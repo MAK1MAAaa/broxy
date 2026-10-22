@@ -4,7 +4,15 @@
 
 本轮先修复可复现的战斗与交互问题，再用固定种子回归检查影响。机器人策略和资源平衡参数保持不变；自动模拟、界面测试、原生运行与真人试玩分别记录，不互相替代。
 
-## 当前：engraved-03竞技场石材
+## 当前：engraved-04主角布料层次
+
+- 主角面具/金链已清楚，但肩以下深紫衣片与脚下阴影接近。本轮只调整原衣片填色、渐变与刻线强度：左侧宽灰紫面连贯，右侧深蓝紫褶谷保留，减弱缩小后不足1px的刻线。面具、兜帽、手、金链、阴影和外轮廓不改。
+- 只player产物变化，其他34项素材及对应manifest条目逐字节相同；35项/原画布/锚点/引用保持。拆开的左右组合path按子路径归一后几何完全一致。完整生成两遍40文件相同；独立SVG结构QA与素材指纹见[character-assets-qa.json](../reports/character-assets-qa.json)。
+- 新增只读独立Godot SVG材质检查工具：96×96 alpha差异0，y<40 RGBA差异0，颜色变更1025像素，变化矩形[15,46,66,41]，透明非零范围前后相同。缺参数exit2、自身对比无变化exit1均按预期；工具不实例Main/GameStore，结果不等同68px导入纹理或动态辨识验收。
+- 68px原生同场景前后图和暗色边缘/敌方预警图已查看，衣片更分明、面具与金链仍优先；独立美术复审未发现阻断问题。草稿与最终图逐字节相同，基线新图也与3f阶段同图逐字节相同。静帧不覆盖移动、无敌闪烁、密集战斗或真人辨识率。
+- 完整2473条Godot和14项Python通过；另存Embers-cloth.app/ZIP，通过arm64、严格签名、Info.plist、无存档包启动及ZIP完整性。运行时/模拟/策略不变，本轮未重跑30局或5分钟压力，最近完整压力仍为e64bb18。源码/图/日志/包指纹见[cloth-art-validation.json](../reports/cloth-art-validation.json)，验证后本地commit，持续优化仍在进行。
+
+## 上一轮：engraved-03竞技场石材
 
 - 原地面更接近同色圆角矩形与重复椭圆污渍。本轮在原铺装上加入断续窄受光边、薄暗面、少量碎缺与短裂、不规则矿物磨面；中央法阵继续低对比。首版倒角偏重，经实际尺寸预览减弱，避免凸起面板感。角色、图标、菜单、音频和玩法不改。
 - 只新增静态SVG细节，保持1280×720画布、中心锚点和原背景绘制路径。35项素材中其他34项哈希保持基线；完整生成两遍字节一致。来源/清单更新为engraved-03，仍原创CC0。资产结构QA与源码指纹见[arena-art-validation.json](../reports/arena-art-validation.json)。
@@ -162,7 +170,7 @@ Flow 的普通首波耗时为 2701 个固定步。Boss 终局检查使用加速�
 | 验收项 | 当前账本状态 | 证据与边界 |
 | --- | --- | --- |
 | 上轮e64bb18真实符文场景5分钟压力测试 | 历史通过，本轮未重测 | Apple M5 / Compatibility / 1280×720，预热5秒、正式300秒、27,255帧；300/600/200，平均90.847 FPS、P99 25.400毫秒；performance.json标记rune-feedback及实际默认设置/无存档状态，退出0 |
-| 本轮独立 macOS 构建与包启动 | 已通过 | `Embers-stone.app`；`build-stone.log`记录arm64、Info.plist和严格签名；`app-boot-stone.log`为无存档入口退出0；`archive-stone.log`检查ZIP完整，旧用户对局保留 |
+| 本轮独立 macOS 构建与包启动 | 已通过 | `Embers-cloth.app`；`build-cloth.log`记录arm64、Info.plist和严格签名；`app-boot-cloth.log`为无存档入口退出0；`archive-cloth.log`检查ZIP完整，旧用户对局保留 |
 | 上轮暂停与设置原生输入 | 固定场景通过 | `modal-native.log`与`modal-native.gd.txt`；实际CUA Tab/Return/Esc、恢复商店及下一波45→37；个人存档读写关闭 |
 | 较早阶段原生约47秒流程 | 已通过普通首波结束检查 | `feedback-flow-native.log`与`feedback-first-wave-complete.png`：45秒正常波次进入“秘术觉醒”，退出0。使用自动走位，未使用压力模式或跳过计时 |
 | 商店原生键盘装配 | 已通过 | 在明确标注的固定商店夹具中按真实Return：骨针装入贯穿、备用归零、焦点到“卸符”，仍停留商店；不代表真人整局通关 |

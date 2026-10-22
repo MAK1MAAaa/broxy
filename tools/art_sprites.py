@@ -36,15 +36,17 @@ def _chain(points: list[tuple[float, float, float]], color: str = "#b29a73") -> 
 
 def _player() -> str:
     body = '<defs>' + _gradient("sp-player-hood", "#75617f", "#44374f", "#1b1b2e")
-    body += _gradient("sp-player-cloth", "#534a65", "#2d2c43", "#131a2a") + '</defs>'
+    body += _gradient("sp-player-cloth", "#6d617c", "#44394f", "#1c2133") + '</defs>'
     body += _ellipse(48, 86, 29, 6, "#030711", 'opacity=".60"')
     # The asymmetric hem and long beak survive the reduced in-game scale.
     body += _path("M31 43 L20 51 13 71 26 68 22 84 39 80 48 89 61 80 77 84 70 66 83 70 75 49 65 41Z", "url(#sp-player-cloth)", width=2.8)
-    body += _path("M30 49 L36 53 30 74 38 80 25 80Z M65 48 L59 54 65 74 60 80 73 79Z", "#181d31", width=0)
-    body += _path("M39 52 L48 58 58 51 62 78 49 86 36 78Z", "#343046", "#6d596e", 1.1)
-    body += _path("M47 60 L47 82 39 77 40 56Z", "#4c3d59", width=0)
+    # Broad matte planes survive the 68px runtime size; retain the dark fold valleys.
+    body += _path("M30 49 L36 53 30 74 38 80 25 80Z", "#64536e", width=0)
+    body += _path("M65 48 L59 54 65 74 60 80 73 79Z", "#181d31", width=0)
+    body += _path("M39 52 L48 58 58 51 62 78 49 86 36 78Z", "#463a52", "#77627d", 1.1)
+    body += _path("M47 60 L47 82 39 77 40 56Z", "#735c79", width=0)
     body += _path("M52 61 L58 54 61 77 52 82Z", "#202237", width=0)
-    body += _etch("M31 60 L26 73 M67 59 L71 73 M39 65 L37 75 M57 63 L60 75", "#777080", 1.0, 'opacity=".60"')
+    body += _etch("M31 60 L26 73 M67 59 L71 73 M39 65 L37 75 M57 63 L60 75", "#918096", 1.0, 'opacity=".40"')
     body += _path("M28 39 Q26 23 37 13 L47 7 Q61 10 68 26 L69 44 58 53 39 53 27 47Z", "url(#sp-player-hood)", width=2.8)
     body += _path("M35 21 L47 12 60 24 64 41 57 49 39 47 32 38Z", "#111525", "#8e7891", 1.1)
     body += _path("M35 23 L47 13 42 25 36 37 33 37Z", "#938095", width=0, extra='opacity=".42"')
@@ -193,7 +195,7 @@ def _boss() -> str:
 def generate(save_svg: SaveSvg) -> None:
     """Write only the six established sprite paths, with their existing pivots."""
     for name, size, author, role in [
-        ("player", 96, _player, "ivory beaked mask, plum hood, ritual chain; center anchor"),
+        ("player", 96, _player, "ivory beaked mask, plum hood, broad matte cloth planes and dark folds, ritual chain; center anchor"),
         ("chaser", 64, _chaser, "tattered pursuing spirit; center anchor"),
         ("rusher", 64, _rusher, "low angular claw beast; center anchor"),
         ("tank", 80, _tank, "heavy shield-shaped iron guardian; center anchor"),

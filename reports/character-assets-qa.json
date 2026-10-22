@@ -1,0 +1,482 @@
+{
+  "schema_version": 1,
+  "baseline_commit": "3f61d66",
+  "baseline_snapshot_sha256": "95488ef9c81c9848160c3ce7264b0e320d5112b5f3aa745dd89c854829dd4709",
+  "art_revision": "engraved-04",
+  "manifest_sha256": "a93bc09266d909a59b0639168362cca78eabb25283b321c2d7665281a65834e8",
+  "asset_count": 35,
+  "asset_types": {
+    "vector": 25,
+    "audio": 10
+  },
+  "only_changed_asset_paths": [
+    "assets/sprites/player.svg"
+  ],
+  "unchanged_non_player_assets": 34,
+  "all_dimensions_and_pivots_preserved": true,
+  "forbidden_elements_checked": [
+    "clipPath",
+    "filter",
+    "font",
+    "font-face",
+    "foreignObject",
+    "image",
+    "mask",
+    "pattern",
+    "script",
+    "style",
+    "text",
+    "use"
+  ],
+  "regeneration_evidence": {
+    "executor": "Root agent; this QA independently compares two supplied file-hash maps and actual output bytes without invoking generation",
+    "first_file": "reports/cloth-generation-first.json",
+    "first_sha256": "3fd9bc65ba06af882718371c764d38b69d1c8ed6fa58cd9cf82f8390a0323180",
+    "second_file": "reports/cloth-generation-second.json",
+    "second_sha256": "3fd9bc65ba06af882718371c764d38b69d1c8ed6fa58cd9cf82f8390a0323180",
+    "file_count": 40,
+    "fingerprints_equal": true,
+    "current_file_mismatches": []
+  },
+  "player_structure": {
+    "drawable_elements_before": 31,
+    "drawable_elements_after": 32,
+    "subpath_geometry_counter_equal": true,
+    "protected_element_attributes_equal": {
+      "shadow": true,
+      "outer_body": true,
+      "hood": true,
+      "face_mask_and_eyes": true,
+      "collar": true,
+      "chain_and_gold": true,
+      "satchel": true,
+      "hands": true
+    },
+    "changed_gradient_ids": [
+      "sp-player-cloth"
+    ],
+    "conservative_geometry_stroke_bounds": [
+      11.6,
+      5.6,
+      84.4,
+      92.0
+    ],
+    "geometry_inside_original_96px_canvas": true,
+    "boundary_method": "All path commands are absolute M/L/Q/Z; path control-point convex hull plus half stroke, ellipses use conservative rotation radius. This is a source-geometry bound, not a pixel alpha measurement."
+  },
+  "generator_sources_sha256": {
+    "tools/generate_assets.py": "95ecfbc4ba8c23ec2551cf7724053de990f416594c47f78a91000c54eee7883a",
+    "tools/art_environment.py": "8a648e92bdc9eca109c9d3d4c4b255f8f620e5dffed10f3b83844143adc640bc",
+    "tools/art_sprites.py": "600b1ae033e50db891830760a709fb29054e1c8a3c17335f5b28a0fc0377cffa",
+    "tools/art_icons.py": "79b405061cfacae19fe521430fb54c7612feb01233344e0938410cf33cc3fcbd"
+  },
+  "passed": true,
+  "errors": [],
+  "limits": [
+    "Technical XML/reference/canvas/source-geometry verification only; visual quality, dynamic legibility and runtime performance are not established.",
+    "No engine, GUI, generator or simulation executed by this QA agent; raster alpha checks belong to the separate native QA report.",
+    "The outer-body fill still references the changed cloth gradient; protected attribute equality does not assert identical rendered body color."
+  ],
+  "assets": [
+    {
+      "path": "assets/sprites/player.svg",
+      "size": [
+        96,
+        96
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "sha256_before": "610d8158d82be5eca4d016c9b5634aa4f893c5899e8fe56d17fc1e08982ee9a1",
+      "sha256_after": "26822f17b6563a862d3ef426afdba7a68395de802eb996b2421ecc9ea622033c"
+    },
+    {
+      "path": "assets/sprites/chaser.svg",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "sha256_before": "5aae1d1650c08a3fc9d3fe1a12b5ec000934deafe345c34d2b9edd61f92f3e43",
+      "sha256_after": "5aae1d1650c08a3fc9d3fe1a12b5ec000934deafe345c34d2b9edd61f92f3e43"
+    },
+    {
+      "path": "assets/sprites/rusher.svg",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "sha256_before": "bea93130efe902762f440b57664fd69a5dd413735c3d971da2362cef97fba647",
+      "sha256_after": "bea93130efe902762f440b57664fd69a5dd413735c3d971da2362cef97fba647"
+    },
+    {
+      "path": "assets/sprites/tank.svg",
+      "size": [
+        80,
+        80
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "sha256_before": "4672d1b3d23ad3125eca2792ceb440a69436bf639e2ed4766468ac287e0e32c6",
+      "sha256_after": "4672d1b3d23ad3125eca2792ceb440a69436bf639e2ed4766468ac287e0e32c6"
+    },
+    {
+      "path": "assets/sprites/caster.svg",
+      "size": [
+        72,
+        72
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "sha256_before": "92de97777b197d1e36faa93046f3f78ecba0c6c70fd659761dd9a7b5933e53d3",
+      "sha256_after": "92de97777b197d1e36faa93046f3f78ecba0c6c70fd659761dd9a7b5933e53d3"
+    },
+    {
+      "path": "assets/sprites/boss.svg",
+      "size": [
+        160,
+        160
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "sha256_before": "8d466578c6a16f25cb821ceb1bc6e3c2441d8f5a83ca6b431da0b50e685a3e98",
+      "sha256_after": "8d466578c6a16f25cb821ceb1bc6e3c2441d8f5a83ca6b431da0b50e685a3e98"
+    },
+    {
+      "path": "assets/arena.svg",
+      "size": [
+        1280,
+        720
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "sha256_before": "ffc2e47dd60f017d18d164aa73c44d48c5fdcd7741f6ade643a845d1a17b9137",
+      "sha256_after": "ffc2e47dd60f017d18d164aa73c44d48c5fdcd7741f6ade643a845d1a17b9137"
+    },
+    {
+      "path": "assets/menu_art.svg",
+      "size": [
+        640,
+        720
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "sha256_before": "897cd1d33d1c3dc074341dfb0c6c874ae6f4cf5c15b00486f032b500afcf44ec",
+      "sha256_after": "897cd1d33d1c3dc074341dfb0c6c874ae6f4cf5c15b00486f032b500afcf44ec"
+    },
+    {
+      "path": "assets/icons/bone.svg",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "sha256_before": "fed510ab206659d89245701d64e714ceeafd07eaaf8f1d224732e1a590d2f95e",
+      "sha256_after": "fed510ab206659d89245701d64e714ceeafd07eaaf8f1d224732e1a590d2f95e"
+    },
+    {
+      "path": "assets/icons/frost.svg",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "sha256_before": "7a4c4d4ab9d51b25bc794e1b880a12d4beaec03fc9be9021cc82f50cb935c1cb",
+      "sha256_after": "7a4c4d4ab9d51b25bc794e1b880a12d4beaec03fc9be9021cc82f50cb935c1cb"
+    },
+    {
+      "path": "assets/icons/ember.svg",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "sha256_before": "a3aedd7805495a4a8060a80e615ca92763ffa6b92bfce3d928cddd2f41ea90f2",
+      "sha256_after": "a3aedd7805495a4a8060a80e615ca92763ffa6b92bfce3d928cddd2f41ea90f2"
+    },
+    {
+      "path": "assets/icons/scatter.svg",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "sha256_before": "b7e4fcd60f6bb83a42cc64896926d29bdfe4d7c93d7caed5a7e684e8324b9562",
+      "sha256_after": "b7e4fcd60f6bb83a42cc64896926d29bdfe4d7c93d7caed5a7e684e8324b9562"
+    },
+    {
+      "path": "assets/icons/pierce.svg",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "sha256_before": "5eba063ccb82ee68b5815d3c70fcce60059a2f0a7a2a349a9b344bdb233849a6",
+      "sha256_after": "5eba063ccb82ee68b5815d3c70fcce60059a2f0a7a2a349a9b344bdb233849a6"
+    },
+    {
+      "path": "assets/icons/bounce.svg",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "sha256_before": "d1496174ecdd3bbdaaef10927f49b2a7a66b8e288a24ac75a0117b641df9d43d",
+      "sha256_after": "d1496174ecdd3bbdaaef10927f49b2a7a66b8e288a24ac75a0117b641df9d43d"
+    },
+    {
+      "path": "assets/icons/blast.svg",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "sha256_before": "063b763b74b85ceb01b95bff5c82074eca23261b6333af1e26b1e3915d0fe255",
+      "sha256_after": "063b763b74b85ceb01b95bff5c82074eca23261b6333af1e26b1e3915d0fe255"
+    },
+    {
+      "path": "assets/icons/damage.svg",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "sha256_before": "29da93aa6234571b4634b6cb5252df96e69e71f7db08fd79bfdbab67b3314c13",
+      "sha256_after": "29da93aa6234571b4634b6cb5252df96e69e71f7db08fd79bfdbab67b3314c13"
+    },
+    {
+      "path": "assets/icons/haste.svg",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "sha256_before": "f7d25f52c26d13580f8ff52d76df364f9dfb649cc461d97ae52569b1357c8e0a",
+      "sha256_after": "f7d25f52c26d13580f8ff52d76df364f9dfb649cc461d97ae52569b1357c8e0a"
+    },
+    {
+      "path": "assets/icons/speed.svg",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "sha256_before": "f3d7303d4a0a90c27d50971dcc6f2f3ed9b155c9b89fc2e1bf1bcdd24eab91c7",
+      "sha256_after": "f3d7303d4a0a90c27d50971dcc6f2f3ed9b155c9b89fc2e1bf1bcdd24eab91c7"
+    },
+    {
+      "path": "assets/icons/vitality.svg",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "sha256_before": "1b6dec7c8605b24295d4cf4535498b0e5623072333c31c606ad841f4e35d94c1",
+      "sha256_after": "1b6dec7c8605b24295d4cf4535498b0e5623072333c31c606ad841f4e35d94c1"
+    },
+    {
+      "path": "assets/icons/armor.svg",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "sha256_before": "9fd54e3bb7625db5eddbd446277a9e4c9943383a928278334eeaf9ada9481203",
+      "sha256_after": "9fd54e3bb7625db5eddbd446277a9e4c9943383a928278334eeaf9ada9481203"
+    },
+    {
+      "path": "assets/icons/magnet.svg",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "sha256_before": "cae7be65fe426b6e19a8c571599c58148b03deaf3439e2da9ee3b8eb81aead32",
+      "sha256_after": "cae7be65fe426b6e19a8c571599c58148b03deaf3439e2da9ee3b8eb81aead32"
+    },
+    {
+      "path": "assets/icons/soul.svg",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "sha256_before": "1c33ec6f6caef925bb15855c6a609267ee98e67c5ee186aa4489f67869647d0f",
+      "sha256_after": "1c33ec6f6caef925bb15855c6a609267ee98e67c5ee186aa4489f67869647d0f"
+    },
+    {
+      "path": "assets/fx/glow.svg",
+      "size": [
+        96,
+        96
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "sha256_before": "a8ce6d65037444dc2f4c70759aebb4d97e5a8a9b6b6181ea21c96e8b45234fbe",
+      "sha256_after": "a8ce6d65037444dc2f4c70759aebb4d97e5a8a9b6b6181ea21c96e8b45234fbe"
+    },
+    {
+      "path": "assets/fx/seal.svg",
+      "size": [
+        96,
+        96
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "sha256_before": "d3cbbe6732fdf6660182591457f0a21af15acaf5682dc3ab4546a74dfcf2de61",
+      "sha256_after": "d3cbbe6732fdf6660182591457f0a21af15acaf5682dc3ab4546a74dfcf2de61"
+    },
+    {
+      "path": "assets/icon.svg",
+      "size": [
+        256,
+        256
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "sha256_before": "8fab446de72653255765e7841dbf43e011f6f4feb9e0d17fe39aece7cee56c45",
+      "sha256_after": "8fab446de72653255765e7841dbf43e011f6f4feb9e0d17fe39aece7cee56c45"
+    },
+    {
+      "path": "assets/audio/shoot.wav",
+      "size": null,
+      "pivot": null,
+      "sha256_before": "f1e80cdc436880575bf138b5f62afe7ad8dd45abe4bc1e081c945b7f44104989",
+      "sha256_after": "f1e80cdc436880575bf138b5f62afe7ad8dd45abe4bc1e081c945b7f44104989"
+    },
+    {
+      "path": "assets/audio/hit.wav",
+      "size": null,
+      "pivot": null,
+      "sha256_before": "09458a7d591ce9d38e98598f3c9862f9f253a4a0c492224318f85474a02563b5",
+      "sha256_after": "09458a7d591ce9d38e98598f3c9862f9f253a4a0c492224318f85474a02563b5"
+    },
+    {
+      "path": "assets/audio/hurt.wav",
+      "size": null,
+      "pivot": null,
+      "sha256_before": "15d151d2a6c6c820323e75ccda4dfdf11e8b196894c096bddb6f3766347c242c",
+      "sha256_after": "15d151d2a6c6c820323e75ccda4dfdf11e8b196894c096bddb6f3766347c242c"
+    },
+    {
+      "path": "assets/audio/death.wav",
+      "size": null,
+      "pivot": null,
+      "sha256_before": "0ebd789967a2e45412d831cb4c96f7efa09cd9d4c593b4f9bd9a7d90e0a8f727",
+      "sha256_after": "0ebd789967a2e45412d831cb4c96f7efa09cd9d4c593b4f9bd9a7d90e0a8f727"
+    },
+    {
+      "path": "assets/audio/buy.wav",
+      "size": null,
+      "pivot": null,
+      "sha256_before": "e5d8978e42077addaaa66d095e144520e176a5eb28768c2ea286100426cd4eab",
+      "sha256_after": "e5d8978e42077addaaa66d095e144520e176a5eb28768c2ea286100426cd4eab"
+    },
+    {
+      "path": "assets/audio/rune.wav",
+      "size": null,
+      "pivot": null,
+      "sha256_before": "07b09e7994fb80cc780592d33a8152f22636a19573a46e1f9357f125c4fcd60c",
+      "sha256_after": "07b09e7994fb80cc780592d33a8152f22636a19573a46e1f9357f125c4fcd60c"
+    },
+    {
+      "path": "assets/audio/level.wav",
+      "size": null,
+      "pivot": null,
+      "sha256_before": "9e3f1bc1ce6d53cd07a3e21d21ecf66232341c76b7da663600598ece5284a479",
+      "sha256_after": "9e3f1bc1ce6d53cd07a3e21d21ecf66232341c76b7da663600598ece5284a479"
+    },
+    {
+      "path": "assets/audio/victory.wav",
+      "size": null,
+      "pivot": null,
+      "sha256_before": "9dd143be5d808cb6aa74ff1a1cd9e8ca93b504802dc39af91185628f28f6e76a",
+      "sha256_after": "9dd143be5d808cb6aa74ff1a1cd9e8ca93b504802dc39af91185628f28f6e76a"
+    },
+    {
+      "path": "assets/audio/defeat.wav",
+      "size": null,
+      "pivot": null,
+      "sha256_before": "d728334078a700976c613df59e9ab71ed72036f5b3a69ab05ef19147db12a4d1",
+      "sha256_after": "d728334078a700976c613df59e9ab71ed72036f5b3a69ab05ef19147db12a4d1"
+    },
+    {
+      "path": "assets/audio/ambience.wav",
+      "size": null,
+      "pivot": null,
+      "sha256_before": "3d3013317384ee836e33d9602d4330d6a60ed30cde93dfbeddfb12bc1faea42e",
+      "sha256_after": "3d3013317384ee836e33d9602d4330d6a60ed30cde93dfbeddfb12bc1faea42e"
+    }
+  ],
+  "local_detailed_report": {
+    "path": "reports/character-assets-qa.raw.log",
+    "sha256": "3aea5695c8d57d53a8c9bd7b2828adcc6c7c9b1c615cd17407bc78bfc5a3e058",
+    "note": "Full XML and per-element diagnostics retained locally; compact results are committed."
+  }
+}

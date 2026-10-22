@@ -2,7 +2,7 @@
 
 Godot 4.7.2 普通版、带类型标注的 GDScript 开发的 macOS 单人割草原型。围绕四个法器槽与可拆换行为符文，完成短波次战斗、经验强化、商店改装和最终 Boss。
 
-当前美术版本为 `engraved-03`：在原有六类角色、蚀月菜单和秘术图标基础上，细化竞技场的断续受光边、碎缺、短裂与不规则石材磨面。地面保持低对比，角色轮廓与敌方预警优先；保留轻微呼吸、倾身和脚下符印。中文优先使用系统 Hiragino Sans GB，避免本机苹方字体映射造成简体缺字。美术合同与来源见 `docs/art-direction.md`。
+当前美术版本为 `engraved-04`：主角披风和衣摆使用更连贯的灰紫亮面与深色褶谷，在68px游戏尺寸下拉开布料层次；面具、金链与原轮廓保持。竞技场沿用上一轮低对比石材，角色和敌方预警优先；保留轻微呼吸、倾身和脚下符印。中文优先使用系统 Hiragino Sans GB，避免本机苹方字体映射造成简体缺字。美术合同与来源见 `docs/art-direction.md`。
 
 战斗现在显示实际伤害与承伤浮字，并提示受击方向。贯穿命中显示淡绿双轨，弹射显示真实转向的冷蓝折角，爆破显示暖金放射纹；敌方预警始终位于最上层。弹体圆点、弹射环和拖尾采用批量绘制。结算新增最后受击来源和各法器实际伤害贡献。购买符文后会自动选中，并把键盘焦点移到法器的“装入”按钮，便于完成改装。
 
@@ -20,7 +20,7 @@ Godot 4.7.2 普通版、带类型标注的 GDScript 开发的 macOS 单人割草
 
 ## 直接游玩
 
-本轮最新应用为 `build/Embers-stone.app`（压缩包`build/Embers-stone-mac-arm64.zip`），包含竞技场石材细化，以及此前的商店条件提示、HUD避让、强化预览、诊断档案隔离和幽焰追踪修复。旧`build/Embers.app`保留正在暂停的对局；结束旧应用后再打开新版。选择骨针或幽焰开局。应用面向 Apple Silicon、macOS 13 及以上；已采用本地 ad-hoc 签名，尚未进行 Developer ID 公证。
+本轮最新应用为 `build/Embers-cloth.app`（压缩包`build/Embers-cloth-mac-arm64.zip`），包含主角布料层次细化，以及此前的竞技场石材、商店条件提示、HUD避让、强化预览、诊断档案隔离和幽焰追踪修复。旧`build/Embers.app`保留正在暂停的对局；结束旧应用后再打开新版。选择骨针或幽焰开局。应用面向 Apple Silicon、macOS 13 及以上；已采用本地 ad-hoc 签名，尚未进行 Developer ID 公证。
 
 | 操作 | 按键 |
 | --- | --- |
@@ -66,7 +66,7 @@ python3 tools/fetch_macos_template.py
 ```sh
 ./tools/build_macos.sh
 # 另存应用，避免替换正在运行的旧版：
-BROXY_APP_PATH="$PWD/build/Embers-stone.app" ./tools/build_macos.sh
+BROXY_APP_PATH="$PWD/build/Embers-cloth.app" ./tools/build_macos.sh
 ```
 
 构建从官方 Universal 模板提取 arm64，生成 `build/Embers.app` 并执行 ad-hoc 签名验证。引擎许可在应用的 `Contents/Resources/licenses/` 中直接可读。对外发布前应使用自己的 Developer ID 配置签名与公证。
@@ -101,7 +101,7 @@ python3 -m unittest discover -s tests -p 'test_shop_analysis.py'
 
 也可以用 `./tools/test.sh` 一次运行十八套Godot行为测试和Python分析器测试。当前2473条Godot无界面断言及14项Python测试全部通过（ProfileModes的六种入口分进程执行）；上一轮原生预警套件另通过134条断言（含12项GPU读回），记录见 `reports/tests.log` 与 `reports/enemy-telegraphs-native.log`。系统字体测试需要正常 macOS 字体访问权限；文件沙箱可能阻止 SystemFont 枚举。请在常规终端运行。性能测试会打开明确标记的窗口并显示采样倒计时，保持300敌人、至少600投射物与200掉落，预热5秒后采样300秒，输出 `reports/performance.json`。`--benchmark-runes`使用四种法器与三类符文的真实伤害弹体，报告标记为`rune-feedback`；省略该参数为含零伤害维持弹体的历史`baseline`场景，两者分别记录。测试时保持该窗口可见、Mac未锁屏，避免同时运行其他图形负载。
 
-上一轮e64bb18的核心143fbc0963af已在Apple M5完成5分钟真实符文场景采样：27,255帧，平均90.847 FPS、P99 25.400毫秒，维持300敌人/600弹体/200掉落并实际产生主/次伤害，退出0。诊断模式采用默认设置且不读写个人档案；旧采样继承个人设置且未记录，不能把帧率差额全部归因于追踪修复。上轮95.480 FPS/P99 25.588毫秒另存`performance-before-homing-turn.json`。本轮仅细化静态竞技场素材，未重跑30局或5分钟压力；运行时与模拟资源保持上一轮源码，1280×720背景纹理尺寸和绘制路径也保持原样。历史340个静止预警短测仍独立记录；设备、场景与源码指纹见 `docs/verification.md`、`reports/homing-validation.json`。
+上一轮e64bb18的核心143fbc0963af已在Apple M5完成5分钟真实符文场景采样：27,255帧，平均90.847 FPS、P99 25.400毫秒，维持300敌人/600弹体/200掉落并实际产生主/次伤害，退出0。诊断模式采用默认设置且不读写个人档案；旧采样继承个人设置且未记录，不能把帧率差额全部归因于追踪修复。上轮95.480 FPS/P99 25.588毫秒另存`performance-before-homing-turn.json`。本轮仅细化主角静态布料素材，未重跑30局或5分钟压力；运行时与模拟资源保持上一轮源码，96×96原画布、68px绘制尺寸和绘制路径也保持原样。历史340个静止预警短测仍独立记录；设备、场景与源码指纹见 `docs/verification.md`、`reports/homing-validation.json`。
 
 完整模拟复用正式 `RunState`、`CombatSim.step` 与商店价格，没有额外金币、无敌或专用 Boss 数值。当前核心版本`fb2ccf1ca5f1`提取只读购买校验；同种子30局与幽焰修复阶段`143fbc0963af`相比，仅排除版本字段后，包括完整购物与战斗轨迹的全部字段一致，仍29胜1败。此前接触反冲修复曾改变24局、28胜变29胜；各阶段独立比较，不代表真人胜率。策略与证据见 `docs/simulation.md`、`reports/purchase-simulation.json`，试玩流程见 `docs/playtest.md`，持续工作记录见 `docs/optimization-log.md`。
 

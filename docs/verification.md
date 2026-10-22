@@ -1,6 +1,6 @@
 # 原型验收记录
 
-验收日期：2026年10月22日。引擎为 Godot 4.7.2 普通版；当前模拟核心/资源版本为 `prototype-0.1.0+fb2ccf1ca5f1`，新增只读购买校验并包含幽焰反向追踪修复；当前美术为 `engraved-03`。以下分别记录自动化、原生窗口、构建与待完成检查；“持续优化游戏”仍在进行中。
+验收日期：2026年10月22日。引擎为 Godot 4.7.2 普通版；当前模拟核心/资源版本为 `prototype-0.1.0+fb2ccf1ca5f1`，新增只读购买校验并包含幽焰反向追踪修复；当前美术为 `engraved-04`。以下分别记录自动化、原生窗口、构建与待完成检查；“持续优化游戏”仍在进行中。
 
 ## 功能与构筑
 
@@ -43,7 +43,17 @@
 
 新证据区分了两类情况：seed2026贯穿首店曾出现18魂屑符文，策略从65魂屑先买两件24魂屑法器后剩17，才拒绝符文；次店四轮未出现目标符文。seed2032爆破的前两店全部已记录报价未出现目标符文；seed2029贯穿也在前两店未见目标符文，最终仍通关。它们不证明未成型就是死亡原因，也不支持仅据此调整正式价格或强制发放指定符文。第5—7店停止刷新有57次策略饱和、27次达到策略刷新上限，不等于无合法消费。此前缺完整报价的局限仍适用于旧报告，不能用新观测补写旧报告的原始证据。
 
-## 当前：竞技场石材细化
+## 当前：主角布料层次
+
+engraved-04只调整主角原衣片颜色与渐变，并减弱细刻线；左侧灰紫亮面与右侧深色褶谷形成宽缓层次。原96×96画布、68px运行时绘制、透明边界及运动代码保持。独立结构检查确认左右组合path拆开后几何区域一致，原面具/兜帽/金链/双手/阴影元素保持；外body仍引用被调整的cloth渐变，不把源属性相同说成体色相同。
+
+35项素材中其他34项及其清单条目逐字节不变，完整生成两遍40文件一致；XML、尺寸/锚点和引用检查通过，见[character-assets-qa.json](../reports/character-assets-qa.json)。Godot独立SVG栅格检查的alpha差异0，y<40 RGBA差异0；颜色变化1025像素、矩形[15,46,66,41]，非零alpha范围前后均[11,5,74,87]。该检查在96×96直接栅格化源SVG，不代表68px导入纹理或动画效果；缺参数exit2、无变化exit1也按预期，见[player-material-raster.json](../reports/player-material-raster.json)。
+
+同场景68px原生前后图、暗色边缘/敌方预警图退出0并已查看；材质改善克制可见，没有金属硬边或新线噪声，面具和金链仍为主要亮点。新基线与3f阶段原图逐字节相同，最终图与草稿也逐字节相同。这些都是冻结夹具，不代表密集动态战斗、无敌闪烁、真人辨识或原生输入验收。
+
+完整2473条Godot与14项Python通过；独立Embers-cloth.app/ZIP通过arm64、严格签名、Info.plist、无存档启动及ZIP完整性。运行时/模拟/策略维持3f61d66源码，本轮未重跑30局/5分钟压力；旧应用与暂停对局保留。完整指纹与验证边界见[cloth-art-validation.json](../reports/cloth-art-validation.json)。
+
+## 上一轮：竞技场石材细化
 
 engraved-03只更新竞技场石面：断续窄受光边、薄暗面、贴边碎缺与短裂，不规则宽缓矿物磨面。原铺装位置、中央低对比双环、边缘建筑保持；首版倒角过重，最终减弱以避免凸起面板感。其他34项素材与基线逐字节相同，35项资源数量、原尺寸和中心锚点均不变。
 
@@ -163,9 +173,9 @@ Boss存活时HUD明确显示“击败首领 / 限时”，真实剩余≤10秒�
 
 ## Mac应用与分发
 
-本轮另存`build/Embers-stone.app`与`build/Embers-stone-mac-arm64.zip`，arm64、ad-hoc严格签名、Info.plist、headless启动退出0、ZIP完整性通过，见build-stone.log、app-boot-stone.log与archive-stone.log。包启动使用--capture-only隔离档案，不创建截图；未另做打包应用普通菜单的原生启动。旧应用与暂停对局均保留。
+本轮另存`build/Embers-cloth.app`与`build/Embers-cloth-mac-arm64.zip`，arm64、ad-hoc严格签名、Info.plist、headless启动退出0、ZIP完整性通过，见build-cloth.log、app-boot-cloth.log与archive-cloth.log。包启动使用--capture-only隔离档案，不创建截图；未另做打包应用普通菜单的原生启动。旧应用与暂停对局均保留。
 
-新应用、PCK、可执行文件及ZIP的SHA-256记录在[arena-art-validation.json](../reports/arena-art-validation.json)，对应当前素材与源码。上一轮Embers-shop-status见[purchase-validation.json](../reports/purchase-validation.json)。更早Embers-hud见[notices-validation.json](../reports/notices-validation.json)。上一轮Embers-choices见[choices-validation.json](../reports/choices-validation.json)；更早Embers-stable应用与完整30局/性能证据仍见[homing-validation.json](../reports/homing-validation.json)，均保留当时的源码指纹。
+新应用、PCK、可执行文件及ZIP的SHA-256记录在[cloth-art-validation.json](../reports/cloth-art-validation.json)，对应当前素材与源码。上一轮Embers-stone见[arena-art-validation.json](../reports/arena-art-validation.json)。更早Embers-shop-status见[purchase-validation.json](../reports/purchase-validation.json)。更早Embers-hud见[notices-validation.json](../reports/notices-validation.json)。上一轮Embers-choices见[choices-validation.json](../reports/choices-validation.json)；更早Embers-stable应用与完整30局/性能证据仍见[homing-validation.json](../reports/homing-validation.json)，均保留当时的源码指纹。
 
 上一阶段`Embers-shop.app`的原生交互来自同源码无存档商店夹具；当时构建与启动记录见[shop-validation.json](../reports/shop-validation.json)。
 
