@@ -69,6 +69,7 @@ func _run_tests() -> void:
 	_check(status != null and status.get_global_rect().end.y <= 100, "Restyled status panel stays within the original top HUD footprint")
 	_check(equipment != null and equipment.get_global_rect().position.y >= 616, "Restyled equipment panel does not cover more of the combat area")
 	_check(_text_inside(ui), "HUD text stays inside the reference viewport without clipping")
+	await _test_boss_hud(ui, state.loadout)
 	ui.update_hud({"health": 100, "max_health": 100, "wave": 8, "time_left": 45.0, "loadout": state.loadout, "boss_health": 100.0, "boss_max_health": 200.0})
 	ui.notify("这是用于验证战斗提示固定宽度的长文本。".repeat(30))
 	await _settle()
@@ -288,6 +289,74 @@ func _run_tests() -> void:
 	await process_frame
 	print("UI: %d assertions, %d failures" % [_checks, _failures])
 	quit(0 if _failures == 0 else 1)
+
+
+func _test_boss_hud(ui: GameUI, loadout: Array) -> void:
+	var status_before: Rect2 = ui.find_child("RitualStatus", true, false).get_global_rect()
+	var equipment_before: Rect2 = ui.find_child("RitualEquipment", true, false).get_global_rect()
+	var boss_snapshot: Dictionary = {"health": 100, "max_health": 100, "wave": 3, "time_left": 45.0,
+		"loadout": loadout, "boss_health": 150.0, "boss_max_health": 300.0}
+	var wave_label: Label = ui._hud["wave"]
+	var timer_label: Label = ui._hud["time"]
+	var boss_status: Control = ui._hud["boss"]
+	var boss_bar: ProgressBar = ui._hud["boss_bar"]
+	_check(GameUI.CORAL.is_equal_approx(Color("ed9a86")), "Boss urgency uses the specified stable coral color")
+	ui.update_hud(boss_snapshot)
+	_check(wave_label.text == "击败首领" and timer_label.text == "限时  00:45", "A living boss changes the objective and timer even outside wave eight")
+	_check(boss_status.visible and boss_bar.value == 150.0 and boss_bar.max_value == 300.0, "Boss objective uses actual positive health and maximum health")
+	_check(timer_label.get_theme_color("font_color").is_equal_approx(GameUI.BONE), "Boss time above ten seconds keeps the ordinary bone color")
+	ui.notify("首领限时验证提示")
+	await _settle()
+	_check(ui.find_child("RitualStatus", true, false).get_global_rect() == status_before and ui.find_child("RitualEquipment", true, false).get_global_rect() == equipment_before and _text_inside(ui), "Boss instructions keep the original readable HUD footprint")
+	var notice: Label = ui._toast
+	_check(not notice.get_global_rect().intersects(boss_status.get_global_rect()) and not notice.get_global_rect().intersects(CombatSim.ARENA), "Boss instructions preserve safe notification space above the arena")
+	for boundary: Array in [[10.001, "限时  00:11", false], [10.0, "限时  00:10", true], [9.99, "限时  00:10", true], [0.0, "限时  00:00", true]]:
+		boss_snapshot["time_left"] = float(boundary[0])
+		ui.update_hud(boss_snapshot)
+		_check(timer_label.text == boundary[1], "Boss timer rounds upward at the actual-time boundary: " + str(boundary[0]))
+		var expected: Color = GameUI.CORAL if boundary[2] else GameUI.BONE
+		_check(timer_label.get_theme_color("font_color").is_equal_approx(expected), "Urgency uses actual remaining seconds rather than the rounded label: " + str(boundary[0]))
+	for repeat: int in 3:
+		ui.update_hud(boss_snapshot)
+	_check(timer_label.get_theme_color("font_color").is_equal_approx(GameUI.CORAL) and timer_label.text == "限时  00:00", "Repeated identical boss snapshots preserve a stable urgency color and timer")
+	boss_snapshot["time_left"] = 45.0
+	ui.update_hud(boss_snapshot)
+	_check(timer_label.get_theme_color("font_color").is_equal_approx(GameUI.BONE), "A later nonurgent boss snapshot resets the previous urgency color")
+	boss_snapshot["wave"] = 8
+	boss_snapshot["time_left"] = 9.99
+	ui.update_hud(boss_snapshot)
+	boss_snapshot["boss_health"] = 0.0
+	ui.update_hud(boss_snapshot)
+	_check(not boss_status.visible and wave_label.text == "波次  8 / 8" and timer_label.text == "剩余  00:10", "Zero boss health restores the ordinary objective and timer even on wave eight")
+	_check(timer_label.get_theme_color("font_color").is_equal_approx(GameUI.BONE), "A defeated boss cannot leave urgency color on the normal-wave timer")
+	boss_snapshot["boss_health"] = 150.0
+	ui.update_hud(boss_snapshot)
+	boss_snapshot["boss_max_health"] = 0.0
+	ui.update_hud(boss_snapshot)
+	_check(not boss_status.visible and wave_label.text == "波次  8 / 8" and timer_label.text == "剩余  00:10" and timer_label.get_theme_color("font_color").is_equal_approx(GameUI.BONE), "Positive current health without a positive maximum is not a living-boss HUD")
+	boss_snapshot["boss_max_health"] = 300.0
+	ui.update_hud(boss_snapshot)
+	boss_snapshot["benchmark"] = true
+	ui.update_hud(boss_snapshot)
+	_check(wave_label.text == "性能测试" and timer_label.text == "采样  00:10", "Benchmark labels take priority over a live boss and its short remaining time")
+	_check(timer_label.get_theme_color("font_color").is_equal_approx(GameUI.BONE), "Benchmark sampling never inherits the boss failure-countdown color")
+	boss_snapshot.erase("benchmark")
+	boss_snapshot["time_left"] = -0.25
+	ui.update_hud(boss_snapshot)
+	_check(timer_label.text == "限时  00:00" and timer_label.get_theme_color("font_color").is_equal_approx(GameUI.CORAL), "Negative remaining boss time clamps to the visible zero-second boundary")
+	ui.show_hud()
+	wave_label = ui._hud["wave"]
+	timer_label = ui._hud["time"]
+	boss_status = ui._hud["boss"]
+	_check(wave_label.text == "波次  1 / 8" and timer_label.text == "剩余  00:45" and not boss_status.visible and timer_label.get_theme_color("font_color").is_equal_approx(GameUI.BONE), "A rebuilt HUD starts with ordinary labels and no stale boss urgency")
+	boss_snapshot["time_left"] = 10.0
+	ui.update_hud(boss_snapshot)
+	_check(wave_label.text == "击败首领" and timer_label.text == "限时  00:10" and boss_status.visible and timer_label.get_theme_color("font_color").is_equal_approx(GameUI.CORAL), "A fresh boss snapshot restores urgency after HUD reconstruction")
+	ui.notify("重建后的首领提示")
+	await _settle()
+	_check(ui.find_child("RitualStatus", true, false).get_global_rect() == status_before and ui.find_child("RitualEquipment", true, false).get_global_rect() == equipment_before and not notice.get_global_rect().intersects(boss_status.get_global_rect()), "HUD reconstruction retains the original layout and notification separation")
+	ui.update_hud({"health": 100, "max_health": 100, "wave": 1, "time_left": 45.0, "loadout": loadout})
+	_check(wave_label.text == "波次  1 / 8" and timer_label.text == "剩余  00:45" and timer_label.get_theme_color("font_color").is_equal_approx(GameUI.BONE), "Ordinary snapshots fully restore timer labels and color after the boss sequence")
 
 
 func _settle() -> void:

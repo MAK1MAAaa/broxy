@@ -16,6 +16,8 @@ const CELL: float = 80.0
 const ENEMY_LIMIT: int = 340
 const SHOT_LIMIT: int = 1600
 const DROP_LIMIT: int = 420
+const RUSHER_WINDUP: float = 0.65
+const CASTER_WINDUP: float = 0.45
 
 class Enemy:
 	var active: bool = false
@@ -260,7 +262,7 @@ func _update_enemies(delta: float) -> void:
 		elif id == "rusher":
 			if enemy.mode == 0 and enemy.action_timer <= 0.0:
 				enemy.mode = 1
-				enemy.action_timer = 0.65
+				enemy.action_timer = RUSHER_WINDUP
 				enemy.charge_direction = direction
 			elif enemy.mode == 1:
 				speed = 0.0
@@ -279,7 +281,7 @@ func _update_enemies(delta: float) -> void:
 			if distance < 160.0:
 				direction = -direction
 				speed = 35.0
-			if enemy.action_timer <= 0.45:
+			if enemy.action_timer <= CASTER_WINDUP:
 				enemy.mode = 1
 			if enemy.action_timer <= 0.0:
 				var aim: Vector2 = (player_position - enemy.position).normalized()

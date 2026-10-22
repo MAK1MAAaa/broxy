@@ -4,15 +4,25 @@
 
 本轮先修复可复现的战斗与交互问题，再用固定种子回归检查影响。机器人策略和资源平衡参数保持不变；自动模拟、界面测试、原生运行与真人试玩分别记录，不互相替代。
 
-## 最新补充：暂停层隔离与接触反冲
+## 最新补充：攻击意图与首领限时
+
+- 冲锋蓄力显示双轨短箭头、起点菱形和三档明度，边缘裁短；仅表示方向，不假设含侧摆、减速或贴墙冲锋的完整范围。术士以闭合刻环表示0.45秒蓄力，不伪造发射前的锁定瞄准。
+- 极端340施法预警线段绘制只有35.172 FPS。改用共享刻环网格、16段向下量化进度与有界实例池后，同夹具119.555 FPS / P99 13.429毫秒；170+170混合由65.087到116.678 FPS / P99 16.927毫秒。该24秒短夹具无physics/600弹体，不冒充完整战斗验收，详细边界与前后源码SHA见[绘制对比](../reports/telegraph-draw-comparison.json)。
+- Boss HUD明确目标与限时，真实剩余≤10秒静态暖色，benchmark仍显示采样文字。原生两张固定陈列退出0，验证层级与排版；不代表真人可读性或真实81秒Boss战。素材仍35项。
+- 九套Godot无界面1422条、14项Python全过。另原生预警134条全过，含12项真实MultiMesh变换/颜色读回；无界面Dummy不支持的12项明确跳过。实例总量≤1020、命令≤24、真实状态/暂停/清理、边界和只读性均覆盖。
+- 当前核心4f7be4bdb91f只提取相同蓄力常量；30局与f29除版本字段外全部一致，仍29胜1败，包括完整trace及shop_observations，策略7c19不变。上轮反冲造成的24局差异仍保留历史，不混作本轮等价。
+- 当前源码完成完整300秒rune-feedback压力：28,645帧、95.480 FPS、P99 25.588毫秒，300/600/200、真实主/次伤害和32刻线峰值，退出0。CUA确认窗口、计数与采样倒计时；旧游戏暂停保留，测试定位时短暂打开过项目管理器，未宣称严格机器隔离。
+- 另存Embers-threats.app与ZIP，arm64/严格签名/Info.plist/headless退出/ZIP全部通过；本轮没有额外启动新包普通菜单。源码、构建、图形和回归指纹汇总[threats-validation.json](../reports/threats-validation.json)。本轮验证完成后统一本地commit；整体持续优化仍进行，五人试玩待开展。
+
+## 上一阶段：暂停层隔离与接触反冲
 
 - 旧暂停层能用真实Tab遍历到背后商店并用Return请求下一波；升级界面延迟重建也会抢走暂停焦点。现门控底页焦点、恢复来源控件或操作ID，并让过期延迟焦点请求失效。设置中的Esc逐层返回，原生固定场景已验证8次Tab留在暂停层、两次Esc分别回暂停/商店，以及下一波倒计时45→37。
 - 主场景拒绝暂停中的下一波请求；最后强化选择与Esc相邻时，延迟开店同步清理实际树暂停，避免只移除覆盖层。新增Flow修复前76条中9失败，修后76条通过；独立Modal37条真实Tab/ShiftTab/Return回归通过。它们是控制时序的回归，不把它认定为用户此前倒计时问题的唯一原因。
 - 接触反冲改为从真实接触点径向远离玩家，再限制到竞技场内，保留18像素与原伤害/接触条件。修正术士退避时反而被推向玩家、冲锋方向影响反冲及边缘越界；Combat302条覆盖所有敌人、Boss、四边、重叠、非接触和无敌期。
-- 当前核心`f29c7008e475`，固定策略仍`7c19c01f20e4`，30局由28胜2败变为29胜1败：seed2032爆破由败转胜，seed2026贯穿仍第3波失败。24局的轨迹或统计改变，不能称为等价或真人胜率改善；[配对报告](../reports/modal-recoil-simulation.json)保留前后哈希。资源、经济、伤害和策略均未调整。
+- 当时核心`f29c7008e475`，固定策略仍`7c19c01f20e4`，30局由28胜2败变为29胜1败：seed2032爆破由败转胜，seed2026贯穿仍第3波失败。24局的轨迹或统计改变，不能称为等价或真人胜率改善；[配对报告](../reports/modal-recoil-simulation.json)保留前后哈希。资源、经济、伤害和策略均未调整。
 - 八套Godot共1269条断言、14项Python测试全部通过。原生Main固定场景使用`persistent=false`，正常退出0，见[modal-native.log](../reports/modal-native.log)；不是实际通关或五人试玩。
 - 发现用户旧`Embers.app`处于第1波暂停，予以保留。本轮以可选`BROXY_APP_PATH`另存`build/Embers-next.app`和`Embers-next-mac-arm64.zip`，导出、严格签名、headless启动和ZIP完整性通过。原应用未关闭，新包未取代旧对局；结束旧应用后可启动新包。
-- 本轮未重跑5分钟图形性能。最近95.642 FPS/P99 26.022毫秒属于上一阶段`bdd5240c97ca`，详见其冻结[验证报告](../reports/rune-vfx-validation.json)。源码、构建、回归与当前原生证据汇总在`reports/modal-recoil-validation.json`；整理后创建本地commit，整体目标继续进行。
+- 该轮未重跑5分钟图形性能。当时最近95.642 FPS/P99 26.022毫秒属于上一阶段`bdd5240c97ca`，详见其冻结[验证报告](../reports/rune-vfx-validation.json)。源码、构建、回归与当前原生证据汇总在`reports/modal-recoil-validation.json`；整理后创建本地commit，整体目标继续进行。
 
 ## 上一阶段：符文命中与弹体批量绘制
 
@@ -55,13 +65,14 @@
 | --- | ---: | ---: |
 | Rules | 204 | 0 |
 | Combat | 302 | 0 |
-| UI | 131 | 0 |
+| UI | 157 | 0 |
 | Modal | 37 | 0 |
 | Flow | 76 | 0 |
-| Feedback | 58 | 0 |
+| Feedback | 64 | 0 |
 | ProjectilePainter | 77 | 0 |
+| EnemyTelegraphs（headless） | 121 | 0 |
 | ShopObservation | 384 | 0 |
-| Godot合计 | **1269** | **0** |
+| Godot合计 | **1422** | **0** |
 
 另有14项Python分析器测试通过；完整记录同在`reports/tests.log`。商店观测的105组冻结策略对照额外核对trace、库存、钱包和RNG状态；分析器将缺失报价和少于四件商品的库存片段保留为未完整观测，不推断缺货。
 
@@ -86,14 +97,14 @@ Flow 的普通首波耗时为 2701 个固定步。Boss 终局检查使用加速�
 
 | 验收项 | 当前账本状态 | 证据与边界 |
 | --- | --- | --- |
-| 上一阶段真实符文场景的5分钟压力测试 | 历史通过，本轮未重测 | Apple M5 / Compatibility / 1280×720，预热5秒、正式300秒、28,694帧；300/600/200，平均95.642 FPS、P99 26.022毫秒；`performance.json`标记rune-feedback，退出0 |
-| 本轮独立 macOS 构建与包启动 | 已通过 | `Embers-next.app`；`build-modal-recoil.log`记录arm64、Info.plist和严格签名；`app-boot-modal-recoil.log`退出0；`archive-modal-recoil.log`检查ZIP完整，旧用户对局保留 |
-| 本轮暂停与设置原生输入 | 固定场景通过 | `modal-native.log`与`modal-native.gd.txt`；实际CUA Tab/Return/Esc、恢复商店及下一波45→37；个人存档读写关闭 |
+| 本轮真实符文场景的5分钟压力测试 | 通过 | Apple M5 / Compatibility / 1280×720，预热5秒、正式300秒、28,645帧；300/600/200，平均95.480 FPS、P99 25.588毫秒；performance.json标记rune-feedback，退出0 |
+| 本轮独立 macOS 构建与包启动 | 已通过 | `Embers-threats.app`；`build-threats.log`记录arm64、Info.plist和严格签名；`app-boot-threats.log`退出0；`archive-threats.log`检查ZIP完整，旧用户对局保留 |
+| 上轮暂停与设置原生输入 | 固定场景通过 | `modal-native.log`与`modal-native.gd.txt`；实际CUA Tab/Return/Esc、恢复商店及下一波45→37；个人存档读写关闭 |
 | 较早阶段原生约47秒流程 | 已通过普通首波结束检查 | `feedback-flow-native.log`与`feedback-first-wave-complete.png`：45秒正常波次进入“秘术觉醒”，退出0。使用自动走位，未使用压力模式或跳过计时 |
 | 商店原生键盘装配 | 已通过 | 在明确标注的固定商店夹具中按真实Return：骨针装入贯穿、备用归零、焦点到“卸符”，仍停留商店；不代表真人整局通关 |
 | 战斗反馈与结果画面 | 已检查固定夹具 | `feedback-combat.png`展示实际伤害、承伤方向、HUD提示安全区；`feedback-result.png`展示承伤来源与贡献。两张均明确标注固定验证场景 |
 
-旧版美术的75.808 FPS / P99 29.295毫秒保存在`performance-before-feedback.json`（另存`performance-engraved-02.json`）与`benchmark-before-feedback.log`。旧baseline另存`performance-before-rune-vfx.json`；最新真实符文场景单独写入`performance.json`，不混用历史采样，也不把跨采样分数差额全部归于某一改动。旧baseline含零伤害维持弹体；`bdd5240c97ca`的rune-feedback保留真实伤害，也不等于覆盖所有构筑或48条浮字同时显示的性能。
+旧版美术的75.808 FPS / P99 29.295毫秒保存在`performance-before-feedback.json`（另存`performance-engraved-02.json`）与`benchmark-before-feedback.log`。旧baseline另存`performance-before-rune-vfx.json`；最新本轮真实符文场景写入`performance.json`，bdd历史另存`performance-before-threats.json`，不混用历史采样，也不把跨采样分数差额全部归于某一改动。旧baseline含零伤害维持弹体；`bdd5240c97ca`的rune-feedback保留真实伤害，也不等于覆盖所有构筑或48条浮字同时显示的性能。
 
 ## 下一轮未完成线索
 

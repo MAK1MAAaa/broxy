@@ -1,0 +1,4 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+OpenGL API 4.1 Metal - 91.7 - Compatibility - Using Device: Apple - Apple M5
+
+THREAT_PREVIEW view=boss frames=42 fixture_passed=true result=0 stats={"active_batches":8,"allocated_instances":683,"cast_count":3,"charge_count":3,"draw_commands":11,"neutral_charge_count":0,"segments":110,"visible_instances":9} persistent=false

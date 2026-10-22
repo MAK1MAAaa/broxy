@@ -1,0 +1,5 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+OpenGL API 4.1 Metal - 91.7 - Compatibility - Using Device: Apple - Apple M5
+
+TELEGRAPH_DRAW_PROFILE {"average_fps":119.555286322915,"duration_target_seconds":10,"enemies":340,"frames":1196,"mean_draw_calls":33.0,"mode":"all_caster","p99_frame_ms":13.429,"physics_ticks":0,"warmup_seconds":2,"warning_stats":{"active_batches":3,"allocated_instances":1020,"cast_count":340,"charge_count":0,"draw_commands":3,"neutral_charge_count":0,"segments":11900,"visible_instances":1020}}
+TELEGRAPH_DRAW_PROFILE {"average_fps":116.677616847689,"duration_target_seconds":10,"enemies":340,"frames":1168,"mean_draw_calls":40.0,"mode":"mixed","p99_frame_ms":16.927,"physics_ticks":0,"warmup_seconds":2,"warning_stats":{"active_batches":8,"allocated_instances":850,"cast_count":170,"charge_count":170,"draw_commands":11,"neutral_charge_count":8,"segments":6187,"visible_instances":510}}

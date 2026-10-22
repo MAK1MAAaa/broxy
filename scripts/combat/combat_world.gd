@@ -69,6 +69,8 @@ var _damage_direction: Vector2 = Vector2.ZERO
 
 const PROJECTILE_PAINTER_SCRIPT = preload("res://scripts/combat/projectile_painter.gd")
 var _projectile_painter: PROJECTILE_PAINTER_SCRIPT = PROJECTILE_PAINTER_SCRIPT.new()
+const ENEMY_TELEGRAPH_SCRIPT = preload("res://scripts/combat/enemy_telegraph_painter.gd")
+var _enemy_telegraphs: ENEMY_TELEGRAPH_SCRIPT = ENEMY_TELEGRAPH_SCRIPT.new()
 
 func _init() -> void:
 	for index: int in NUMBER_LIMIT:
@@ -174,6 +176,7 @@ func _on_rune_activated(rune_id: String, origin: Vector2, incoming: Vector2, out
 	_rune_flashes.append(flash)
 
 func _reset_feedback() -> void:
+	_enemy_telegraphs.clear()
 	_numbers.clear()
 	_number_lookup.clear()
 	_number_free.clear()
@@ -268,6 +271,7 @@ func _advance_feedback(delta: float) -> void:
 
 func _on_ended(victory: bool, reason: String) -> void:
 	active = false
+	_enemy_telegraphs.clear()
 	hud_changed.emit(hud_snapshot())
 	wave_ended.emit(victory, reason)
 
@@ -467,13 +471,9 @@ func _draw_effects() -> void:
 				draw_line(point, point + direction * 5.0 * (1.0 - progress), color, 2.0, true)
 
 func _draw_danger() -> void:
-	for shot: CombatSim.Shot in sim.shots:
-		if not shot.active or not shot.hostile:
-			continue
-		draw_circle(shot.position, shot.radius + 3.0, Color("542e35"))
-		draw_circle(shot.position, shot.radius, Color("ff8666"))
-		draw_arc(shot.position, shot.radius, 0, TAU, 12, Color("ffdfb1"), 1.5, true)
-		draw_circle(shot.position, 2.5, Color("fff2d7"))
+	if active:
+		_enemy_telegraphs.rebuild(sim.enemies)
+		_enemy_telegraphs.draw(self)
 	for zone: CombatSim.WarningZone in sim.zones:
 		if zone.triggered:
 			continue
@@ -486,15 +486,14 @@ func _draw_danger() -> void:
 			draw_line(zone.position + direction * (zone.radius - 4.0), zone.position + direction * (zone.radius + 3.0), Color("efaa7c"), 1.3, true)
 		draw_line(zone.position - Vector2(8, 0), zone.position + Vector2(8, 0), Color("ffb68a"), 1.0, true)
 		draw_line(zone.position - Vector2(0, 8), zone.position + Vector2(0, 8), Color("ffb68a"), 1.0, true)
-	for enemy: CombatSim.Enemy in sim.enemies:
-		if not enemy.active:
+	# Live hostile rounds remain above all warning strokes.
+	for shot: CombatSim.Shot in sim.shots:
+		if not shot.active or not shot.hostile:
 			continue
-		if enemy.definition.id == "rusher" and enemy.mode == 1:
-			var end: Vector2 = enemy.position + enemy.charge_direction * 130.0
-			draw_line(enemy.position, end, Color(1.0, 0.45, 0.30, 0.45), 8.0, true)
-			draw_line(enemy.position, end, Color("ffd6a6"), 1.5, true)
-		elif enemy.definition.id == "caster" and enemy.mode == 1:
-			draw_arc(enemy.position + Vector2(0, -14), 17, 0, TAU, 16, Color("ffbb8a"), 2.0, true)
+		draw_circle(shot.position, shot.radius + 3.0, Color("542e35"))
+		draw_circle(shot.position, shot.radius, Color("ff8666"))
+		draw_arc(shot.position, shot.radius, 0, TAU, 12, Color("ffdfb1"), 1.5, true)
+		draw_circle(shot.position, 2.5, Color("fff2d7"))
 
 func _maintain_stress() -> void:
 	# This deliberately retains 300 enemies, 600 live moving projectiles and 200 drops.

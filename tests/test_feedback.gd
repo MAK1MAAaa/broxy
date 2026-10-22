@@ -84,6 +84,7 @@ func _test() -> void:
 	_check(distinct.size() == CombatWorld.NUMBER_LIMIT, "Repeated reuse never duplicates or leaks feedback pool entries")
 	await _test_rune_feedback(world)
 	_test_number_lookup(world)
+	await _test_enemy_warning_lifecycle(world)
 	print("Feedback: %d assertions, %d failures" % [_checks, _failures])
 	world.queue_free()
 	sound.queue_free()
@@ -210,3 +211,45 @@ func _check(condition: bool, message: String) -> void:
 	if not condition:
 		_failures += 1
 		push_error(message)
+
+
+func _test_enemy_warning_lifecycle(world: CombatWorld) -> void:
+	var state := RunState.new()
+	state.begin(20261022, "bone")
+	world.begin(state)
+	world.set_physics_process(false)
+	var sim: CombatSim = world.sim
+	sim.sandbox = true
+	sim._cooldowns.fill(9999.0)
+	sim.player_position = Vector2(640, 540)
+	var enemy: CombatSim.Enemy = sim.spawn_enemy("rusher", Vector2(640, 260))
+	enemy.action_timer = 0.0
+	sim.step(1.0 / 60.0, Vector2.ZERO)
+	world._enemy_telegraphs.rebuild(sim.enemies)
+	_check(enemy.mode == 1 and world._enemy_telegraphs.charge_count == 1, "Production windup state populates a world-owned enemy warning")
+	var remaining: float = enemy.action_timer
+	world.set_physics_process(true)
+	paused = true
+	await process_frame
+	await process_frame
+	_check(is_equal_approx(enemy.action_timer, remaining), "Pausing freezes the real windup timer rather than animating a cosmetic deadline")
+	paused = false
+	await physics_frame
+	await physics_frame
+	world.set_physics_process(false)
+	_check(enemy.action_timer < remaining, "Resuming continues the same windup timer")
+	world._enemy_telegraphs.rebuild(sim.enemies)
+	world.stop()
+	_check(world._enemy_telegraphs.get_stats()["segments"] == 0, "Stopping clears cached warning strokes before menus")
+	world.begin(state)
+	world.set_physics_process(false)
+	_check(world._enemy_telegraphs.get_stats()["segments"] == 0, "A new encounter starts without cached warnings")
+	sim = world.sim
+	sim.sandbox = true
+	sim._cooldowns.fill(9999.0)
+	enemy = sim.spawn_enemy("caster", Vector2(850, 300))
+	enemy.action_timer = CombatSim.CASTER_WINDUP * 0.5
+	sim.step(1.0 / 60.0, Vector2.ZERO)
+	world._enemy_telegraphs.rebuild(sim.enemies)
+	sim._finish(false, "Fixed terminal warning regression")
+	_check(not world.active and world._enemy_telegraphs.get_stats()["segments"] == 0, "A terminal event removes stale windup warnings without deleting final damage feedback")

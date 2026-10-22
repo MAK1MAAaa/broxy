@@ -6,11 +6,11 @@ Godot 4.7.2 普通版、带类型标注的 GDScript 开发的 macOS 单人割草
 
 战斗现在显示实际伤害与承伤浮字，并提示受击方向。贯穿命中显示淡绿双轨，弹射显示真实转向的冷蓝折角，爆破显示暖金放射纹；敌方预警始终位于最上层。弹体圆点、弹射环和拖尾采用批量绘制。结算新增最后受击来源和各法器实际伤害贡献。购买符文后会自动选中，并把键盘焦点移到法器的“装入”按钮，便于完成改装。
 
-波末结算会清理暂停状态，避免暂停事件与结算相邻时，下一波留下不可见的暂停状态。
+冲锋蓄力显示短双轨方向箭头，施法蓄力显示闭合刻环；它们表示攻击意图，不代表完整碰撞范围或术士锁定瞄准。Boss战明确显示“击败首领”和“限时”，最后10秒使用静态暖色提醒。波末结算会清理暂停状态，避免下一波留下不可见的暂停。
 
 ## 直接游玩
 
-本轮最新应用为 `build/Embers-next.app`（压缩包`build/Embers-next-mac-arm64.zip`）。旧`build/Embers.app`保留正在暂停的对局；结束旧应用后再打开新版。选择骨针或幽焰开局。应用面向 Apple Silicon、macOS 13 及以上；已采用本地 ad-hoc 签名，尚未进行 Developer ID 公证。
+本轮最新应用为 `build/Embers-threats.app`（压缩包`build/Embers-threats-mac-arm64.zip`）。旧`build/Embers.app`保留正在暂停的对局；结束旧应用后再打开新版。选择骨针或幽焰开局。应用面向 Apple Silicon、macOS 13 及以上；已采用本地 ad-hoc 签名，尚未进行 Developer ID 公证。
 
 | 操作 | 按键 |
 | --- | --- |
@@ -56,7 +56,7 @@ python3 tools/fetch_macos_template.py
 ```sh
 ./tools/build_macos.sh
 # 另存应用，避免替换正在运行的旧版：
-BROXY_APP_PATH="$PWD/build/Embers-next.app" ./tools/build_macos.sh
+BROXY_APP_PATH="$PWD/build/Embers-threats.app" ./tools/build_macos.sh
 ```
 
 构建从官方 Universal 模板提取 arm64，生成 `build/Embers.app` 并执行 ad-hoc 签名验证。引擎许可在应用的 `Contents/Resources/licenses/` 中直接可读。对外发布前应使用自己的 Developer ID 配置签名与公证。
@@ -71,23 +71,26 @@ BROXY_APP_PATH="$PWD/build/Embers-next.app" ./tools/build_macos.sh
 ./tools/run.sh --headless --script res://tests/test_flow.gd
 ./tools/run.sh --headless --script res://tests/test_feedback.gd
 ./tools/run.sh --headless --script res://tests/test_projectile_painter.gd
+./tools/run.sh --headless --script res://tests/test_enemy_telegraphs.gd
 ./tools/run.sh --headless --script res://tests/test_simulation_shop.gd
 python3 -m unittest discover -s tests -p 'test_shop_analysis.py'
 ./tools/run.sh --headless --script res://tests/simulate_runs.gd -- --seed=2027 --require-win
 ./tools/run.sh -- --benchmark --benchmark-runes --seconds=300
 ```
 
-也可以用 `./tools/test.sh` 一次运行八套Godot行为测试和Python分析器测试。当前1269条Godot断言及14项Python测试全部通过，记录见 `reports/tests.log`。系统字体测试需要正常 macOS 字体访问权限；文件沙箱可能阻止 SystemFont 枚举。请在常规终端运行。性能测试会打开明确标记的窗口并显示采样倒计时，保持300敌人、至少600投射物与200掉落，预热5秒后采样300秒，输出 `reports/performance.json`。`--benchmark-runes`使用四种法器与三类符文的真实伤害弹体，报告标记为`rune-feedback`；省略该参数为含零伤害维持弹体的历史`baseline`场景，两者分别记录。测试时保持该窗口可见、Mac未锁屏，避免同时运行其他图形负载。
+也可以用 `./tools/test.sh` 一次运行九套Godot行为测试和Python分析器测试。当前1422条Godot无界面断言及14项Python测试全部通过；原生预警套件另通过134条断言（含12项GPU读回），记录见 `reports/tests.log` 与 `reports/enemy-telegraphs-native.log`。系统字体测试需要正常 macOS 字体访问权限；文件沙箱可能阻止 SystemFont 枚举。请在常规终端运行。性能测试会打开明确标记的窗口并显示采样倒计时，保持300敌人、至少600投射物与200掉落，预热5秒后采样300秒，输出 `reports/performance.json`。`--benchmark-runes`使用四种法器与三类符文的真实伤害弹体，报告标记为`rune-feedback`；省略该参数为含零伤害维持弹体的历史`baseline`场景，两者分别记录。测试时保持该窗口可见、Mac未锁屏，避免同时运行其他图形负载。
 
-最近一次完整5分钟采样对应上一阶段核心`bdd5240c97ca`，在Apple M5真实符文场景中达到平均95.64 FPS、P99 26.02毫秒；本轮暂停与反冲修复未重跑5分钟压力测试。设备与场景边界见 `docs/verification.md`。
+本轮完整5分钟采样在Apple M5真实符文场景达到平均95.480 FPS、P99 25.588毫秒，维持300敌人/600弹体/200掉落并实际产生主/次伤害，退出0。另用340个静止预警单独短测，共享网格后全施法119.56 FPS、混合116.68 FPS；两个负载分别记录，设备与场景边界见 `docs/verification.md`。
 
-完整模拟复用正式 `RunState`、`CombatSim.step` 与商店价格，没有额外金币、无敌或专用 Boss 数值。最新核心版本`f29c7008e475`修复接触反冲方向及边界：30局固定策略回归从28胜变为29胜，24局轨迹或统计改变，不能称为行为等价或真人胜率。策略与证据见 `docs/simulation.md`，试玩流程见 `docs/playtest.md`，持续工作记录见 `docs/optimization-log.md`。
+完整模拟复用正式 `RunState`、`CombatSim.step` 与商店价格，没有额外金币、无敌或专用 Boss 数值。当前核心版本`4f7be4bdb91f`将既有蓄力时长提取为共享常量；30局与上一阶段`f29c7008e475`除版本字段外逐字段一致，保持29胜1败。上一阶段接触反冲修复曾使24局轨迹或统计改变、28胜变29胜；当前等价比较不覆盖那次行为变更，也不代表真人胜率。策略与证据见 `docs/simulation.md`，试玩流程见 `docs/playtest.md`，持续工作记录见 `docs/optimization-log.md`。
 
 模拟还会记录完整商店报价、余额、候选评分及停止购买/刷新原因。`tools/analyze_shop_runs.py`可生成观测分析，并用`--baseline`严格比较旧对局字段和购物trace。商店观测阶段的30局在新增观测前后旧字段完全一致，证据见`reports/shop-analysis.json`；该结果只证明所测样本不受观测影响，不表示此前的战斗修复没有改变轨迹。
 
 美术可用 `python3 tools/generate_assets.py` 确定性重建。运行 `./tools/run.sh --script res://tools/preview_art.gd` 会创建不读写个人存档的固定陈列场景，保存 `reports/art-showcase.png` 后退出；它用于检查角色、法器与预警层级，不代表实际关卡或通关表现。普通战斗、菜单及商店截图分别为 `reports/art-after.png`、`reports/art-menu.png`、`reports/art-shop.png`。
 
 反馈与结算布局使用 `./tools/run.sh --script res://tools/preview_feedback.gd -- --view=combat` 检查，也可选择 `shop` 或 `result`。输出为 `reports/feedback-<view>.png`。这些画面明确标注为固定验证场景，不读写个人存档，也不代表实际通关。
+
+预警/HUD可用 `./tools/run.sh --script res://tools/preview_threats.gd` 与追加 `-- --view=boss` 检查；分别保存 `reports/threat-showcase.png` 和 `reports/boss-deadline.png`。这是42个正式固定步推进后冻结的无存档陈列，Boss剩余9秒为排版夹具，不是实际打了81秒。
 
 ## 项目组织
 

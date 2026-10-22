@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "core_version": "prototype-0.1.0+4f7be4bdb91f",
+  "policy_version": "orbit-avoid-v1/shop-v1+7c19c01f20e4",
+  "runtime_sha256": {
+    "scripts/combat/combat_sim.gd": "3dbef0e8cb03359532f2e7d883305fd147f6abe8deffe18eb3e524914234cbbc",
+    "scripts/combat/combat_world.gd": "4cf1b8bcc68f299a3e8defbef421c634f1cce0e8eeff6f445c8d83ed79fdc5c1",
+    "scripts/combat/enemy_telegraph_painter.gd": "4750e8c434ef2eac723d1cb6cb3bef5386734cd369a80f001b0467a3211af2e6",
+    "scripts/combat/projectile_painter.gd": "dc06af10a75453536ded8b37325f564be4e1fbaf7e56e3b14925ad2475930a3e",
+    "scripts/ui/game_ui.gd": "4310706e5953505f41c04a2a961127149adebc20ad45c214359bc400373d7aa2",
+    "scripts/main.gd": "d36ed4f958d5fe6d61f5eb091db6a20f857dcfe5377a4e55dfebb47835fefb61"
+  },
+  "runtime_unchanged_between_build_tests_and_benchmark": true,
+  "headless_suites": [
+    {
+      "suite": "Rules",
+      "assertions": 204,
+      "failures": 0
+    },
+    {
+      "suite": "Combat",
+      "assertions": 302,
+      "failures": 0
+    },
+    {
+      "suite": "UI",
+      "assertions": 157,
+      "failures": 0
+    },
+    {
+      "suite": "Modal",
+      "assertions": 37,
+      "failures": 0
+    },
+    {
+      "suite": "Flow",
+      "assertions": 76,
+      "failures": 0
+    },
+    {
+      "suite": "Feedback",
+      "assertions": 64,
+      "failures": 0
+    },
+    {
+      "suite": "ProjectilePainter",
+      "assertions": 77,
+      "failures": 0
+    },
+    {
+      "suite": "EnemyTelegraphs",
+      "assertions": 121,
+      "failures": 0
+    },
+    {
+      "suite": "ShopObservation",
+      "assertions": 384,
+      "failures": 0
+    }
+  ],
+  "headless_assertions": 1422,
+  "headless_renderer_checks_skipped": 12,
+  "python_tests": 14,
+  "native_enemy_telegraphs_assertions": 134,
+  "native_renderer_checks_executed": 12,
+  "native_renderer_checks_skipped": 0,
+  "test_exit_codes": {
+    "headless_suites_and_python": 0,
+    "native_enemy_telegraphs": 0,
+    "simulation_30": 0,
+    "windup_preview": 0,
+    "boss_preview": 0,
+    "build": 0,
+    "app_headless_boot": 0,
+    "archive_check": 0,
+    "benchmark": 0
+  },
+  "performance": {
+    "average_fps": 95.4798483188692,
+    "duration_seconds": 300.0,
+    "enemies": 300,
+    "internal_resolution": "1280x720",
+    "os": "macOS",
+    "p99_frame_ms": 25.588,
+    "passed": true,
+    "pickups": 200,
+    "primary_hits": 467760,
+    "projectiles": 600,
+    "renderer": "gl_compatibility",
+    "rune_visual_peak": 32,
+    "samples": 28645,
+    "scenario": "rune-feedback",
+    "secondary_hits": 1212726
+  },
+  "short_warning_profile": "reports/telegraph-draw-comparison.json",
+  "simulation": "reports/telegraph-equivalence.json",
+  "build_app": "build/Embers-threats.app",
+  "artifact_sha256": {
+    "reports/tests.log": "01962fe60ca175fbf3cefca9c020171eb3daca818755dc7f52da196e3715f352",
+    "reports/enemy-telegraphs-native.log": "2ba536d78290229f33108c20fe1ae90f7b4c3f6665e52eeea6f500f8580e1b26",
+    "reports/benchmark.log": "bde2da5a64ff3040bb547a6a4b1cdd4fb9bd5ae8730a4b164b71ba209f19ce52",
+    "reports/performance.json": "864c89c6b603f3e753777dac199d457e6653d76e5d8f6c330e5c80d7eed84a77",
+    "reports/telegraph-equivalence.json": "9e9c2d9f273d1e7766c276e3b85c310bb29622cd1ec782b35532b0659b2b03d1",
+    "reports/telegraph-draw-comparison.json": "96269eb00f792afff396056fd07c4d515bc7880a23f2cdd0043a9db7d19ef30a",
+    "reports/telegraph-draw-harness.gd.txt": "f1318bb91aa8bec75e2a37697075e1dfc0c4202ce3912ebc503433382486c3a0",
+    "reports/threat-preview.log": "9d3d8a38ca9f7b7d8c1e6c4197772359087d51235eab6a14d38e4c1864faf7e1",
+    "reports/boss-preview.log": "8dd9097d7e0f13b3c3110d5fc414e1df748d3ce743159613411182fc407dc1f6",
+    "reports/threat-showcase.png": "fc8645d80fd0c2bd2605e493fcf1788ab8704c0a01854c61b7f5af23d9cf2ca3",
+    "reports/boss-deadline.png": "fd35bc5e5436036621ac904c625a660806614ac2003b4635b6930e6d5cbb2835",
+    "reports/build-threats.log": "c9007451b5fb4ae4cfec7452b6e45acbca67df6d50c666e1f1a6e35002e25d8e",
+    "reports/app-boot-threats.log": "6c536b7ab6a1ee8e7ac91fdd27709abb484073b092cabb70d205c4f987e47ddd",
+    "reports/archive-threats.log": "7c2bb2dc38850de1c13cb71d4e8dba85fbb054e8f7a2fe351f860a7a7b9cbf4b",
+    "tests/test_enemy_telegraphs.gd": "721ab01c9c3dea2d7936f27dc7bdf920b258f938f84b5fd1dd9376ae103d4502",
+    "tools/preview_threats.gd": "8ee7978598e10dcc589be96f3a14c6049a258e7f69edda83d0821ae8da3cfb26",
+    "build/Embers-threats-mac-arm64.zip": "666b859d5ca8df5c8d57ad0232539137ddc2b923d15e35f2f8b1ccc27a38c795",
+    "build/Embers-threats.app/Contents/MacOS/\u79d8\u672f\u4f59\u70ec": "38d9298ce0e2b94777d9a44ad0b9fe74bf925c320ae096a5ba0c9f42ed4909fb",
+    "build/Embers-threats.app/Contents/Resources/\u79d8\u672f\u4f59\u70ec.pck": "2652cbd46045a6c4031ce9673820a1195321b305beea85bf21669e1be8d6e617"
+  },
+  "limits": [
+    "Old user Embers.app paused run and Embers-next.app retained; neither application replaced or closed.",
+    "No new ordinary packaged-app native title screen test; native readback, art fixtures and 300s benchmark run from the same production source.",
+    "CUA verified native benchmark window, 300 enemies, 600 projectiles and progressing countdown. During initial window selection a separate project manager was briefly opened; no claim of strictly isolated machine load.",
+    "300s rune-feedback has real primary/secondary damage and 300/600/200; separate frozen 340-warning profile has no physics or600 projectiles. These are different loads.",
+    "The 30 paired bot runs are identical except core version to f29; earlier contact recoil correction changed trajectories and is not included in that equality claim.",
+    "No five-human playtest, other Mac model or external notarized distribution acceptance."
+  ]
+}

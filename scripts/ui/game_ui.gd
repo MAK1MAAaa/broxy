@@ -19,6 +19,7 @@ const GOLD := Color("c4a76f")
 const PURPLE := Color("bfa2e6")
 const CYAN := Color("89d8d2")
 const RED := Color("df888d")
+const CORAL := Color("ed9a86")
 
 ## Painted only on construction/resize. Decorative controls never intercept input.
 class RitualFrame:
@@ -322,22 +323,32 @@ func update_hud(snapshot: Dictionary) -> void:
 	_hud["health"].text = "生命  %d / %d" % [ceili(hp), ceili(maximum)]
 	_hud["health_bar"].max_value = maximum
 	_hud["health_bar"].value = hp
+	var boss_health := float(snapshot.get("boss_health", 0))
+	var boss_max := float(snapshot.get("boss_max_health", 0))
+	var boss_alive: bool = boss_max > 0.0 and boss_health > 0.0
 	_hud["wave"].text = "波次  %d / %d" % [int(snapshot.get("wave", 1)), GameCatalog.WAVE_DEFS.size()]
-	var seconds := maxi(0, ceili(float(snapshot.get("time_left", 0))))
-	_hud["time"].text = "剩余  %02d:%02d" % [seconds / 60, seconds % 60]
+	var time_left := maxf(0.0, float(snapshot.get("time_left", 0)))
+	var seconds := ceili(time_left)
+	var timer: Label = _hud["time"]
+	timer.text = "剩余  %02d:%02d" % [seconds / 60, seconds % 60]
+	timer.add_theme_color_override("font_color", BONE)
 	_hud["gold"].text = "魂屑  %d" % int(snapshot.get("gold", 0))
 	_hud["level"].text = "等级  %d" % int(snapshot.get("level", 1))
 	if bool(snapshot.get("benchmark", false)):
 		_hud["wave"].text = "性能测试"
-		_hud["time"].text = "采样  %02d:%02d" % [seconds / 60, seconds % 60]
+		timer.text = "采样  %02d:%02d" % [seconds / 60, seconds % 60]
 		_hud["gold"].text = "敌人  %d" % int(snapshot.get("enemies", 0))
 		_hud["level"].text = "投射物  %d" % int(snapshot.get("projectiles", 0))
+	elif boss_alive:
+		_hud["wave"].text = "击败首领"
+		timer.text = "限时  %02d:%02d" % [seconds / 60, seconds % 60]
+		if time_left <= 10.0:
+			timer.add_theme_color_override("font_color", CORAL)
 	_hud["xp_bar"].max_value = maxf(1, float(snapshot.get("xp_needed", 1)))
 	_hud["xp_bar"].value = float(snapshot.get("xp", 0))
-	var boss_max := float(snapshot.get("boss_max_health", 0))
-	_hud["boss"].visible = boss_max > 0 and float(snapshot.get("boss_health", 0)) > 0
+	_hud["boss"].visible = boss_alive
 	_hud["boss_bar"].max_value = maxf(1, boss_max)
-	_hud["boss_bar"].value = float(snapshot.get("boss_health", 0))
+	_hud["boss_bar"].value = boss_health
 	var loadout: Array = snapshot.get("loadout", [])
 	var key := str(loadout)
 	if key != _hud_loadout_key:
