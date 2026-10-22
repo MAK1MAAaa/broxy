@@ -46,7 +46,7 @@ Godot自身可能在标准输出打印版本信息。保存为JSONL时，仅保�
 
 ## 已运行结果
 
-最新engraved-04只细化主角静态布料SVG；运行时、data资源与策略保持37be1ea源码，未重跑30局。以下fb2核心记录仍是最近完整模拟，不能用来验证本轮静帧美感或动态性能。
+本轮primary-impact-v1只增加World命中装饰、设置即时清理与Main性能观测；CombatSim、RunState、data资源和策略与80d18fa一致，未重跑30局。绘制只读与RNG由独立行为测试覆盖；静态35素材仍engraved-04。以下fb2核心记录仍是最近完整模拟，不能验证本轮美感或动态性能。
 
 ### 最近完整批次：商店只读校验的30局配对
 
@@ -114,7 +114,7 @@ initial记录自动装备备用符文前的商店，decision记录每次候选�
 
 旧记录无观测时，分析器标记 `unknown_unobserved`。只有包含初始快照、从0到末次刷新连续的4项报价及结束事件，`stock_history_complete` 才为true；片段缺失时，即使已记录快照未见目标符文，缺失部分仍未知。重复decision/stop事件不是独立的新一轮库存，只有initial/reroll计为报价快照。这批固定机器人样本不能用于估计真人通关率。
 
-当前 [tests.log](../reports/tests.log) 已完整记录Godot共2473条无界面断言通过（Rules204、PurchaseQuery119、Combat302、Homing45、UI157、Notifications65、Modal37、ChoiceActions44、UpgradePreviews350、ShopActions106、ShopDetails51、ShopAvailability166、ProfileModes105（六入口）、Flow76、Feedback64、ProjectilePainter77、EnemyTelegraphs121、ShopObservation384），另有14项Python分析器测试通过。EnemyTelegraphs在headless明确跳过12项实例读回；[原生套件](../reports/enemy-telegraphs-native.log)134条断言全部通过，实际执行这12项读回，并强制检查原生读回可用。商店测试含105组冻结shop-v1的购物trace、钱包、库存和RNG状态对照，并覆盖拒绝优先级、低血生命遗物例外、快照不被后续购买污染及停止刷新边界。
+当前 [tests.log](../reports/tests.log) 已完整记录Godot共2574条无界面断言通过（Rules204、PurchaseQuery119、Combat302、Homing45、UI157、Notifications65、Modal37、ChoiceActions44、UpgradePreviews350、ShopActions106、ShopDetails51、ShopAvailability166、ProfileModes105（六入口）、Flow76、Feedback64、ImpactFeedback101、ProjectilePainter77、EnemyTelegraphs121、ShopObservation384），另有14项Python分析器测试通过。EnemyTelegraphs在headless明确跳过12项实例读回；[原生套件](../reports/enemy-telegraphs-native.log)134条断言全部通过，实际执行这12项读回，并强制检查原生读回可用。商店测试含105组冻结shop-v1的购物trace、钱包、库存和RNG状态对照，并覆盖拒绝优先级、低血生命遗物例外、快照不被后续购买污染及停止刷新边界。
 
 ### 历史：战斗修复阶段30局配对回归
 

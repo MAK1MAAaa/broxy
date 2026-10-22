@@ -71,6 +71,8 @@ const PROJECTILE_PAINTER_SCRIPT = preload("res://scripts/combat/projectile_paint
 var _projectile_painter: PROJECTILE_PAINTER_SCRIPT = PROJECTILE_PAINTER_SCRIPT.new()
 const ENEMY_TELEGRAPH_SCRIPT = preload("res://scripts/combat/enemy_telegraph_painter.gd")
 var _enemy_telegraphs: ENEMY_TELEGRAPH_SCRIPT = ENEMY_TELEGRAPH_SCRIPT.new()
+const IMPACT_PAINTER_SCRIPT = preload("res://scripts/combat/impact_painter.gd")
+var _impact_painter: IMPACT_PAINTER_SCRIPT = IMPACT_PAINTER_SCRIPT.new()
 
 func _init() -> void:
 	for index: int in NUMBER_LIMIT:
@@ -95,6 +97,13 @@ func _ready() -> void:
 		textures[id] = load("res://assets/sprites/%s.svg" % id)
 	for definition: ContentDef in GameCatalog.weapons():
 		textures[definition.id] = load("res://assets/icons/%s.svg" % definition.icon)
+	queue_redraw()
+
+func apply_visual_settings(value: Dictionary) -> void:
+	settings = value
+	# Settings remain responsive while the scene tree pauses combat updates.
+	if not bool(settings.get("flash", true)):
+		_impact_painter.clear()
 	queue_redraw()
 
 func begin(state: RunState) -> void:
@@ -157,7 +166,12 @@ func _on_player_hurt() -> void:
 	hud_changed.emit(hud_snapshot())
 
 func _on_damage_dealt(point: Vector2, amount: float, source: String, secondary: bool, target_uid: int = -1) -> void:
+	if not point.is_finite() or not is_finite(amount) or amount <= 0.0:
+		return
 	_spawn_number(point + Vector2(0, -22), amount, source, false, secondary, target_uid)
+	# Damage events identify the enemy center, not an impact normal or contact point.
+	if active and sim != null and not sim.complete and not secondary and bool(settings.get("flash", true)):
+		_impact_painter.add_hit(point, source, target_uid)
 
 func _on_player_damaged(amount: float, _source_id: String, _kind: String, origin: Vector2) -> void:
 	_spawn_number(sim.player_position + Vector2(0, -40), amount, "player", true, false)
@@ -177,6 +191,7 @@ func _on_rune_activated(rune_id: String, origin: Vector2, incoming: Vector2, out
 
 func _reset_feedback() -> void:
 	_enemy_telegraphs.clear()
+	_impact_painter.clear()
 	_numbers.clear()
 	_number_lookup.clear()
 	_number_free.clear()
@@ -246,6 +261,7 @@ static func _damage_text(amount: float, player_hit: bool) -> String:
 	return ("−" if player_hit else "") + value
 
 func _advance_feedback(delta: float) -> void:
+	_impact_painter.advance(delta)
 	_damage_flash = maxf(0.0, _damage_flash - delta)
 	for index: int in range(_rune_flashes.size() - 1, -1, -1):
 		var flash: RuneFlash = _rune_flashes[index]
@@ -272,6 +288,7 @@ func _advance_feedback(delta: float) -> void:
 func _on_ended(victory: bool, reason: String) -> void:
 	active = false
 	_enemy_telegraphs.clear()
+	_impact_painter.clear()
 	hud_changed.emit(hud_snapshot())
 	wave_ended.emit(victory, reason)
 
@@ -295,10 +312,15 @@ func _draw() -> void:
 	_draw_friendly_shots()
 	_draw_player()
 	_draw_effects()
+	_draw_impact_feedback()
 	_draw_rune_feedback()
 	_draw_feedback()
 	# Hostile projectiles and telegraphs stay above all friendly spell effects.
 	_draw_danger()
+
+func _draw_impact_feedback() -> void:
+	_impact_painter.rebuild(bool(settings.get("flash", true)))
+	_impact_painter.draw(self)
 
 func _draw_rune_feedback() -> void:
 	_rebuild_rune_lines()

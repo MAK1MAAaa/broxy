@@ -1,0 +1,18 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+ERROR: Turning flash off through Main while paused immediately clears existing marks and cached strokes
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_impact_feedback.gd:471)
+       [1] _test_paused_main_settings (res://tests/test_impact_feedback.gd:345)
+ERROR: Paused redraws cannot leave the old impact visible after flash is disabled
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_impact_feedback.gd:471)
+       [1] _test_paused_main_settings (res://tests/test_impact_feedback.gd:350)
+ERROR: Turning flash back on while paused cannot replay the previous hit
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_impact_feedback.gd:471)
+       [1] _test_paused_main_settings (res://tests/test_impact_feedback.gd:354)
+ImpactFeedback: 101 assertions, 3 failures

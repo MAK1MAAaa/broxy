@@ -45,6 +45,9 @@ Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
 Feedback: 64 assertions, 0 failures
 Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
 
+ImpactFeedback: 101 assertions, 0 failures
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
 ProjectilePainter: 77 assertions, 0 failures
 Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
 
@@ -71,6 +74,6 @@ Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
 ProfileModes: 16 assertions, 0 failures; mode=capture-only
 ..............
 ----------------------------------------------------------------------
-Ran 14 tests in 0.012s
+Ran 14 tests in 0.013s
 
 OK

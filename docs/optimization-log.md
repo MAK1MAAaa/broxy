@@ -4,7 +4,14 @@
 
 本轮先修复可复现的战斗与交互问题，再用固定种子回归检查影响。机器人策略和资源平衡参数保持不变；自动模拟、界面测试、原生运行与真人试玩分别记录，不互相替代。
 
-## 当前：engraved-04主角布料层次
+## 当前：primary-impact-v1普通命中反馈
+
+- 普通法器真实主命中增加四种0.12秒小刻痕，位置取敌人中心；次级溅射不叠加。32固定池、12批次上限，kind+有效UID在age<0.05秒去重且不续命；保持危险提示最高层级。
+- 独立101条检查覆盖真实四法器碰撞、池/淡出/去重/次级过滤、暂停与三处清理、绘制只读/RNG。真实Main暂停设置回归修前3失败；统一设置应用后即时清旧刻痕，重开不重播，101条全部通过。接入前53条仅存在性1失败，不能混作完整101条红绿。
+- 四张原生静帧退出0并已查看，正式碰撞18主/0次，刻痕12→8→0；仅幽魂夹具，年龄偏移仅推进反馈。符文混合图保持危险层级；静帧不能代替动态识别或真人试玩。
+- 完整2574条Godot与14项Python通过；另存Embers-impact.app/ZIP，构建/arm64/严格签名/Info.plist/无档案启动/ZIP均通过，旧应用与暂停对局保留。35静态资源、模拟/数据/策略不变，未重跑30局；Mac锁屏，本轮5分钟性能未完成，不套用历史e64bb18帧率。证据[impact-validation.json](../reports/impact-validation.json)，验证后本地commit。
+
+## 上一轮：engraved-04主角布料层次
 
 - 主角面具/金链已清楚，但肩以下深紫衣片与脚下阴影接近。本轮只调整原衣片填色、渐变与刻线强度：左侧宽灰紫面连贯，右侧深蓝紫褶谷保留，减弱缩小后不足1px的刻线。面具、兜帽、手、金链、阴影和外轮廓不改。
 - 只player产物变化，其他34项素材及对应manifest条目逐字节相同；35项/原画布/锚点/引用保持。拆开的左右组合path按子路径归一后几何完全一致。完整生成两遍40文件相同；独立SVG结构QA与素材指纹见[character-assets-qa.json](../reports/character-assets-qa.json)。
@@ -137,6 +144,7 @@
 | UpgradePreviews | 350 | 0 |
 | Flow | 76 | 0 |
 | Feedback | 64 | 0 |
+| ImpactFeedback | 101 | 0 |
 | ProjectilePainter | 77 | 0 |
 | EnemyTelegraphs（headless） | 121 | 0 |
 | ShopObservation | 384 | 0 |
@@ -144,7 +152,7 @@
 | ShopDetails | 51 | 0 |
 | ShopAvailability | 166 | 0 |
 | ProfileModes（六入口） | 105 | 0 |
-| Godot合计 | **2473** | **0** |
+| Godot合计 | **2574** | **0** |
 
 另有14项Python分析器测试通过；完整记录同在`reports/tests.log`。商店观测的105组冻结策略对照额外核对trace、库存、钱包和RNG状态；分析器将缺失报价和少于四件商品的库存片段保留为未完整观测，不推断缺货。
 
@@ -169,14 +177,14 @@ Flow 的普通首波耗时为 2701 个固定步。Boss 终局检查使用加速�
 
 | 验收项 | 当前账本状态 | 证据与边界 |
 | --- | --- | --- |
-| 上轮e64bb18真实符文场景5分钟压力测试 | 历史通过，本轮未重测 | Apple M5 / Compatibility / 1280×720，预热5秒、正式300秒、27,255帧；300/600/200，平均90.847 FPS、P99 25.400毫秒；performance.json标记rune-feedback及实际默认设置/无存档状态，退出0 |
-| 本轮独立 macOS 构建与包启动 | 已通过 | `Embers-cloth.app`；`build-cloth.log`记录arm64、Info.plist和严格签名；`app-boot-cloth.log`为无存档入口退出0；`archive-cloth.log`检查ZIP完整，旧用户对局保留 |
+| 上轮e64bb18真实符文场景5分钟压力测试 | 历史通过，本轮锁屏未重测 | Apple M5 / Compatibility / 1280×720，预热5秒、正式300秒、27,255帧；300/600/200，平均90.847 FPS、P99 25.400毫秒；performance.json标记rune-feedback及实际默认设置/无存档状态，退出0 |
+| 本轮独立 macOS 构建与包启动 | 已通过 | `Embers-impact.app`；`build-impact.log`记录arm64、Info.plist和严格签名；`app-boot-impact.log`为无存档入口退出0；`archive-impact.log`检查ZIP完整，旧用户对局保留 |
 | 上轮暂停与设置原生输入 | 固定场景通过 | `modal-native.log`与`modal-native.gd.txt`；实际CUA Tab/Return/Esc、恢复商店及下一波45→37；个人存档读写关闭 |
 | 较早阶段原生约47秒流程 | 已通过普通首波结束检查 | `feedback-flow-native.log`与`feedback-first-wave-complete.png`：45秒正常波次进入“秘术觉醒”，退出0。使用自动走位，未使用压力模式或跳过计时 |
 | 商店原生键盘装配 | 已通过 | 在明确标注的固定商店夹具中按真实Return：骨针装入贯穿、备用归零、焦点到“卸符”，仍停留商店；不代表真人整局通关 |
 | 战斗反馈与结果画面 | 已检查固定夹具 | `feedback-combat.png`展示实际伤害、承伤方向、HUD提示安全区；`feedback-result.png`展示承伤来源与贡献。两张均明确标注固定验证场景 |
 
-旧版美术的75.808 FPS / P99 29.295毫秒保存在`performance-before-feedback.json`（另存`performance-engraved-02.json`）与`benchmark-before-feedback.log`。旧baseline另存`performance-before-rune-vfx.json`；最新本轮真实符文场景写入`performance.json`，bdd历史另存`performance-before-threats.json`，不混用历史采样，也不把跨采样分数差额全部归于某一改动。旧baseline含零伤害维持弹体；`bdd5240c97ca`的rune-feedback保留真实伤害，也不等于覆盖所有构筑或48条浮字同时显示的性能。
+旧版美术的75.808 FPS / P99 29.295毫秒保存在`performance-before-feedback.json`（另存`performance-engraved-02.json`）与`benchmark-before-feedback.log`。旧baseline另存`performance-before-rune-vfx.json`；最近完整历史e64bb18真实符文场景保留在`performance.json`，bdd历史另存`performance-before-threats.json`，不混用历史采样，也不把跨采样分数差额全部归于某一改动。旧baseline含零伤害维持弹体；`bdd5240c97ca`的rune-feedback保留真实伤害，也不等于覆盖所有构筑或48条浮字同时显示的性能。
 
 ## 下一轮未完成线索
 

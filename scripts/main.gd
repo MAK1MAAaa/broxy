@@ -38,7 +38,7 @@ func _ready() -> void:
 	world = CombatWorld.new()
 	world.process_mode = Node.PROCESS_MODE_PAUSABLE
 	world.sound = sound
-	world.settings = store.settings
+	world.apply_visual_settings(store.settings)
 	add_child(world)
 	ui = GameUI.new()
 	add_child(ui)
@@ -162,7 +162,7 @@ func _resume() -> void:
 
 func _setting_changed(key: String, value: Variant) -> void:
 	store.settings[key] = value
-	world.settings = store.settings
+	world.apply_visual_settings(store.settings)
 	if key == "volume":
 		sound.set_volume(float(value))
 	store.save_profile()
@@ -255,6 +255,11 @@ func _record_benchmark() -> void:
 	result["persistent_profile"] = store.persistent
 	result["run_seed"] = run.summary()["seed"]
 	result["rune_visual_peak"] = _peak_rune_flashes
+	var impact_stats: Dictionary = world._impact_painter.get_stats()
+	result["impact_visual_revision"] = "primary-impact-v1"
+	result["impact_visual_peak"] = impact_stats["peak_active"]
+	result["impact_visual_capacity"] = impact_stats["capacity"]
+	result["impact_draw_commands_at_end"] = impact_stats["draw_commands"]
 	result["primary_hits"] = world.sim.primary_hits
 	result["secondary_hits"] = world.sim.secondary_hits
 	var output: FileAccess = FileAccess.open("res://reports/performance.json", FileAccess.WRITE)
