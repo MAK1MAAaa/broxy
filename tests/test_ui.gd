@@ -76,9 +76,10 @@ func _run_tests() -> void:
 	var hud_notice: Label = ui.get("_toast")
 	var notice_rect: Rect2 = hud_notice.get_global_rect()
 	var boss_status: Control = ui.get("_hud")["boss"]
-	_check(notice_rect.position == Vector2(24, 106) and not notice_rect.intersects(CombatSim.ARENA), "Battle notifications remain in safe space above the playable arena")
+	var current_status: Control = ui.find_child("RitualStatus", true, false)
+	_check(current_status.get_global_rect().encloses(notice_rect) and not notice_rect.intersects(CombatSim.ARENA), "Battle notifications stay inside the status panel above the playable arena")
 	_check(boss_status.visible and not notice_rect.intersects(boss_status.get_global_rect()), "Battle notifications never overlap a visible boss status bar")
-	_check(notice_rect.size == Vector2(370, 30) and hud_notice.clip_text and hud_notice.text_overrun_behavior == TextServer.OVERRUN_TRIM_ELLIPSIS, "Long battle notifications truncate inside a fixed-size notice without expanding it")
+	_check(hud_notice.max_lines_visible == 1 and hud_notice.clip_text and hud_notice.text_overrun_behavior == TextServer.OVERRUN_TRIM_ELLIPSIS, "Long battle notifications use one visible ellipsized line inside the status panel")
 	_check(hud_notice.mouse_filter == Control.MOUSE_FILTER_IGNORE, "Battle notifications never intercept movement or targeting input")
 	ui.show_pause()
 	paused = true

@@ -1,0 +1,222 @@
+{
+  "schema_version": 1,
+  "baseline_commit": "7a5223b",
+  "production_files_changed": [
+    "scripts/ui/game_ui.gd"
+  ],
+  "core_version_unchanged": "prototype-0.1.0+143fbc0963af",
+  "policy_version_unchanged": "orbit-avoid-v1/shop-v1+7c19c01f20e4",
+  "unchanged_runtime_sha256": {
+    "scripts/main.gd": "66b193ae057775163c02ff6efc7728d36f6734b84421b86da1171fb96e171ba4",
+    "scripts/core/game_store.gd": "13f95880667763d262cdfa5af6ceefbeb27ba3c098e1b4ac94cd5eab56041150",
+    "scripts/core/run_state.gd": "0787d0442dc8e03d782808dc37ac7277ed1478a0c77d7d672e5acb2de7deeb4e",
+    "scripts/combat/combat_sim.gd": "5bca9f0367c8cdcb5f698f672e4f3b9b0689dc684f73a20a30edf97e4ee73e34",
+    "scripts/combat/combat_world.gd": "4cf1b8bcc68f299a3e8defbef421c634f1cce0e8eeff6f445c8d83ed79fdc5c1",
+    "scripts/combat/projectile_painter.gd": "dc06af10a75453536ded8b37325f564be4e1fbaf7e56e3b14925ad2475930a3e",
+    "scripts/combat/enemy_telegraph_painter.gd": "4750e8c434ef2eac723d1cb6cb3bef5386734cd369a80f001b0467a3211af2e6",
+    "scripts/combat/bot_policy.gd": "a78c47c7c5002f06928cc8af373851fb81f853ec401f6fa929a28efd303d613b",
+    "tests/simulate_runs.gd": "361cf71e03712a882de74a3ec0fc36b0d430ac7554ab5127a4813a23932e6486"
+  },
+  "headless_suites_by_process": [
+    {
+      "suite": "Rules",
+      "assertions": 204,
+      "failures": 0
+    },
+    {
+      "suite": "Combat",
+      "assertions": 302,
+      "failures": 0
+    },
+    {
+      "suite": "Homing",
+      "assertions": 45,
+      "failures": 0
+    },
+    {
+      "suite": "UI",
+      "assertions": 157,
+      "failures": 0
+    },
+    {
+      "suite": "Notifications",
+      "assertions": 65,
+      "failures": 0
+    },
+    {
+      "suite": "Modal",
+      "assertions": 37,
+      "failures": 0
+    },
+    {
+      "suite": "ChoiceActions",
+      "assertions": 44,
+      "failures": 0
+    },
+    {
+      "suite": "UpgradePreviews",
+      "assertions": 350,
+      "failures": 0
+    },
+    {
+      "suite": "ShopActions",
+      "assertions": 106,
+      "failures": 0
+    },
+    {
+      "suite": "ShopDetails",
+      "assertions": 51,
+      "failures": 0
+    },
+    {
+      "suite": "ProfileModes",
+      "assertions": 25,
+      "failures": 0
+    },
+    {
+      "suite": "Flow",
+      "assertions": 76,
+      "failures": 0
+    },
+    {
+      "suite": "Feedback",
+      "assertions": 64,
+      "failures": 0
+    },
+    {
+      "suite": "ProjectilePainter",
+      "assertions": 77,
+      "failures": 0
+    },
+    {
+      "suite": "EnemyTelegraphs",
+      "assertions": 121,
+      "failures": 0
+    },
+    {
+      "suite": "ShopObservation",
+      "assertions": 384,
+      "failures": 0
+    },
+    {
+      "suite": "ProfileModes",
+      "assertions": 16,
+      "failures": 0
+    },
+    {
+      "suite": "ProfileModes",
+      "assertions": 16,
+      "failures": 0
+    },
+    {
+      "suite": "ProfileModes",
+      "assertions": 16,
+      "failures": 0
+    },
+    {
+      "suite": "ProfileModes",
+      "assertions": 16,
+      "failures": 0
+    },
+    {
+      "suite": "ProfileModes",
+      "assertions": 16,
+      "failures": 0
+    }
+  ],
+  "suite_classes": 16,
+  "headless_assertions": 2188,
+  "python_tests": 14,
+  "notifications_regression": {
+    "before_assertions": 65,
+    "before_failures": 6,
+    "after_assertions": 65,
+    "after_failures": 0,
+    "same_test_source_before_after": true
+  },
+  "player_art_envelope": {
+    "rect": [
+      24,
+      95,
+      1232,
+      540
+    ],
+    "basis": "Reachable center clamp inset16; body68x68 and -50 offset, bob +/-2, lean +/-0.045, shake +/-4; glow/seal and orbit39 plus rune arc15 plus vertical bob3. Conservative continuous envelope, not just the collision arena."
+  },
+  "layout_after": {
+    "notice": [
+      54,
+      62,
+      636,
+      20
+    ],
+    "boss": [
+      720,
+      62,
+      506,
+      20
+    ],
+    "unchanged": "Status panel, primary fields, health, XP and equipment placements; notification font13, boss font16 and meter height8."
+  },
+  "notification_semantics": "Original text retained, one visible line with overwide ellipsis in combat. Original 2.8s one-shot timer keeps counting during pause, replacements restart it, screen changes hide old text. Non-combat resets the visible-line limit.",
+  "initial_full_suite_interruption": {
+    "exit_code": 143,
+    "cause": "New test_ui assertion used a status Control freed by the existing HUD-rebuild helper. Reacquired current status in the test and reran the whole suite; production source unchanged during this repair.",
+    "raw_log": "reports/tests-notices-interrupted.raw.log"
+  },
+  "native_observations": "reports/notices-native-observations.json",
+  "headless_gpu_readbacks_skipped": 12,
+  "native_gpu_suite_rerun": false,
+  "full_300s_benchmark_rerun": false,
+  "simulation_30_rerun": false,
+  "latest_complete_measurements_commit": "e64bb18",
+  "build_app": "build/Embers-hud.app",
+  "build_zip": "build/Embers-hud-mac-arm64.zip",
+  "packaged_boot_args": "--headless --quit-after 3 -- --capture-only",
+  "exit_codes": {
+    "final_all_tests": 0,
+    "edge_preview_before": 0,
+    "boss_preview_before": 0,
+    "edge_preview": 0,
+    "boss_preview": 0,
+    "long_preview": 0,
+    "build": 0,
+    "packaged_headless_boot": 0,
+    "archive_check": 0
+  },
+  "artifact_sha256": {
+    "scripts/ui/game_ui.gd": "701289635e3d5251bb0f15d9da3f8764abb942abfba9e67cc625f99667d0192d",
+    "tests/test_ui.gd": "fdce020d8fb6c2c5d0ff0651a84337a6aaad6582799852db700d47819667df96",
+    "tests/test_notifications.gd": "f060ab2ceba423ff4a184d0664dec4d30725c95898764a5604df439a98d26cfd",
+    "tools/test.sh": "2f14f90452f3adccd2efe2c9da872e5fe6036a22f47bcce2494245cf76ac7c1d",
+    "tools/preview_notices.gd": "2107fc7eca9c018e4a661656ade7be8d20ce0ef585bf93b30526ca1a72328bcf",
+    "reports/tests.log": "f1ae794683ef6a4f4cfa7fb7ac57282e366749d24ebd8405f9e166a807a72f29",
+    "reports/tests-before-notices.log": "bf3f16c07e112011ea9f310e6aa837ba06db11adce663a450464d99aef8cdfa2",
+    "reports/notifications-before.log": "cc4873809bb3ab7ce265255a6c6c3cd334efad352d8c4046f9e62c0acd1ab089",
+    "reports/tests-notices-interrupted.raw.log": "d992595fb76c6bdd559ce7b61021cee899931c970b3f047fb33008dc3f1e0c74",
+    "reports/notices-native-observations.json": "3da6ce7e914a19e698e7e7161bb500978729bec0b95997755780165ea7470340",
+    "reports/notice-edge-before.log": "c4efe14669163884e89af920983c65e8d0ff2f786d66890ce280c32699429f55",
+    "reports/notice-boss-before.log": "ce1f81b823bb4689fac6e8e1e2c9b3780320f82210d31a7fbc5d3ed68c871197",
+    "reports/notice-edge.log": "67a70d6b4e9ad3bb4b2f7a538bd48748ba5be588a87f2dbd58a54bc20dd95eda",
+    "reports/notice-boss.log": "9b234b994a8dd9b621afa22ca75412735e39ae2f2d4ba9d56b042b9ae78c8a5f",
+    "reports/notice-long.log": "a15c45266e8254cbaebc3f6e0a66858f4de434bf0c9f2aa3b1e71424f275aa05",
+    "reports/build-hud.log": "6f2d1f1927bf612811aa539e7632a675327eb942e33a54e3fcf1ec8bd9964153",
+    "reports/app-boot-hud.log": "6c536b7ab6a1ee8e7ac91fdd27709abb484073b092cabb70d205c4f987e47ddd",
+    "reports/archive-hud.log": "c1f8c0bdcbe2b9dea5a4fca921970fc1360f179a388569632750a31d5e1d710c",
+    "reports/notice-edge-before.png": "d282b96afc4bbaf68544e89edc50c46deaae0c3c2ee563f1527b73fab66015b3",
+    "reports/notice-boss-before.png": "8e1db4186efa47c504c1b360136a774bd3cdb21785996b2927dac6411baa5838",
+    "reports/notice-edge.png": "00268fba2cf91a2c73a746aa26640367201a7351e6941aefb574671d19da3668",
+    "reports/notice-boss.png": "3ebd7428aff86522f42310559cd13a7f62ef681410a271e0f6931c81155d36dd",
+    "reports/notice-long.png": "87965da6350a03800e1dd1c85ba63dcdab94a2f300d7a1a9f4c8a6cd7d4fb143",
+    "build/Embers-hud-mac-arm64.zip": "17762a7d818aaa2dcdf1c323a30b9f8b7b1648679028f717f7363d783b3847c8",
+    "build/Embers-hud.app/Contents/MacOS/秘术余烬": "acdc013335229f69761ef74a929bbe05c08438edc740f168e6615bfd39828033",
+    "build/Embers-hud.app/Contents/Resources/秘术余烬.pck": "70b42d994aeed8807220671672d120d78e1e796edc39c949a035b7e4cc3bb84f"
+  },
+  "limits": [
+    "The new regression checks the complete player drawing envelope and critical HUD fields; it is not a proof about all enemy sprites and cosmetic effects.",
+    "Source-only fixed native captures; new package headless-booted but not separately opened in an ordinary native menu.",
+    "No combat, resource, Main, World/painter or bot-policy changes. Previous FPS and bot outcomes are not new measurements or human playtest results.",
+    "Six previous bundles and the user paused game preserved; images, build artifacts and raw interruption log follow project ignore rules.",
+    "No new human playtest, other Mac/macOS13 real device test, Developer ID signature or notarization."
+  ]
+}

@@ -1,0 +1,39 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+ERROR: Combat notices clear every reachable player drawing, including bob, lean, shake, glow and orbiting weapons
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_notifications.gd:211)
+       [1] _test_combat_geometry (res://tests/test_notifications.gd:57)
+       [2] _settle (res://tests/test_notifications.gd:204)
+ERROR: The full boss status clears the same reachable player drawing bounds
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_notifications.gd:211)
+       [1] _test_combat_geometry (res://tests/test_notifications.gd:68)
+       [2] _settle (res://tests/test_notifications.gd:204)
+ERROR: Long messages cannot escape the panel into the player drawing region
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_notifications.gd:211)
+       [1] _test_combat_geometry (res://tests/test_notifications.gd:90)
+       [2] _settle (res://tests/test_notifications.gd:204)
+ERROR: Long or multiline messages retain the short notice's fixed geometry
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_notifications.gd:211)
+       [1] _test_combat_geometry (res://tests/test_notifications.gd:83)
+       [2] _settle (res://tests/test_notifications.gd:204)
+ERROR: Embedded line breaks cannot expand the visible combat notice beyond one line
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_notifications.gd:211)
+       [1] _test_combat_geometry (res://tests/test_notifications.gd:86)
+       [2] _settle (res://tests/test_notifications.gd:204)
+ERROR: Long messages cannot escape the panel into the player drawing region
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_notifications.gd:211)
+       [1] _test_combat_geometry (res://tests/test_notifications.gd:90)
+       [2] _settle (res://tests/test_notifications.gd:204)
+Notifications: 65 assertions, 6 failures

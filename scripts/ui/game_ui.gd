@@ -275,19 +275,24 @@ func show_hud() -> void:
 	xp.add_theme_stylebox_override("background", _bar_style(Color("292334")))
 	_page.add_child(xp)
 	_hud["xp_bar"] = xp
-	var boss := VBoxContainer.new()
-	boss.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
-	boss.offset_left = -230
-	boss.offset_right = 230
-	boss.offset_top = 118
-	boss.offset_bottom = 156
+	var boss := HBoxContainer.new()
+	boss.name = "BossStatus"
+	boss.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
+	boss.offset_left = -560
+	boss.offset_right = -54
+	boss.offset_top = 62
+	boss.offset_bottom = 82
+	boss.add_theme_constant_override("separation", 12)
 	boss.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_page.add_child(boss)
 	var boss_name := _label(GameCatalog.enemy("boss").display_name, 16, RED)
-	boss_name.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	boss_name.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	boss.add_child(boss_name)
 	var boss_hp := ProgressBar.new()
-	boss_hp.custom_minimum_size.y = 8
+	boss_hp.custom_minimum_size = Vector2(200, 8)
+	boss_hp.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	boss_hp.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	boss_hp.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	boss_hp.show_percentage = false
 	boss_hp.add_theme_stylebox_override("fill", _bar_style(RED))
 	boss_hp.add_theme_stylebox_override("background", _bar_style(Color("2d2630")))
@@ -554,27 +559,30 @@ func notify(message: String) -> void:
 		return
 	_toast.text = message
 	if _screen == "hud":
-		# Keep messages outside both the playable arena and the centered boss bar.
+		# The player's art, orbiting weapons and shake extend above its collision
+		# bounds. Use the status panel's spare row, alongside the boss meter.
 		_toast.add_theme_font_size_override("font_size", 13)
 		var style := _box(PANEL_LIGHT, Color(GOLD, 0.55))
 		style.content_margin_left = 6
 		style.content_margin_right = 6
-		style.content_margin_top = 3
-		style.content_margin_bottom = 3
+		style.content_margin_top = 0
+		style.content_margin_bottom = 0
 		_toast.add_theme_stylebox_override("normal", style)
 		_toast.clip_text = true
+		_toast.max_lines_visible = 1
 		_toast.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 		_toast.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 		_toast.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		_toast.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT)
-		_toast.offset_left = 24
-		_toast.offset_right = 394
-		_toast.offset_top = 106
-		_toast.offset_bottom = 136
+		_toast.offset_left = 54
+		_toast.offset_right = 690
+		_toast.offset_top = 62
+		_toast.offset_bottom = 82
 	else:
 		_toast.add_theme_font_size_override("font_size", 16)
 		_toast.add_theme_stylebox_override("normal", _box(PANEL_LIGHT, GOLD))
 		_toast.clip_text = false
+		_toast.max_lines_visible = -1
 		_toast.text_overrun_behavior = TextServer.OVERRUN_NO_TRIMMING
 		_toast.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		_toast.vertical_alignment = VERTICAL_ALIGNMENT_CENTER

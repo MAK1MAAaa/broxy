@@ -1,0 +1,143 @@
+{
+  "schema_version": 1,
+  "engine": "Godot 4.7.2, Compatibility, Apple M5",
+  "logical_resolution": "1280x720",
+  "fixture": "tools/preview_notices.gd",
+  "before_ui_commit": "7a5223b",
+  "before_ui_sha256": "cb147104ebc3713eb71c2086f3e3afaac08e3b3ff17a700392b78dc8d8454320",
+  "before_images": [
+    "reports/notice-edge-before.png",
+    "reports/notice-boss-before.png"
+  ],
+  "after_images": [
+    "reports/notice-edge.png",
+    "reports/notice-boss.png",
+    "reports/notice-long.png"
+  ],
+  "observed_before": [
+    "The notice covers the top-edge player mask.",
+    "The centered boss name and meter overlap the top-edge player."
+  ],
+  "observed_after": [
+    "Mask and orbiting weapon are visible in both edge fixtures.",
+    "Notice and inline boss status share the spare HUD row with separate areas.",
+    "Long text including a line break stays on one visible line, with an ellipsis for excess width."
+  ],
+  "captured_geometry": {
+    "notice-edge-before": {
+      "boss": [
+        410.0,
+        118.0,
+        460.0,
+        38.0
+      ],
+      "boss_visible": false,
+      "notice": [
+        24.0,
+        106.0,
+        370.0,
+        30.0
+      ],
+      "persistent": false,
+      "player": [
+        300.0,
+        156.0
+      ],
+      "result": 0,
+      "view": "edge"
+    },
+    "notice-boss-before": {
+      "boss": [
+        410.0,
+        118.0,
+        460.0,
+        38.0
+      ],
+      "boss_visible": true,
+      "notice": [
+        24.0,
+        106.0,
+        370.0,
+        30.0
+      ],
+      "persistent": false,
+      "player": [
+        640.0,
+        156.0
+      ],
+      "result": 0,
+      "view": "boss"
+    },
+    "notice-edge": {
+      "boss": [
+        720.0,
+        62.0,
+        506.0,
+        20.0
+      ],
+      "boss_visible": false,
+      "notice": [
+        54.0,
+        62.0,
+        636.0,
+        20.0
+      ],
+      "persistent": false,
+      "player": [
+        300.0,
+        156.0
+      ],
+      "result": 0,
+      "view": "edge"
+    },
+    "notice-boss": {
+      "boss": [
+        720.0,
+        62.0,
+        506.0,
+        20.0
+      ],
+      "boss_visible": true,
+      "notice": [
+        54.0,
+        62.0,
+        636.0,
+        20.0
+      ],
+      "persistent": false,
+      "player": [
+        640.0,
+        156.0
+      ],
+      "result": 0,
+      "view": "boss"
+    },
+    "notice-long": {
+      "boss": [
+        720.0,
+        62.0,
+        506.0,
+        20.0
+      ],
+      "boss_visible": false,
+      "notice": [
+        54.0,
+        62.0,
+        636.0,
+        20.0
+      ],
+      "persistent": false,
+      "player": [
+        300.0,
+        156.0
+      ],
+      "result": 0,
+      "view": "long"
+    }
+  },
+  "limits": [
+    "Fixed no-profile World/UI fixtures, physics frozen and player placed at the reachable top boundary; not a played whole run.",
+    "Notification timer deliberately stopped only for screenshots; the independent suite uses real time to check 2.8 seconds and pause/replacement behavior.",
+    "No new CUA keyboard or mouse interaction is claimed for this visual-only layout change."
+  ]
+}

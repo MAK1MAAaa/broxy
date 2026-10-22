@@ -10,6 +10,7 @@
 | 战斗测试 | 302条断言，0失败；新增接触反冲朝向、四边限位与全部敌人状态回归；含符文真实事件、爆破候选顺序与最近目标网格/线性对照；覆盖12种法器/符文组合、命中预算、爆破禁止递归、施法者瞄准、幽焰追踪，以及既有终局冻结、减速状态、扫掠命中顺序、来源与实际伤害 | [tests.log](../reports/tests.log) |
 | 幽焰转向边界 | 45条断言，0失败；真实四法器齐射/补刀重锁、反向与半权重退化、微小偏移方向、保速、贯穿UID排除、普通曲线与RNG；同一测试修前6失败 | [tests.log](../reports/tests.log)、[before](../reports/homing-before.log) |
 | 界面测试 | 157条断言，0失败；覆盖真实键盘焦点与装配操作、符文引导、伤害贡献/死亡来源复盘、通知安全区，以及字体排版和装饰输入穿透 | [tests.log](../reports/tests.log) |
+| 通知与角色避让 | 65条断言，0失败；通知和完整首领状态避开保守连续角色绘制包络，保留HUD文字与读数，多行固定为一行，输入穿透和2.8秒生命周期；同一源码修前6失败 | [tests.log](../reports/tests.log)、[before](../reports/notifications-before.log) |
 | 覆盖层输入测试 | 37条断言，0失败；真实Tab/Shift+Tab/Return覆盖底页隔离、返回源焦点、升级延迟刷新与界面替换 | [tests.log](../reports/tests.log) |
 | 选择时序 | 44条断言，0失败；两次同帧Return仅选一次，旧强化按钮跨页/覆盖层/新局无效，标题选择不关闭设置；同一源码修前19失败 | [tests.log](../reports/tests.log)、[before](../reports/choice-actions-before.log) |
 | 强化数值预览 | 350条断言，0失败；六类自然选项、合法满遗物加成、独立实际choose_upgrade结果、两页及同类重复升级、展示只读与布局；同一源码旧界面193失败 | [tests.log](../reports/tests.log)、[before](../reports/upgrade-previews-before.log) |
@@ -26,7 +27,7 @@
 | 实际窗口商店输入 | 固定商店夹具中以CUA按Return成功装配贯穿符文，仍留在商店，没有误触“开始下一波” | 负责人原生CUA操作观察；[商店过程截图](../reports/feedback-shop.png)、[原生日志](../reports/feedback-shop-native.log) |
 | 同种子整局配对模拟 | 2026—2035十个种子×三种符文策略，共30局；e64bb18批次29胜1败，与其上轮4f相比27局除版本外全部字段相同，3局轨迹/统计变化，无胜负转换；策略未改 | [当前配对报告](../reports/homing-simulation.json)、[历史预警等价](../reports/telegraph-equivalence.json) |
 
-十五套Godot行为测试共 **2123条headless断言，0失败**，另有14项Python测试通过。流程测试中的Boss终局使用加速条件；商店原生操作使用固定夹具，均只验证对应流程或交互，不代表真实整局通关。
+十六套Godot行为测试共 **2188条headless断言，0失败**，另有14项Python测试通过。流程测试中的Boss终局使用加速条件；商店原生操作使用固定夹具，均只验证对应流程或交互，不代表真实整局通关。
 
 前一阶段新增暂停边界修复：`main._finish_wave`在离开战斗前统一清除SceneTree及主场景的暂停状态。用`ended`回调中的真实`push_input(Esc)`或失焦通知，人为控制“终局已确定、deferred结算尚未执行”的时序；修复前62条中6条失败，修复后全部通过，覆盖商店、升级、Boss胜利与超时失败。普通波进入下一波后实际physics计时继续推进。该回归证明状态健壮性，尚未原生复现普通OS输入会自然落入该窄窗口，不认定它是之前倒计时反馈的唯一原因。证据为`flow-pause-boundary-before.log`和`flow-pause-boundary-after.log`。
 
@@ -40,7 +41,17 @@
 
 新证据区分了两类情况：seed2026贯穿首店曾出现18魂屑符文，策略从65魂屑先买两件24魂屑法器后剩17，才拒绝符文；次店四轮未出现目标符文。seed2032爆破的前两店全部已记录报价未出现目标符文；seed2029贯穿也在前两店未见目标符文，最终仍通关。它们不证明未成型就是死亡原因，也不支持仅据此调整正式价格或强制发放指定符文。第5—7店停止刷新有57次策略饱和、27次达到策略刷新上限，不等于无合法消费。此前缺完整报价的局限仍适用于旧报告，不能用新观测补写旧报告的原始证据。
 
-## 当前：强化信息与选择保护
+## 当前：战斗提示与首领状态避让
+
+旧通知虽未进入ARENA，却覆盖贴上边界角色的68×30像素贴图区域，其中包含面具；旧首领条同样横跨角色。两处均以同源码固定原生截图确认。现保持状态栏、主读数、血量、经验和装备位置不变，将通知移至状态栏第二行左侧，首领姓名与血条并排置于右侧；首领姓名仍16px、血条仍8px，通知仍13px、2.8秒。通知最多显示一行，保留原始文字，超宽省略；商店恢复原提示布局与多行设置。
+
+65条同源码回归由6失败变为0：以可达中心范围加上68×68角色、±2呼吸、±0.045倾斜、±4震屏、39像素法器轨道、15像素符文弧和±3浮动构造保守包络x24..1256/y95..635。新通知与首领区域均结束于y82，与该包络不交；实际TextServer字形、HP/XP和装备检查证明没有借用读数已占区域。真实等待验证暂停中原计时继续、切页隐藏、替换后重计时；没有更改持续时间或暂停规则。
+
+原生edge/boss/long三图退出0且已查看，角色面具与法器完整，超长含换行文字单行省略。固定陈列冻结physics、手工设置可达位置并停止通知计时供截图，不代表自然跑完整局；计时与输入检查由独立回归覆盖。第一次全测因新增布局断言引用了重建前旧控件而中断，修正测试引用后完整2188条通过，未归作游戏故障。证据与源码/包指纹见[notices-validation.json](../reports/notices-validation.json)。
+
+生产仅GameUI变化，核心143、Main、资源、策略与World/painter均未改；本轮未重跑30局或5分钟压力，最近完整样本仍属于e64bb18。
+
+## 上一轮：强化信息与选择保护
 
 强化卡以20px冷青文字显示当前属性与选择后的结果，包含已有遗物和升级。伤害/攻速显示倍率，护甲为点数，生命为上限；不是DPS或相对提升百分比。base种子2与boosted种子7的原生截图覆盖六类属性，布局完整。350条回归用独立RunState实际choose_upgrade后的stat核对数值，验证第二页同类护甲6→7→8、展示不改RNG/状态；旧界面193失败均来自缺少卡/数值及其派生检查，没有解析失败。
 
@@ -132,9 +143,9 @@ Boss存活时HUD明确显示“击败首领 / 限时”，真实剩余≤10秒�
 
 ## Mac应用与分发
 
-本轮另存`build/Embers-choices.app`与`build/Embers-choices-mac-arm64.zip`，arm64、ad-hoc严格签名、Info.plist、headless启动退出0、ZIP完整性通过，见build-choices.log、app-boot-choices.log与archive-choices.log。包启动使用--capture-only隔离档案，不创建截图；未另做打包应用普通菜单的原生启动。五份旧应用均保留，旧暂停对局不动。
+本轮另存`build/Embers-hud.app`与`build/Embers-hud-mac-arm64.zip`，arm64、ad-hoc严格签名、Info.plist、headless启动退出0、ZIP完整性通过，见build-hud.log、app-boot-hud.log与archive-hud.log。包启动使用--capture-only隔离档案，不创建截图；未另做打包应用普通菜单的原生启动。六份旧应用均保留，旧暂停对局不动。
 
-新应用、PCK、可执行文件及ZIP的SHA-256记录在[choices-validation.json](../reports/choices-validation.json)，对应当前生产源码。上一轮Embers-stable应用与完整30局/性能证据仍见[homing-validation.json](../reports/homing-validation.json)，保留其当时的源码指纹。
+新应用、PCK、可执行文件及ZIP的SHA-256记录在[notices-validation.json](../reports/notices-validation.json)，对应当前生产源码。上一轮Embers-choices见[choices-validation.json](../reports/choices-validation.json)；更早Embers-stable应用与完整30局/性能证据仍见[homing-validation.json](../reports/homing-validation.json)，均保留当时的源码指纹。
 
 上一阶段`Embers-shop.app`的原生交互来自同源码无存档商店夹具；当时构建与启动记录见[shop-validation.json](../reports/shop-validation.json)。
 
