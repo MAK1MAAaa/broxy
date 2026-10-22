@@ -14,13 +14,15 @@
 | 反馈测试 | 64条断言，0失败；新增符文池、真实方向、批次上限及浮字索引回收；覆盖真实伤害浮字、目标UID分离、玩家损血优先级、受击方向、固定池容量与重置 | [tests.log](../reports/tests.log) |
 | 弹体绘制测试 | 77条断言，0失败；覆盖全部法器/符文视觉家族、600/1600弹体容量、圆环厚度、过滤/清理及不改模拟和RNG | [tests.log](../reports/tests.log) |
 | 敌方预警测试 | 121条headless断言，0失败；另134条原生断言覆盖GPU实例读回、边界和颜色；headless明确跳过12项读回 | [tests.log](../reports/tests.log)、[native](../reports/enemy-telegraphs-native.log) |
+| 商店动作时序 | 106条断言，0失败；刷新旧报价、同帧重复出售/选错UID、覆盖层、切波和重开旧控件均受保护；相同测试修前19失败 | [tests.log](../reports/tests.log)、[before](../reports/shop-actions-before.log) |
+| 商店信息与焦点 | 51条断言，0失败；卸符拒绝/成功焦点、装配语义、商品数值与所有装备说明；数值对照正式CombatSim发射结果 | [tests.log](../reports/tests.log)、[before](../reports/shop-details-before.log) |
 | 商店观测测试 | 384条断言，0失败；105组冻结shop-v1对照保持trace、库存、钱包和RNG一致，覆盖拒绝原因、停止条件与快照不变性 | [tests.log](../reports/tests.log) |
 | 离线分析工具 | 14项Python测试通过；覆盖配对旧字段一致性、完整库存与片段区别、缺观测保持未知、坏JSON及混合版本拒绝 | [tests.log](../reports/tests.log) |
 | 实际窗口首波 | 实际运行约47秒；普通45秒首波结束后进入“秘术觉醒”，进程退出码0 | [feedback-flow-native.log](../reports/feedback-flow-native.log)、[首波结束截图](../reports/feedback-first-wave-complete.png) |
 | 实际窗口商店输入 | 固定商店夹具中以CUA按Return成功装配贯穿符文，仍留在商店，没有误触“开始下一波” | 负责人原生CUA操作观察；[商店过程截图](../reports/feedback-shop.png)、[原生日志](../reports/feedback-shop-native.log) |
 | 同种子整局配对模拟 | 2026—2035十个种子×三种符文策略，共30局；本轮29胜1败，与上轮f29除版本外全部字段相同；上轮反冲修复曾改变24局轨迹/统计 | [当前等价报告](../reports/telegraph-equivalence.json)、[上轮配对报告](../reports/modal-recoil-simulation.json) |
 
-九套Godot行为测试共 **1422条headless断言，0失败**，另有14项Python测试通过。流程测试中的Boss终局使用加速条件；商店原生操作使用固定夹具，均只验证对应流程或交互，不代表真实整局通关。
+十一套Godot行为测试共 **1579条headless断言，0失败**，另有14项Python测试通过。流程测试中的Boss终局使用加速条件；商店原生操作使用固定夹具，均只验证对应流程或交互，不代表真实整局通关。
 
 前一阶段新增暂停边界修复：`main._finish_wave`在离开战斗前统一清除SceneTree及主场景的暂停状态。用`ended`回调中的真实`push_input(Esc)`或失焦通知，人为控制“终局已确定、deferred结算尚未执行”的时序；修复前62条中6条失败，修复后全部通过，覆盖商店、升级、Boss胜利与超时失败。普通波进入下一波后实际physics计时继续推进。该回归证明状态健壮性，尚未原生复现普通OS输入会自然落入该窄窗口，不认定它是之前倒计时反馈的唯一原因。证据为`flow-pause-boundary-before.log`和`flow-pause-boundary-after.log`。
 
@@ -34,7 +36,17 @@
 
 新证据区分了两类情况：seed2026贯穿首店曾出现18魂屑符文，策略从65魂屑先买两件24魂屑法器后剩17，才拒绝符文；次店四轮未出现目标符文。seed2032爆破的前两店全部已记录报价未出现目标符文；seed2029贯穿也在前两店未见目标符文，最终仍通关。它们不证明未成型就是死亡原因，也不支持仅据此调整正式价格或强制发放指定符文。第5—7店停止刷新有57次策略饱和、27次达到策略刷新上限，不等于无合法消费。此前缺完整报价的局限仍适用于旧报告，不能用新观测补写旧报告的原始证据。
 
-## 本轮敌方意图与Boss限时
+## 本轮商店交易与信息
+
+旧卡片只绑定数组index：刷新已换报价、deferred重绘未执行时，旧“幽焰24”按钮可买到新“散魂26”；同帧Return出售备用A、Tab移至旧B、Return选择时会选中已移到该index的C。当前按钮捕获建页代次，统一拒绝数据待重绘、旧页、非商店或覆盖层下的回调。新页仍按原规则接收购买、出售、装配与下波请求。106条同一时序测试由19失败转为0；包含真实Godot InputEventKey与刻意触发旧Button信号的夹具，不声称已经通过普通真人OS输入自然复现。
+
+满备用栏卸符失败后保留原“卸符”焦点，成功才转至退回符文UID；装配提示修为“符文已装入法器”。法器商品增加14px数值行，说明每枚伤害、每次枚数和持续攻击时标称间隔；已计当前加成，未计符文追加命中，不称实际DPS。装备名称始终可查看基础行为与当前值。51条信息回归中，原51条检查曾27失败；最终夹具购买价由固定20修正为正式shop_price，未更换检查目标，数值与真实战斗弹体/冷却对照全部通过。
+
+原生base、boosted、fullbag三张固定商店排版退出0且人工查看通过，截图为reports/shop-<view>.png。transactions无存档窗口用CUA实际Return购买霜矛24、贯穿18并装入骨针；鼠标买血棘20、Return买时砂20，余额1000→976→958→938→918，霜矛伤害11.0→12.6、间隔0.62→0.55，与1.15伤害/1.12攻速相符（伤害显示1位小数，间隔2位小数）。详情tooltip的数据挂载由自动化验证，本轮没有独立的原生弹出框截图，不将悬停尝试记作可视验收。观察记录见[shop-native-observations.json](../reports/shop-native-observations.json)，夹具退出0；测试预算与库存明确标为固定场景，不替代真人试玩。
+
+生产代码只修改GameUI；RunState、CombatSim、World、主场景、资源和机器人策略均与fb22ce9一致。因此未再跑30局或5分钟压力；最近30局等价与性能报告属于下述上轮源码，本轮不据此宣称重新测量。当前构建/回归指纹见[shop-validation.json](../reports/shop-validation.json)。
+
+## 上一轮敌方意图与Boss限时
 
 冲锋短双轨箭头显示正式锁定方向，保留中性无方向标记；施法环读取正式剩余计时，不伪造锁定瞄准。共享静态刻环网格替代每帧重建大量线段，最多1020个caster GPU实例、24次预警输入绘制命令。环进度向下量化到16段，最多约28.125毫秒装饰滞后，不改变0.65/0.45秒蓄力或发射时机。全部绘制只读模拟和RNG；暂停冻结、停止/换波/终局清理，Feedback增加6条生命周期回归。
 
@@ -66,9 +78,9 @@ Boss存活时HUD明确显示“击败首领 / 限时”，真实剩余≤10秒�
 
 本机原先将PingFang SC解析成缺少部分简体字形的PingFang HK。“敌”“杀”等字符确实产生缺字字形；现优先采用Hiragino Sans GB，回归检查实际TextServer排版的字形RID与索引，菜单和商店原生截图已确认文字完整。
 
-## 本机性能（本轮完整采样）
+## 本机性能（最近完整采样为fb22ce9，本轮未重测）
 
-当前核心4f7be4bdb91f、当前绘制源码在Apple M5 / Godot4.7.2 Compatibility / 1280×720原生运行，保留VSync、max_fps=0。预热5秒后正式采样300秒，28,645帧，平均**95.480 FPS**，P99**25.588毫秒**，退出0并通过≥58 FPS / ≤33毫秒门槛。终点300敌/600弹/200掉落，符文刻线峰值32，含预热累计主命中467,760、次级命中1,212,726。原始[performance.json](../reports/performance.json)、[benchmark.log](../reports/benchmark.log)与源码哈希在[本轮报告](../reports/threats-validation.json)冻结。采样期间不运行其他Godot测试/构建，旧用户应用在后台暂停保留。CUA确认压力窗口可见且显示300/600与采样倒计时；定位时曾短暂打开独立项目管理器，实际测试窗口随后确认，没有将此当作严格隔离实验。
+上一轮fb22ce9的核心4f7be4bdb91f、当时源码在Apple M5 / Godot4.7.2 Compatibility / 1280×720原生运行，保留VSync、max_fps=0。预热5秒后正式采样300秒，28,645帧，平均**95.480 FPS**，P99**25.588毫秒**，退出0并通过≥58 FPS / ≤33毫秒门槛。终点300敌/600弹/200掉落，符文刻线峰值32，含预热累计主命中467,760、次级命中1,212,726。原始[performance.json](../reports/performance.json)、[benchmark.log](../reports/benchmark.log)与源码哈希在[该轮报告](../reports/threats-validation.json)冻结。采样期间不运行其他Godot测试/构建，旧用户应用在后台暂停保留。CUA确认压力窗口可见且显示300/600与采样倒计时；定位时曾短暂打开独立项目管理器，实际测试窗口随后确认，没有将此当作严格隔离实验。
 
 该完整场景以游魂及真实四法器/三符文伤害为主，不覆盖340个同时施法预警。因此另保留相同静止340敌人配置、各2秒预热+10秒采样的[预警绘制对比](../reports/telegraph-draw-comparison.json)：全施法35.172→119.555 FPS、P99 36.850→13.429毫秒；170冲锋+170施法65.087→116.678 FPS、P99 28.755→16.927毫秒。优化前后均无physics/真实攻击/600弹体，仅用于绘制诊断；进度向下量化使临近满环少一段，最大约28.125毫秒装饰滞后。输入绘制命令不是引擎最终drawcall数，报告分别记录，不据此保证其他Mac或所有构筑性能。
 
@@ -88,7 +100,7 @@ Boss存活时HUD明确显示“击败首领 / 限时”，真实剩余≤10秒�
 
 ## Mac应用与分发
 
-本轮新包为`build/Embers-threats.app`与`build/Embers-threats-mac-arm64.zip`。arm64提取、ad-hoc严格签名、Info.plist、headless启动退出0及ZIP完整性全部通过，见[构建](../reports/build-threats.log)、[启动](../reports/app-boot-threats.log)、[ZIP](../reports/archive-threats.log)。未覆盖或关闭旧Embers.app及Embers-next.app，保留旧用户对局；新包未额外启动普通菜单，其本轮原生画面与GPU检查来自源码夹具，完整战斗性能同样来自源码运行。构建生产源码哈希与测试/采样时一致；tests/tools/docs不随PCK导出。
+本轮另存`build/Embers-shop.app`与`build/Embers-shop-mac-arm64.zip`，arm64、ad-hoc严格签名、Info.plist、headless启动退出0、ZIP完整性通过，见build-shop.log、app-boot-shop.log、archive-shop.log与[shop-validation.json](../reports/shop-validation.json)。Embers.app、Embers-next.app、Embers-threats.app均保留，旧暂停对局不动。新包未另做普通菜单原生启动；本轮普通原生交互来自同源码的无存档商店夹具。
 
 以下是上一阶段的打包记录：
 

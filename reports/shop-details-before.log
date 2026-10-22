@@ -1,0 +1,191 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+ERROR: Condition "ret != noErr" is true. Returning: ""
+   at: get_system_ca_certificates (platform/macos/os_macos.mm:1035)
+ERROR: A rejected unequip keeps keyboard focus on the original action
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_details.gd:240)
+       [1] _test_unequip_and_equip (res://tests/test_shop_details.gd:51)
+       [2] _settle (res://tests/test_shop_details.gd:233)
+ERROR: Equip confirmation names the rune as the item installed into the weapon
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_details.gd:240)
+       [1] _test_unequip_and_equip (res://tests/test_shop_details.gd:76)
+       [2] _settle (res://tests/test_shop_details.gd:233)
+ERROR: The visible offer matches live per-projectile damage, volley count and cooldown: bone
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_details.gd:240)
+       [1] _assert_visible_details (res://tests/test_shop_details.gd:157)
+       [2] _test_weapon_details (res://tests/test_shop_details.gd:106)
+       [3] _settle (res://tests/test_shop_details.gd:233)
+ERROR: Every equipment name exposes its base description and current numbers: bone
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_details.gd:240)
+       [1] _assert_visible_details (res://tests/test_shop_details.gd:159)
+       [2] _test_weapon_details (res://tests/test_shop_details.gd:106)
+       [3] _settle (res://tests/test_shop_details.gd:233)
+ERROR: Equipment detail tooltips work without taking keyboard focus: bone
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_details.gd:240)
+       [1] _assert_visible_details (res://tests/test_shop_details.gd:160)
+       [2] _test_weapon_details (res://tests/test_shop_details.gd:106)
+       [3] _settle (res://tests/test_shop_details.gd:233)
+ERROR: The visible offer matches live per-projectile damage, volley count and cooldown: frost
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_details.gd:240)
+       [1] _assert_visible_details (res://tests/test_shop_details.gd:157)
+       [2] _test_weapon_details (res://tests/test_shop_details.gd:106)
+       [3] _settle (res://tests/test_shop_details.gd:233)
+ERROR: Every equipment name exposes its base description and current numbers: frost
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_details.gd:240)
+       [1] _assert_visible_details (res://tests/test_shop_details.gd:159)
+       [2] _test_weapon_details (res://tests/test_shop_details.gd:106)
+       [3] _settle (res://tests/test_shop_details.gd:233)
+ERROR: Equipment detail tooltips work without taking keyboard focus: frost
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_details.gd:240)
+       [1] _assert_visible_details (res://tests/test_shop_details.gd:160)
+       [2] _test_weapon_details (res://tests/test_shop_details.gd:106)
+       [3] _settle (res://tests/test_shop_details.gd:233)
+ERROR: The visible offer matches live per-projectile damage, volley count and cooldown: ember
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_details.gd:240)
+       [1] _assert_visible_details (res://tests/test_shop_details.gd:157)
+       [2] _test_weapon_details (res://tests/test_shop_details.gd:106)
+       [3] _settle (res://tests/test_shop_details.gd:233)
+ERROR: Every equipment name exposes its base description and current numbers: ember
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_details.gd:240)
+       [1] _assert_visible_details (res://tests/test_shop_details.gd:159)
+       [2] _test_weapon_details (res://tests/test_shop_details.gd:106)
+       [3] _settle (res://tests/test_shop_details.gd:233)
+ERROR: Equipment detail tooltips work without taking keyboard focus: ember
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_details.gd:240)
+       [1] _assert_visible_details (res://tests/test_shop_details.gd:160)
+       [2] _test_weapon_details (res://tests/test_shop_details.gd:106)
+       [3] _settle (res://tests/test_shop_details.gd:233)
+ERROR: The visible offer matches live per-projectile damage, volley count and cooldown: scatter
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_details.gd:240)
+       [1] _assert_visible_details (res://tests/test_shop_details.gd:157)
+       [2] _test_weapon_details (res://tests/test_shop_details.gd:106)
+       [3] _settle (res://tests/test_shop_details.gd:233)
+ERROR: Every equipment name exposes its base description and current numbers: scatter
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_details.gd:240)
+       [1] _assert_visible_details (res://tests/test_shop_details.gd:159)
+       [2] _test_weapon_details (res://tests/test_shop_details.gd:106)
+       [3] _settle (res://tests/test_shop_details.gd:233)
+ERROR: Equipment detail tooltips work without taking keyboard focus: scatter
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_details.gd:240)
+       [1] _assert_visible_details (res://tests/test_shop_details.gd:160)
+       [2] _test_weapon_details (res://tests/test_shop_details.gd:106)
+       [3] _settle (res://tests/test_shop_details.gd:233)
+ERROR: An equipped weapon name retains its base behavior, current numbers and rune behavior in one tooltip
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_details.gd:240)
+       [1] _test_weapon_details (res://tests/test_shop_details.gd:115)
+       [2] _settle (res://tests/test_shop_details.gd:233)
+ERROR: The visible offer matches live per-projectile damage, volley count and cooldown: bone
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_details.gd:240)
+       [1] _assert_visible_details (res://tests/test_shop_details.gd:157)
+       [2] _test_weapon_details (res://tests/test_shop_details.gd:122)
+       [3] _settle (res://tests/test_shop_details.gd:233)
+ERROR: Every equipment name exposes its base description and current numbers: bone
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_details.gd:240)
+       [1] _assert_visible_details (res://tests/test_shop_details.gd:159)
+       [2] _test_weapon_details (res://tests/test_shop_details.gd:122)
+       [3] _settle (res://tests/test_shop_details.gd:233)
+ERROR: Equipment detail tooltips work without taking keyboard focus: bone
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_details.gd:240)
+       [1] _assert_visible_details (res://tests/test_shop_details.gd:160)
+       [2] _test_weapon_details (res://tests/test_shop_details.gd:122)
+       [3] _settle (res://tests/test_shop_details.gd:233)
+ERROR: The visible offer matches live per-projectile damage, volley count and cooldown: frost
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_details.gd:240)
+       [1] _assert_visible_details (res://tests/test_shop_details.gd:157)
+       [2] _test_weapon_details (res://tests/test_shop_details.gd:122)
+       [3] _settle (res://tests/test_shop_details.gd:233)
+ERROR: Every equipment name exposes its base description and current numbers: frost
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_details.gd:240)
+       [1] _assert_visible_details (res://tests/test_shop_details.gd:159)
+       [2] _test_weapon_details (res://tests/test_shop_details.gd:122)
+       [3] _settle (res://tests/test_shop_details.gd:233)
+ERROR: Equipment detail tooltips work without taking keyboard focus: frost
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_details.gd:240)
+       [1] _assert_visible_details (res://tests/test_shop_details.gd:160)
+       [2] _test_weapon_details (res://tests/test_shop_details.gd:122)
+       [3] _settle (res://tests/test_shop_details.gd:233)
+ERROR: The visible offer matches live per-projectile damage, volley count and cooldown: ember
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_details.gd:240)
+       [1] _assert_visible_details (res://tests/test_shop_details.gd:157)
+       [2] _test_weapon_details (res://tests/test_shop_details.gd:122)
+       [3] _settle (res://tests/test_shop_details.gd:233)
+ERROR: Every equipment name exposes its base description and current numbers: ember
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_details.gd:240)
+       [1] _assert_visible_details (res://tests/test_shop_details.gd:159)
+       [2] _test_weapon_details (res://tests/test_shop_details.gd:122)
+       [3] _settle (res://tests/test_shop_details.gd:233)
+ERROR: Equipment detail tooltips work without taking keyboard focus: ember
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_details.gd:240)
+       [1] _assert_visible_details (res://tests/test_shop_details.gd:160)
+       [2] _test_weapon_details (res://tests/test_shop_details.gd:122)
+       [3] _settle (res://tests/test_shop_details.gd:233)
+ERROR: The visible offer matches live per-projectile damage, volley count and cooldown: scatter
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_details.gd:240)
+       [1] _assert_visible_details (res://tests/test_shop_details.gd:157)
+       [2] _test_weapon_details (res://tests/test_shop_details.gd:122)
+       [3] _settle (res://tests/test_shop_details.gd:233)
+ERROR: Every equipment name exposes its base description and current numbers: scatter
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_details.gd:240)
+       [1] _assert_visible_details (res://tests/test_shop_details.gd:159)
+       [2] _test_weapon_details (res://tests/test_shop_details.gd:122)
+       [3] _settle (res://tests/test_shop_details.gd:233)
+ERROR: Equipment detail tooltips work without taking keyboard focus: scatter
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_details.gd:240)
+       [1] _assert_visible_details (res://tests/test_shop_details.gd:160)
+       [2] _test_weapon_details (res://tests/test_shop_details.gd:122)
+       [3] _settle (res://tests/test_shop_details.gd:233)
+ShopDetails: 51 assertions, 27 failures

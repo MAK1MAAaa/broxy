@@ -12,6 +12,12 @@ Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
 Modal: 37 assertions, 0 failures
 Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
 
+ShopActions: 106 assertions, 0 failures
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+ShopDetails: 51 assertions, 0 failures
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
 Flow: 76 assertions, 0 failures; first wave 2701 fixed ticks; boss terminal conditions are fixtures, not balance tests
 Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
 
@@ -28,6 +34,6 @@ Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
 ShopObservation: 384 assertions, 0 failures
 ..............
 ----------------------------------------------------------------------
-Ran 14 tests in 0.012s
+Ran 14 tests in 0.013s
 
 OK

@@ -1,0 +1,49 @@
+{
+  "kind": "Native CUA observation of an independent fixed shop fixture",
+  "command": "./tools/run.sh --script res://tools/preview_shop.gd -- --view=transactions --hold",
+  "personal_persistence": false,
+  "budget": 1000,
+  "budget_is_fixture_only": true,
+  "observed_steps": [
+    {
+      "action": "Real Return buys frost",
+      "gold": 976,
+      "weapon_slots_used": 2,
+      "purchased_offer": "frost",
+      "price": 24
+    },
+    {
+      "action": "Real Return buys pierce",
+      "gold": 958,
+      "reserve_runes": 1,
+      "focus": "equip slot 0"
+    },
+    {
+      "action": "Real Return equips pierce into bone",
+      "gold": 958,
+      "reserve_runes": 0,
+      "focus": "unequip slot 0",
+      "confirmation": "贯穿符文已装入骨针。悬停法器名称可查看详情。"
+    },
+    {
+      "action": "Mouse click buys damage relic",
+      "gold": 938,
+      "damage_multiplier": 1.15,
+      "visible_frost_per_projectile_damage": "12.6",
+      "visible_frost_interval_seconds": "0.62"
+    },
+    {
+      "action": "Real Return buys haste relic",
+      "gold": 918,
+      "attack_speed_multiplier": 1.12,
+      "visible_frost_interval_seconds": "0.55"
+    }
+  ],
+  "native_fixture_exit_code": 0,
+  "tooltip_visual_check": "Not confirmed: clicks/hover attempts did not yield a separately captured popup. Tooltip attachment and contents are covered by ShopDetails tests.",
+  "limits": [
+    "Observations read from the actual CUA native window, not parsed from the startup-only shop-native.log.",
+    "A fixed stock and fixture budget are used; this is not a real wave settlement or a human playtest.",
+    "Stale same-frame actions are deliberately timed Godot input/signal regressions, not reproduced human OS timing."
+  ]
+}

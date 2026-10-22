@@ -8,9 +8,11 @@ Godot 4.7.2 普通版、带类型标注的 GDScript 开发的 macOS 单人割草
 
 冲锋蓄力显示短双轨方向箭头，施法蓄力显示闭合刻环；它们表示攻击意图，不代表完整碰撞范围或术士锁定瞄准。Boss战明确显示“击败首领”和“限时”，最后10秒使用静态暖色提醒。波末结算会清理暂停状态，避免下一波留下不可见的暂停。
 
+商店法器卡显示当前每枚伤害、每次枚数和标称攻击间隔，已计局内伤害与攻速加成。悬停装备名称可查看基础行为、数值和符文效果；数值未计符文追加命中，也不是实际DPS。刷新或改装后，旧界面按钮立即失效，避免连续输入按旧卡购买新商品或错选符文。
+
 ## 直接游玩
 
-本轮最新应用为 `build/Embers-threats.app`（压缩包`build/Embers-threats-mac-arm64.zip`）。旧`build/Embers.app`保留正在暂停的对局；结束旧应用后再打开新版。选择骨针或幽焰开局。应用面向 Apple Silicon、macOS 13 及以上；已采用本地 ad-hoc 签名，尚未进行 Developer ID 公证。
+本轮最新应用为 `build/Embers-shop.app`（压缩包`build/Embers-shop-mac-arm64.zip`）。旧`build/Embers.app`保留正在暂停的对局；结束旧应用后再打开新版。选择骨针或幽焰开局。应用面向 Apple Silicon、macOS 13 及以上；已采用本地 ad-hoc 签名，尚未进行 Developer ID 公证。
 
 | 操作 | 按键 |
 | --- | --- |
@@ -56,7 +58,7 @@ python3 tools/fetch_macos_template.py
 ```sh
 ./tools/build_macos.sh
 # 另存应用，避免替换正在运行的旧版：
-BROXY_APP_PATH="$PWD/build/Embers-threats.app" ./tools/build_macos.sh
+BROXY_APP_PATH="$PWD/build/Embers-shop.app" ./tools/build_macos.sh
 ```
 
 构建从官方 Universal 模板提取 arm64，生成 `build/Embers.app` 并执行 ad-hoc 签名验证。引擎许可在应用的 `Contents/Resources/licenses/` 中直接可读。对外发布前应使用自己的 Developer ID 配置签名与公证。
@@ -68,6 +70,8 @@ BROXY_APP_PATH="$PWD/build/Embers-threats.app" ./tools/build_macos.sh
 ./tools/run.sh --headless --script res://tests/test_combat.gd
 ./tools/run.sh --headless --script res://tests/test_ui.gd
 ./tools/run.sh --headless --script res://tests/test_modal.gd
+./tools/run.sh --headless --script res://tests/test_shop_actions.gd
+./tools/run.sh --headless --script res://tests/test_shop_details.gd
 ./tools/run.sh --headless --script res://tests/test_flow.gd
 ./tools/run.sh --headless --script res://tests/test_feedback.gd
 ./tools/run.sh --headless --script res://tests/test_projectile_painter.gd
@@ -78,9 +82,9 @@ python3 -m unittest discover -s tests -p 'test_shop_analysis.py'
 ./tools/run.sh -- --benchmark --benchmark-runes --seconds=300
 ```
 
-也可以用 `./tools/test.sh` 一次运行九套Godot行为测试和Python分析器测试。当前1422条Godot无界面断言及14项Python测试全部通过；原生预警套件另通过134条断言（含12项GPU读回），记录见 `reports/tests.log` 与 `reports/enemy-telegraphs-native.log`。系统字体测试需要正常 macOS 字体访问权限；文件沙箱可能阻止 SystemFont 枚举。请在常规终端运行。性能测试会打开明确标记的窗口并显示采样倒计时，保持300敌人、至少600投射物与200掉落，预热5秒后采样300秒，输出 `reports/performance.json`。`--benchmark-runes`使用四种法器与三类符文的真实伤害弹体，报告标记为`rune-feedback`；省略该参数为含零伤害维持弹体的历史`baseline`场景，两者分别记录。测试时保持该窗口可见、Mac未锁屏，避免同时运行其他图形负载。
+也可以用 `./tools/test.sh` 一次运行十一套Godot行为测试和Python分析器测试。当前1579条Godot无界面断言及14项Python测试全部通过；上一轮原生预警套件另通过134条断言（含12项GPU读回），记录见 `reports/tests.log` 与 `reports/enemy-telegraphs-native.log`。系统字体测试需要正常 macOS 字体访问权限；文件沙箱可能阻止 SystemFont 枚举。请在常规终端运行。性能测试会打开明确标记的窗口并显示采样倒计时，保持300敌人、至少600投射物与200掉落，预热5秒后采样300秒，输出 `reports/performance.json`。`--benchmark-runes`使用四种法器与三类符文的真实伤害弹体，报告标记为`rune-feedback`；省略该参数为含零伤害维持弹体的历史`baseline`场景，两者分别记录。测试时保持该窗口可见、Mac未锁屏，避免同时运行其他图形负载。
 
-本轮完整5分钟采样在Apple M5真实符文场景达到平均95.480 FPS、P99 25.588毫秒，维持300敌人/600弹体/200掉落并实际产生主/次伤害，退出0。另用340个静止预警单独短测，共享网格后全施法119.56 FPS、混合116.68 FPS；两个负载分别记录，设备与场景边界见 `docs/verification.md`。
+最近完整5分钟采样对应上一轮fb22ce9，在Apple M5真实符文场景达到平均95.480 FPS、P99 25.588毫秒，维持300敌人/600弹体/200掉落并实际产生主/次伤害，退出0。本轮仅调整商店界面与交互，未重跑完整压力或30局模拟；核心、资源及绘制源码未改变。另用340个静止预警单独短测，共享网格后全施法119.56 FPS、混合116.68 FPS；两个负载分别记录，设备与场景边界见 `docs/verification.md`。
 
 完整模拟复用正式 `RunState`、`CombatSim.step` 与商店价格，没有额外金币、无敌或专用 Boss 数值。当前核心版本`4f7be4bdb91f`将既有蓄力时长提取为共享常量；30局与上一阶段`f29c7008e475`除版本字段外逐字段一致，保持29胜1败。上一阶段接触反冲修复曾使24局轨迹或统计改变、28胜变29胜；当前等价比较不覆盖那次行为变更，也不代表真人胜率。策略与证据见 `docs/simulation.md`，试玩流程见 `docs/playtest.md`，持续工作记录见 `docs/optimization-log.md`。
 
@@ -91,6 +95,8 @@ python3 -m unittest discover -s tests -p 'test_shop_analysis.py'
 反馈与结算布局使用 `./tools/run.sh --script res://tools/preview_feedback.gd -- --view=combat` 检查，也可选择 `shop` 或 `result`。输出为 `reports/feedback-<view>.png`。这些画面明确标注为固定验证场景，不读写个人存档，也不代表实际通关。
 
 预警/HUD可用 `./tools/run.sh --script res://tools/preview_threats.gd` 与追加 `-- --view=boss` 检查；分别保存 `reports/threat-showcase.png` 和 `reports/boss-deadline.png`。这是42个正式固定步推进后冻结的无存档陈列，Boss剩余9秒为排版夹具，不是实际打了81秒。
+
+商店数值与排版可用 `./tools/run.sh --script res://tools/preview_shop.gd -- --view=base` 检查；也支持 `boosted`、`fullbag` 和 `transactions`，追加 `--hold` 留在交互窗口。固定夹具通过正式购买接口布置库存，提供独立测试预算，不读写个人存档，不代表正式对局或难度验收。
 
 ## 项目组织
 

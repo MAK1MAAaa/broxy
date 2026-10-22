@@ -78,6 +78,7 @@ var _hud: Dictionary = {}
 var _hud_loadout_key := ""
 var _best: Dictionary = {}
 var _requested_shop_focus := ""
+var _shop_epoch: int = 0
 var _overlay_mode := ""
 var _page_focus: Control
 var _page_focus_id := ""
@@ -582,6 +583,7 @@ func notify(message: String) -> void:
 
 
 func _build_shop() -> void:
+	_shop_epoch += 1
 	var focus_id := _requested_shop_focus
 	_requested_shop_focus = ""
 	if focus_id.is_empty():
@@ -679,6 +681,11 @@ func _offer_card(parent: Control, index: int) -> void:
 	var description := _wrap(definition.description, 14, MUTED)
 	description.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	body.add_child(description)
+	if kind == "weapon":
+		var stats := _wrap(_weapon_stats_text(definition), 14, GOLD)
+		stats.name = "WeaponStats"
+		_enable_tooltip(stats, _weapon_stats_note())
+		body.add_child(stats)
 	var sold := bool(offer.get("sold", false))
 	var buy := _shop_button("已购买" if sold else "购买  %d 魂屑" % int(offer.get("price", 0)), _buy.bind(index), "buy:%d" % index, Vector2(0, 35))
 	buy.add_theme_font_size_override("font_size", 16)
@@ -705,7 +712,9 @@ func _weapon_row(parent: Control, index: int) -> void:
 	var names := VBoxContainer.new()
 	names.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	row.add_child(names)
-	names.add_child(_label(definition.display_name, 16, BONE))
+	var weapon_name := _label(definition.display_name, 16, BONE)
+	_enable_tooltip(weapon_name, _equipment_tooltip(item))
+	names.add_child(weapon_name)
 	var rune: Dictionary = item.get("rune", {})
 	var rune_label := _label("无符文" if rune.is_empty() else GameCatalog.rune(str(rune["id"])).display_name, 13, MUTED if rune.is_empty() else PURPLE)
 	if not rune.is_empty():
@@ -917,7 +926,7 @@ func _equip(index: int) -> void:
 	var success := run.equip_rune(_selected_rune, index)
 	if success:
 		_selected_rune = -1
-	_handle_action(success, "rune", "%s已装入%s。悬停符文名称可查看效果。" % [weapon_name, rune_name])
+	_handle_action(success, "rune", "%s已装入%s。悬停法器名称可查看详情。" % [rune_name, weapon_name])
 
 
 func _unequip(index: int) -> void:
@@ -926,8 +935,11 @@ func _unequip(index: int) -> void:
 		return
 	var weapon: Dictionary = run.loadout[index]
 	var rune: Dictionary = weapon.get("rune", {})
-	_requested_shop_focus = "rune:%d" % int(rune.get("uid", -1))
-	_handle_action(run.unequip_rune(index), "rune", "%s的符文已卸下，退回备用栏。" % GameCatalog.weapon(str(weapon["id"])).display_name)
+	_requested_shop_focus = "unequip:%d" % index
+	var success := run.unequip_rune(index)
+	if success:
+		_requested_shop_focus = "rune:%d" % int(rune.get("uid", -1))
+	_handle_action(success, "rune", "%s的符文已卸下，退回备用栏。" % GameCatalog.weapon(str(weapon["id"])).display_name)
 
 
 func _choose_upgrade(id: String) -> void:
@@ -1039,10 +1051,21 @@ func _rune_guide() -> String:
 func _equipment_tooltip(item: Dictionary) -> String:
 	var weapon: ContentDef = GameCatalog.weapon(str(item["id"]))
 	var rune: Dictionary = item.get("rune", {})
+	var details: String = "%s：%s\n%s\n%s" % [weapon.display_name, weapon.description, _weapon_stats_text(weapon), _weapon_stats_note()]
 	if rune.is_empty():
-		return weapon.display_name + "：" + weapon.description + "\n未装符文。"
+		return details + "\n未装符文。"
 	var definition: ContentDef = GameCatalog.rune(str(rune["id"]))
-	return "%s · %s\n%s" % [weapon.display_name, definition.display_name, definition.description]
+	return "%s\n%s：%s" % [details, definition.display_name, definition.description]
+
+
+func _weapon_stats_text(definition: ContentDef) -> String:
+	var damage_multiplier: float = run.stat("damage") if run != null else 1.0
+	var attack_speed: float = run.stat("attack_speed") if run != null else 1.0
+	return "每枚 %.1f伤害 · %d枚/次 · 间隔 %.2f秒" % [definition.damage * damage_multiplier, definition.shots, definition.cooldown / attack_speed]
+
+
+func _weapon_stats_note() -> String:
+	return "已计当前伤害与攻速加成，未计符文追加命中。间隔为持续攻击时的标称值。"
 
 
 func _enable_tooltip(control: Control, text: String) -> void:
@@ -1052,9 +1075,17 @@ func _enable_tooltip(control: Control, text: String) -> void:
 
 
 func _shop_button(text: String, action: Callable, focus_id: String, minimum: Vector2 = Vector2(0, 40)) -> Button:
-	var button := _button(text, action, minimum)
+	var button := _button(text, _perform_shop_action.bind(action, _shop_epoch), minimum)
 	button.set_meta("shop_focus_id", focus_id)
 	return button
+
+
+func _perform_shop_action(action: Callable, epoch: int) -> void:
+	# Deferred rebuilding leaves old controls alive briefly. Their indices must not
+	# act on newer stock or inventory, even if another input arrives in this frame.
+	if _screen != "shop" or _refresh_queued or not _overlay_mode.is_empty() or epoch != _shop_epoch:
+		return
+	action.call()
 
 
 func _restore_shop_focus(focus_id: String) -> void:

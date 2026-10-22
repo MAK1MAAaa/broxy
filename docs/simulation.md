@@ -48,7 +48,9 @@ Godot自身可能在标准输出打印版本信息。保存为JSONL时，仅保�
 
 ### 当前：预警时长常量的30局等价回归
 
-当前`prototype-0.1.0+4f7be4bdb91f`仅将正式冲锋0.65秒、施法0.45秒蓄力提取为供绘制共享的常量。相同2026—2035种子、三流派及`7c19c01f20e4`固定策略重新跑30局，退出0；与`f29c7008e475`逐字段比较，仅排除`balance_version`，完整trace、逐波结果及shop_observations全部相同，仍29胜1败。见[telegraph-equivalence.json](../reports/telegraph-equivalence.json)，本地原始`simulation-30-telegraph.jsonl` SHA-256为`a702b962fdddfbc03ec07b4dc302dcc0a4cc31127aad036ed88c4f90ea3a6d9a`。预警绘制独立验证不修改模拟或RNG；该样本等价不证明性能或真人辨识度。
+本轮商店只修改GameUI，未改模拟/资源/策略，也未重跑30局；下面最近完整批次仍与当前核心一致，但不代表商店原生时序验证。
+
+上一轮`prototype-0.1.0+4f7be4bdb91f`仅将正式冲锋0.65秒、施法0.45秒蓄力提取为供绘制共享的常量。相同2026—2035种子、三流派及`7c19c01f20e4`固定策略重新跑30局，退出0；与`f29c7008e475`逐字段比较，仅排除`balance_version`，完整trace、逐波结果及shop_observations全部相同，仍29胜1败。见[telegraph-equivalence.json](../reports/telegraph-equivalence.json)，本地原始`simulation-30-telegraph.jsonl` SHA-256为`a702b962fdddfbc03ec07b4dc302dcc0a4cc31127aad036ed88c4f90ea3a6d9a`。预警绘制独立验证不修改模拟或RNG；该样本等价不证明性能或真人辨识度。
 
 ### 上一阶段：接触反冲修复的30局配对
 
@@ -100,7 +102,7 @@ initial记录自动装备备用符文前的商店，decision记录每次候选�
 
 旧记录无观测时，分析器标记 `unknown_unobserved`。只有包含初始快照、从0到末次刷新连续的4项报价及结束事件，`stock_history_complete` 才为true；片段缺失时，即使已记录快照未见目标符文，缺失部分仍未知。重复decision/stop事件不是独立的新一轮库存，只有initial/reroll计为报价快照。这批固定机器人样本不能用于估计真人通关率。
 
-当前 [tests.log](../reports/tests.log) 已完整记录Godot共1422条无界面断言通过（Rules204、Combat302、UI157、Modal37、Flow76、Feedback64、ProjectilePainter77、EnemyTelegraphs121、ShopObservation384），另有14项Python分析器测试通过。EnemyTelegraphs在headless明确跳过12项实例读回；[原生套件](../reports/enemy-telegraphs-native.log)134条断言全部通过，实际执行这12项读回，并强制检查原生读回可用。商店测试含105组冻结shop-v1的购物trace、钱包、库存和RNG状态对照，并覆盖拒绝优先级、低血生命遗物例外、快照不被后续购买污染及停止刷新边界。
+当前 [tests.log](../reports/tests.log) 已完整记录Godot共1579条无界面断言通过（Rules204、Combat302、UI157、Modal37、ShopActions106、ShopDetails51、Flow76、Feedback64、ProjectilePainter77、EnemyTelegraphs121、ShopObservation384），另有14项Python分析器测试通过。EnemyTelegraphs在headless明确跳过12项实例读回；[原生套件](../reports/enemy-telegraphs-native.log)134条断言全部通过，实际执行这12项读回，并强制检查原生读回可用。商店测试含105组冻结shop-v1的购物trace、钱包、库存和RNG状态对照，并覆盖拒绝优先级、低血生命遗物例外、快照不被后续购买污染及停止刷新边界。
 
 ### 历史：战斗修复阶段30局配对回归
 

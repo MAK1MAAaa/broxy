@@ -1,0 +1,142 @@
+{
+  "schema_version": 1,
+  "baseline_commit": "fb22ce9",
+  "core_version_unchanged": "prototype-0.1.0+4f7be4bdb91f",
+  "policy_version_unchanged": "orbit-avoid-v1/shop-v1+7c19c01f20e4",
+  "production_files_changed": [
+    "scripts/ui/game_ui.gd"
+  ],
+  "runtime_sha256": {
+    "scripts/combat/combat_sim.gd": "3dbef0e8cb03359532f2e7d883305fd147f6abe8deffe18eb3e524914234cbbc",
+    "scripts/combat/combat_world.gd": "4cf1b8bcc68f299a3e8defbef421c634f1cce0e8eeff6f445c8d83ed79fdc5c1",
+    "scripts/combat/enemy_telegraph_painter.gd": "4750e8c434ef2eac723d1cb6cb3bef5386734cd369a80f001b0467a3211af2e6",
+    "scripts/combat/projectile_painter.gd": "dc06af10a75453536ded8b37325f564be4e1fbaf7e56e3b14925ad2475930a3e",
+    "scripts/ui/game_ui.gd": "4e40d2b5bc07c3aba797a41942b90008329de2b4f382138f668be1730cfd978b",
+    "scripts/main.gd": "d36ed4f958d5fe6d61f5eb091db6a20f857dcfe5377a4e55dfebb47835fefb61"
+  },
+  "headless_suites": [
+    {
+      "suite": "Rules",
+      "assertions": 204,
+      "failures": 0
+    },
+    {
+      "suite": "Combat",
+      "assertions": 302,
+      "failures": 0
+    },
+    {
+      "suite": "UI",
+      "assertions": 157,
+      "failures": 0
+    },
+    {
+      "suite": "Modal",
+      "assertions": 37,
+      "failures": 0
+    },
+    {
+      "suite": "ShopActions",
+      "assertions": 106,
+      "failures": 0
+    },
+    {
+      "suite": "ShopDetails",
+      "assertions": 51,
+      "failures": 0
+    },
+    {
+      "suite": "Flow",
+      "assertions": 76,
+      "failures": 0
+    },
+    {
+      "suite": "Feedback",
+      "assertions": 64,
+      "failures": 0
+    },
+    {
+      "suite": "ProjectilePainter",
+      "assertions": 77,
+      "failures": 0
+    },
+    {
+      "suite": "EnemyTelegraphs",
+      "assertions": 121,
+      "failures": 0
+    },
+    {
+      "suite": "ShopObservation",
+      "assertions": 384,
+      "failures": 0
+    }
+  ],
+  "headless_assertions": 1579,
+  "python_tests": 14,
+  "renderer_checks_skipped_headless": 12,
+  "native_renderer_tests_rerun": false,
+  "prior_native_renderer_evidence": "reports/enemy-telegraphs-native.log at fb22ce9: 134 assertions, 12 actual readback checks. Painters unchanged.",
+  "regression_before": {
+    "ShopActions": {
+      "assertions": 106,
+      "failures": 19,
+      "same_test_source_as_after": true
+    },
+    "ShopDetails": {
+      "assertions": 51,
+      "failures": 27,
+      "same_assertion_targets_as_after": true,
+      "fixture_purchase_setup_change_after_red": "Fixed price20 replaced with formal state.shop_price(definition). Assertion targets retained; tests not claimed byte-identical."
+    }
+  },
+  "exit_codes": {
+    "all_tests": 0,
+    "base_preview": 0,
+    "boosted_preview": 0,
+    "fullbag_preview": 0,
+    "native_transactions_fixture": 0,
+    "build": 0,
+    "packaged_headless_boot": 0,
+    "archive_check": 0
+  },
+  "full_300s_benchmark_rerun": false,
+  "last_300s_benchmark_commit": "fb22ce9",
+  "simulation_30_rerun": false,
+  "native_observations": "reports/shop-native-observations.json",
+  "build_app": "build/Embers-shop.app",
+  "artifact_sha256": {
+    "scripts/ui/game_ui.gd": "4e40d2b5bc07c3aba797a41942b90008329de2b4f382138f668be1730cfd978b",
+    "tools/test.sh": "a400e007186902eebe5ac20471340803a95456d4c045e3d098c7429efc2e5ad5",
+    "tools/preview_shop.gd": "cf00c52c0555ad733d8e75eb9e7b5a5d4c5d376e45c70a99ce40d8feb9ec8b7f",
+    "tests/test_shop_actions.gd": "b3557545344de424315fda6a0df9f424feb14efc0e5cf28c91616c8090f86388",
+    "tests/test_shop_details.gd": "0cd7a2cf1e9314677da231f9d2031eb261e426826dfb6f56681ab70ce548375b",
+    "reports/tests.log": "7d8a4f51686f25d95d6faa57d061cf451cd3669694276daa312e686670c9e783",
+    "reports/tests-before-shop.log": "01962fe60ca175fbf3cefca9c020171eb3daca818755dc7f52da196e3715f352",
+    "reports/shop-actions-before.log": "8f86241bc5e9a88bb67f29e04c827654102faac78d87fd57a25cdb60a93d0e84",
+    "reports/shop-details-before.log": "0a3d7b5da57a50a1a421e339491ae8a4332708c43a7ac18f5aa47c358084e2b0",
+    "reports/shop-native.log": "ed39ef5282015dbd0955b6c48df8d02cf4043ad4780ac4f38d3ef0eb56468460",
+    "reports/shop-native-observations.json": "e5f8a97dd77ff532d62a9700b1db4aad965e4cfb546df6e91cfa0f5feaf39797",
+    "reports/shop-base.log": "126435f16c63b827a24d9393fb9b2ee1371e322e02d85c8ad7b061e49243e4cf",
+    "reports/shop-boosted.log": "9776b388433113fe88e3cbbbce0479ef4fcc65644a9c4b5f2efbfbd76316a442",
+    "reports/shop-fullbag.log": "116b143e7fe74e58909e9219a41c75f111e521a74b2ec38c51de7ece50027f0e",
+    "reports/shop-fullbag-before.log": "116b143e7fe74e58909e9219a41c75f111e521a74b2ec38c51de7ece50027f0e",
+    "reports/shop-base.png": "621d5ceea117a8ce80e9b9450ad8f62ada42b1ec146d7929b71628c5f18ac078",
+    "reports/shop-boosted.png": "52bc4cf2fe805e401d1c1069b6a38177e7523bfa5a098687f7d3fcd33ae109b6",
+    "reports/shop-fullbag.png": "d9b2073d4c01becef416d49986e4392dc7ceec5ab701a7d47de948ce09a3d5d8",
+    "reports/shop-fullbag-before.png": "d46efdc80e3eed5bab1646afc372c3aed0a28e7e889a5d799163d98b6e58ffe2",
+    "reports/shop-transactions.png": "294b067eacb0b0e3903997adccfcbaac26ea2a6a0342107914a020d347d41eca",
+    "reports/build-shop.log": "48cdd5e940d5ccab9f5898ed9fab2a1e47a059633db4fae495afd82ed3316098",
+    "reports/app-boot-shop.log": "6c536b7ab6a1ee8e7ac91fdd27709abb484073b092cabb70d205c4f987e47ddd",
+    "reports/archive-shop.log": "0d0ccfadd67b630f98a0716713965ea17f9e4ad69aba5f7d02615ead725aa178",
+    "build/Embers-shop-mac-arm64.zip": "4ba1146354a29296975a53d970b60b61988aaa7a73d8d8e081bd4636cbb36d48",
+    "build/Embers-shop.app/Contents/MacOS/秘术余烬": "437ec8d9ac968c02757797f386d55301f30a6ecd712fc0b4fb73d9fae8d9af89",
+    "build/Embers-shop.app/Contents/Resources/秘术余烬.pck": "67849d2e9bdb13d617d094429385e33de58ced0bf47dfa23c1b44a7c225396ce"
+  },
+  "limits": [
+    "No new external dependency, source asset or gameplay parameter change. UI guard filters old callbacks; internal direct diagnostic methods retain their existing API.",
+    "Preview stocks and budgets are test fixtures. All prefilled inventory uses RunState purchase/equip APIs; no personal profile read/write.",
+    "New packaged app is headless-booted; normal native UI observations are from the matching source fixture, not a new packaged ordinary menu run.",
+    "Three prior application bundles and the old paused user run are preserved.",
+    "No new five-human playtest, full-battle frame sampling, 30-run sampling, other Mac or notarized distribution acceptance."
+  ]
+}
