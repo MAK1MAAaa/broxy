@@ -20,7 +20,7 @@ Godot 4.7.2 普通版、带类型标注的 GDScript 开发的 macOS 单人割草
 
 ## 直接游玩
 
-本轮最新应用为 `build/Embers-impact.app`（压缩包`build/Embers-impact-mac-arm64.zip`），新增普通法器命中刻痕，包含此前的主角布料、竞技场石材、商店条件提示、HUD避让、强化预览、诊断档案隔离和幽焰追踪修复。旧`build/Embers.app`保留正在暂停的对局；结束旧应用后再打开新版。选择骨针或幽焰开局。应用面向 Apple Silicon、macOS 13 及以上；已采用本地 ad-hoc 签名，尚未进行 Developer ID 公证。
+本轮最新应用为 `build/Embers-impact.app`（压缩包`build/Embers-impact-mac-arm64.zip`），新增普通法器命中刻痕，包含此前的主角布料、竞技场石材、商店条件提示、HUD避让、强化预览、诊断档案隔离和幽焰追踪修复。旧`build/Embers.app`文件保留；若旧版正在运行，先结束再打开新版。选择骨针或幽焰开局。应用面向 Apple Silicon、macOS 13 及以上；已采用本地 ad-hoc 签名，尚未进行 Developer ID 公证。
 
 | 操作 | 按键 |
 | --- | --- |
@@ -73,7 +73,7 @@ BROXY_APP_PATH="$PWD/build/Embers-impact.app" ./tools/build_macos.sh
 
 ## 验证
 
-直接CLI入口`--smoke`、`--autoplay`、`--shop-preview`、`--benchmark`、`--capture-only`会在读取档案前关闭持久化；本进程的设置和成绩只留在内存，窗口标注“不保存设置与成绩”。普通启动保持原有保存行为。独立预览脚本仍各自关闭持久化。最新Embers-hud.app已包含该修复；性能报告另记录实际设置、持久化状态与本次种子。
+直接CLI入口`--smoke`、`--autoplay`、`--shop-preview`、`--benchmark`、`--capture-only`会在读取档案前关闭持久化；本进程的设置和成绩只留在内存，窗口标注“不保存设置与成绩”。普通启动保持原有保存行为。独立预览脚本仍各自关闭持久化。当前Embers-impact.app已包含该修复；性能报告另记录实际设置、持久化状态与本次种子。
 
 ```sh
 ./tools/run.sh --headless --script res://tests/test_rules.gd
@@ -102,7 +102,7 @@ python3 -m unittest discover -s tests -p 'test_shop_analysis.py'
 
 也可以用 `./tools/test.sh` 一次运行十九套Godot行为测试和Python分析器测试。当前2574条Godot无界面断言及14项Python测试全部通过（ProfileModes的六种入口分进程执行）；历史原生预警套件另通过134条断言（含12项GPU读回），记录见 `reports/tests.log` 与 `reports/enemy-telegraphs-native.log`。系统字体测试需要正常 macOS 字体访问权限；文件沙箱可能阻止 SystemFont 枚举。请在常规终端运行。性能测试会打开明确标记的窗口并显示采样倒计时，保持300敌人、至少600投射物与200掉落，预热5秒后采样300秒，输出 `reports/performance.json`。`--benchmark-runes`使用四种法器与三类符文的真实伤害弹体，报告标记为`rune-feedback`；新增`impact_visual_revision`、刻痕池容量、峰值和最后准备批次数，便于核对刻痕负载。省略该参数为含零伤害维持弹体的历史`baseline`场景，两者分别记录。测试时保持该窗口可见、Mac未锁屏，避免同时运行其他图形负载。
 
-历史e64bb18的核心143fbc0963af已在Apple M5完成5分钟真实符文场景采样：27,255帧，平均90.847 FPS、P99 25.400毫秒，维持300敌人/600弹体/200掉落并实际产生主/次伤害，退出0。诊断模式采用默认设置且不读写个人档案；旧采样继承个人设置且未记录，不能把帧率差额全部归因于追踪修复。历史95.480 FPS/P99 25.588毫秒另存`performance-before-homing-turn.json`。本轮新增运行时命中反馈，Mac锁屏使5分钟图形压力未能补测，上述帧率不代表本轮性能。模拟核心、数据与策略不变，未重跑30局；静态素材仍为engraved-04的35项。设备、场景与源码指纹见 `docs/verification.md`、`reports/impact-validation.json`。
+当前源码`2a6c4b9`已在Apple M5完成5分钟原生真实符文场景采样：27,895帧，平均92.979 FPS、P99帧间隔26.191毫秒，达到≥58 FPS / ≤33毫秒门槛，退出0。末尾300敌人/600弹体/200掉落；主/次命中473,662/1,223,944，刻痕池峰值32、容量32，结束时最近准备7个非空批次。峰值和命中累计含5秒预热，末段批次不是全程最大或GPU drawcall数。默认设置且不读写个人档案，四次CUA观察确认可见窗口和采样推进。结果见`reports/impact-performance-validation.json`；原实现验证`reports/impact-validation.json`保留当时锁屏未测的历史状态。本轮只补测和记录，未更改源码/素材、重跑30局或重新打包；仍交付同一Embers-impact.app。旧e64bb18的90.847 FPS/P99 25.400毫秒原样另存`performance-before-impacts.json`与`benchmark-before-impacts.log`，跨种子与跨版本差额不能单独归因于刻痕。详见`docs/verification.md`。
 
 完整模拟复用正式 `RunState`、`CombatSim.step` 与商店价格，没有额外金币、无敌或专用 Boss 数值。当前核心版本`fb2ccf1ca5f1`提取只读购买校验；同种子30局与幽焰修复阶段`143fbc0963af`相比，仅排除版本字段后，包括完整购物与战斗轨迹的全部字段一致，仍29胜1败。此前接触反冲修复曾改变24局、28胜变29胜；各阶段独立比较，不代表真人胜率。策略与证据见 `docs/simulation.md`、`reports/purchase-simulation.json`，试玩流程见 `docs/playtest.md`，持续工作记录见 `docs/optimization-log.md`。
 

@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "created_at_utc": "2026-10-22T16:05:33.424194+00:00",
+  "date_local": "2026-10-23",
+  "source_commit": "2a6c4b9e42970776a3df6e4098a60d6d1321c46a",
+  "scope": "Complete previously blocked graphical performance acceptance for unchanged primary-impact-v1 source; documentation/evidence only.",
+  "command": "./tools/run.sh -- --benchmark --benchmark-runes --seconds=300",
+  "exit_code": 0,
+  "warmup_seconds": 5,
+  "measured_seconds": 300,
+  "device": "Apple M5",
+  "engine": "Godot 4.7.2.stable.official.ed1daf0bf",
+  "renderer_evidence": "Native OpenGL 4.1 Metal Compatibility / Apple M5 startup log, project settings and visible CUA window",
+  "vsync": "retained from project",
+  "engine_max_fps": 0,
+  "performance": {
+    "average_fps": 92.9787640469391,
+    "duration_seconds": 300.0,
+    "enemies": 300,
+    "impact_draw_commands_at_end": 7,
+    "impact_visual_capacity": 32,
+    "impact_visual_peak": 32,
+    "impact_visual_revision": "primary-impact-v1",
+    "internal_resolution": "1280x720",
+    "os": "macOS",
+    "p99_frame_ms": 26.191,
+    "passed": true,
+    "persistent_profile": false,
+    "pickups": 200,
+    "primary_hits": 473662,
+    "projectiles": 600,
+    "renderer": "gl_compatibility",
+    "run_seed": 1792432484,
+    "rune_visual_peak": 32,
+    "samples": 27895,
+    "scenario": "rune-feedback",
+    "secondary_hits": 1223944,
+    "settings": {
+      "flash": true,
+      "shake": true,
+      "volume": 0.65
+    }
+  },
+  "acceptance": {
+    "average_fps_minimum": 58,
+    "p99_frame_ms_maximum": 33,
+    "all_numeric_and_workload_checks_passed": true,
+    "impact_pool_reached_capacity": true,
+    "json_matches_log_result": true
+  },
+  "source_sha256": {
+    "scripts/main.gd": "6c096bdc0154b9dd9f66547272d815aea00ffc103f37db3866245874791db7c7",
+    "scripts/combat/combat_world.gd": "d47b30af6b04b2cfa3f057c92b84cfcce095971ce031ec9a0768efc465543bb0",
+    "scripts/combat/impact_painter.gd": "35a8e91da90421dc1dcb6d43314c42e80e4e47bac874c0bef3c7885833f7289b",
+    "scripts/combat/combat_sim.gd": "5bca9f0367c8cdcb5f698f672e4f3b9b0689dc684f73a20a30edf97e4ee73e34",
+    "scripts/core/run_state.gd": "7864a8860951b5dcf1b924257fee4dd91d9c07888a97714865a863a63c98e06b",
+    "scripts/combat/bot_policy.gd": "a78c47c7c5002f06928cc8af373851fb81f853ec401f6fa929a28efd303d613b",
+    "tests/simulate_runs.gd": "361cf71e03712a882de74a3ec0fc36b0d430ac7554ab5127a4813a23932e6486",
+    "tools/run.sh": "16fcf0f96b5ba085040f72d9a7793c20b044b5502301bcec05b746ac336117f8",
+    "project.godot": "243b092054cff0748423392064c7b243a195bc5a0513430b96b904f5b8ee405d",
+    "assets/manifest.json": "a93bc09266d909a59b0639168362cca78eabb25283b321c2d7665281a65834e8"
+  },
+  "evidence_sha256": {
+    "reports/performance.json": "0f722ddd93092af1c9ad682c20d0ca1c1ae45f4f16c238113a708c1c852df0c4",
+    "reports/benchmark.log": "565fdbcf5ea5faf83fbb984d6d06a56ace3638fcc8edf26f0718e27cca55ec71",
+    "reports/impact-performance-native-observations.json": "5b881c78a0fa88406f7a86ed8116a89999ffe86cc39085187e7c68d8832be924",
+    "reports/performance-before-impacts.json": "d415e76b9d8524addb74f357be8c70dda140fa4e6f1b4157ae5c1ec5b3a10c6e",
+    "reports/benchmark-before-impacts.log": "2b566b0da26e1d942d87b11e0dfc3325f1362702636e1fcd92c52dc313007a0b",
+    "reports/impact-validation.json": "3ccaaa02aee2da99016ec08762c2b2be4409f0c53d431723e66d6a2469b65d02",
+    "reports/tests.log": "016c68c0e68509b3d8969c698f6affda06a06b18c40b14a1a01fb24bc6461f5c"
+  },
+  "historical_preservation": {
+    "prior_commit": "e64bb18",
+    "original_canonical_files_copied_byte_for_byte_from_2a6c4b9": true,
+    "performance_snapshot": "reports/performance-before-impacts.json",
+    "log_snapshot": "reports/benchmark-before-impacts.log",
+    "historical_average_fps": 90.8467231586951,
+    "historical_p99_ms": 25.4,
+    "comparison_limits": "Different seeds, UI and static art across historical commits; no single-factor performance attribution."
+  },
+  "prior_validation": {
+    "report": "reports/impact-validation.json",
+    "state": "Preserved unchanged as the original implementation-time record, including its then-locked performance blocker. This supplementary report resolves that blocker.",
+    "source_log_and_asset_fingerprints_rechecked": true,
+    "static_assets_unchanged": 35,
+    "headless_assertions": 2574,
+    "python_tests": 14,
+    "not_rerun_tests_or_build": "No production code or asset edits; tests and build remain those verified for the identical 2a6c4b9 source.",
+    "package_artifact_sha256_rechecked": {
+      "build/Embers-impact.app/Contents/MacOS/秘术余烬": "9bb096ec4a516d6d161310b9edb1de9cdca1f0c39ff3cd2de551eda13c43caf2",
+      "build/Embers-impact.app/Contents/Resources/秘术余烬.pck": "88fe6d6598ad0d2bf49de5498fa93d3e8f1b818d94700e69b9897220dfd418ac",
+      "build/Embers-impact-mac-arm64.zip": "5f7d7a82883f703dcf14de591cc2a1b680e585ef0da0b7ef2701ce55a86bde50"
+    }
+  },
+  "limits": [
+    "Single device and one 300-second native sample; not a universal frame-rate guarantee.",
+    "Process frame intervals, not GPU timings: average FPS is reciprocal mean interval; P99 uses floor(N*0.99) of sorted samples.",
+    "Impact and rune peaks and primary/secondary hit totals include the 5-second warmup; peak32 proves capacity was reached at least once, not throughout the sample.",
+    "impact_draw_commands_at_end=7 is the most recent prepared nonempty batch count, not the maximum across the run or actual GPU drawcalls.",
+    "No per-source mark counts, occupancy timeline, drawn-mark total or overflow/drop rate is measured.",
+    "Stress predominantly uses chasers and does not cover all enemy attacks, 340 simultaneous telegraphs or all builds.",
+    "The source was run through the native Godot executable; this is not a new performance measurement of the exported release app.",
+    "No native keyboard gameplay or five-person human playtest was added."
+  ]
+}

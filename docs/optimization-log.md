@@ -1,6 +1,6 @@
 # 持续优化工作账本
 
-更新日期：2026-10-22。目标：**持续优化游戏，进行中**。
+更新日期：2026-10-23。目标：**持续优化游戏，进行中**。
 
 本轮先修复可复现的战斗与交互问题，再用固定种子回归检查影响。机器人策略和资源平衡参数保持不变；自动模拟、界面测试、原生运行与真人试玩分别记录，不互相替代。
 
@@ -9,7 +9,7 @@
 - 普通法器真实主命中增加四种0.12秒小刻痕，位置取敌人中心；次级溅射不叠加。32固定池、12批次上限，kind+有效UID在age<0.05秒去重且不续命；保持危险提示最高层级。
 - 独立101条检查覆盖真实四法器碰撞、池/淡出/去重/次级过滤、暂停与三处清理、绘制只读/RNG。真实Main暂停设置回归修前3失败；统一设置应用后即时清旧刻痕，重开不重播，101条全部通过。接入前53条仅存在性1失败，不能混作完整101条红绿。
 - 四张原生静帧退出0并已查看，正式碰撞18主/0次，刻痕12→8→0；仅幽魂夹具，年龄偏移仅推进反馈。符文混合图保持危险层级；静帧不能代替动态识别或真人试玩。
-- 完整2574条Godot与14项Python通过；另存Embers-impact.app/ZIP，构建/arm64/严格签名/Info.plist/无档案启动/ZIP均通过，旧应用与暂停对局保留。35静态资源、模拟/数据/策略不变，未重跑30局；Mac锁屏，本轮5分钟性能未完成，不套用历史e64bb18帧率。证据[impact-validation.json](../reports/impact-validation.json)，验证后本地commit。
+- 完整2574条Godot与14项Python通过；另存Embers-impact.app/ZIP，构建/arm64/严格签名/Info.plist/无档案启动/ZIP均通过，旧应用与暂停对局保留。35静态资源、模拟/数据/策略不变，未重跑30局；初次因Mac锁屏未测性能；2026-10-23解锁后2a6c4b9完成300秒：27,895帧、92.979 FPS/P99 26.191毫秒，末尾300/600/200，主/次命中473,662/1,223,944，刻痕峰值32/容量32，末段最近准备7批，退出0。四次CUA观察推进，采样期间无其他Godot测试/构建/模拟；未量化独立刻痕成本或真人辨识。原[实现记录](../reports/impact-validation.json)冻结，另见[补测报告](../reports/impact-performance-validation.json)。只补测/更新文档，源码/素材/现有包指纹保持、未重跑全测/30局/构建；整理后本地commit。
 
 ## 上一轮：engraved-04主角布料层次
 
@@ -177,14 +177,15 @@ Flow 的普通首波耗时为 2701 个固定步。Boss 终局检查使用加速�
 
 | 验收项 | 当前账本状态 | 证据与边界 |
 | --- | --- | --- |
-| 上轮e64bb18真实符文场景5分钟压力测试 | 历史通过，本轮锁屏未重测 | Apple M5 / Compatibility / 1280×720，预热5秒、正式300秒、27,255帧；300/600/200，平均90.847 FPS、P99 25.400毫秒；performance.json标记rune-feedback及实际默认设置/无存档状态，退出0 |
+| 2a6c4b9命中刻痕5分钟补测 | 已通过 | Apple M5 / Compatibility / 1280×720；预热5秒、正式300秒、27,895帧；末尾300/600/200，平均92.979 FPS、P99 26.191毫秒，刻痕峰值32/末段7批；rune-feedback、默认设置/无档案，退出0。见impact-performance-validation.json |
+| 历史e64bb18真实符文场景5分钟压力 | 历史通过 | 27,255帧、90.847 FPS/P99 25.400毫秒，原样备份performance-before-impacts.json/benchmark-before-impacts.log；不把跨采样差额单独归因于刻痕 |
 | 本轮独立 macOS 构建与包启动 | 已通过 | `Embers-impact.app`；`build-impact.log`记录arm64、Info.plist和严格签名；`app-boot-impact.log`为无存档入口退出0；`archive-impact.log`检查ZIP完整，旧用户对局保留 |
 | 上轮暂停与设置原生输入 | 固定场景通过 | `modal-native.log`与`modal-native.gd.txt`；实际CUA Tab/Return/Esc、恢复商店及下一波45→37；个人存档读写关闭 |
 | 较早阶段原生约47秒流程 | 已通过普通首波结束检查 | `feedback-flow-native.log`与`feedback-first-wave-complete.png`：45秒正常波次进入“秘术觉醒”，退出0。使用自动走位，未使用压力模式或跳过计时 |
 | 商店原生键盘装配 | 已通过 | 在明确标注的固定商店夹具中按真实Return：骨针装入贯穿、备用归零、焦点到“卸符”，仍停留商店；不代表真人整局通关 |
 | 战斗反馈与结果画面 | 已检查固定夹具 | `feedback-combat.png`展示实际伤害、承伤方向、HUD提示安全区；`feedback-result.png`展示承伤来源与贡献。两张均明确标注固定验证场景 |
 
-旧版美术的75.808 FPS / P99 29.295毫秒保存在`performance-before-feedback.json`（另存`performance-engraved-02.json`）与`benchmark-before-feedback.log`。旧baseline另存`performance-before-rune-vfx.json`；最近完整历史e64bb18真实符文场景保留在`performance.json`，bdd历史另存`performance-before-threats.json`，不混用历史采样，也不把跨采样分数差额全部归于某一改动。旧baseline含零伤害维持弹体；`bdd5240c97ca`的rune-feedback保留真实伤害，也不等于覆盖所有构筑或48条浮字同时显示的性能。
+旧版美术的75.808 FPS / P99 29.295毫秒保存在`performance-before-feedback.json`（另存`performance-engraved-02.json`）与`benchmark-before-feedback.log`。旧baseline另存`performance-before-rune-vfx.json`；最新2a6c4b9结果为`performance.json`/`benchmark.log`，e64bb18历史逐字节保留在`performance-before-impacts.json`/`benchmark-before-impacts.log`，bdd历史另存`performance-before-threats.json`，不混用历史采样，也不把跨采样分数差额全部归于某一改动。旧baseline含零伤害维持弹体；`bdd5240c97ca`的rune-feedback保留真实伤害，也不等于覆盖所有构筑或48条浮字同时显示的性能。
 
 ## 下一轮未完成线索
 

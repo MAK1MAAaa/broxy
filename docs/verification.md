@@ -1,6 +1,6 @@
 # 原型验收记录
 
-验收日期：2026年10月22日。引擎为 Godot 4.7.2 普通版；当前模拟核心/资源版本为 `prototype-0.1.0+fb2ccf1ca5f1`，新增只读购买校验并包含幽焰反向追踪修复；当前静态美术为 `engraved-04`，运行时命中反馈为 `primary-impact-v1`。以下分别记录自动化、原生窗口、构建与待完成检查；“持续优化游戏”仍在进行中。
+验收日期：2026年10月23日。引擎为 Godot 4.7.2 普通版；当前模拟核心/资源版本为 `prototype-0.1.0+fb2ccf1ca5f1`，新增只读购买校验并包含幽焰反向追踪修复；当前静态美术为 `engraved-04`，运行时命中反馈为 `primary-impact-v1`。以下分别记录自动化、原生窗口、构建与待完成检查；“持续优化游戏”仍在进行中。
 
 ## 功能与构筑
 
@@ -52,7 +52,7 @@
 
 1280×720原生before/after/fading/expired静帧均退出0并已查看。正式fire_weapon+step产生18次主命中、0次次级，刻痕12→8→0，过期无残留；仅使用高生命幽魂，年龄偏移只推进反馈。符文混合陈列另记录5主/2次及2/1/1符文事件，珊瑚危险提示保持最高层级。这些静帧不证明所有敌人遮挡、动态辨识率或真人手感。
 
-完整2574条Godot与14项Python通过；独立Embers-impact.app/ZIP通过arm64、严格ad-hoc签名、Info.plist、无存档启动与ZIP完整性。35项静态素材及模拟/数据/策略与80d18fa一致，未重跑30局。Mac锁屏使本轮5分钟图形性能尚未补测；最新完整数值仍为历史e64bb18。源码、静帧、日志和包指纹见[impact-validation.json](../reports/impact-validation.json)。
+完整2574条Godot与14项Python通过；独立Embers-impact.app/ZIP通过arm64、严格ad-hoc签名、Info.plist、无存档启动与ZIP完整性。35项静态素材及模拟/数据/策略与80d18fa一致，未重跑30局。初次验收因Mac锁屏未测性能；2026-10-23解锁后，同源码2a6c4b9的300秒原生压力已通过，见[补测报告](../reports/impact-performance-validation.json)。源码、静帧、日志和包指纹仍见[原实现记录](../reports/impact-validation.json)，该记录保留当时未测状态。
 
 ## 上一轮：主角布料层次
 
@@ -160,11 +160,19 @@ Boss存活时HUD明确显示“击败首领 / 限时”，真实剩余≤10秒�
 
 本机原先将PingFang SC解析成缺少部分简体字形的PingFang HK。“敌”“杀”等字符确实产生缺字字形；现优先采用Hiragino Sans GB，回归检查实际TextServer排版的字形RID与索引，菜单和商店原生截图已确认文字完整。
 
-## 本机性能（最近完整采样为e64bb18，本轮因锁屏未重测）
+## 本机性能：2a6c4b9命中刻痕补测
 
-历史e64bb18核心143fbc0963af在Apple M5 / Godot4.7.2 Compatibility / 1280×720原生运行，保留VSync、max_fps=0。预热5秒后正式采样300秒，27,255帧，平均**90.847 FPS**，P99**25.400毫秒**，退出0并通过≥58 FPS / ≤33毫秒门槛。终点300敌/600弹/200掉落，符文刻线峰值32，含预热累计主命中472,453、次级命中1,218,763。原始[performance.json](../reports/performance.json)、[benchmark.log](../reports/benchmark.log)与源码、构建及回归指纹汇总在[homing-validation.json](../reports/homing-validation.json)。CUA在04:53、02:44、01:20、00:17确认窗口可见、300/600和倒计时推进，标题明确不保存设置与成绩，见[观察记录](../reports/homing-native-observations.json)。采样期间没有运行其他Godot测试/构建/模拟，旧用户应用在后台暂停保留。
+2026-10-23在Apple M5 / Godot4.7.2 Compatibility / 1280×720原生窗口运行同源码2a6c4b9，保留VSync、max_fps=0。预热5秒后正式采样300秒，共27,895帧；平均**92.979 FPS**、P99帧间隔**26.191毫秒**，满足≥58 FPS / ≤33毫秒，进程正常退出0。末尾300敌/600弹/200掉落；含预热累计主命中473,662、次级命中1,223,944，符文刻线峰值32，primary-impact-v1刻痕峰值32/容量32，最近准备7个非空批次。实际默认设置为volume=0.65、shake=true、flash=true，persistent_profile=false、run_seed=1792432484。原始[performance.json](../reports/performance.json)与[benchmark.log](../reports/benchmark.log)逐字段一致，核验与指纹见[补测报告](../reports/impact-performance-validation.json)。
 
-本次实际设置为volume=0.65、shake=true、flash=true，persistent_profile=false，run_seed=1792237134，报告新增这三类元数据。诊断隔离后采用默认设置；旧采样继承个人设置且未记录，种子也不同，不能把跨采样差额单独归因于幽焰修复。上一轮fb22ce9的95.480 FPS/P99 25.588毫秒、28,645帧另存[performance-before-homing-turn.json](../reports/performance-before-homing-turn.json)与[benchmark-before-homing-turn.log](../reports/benchmark-before-homing-turn.log)；原源码指纹见该提交的threats-validation.json。更早的performance-before-homing.json保留首次启用追踪前的70.681 FPS历史记录，没有覆盖。
+CUA在04:53、03:02、01:45、00:45查看原生测试窗口，确认300敌人/600弹体及倒计时推进；初段将测试窗口置前，结束后确认Godot不再运行，见[观察记录](../reports/impact-performance-native-observations.json)。采样期间没有启动其他Godot测试、构建或模拟；原有其他桌面应用保持，未声称独占或裸机测试。
+
+峰值和伤害累计含预热，峰值32只证明曾同时占满池；末段7批是最近一次重建的非空批次，不是全程最大或GPU实际drawcall数。FPS/P99统计的是process帧间隔，不是GPU耗时。没有逐帧占用、丢弃率或四家族各自计数，不能量化刻痕独立成本；以幽魂为主的单次压力也不覆盖全部敌人/构筑或真人可读性。源码、35素材、现有应用包及此前2574+14检查证据的指纹均重新核对一致；本次仅补测与文档记录，未重复完整测试、模拟或构建。原实现记录中的锁屏状态保留，由本补测报告补齐。
+
+## 历史：e64bb18完整采样
+
+历史e64bb18核心143fbc0963af在Apple M5 / Godot4.7.2 Compatibility / 1280×720原生运行，保留VSync、max_fps=0。预热5秒后正式采样300秒，27,255帧，平均**90.847 FPS**，P99**25.400毫秒**，退出0并通过≥58 FPS / ≤33毫秒门槛。终点300敌/600弹/200掉落，符文刻线峰值32，含预热累计主命中472,453、次级命中1,218,763。原始结果已逐字节另存[performance-before-impacts.json](../reports/performance-before-impacts.json)、[benchmark-before-impacts.log](../reports/benchmark-before-impacts.log)，源码、构建及回归指纹汇总在[homing-validation.json](../reports/homing-validation.json)。CUA在04:53、02:44、01:20、00:17确认窗口可见、300/600和倒计时推进，标题明确不保存设置与成绩，见[观察记录](../reports/homing-native-observations.json)。采样期间没有运行其他Godot测试/构建/模拟，旧用户应用在后台暂停保留。
+
+e64bb18当时实际设置为volume=0.65、shake=true、flash=true，persistent_profile=false，run_seed=1792237134，报告新增这三类元数据。诊断隔离后采用默认设置；旧采样继承个人设置且未记录，种子也不同，不能把跨采样差额单独归因于幽焰修复。上一轮fb22ce9的95.480 FPS/P99 25.588毫秒、28,645帧另存[performance-before-homing-turn.json](../reports/performance-before-homing-turn.json)与[benchmark-before-homing-turn.log](../reports/benchmark-before-homing-turn.log)；原源码指纹见该提交的threats-validation.json。更早的performance-before-homing.json保留首次启用追踪前的70.681 FPS历史记录，没有覆盖。
 
 该完整场景以游魂及真实四法器/三符文伤害为主，不覆盖340个同时施法预警。因此另保留相同静止340敌人配置、各2秒预热+10秒采样的[预警绘制对比](../reports/telegraph-draw-comparison.json)：全施法35.172→119.555 FPS、P99 36.850→13.429毫秒；170冲锋+170施法65.087→116.678 FPS、P99 28.755→16.927毫秒。优化前后均无physics/真实攻击/600弹体，仅用于绘制诊断；进度向下量化使临近满环少一段，最大约28.125毫秒装饰滞后。输入绘制命令不是引擎最终drawcall数，报告分别记录，不据此保证其他Mac或所有构筑性能。
 
@@ -184,9 +192,9 @@ Boss存活时HUD明确显示“击败首领 / 限时”，真实剩余≤10秒�
 
 ## Mac应用与分发
 
-本轮另存`build/Embers-cloth.app`与`build/Embers-cloth-mac-arm64.zip`，arm64、ad-hoc严格签名、Info.plist、headless启动退出0、ZIP完整性通过，见build-cloth.log、app-boot-cloth.log与archive-cloth.log。包启动使用--capture-only隔离档案，不创建截图；未另做打包应用普通菜单的原生启动。旧应用与暂停对局均保留。
+当前交付为`build/Embers-impact.app`与`build/Embers-impact-mac-arm64.zip`，arm64、ad-hoc严格签名、Info.plist、headless启动退出0、ZIP完整性检查见build-impact.log、app-boot-impact.log与archive-impact.log。包启动使用--capture-only隔离档案，不创建截图；未另做打包应用普通菜单的原生启动。本次补测没有重建或替换应用，旧应用保留。
 
-新应用、PCK、可执行文件及ZIP的SHA-256记录在[cloth-art-validation.json](../reports/cloth-art-validation.json)，对应当前素材与源码。上一轮Embers-stone见[arena-art-validation.json](../reports/arena-art-validation.json)。更早Embers-shop-status见[purchase-validation.json](../reports/purchase-validation.json)。更早Embers-hud见[notices-validation.json](../reports/notices-validation.json)。上一轮Embers-choices见[choices-validation.json](../reports/choices-validation.json)；更早Embers-stable应用与完整30局/性能证据仍见[homing-validation.json](../reports/homing-validation.json)，均保留当时的源码指纹。
+当前应用、PCK、可执行文件及ZIP的SHA-256记录在[impact-validation.json](../reports/impact-validation.json)，本次补测重新核对一致。前一阶段Embers-cloth与对应源码指纹见[cloth-art-validation.json](../reports/cloth-art-validation.json)。上一轮Embers-stone见[arena-art-validation.json](../reports/arena-art-validation.json)。更早Embers-shop-status见[purchase-validation.json](../reports/purchase-validation.json)。更早Embers-hud见[notices-validation.json](../reports/notices-validation.json)。上一轮Embers-choices见[choices-validation.json](../reports/choices-validation.json)；更早Embers-stable应用与完整30局/性能证据仍见[homing-validation.json](../reports/homing-validation.json)，均保留当时的源码指纹。
 
 上一阶段`Embers-shop.app`的原生交互来自同源码无存档商店夹具；当时构建与启动记录见[shop-validation.json](../reports/shop-validation.json)。
 
