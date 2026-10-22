@@ -1,0 +1,205 @@
+{
+  "schema_version": 1,
+  "baseline_commit": "f12268a",
+  "baseline_core_version": "prototype-0.1.0+4f7be4bdb91f",
+  "current_core_version": "prototype-0.1.0+143fbc0963af",
+  "policy_version_unchanged": "orbit-avoid-v1/shop-v1+7c19c01f20e4",
+  "production_files_changed_in_this_commit": [
+    "scripts/combat/combat_sim.gd",
+    "scripts/main.gd"
+  ],
+  "main_change": "Record actual benchmark settings, persistent_profile and run_seed; diagnostic isolation already landed in f12268a.",
+  "regression": {
+    "suite": "Homing",
+    "before_assertions": 45,
+    "before_failures": 6,
+    "after_assertions": 45,
+    "after_failures": 0,
+    "same_test_source_as_after": true,
+    "red_environment_diagnostic": "Historical red log also contains a macOS system CA error; six named homing assertions failed independently."
+  },
+  "headless_suites_by_process": [
+    {
+      "suite": "Rules",
+      "assertions": 204,
+      "failures": 0
+    },
+    {
+      "suite": "Combat",
+      "assertions": 302,
+      "failures": 0
+    },
+    {
+      "suite": "Homing",
+      "assertions": 45,
+      "failures": 0
+    },
+    {
+      "suite": "UI",
+      "assertions": 157,
+      "failures": 0
+    },
+    {
+      "suite": "Modal",
+      "assertions": 37,
+      "failures": 0
+    },
+    {
+      "suite": "ShopActions",
+      "assertions": 106,
+      "failures": 0
+    },
+    {
+      "suite": "ShopDetails",
+      "assertions": 51,
+      "failures": 0
+    },
+    {
+      "suite": "ProfileModes",
+      "assertions": 25,
+      "failures": 0
+    },
+    {
+      "suite": "Flow",
+      "assertions": 76,
+      "failures": 0
+    },
+    {
+      "suite": "Feedback",
+      "assertions": 64,
+      "failures": 0
+    },
+    {
+      "suite": "ProjectilePainter",
+      "assertions": 77,
+      "failures": 0
+    },
+    {
+      "suite": "EnemyTelegraphs",
+      "assertions": 121,
+      "failures": 0
+    },
+    {
+      "suite": "ShopObservation",
+      "assertions": 384,
+      "failures": 0
+    },
+    {
+      "suite": "ProfileModes",
+      "assertions": 16,
+      "failures": 0
+    },
+    {
+      "suite": "ProfileModes",
+      "assertions": 16,
+      "failures": 0
+    },
+    {
+      "suite": "ProfileModes",
+      "assertions": 16,
+      "failures": 0
+    },
+    {
+      "suite": "ProfileModes",
+      "assertions": 16,
+      "failures": 0
+    },
+    {
+      "suite": "ProfileModes",
+      "assertions": 16,
+      "failures": 0
+    }
+  ],
+  "suite_classes": 13,
+  "headless_assertions": 1729,
+  "python_tests": 14,
+  "headless_renderer_readbacks_skipped": 12,
+  "prior_native_renderer_readbacks_rerun": false,
+  "independent_review": "Read-only code/test review found no material issue; no engine workload during benchmark.",
+  "simulation_report": "reports/homing-simulation.json",
+  "trajectory_report": "reports/homing-trajectory.json",
+  "simulation_30_rerun": true,
+  "full_300s_benchmark_rerun": true,
+  "performance": {
+    "average_fps": 90.8467231586951,
+    "duration_seconds": 300.0,
+    "enemies": 300,
+    "internal_resolution": "1280x720",
+    "os": "macOS",
+    "p99_frame_ms": 25.4,
+    "passed": true,
+    "persistent_profile": false,
+    "pickups": 200,
+    "primary_hits": 472453,
+    "projectiles": 600,
+    "renderer": "gl_compatibility",
+    "run_seed": 1792237134,
+    "rune_visual_peak": 32,
+    "samples": 27255,
+    "scenario": "rune-feedback",
+    "secondary_hits": 1218763,
+    "settings": {
+      "flash": true,
+      "shake": true,
+      "volume": 0.65
+    }
+  },
+  "benchmark_command": "./tools/run.sh -- --benchmark --benchmark-runes --seconds=300",
+  "benchmark_device": "Apple M5, macOS, Godot 4.7.2 Compatibility, 1280x720, VSync retained, Engine.max_fps=0",
+  "warmup_seconds": 5,
+  "native_observations": "reports/homing-native-observations.json",
+  "performance_baseline_commit": "fb22ce9",
+  "performance_comparison_limits": "Previous 95.479848 FPS/P99 25.588ms sample inherited personal settings and did not record them. New diagnostics use defaults. Different seeds/settings and wall-clock samples prevent single-factor attribution to homing.",
+  "build_app": "build/Embers-stable.app",
+  "build_zip": "build/Embers-stable-mac-arm64.zip",
+  "packaged_boot_args": "--headless --quit-after 3 -- --capture-only",
+  "exit_codes": {
+    "all_tests": 0,
+    "simulation_30": 0,
+    "full_300s_benchmark": 0,
+    "build": 0,
+    "packaged_headless_boot": 0,
+    "archive_check": 0
+  },
+  "artifact_sha256": {
+    "scripts/combat/combat_sim.gd": "5bca9f0367c8cdcb5f698f672e4f3b9b0689dc684f73a20a30edf97e4ee73e34",
+    "scripts/combat/combat_world.gd": "4cf1b8bcc68f299a3e8defbef421c634f1cce0e8eeff6f445c8d83ed79fdc5c1",
+    "scripts/combat/projectile_painter.gd": "dc06af10a75453536ded8b37325f564be4e1fbaf7e56e3b14925ad2475930a3e",
+    "scripts/combat/enemy_telegraph_painter.gd": "4750e8c434ef2eac723d1cb6cb3bef5386734cd369a80f001b0467a3211af2e6",
+    "scripts/core/game_store.gd": "13f95880667763d262cdfa5af6ceefbeb27ba3c098e1b4ac94cd5eab56041150",
+    "scripts/core/run_state.gd": "0787d0442dc8e03d782808dc37ac7277ed1478a0c77d7d672e5acb2de7deeb4e",
+    "scripts/main.gd": "66b193ae057775163c02ff6efc7728d36f6734b84421b86da1171fb96e171ba4",
+    "scripts/ui/game_ui.gd": "4e40d2b5bc07c3aba797a41942b90008329de2b4f382138f668be1730cfd978b",
+    "scripts/combat/bot_policy.gd": "a78c47c7c5002f06928cc8af373851fb81f853ec401f6fa929a28efd303d613b",
+    "tests/simulate_runs.gd": "361cf71e03712a882de74a3ec0fc36b0d430ac7554ab5127a4813a23932e6486",
+    "tests/test_homing.gd": "9c5e768fb31da247226eee13539039ef30244ec39b9633b60b98ffa42a20a123",
+    "tests/test_profile_modes.gd": "b06cc43cc108f6ff496922d2fd4d583b7d11e07f94d0a9da3a927523d6aaa29d",
+    "tools/test.sh": "39086df7d9b5dc2cfad4d892687094a9ddb75d3ef82cb49fc9312da9a582a349",
+    "tools/build_macos.sh": "84ffc3343fec5e6fb624ffb7fc166a41406d5f0f0575c8e13aeeaf80beb473d2",
+    "reports/tests.log": "4778d035e4f39e152a0e44974d3c73eebafec4fc41fcaa4259ecb90845564730",
+    "reports/tests-before-homing.log": "2eeaec5286c19ed4a9c7d5307e87070f4415971394866a26045952eaf390c1ad",
+    "reports/homing-before.log": "1511f6e791217a7c3c7f39aae4fc1a36be95a5c06d11cc5b6e4dbb8af8f91329",
+    "reports/homing-simulation.json": "37876ea1c5176d23ae2d7a40bf77ca876bfa0546c82bda34103caec708120227",
+    "reports/homing-trajectory.json": "9b9bae77eec458096fa0b00773d1cc5f13b86247b965cc4534405d2ba4833f61",
+    "reports/homing-trajectory.gd.txt": "9f60200efd27389b7bb072027bb3baad2dfbab0d0b6f80af23ccf5f446b1432b",
+    "reports/homing-native-observations.json": "5b39eaa215ed793fc143dd2d26bef27f2ee73b948aaf4efc4851151f57b145d1",
+    "reports/performance.json": "d415e76b9d8524addb74f357be8c70dda140fa4e6f1b4157ae5c1ec5b3a10c6e",
+    "reports/benchmark.log": "2b566b0da26e1d942d87b11e0dfc3325f1362702636e1fcd92c52dc313007a0b",
+    "reports/performance-before-homing-turn.json": "864c89c6b603f3e753777dac199d457e6653d76e5d8f6c330e5c80d7eed84a77",
+    "reports/benchmark-before-homing-turn.log": "bde2da5a64ff3040bb547a6a4b1cdd4fb9bd5ae8730a4b164b71ba209f19ce52",
+    "reports/build-stable.log": "4b493df9ae1c1f1b798b4f2e2c44b1bcac33bd97a8172f6bd2de3e7b17f5513b",
+    "reports/app-boot-stable.log": "6c536b7ab6a1ee8e7ac91fdd27709abb484073b092cabb70d205c4f987e47ddd",
+    "reports/archive-stable.log": "b2a7eab94a6a7d380002b756a88cebdbbb259b28c649f381c3de39b70006b861",
+    "build/Embers-stable-mac-arm64.zip": "279162b306d32ec4331f035cd1c3b4f9fe24dd39a5f6ea51a4e1eaf93eca3e1b",
+    "build/Embers-stable.app/Contents/Resources/秘术余烬.pck": "0b7557772c5a76084835105de9d6416074bbc001224cbc8c6d674b33b20c053e",
+    "build/Embers-stable.app/Contents/MacOS/秘术余烬": "d13ef15d7ca71b85b36542c744ef53b23a21bd3ad5eef038abcf5064c2a60452"
+  },
+  "limits": [
+    "The reverse-target fixture turns but eventually exits range without hitting the target; no guaranteed pursuit claim.",
+    "Homing uses the original normalized lerp outside 0<weight<=0.5, dot<0 and abs(cross)<=0.0001; no RNG side selection.",
+    "No data, price, damage, life, range, RunState or bot-policy changes; 3/30 paired runs still change statistics and paths.",
+    "Thirty fixed bot samples are not human win rates or playtest results.",
+    "Four previous bundles and the old paused user run retained; new package not separately launched in an ordinary native menu.",
+    "No five-human playtest, other Mac model/macOS13 real device check, Developer ID signing or notarization."
+  ]
+}

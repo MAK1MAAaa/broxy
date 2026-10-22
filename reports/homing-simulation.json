@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "command": "./tools/run.sh --headless --script res://tests/simulate_runs.gd -- --seed=2026 --count=10",
+  "simulation_exit_code": 0,
+  "baseline_file": "reports/simulation-30-telegraph.jsonl",
+  "baseline_sha256": "a702b962fdddfbc03ec07b4dc302dcc0a4cc31127aad036ed88c4f90ea3a6d9a",
+  "current_file": "reports/simulation-30-homing.jsonl",
+  "current_sha256": "fe8443aa3eed8b49c6e5ec511e69a8a1f5e663e33999ba96b9879841a67a3271",
+  "baseline_core_versions": [
+    "prototype-0.1.0+4f7be4bdb91f"
+  ],
+  "current_core_version": "prototype-0.1.0+143fbc0963af",
+  "source_version_matches_runtime": true,
+  "policy_version": "orbit-avoid-v1/shop-v1+7c19c01f20e4",
+  "paired_runs": 30,
+  "excluded_fields": [
+    "balance_version"
+  ],
+  "all_other_fields_identical": false,
+  "changed_runs": 3,
+  "unchanged_runs": 27,
+  "field_change_counts": {
+    "gold": 3,
+    "kills": 2,
+    "shop_observations": 3,
+    "trace": 3,
+    "wave_results": 3
+  },
+  "includes_full_trace_and_shop_observations": true,
+  "before_wins": 29,
+  "after_wins": 29,
+  "outcome_transitions": [],
+  "results_by_rune": {
+    "pierce": {
+      "runs": 10,
+      "wins": 9
+    },
+    "bounce": {
+      "runs": 10,
+      "wins": 10
+    },
+    "blast": {
+      "runs": 10,
+      "wins": 10
+    }
+  },
+  "differences": [
+    {
+      "seed": 2027,
+      "rune": "blast",
+      "changed_fields": [
+        "gold",
+        "kills",
+        "shop_observations",
+        "trace",
+        "wave_results"
+      ],
+      "first_difference_by_field": {
+        "gold": "$.gold",
+        "kills": "$.kills",
+        "shop_observations": "$.shop_observations[25].wallet",
+        "trace": "$.trace[18].gold",
+        "wave_results": "$.wave_results[2].collected"
+      },
+      "won_before": true,
+      "won_after": true
+    },
+    {
+      "seed": 2032,
+      "rune": "bounce",
+      "changed_fields": [
+        "gold",
+        "kills",
+        "shop_observations",
+        "trace",
+        "wave_results"
+      ],
+      "first_difference_by_field": {
+        "gold": "$.gold",
+        "kills": "$.kills",
+        "shop_observations": "$.shop_observations[61].wallet",
+        "trace": "$.trace[42].gold",
+        "wave_results": "$.wave_results[4].collected"
+      },
+      "won_before": true,
+      "won_after": true
+    },
+    {
+      "seed": 2034,
+      "rune": "bounce",
+      "changed_fields": [
+        "gold",
+        "shop_observations",
+        "trace",
+        "wave_results"
+      ],
+      "first_difference_by_field": {
+        "gold": "$.gold",
+        "shop_observations": "$.shop_observations[42].wallet",
+        "trace": "$.trace[32].gold",
+        "wave_results": "$.wave_results[3].collected"
+      },
+      "won_before": true,
+      "won_after": true
+    }
+  ],
+  "limits": [
+    "Thirty fixed seed/rune pairs under one unchanged bot policy; not a human win-rate estimate.",
+    "Only the near-opposite homing degeneracy changes in CombatSim; no data, price, movement/shop policy or RunState changes.",
+    "Equality in this sample cannot establish that a real behavioral correction has no effect on all inputs.",
+    "This simulation does not measure native graphics performance, visibility or fun."
+  ]
+}

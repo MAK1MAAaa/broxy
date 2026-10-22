@@ -4,12 +4,22 @@
 
 本轮先修复可复现的战斗与交互问题，再用固定种子回归检查影响。机器人策略和资源平衡参数保持不变；自动模拟、界面测试、原生运行与真人试玩分别记录，不互相替代。
 
-## 当前：诊断入口隔离
+## 当前：幽焰反向转向与稳定版验证
+
+- 原normalized-lerp在正反方向、weight<0.5时不转向，weight=0.5时速度归零。仅为近反向窄区间增加确定性小角转动，保留普通插值、目标筛选、速度、范围、寿命与RNG。45条专项回归由6失败变为0；实际四法器自动齐射后，三骨针补刀、幽焰真实重锁走正式step路径，不用直接伤害代替补刀。
+- 夹具第22帧开始转向2.292°，第45帧5.429°；随后离开420追踪半径，后方目标未被命中。修复防止插值卡死或归零，不承诺追上后方目标。逐帧轨迹与夹具源保留在homing-trajectory.json及gd.txt。
+- 十三类Godot共1729条无界面断言和14项Python全过；包含上一阶段档案入口105条。独立只读审查未发现实质问题。核心143fbc0963af，策略7c19不变，资源与RunState均未改。
+- 2026—2035×三策略30局为29胜1败；与4f阶段相比27局除版本外全字段一致，3局gold/trace/逐波/shop_observations改变，其中2局kills改变，无胜负转换。完整字段比较见homing-simulation.json，不把固定机器人结果当作真人胜率。
+- 另存Embers-stable.app与ZIP，包含诊断隔离和本轮转向修复。arm64、严格签名、Info.plist、无存档headless启动及压缩完整性通过；四份旧包和暂停对局保留，新包未另做普通菜单原生启动。
+- 当前核心完整300秒rune-feedback压力通过：27,255帧、90.847 FPS、P99 25.400毫秒、300/600/200、32符文刻线峰值，实际主/次命中472,453/1,218,763（含预热），退出0。CUA确认首段、中段及00:17窗口可见、计数和倒计时推进；采样期间无其它Godot测试/模拟/构建。
+- 新增实际settings/persistent_profile/run_seed元数据：本次默认0.65/true/true、false、1792237134；旧样本继承个人设置且未记录，不把95.480→90.847的差额单独归于转向修复。旧样本另存performance-before-homing-turn.json，不覆盖更早首次启用追踪前的历史记录。本轮完整证据与哈希见[homing-validation.json](../reports/homing-validation.json)；验证后本地提交，持续优化目标仍进行中。
+
+## 上一阶段：诊断入口隔离
 
 - 直接CLI五种验证入口原先仍读取/写回个人profile，受控自动终局还会记录测试成绩。现于load之前关闭persistent，普通启动保留原存储行为及手动false夹具；验证窗口标记不保存设置与成绩，不修改已有个人记录。
 - 六入口以真实Main/CLI和实际临时ConfigFile核验：修前98条25失败，修后原项通过并增加7条标题检查，共105条0失败。十二类Godot共1684条、14项Python全过；临时文件均清理，个人profile不参与该套测试。
-- 原生CLI商店截图正常、退出0，viewport没有Mac标题栏，未声称CUA看到了标题；标题属性由模式回归检查。此提交尚未打包，最新二进制仍745a5bb的Embers-shop。核心仍4f7be4bdb91f，未重测30局或性能。详细证据profile-modes-validation.json。
-- 新确认幽焰对正后方目标的方向插值退化；45条聚焦回归中6条失败，已保留证据，接着完成独立修复。
+- 原生CLI商店截图正常、退出0，viewport没有Mac标题栏，未声称CUA看到了标题；标题属性由模式回归检查。f12268a提交时尚未打包，彼时最新二进制仍745a5bb的Embers-shop。该阶段核心仍4f7be4bdb91f，未重测30局或性能；现已随stable包纳入。原阶段证据profile-modes-validation.json保留。
+- 当时确认幽焰对正后方目标的方向插值退化；45条聚焦回归中6条失败，证据已保留，后续修复与验证见当前轮次。
 
 ## 上一轮：商店交易保护与法器信息
 
@@ -80,6 +90,7 @@
 | --- | ---: | ---: |
 | Rules | 204 | 0 |
 | Combat | 302 | 0 |
+| Homing | 45 | 0 |
 | UI | 157 | 0 |
 | Modal | 37 | 0 |
 | Flow | 76 | 0 |
@@ -90,7 +101,7 @@
 | ShopActions | 106 | 0 |
 | ShopDetails | 51 | 0 |
 | ProfileModes（六入口） | 105 | 0 |
-| Godot合计 | **1684** | **0** |
+| Godot合计 | **1729** | **0** |
 
 另有14项Python分析器测试通过；完整记录同在`reports/tests.log`。商店观测的105组冻结策略对照额外核对trace、库存、钱包和RNG状态；分析器将缺失报价和少于四件商品的库存片段保留为未完整观测，不推断缺货。
 
@@ -115,8 +126,8 @@ Flow 的普通首波耗时为 2701 个固定步。Boss 终局检查使用加速�
 
 | 验收项 | 当前账本状态 | 证据与边界 |
 | --- | --- | --- |
-| 上轮fb22ce9真实符文场景5分钟压力测试 | 历史通过，本轮未重测 | Apple M5 / Compatibility / 1280×720，预热5秒、正式300秒、28,645帧；300/600/200，平均95.480 FPS、P99 25.588毫秒；performance.json标记rune-feedback，退出0 |
-| 本轮独立 macOS 构建与包启动 | 已通过 | `Embers-shop.app`；`build-shop.log`记录arm64、Info.plist和严格签名；`app-boot-shop.log`退出0；`archive-shop.log`检查ZIP完整，旧用户对局保留 |
+| 当前143fbc0963af真实符文场景5分钟压力测试 | 已通过 | Apple M5 / Compatibility / 1280×720，预热5秒、正式300秒、27,255帧；300/600/200，平均90.847 FPS、P99 25.400毫秒；performance.json标记rune-feedback及实际默认设置/无存档状态，退出0 |
+| 本轮独立 macOS 构建与包启动 | 已通过 | `Embers-stable.app`；`build-stable.log`记录arm64、Info.plist和严格签名；`app-boot-stable.log`为无存档入口退出0；`archive-stable.log`检查ZIP完整，旧用户对局保留 |
 | 上轮暂停与设置原生输入 | 固定场景通过 | `modal-native.log`与`modal-native.gd.txt`；实际CUA Tab/Return/Esc、恢复商店及下一波45→37；个人存档读写关闭 |
 | 较早阶段原生约47秒流程 | 已通过普通首波结束检查 | `feedback-flow-native.log`与`feedback-first-wave-complete.png`：45秒正常波次进入“秘术觉醒”，退出0。使用自动走位，未使用压力模式或跳过计时 |
 | 商店原生键盘装配 | 已通过 | 在明确标注的固定商店夹具中按真实Return：骨针装入贯穿、备用归零、焦点到“卸符”，仍停留商店；不代表真人整局通关 |

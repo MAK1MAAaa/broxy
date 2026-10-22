@@ -251,6 +251,9 @@ func _record_benchmark() -> void:
 	var fps: float = 1000.0 * float(_frame_samples.size()) / maxf(1.0, total)
 	var result: Dictionary = {"duration_seconds": _benchmark_seconds, "samples": _frame_samples.size(), "average_fps": fps, "p99_frame_ms": p99, "enemies": world.sim.enemy_count, "projectiles": world.sim.shot_count, "pickups": world.sim.soul_count, "internal_resolution": "1280x720", "os": OS.get_name(), "renderer": "gl_compatibility", "passed": fps >= 58.0 and p99 <= 33.0}
 	result["scenario"] = "rune-feedback" if world.rune_stress_mode else "baseline"
+	result["settings"] = store.settings.duplicate()
+	result["persistent_profile"] = store.persistent
+	result["run_seed"] = run.summary()["seed"]
 	result["rune_visual_peak"] = _peak_rune_flashes
 	result["primary_hits"] = world.sim.primary_hits
 	result["secondary_hits"] = world.sim.secondary_hits

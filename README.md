@@ -10,9 +10,11 @@ Godot 4.7.2 普通版、带类型标注的 GDScript 开发的 macOS 单人割草
 
 商店法器卡显示当前每枚伤害、每次枚数和标称攻击间隔，已计局内伤害与攻速加成。悬停装备名称可查看基础行为、数值和符文效果；数值未计符文追加命中，也不是实际DPS。刷新或改装后，旧界面按钮立即失效，避免连续输入按旧卡购买新商品或错选符文。
 
+幽焰现在能在目标恰好位于正后方时开始转向，避免原方向插值卡住或将速度归零。普通转向曲线、速度、追踪范围与寿命保持原规则，修复不保证追上已经远离的目标。
+
 ## 直接游玩
 
-本轮最新应用为 `build/Embers-shop.app`（压缩包`build/Embers-shop-mac-arm64.zip`）。旧`build/Embers.app`保留正在暂停的对局；结束旧应用后再打开新版。选择骨针或幽焰开局。应用面向 Apple Silicon、macOS 13 及以上；已采用本地 ad-hoc 签名，尚未进行 Developer ID 公证。
+本轮最新应用为 `build/Embers-stable.app`（压缩包`build/Embers-stable-mac-arm64.zip`），包含诊断档案隔离与幽焰反向追踪修复。旧`build/Embers.app`保留正在暂停的对局；结束旧应用后再打开新版。选择骨针或幽焰开局。应用面向 Apple Silicon、macOS 13 及以上；已采用本地 ad-hoc 签名，尚未进行 Developer ID 公证。
 
 | 操作 | 按键 |
 | --- | --- |
@@ -58,22 +60,24 @@ python3 tools/fetch_macos_template.py
 ```sh
 ./tools/build_macos.sh
 # 另存应用，避免替换正在运行的旧版：
-BROXY_APP_PATH="$PWD/build/Embers-shop.app" ./tools/build_macos.sh
+BROXY_APP_PATH="$PWD/build/Embers-stable.app" ./tools/build_macos.sh
 ```
 
 构建从官方 Universal 模板提取 arm64，生成 `build/Embers.app` 并执行 ad-hoc 签名验证。引擎许可在应用的 `Contents/Resources/licenses/` 中直接可读。对外发布前应使用自己的 Developer ID 配置签名与公证。
 
 ## 验证
 
-直接CLI入口`--smoke`、`--autoplay`、`--shop-preview`、`--benchmark`、`--capture-only`会在读取档案前关闭持久化；本进程的设置和成绩只留在内存，窗口标注“不保存设置与成绩”。普通启动保持原有保存行为。独立预览脚本仍各自关闭持久化。当前二进制Embers-shop.app来自745a5bb，此诊断隔离源码修复尚未重新导出；打包状态以验收记录为准。
+直接CLI入口`--smoke`、`--autoplay`、`--shop-preview`、`--benchmark`、`--capture-only`会在读取档案前关闭持久化；本进程的设置和成绩只留在内存，窗口标注“不保存设置与成绩”。普通启动保持原有保存行为。独立预览脚本仍各自关闭持久化。最新Embers-stable.app已包含该修复；性能报告另记录实际设置、持久化状态与本次种子。
 
 ```sh
 ./tools/run.sh --headless --script res://tests/test_rules.gd
 ./tools/run.sh --headless --script res://tests/test_combat.gd
+./tools/run.sh --headless --script res://tests/test_homing.gd
 ./tools/run.sh --headless --script res://tests/test_ui.gd
 ./tools/run.sh --headless --script res://tests/test_modal.gd
 ./tools/run.sh --headless --script res://tests/test_shop_actions.gd
 ./tools/run.sh --headless --script res://tests/test_shop_details.gd
+./tools/run.sh --headless --script res://tests/test_profile_modes.gd
 ./tools/run.sh --headless --script res://tests/test_flow.gd
 ./tools/run.sh --headless --script res://tests/test_feedback.gd
 ./tools/run.sh --headless --script res://tests/test_projectile_painter.gd
@@ -84,11 +88,11 @@ python3 -m unittest discover -s tests -p 'test_shop_analysis.py'
 ./tools/run.sh -- --benchmark --benchmark-runes --seconds=300
 ```
 
-也可以用 `./tools/test.sh` 一次运行十二套Godot行为测试和Python分析器测试。当前1684条Godot无界面断言及14项Python测试全部通过（ProfileModes的六种入口分进程执行）；上一轮原生预警套件另通过134条断言（含12项GPU读回），记录见 `reports/tests.log` 与 `reports/enemy-telegraphs-native.log`。系统字体测试需要正常 macOS 字体访问权限；文件沙箱可能阻止 SystemFont 枚举。请在常规终端运行。性能测试会打开明确标记的窗口并显示采样倒计时，保持300敌人、至少600投射物与200掉落，预热5秒后采样300秒，输出 `reports/performance.json`。`--benchmark-runes`使用四种法器与三类符文的真实伤害弹体，报告标记为`rune-feedback`；省略该参数为含零伤害维持弹体的历史`baseline`场景，两者分别记录。测试时保持该窗口可见、Mac未锁屏，避免同时运行其他图形负载。
+也可以用 `./tools/test.sh` 一次运行十三套Godot行为测试和Python分析器测试。当前1729条Godot无界面断言及14项Python测试全部通过（ProfileModes的六种入口分进程执行）；上一轮原生预警套件另通过134条断言（含12项GPU读回），记录见 `reports/tests.log` 与 `reports/enemy-telegraphs-native.log`。系统字体测试需要正常 macOS 字体访问权限；文件沙箱可能阻止 SystemFont 枚举。请在常规终端运行。性能测试会打开明确标记的窗口并显示采样倒计时，保持300敌人、至少600投射物与200掉落，预热5秒后采样300秒，输出 `reports/performance.json`。`--benchmark-runes`使用四种法器与三类符文的真实伤害弹体，报告标记为`rune-feedback`；省略该参数为含零伤害维持弹体的历史`baseline`场景，两者分别记录。测试时保持该窗口可见、Mac未锁屏，避免同时运行其他图形负载。
 
-最近完整5分钟采样对应上一轮fb22ce9，在Apple M5真实符文场景达到平均95.480 FPS、P99 25.588毫秒，维持300敌人/600弹体/200掉落并实际产生主/次伤害，退出0。本轮仅调整商店界面与交互，未重跑完整压力或30局模拟；核心、资源及绘制源码未改变。另用340个静止预警单独短测，共享网格后全施法119.56 FPS、混合116.68 FPS；两个负载分别记录，设备与场景边界见 `docs/verification.md`。
+当前核心143fbc0963af已在Apple M5完成最新5分钟真实符文场景采样：27,255帧，平均90.847 FPS、P99 25.400毫秒，维持300敌人/600弹体/200掉落并实际产生主/次伤害，退出0。诊断模式采用默认设置且不读写个人档案；旧采样继承个人设置且未记录，不能把帧率差额全部归因于追踪修复。上轮95.480 FPS/P99 25.588毫秒另存`performance-before-homing-turn.json`。历史340个静止预警短测仍独立记录；设备、场景与源码指纹见 `docs/verification.md`、`reports/homing-validation.json`。
 
-完整模拟复用正式 `RunState`、`CombatSim.step` 与商店价格，没有额外金币、无敌或专用 Boss 数值。当前核心版本`4f7be4bdb91f`将既有蓄力时长提取为共享常量；30局与上一阶段`f29c7008e475`除版本字段外逐字段一致，保持29胜1败。上一阶段接触反冲修复曾使24局轨迹或统计改变、28胜变29胜；当前等价比较不覆盖那次行为变更，也不代表真人胜率。策略与证据见 `docs/simulation.md`，试玩流程见 `docs/playtest.md`，持续工作记录见 `docs/optimization-log.md`。
+完整模拟复用正式 `RunState`、`CombatSim.step` 与商店价格，没有额外金币、无敌或专用 Boss 数值。当前核心版本`143fbc0963af`修复幽焰反向插值退化；同种子30局与上一阶段`4f7be4bdb91f`相比，27局除版本字段外逐字段一致，3局轨迹或统计变化，保持29胜1败且无胜负转换。此前接触反冲修复曾改变24局、28胜变29胜；各阶段独立比较，不代表真人胜率。策略与证据见 `docs/simulation.md`、`reports/homing-simulation.json`，试玩流程见 `docs/playtest.md`，持续工作记录见 `docs/optimization-log.md`。
 
 模拟还会记录完整商店报价、余额、候选评分及停止购买/刷新原因。`tools/analyze_shop_runs.py`可生成观测分析，并用`--baseline`严格比较旧对局字段和购物trace。商店观测阶段的30局在新增观测前后旧字段完全一致，证据见`reports/shop-analysis.json`；该结果只证明所测样本不受观测影响，不表示此前的战斗修复没有改变轨迹。
 

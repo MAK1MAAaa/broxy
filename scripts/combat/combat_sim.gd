@@ -487,7 +487,16 @@ func _update_shots(delta: float) -> void:
 			if target != null:
 				var speed: float = shot.velocity.length()
 				var desired: Vector2 = (target.position - shot.position).normalized()
-				shot.velocity = shot.velocity.normalized().lerp(desired, minf(1.0, shot.homing * delta)).normalized() * speed
+				var heading: Vector2 = shot.velocity.normalized()
+				var weight: float = minf(1.0, shot.homing * delta)
+				var turn_cross: float = heading.cross(desired)
+				# Opposite vectors keep their heading below half weight, or cancel at half.
+				# Only escape that narrow case; exact opposition takes a fixed, RNG-free side.
+				if weight > 0.0 and weight <= 0.5 and heading.dot(desired) < 0.0 and absf(turn_cross) <= 0.0001:
+					var turn_sign: float = -1.0 if turn_cross < 0.0 else 1.0
+					shot.velocity = heading.rotated(turn_sign * weight) * speed
+				else:
+					shot.velocity = heading.lerp(desired, weight).normalized() * speed
 		shot.previous = shot.position
 		shot.position += shot.velocity * delta
 		if shot.hostile:

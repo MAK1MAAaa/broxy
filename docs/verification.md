@@ -1,6 +1,6 @@
 # 原型验收记录
 
-验收日期：2026年10月22日。引擎为 Godot 4.7.2 普通版；当前模拟核心/资源版本为 `prototype-0.1.0+4f7be4bdb91f`，包含幽焰追踪行为；当前美术为 `engraved-02`。以下分别记录自动化、原生窗口、构建与待完成检查；“持续优化游戏”仍在进行中。
+验收日期：2026年10月22日。引擎为 Godot 4.7.2 普通版；当前模拟核心/资源版本为 `prototype-0.1.0+143fbc0963af`，包含幽焰反向追踪修复；当前美术为 `engraved-02`。以下分别记录自动化、原生窗口、构建与待完成检查；“持续优化游戏”仍在进行中。
 
 ## 功能与构筑
 
@@ -8,6 +8,7 @@
 | --- | --- | --- |
 | 规则测试 | 204条断言，0失败；覆盖收入、商店、装备与升级等规则 | [tests.log](../reports/tests.log) |
 | 战斗测试 | 302条断言，0失败；新增接触反冲朝向、四边限位与全部敌人状态回归；含符文真实事件、爆破候选顺序与最近目标网格/线性对照；覆盖12种法器/符文组合、命中预算、爆破禁止递归、施法者瞄准、幽焰追踪，以及既有终局冻结、减速状态、扫掠命中顺序、来源与实际伤害 | [tests.log](../reports/tests.log) |
+| 幽焰转向边界 | 45条断言，0失败；真实四法器齐射/补刀重锁、反向与半权重退化、微小偏移方向、保速、贯穿UID排除、普通曲线与RNG；同一测试修前6失败 | [tests.log](../reports/tests.log)、[before](../reports/homing-before.log) |
 | 界面测试 | 157条断言，0失败；覆盖真实键盘焦点与装配操作、符文引导、伤害贡献/死亡来源复盘、通知安全区，以及字体排版和装饰输入穿透 | [tests.log](../reports/tests.log) |
 | 覆盖层输入测试 | 37条断言，0失败；真实Tab/Shift+Tab/Return覆盖底页隔离、返回源焦点、升级延迟刷新与界面替换 | [tests.log](../reports/tests.log) |
 | 完整流程测试 | 76条断言，0失败；新增设置Esc逐层返回、暂停商店请求保护、最后强化延迟开店的暂停清理；正式首波在2701个固定步后结束，覆盖强化→商店→下一波、暂停/恢复、失败重开、跨波统计与终局结算，以及波末暂停边界 | [tests.log](../reports/tests.log) |
@@ -21,9 +22,9 @@
 | 离线分析工具 | 14项Python测试通过；覆盖配对旧字段一致性、完整库存与片段区别、缺观测保持未知、坏JSON及混合版本拒绝 | [tests.log](../reports/tests.log) |
 | 实际窗口首波 | 实际运行约47秒；普通45秒首波结束后进入“秘术觉醒”，进程退出码0 | [feedback-flow-native.log](../reports/feedback-flow-native.log)、[首波结束截图](../reports/feedback-first-wave-complete.png) |
 | 实际窗口商店输入 | 固定商店夹具中以CUA按Return成功装配贯穿符文，仍留在商店，没有误触“开始下一波” | 负责人原生CUA操作观察；[商店过程截图](../reports/feedback-shop.png)、[原生日志](../reports/feedback-shop-native.log) |
-| 同种子整局配对模拟 | 2026—2035十个种子×三种符文策略，共30局；本轮29胜1败，与上轮f29除版本外全部字段相同；上轮反冲修复曾改变24局轨迹/统计 | [当前等价报告](../reports/telegraph-equivalence.json)、[上轮配对报告](../reports/modal-recoil-simulation.json) |
+| 同种子整局配对模拟 | 2026—2035十个种子×三种符文策略，共30局；本轮29胜1败，与上轮4f相比27局除版本外全部字段相同，3局轨迹/统计变化，无胜负转换；策略未改 | [当前配对报告](../reports/homing-simulation.json)、[历史预警等价](../reports/telegraph-equivalence.json) |
 
-十二套Godot行为测试共 **1684条headless断言，0失败**，另有14项Python测试通过。流程测试中的Boss终局使用加速条件；商店原生操作使用固定夹具，均只验证对应流程或交互，不代表真实整局通关。
+十三套Godot行为测试共 **1729条headless断言，0失败**，另有14项Python测试通过。流程测试中的Boss终局使用加速条件；商店原生操作使用固定夹具，均只验证对应流程或交互，不代表真实整局通关。
 
 前一阶段新增暂停边界修复：`main._finish_wave`在离开战斗前统一清除SceneTree及主场景的暂停状态。用`ended`回调中的真实`push_input(Esc)`或失焦通知，人为控制“终局已确定、deferred结算尚未执行”的时序；修复前62条中6条失败，修复后全部通过，覆盖商店、升级、Boss胜利与超时失败。普通波进入下一波后实际physics计时继续推进。该回归证明状态健壮性，尚未原生复现普通OS输入会自然落入该窄窗口，不认定它是之前倒计时反馈的唯一原因。证据为`flow-pause-boundary-before.log`和`flow-pause-boundary-after.log`。
 
@@ -37,13 +38,21 @@
 
 新证据区分了两类情况：seed2026贯穿首店曾出现18魂屑符文，策略从65魂屑先买两件24魂屑法器后剩17，才拒绝符文；次店四轮未出现目标符文。seed2032爆破的前两店全部已记录报价未出现目标符文；seed2029贯穿也在前两店未见目标符文，最终仍通关。它们不证明未成型就是死亡原因，也不支持仅据此调整正式价格或强制发放指定符文。第5—7店停止刷新有57次策略饱和、27次达到策略刷新上限，不等于无合法消费。此前缺完整报价的局限仍适用于旧报告，不能用新观测补写旧报告的原始证据。
 
-## 当前：诊断入口档案隔离
+## 当前：幽焰反向追踪边界
+
+原normalized-lerp在方向恰好相反且权重小于0.5时保持原方向，权重等于0.5时归零。现仅在0<weight≤0.5、dot<0且|cross|≤0.0001的窄区间，沿实际cross符号旋转weight弧度；精确相反时固定正侧，不使用RNG。其余路径继续原normalized-lerp，速度、伤害、范围、寿命、目标筛选与资源均未改。45条同一源码回归修前6失败、修后0失败，另Combat302条通过。
+
+真实自动齐射夹具由三颗骨针在第21帧击杀前方目标，幽焰第22帧向后方重锁并转向2.292°，保持290像素/秒；第45帧为5.429°，随后飞出420追踪范围，后方目标仍38/38生命。此修复证明不再卡死或速度清零，不保证追上后方目标。完整逐帧记录与可复现夹具见[轨迹](../reports/homing-trajectory.json)及相邻gd.txt。
+
+同种子30局与4f阶段相比，3局gold、trace、逐波结果及shop_observations变化，其中2局kills变化，27局除balance_version外全部字段一致。胜负保持29胜1败、无转换，策略7c19不变；不能称为全样本行为等价或真人胜率改善。源码指纹及差异见[homing-simulation.json](../reports/homing-simulation.json)。
+
+## 上一阶段：诊断入口档案隔离
 
 此前直接CLI的五种验证入口启动均会读取个人档案，关闭均可写回；自动流程与商店预览继续结算还会把测试成绩记为个人最佳。现在于load_profile之前对五入口设置persistent=false，仅保留本进程内的设置/成绩，普通启动不反向覆盖调用者已有的false。窗口明确标注不保存设置与成绩，普通正常持久化标题保持不变。没有清理或改写任何已有个人记录，也不推断旧记录的来源。
 
 GameStore新增可选内部构造path，默认仍为原user://profile.cfg，现有调用与格式不变。六进程使用真实Main、真实CLI参数与唯一/private/tmp文件：修前98条25失败，修后原检查全部通过，另加7条标题检查，合计105条0失败；正常模式也验证真实读回与保存设置/成绩。十二类Godot测试共1684条及14项Python通过。原生shop-preview+capture-only截图正常、退出0，viewport不包含Mac标题栏；无CUA标题可视确认，标题由真实Main属性断言覆盖。见[报告](../reports/profile-modes-validation.json)。
 
-此逻辑提交尚未重新导出应用；当前Embers-shop.app仍为745a5bb。本轮诊断修复未改战斗核心、资源或策略，未重跑30局及5分钟压力。已复现的幽焰反向追踪退化另行修复与验证，不由本段声称完成。
+f12268a逻辑提交时未重新导出应用，彼时最新包仍为745a5bb的Embers-shop.app；该阶段未改战斗核心/资源/策略，也未重跑30局或5分钟压力。当前Embers-stable.app已同时纳入该隔离与上文幽焰修复。原阶段报告保留当时状态，不改写历史证据。
 
 ## 上一轮商店交易与信息
 
@@ -87,9 +96,11 @@ Boss存活时HUD明确显示“击败首领 / 限时”，真实剩余≤10秒�
 
 本机原先将PingFang SC解析成缺少部分简体字形的PingFang HK。“敌”“杀”等字符确实产生缺字字形；现优先采用Hiragino Sans GB，回归检查实际TextServer排版的字形RID与索引，菜单和商店原生截图已确认文字完整。
 
-## 本机性能（最近完整采样为fb22ce9，本轮未重测）
+## 本机性能（当前143fbc0963af完整采样通过）
 
-上一轮fb22ce9的核心4f7be4bdb91f、当时源码在Apple M5 / Godot4.7.2 Compatibility / 1280×720原生运行，保留VSync、max_fps=0。预热5秒后正式采样300秒，28,645帧，平均**95.480 FPS**，P99**25.588毫秒**，退出0并通过≥58 FPS / ≤33毫秒门槛。终点300敌/600弹/200掉落，符文刻线峰值32，含预热累计主命中467,760、次级命中1,212,726。原始[performance.json](../reports/performance.json)、[benchmark.log](../reports/benchmark.log)与源码哈希在[该轮报告](../reports/threats-validation.json)冻结。采样期间不运行其他Godot测试/构建，旧用户应用在后台暂停保留。CUA确认压力窗口可见且显示300/600与采样倒计时；定位时曾短暂打开独立项目管理器，实际测试窗口随后确认，没有将此当作严格隔离实验。
+当前核心143fbc0963af在Apple M5 / Godot4.7.2 Compatibility / 1280×720原生运行，保留VSync、max_fps=0。预热5秒后正式采样300秒，27,255帧，平均**90.847 FPS**，P99**25.400毫秒**，退出0并通过≥58 FPS / ≤33毫秒门槛。终点300敌/600弹/200掉落，符文刻线峰值32，含预热累计主命中472,453、次级命中1,218,763。原始[performance.json](../reports/performance.json)、[benchmark.log](../reports/benchmark.log)与源码、构建及回归指纹汇总在[homing-validation.json](../reports/homing-validation.json)。CUA在04:53、02:44、01:20、00:17确认窗口可见、300/600和倒计时推进，标题明确不保存设置与成绩，见[观察记录](../reports/homing-native-observations.json)。采样期间没有运行其他Godot测试/构建/模拟，旧用户应用在后台暂停保留。
+
+本次实际设置为volume=0.65、shake=true、flash=true，persistent_profile=false，run_seed=1792237134，报告新增这三类元数据。诊断隔离后采用默认设置；旧采样继承个人设置且未记录，种子也不同，不能把跨采样差额单独归因于幽焰修复。上一轮fb22ce9的95.480 FPS/P99 25.588毫秒、28,645帧另存[performance-before-homing-turn.json](../reports/performance-before-homing-turn.json)与[benchmark-before-homing-turn.log](../reports/benchmark-before-homing-turn.log)；原源码指纹见该提交的threats-validation.json。更早的performance-before-homing.json保留首次启用追踪前的70.681 FPS历史记录，没有覆盖。
 
 该完整场景以游魂及真实四法器/三符文伤害为主，不覆盖340个同时施法预警。因此另保留相同静止340敌人配置、各2秒预热+10秒采样的[预警绘制对比](../reports/telegraph-draw-comparison.json)：全施法35.172→119.555 FPS、P99 36.850→13.429毫秒；170冲锋+170施法65.087→116.678 FPS、P99 28.755→16.927毫秒。优化前后均无physics/真实攻击/600弹体，仅用于绘制诊断；进度向下量化使临近满环少一段，最大约28.125毫秒装饰滞后。输入绘制命令不是引擎最终drawcall数，报告分别记录，不据此保证其他Mac或所有构筑性能。
 
@@ -109,7 +120,11 @@ Boss存活时HUD明确显示“击败首领 / 限时”，真实剩余≤10秒�
 
 ## Mac应用与分发
 
-本轮另存`build/Embers-shop.app`与`build/Embers-shop-mac-arm64.zip`，arm64、ad-hoc严格签名、Info.plist、headless启动退出0、ZIP完整性通过，见build-shop.log、app-boot-shop.log、archive-shop.log与[shop-validation.json](../reports/shop-validation.json)。Embers.app、Embers-next.app、Embers-threats.app均保留，旧暂停对局不动。新包未另做普通菜单原生启动；本轮普通原生交互来自同源码的无存档商店夹具。
+本轮另存`build/Embers-stable.app`与`build/Embers-stable-mac-arm64.zip`，arm64、ad-hoc严格签名、Info.plist、headless启动退出0、ZIP完整性通过，见build-stable.log、app-boot-stable.log与archive-stable.log。包启动使用--capture-only隔离档案，不创建截图；未另做打包应用普通菜单的原生启动。四份旧应用均保留，旧暂停对局不动。
+
+新应用、PCK、可执行文件及ZIP的SHA-256记录在[homing-validation.json](../reports/homing-validation.json)，对应当前生产源码；自动化、30局和图形采样均已结束后统一整理本地commit。
+
+上一阶段`Embers-shop.app`的原生交互来自同源码无存档商店夹具；当时构建与启动记录见[shop-validation.json](../reports/shop-validation.json)。
 
 以下是上一阶段的打包记录：
 
