@@ -1,0 +1,4 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+OpenGL API 4.1 Metal - 91.7 - Compatibility - Using Device: Apple - Apple M5
+
+UPGRADE_PREVIEW view=boosted result=0 persistent=false choices=[{"amount":12.0,"color":"(0.6, 0.75, 0.92, 1.0)","description":"拾取范围 +12","display_name":"灵魂牵引","icon":"magnet","id":"magnet","name":"灵魂牵引","stat":"pickup_radius"},{"amount":0.1,"color":"(0.89, 0.71, 0.42, 1.0)","description":"攻击速度 +10%","display_name":"咒速精通","icon":"haste","id":"haste","name":"咒速精通","stat":"attack_speed"},{"amount":0.12,"color":"(0.9, 0.36, 0.42, 1.0)","description":"伤害 +12%","display_name":"秘术精通","icon":"damage","id":"damage","name":"秘术精通","stat":"damage"}]

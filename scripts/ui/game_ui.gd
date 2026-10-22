@@ -79,6 +79,7 @@ var _hud_loadout_key := ""
 var _best: Dictionary = {}
 var _requested_shop_focus := ""
 var _shop_epoch: int = 0
+var _upgrade_epoch: int = 0
 var _overlay_mode := ""
 var _page_focus: Control
 var _page_focus_id := ""
@@ -171,6 +172,7 @@ func show_title(best: Dictionary) -> void:
 		option.add_theme_constant_override("separation", 4)
 		starters.add_child(option)
 		var card := _button(definition.display_name, _select_starter.bind(id), Vector2(0, 62))
+		card.name = "Starter_" + id
 		card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		card.toggle_mode = true
 		card.button_pressed = _starter == id
@@ -182,10 +184,13 @@ func show_title(best: Dictionary) -> void:
 		_set_button_icon(card, definition)
 		option.add_child(card)
 		var role := _label(definition.subtitle.get_slice(" · ", 1), 12, GOLD if _starter == id else MUTED)
+		role.name = "StarterRole_" + id
 		role.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		option.add_child(role)
 	var chosen: ContentDef = GameCatalog.weapon(_starter)
-	start_body.add_child(_wrap(chosen.description, 14, MUTED))
+	var starter_description := _wrap(chosen.description, 14, MUTED)
+	starter_description.name = "StarterDescription"
+	start_body.add_child(starter_description)
 	var start := _button("进入试炼", _start, Vector2(0, 46))
 	_accent(start)
 	start_body.add_child(start)
@@ -757,6 +762,7 @@ func _bag_slot(parent: Control, index: int) -> void:
 
 
 func _build_upgrades() -> void:
+	_upgrade_epoch += 1
 	_clear(_page)
 	_background()
 	if run == null:
@@ -781,6 +787,7 @@ func _build_upgrades() -> void:
 	for index in range(choices.size()):
 		var choice: Dictionary = choices[index]
 		var card := _panel(row)
+		card.name = "Upgrade_" + str(choice["id"])
 		card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		var body := _inside(card, 26)
 		var card_heading := HBoxContainer.new()
@@ -796,11 +803,38 @@ func _build_upgrades() -> void:
 		var description := _wrap(str(choice.get("description", "")), 19, BONE)
 		description.size_flags_vertical = Control.SIZE_EXPAND_FILL
 		body.add_child(description)
-		var button := _button("选择强化", _choose_upgrade.bind(str(choice.get("id", ""))), Vector2(0, 46))
+		var preview := VBoxContainer.new()
+		preview.add_theme_constant_override("separation", 4)
+		body.add_child(preview)
+		preview.add_child(_label("当前 → 强化后", 12, MUTED))
+		var values := _label(_upgrade_stat_preview(choice), 20, CYAN)
+		values.name = "UpgradePreview"
+		preview.add_child(values)
+		var button := _button("选择强化", _perform_upgrade_action.bind(str(choice["id"]), _upgrade_epoch), Vector2(0, 46))
 		_accent(button)
 		body.add_child(button)
 		if index == 0:
 			_focus_later(button)
+
+
+func _upgrade_stat_preview(choice: Dictionary) -> String:
+	var key: String = str(choice.get("stat", ""))
+	var names: Dictionary = {"damage": "伤害", "attack_speed": "攻速", "move_speed": "移速", "max_health": "生命上限", "armor": "护甲", "pickup_radius": "拾取范围"}
+	if run == null or not names.has(key):
+		return ""
+	# RunState stacks upgrade and relic bonuses additively for all six current stats.
+	var before: float = run.stat(key)
+	var after: float = before + float(choice.get("amount", 0.0))
+	if key == "damage" or key == "attack_speed":
+		return "%s  ×%.2f → ×%.2f" % [names[key], before, after]
+	return "%s  %.0f → %.0f" % [names[key], before, after]
+
+
+func _perform_upgrade_action(id: String, epoch: int) -> void:
+	# A still-live old button may refer to an ID also offered in the next set.
+	if _screen != "upgrades" or _refresh_queued or not _overlay_mode.is_empty() or epoch != _upgrade_epoch:
+		return
+	_choose_upgrade(id)
 
 
 func _show_settings(from_pause: bool) -> void:
@@ -843,16 +877,32 @@ func _change_toggle(value: bool, key: String) -> void:
 
 
 func _select_starter(id: String) -> void:
+	if _screen != "title" or not _overlay_mode.is_empty() or id not in ["bone", "ember"]:
+		return
 	_starter = id
 	_refresh_title.call_deferred()
 
 
 func _refresh_title() -> void:
-	if _screen == "title":
-		show_title(_best)
+	if _screen != "title":
+		return
+	# Update in place so a queued selection never rebuilds away a settings modal
+	# or its source control and keyboard focus.
+	for id: String in ["bone", "ember"]:
+		var button := _page.find_child("Starter_" + id, true, false) as Button
+		var role := _page.find_child("StarterRole_" + id, true, false) as Label
+		if button != null:
+			button.set_pressed_no_signal(_starter == id)
+		if role != null:
+			role.add_theme_color_override("font_color", GOLD if _starter == id else MUTED)
+	var description := _page.find_child("StarterDescription", true, false) as Label
+	if description != null:
+		description.text = GameCatalog.weapon(_starter).description
 
 
 func _start() -> void:
+	if _screen not in ["title", "result"] or not _overlay_mode.is_empty():
+		return
 	start_requested.emit(_starter)
 
 

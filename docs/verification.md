@@ -11,6 +11,8 @@
 | 幽焰转向边界 | 45条断言，0失败；真实四法器齐射/补刀重锁、反向与半权重退化、微小偏移方向、保速、贯穿UID排除、普通曲线与RNG；同一测试修前6失败 | [tests.log](../reports/tests.log)、[before](../reports/homing-before.log) |
 | 界面测试 | 157条断言，0失败；覆盖真实键盘焦点与装配操作、符文引导、伤害贡献/死亡来源复盘、通知安全区，以及字体排版和装饰输入穿透 | [tests.log](../reports/tests.log) |
 | 覆盖层输入测试 | 37条断言，0失败；真实Tab/Shift+Tab/Return覆盖底页隔离、返回源焦点、升级延迟刷新与界面替换 | [tests.log](../reports/tests.log) |
+| 选择时序 | 44条断言，0失败；两次同帧Return仅选一次，旧强化按钮跨页/覆盖层/新局无效，标题选择不关闭设置；同一源码修前19失败 | [tests.log](../reports/tests.log)、[before](../reports/choice-actions-before.log) |
+| 强化数值预览 | 350条断言，0失败；六类自然选项、合法满遗物加成、独立实际choose_upgrade结果、两页及同类重复升级、展示只读与布局；同一源码旧界面193失败 | [tests.log](../reports/tests.log)、[before](../reports/upgrade-previews-before.log) |
 | 完整流程测试 | 76条断言，0失败；新增设置Esc逐层返回、暂停商店请求保护、最后强化延迟开店的暂停清理；正式首波在2701个固定步后结束，覆盖强化→商店→下一波、暂停/恢复、失败重开、跨波统计与终局结算，以及波末暂停边界 | [tests.log](../reports/tests.log) |
 | 反馈测试 | 64条断言，0失败；新增符文池、真实方向、批次上限及浮字索引回收；覆盖真实伤害浮字、目标UID分离、玩家损血优先级、受击方向、固定池容量与重置 | [tests.log](../reports/tests.log) |
 | 弹体绘制测试 | 77条断言，0失败；覆盖全部法器/符文视觉家族、600/1600弹体容量、圆环厚度、过滤/清理及不改模拟和RNG | [tests.log](../reports/tests.log) |
@@ -22,9 +24,9 @@
 | 离线分析工具 | 14项Python测试通过；覆盖配对旧字段一致性、完整库存与片段区别、缺观测保持未知、坏JSON及混合版本拒绝 | [tests.log](../reports/tests.log) |
 | 实际窗口首波 | 实际运行约47秒；普通45秒首波结束后进入“秘术觉醒”，进程退出码0 | [feedback-flow-native.log](../reports/feedback-flow-native.log)、[首波结束截图](../reports/feedback-first-wave-complete.png) |
 | 实际窗口商店输入 | 固定商店夹具中以CUA按Return成功装配贯穿符文，仍留在商店，没有误触“开始下一波” | 负责人原生CUA操作观察；[商店过程截图](../reports/feedback-shop.png)、[原生日志](../reports/feedback-shop-native.log) |
-| 同种子整局配对模拟 | 2026—2035十个种子×三种符文策略，共30局；本轮29胜1败，与上轮4f相比27局除版本外全部字段相同，3局轨迹/统计变化，无胜负转换；策略未改 | [当前配对报告](../reports/homing-simulation.json)、[历史预警等价](../reports/telegraph-equivalence.json) |
+| 同种子整局配对模拟 | 2026—2035十个种子×三种符文策略，共30局；e64bb18批次29胜1败，与其上轮4f相比27局除版本外全部字段相同，3局轨迹/统计变化，无胜负转换；策略未改 | [当前配对报告](../reports/homing-simulation.json)、[历史预警等价](../reports/telegraph-equivalence.json) |
 
-十三套Godot行为测试共 **1729条headless断言，0失败**，另有14项Python测试通过。流程测试中的Boss终局使用加速条件；商店原生操作使用固定夹具，均只验证对应流程或交互，不代表真实整局通关。
+十五套Godot行为测试共 **2123条headless断言，0失败**，另有14项Python测试通过。流程测试中的Boss终局使用加速条件；商店原生操作使用固定夹具，均只验证对应流程或交互，不代表真实整局通关。
 
 前一阶段新增暂停边界修复：`main._finish_wave`在离开战斗前统一清除SceneTree及主场景的暂停状态。用`ended`回调中的真实`push_input(Esc)`或失焦通知，人为控制“终局已确定、deferred结算尚未执行”的时序；修复前62条中6条失败，修复后全部通过，覆盖商店、升级、Boss胜利与超时失败。普通波进入下一波后实际physics计时继续推进。该回归证明状态健壮性，尚未原生复现普通OS输入会自然落入该窄窗口，不认定它是之前倒计时反馈的唯一原因。证据为`flow-pause-boundary-before.log`和`flow-pause-boundary-after.log`。
 
@@ -38,7 +40,17 @@
 
 新证据区分了两类情况：seed2026贯穿首店曾出现18魂屑符文，策略从65魂屑先买两件24魂屑法器后剩17，才拒绝符文；次店四轮未出现目标符文。seed2032爆破的前两店全部已记录报价未出现目标符文；seed2029贯穿也在前两店未见目标符文，最终仍通关。它们不证明未成型就是死亡原因，也不支持仅据此调整正式价格或强制发放指定符文。第5—7店停止刷新有57次策略饱和、27次达到策略刷新上限，不等于无合法消费。此前缺完整报价的局限仍适用于旧报告，不能用新观测补写旧报告的原始证据。
 
-## 当前：幽焰反向追踪边界
+## 当前：强化信息与选择保护
+
+强化卡以20px冷青文字显示当前属性与选择后的结果，包含已有遗物和升级。伤害/攻速显示倍率，护甲为点数，生命为上限；不是DPS或相对提升百分比。base种子2与boosted种子7的原生截图覆盖六类属性，布局完整。350条回归用独立RunState实际choose_upgrade后的stat核对数值，验证第二页同类护甲6→7→8、展示不改RNG/状态；旧界面193失败均来自缺少卡/数值及其派生检查，没有解析失败。
+
+原强化按钮会在deferred重绘前再次消费相同ID，而该ID可能也出现在下一组。当前按钮捕获建页代次，并在待刷新、旧页、覆盖层或非强化界面时拒绝；旧开始按钮也不能再次重开已启动的战斗。标题选择改为原位更新按下状态、角色说明和颜色，不重建整页，保留设置及来源Node。44条受控输入回归由19失败转为0；同帧Return和标题Tab/Return为真实Godot InputEvent，跨页旧信号为刻意时序夹具，不声称真人OS输入已自然落入相同帧。
+
+CUA在原生固定场景中按Return选护甲，看到待选2→1、下一组护甲1→2；两次Tab选中该护甲再Return，进入商店并显示护甲2。另在不保存档案的Main主菜单选择幽焰、打开设置、Esc返回，实际选择说明和设置按钮焦点保留。窗口均正常退出0；原生操作按正常间隔进行，同帧边界由自动化覆盖，不等同真人整局试玩。记录见[choices-native-observations.json](../reports/choices-native-observations.json)。
+
+生产仅改GameUI，本轮未重跑30局或5分钟压力；核心仍143fbc0963af，RunState、资源、策略、Main与绘制源码未改。最近完整性能和模拟属于e64bb18，当前回归/构建证据见[choices-validation.json](../reports/choices-validation.json)。
+
+## 上一轮：幽焰反向追踪边界
 
 原normalized-lerp在方向恰好相反且权重小于0.5时保持原方向，权重等于0.5时归零。现仅在0<weight≤0.5、dot<0且|cross|≤0.0001的窄区间，沿实际cross符号旋转weight弧度；精确相反时固定正侧，不使用RNG。其余路径继续原normalized-lerp，速度、伤害、范围、寿命、目标筛选与资源均未改。45条同一源码回归修前6失败、修后0失败，另Combat302条通过。
 
@@ -96,7 +108,7 @@ Boss存活时HUD明确显示“击败首领 / 限时”，真实剩余≤10秒�
 
 本机原先将PingFang SC解析成缺少部分简体字形的PingFang HK。“敌”“杀”等字符确实产生缺字字形；现优先采用Hiragino Sans GB，回归检查实际TextServer排版的字形RID与索引，菜单和商店原生截图已确认文字完整。
 
-## 本机性能（当前143fbc0963af完整采样通过）
+## 本机性能（最近完整采样为e64bb18，本轮未重测）
 
 当前核心143fbc0963af在Apple M5 / Godot4.7.2 Compatibility / 1280×720原生运行，保留VSync、max_fps=0。预热5秒后正式采样300秒，27,255帧，平均**90.847 FPS**，P99**25.400毫秒**，退出0并通过≥58 FPS / ≤33毫秒门槛。终点300敌/600弹/200掉落，符文刻线峰值32，含预热累计主命中472,453、次级命中1,218,763。原始[performance.json](../reports/performance.json)、[benchmark.log](../reports/benchmark.log)与源码、构建及回归指纹汇总在[homing-validation.json](../reports/homing-validation.json)。CUA在04:53、02:44、01:20、00:17确认窗口可见、300/600和倒计时推进，标题明确不保存设置与成绩，见[观察记录](../reports/homing-native-observations.json)。采样期间没有运行其他Godot测试/构建/模拟，旧用户应用在后台暂停保留。
 
@@ -120,9 +132,9 @@ Boss存活时HUD明确显示“击败首领 / 限时”，真实剩余≤10秒�
 
 ## Mac应用与分发
 
-本轮另存`build/Embers-stable.app`与`build/Embers-stable-mac-arm64.zip`，arm64、ad-hoc严格签名、Info.plist、headless启动退出0、ZIP完整性通过，见build-stable.log、app-boot-stable.log与archive-stable.log。包启动使用--capture-only隔离档案，不创建截图；未另做打包应用普通菜单的原生启动。四份旧应用均保留，旧暂停对局不动。
+本轮另存`build/Embers-choices.app`与`build/Embers-choices-mac-arm64.zip`，arm64、ad-hoc严格签名、Info.plist、headless启动退出0、ZIP完整性通过，见build-choices.log、app-boot-choices.log与archive-choices.log。包启动使用--capture-only隔离档案，不创建截图；未另做打包应用普通菜单的原生启动。五份旧应用均保留，旧暂停对局不动。
 
-新应用、PCK、可执行文件及ZIP的SHA-256记录在[homing-validation.json](../reports/homing-validation.json)，对应当前生产源码；自动化、30局和图形采样均已结束后统一整理本地commit。
+新应用、PCK、可执行文件及ZIP的SHA-256记录在[choices-validation.json](../reports/choices-validation.json)，对应当前生产源码。上一轮Embers-stable应用与完整30局/性能证据仍见[homing-validation.json](../reports/homing-validation.json)，保留其当时的源码指纹。
 
 上一阶段`Embers-shop.app`的原生交互来自同源码无存档商店夹具；当时构建与启动记录见[shop-validation.json](../reports/shop-validation.json)。
 

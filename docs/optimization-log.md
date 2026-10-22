@@ -4,7 +4,15 @@
 
 本轮先修复可复现的战斗与交互问题，再用固定种子回归检查影响。机器人策略和资源平衡参数保持不变；自动模拟、界面测试、原生运行与真人试玩分别记录，不互相替代。
 
-## 当前：幽焰反向转向与稳定版验证
+## 当前：强化预览与选择保护
+
+- 强化按钮仍存活于deferred重绘前，同一ID也可能在下一组出现。seed2两次真实Return复现了未展示的第二次护甲被消费；现按建页代次、待刷新状态、界面和覆盖层门控。旧开始按钮不能在已进入HUD后重开。44条回归由19失败变0，保留同一源码。
+- 起始法器选择原先延迟重建标题，紧接打开的设置会被清除。现只更新原控件的选中状态、色彩与说明，保留设置窗口与来源焦点；真实Godot Tab/Return覆盖该受控时序。
+- 六类强化卡增加20px冷青数值预览，计入遗物与已有升级。350条回归由193个缺失预览及派生检查失败变0，用独立RunState实际选择后的stat作为oracle，覆盖满遗物、第二页及护甲6→7→8。未把倍率当作DPS或相对百分比，也未改资源数值。
+- 十五类Godot共2123条、14项Python全过。原生base/boosted两图覆盖六类属性，排版已查看；CUA正常间隔两次选护甲后进商店，显示护甲2；Main无存档主菜单选幽焰→设置→Esc，选择与设置焦点保留。这些原生操作不冒充同帧OS复现或真人整局试玩。
+- 仅GameUI生产变化，核心143与策略7c19、资源、RunState、Main、World与painter均未改；未重跑30局或压力，最近90.847 FPS/P99 25.400毫秒仍属于e64bb18。另存Embers-choices.app/ZIP，构建、arm64、严格签名、无存档包启动与ZIP校验均通过；五份旧包和用户暂停对局保留。证据与SHA见[choices-validation.json](../reports/choices-validation.json)，验证后本地commit，持续优化仍在进行。
+
+## 上一轮：幽焰反向转向与稳定版验证
 
 - 原normalized-lerp在正反方向、weight<0.5时不转向，weight=0.5时速度归零。仅为近反向窄区间增加确定性小角转动，保留普通插值、目标筛选、速度、范围、寿命与RNG。45条专项回归由6失败变为0；实际四法器自动齐射后，三骨针补刀、幽焰真实重锁走正式step路径，不用直接伤害代替补刀。
 - 夹具第22帧开始转向2.292°，第45帧5.429°；随后离开420追踪半径，后方目标未被命中。修复防止插值卡死或归零，不承诺追上后方目标。逐帧轨迹与夹具源保留在homing-trajectory.json及gd.txt。
@@ -93,6 +101,8 @@
 | Homing | 45 | 0 |
 | UI | 157 | 0 |
 | Modal | 37 | 0 |
+| ChoiceActions | 44 | 0 |
+| UpgradePreviews | 350 | 0 |
 | Flow | 76 | 0 |
 | Feedback | 64 | 0 |
 | ProjectilePainter | 77 | 0 |
@@ -101,7 +111,7 @@
 | ShopActions | 106 | 0 |
 | ShopDetails | 51 | 0 |
 | ProfileModes（六入口） | 105 | 0 |
-| Godot合计 | **1729** | **0** |
+| Godot合计 | **2123** | **0** |
 
 另有14项Python分析器测试通过；完整记录同在`reports/tests.log`。商店观测的105组冻结策略对照额外核对trace、库存、钱包和RNG状态；分析器将缺失报价和少于四件商品的库存片段保留为未完整观测，不推断缺货。
 
@@ -126,8 +136,8 @@ Flow 的普通首波耗时为 2701 个固定步。Boss 终局检查使用加速�
 
 | 验收项 | 当前账本状态 | 证据与边界 |
 | --- | --- | --- |
-| 当前143fbc0963af真实符文场景5分钟压力测试 | 已通过 | Apple M5 / Compatibility / 1280×720，预热5秒、正式300秒、27,255帧；300/600/200，平均90.847 FPS、P99 25.400毫秒；performance.json标记rune-feedback及实际默认设置/无存档状态，退出0 |
-| 本轮独立 macOS 构建与包启动 | 已通过 | `Embers-stable.app`；`build-stable.log`记录arm64、Info.plist和严格签名；`app-boot-stable.log`为无存档入口退出0；`archive-stable.log`检查ZIP完整，旧用户对局保留 |
+| 上轮e64bb18真实符文场景5分钟压力测试 | 历史通过，本轮未重测 | Apple M5 / Compatibility / 1280×720，预热5秒、正式300秒、27,255帧；300/600/200，平均90.847 FPS、P99 25.400毫秒；performance.json标记rune-feedback及实际默认设置/无存档状态，退出0 |
+| 本轮独立 macOS 构建与包启动 | 已通过 | `Embers-choices.app`；`build-choices.log`记录arm64、Info.plist和严格签名；`app-boot-choices.log`为无存档入口退出0；`archive-choices.log`检查ZIP完整，旧用户对局保留 |
 | 上轮暂停与设置原生输入 | 固定场景通过 | `modal-native.log`与`modal-native.gd.txt`；实际CUA Tab/Return/Esc、恢复商店及下一波45→37；个人存档读写关闭 |
 | 较早阶段原生约47秒流程 | 已通过普通首波结束检查 | `feedback-flow-native.log`与`feedback-first-wave-complete.png`：45秒正常波次进入“秘术觉醒”，退出0。使用自动走位，未使用压力模式或跳过计时 |
 | 商店原生键盘装配 | 已通过 | 在明确标注的固定商店夹具中按真实Return：骨针装入贯穿、备用归零、焦点到“卸符”，仍停留商店；不代表真人整局通关 |

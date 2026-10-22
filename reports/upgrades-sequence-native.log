@@ -1,0 +1,7 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+OpenGL API 4.1 Metal - 91.7 - Compatibility - Using Device: Apple - Apple M5
+
+UPGRADE_PREVIEW view=sequence result=0 persistent=false choices=[{"amount":1.0,"color":"(0.65, 0.68, 0.79, 1.0)","description":"护甲 +1","display_name":"符文护体","icon":"armor","id":"armor","name":"符文护体","stat":"armor"},{"amount":12.0,"color":"(0.89, 0.4, 0.51, 1.0)","description":"生命上限 +12，并回复12生命","display_name":"生命灌注","icon":"vitality","id":"vitality","name":"生命灌注","stat":"max_health"},{"amount":12.0,"color":"(0.48, 0.79, 0.71, 1.0)","description":"移动速度 +12","display_name":"轻盈步伐","icon":"speed","id":"speed","name":"轻盈步伐","stat":"move_speed"}]
+UPGRADE_PREVIEW_CHOICE {"pending":1,"stats":{"armor":1.0,"attack_speed":1.0,"damage":1.0,"max_health":100.0,"move_speed":220.0,"pickup_radius":76.0}}
+UPGRADE_PREVIEW_CHOICE {"pending":0,"stats":{"armor":2.0,"attack_speed":1.0,"damage":1.0,"max_health":100.0,"move_speed":220.0,"pickup_radius":76.0}}
+UPGRADE_PREVIEW_COMPLETE {"damage_dealt_by_weapon":{},"damage_taken":0.0,"elapsed":0.0,"gold":102,"health":100.0,"hits_taken":0,"kills":0,"last_hit":{},"level":3,"loadout":[{"id":"bone","paid":0,"rune":{}}],"max_health":100.0,"pending_upgrades":0,"relic_counts":{},"rune_bag":[],"seed":2,"wave":1,"xp":0}
