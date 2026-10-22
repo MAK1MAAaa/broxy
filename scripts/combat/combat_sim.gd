@@ -295,7 +295,9 @@ func _update_enemies(delta: float) -> void:
 			enemy.position = clamp_point(enemy.position + enemy.velocity * delta)
 		if distance < enemy.radius + 13.0 and invulnerability <= 0.0:
 			var contact_origin: Vector2 = enemy.position
-			enemy.position -= direction * 18.0
+			# Retreat/charge movement can point away from the player; recoil is radial.
+			var recoil_direction: Vector2 = (contact_origin - player_position).normalized()
+			enemy.position = clamp_point(contact_origin + recoil_direction * 18.0)
 			_hurt_player(enemy.definition.damage * (1.0 + 0.09 * float(run.wave - 1)), id, "contact", contact_origin)
 
 func _update_boss(enemy: Enemy, direction: Vector2, delta: float) -> void:

@@ -77,6 +77,9 @@ var _hud: Dictionary = {}
 var _hud_loadout_key := ""
 var _best: Dictionary = {}
 var _requested_shop_focus := ""
+var _overlay_mode := ""
+var _page_focus: Control
+var _page_focus_id := ""
 
 
 func _ready() -> void:
@@ -355,21 +358,71 @@ func show_upgrades() -> void:
 
 
 func show_pause() -> void:
-	_clear(_overlay)
+	var returning_from_settings: bool = _overlay_mode == "settings_pause"
+	_begin_overlay("pause")
 	var body := _modal("试炼暂停", Vector2(500, 470))
 	body.add_child(_label("余烬尚未熄灭。", 17, MUTED))
 	_spacer(body, 12)
 	var resume := _button("继续试炼", _resume, Vector2(0, 48))
 	_accent(resume)
 	body.add_child(resume)
-	body.add_child(_button("设置", _show_settings.bind(true), Vector2(0, 46)))
+	var settings := _button("设置", _show_settings.bind(true), Vector2(0, 46))
+	body.add_child(settings)
 	body.add_child(_button("返回主菜单", _menu, Vector2(0, 46)))
 	body.add_child(_button("退出游戏", _quit, Vector2(0, 46)))
-	_focus_later(resume)
+	_focus_later(settings if returning_from_settings else resume)
 
 
 func hide_pause() -> void:
+	var restore_focus: bool = not _overlay_mode.is_empty()
 	_clear(_overlay)
+	_overlay_mode = ""
+	_page.focus_behavior_recursive = Control.FOCUS_BEHAVIOR_INHERITED
+	if restore_focus:
+		_restore_page_focus()
+	_page_focus = null
+	_page_focus_id = ""
+
+
+func handle_back() -> bool:
+	if _overlay_mode == "settings_pause":
+		show_pause()
+		return true
+	if _overlay_mode == "settings_title":
+		hide_pause()
+		return true
+	return false
+
+
+func _begin_overlay(mode: String) -> void:
+	if _overlay_mode.is_empty():
+		var current: Control = get_viewport().gui_get_focus_owner()
+		_page_focus = current if current != null and _page.is_ancestor_of(current) else null
+		_page_focus_id = str(current.get_meta("shop_focus_id", "")) if _page_focus != null else ""
+	_overlay_mode = mode
+	_page.focus_behavior_recursive = Control.FOCUS_BEHAVIOR_DISABLED
+	_clear(_overlay)
+
+
+func _restore_page_focus() -> void:
+	if is_instance_valid(_page_focus) and _page_focus.is_inside_tree() and _page.is_ancestor_of(_page_focus):
+		_focus_later(_page_focus)
+	elif _screen == "shop":
+		_restore_shop_focus(_page_focus_id)
+	else:
+		var candidate: Button = _first_page_button(_page)
+		if candidate != null:
+			_focus_later(candidate)
+
+
+func _first_page_button(node: Node) -> Button:
+	if node is Button and not node.disabled and node.is_visible_in_tree():
+		return node as Button
+	for child: Node in node.get_children():
+		var found: Button = _first_page_button(child)
+		if found != null:
+			return found
+	return null
 
 
 func show_result(victory: bool, reason: String, best: Dictionary) -> void:
@@ -731,7 +784,7 @@ func _build_upgrades() -> void:
 
 
 func _show_settings(from_pause: bool) -> void:
-	_clear(_overlay)
+	_begin_overlay("settings_pause" if from_pause else "settings_title")
 	var body := _modal("设置", Vector2(540, 440))
 	body.add_child(_label("主音量", 18, BONE))
 	var volume := HSlider.new()
@@ -909,6 +962,10 @@ func _refresh() -> void:
 func _set_screen(screen: String) -> void:
 	_screen = screen
 	_requested_shop_focus = ""
+	_overlay_mode = ""
+	_page_focus = null
+	_page_focus_id = ""
+	_page.focus_behavior_recursive = Control.FOCUS_BEHAVIOR_INHERITED
 	_clear(_page)
 	_clear(_overlay)
 	if _toast != null:
@@ -1205,8 +1262,12 @@ func _button(text: String, action: Callable, minimum: Vector2 = Vector2(0, 40)) 
 func _focus_later(control: Control) -> void:
 	# A screen may be replaced again before its deferred focus request runs.
 	var request: Callable = func() -> void:
-		if is_instance_valid(control) and control.is_inside_tree():
-			control.grab_focus()
+		if not is_instance_valid(control) or not control.is_inside_tree() or not control.is_visible_in_tree():
+			return
+		# A delayed underlying-page rebuild must never steal a modal's focus.
+		if not _overlay_mode.is_empty() and not _overlay.is_ancestor_of(control):
+			return
+		control.grab_focus()
 	request.call_deferred()
 
 

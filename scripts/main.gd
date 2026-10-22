@@ -87,7 +87,7 @@ func _start_run(starter: String) -> void:
 	ui.notify("移动躲避 · 法器自动攻击 · 收集魂屑，波间改装")
 
 func _next_wave() -> void:
-	if screen != Screen.SHOP:
+	if screen != Screen.SHOP or paused or get_tree().paused:
 		return
 	run.next_wave()
 	screen = Screen.COMBAT
@@ -123,6 +123,9 @@ func _finish_wave(won: bool, reason: String) -> void:
 func _open_shop() -> void:
 	if screen != Screen.COMBAT and screen != Screen.UPGRADE:
 		return
+	# The last upgrade can settle after a pause input but before its deferred shop.
+	# Replacing that overlay must also release the actual scene-tree pause.
+	_resume()
 	screen = Screen.SHOP
 	run.generate_shop()
 	ui.show_shop()
@@ -161,7 +164,9 @@ func _setting_changed(key: String, value: Variant) -> void:
 func _unhandled_key_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo:
 		if event.keycode == KEY_ESCAPE:
-			if paused:
+			if ui.handle_back():
+				pass
+			elif paused:
 				_resume()
 			else:
 				_pause()

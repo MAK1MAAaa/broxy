@@ -148,6 +148,9 @@ func _run_tests() -> void:
 	app._title()
 	_check(_profile_unchanged(), "Damage reports and repeated restarts remain in-run and never overwrite personal settings or best scores")
 	await _test_terminal_pause_boundary(app)
+	await _test_overlay_back_flow(app)
+	await _test_paused_shop_transition(app)
+	await _test_upgrade_pause_boundary(app)
 	print("Flow: %d assertions, %d failures; first wave %d fixed ticks; boss terminal conditions are fixtures, not balance tests" % [_checks, _failures, steps])
 	# Use the production quit path, including sound shutdown, after all checks.
 	app._quit_game(0 if _failures == 0 else 1)
@@ -208,6 +211,112 @@ func _test_terminal_pause_boundary(app: Node) -> void:
 			world.set_physics_process(false)
 		app._title()
 	_check(_profile_unchanged(), "Terminal-frame pause regressions do not write personal progression")
+
+
+func _test_overlay_back_flow(app: Node) -> void:
+	app._title()
+	await _settle()
+	var settings_button: Button = _find_button(app.ui, "设置")
+	settings_button.grab_focus()
+	settings_button.pressed.emit()
+	await _settle()
+	_escape()
+	await _settle()
+	_check(app.screen == MAIN_SCRIPT.Screen.TITLE and not paused and not app.paused and app.ui._overlay.get_child_count() == 0, "Escape closes title settings without opening a pause menu")
+	_check(root.gui_get_focus_owner() == settings_button, "Closing title settings restores the invoking button's focus")
+	app._start_run("bone")
+	app.world.set_physics_process(false)
+	app._pause()
+	await _settle()
+	_find_button(app.ui, "设置").pressed.emit()
+	await _settle()
+	_escape()
+	await _settle()
+	_check(paused and app.paused and _find_button(app.ui, "继续试炼") != null and _find_button(app.ui, "返回") == null, "First Escape from pause settings returns one level and keeps combat paused")
+	_escape()
+	await _settle()
+	_check(not paused and not app.paused and app.ui._overlay.get_child_count() == 0, "Second Escape resumes combat from the restored pause menu")
+	app.world.set_physics_process(true)
+	await physics_frame
+	await physics_frame
+	await physics_frame
+	_check(app.world.sim.elapsed > 0.0, "Layered settings return leaves the real combat timer able to advance")
+	app.world.set_physics_process(false)
+	app._title()
+
+
+func _test_paused_shop_transition(app: Node) -> void:
+	app._start_run("bone")
+	app.world.stop()
+	app._open_shop()
+	await _settle()
+	var next: Button = _find_button(app.ui, "开始下一波")
+	next.grab_focus()
+	_escape()
+	await _settle()
+	var before: int = app.run.wave
+	var previous_sim: CombatSim = app.world.sim
+	# A delayed command must not bypass the modal, even if emitted by an old button.
+	next.pressed.emit()
+	await _settle()
+	_check(app.screen == MAIN_SCRIPT.Screen.SHOP and app.run.wave == before and app.world.sim == previous_sim, "A next-wave request while paused cannot replace the shop or simulation")
+	_check(paused and app.paused and _find_button(app.ui, "继续试炼") != null and not app.world.active, "A rejected next-wave request preserves the visible pause state")
+	_escape()
+	await _settle()
+	_check(not paused and not app.paused and root.gui_get_focus_owner() == next, "Resuming the shop restores the exact next-wave control that invoked pause")
+	var accept := InputEventAction.new()
+	accept.action = "ui_accept"
+	accept.pressed = true
+	root.push_input(accept)
+	accept = InputEventAction.new()
+	accept.action = "ui_accept"
+	accept.pressed = false
+	root.push_input(accept)
+	await _settle()
+	_check(app.run.wave == before + 1 and app.screen == MAIN_SCRIPT.Screen.COMBAT and app.world.active and not paused, "The restored shop focus can start the next wave through real ui_accept")
+	app.world.set_physics_process(true)
+	await physics_frame
+	await physics_frame
+	await physics_frame
+	_check(app.world.sim.elapsed > 0.0, "The resumed shop's next wave advances physics without a hidden pause")
+	app.world.set_physics_process(false)
+	app._title()
+
+
+func _test_upgrade_pause_boundary(app: Node) -> void:
+	app._start_run("bone")
+	app.world.stop()
+	app.run.pending_upgrades = 1
+	app.screen = MAIN_SCRIPT.Screen.UPGRADE
+	app.ui.show_upgrades()
+	await _settle()
+	_find_button(app.ui, "选择强化").pressed.emit()
+	_escape()
+	_check(paused and app.paused, "The upgrade fixture pauses after the final choice but before deferred shop creation")
+	await _settle()
+	_check(app.screen == MAIN_SCRIPT.Screen.SHOP and app.run.pending_upgrades == 0 and not paused and not app.paused and app.ui._overlay.get_child_count() == 0, "Final-upgrade settlement opens an unpaused shop instead of removing only the pause overlay")
+	_find_button(app.ui, "开始下一波").pressed.emit()
+	app.world.set_physics_process(true)
+	await physics_frame
+	await physics_frame
+	await physics_frame
+	_check(app.screen == MAIN_SCRIPT.Screen.COMBAT and app.world.sim.elapsed > 0.0 and not paused and not app.paused, "The final-upgrade pause boundary cannot freeze the next combat timer")
+	app.world.set_physics_process(false)
+	app._title()
+	_check(_profile_unchanged(), "Modal and paused-transition regressions never persist personal settings or scores")
+
+
+func _escape() -> void:
+	var event := InputEventKey.new()
+	event.keycode = KEY_ESCAPE
+	event.physical_keycode = KEY_ESCAPE
+	event.pressed = true
+	root.push_input(event, false)
+	event = InputEventKey.new()
+	event.keycode = KEY_ESCAPE
+	event.physical_keycode = KEY_ESCAPE
+	event.pressed = false
+	root.push_input(event, false)
 
 
 func _settle() -> void:

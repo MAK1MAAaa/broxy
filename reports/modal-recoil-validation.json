@@ -1,0 +1,131 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-10-22T11:17:40.584252+00:00",
+  "baseline_git_ref": "4ae1a0e",
+  "core_version": "prototype-0.1.0+f29c7008e475",
+  "source_sha256": {
+    "scripts/combat/combat_sim.gd": "b4c1472f2e3682b0778f2a0bd608d781b0f04568a47c6398f424a7d13ca00915",
+    "scripts/ui/game_ui.gd": "32448e843024ebba1a2fc40d1dba426726745c87b6dd9f2def358ff4b0fed0c6",
+    "scripts/main.gd": "d36ed4f958d5fe6d61f5eb091db6a20f857dcfe5377a4e55dfebb47835fefb61",
+    "tools/build_macos.sh": "84ffc3343fec5e6fb624ffb7fc166a41406d5f0f0575c8e13aeeaf80beb473d2",
+    "tests/test_combat.gd": "9600c0f15859e255c140901dde9b361b61c0f7f1966a49de530c223b19f76c3a",
+    "tests/test_flow.gd": "24ab4721ba621b1b6af1e159148e64b3471dc533ad52a666dd35c601496f4724",
+    "tests/test_modal.gd": "91d4ac5a5310dc8a2735a6718d3a3ea751628bbe91cb8c78118091b7da95fa99"
+  },
+  "unchanged_since_baseline": [
+    "scripts/core/run_state.gd",
+    "scripts/combat/bot_policy.gd",
+    "tests/simulate_runs.gd",
+    "scripts/combat/combat_world.gd",
+    "scripts/combat/projectile_painter.gd",
+    "data/runes/pierce.tres",
+    "data/runes/bounce.tres",
+    "data/runes/blast.tres",
+    "data/relics/armor.tres",
+    "data/relics/vitality.tres",
+    "data/relics/damage.tres",
+    "data/relics/speed.tres",
+    "data/relics/haste.tres",
+    "data/relics/magnet.tres",
+    "data/weapons/scatter.tres",
+    "data/weapons/frost.tres",
+    "data/weapons/bone.tres",
+    "data/weapons/ember.tres",
+    "data/waves/wave_1.tres",
+    "data/waves/wave_6.tres",
+    "data/waves/wave_7.tres",
+    "data/waves/wave_8.tres",
+    "data/waves/wave_4.tres",
+    "data/waves/wave_5.tres",
+    "data/waves/wave_2.tres",
+    "data/waves/wave_3.tres",
+    "data/enemies/caster.tres",
+    "data/enemies/boss.tres",
+    "data/enemies/tank.tres",
+    "data/enemies/chaser.tres",
+    "data/enemies/rusher.tres"
+  ],
+  "godot_suites": {
+    "Rules": {
+      "assertions": 204,
+      "failures": 0
+    },
+    "Combat": {
+      "assertions": 302,
+      "failures": 0
+    },
+    "UI": {
+      "assertions": 131,
+      "failures": 0
+    },
+    "Modal": {
+      "assertions": 37,
+      "failures": 0
+    },
+    "Flow": {
+      "assertions": 76,
+      "failures": 0
+    },
+    "Feedback": {
+      "assertions": 58,
+      "failures": 0
+    },
+    "ProjectilePainter": {
+      "assertions": 77,
+      "failures": 0
+    },
+    "ShopObservation": {
+      "assertions": 384,
+      "failures": 0
+    }
+  },
+  "godot_assertions_total": 1269,
+  "python_tests": 14,
+  "tests_log_sha256": "bd97ea32336d0cec87c73c2ab27c6eb99f622096534d97b19611c78626ce20ae",
+  "flow_regression_before": {
+    "assertions": 76,
+    "failures": 9
+  },
+  "flow_regression_after": {
+    "assertions": 76,
+    "failures": 0
+  },
+  "simulation_comparison": "reports/modal-recoil-simulation.json",
+  "simulation_comparison_sha256": "1e259de193acbffacc5ca4680bedce926cf867dddee423b4744a1d1969002a25",
+  "native_fixture": {
+    "script": "reports/modal-native.gd.txt",
+    "script_sha256": "2ce3422577082c3060e02d3473ee2613cc5752ec46208b560d01ded0d7eb44bc",
+    "log_sha256": "09e220c3c042487e895ac3a223b311995d4d8e0437398da9a945baece3f94314",
+    "personal_profile_persistence": false,
+    "exit_code": 0,
+    "CUA_verified": [
+      "Eight Tabs returned to pause resume button without entering underlying shop",
+      "Tab/Return opened pause settings",
+      "First Escape returned to pause menu with settings focus",
+      "Second Escape restored shop buy:0 focus",
+      "Clicked next wave and observed wave2 countdown 45 to 37",
+      "Title settings Escape restored source settings focus"
+    ]
+  },
+  "mac_app": {
+    "path": "build/Embers-next.app",
+    "architecture": "arm64",
+    "signing": "ad-hoc; codesign deep strict verified",
+    "executable_sha256": "e474890f6204c874cac0f649fcc422626282ef0fafcf62422f82a39eceb2eec2",
+    "archive": "build/Embers-next-mac-arm64.zip",
+    "archive_sha256": "f402709d0c52c9744d05a464e703e98e6f8c133962eab8440d872d200e8d56b4",
+    "headless_boot_exit_code": 0,
+    "archive_integrity_exit_code": 0,
+    "original_app_and_archive_unchanged": true,
+    "original_user_run_observed": "wave1, paused, timer00:36 before and after this round",
+    "candidate_normal_native_launch_tested": false,
+    "optional_output_rejects_relative_path": true,
+    "original_bundle_files_match_preserved_archive": 10
+  },
+  "limits": [
+    "No new five-minute graphics benchmark this round; previous95.642FPS/P9926.022ms belongs to bdd5240c97ca.",
+    "Native interaction used a no-persistence Main fixture and a directly constructed shop, not a first-wave clear or human playtest.",
+    "Current30 fixed bot runs intentionally differ after contact recoil repair; not an equivalence or human-difficulty claim.",
+    "Five-person human playtest remains pending."
+  ]
+}

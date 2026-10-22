@@ -77,6 +77,7 @@ func _initialize() -> void:
 	_test_rune_activation_guards()
 	_test_explosion_spatial_equivalence()
 	_test_nearest_spatial_equivalence()
+	_test_contact_recoil()
 	_test_caster_aim()
 	_test_ember_homing()
 	_test_damage_accounting()
@@ -624,6 +625,75 @@ func _first_hostile(simulation: CombatSim) -> CombatSim.Shot:
 		if shot.active and shot.hostile:
 			return shot
 	return null
+
+func _test_contact_recoil() -> void:
+	for behavior: String in ["chaser", "rusher", "rusher_charge", "tank", "caster", "boss"]:
+		var sim: CombatSim = _simulation(431, 3)
+		sim.player_position = Vector2(640, 365)
+		var id: String = "rusher" if behavior == "rusher_charge" else behavior
+		var enemy: CombatSim.Enemy = sim.spawn_enemy(id, Vector2(660, 365))
+		enemy.action_timer = 9999.0
+		if behavior == "rusher_charge":
+			enemy.mode = 2
+			enemy.charge_direction = Vector2.DOWN
+		var hits: Array[Dictionary] = []
+		sim.player_damaged.connect(func(amount: float, source: String, kind: String, origin: Vector2) -> void:
+			hits.append({"amount": amount, "source": source, "kind": kind, "origin": origin})
+		)
+		sim.step(DELTA, Vector2.ZERO)
+		_check(hits.size() == 1 and sim.run.hits_taken == 1 and is_equal_approx(sim.run.damage_taken, enemy.definition.damage * 1.18), "Contact recoil preserves actual damage and hit count: " + behavior)
+		if hits.size() == 1:
+			var origin: Vector2 = hits[0]["origin"]
+			var recoil: Vector2 = enemy.position - origin
+			_check(is_equal_approx(recoil.length(), 18.0) and recoil.normalized().dot((origin - sim.player_position).normalized()) > 0.9999, "Contact recoil moves radially away, independently of pursuit/retreat/charge: " + behavior)
+			_check(enemy.position.distance_to(sim.player_position) > origin.distance_to(sim.player_position), "Contact recoil increases separation from the player: " + behavior)
+			_check(hits[0]["source"] == id and hits[0]["kind"] == "contact" and is_equal_approx(float(hits[0]["amount"]), enemy.definition.damage * 1.18), "Contact feedback keeps source, origin and scaled damage: " + behavior)
+	var edge_cases: Array[Dictionary] = [
+		{"player": Vector2(82, 365), "enemy": Vector2(67, 365)},
+		{"player": Vector2(1198, 365), "enemy": Vector2(1213, 365)},
+		{"player": Vector2(640, 156), "enemy": Vector2(640, 141)},
+		{"player": Vector2(640, 574), "enemy": Vector2(640, 589)},
+	]
+	for fixture: Dictionary in edge_cases:
+		var sim: CombatSim = _simulation()
+		sim.player_position = fixture["player"]
+		var enemy: CombatSim.Enemy = sim.spawn_enemy("chaser", fixture["enemy"])
+		enemy.action_timer = 9999.0
+		sim.step(DELTA, Vector2.ZERO)
+		var bounds: Rect2 = CombatSim.ARENA
+		_check(enemy.position.x >= bounds.position.x and enemy.position.x <= bounds.end.x and enemy.position.y >= bounds.position.y and enemy.position.y <= bounds.end.y, "Post-contact recoil remains inside every arena edge")
+		_check(sim.run.hits_taken == 1 and sim.run.health == 92.0, "Arena clamping does not cancel contact damage")
+	var overlap: CombatSim = _simulation()
+	overlap.player_position = Vector2(640, 365)
+	var coincident: CombatSim.Enemy = overlap.spawn_enemy("chaser", overlap.player_position)
+	coincident.action_timer = 9999.0
+	overlap.step(DELTA, Vector2.ZERO)
+	_check(coincident.position.is_finite() and coincident.position == overlap.player_position and overlap.run.health == 92.0, "Exact overlap keeps a finite zero recoil direction and normal contact damage")
+	for distance: float in [100.0, 200.0, 300.0]:
+		var sim: CombatSim = _simulation()
+		sim.player_position = Vector2(640, 365)
+		var start: Vector2 = sim.player_position + Vector2(distance, 0)
+		var caster: CombatSim.Enemy = sim.spawn_enemy("caster", start)
+		caster.action_timer = 9999.0
+		sim.step(DELTA, Vector2.ZERO)
+		_check(caster.position.is_equal_approx(CombatSim.clamp_point(start + caster.velocity * DELTA)) and sim.run.hits_taken == 0 and sim.run.health == 100.0, "Non-contact caster motion has no added recoil: distance " + str(distance))
+		_check(caster.position.distance_to(sim.player_position) > distance if distance < 160.0 else (caster.velocity == Vector2.ZERO if distance < 250.0 else caster.position.distance_to(sim.player_position) < distance), "Caster retreat/hold/pursuit behavior is unchanged: distance " + str(distance))
+	for id: String in ["chaser", "rusher", "tank"]:
+		var sim: CombatSim = _simulation()
+		sim.player_position = Vector2(640, 365)
+		var start: Vector2 = Vector2(840, 365)
+		var enemy: CombatSim.Enemy = sim.spawn_enemy(id, start)
+		enemy.action_timer = 9999.0
+		sim.step(DELTA, Vector2.ZERO)
+		_check(enemy.position.is_equal_approx(CombatSim.clamp_point(start + enemy.velocity * DELTA)) and sim.run.hits_taken == 0, "Non-contact pursuit is unchanged: " + id)
+	var invulnerable: CombatSim = _simulation()
+	invulnerable.player_position = Vector2(640, 365)
+	invulnerable.invulnerability = 0.5
+	var untouched: CombatSim.Enemy = invulnerable.spawn_enemy("caster", Vector2(660, 365))
+	untouched.action_timer = 9999.0
+	var start: Vector2 = untouched.position
+	invulnerable.step(DELTA, Vector2.ZERO)
+	_check(untouched.position.is_equal_approx(start + untouched.velocity * DELTA) and invulnerable.run.hits_taken == 0, "Existing invulnerability suppresses both contact damage and recoil")
 
 func _test_caster_aim() -> void:
 	var close: CombatSim = _simulation()

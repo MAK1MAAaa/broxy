@@ -2,7 +2,11 @@
 set -eu
 BROXY_ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 BROXY_GODOT=${GODOT_BIN:-"$BROXY_ROOT/.tools/godot/Godot.app/Contents/MacOS/Godot"}
-BROXY_APP="$BROXY_ROOT/build/Embers.app"
+BROXY_APP=${BROXY_APP_PATH:-"$BROXY_ROOT/build/Embers.app"}
+case "$BROXY_APP" in
+  /*.app) ;;
+  *) echo "BROXY_APP_PATH must be an absolute path ending in .app" >&2; exit 1 ;;
+esac
 if [ ! -x "$BROXY_GODOT" ] || [ ! -f "$BROXY_ROOT/.tools/macos.zip" ]; then
   echo "Required: official Godot editor and macOS template in .tools/. See README.md." >&2
   exit 1

@@ -10,7 +10,7 @@ Godot 4.7.2 普通版、带类型标注的 GDScript 开发的 macOS 单人割草
 
 ## 直接游玩
 
-打开 `build/Embers.app`，选择骨针或幽焰开局。应用面向 Apple Silicon、macOS 13 及以上；已采用本地 ad-hoc 签名，尚未进行 Developer ID 公证。
+本轮最新应用为 `build/Embers-next.app`（压缩包`build/Embers-next-mac-arm64.zip`）。旧`build/Embers.app`保留正在暂停的对局；结束旧应用后再打开新版。选择骨针或幽焰开局。应用面向 Apple Silicon、macOS 13 及以上；已采用本地 ad-hoc 签名，尚未进行 Developer ID 公证。
 
 | 操作 | 按键 |
 | --- | --- |
@@ -20,7 +20,7 @@ Godot 4.7.2 普通版、带类型标注的 GDScript 开发的 macOS 单人割草
 | 暂停 / 继续 | Esc |
 | 窗口 / 全屏 | Alt+F 或 F11 |
 
-失去焦点自动暂停，恢复焦点后需主动继续。主菜单和暂停菜单均可调整音量、震屏与受击闪光。
+失去焦点自动暂停，恢复焦点后需主动继续。设置中按Esc逐层返回；暂停和设置隔离底层商店/强化的键盘焦点，关闭后恢复原控件。主菜单和暂停菜单均可调整音量、震屏与受击闪光。
 
 ## 游戏规则
 
@@ -55,6 +55,8 @@ python3 tools/fetch_macos_template.py
 
 ```sh
 ./tools/build_macos.sh
+# 另存应用，避免替换正在运行的旧版：
+BROXY_APP_PATH="$PWD/build/Embers-next.app" ./tools/build_macos.sh
 ```
 
 构建从官方 Universal 模板提取 arm64，生成 `build/Embers.app` 并执行 ad-hoc 签名验证。引擎许可在应用的 `Contents/Resources/licenses/` 中直接可读。对外发布前应使用自己的 Developer ID 配置签名与公证。
@@ -65,6 +67,7 @@ python3 tools/fetch_macos_template.py
 ./tools/run.sh --headless --script res://tests/test_rules.gd
 ./tools/run.sh --headless --script res://tests/test_combat.gd
 ./tools/run.sh --headless --script res://tests/test_ui.gd
+./tools/run.sh --headless --script res://tests/test_modal.gd
 ./tools/run.sh --headless --script res://tests/test_flow.gd
 ./tools/run.sh --headless --script res://tests/test_feedback.gd
 ./tools/run.sh --headless --script res://tests/test_projectile_painter.gd
@@ -74,13 +77,13 @@ python3 -m unittest discover -s tests -p 'test_shop_analysis.py'
 ./tools/run.sh -- --benchmark --benchmark-runes --seconds=300
 ```
 
-也可以用 `./tools/test.sh` 一次运行七套Godot行为测试和Python分析器测试。当前1175条Godot断言及14项Python测试全部通过，记录见 `reports/tests.log`。系统字体测试需要正常 macOS 字体访问权限；文件沙箱可能阻止 SystemFont 枚举。请在常规终端运行。性能测试会打开明确标记的窗口并显示采样倒计时，保持300敌人、至少600投射物与200掉落，预热5秒后采样300秒，输出 `reports/performance.json`。`--benchmark-runes`使用四种法器与三类符文的真实伤害弹体，报告标记为`rune-feedback`；省略该参数为含零伤害维持弹体的历史`baseline`场景，两者分别记录。测试时保持该窗口可见、Mac未锁屏，避免同时运行其他图形负载。
+也可以用 `./tools/test.sh` 一次运行八套Godot行为测试和Python分析器测试。当前1269条Godot断言及14项Python测试全部通过，记录见 `reports/tests.log`。系统字体测试需要正常 macOS 字体访问权限；文件沙箱可能阻止 SystemFont 枚举。请在常规终端运行。性能测试会打开明确标记的窗口并显示采样倒计时，保持300敌人、至少600投射物与200掉落，预热5秒后采样300秒，输出 `reports/performance.json`。`--benchmark-runes`使用四种法器与三类符文的真实伤害弹体，报告标记为`rune-feedback`；省略该参数为含零伤害维持弹体的历史`baseline`场景，两者分别记录。测试时保持该窗口可见、Mac未锁屏，避免同时运行其他图形负载。
 
-最新5分钟真实符文压力场景在Apple M5上达到平均95.64 FPS、P99 26.02毫秒；设备与场景边界见 `docs/verification.md`。
+最近一次完整5分钟采样对应上一阶段核心`bdd5240c97ca`，在Apple M5真实符文场景中达到平均95.64 FPS、P99 26.02毫秒；本轮暂停与反冲修复未重跑5分钟压力测试。设备与场景边界见 `docs/verification.md`。
 
-完整模拟复用正式 `RunState`、`CombatSim.step` 与商店价格，没有额外金币、无敌或专用 Boss 数值。最新核心版本`bdd5240c97ca`的30局回归为28胜2败，与商店观测基线除核心版本字段外全部一致；更早的战斗正确性修复曾改变轨迹。它不代表真人胜率。策略与证据见 `docs/simulation.md`，试玩流程见 `docs/playtest.md`，持续工作记录见 `docs/optimization-log.md`。
+完整模拟复用正式 `RunState`、`CombatSim.step` 与商店价格，没有额外金币、无敌或专用 Boss 数值。最新核心版本`f29c7008e475`修复接触反冲方向及边界：30局固定策略回归从28胜变为29胜，24局轨迹或统计改变，不能称为行为等价或真人胜率。策略与证据见 `docs/simulation.md`，试玩流程见 `docs/playtest.md`，持续工作记录见 `docs/optimization-log.md`。
 
-模拟还会记录完整商店报价、余额、候选评分及停止购买/刷新原因。`tools/analyze_shop_runs.py`可生成观测分析，并用`--baseline`严格比较旧对局字段和购物trace。本轮30局新增观测前后旧字段完全一致，证据见`reports/shop-analysis.json`；该结果只证明所测样本不受观测影响，不表示此前的战斗修复没有改变轨迹。
+模拟还会记录完整商店报价、余额、候选评分及停止购买/刷新原因。`tools/analyze_shop_runs.py`可生成观测分析，并用`--baseline`严格比较旧对局字段和购物trace。商店观测阶段的30局在新增观测前后旧字段完全一致，证据见`reports/shop-analysis.json`；该结果只证明所测样本不受观测影响，不表示此前的战斗修复没有改变轨迹。
 
 美术可用 `python3 tools/generate_assets.py` 确定性重建。运行 `./tools/run.sh --script res://tools/preview_art.gd` 会创建不读写个人存档的固定陈列场景，保存 `reports/art-showcase.png` 后退出；它用于检查角色、法器与预警层级，不代表实际关卡或通关表现。普通战斗、菜单及商店截图分别为 `reports/art-after.png`、`reports/art-menu.png`、`reports/art-shop.png`。
 
