@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Original environment artwork for the Eclipse Reliquary vector family.
 
-Only paths, shapes, gradients and patterns are used: no SVG filters, masks,
+Only paths, shapes and gradients are used: no SVG filters, masks,
 external images or fonts. All procedural variation is deterministically seeded.
 """
 from __future__ import annotations
@@ -39,6 +39,46 @@ def star(x: float, y: float, radius: float, fill: str, opacity: float = 1) -> st
 
 def glyph(x: float, y: float, size: float, angle: float, color: str, opacity: float) -> str:
     return f'<g transform="translate({x:g} {y:g}) rotate({angle:g}) scale({size:g})">' + p("M-3 -4 L0 4 3 -4 M-3 -1 H3 M0 -5 V5", stroke=color, sw=1, opacity=opacity) + '</g>'
+
+
+def wear_patch(x: float, y: float, rx: float, ry: float, fill: str, opacity: float, seed: int) -> str:
+    """Broad, soft-edged mineral wear rather than repeated oval spots."""
+    rng = random.Random(seed)
+    points = []
+    for index in range(9):
+        angle = index * math.tau / 9
+        radius = rng.uniform(.55, 1.0)
+        points.append((x + math.cos(angle) * rx * radius, y + math.sin(angle) * ry * radius))
+    middle = lambda a, b: ((a[0] + b[0]) * .5, (a[1] + b[1]) * .5)
+    start = middle(points[-1], points[0])
+    d = f"M{start[0]:.1f} {start[1]:.1f}"
+    for index, point in enumerate(points):
+        end = middle(point, points[(index + 1) % len(points)])
+        d += f" Q{point[0]:.1f} {point[1]:.1f} {end[0]:.1f} {end[1]:.1f}"
+    return p(d + "Z", fill, opacity=opacity)
+
+
+def slab_edges(x: float, y: float, right: float, bottom: float, seed: int) -> str:
+    """Shallow facets stay inside each existing slab; no raised obstacle shapes."""
+    rng = random.Random(seed)
+    # Broken, narrow lips avoid making every slab look like a raised bevelled panel.
+    edge_width = rng.uniform(1.3, 2.5)
+    edge_end = x + (right - x) * rng.uniform(.62, .91)
+    b = p(f"M{x+7:.1f} {y+4:.1f} L{edge_end:.1f} {y+4:.1f} {edge_end-5:.1f} {y+4+edge_width:.1f} {x+11:.1f} {y+5+edge_width:.1f}Z", "#8f9b92", opacity=.09)
+    b += line(x+4,y+11,x+4,bottom-13,"#829289",.8,.09)
+    b += p(f"M{right-4:.1f} {y+9:.1f} L{right-4:.1f} {bottom-6:.1f} {right-8:.1f} {bottom-4:.1f} {x+10:.1f} {bottom-4:.1f} {x+14:.1f} {bottom-6:.1f} {right-7:.1f} {bottom-7:.1f}Z", "#0b1925", opacity=.22)
+    # Chisel scratches follow the top-left illumination, with generous quiet gaps.
+    if right - x > 60 and rng.random() < .65:
+        px = rng.uniform(x + 13, right - 22)
+        py = rng.uniform(y + 12, bottom - 12)
+        length = min(rng.uniform(8, 23), right - px - 8)
+        b += p(f"M{px:.1f} {py:.1f} l{length*.6:.1f} -1.5 {length*.4:.1f} 1", stroke="#9aa294", sw=.65, opacity=.10)
+    if right - x > 64 and rng.random() < .48:
+        chip = rng.uniform(x + 17, right - 17)
+        b += p(f"M{chip-5:.1f} {y+3:.1f} l4 5 5 -2 3 -3Z", "#152430", opacity=.85)
+        b += p(f"M{chip-1:.1f} {y+8:.1f} l5 -2 3 -2", stroke="#889489", sw=.7, opacity=.22)
+        b += p(f"M{chip+1:.1f} {y+8:.1f} l-3 7 4 4 -2 5", stroke="#0e1e2a", sw=.8, opacity=.6)
+    return b
 
 
 def candle(x: float, y: float, scale: float, prefix: str) -> str:
@@ -92,12 +132,13 @@ def arena_body() -> str:
             n1, n2 = rng.uniform(2, 7), rng.uniform(2, 7)
             points = [(x+2, y+2+n1*.2), (right-5, y+2), (right-2, y+n2), (right-2, bottom-5), (right-6, bottom-2), (x+n1, bottom-2), (x+2, bottom-6)]
             d = "M" + " L".join(f"{a:.1f} {c:.1f}" for a, c in points) + "Z"
-            b += p(d, rng.choice(colors), "#14232e", 1.7)
-            b += line(x+7, y+5, right-8, y+5, "#59615f", .8, .25)
-            b += line(x+5, y+9, x+5, bottom-10, "#50605f", .7, .15)
+            b += p(d, rng.choice(colors), "#14232e", 1.3)
+            # A separate detail seed preserves the established slab layout/RNG stream.
+            detail_seed = 0x5A17 + row * 257 + column * 977
+            b += slab_edges(x, y, right, bottom, detail_seed)
             if right - x > 70:
                 px, py = x+(right-x)*rng.uniform(.2,.65), y+(bottom-y)*rng.uniform(.25,.75)
-                b += ellipse(px, py, rng.uniform(15, 35), rng.uniform(5, 13), "#789080", opacity=rng.uniform(.025,.055))
+                b += wear_patch(px, py, rng.uniform(15, 35), rng.uniform(5, 13), "#8b9787", rng.uniform(.035,.065), detail_seed + 13)
                 if rng.random() < .34:
                     b += p(f"M{px:.1f} {py:.1f} l9 -3 6 5 11 -2 6 5", stroke="#12222e", sw=1, opacity=.57)
                     b += p(f"M{px+9:.1f} {py-3:.1f} l-1 -7 5 -4", stroke="#14232d", sw=.7, opacity=.4)
@@ -127,9 +168,9 @@ def arena_body() -> str:
     b += p("M640 258 L732.7 418.5 H547.3Z M640 472 L547.3 311.5 H732.7Z", stroke="#b1a17c", sw=.9, opacity=.075)
     b += p("M640 321 L650 355 684 365 650 375 640 409 630 375 596 365 630 355Z", stroke="#b6a582", sw=.9, opacity=.1)
     # Uneven wear patches are broad and almost invisible in the center.
-    for _ in range(24):
+    for index in range(24):
         x, y = rng.uniform(94,1186), rng.uniform(149,574)
-        b += ellipse(x,y,rng.uniform(13,37),rng.uniform(3,10),"#101e2a",opacity=rng.uniform(.035,.1))
+        b += wear_patch(x,y,rng.uniform(13,37),rng.uniform(3,10),"#101e2a",rng.uniform(.035,.1),0x7EA2+index)
     b += rect(57, 119, 1166, 490, "url(#env_upper_shadow)", rx=7)
     # Recessed northern chapel arcade, entirely outside the actual combat bounds.
     for x in range(100, 1220, 135):
@@ -295,7 +336,7 @@ def menu_body() -> str:
 
 
 def generate(save_svg: SaveSVG) -> None:
-    save_svg("arena.svg", 1280, 720, arena_body(), "original worn blue-grey chapel arena; unobstructed low-contrast gameplay Rect2(66,140,1148,450); muted gold ritual rings; decorative edge architecture")
+    save_svg("arena.svg", 1280, 720, arena_body(), "original worn blue-grey chapel arena; shallow stone facets, chipped seams and mineral wear; unobstructed low-contrast gameplay Rect2(66,140,1148,450); muted gold ritual rings; decorative edge architecture")
     save_svg("menu_art.svg", 640, 720, menu_body(), "original eclipse orrery, illuminated floating folio, cracked columns and candlelight; quiet left 150px; no baked typography")
 
 

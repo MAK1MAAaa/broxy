@@ -14,11 +14,14 @@ func _initialize() -> void:
 
 func _preview() -> void:
 	var view: String = "windup"
+	var destination: String = ""
 	for argument: String in OS.get_cmdline_user_args():
 		if argument.begins_with("--view="):
 			view = argument.trim_prefix("--view=")
+		elif argument.begins_with("--output=res://reports/") and argument.ends_with(".png"):
+			destination = argument.trim_prefix("--output=")
 		else:
-			push_error("Use --view=windup or --view=boss")
+			push_error("Use --view=windup|boss and optional --output=res://reports/<name>.png")
 			quit(2)
 			return
 	if view not in ["windup", "boss"] or DisplayServer.get_name() == "headless":
@@ -85,7 +88,8 @@ func _preview() -> void:
 	world._enemy_telegraphs.rebuild(sim.enemies)
 	var stats: Dictionary = world._enemy_telegraphs.get_stats()
 	passed = passed and stats["charge_count"] == 3 and stats["cast_count"] == 3
-	var destination: String = "res://reports/" + ("boss-deadline.png" if view == "boss" else "threat-showcase.png")
+	if destination.is_empty():
+		destination = "res://reports/" + ("boss-deadline.png" if view == "boss" else "threat-showcase.png")
 	var result: Error = root.get_texture().get_image().save_png(ProjectSettings.globalize_path(destination))
 	print("THREAT_PREVIEW view=",view," frames=",FRAMES," fixture_passed=",passed,
 		" result=",result," stats=",JSON.stringify(stats)," persistent=false")

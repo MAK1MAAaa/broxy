@@ -46,6 +46,8 @@ Godot自身可能在标准输出打印版本信息。保存为JSONL时，仅保�
 
 ## 已运行结果
 
+最新engraved-03只细化静态竞技场SVG；运行时、data资源与策略保持37be1ea源码，未重跑30局。以下fb2核心记录仍是最近完整模拟，不能用来验证本轮静帧美感或动态性能。
+
 ### 最近完整批次：商店只读校验的30局配对
 
 将购买条件提取为纯查询后，核心指纹变为`prototype-0.1.0+fb2ccf1ca5f1`。种子2026—2035×贯穿/弹射/爆破，沿用`orbit-avoid-v1/shop-v1+7c19c01f20e4`，30局退出0；与下述143核心批次逐字段比较，仅排除`balance_version`，包括完整trace、wave_results与shop_observations的所有剩余字段均一致，仍29胜1败。见[purchase-simulation.json](../reports/purchase-simulation.json)，本地JSONL为`reports/simulation-30-purchase.jsonl`，SHA-256为`6dc407886ecf6f923c913ba79d6c6fa1e13d566bc18bab5035fb5b3889d7a1e8`。这只约束所测固定机器人样本，不证明真人购物理解、胜率或图形性能。

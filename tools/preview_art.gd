@@ -5,6 +5,10 @@ func _initialize() -> void:
 	_preview.call_deferred()
 
 func _preview() -> void:
+	var destination: String = "res://reports/art-showcase.png"
+	for argument: String in OS.get_cmdline_user_args():
+		if argument.begins_with("--output=res://reports/") and argument.ends_with(".png"):
+			destination = argument.trim_prefix("--output=")
 	root.size = Vector2i(1280, 720)
 	var app = load("res://scenes/main.tscn").instantiate()
 	app.store.persistent = false
@@ -62,6 +66,6 @@ func _preview() -> void:
 	await process_frame
 	await process_frame
 	await RenderingServer.frame_post_draw
-	var result: Error = root.get_texture().get_image().save_png("res://reports/art-showcase.png")
-	print("ART_PREVIEW_CAPTURE result=", result)
+	var result: Error = root.get_texture().get_image().save_png(destination)
+	print("ART_PREVIEW_CAPTURE result=", result, " output=", destination, " persistent=false")
 	app._quit_game(0 if result == OK else 1)

@@ -1,6 +1,6 @@
 # 原型验收记录
 
-验收日期：2026年10月22日。引擎为 Godot 4.7.2 普通版；当前模拟核心/资源版本为 `prototype-0.1.0+fb2ccf1ca5f1`，新增只读购买校验并包含幽焰反向追踪修复；当前美术为 `engraved-02`。以下分别记录自动化、原生窗口、构建与待完成检查；“持续优化游戏”仍在进行中。
+验收日期：2026年10月22日。引擎为 Godot 4.7.2 普通版；当前模拟核心/资源版本为 `prototype-0.1.0+fb2ccf1ca5f1`，新增只读购买校验并包含幽焰反向追踪修复；当前美术为 `engraved-03`。以下分别记录自动化、原生窗口、构建与待完成检查；“持续优化游戏”仍在进行中。
 
 ## 功能与构筑
 
@@ -43,7 +43,17 @@
 
 新证据区分了两类情况：seed2026贯穿首店曾出现18魂屑符文，策略从65魂屑先买两件24魂屑法器后剩17，才拒绝符文；次店四轮未出现目标符文。seed2032爆破的前两店全部已记录报价未出现目标符文；seed2029贯穿也在前两店未见目标符文，最终仍通关。它们不证明未成型就是死亡原因，也不支持仅据此调整正式价格或强制发放指定符文。第5—7店停止刷新有57次策略饱和、27次达到策略刷新上限，不等于无合法消费。此前缺完整报价的局限仍适用于旧报告，不能用新观测补写旧报告的原始证据。
 
-## 当前：商店购买条件可见与键盘导航
+## 当前：竞技场石材细化
+
+engraved-03只更新竞技场石面：断续窄受光边、薄暗面、贴边碎缺与短裂，不规则宽缓矿物磨面。原铺装位置、中央低对比双环、边缘建筑保持；首版倒角过重，最终减弱以避免凸起面板感。其他34项素材与基线逐字节相同，35项资源数量、原尺寸和中心锚点均不变。
+
+完整生成两次，40个产物/元数据/许可文件的指纹一致；25张SVG XML、尺寸、本地引用与10段WAV格式检查通过，没有外部图片/字体、滤镜、脚本或掩膜。技术报告见[arena-assets-qa.json](../reports/arena-assets-qa.json)。这些检查不证明审美或危险辨识度。
+
+同源码1280×720美术陈列前后图和42步后冻结的预警/边缘角色图均退出0并已查看；玩家面具、敌人轮廓与珊瑚预警仍清楚，未见明显假障碍或抢眼噪声。这是静帧判断，没有进行本轮动态密集战斗、真人试玩或原生键盘验收。全2473条Godot和14项Python通过；另存Embers-stone.app/ZIP，通过arm64、ad-hoc严格签名、Info.plist、无存档包启动和ZIP完整性检查，旧应用/暂停对局保留。
+
+运行时脚本、模拟资源与策略保持37be1ea源码，因此本轮没有重跑30局或5分钟压力；没有增加背景纹理尺寸或背景绘制提交，也不据此声称已测得新帧率。源码、图片、日志和包指纹见[arena-art-validation.json](../reports/arena-art-validation.json)。
+
+## 上一轮：商店购买条件可见与键盘导航
 
 四种暂不可购条件直接写在原购买按钮内，保留售价；副标题显示法器/备用容量或该遗物层数。受阻商品保持可聚焦，Return仍走正式拒绝反馈，失败后保留该卡焦点。只有已售出商品disabled且FOCUS_NONE。满袋说明明确装入无符文法器或出售备用符文；交换不会腾位。正常交易、错误优先级、价格和生成报价保持原规则。
 
@@ -153,9 +163,9 @@ Boss存活时HUD明确显示“击败首领 / 限时”，真实剩余≤10秒�
 
 ## Mac应用与分发
 
-本轮另存`build/Embers-shop-status.app`与`build/Embers-shop-status-mac-arm64.zip`，arm64、ad-hoc严格签名、Info.plist、headless启动退出0、ZIP完整性通过，见build-shop-status.log、app-boot-shop-status.log与archive-shop-status.log。包启动使用--capture-only隔离档案，不创建截图；未另做打包应用普通菜单的原生启动。旧应用与暂停对局均保留。
+本轮另存`build/Embers-stone.app`与`build/Embers-stone-mac-arm64.zip`，arm64、ad-hoc严格签名、Info.plist、headless启动退出0、ZIP完整性通过，见build-stone.log、app-boot-stone.log与archive-stone.log。包启动使用--capture-only隔离档案，不创建截图；未另做打包应用普通菜单的原生启动。旧应用与暂停对局均保留。
 
-新应用、PCK、可执行文件及ZIP的SHA-256记录在[purchase-validation.json](../reports/purchase-validation.json)，对应当前生产源码。上一轮Embers-hud见[notices-validation.json](../reports/notices-validation.json)。上一轮Embers-choices见[choices-validation.json](../reports/choices-validation.json)；更早Embers-stable应用与完整30局/性能证据仍见[homing-validation.json](../reports/homing-validation.json)，均保留当时的源码指纹。
+新应用、PCK、可执行文件及ZIP的SHA-256记录在[arena-art-validation.json](../reports/arena-art-validation.json)，对应当前素材与源码。上一轮Embers-shop-status见[purchase-validation.json](../reports/purchase-validation.json)。更早Embers-hud见[notices-validation.json](../reports/notices-validation.json)。上一轮Embers-choices见[choices-validation.json](../reports/choices-validation.json)；更早Embers-stable应用与完整30局/性能证据仍见[homing-validation.json](../reports/homing-validation.json)，均保留当时的源码指纹。
 
 上一阶段`Embers-shop.app`的原生交互来自同源码无存档商店夹具；当时构建与启动记录见[shop-validation.json](../reports/shop-validation.json)。
 

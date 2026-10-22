@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "style": "Eclipse reliquary: engraved occult vector art",
-  "art_revision": "engraved-02",
+  "art_revision": "engraved-03",
   "license": "CC0-1.0",
   "generator": "python3 tools/generate_assets.py",
   "external_sources": [],
@@ -126,7 +126,7 @@
         0.5,
         0.5
       ],
-      "role": "original worn blue-grey chapel arena; unobstructed low-contrast gameplay Rect2(66,140,1148,450); muted gold ritual rings; decorative edge architecture",
+      "role": "original worn blue-grey chapel arena; shallow stone facets, chipped seams and mineral wear; unobstructed low-contrast gameplay Rect2(66,140,1148,450); muted gold ritual rings; decorative edge architecture",
       "source": "tools/art_environment.py",
       "creator": "Project original procedural vector artwork",
       "license": "CC0-1.0",
