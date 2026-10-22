@@ -1,0 +1,580 @@
+{
+  "schema_version": 1,
+  "style": "Eclipse reliquary: engraved occult vector art",
+  "art_revision": "engraved-02",
+  "license": "CC0-1.0",
+  "generator": "python3 tools/generate_assets.py",
+  "external_sources": [],
+  "assets": [
+    {
+      "id": "sprites_player",
+      "path": "assets/sprites/player.svg",
+      "type": "vector",
+      "size": [
+        96,
+        96
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "ivory beaked mask, plum hood, ritual chain; center anchor",
+      "source": "tools/art_sprites.py",
+      "creator": "Project original procedural vector artwork",
+      "license": "CC0-1.0",
+      "status": "authored; engine visual QA pending"
+    },
+    {
+      "id": "sprites_chaser",
+      "path": "assets/sprites/chaser.svg",
+      "type": "vector",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "tattered pursuing spirit; center anchor",
+      "source": "tools/art_sprites.py",
+      "creator": "Project original procedural vector artwork",
+      "license": "CC0-1.0",
+      "status": "authored; engine visual QA pending"
+    },
+    {
+      "id": "sprites_rusher",
+      "path": "assets/sprites/rusher.svg",
+      "type": "vector",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "low angular claw beast; center anchor",
+      "source": "tools/art_sprites.py",
+      "creator": "Project original procedural vector artwork",
+      "license": "CC0-1.0",
+      "status": "authored; engine visual QA pending"
+    },
+    {
+      "id": "sprites_tank",
+      "path": "assets/sprites/tank.svg",
+      "type": "vector",
+      "size": [
+        80,
+        80
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "heavy shield-shaped iron guardian; center anchor",
+      "source": "tools/art_sprites.py",
+      "creator": "Project original procedural vector artwork",
+      "license": "CC0-1.0",
+      "status": "authored; engine visual QA pending"
+    },
+    {
+      "id": "sprites_caster",
+      "path": "assets/sprites/caster.svg",
+      "type": "vector",
+      "size": [
+        72,
+        72
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "ceremonial robed cultist and skull staff; center anchor",
+      "source": "tools/art_sprites.py",
+      "creator": "Project original procedural vector artwork",
+      "license": "CC0-1.0",
+      "status": "authored; engine visual QA pending"
+    },
+    {
+      "id": "sprites_boss",
+      "path": "assets/sprites/boss.svg",
+      "type": "vector",
+      "size": [
+        160,
+        160
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "crowned faceless idol with detached floating hands; center anchor",
+      "source": "tools/art_sprites.py",
+      "creator": "Project original procedural vector artwork",
+      "license": "CC0-1.0",
+      "status": "authored; engine visual QA pending"
+    },
+    {
+      "id": "arena",
+      "path": "assets/arena.svg",
+      "type": "vector",
+      "size": [
+        1280,
+        720
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "original worn blue-grey chapel arena; unobstructed low-contrast gameplay Rect2(66,140,1148,450); muted gold ritual rings; decorative edge architecture",
+      "source": "tools/art_environment.py",
+      "creator": "Project original procedural vector artwork",
+      "license": "CC0-1.0",
+      "status": "authored; engine visual QA pending"
+    },
+    {
+      "id": "menu_art",
+      "path": "assets/menu_art.svg",
+      "type": "vector",
+      "size": [
+        640,
+        720
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "original eclipse orrery, illuminated floating folio, cracked columns and candlelight; quiet left 150px; no baked typography",
+      "source": "tools/art_environment.py",
+      "creator": "Project original procedural vector artwork",
+      "license": "CC0-1.0",
+      "status": "authored; engine visual QA pending"
+    },
+    {
+      "id": "icons_bone",
+      "path": "assets/icons/bone.svg",
+      "type": "vector",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "engraved occult bone icon; transparent; readable at 24–48px",
+      "source": "tools/art_icons.py",
+      "creator": "Project original procedural vector artwork",
+      "license": "CC0-1.0",
+      "status": "authored; engine visual QA pending"
+    },
+    {
+      "id": "icons_frost",
+      "path": "assets/icons/frost.svg",
+      "type": "vector",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "engraved occult frost icon; transparent; readable at 24–48px",
+      "source": "tools/art_icons.py",
+      "creator": "Project original procedural vector artwork",
+      "license": "CC0-1.0",
+      "status": "authored; engine visual QA pending"
+    },
+    {
+      "id": "icons_ember",
+      "path": "assets/icons/ember.svg",
+      "type": "vector",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "engraved occult ember icon; transparent; readable at 24–48px",
+      "source": "tools/art_icons.py",
+      "creator": "Project original procedural vector artwork",
+      "license": "CC0-1.0",
+      "status": "authored; engine visual QA pending"
+    },
+    {
+      "id": "icons_scatter",
+      "path": "assets/icons/scatter.svg",
+      "type": "vector",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "engraved occult scatter icon; transparent; readable at 24–48px",
+      "source": "tools/art_icons.py",
+      "creator": "Project original procedural vector artwork",
+      "license": "CC0-1.0",
+      "status": "authored; engine visual QA pending"
+    },
+    {
+      "id": "icons_pierce",
+      "path": "assets/icons/pierce.svg",
+      "type": "vector",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "engraved occult pierce icon; transparent; readable at 24–48px",
+      "source": "tools/art_icons.py",
+      "creator": "Project original procedural vector artwork",
+      "license": "CC0-1.0",
+      "status": "authored; engine visual QA pending"
+    },
+    {
+      "id": "icons_bounce",
+      "path": "assets/icons/bounce.svg",
+      "type": "vector",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "engraved occult bounce icon; transparent; readable at 24–48px",
+      "source": "tools/art_icons.py",
+      "creator": "Project original procedural vector artwork",
+      "license": "CC0-1.0",
+      "status": "authored; engine visual QA pending"
+    },
+    {
+      "id": "icons_blast",
+      "path": "assets/icons/blast.svg",
+      "type": "vector",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "engraved occult blast icon; transparent; readable at 24–48px",
+      "source": "tools/art_icons.py",
+      "creator": "Project original procedural vector artwork",
+      "license": "CC0-1.0",
+      "status": "authored; engine visual QA pending"
+    },
+    {
+      "id": "icons_damage",
+      "path": "assets/icons/damage.svg",
+      "type": "vector",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "engraved occult damage icon; transparent; readable at 24–48px",
+      "source": "tools/art_icons.py",
+      "creator": "Project original procedural vector artwork",
+      "license": "CC0-1.0",
+      "status": "authored; engine visual QA pending"
+    },
+    {
+      "id": "icons_haste",
+      "path": "assets/icons/haste.svg",
+      "type": "vector",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "engraved occult haste icon; transparent; readable at 24–48px",
+      "source": "tools/art_icons.py",
+      "creator": "Project original procedural vector artwork",
+      "license": "CC0-1.0",
+      "status": "authored; engine visual QA pending"
+    },
+    {
+      "id": "icons_speed",
+      "path": "assets/icons/speed.svg",
+      "type": "vector",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "engraved occult speed icon; transparent; readable at 24–48px",
+      "source": "tools/art_icons.py",
+      "creator": "Project original procedural vector artwork",
+      "license": "CC0-1.0",
+      "status": "authored; engine visual QA pending"
+    },
+    {
+      "id": "icons_vitality",
+      "path": "assets/icons/vitality.svg",
+      "type": "vector",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "engraved occult vitality icon; transparent; readable at 24–48px",
+      "source": "tools/art_icons.py",
+      "creator": "Project original procedural vector artwork",
+      "license": "CC0-1.0",
+      "status": "authored; engine visual QA pending"
+    },
+    {
+      "id": "icons_armor",
+      "path": "assets/icons/armor.svg",
+      "type": "vector",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "engraved occult armor icon; transparent; readable at 24–48px",
+      "source": "tools/art_icons.py",
+      "creator": "Project original procedural vector artwork",
+      "license": "CC0-1.0",
+      "status": "authored; engine visual QA pending"
+    },
+    {
+      "id": "icons_magnet",
+      "path": "assets/icons/magnet.svg",
+      "type": "vector",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "engraved occult magnet icon; transparent; readable at 24–48px",
+      "source": "tools/art_icons.py",
+      "creator": "Project original procedural vector artwork",
+      "license": "CC0-1.0",
+      "status": "authored; engine visual QA pending"
+    },
+    {
+      "id": "icons_soul",
+      "path": "assets/icons/soul.svg",
+      "type": "vector",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "engraved occult soul icon; transparent; readable at 24–48px",
+      "source": "tools/art_icons.py",
+      "creator": "Project original procedural vector artwork",
+      "license": "CC0-1.0",
+      "status": "authored; engine visual QA pending"
+    },
+    {
+      "id": "fx_glow",
+      "path": "assets/fx/glow.svg",
+      "type": "vector",
+      "size": [
+        96,
+        96
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "soft radial light; runtime tint and opacity; cosmetic only",
+      "source": "tools/art_icons.py",
+      "creator": "Project original procedural vector artwork",
+      "license": "CC0-1.0",
+      "status": "authored; engine visual QA pending"
+    },
+    {
+      "id": "fx_seal",
+      "path": "assets/fx/seal.svg",
+      "type": "vector",
+      "size": [
+        96,
+        96
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "player ground sigil; transparent; decorative, no collision",
+      "source": "tools/art_icons.py",
+      "creator": "Project original procedural vector artwork",
+      "license": "CC0-1.0",
+      "status": "authored; engine visual QA pending"
+    },
+    {
+      "id": "icon",
+      "path": "assets/icon.svg",
+      "type": "vector",
+      "size": [
+        256,
+        256
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "application icon; engraved eclipse and ritual flame",
+      "source": "tools/art_icons.py",
+      "creator": "Project original procedural vector artwork",
+      "license": "CC0-1.0",
+      "status": "authored; engine visual QA pending"
+    },
+    {
+      "id": "audio_shoot",
+      "path": "assets/audio/shoot.wav",
+      "type": "audio",
+      "duration_seconds": 0.14,
+      "sample_rate": 22050,
+      "loop": false,
+      "source": "tools/generate_assets.py",
+      "creator": "Project original deterministic synthesis",
+      "license": "CC0-1.0",
+      "status": "authored; in-game mix QA pending"
+    },
+    {
+      "id": "audio_hit",
+      "path": "assets/audio/hit.wav",
+      "type": "audio",
+      "duration_seconds": 0.13,
+      "sample_rate": 22050,
+      "loop": false,
+      "source": "tools/generate_assets.py",
+      "creator": "Project original deterministic synthesis",
+      "license": "CC0-1.0",
+      "status": "authored; in-game mix QA pending"
+    },
+    {
+      "id": "audio_hurt",
+      "path": "assets/audio/hurt.wav",
+      "type": "audio",
+      "duration_seconds": 0.33,
+      "sample_rate": 22050,
+      "loop": false,
+      "source": "tools/generate_assets.py",
+      "creator": "Project original deterministic synthesis",
+      "license": "CC0-1.0",
+      "status": "authored; in-game mix QA pending"
+    },
+    {
+      "id": "audio_death",
+      "path": "assets/audio/death.wav",
+      "type": "audio",
+      "duration_seconds": 0.38,
+      "sample_rate": 22050,
+      "loop": false,
+      "source": "tools/generate_assets.py",
+      "creator": "Project original deterministic synthesis",
+      "license": "CC0-1.0",
+      "status": "authored; in-game mix QA pending"
+    },
+    {
+      "id": "audio_buy",
+      "path": "assets/audio/buy.wav",
+      "type": "audio",
+      "duration_seconds": 0.28,
+      "sample_rate": 22050,
+      "loop": false,
+      "source": "tools/generate_assets.py",
+      "creator": "Project original deterministic synthesis",
+      "license": "CC0-1.0",
+      "status": "authored; in-game mix QA pending"
+    },
+    {
+      "id": "audio_rune",
+      "path": "assets/audio/rune.wav",
+      "type": "audio",
+      "duration_seconds": 0.46,
+      "sample_rate": 22050,
+      "loop": false,
+      "source": "tools/generate_assets.py",
+      "creator": "Project original deterministic synthesis",
+      "license": "CC0-1.0",
+      "status": "authored; in-game mix QA pending"
+    },
+    {
+      "id": "audio_level",
+      "path": "assets/audio/level.wav",
+      "type": "audio",
+      "duration_seconds": 0.65,
+      "sample_rate": 22050,
+      "loop": false,
+      "source": "tools/generate_assets.py",
+      "creator": "Project original deterministic synthesis",
+      "license": "CC0-1.0",
+      "status": "authored; in-game mix QA pending"
+    },
+    {
+      "id": "audio_victory",
+      "path": "assets/audio/victory.wav",
+      "type": "audio",
+      "duration_seconds": 0.78,
+      "sample_rate": 22050,
+      "loop": false,
+      "source": "tools/generate_assets.py",
+      "creator": "Project original deterministic synthesis",
+      "license": "CC0-1.0",
+      "status": "authored; in-game mix QA pending"
+    },
+    {
+      "id": "audio_defeat",
+      "path": "assets/audio/defeat.wav",
+      "type": "audio",
+      "duration_seconds": 0.75,
+      "sample_rate": 22050,
+      "loop": false,
+      "source": "tools/generate_assets.py",
+      "creator": "Project original deterministic synthesis",
+      "license": "CC0-1.0",
+      "status": "authored; in-game mix QA pending"
+    },
+    {
+      "id": "audio_ambience",
+      "path": "assets/audio/ambience.wav",
+      "type": "audio",
+      "duration_seconds": 8.0,
+      "sample_rate": 22050,
+      "loop": true,
+      "source": "tools/generate_assets.py",
+      "creator": "Project original deterministic synthesis",
+      "license": "CC0-1.0",
+      "status": "authored; in-game mix QA pending"
+    }
+  ]
+}

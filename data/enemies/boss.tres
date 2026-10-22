@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="ContentDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/content_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "boss"
+kind = "enemy"
+display_name = "无面祭司"
+subtitle = "终末首领"
+description = "主持终末仪式的无面祭司。倒计时结束前击败它，完成试炼。"
+color = Color(0.89, 0.38, 0.33, 1)
+health = 1500.0
+speed = 34.0
+damage = 18.0
+radius = 42.0
+cooldown = 2.7
+projectile_speed = 170.0
+projectile_radius = 8.0
+range = 1200.0
+shots = 12

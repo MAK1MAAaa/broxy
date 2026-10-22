@@ -1,0 +1,1082 @@
+{
+  "schema_version": 1,
+  "stage": "final target-ID feedback version",
+  "command": "tools/run.sh --headless --script res://tests/simulate_runs.gd -- --seed=2026 --count=10",
+  "headless": true,
+  "simulation_exit_code": 0,
+  "seed_range": [
+    2026,
+    2035
+  ],
+  "balance_version": "prototype-0.1.0+dad5c03f6439",
+  "policy_version": "orbit-avoid-v1/shop-v1+cf468b4c5f0f",
+  "source_version_at_report_export": "prototype-0.1.0+dad5c03f6439",
+  "source_matches_runtime_at_export": true,
+  "baseline_unchanged": true,
+  "existing_simulation_jsonl_unchanged": true,
+  "jsonl_sha256": "98d4b6a5d3dbd4783dd68844f1568ee7d060ee4532419da235d8f8008487d0ea",
+  "overall": {
+    "runs": 30,
+    "wins": 28,
+    "robot_win_fraction": 0.9333,
+    "death_wave_counts": {
+      "3": 1,
+      "4": 1
+    },
+    "first_target_equip_after_wave_counts": {
+      "1": 9,
+      "2": 18,
+      "3": 2,
+      "never": 1
+    },
+    "target_equipped_before_start_of_wave_3": 27,
+    "never_equipped_target_count": 1,
+    "full_target_build_after_wave_counts": {
+      "2": 9,
+      "3": 11,
+      "4": 5,
+      "5": 2,
+      "7": 1,
+      "never": 2
+    },
+    "final_gold": {
+      "n": 30,
+      "min": 213,
+      "median": 1609.5,
+      "mean": 1511.067,
+      "max": 1856
+    },
+    "battle_seconds_wins_only": {
+      "n": 28,
+      "min": 319.717,
+      "median": 325.275,
+      "mean": 327.476,
+      "max": 347.367
+    }
+  },
+  "by_rune": {
+    "pierce": {
+      "runs": 10,
+      "wins": 9,
+      "robot_win_fraction": 0.9,
+      "death_wave_counts": {
+        "3": 1
+      },
+      "first_target_equip_after_wave_counts": {
+        "1": 1,
+        "2": 7,
+        "3": 1,
+        "never": 1
+      },
+      "target_equipped_before_start_of_wave_3": 8,
+      "never_equipped_target_count": 1,
+      "full_target_build_after_wave_counts": {
+        "2": 1,
+        "3": 6,
+        "4": 1,
+        "5": 1,
+        "never": 1
+      },
+      "final_gold": {
+        "n": 10,
+        "min": 213,
+        "median": 1652.5,
+        "mean": 1503.6,
+        "max": 1856
+      },
+      "battle_seconds_wins_only": {
+        "n": 9,
+        "min": 319.717,
+        "median": 326.183,
+        "mean": 329.487,
+        "max": 347.367
+      }
+    },
+    "bounce": {
+      "runs": 10,
+      "wins": 10,
+      "robot_win_fraction": 1.0,
+      "death_wave_counts": {},
+      "first_target_equip_after_wave_counts": {
+        "1": 5,
+        "2": 5
+      },
+      "target_equipped_before_start_of_wave_3": 10,
+      "never_equipped_target_count": 0,
+      "full_target_build_after_wave_counts": {
+        "2": 6,
+        "3": 2,
+        "4": 1,
+        "7": 1
+      },
+      "final_gold": {
+        "n": 10,
+        "min": 1245,
+        "median": 1616.5,
+        "mean": 1576,
+        "max": 1695
+      },
+      "battle_seconds_wins_only": {
+        "n": 10,
+        "min": 320.417,
+        "median": 322.5165,
+        "mean": 324.448,
+        "max": 335.383
+      }
+    },
+    "blast": {
+      "runs": 10,
+      "wins": 9,
+      "robot_win_fraction": 0.9,
+      "death_wave_counts": {
+        "4": 1
+      },
+      "first_target_equip_after_wave_counts": {
+        "1": 3,
+        "2": 6,
+        "3": 1
+      },
+      "target_equipped_before_start_of_wave_3": 9,
+      "never_equipped_target_count": 0,
+      "full_target_build_after_wave_counts": {
+        "2": 2,
+        "3": 3,
+        "4": 3,
+        "5": 1,
+        "never": 1
+      },
+      "final_gold": {
+        "n": 10,
+        "min": 301,
+        "median": 1582.5,
+        "mean": 1453.6,
+        "max": 1700
+      },
+      "battle_seconds_wins_only": {
+        "n": 9,
+        "min": 320.6,
+        "median": 329.183,
+        "mean": 328.828,
+        "max": 335.867
+      }
+    }
+  },
+  "by_wave": [
+    {
+      "wave": 1,
+      "reached": 30,
+      "wave_completed": 30,
+      "deaths": 0,
+      "combat_income": {
+        "n": 30,
+        "min": 86,
+        "median": 87.0,
+        "mean": 87.2,
+        "max": 88
+      },
+      "gold_after_combat": {
+        "n": 30,
+        "min": 86,
+        "median": 87.0,
+        "mean": 87.2,
+        "max": 88
+      },
+      "gold_after_shop": {
+        "n": 30,
+        "min": 0,
+        "median": 16.0,
+        "mean": 14.133,
+        "max": 21
+      },
+      "shop_count": 30,
+      "shops_with_no_purchase": 0,
+      "top_up_total": 0
+    },
+    {
+      "wave": 2,
+      "reached": 30,
+      "wave_completed": 30,
+      "deaths": 0,
+      "combat_income": {
+        "n": 30,
+        "min": 140,
+        "median": 150.5,
+        "mean": 150.2,
+        "max": 158
+      },
+      "gold_after_combat": {
+        "n": 30,
+        "min": 155,
+        "median": 163.5,
+        "mean": 164.333,
+        "max": 179
+      },
+      "gold_after_shop": {
+        "n": 30,
+        "min": 3,
+        "median": 34.0,
+        "mean": 45.6,
+        "max": 119
+      },
+      "shop_count": 30,
+      "shops_with_no_purchase": 0,
+      "top_up_total": 0
+    },
+    {
+      "wave": 3,
+      "reached": 30,
+      "wave_completed": 29,
+      "deaths": 1,
+      "combat_income": {
+        "n": 30,
+        "min": 94,
+        "median": 216.0,
+        "mean": 211,
+        "max": 250
+      },
+      "gold_after_combat": {
+        "n": 30,
+        "min": 212,
+        "median": 256.5,
+        "mean": 256.6,
+        "max": 290
+      },
+      "gold_after_shop": {
+        "n": 29,
+        "min": 5,
+        "median": 108,
+        "mean": 97.793,
+        "max": 205
+      },
+      "shop_count": 29,
+      "shops_with_no_purchase": 0,
+      "top_up_total": 0
+    },
+    {
+      "wave": 4,
+      "reached": 29,
+      "wave_completed": 28,
+      "deaths": 1,
+      "combat_income": {
+        "n": 29,
+        "min": 174,
+        "median": 323,
+        "mean": 320.586,
+        "max": 368
+      },
+      "gold_after_combat": {
+        "n": 29,
+        "min": 301,
+        "median": 421,
+        "mean": 418.379,
+        "max": 527
+      },
+      "gold_after_shop": {
+        "n": 28,
+        "min": 190,
+        "median": 280.5,
+        "mean": 289.179,
+        "max": 415
+      },
+      "shop_count": 28,
+      "shops_with_no_purchase": 0,
+      "top_up_total": 0
+    },
+    {
+      "wave": 5,
+      "reached": 28,
+      "wave_completed": 28,
+      "deaths": 0,
+      "combat_income": {
+        "n": 28,
+        "min": 352,
+        "median": 390.5,
+        "mean": 390.786,
+        "max": 423
+      },
+      "gold_after_combat": {
+        "n": 28,
+        "min": 550,
+        "median": 668.0,
+        "mean": 679.964,
+        "max": 822
+      },
+      "gold_after_shop": {
+        "n": 28,
+        "min": 481,
+        "median": 600.0,
+        "mean": 592.893,
+        "max": 720
+      },
+      "shop_count": 28,
+      "shops_with_no_purchase": 3,
+      "top_up_total": 0
+    },
+    {
+      "wave": 6,
+      "reached": 28,
+      "wave_completed": 28,
+      "deaths": 0,
+      "combat_income": {
+        "n": 28,
+        "min": 419,
+        "median": 491.0,
+        "mean": 488.607,
+        "max": 539
+      },
+      "gold_after_combat": {
+        "n": 28,
+        "min": 900,
+        "median": 1083.0,
+        "mean": 1081.5,
+        "max": 1259
+      },
+      "gold_after_shop": {
+        "n": 28,
+        "min": 823,
+        "median": 1038.0,
+        "mean": 1033.536,
+        "max": 1141
+      },
+      "shop_count": 28,
+      "shops_with_no_purchase": 11,
+      "top_up_total": 0
+    },
+    {
+      "wave": 7,
+      "reached": 28,
+      "wave_completed": 28,
+      "deaths": 0,
+      "combat_income": {
+        "n": 28,
+        "min": 442,
+        "median": 535.5,
+        "mean": 537.679,
+        "max": 594
+      },
+      "gold_after_combat": {
+        "n": 28,
+        "min": 1265,
+        "median": 1566.0,
+        "mean": 1571.214,
+        "max": 1710
+      },
+      "gold_after_shop": {
+        "n": 28,
+        "min": 1231,
+        "median": 1566.0,
+        "mean": 1560.964,
+        "max": 1710
+      },
+      "shop_count": 28,
+      "shops_with_no_purchase": 23,
+      "top_up_total": 0
+    },
+    {
+      "wave": 8,
+      "reached": 28,
+      "wave_completed": 28,
+      "deaths": 0,
+      "combat_income": {
+        "n": 28,
+        "min": 4,
+        "median": 30.5,
+        "mean": 39.679,
+        "max": 146
+      },
+      "gold_after_combat": {
+        "n": 28,
+        "min": 1245,
+        "median": 1619.0,
+        "mean": 1600.643,
+        "max": 1856
+      },
+      "gold_after_shop": {
+        "n": 0,
+        "min": null,
+        "median": null,
+        "mean": null,
+        "max": null
+      },
+      "shop_count": 0,
+      "shops_with_no_purchase": 0,
+      "top_up_total": 0
+    }
+  ],
+  "runs": [
+    {
+      "seed": 2026,
+      "rune": "pierce",
+      "won": false,
+      "death_wave": 3,
+      "battle_seconds": 123.1,
+      "first_target_equip_after_wave": null,
+      "first_target_equip_entering_wave": null,
+      "full_target_build_after_wave": null,
+      "target_runes_at_end": 0,
+      "final_gold": 213,
+      "reason": "生命耗尽：被缚棺者的接触攻击击败。",
+      "shop_gold_after_wave_1_to_7": [
+        17,
+        119,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "seed": 2026,
+      "rune": "bounce",
+      "won": true,
+      "death_wave": null,
+      "battle_seconds": 321.133,
+      "first_target_equip_after_wave": 2,
+      "first_target_equip_entering_wave": 3,
+      "full_target_build_after_wave": 7,
+      "target_runes_at_end": 4,
+      "final_gold": 1245,
+      "reason": "无面祭司已被击败。你的余烬仍在燃烧。",
+      "shop_gold_after_wave_1_to_7": [
+        17,
+        97,
+        104,
+        198,
+        481,
+        823,
+        1231
+      ]
+    },
+    {
+      "seed": 2026,
+      "rune": "blast",
+      "won": true,
+      "death_wave": null,
+      "battle_seconds": 331.15,
+      "first_target_equip_after_wave": 1,
+      "first_target_equip_entering_wave": 2,
+      "full_target_build_after_wave": 2,
+      "target_runes_at_end": 4,
+      "final_gold": 1606,
+      "reason": "无面祭司已被击败。你的余烬仍在燃烧。",
+      "shop_gold_after_wave_1_to_7": [
+        21,
+        29,
+        84,
+        190,
+        509,
+        1033,
+        1555
+      ]
+    },
+    {
+      "seed": 2027,
+      "rune": "pierce",
+      "won": true,
+      "death_wave": null,
+      "battle_seconds": 326.183,
+      "first_target_equip_after_wave": 2,
+      "first_target_equip_entering_wave": 3,
+      "full_target_build_after_wave": 3,
+      "target_runes_at_end": 4,
+      "final_gold": 1716,
+      "reason": "无面祭司已被击败。你的余烬仍在燃烧。",
+      "shop_gold_after_wave_1_to_7": [
+        13,
+        38,
+        14,
+        242,
+        618,
+        1121,
+        1680
+      ]
+    },
+    {
+      "seed": 2027,
+      "rune": "bounce",
+      "won": true,
+      "death_wave": null,
+      "battle_seconds": 322.683,
+      "first_target_equip_after_wave": 2,
+      "first_target_equip_entering_wave": 3,
+      "full_target_build_after_wave": 3,
+      "target_runes_at_end": 4,
+      "final_gold": 1690,
+      "reason": "无面祭司已被击败。你的余烬仍在燃烧。",
+      "shop_gold_after_wave_1_to_7": [
+        13,
+        9,
+        24,
+        258,
+        628,
+        1121,
+        1671
+      ]
+    },
+    {
+      "seed": 2027,
+      "rune": "blast",
+      "won": true,
+      "death_wave": null,
+      "battle_seconds": 325.0,
+      "first_target_equip_after_wave": 2,
+      "first_target_equip_entering_wave": 3,
+      "full_target_build_after_wave": 4,
+      "target_runes_at_end": 4,
+      "final_gold": 1612,
+      "reason": "无面祭司已被击败。你的余烬仍在燃烧。",
+      "shop_gold_after_wave_1_to_7": [
+        13,
+        31,
+        80,
+        219,
+        536,
+        1012,
+        1586
+      ]
+    },
+    {
+      "seed": 2028,
+      "rune": "pierce",
+      "won": true,
+      "death_wave": null,
+      "battle_seconds": 331.833,
+      "first_target_equip_after_wave": 1,
+      "first_target_equip_entering_wave": 2,
+      "full_target_build_after_wave": 3,
+      "target_runes_at_end": 4,
+      "final_gold": 1694,
+      "reason": "无面祭司已被击败。你的余烬仍在燃烧。",
+      "shop_gold_after_wave_1_to_7": [
+        20,
+        3,
+        9,
+        245,
+        594,
+        1108,
+        1639
+      ]
+    },
+    {
+      "seed": 2028,
+      "rune": "bounce",
+      "won": true,
+      "death_wave": null,
+      "battle_seconds": 321.567,
+      "first_target_equip_after_wave": 1,
+      "first_target_equip_entering_wave": 2,
+      "full_target_build_after_wave": 4,
+      "target_runes_at_end": 4,
+      "final_gold": 1546,
+      "reason": "无面祭司已被击败。你的余烬仍在燃烧。",
+      "shop_gold_after_wave_1_to_7": [
+        18,
+        30,
+        72,
+        255,
+        639,
+        1068,
+        1532
+      ]
+    },
+    {
+      "seed": 2028,
+      "rune": "blast",
+      "won": true,
+      "death_wave": null,
+      "battle_seconds": 329.183,
+      "first_target_equip_after_wave": 2,
+      "first_target_equip_entering_wave": 3,
+      "full_target_build_after_wave": 2,
+      "target_runes_at_end": 4,
+      "final_gold": 1699,
+      "reason": "无面祭司已被击败。你的余烬仍在燃烧。",
+      "shop_gold_after_wave_1_to_7": [
+        17,
+        8,
+        45,
+        212,
+        572,
+        1071,
+        1658
+      ]
+    },
+    {
+      "seed": 2029,
+      "rune": "pierce",
+      "won": true,
+      "death_wave": null,
+      "battle_seconds": 320.383,
+      "first_target_equip_after_wave": 3,
+      "first_target_equip_entering_wave": 4,
+      "full_target_build_after_wave": 5,
+      "target_runes_at_end": 4,
+      "final_gold": 1567,
+      "reason": "无面祭司已被击败。你的余烬仍在燃烧。",
+      "shop_gold_after_wave_1_to_7": [
+        18,
+        85,
+        102,
+        268,
+        495,
+        1010,
+        1559
+      ]
+    },
+    {
+      "seed": 2029,
+      "rune": "bounce",
+      "won": true,
+      "death_wave": null,
+      "battle_seconds": 320.567,
+      "first_target_equip_after_wave": 1,
+      "first_target_equip_entering_wave": 2,
+      "full_target_build_after_wave": 2,
+      "target_runes_at_end": 4,
+      "final_gold": 1564,
+      "reason": "无面祭司已被击败。你的余烬仍在燃烧。",
+      "shop_gold_after_wave_1_to_7": [
+        5,
+        34,
+        205,
+        380,
+        606,
+        1019,
+        1554
+      ]
+    },
+    {
+      "seed": 2029,
+      "rune": "blast",
+      "won": true,
+      "death_wave": null,
+      "battle_seconds": 335.867,
+      "first_target_equip_after_wave": 1,
+      "first_target_equip_entering_wave": 2,
+      "full_target_build_after_wave": 3,
+      "target_runes_at_end": 4,
+      "final_gold": 1670,
+      "reason": "无面祭司已被击败。你的余烬仍在燃烧。",
+      "shop_gold_after_wave_1_to_7": [
+        1,
+        47,
+        170,
+        329,
+        569,
+        1055,
+        1587
+      ]
+    },
+    {
+      "seed": 2030,
+      "rune": "pierce",
+      "won": true,
+      "death_wave": null,
+      "battle_seconds": 320.283,
+      "first_target_equip_after_wave": 2,
+      "first_target_equip_entering_wave": 3,
+      "full_target_build_after_wave": 4,
+      "target_runes_at_end": 4,
+      "final_gold": 1658,
+      "reason": "无面祭司已被击败。你的余烬仍在燃烧。",
+      "shop_gold_after_wave_1_to_7": [
+        14,
+        54,
+        108,
+        316,
+        606,
+        1058,
+        1652
+      ]
+    },
+    {
+      "seed": 2030,
+      "rune": "bounce",
+      "won": true,
+      "death_wave": null,
+      "battle_seconds": 322.817,
+      "first_target_equip_after_wave": 2,
+      "first_target_equip_entering_wave": 3,
+      "full_target_build_after_wave": 3,
+      "target_runes_at_end": 4,
+      "final_gold": 1648,
+      "reason": "无面祭司已被击败。你的余烬仍在燃烧。",
+      "shop_gold_after_wave_1_to_7": [
+        14,
+        27,
+        85,
+        393,
+        715,
+        1082,
+        1625
+      ]
+    },
+    {
+      "seed": 2030,
+      "rune": "blast",
+      "won": true,
+      "death_wave": null,
+      "battle_seconds": 322.417,
+      "first_target_equip_after_wave": 2,
+      "first_target_equip_entering_wave": 3,
+      "full_target_build_after_wave": 4,
+      "target_runes_at_end": 4,
+      "final_gold": 1528,
+      "reason": "无面祭司已被击败。你的余烬仍在燃烧。",
+      "shop_gold_after_wave_1_to_7": [
+        14,
+        30,
+        135,
+        331,
+        536,
+        983,
+        1515
+      ]
+    },
+    {
+      "seed": 2031,
+      "rune": "pierce",
+      "won": true,
+      "death_wave": null,
+      "battle_seconds": 319.717,
+      "first_target_equip_after_wave": 2,
+      "first_target_equip_entering_wave": 3,
+      "full_target_build_after_wave": 3,
+      "target_runes_at_end": 4,
+      "final_gold": 1534,
+      "reason": "无面祭司已被击败。你的余烬仍在燃烧。",
+      "shop_gold_after_wave_1_to_7": [
+        16,
+        63,
+        139,
+        345,
+        613,
+        998,
+        1530
+      ]
+    },
+    {
+      "seed": 2031,
+      "rune": "bounce",
+      "won": true,
+      "death_wave": null,
+      "battle_seconds": 322.35,
+      "first_target_equip_after_wave": 2,
+      "first_target_equip_entering_wave": 3,
+      "full_target_build_after_wave": 2,
+      "target_runes_at_end": 4,
+      "final_gold": 1607,
+      "reason": "无面祭司已被击败。你的余烬仍在燃烧。",
+      "shop_gold_after_wave_1_to_7": [
+        16,
+        34,
+        151,
+        366,
+        638,
+        1043,
+        1589
+      ]
+    },
+    {
+      "seed": 2031,
+      "rune": "blast",
+      "won": true,
+      "death_wave": null,
+      "battle_seconds": 320.6,
+      "first_target_equip_after_wave": 1,
+      "first_target_equip_entering_wave": 2,
+      "full_target_build_after_wave": 3,
+      "target_runes_at_end": 4,
+      "final_gold": 1479,
+      "reason": "无面祭司已被击败。你的余烬仍在燃烧。",
+      "shop_gold_after_wave_1_to_7": [
+        20,
+        76,
+        112,
+        304,
+        539,
+        947,
+        1472
+      ]
+    },
+    {
+      "seed": 2032,
+      "rune": "pierce",
+      "won": true,
+      "death_wave": null,
+      "battle_seconds": 331.283,
+      "first_target_equip_after_wave": 2,
+      "first_target_equip_entering_wave": 3,
+      "full_target_build_after_wave": 2,
+      "target_runes_at_end": 4,
+      "final_gold": 1489,
+      "reason": "无面祭司已被击败。你的余烬仍在燃烧。",
+      "shop_gold_after_wave_1_to_7": [
+        20,
+        19,
+        112,
+        253,
+        624,
+        1024,
+        1432
+      ]
+    },
+    {
+      "seed": 2032,
+      "rune": "bounce",
+      "won": true,
+      "death_wave": null,
+      "battle_seconds": 324.6,
+      "first_target_equip_after_wave": 1,
+      "first_target_equip_entering_wave": 2,
+      "full_target_build_after_wave": 2,
+      "target_runes_at_end": 4,
+      "final_gold": 1494,
+      "reason": "无面祭司已被击败。你的余烬仍在燃烧。",
+      "shop_gold_after_wave_1_to_7": [
+        0,
+        28,
+        133,
+        290,
+        660,
+        1067,
+        1472
+      ]
+    },
+    {
+      "seed": 2032,
+      "rune": "blast",
+      "won": false,
+      "death_wave": 4,
+      "battle_seconds": 179.067,
+      "first_target_equip_after_wave": 3,
+      "first_target_equip_entering_wave": 4,
+      "full_target_build_after_wave": null,
+      "target_runes_at_end": 1,
+      "final_gold": 301,
+      "reason": "生命耗尽：被缚棺者的接触攻击击败。",
+      "shop_gold_after_wave_1_to_7": [
+        20,
+        103,
+        127,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "seed": 2033,
+      "rune": "pierce",
+      "won": true,
+      "death_wave": null,
+      "battle_seconds": 342.783,
+      "first_target_equip_after_wave": 2,
+      "first_target_equip_entering_wave": 3,
+      "full_target_build_after_wave": 3,
+      "target_runes_at_end": 4,
+      "final_gold": 1662,
+      "reason": "无面祭司已被击败。你的余烬仍在燃烧。",
+      "shop_gold_after_wave_1_to_7": [
+        16,
+        35,
+        64,
+        280,
+        563,
+        1010,
+        1546
+      ]
+    },
+    {
+      "seed": 2033,
+      "rune": "bounce",
+      "won": true,
+      "death_wave": null,
+      "battle_seconds": 335.383,
+      "first_target_equip_after_wave": 1,
+      "first_target_equip_entering_wave": 2,
+      "full_target_build_after_wave": 2,
+      "target_runes_at_end": 4,
+      "final_gold": 1645,
+      "reason": "无面祭司已被击败。你的余烬仍在燃烧。",
+      "shop_gold_after_wave_1_to_7": [
+        2,
+        21,
+        142,
+        281,
+        569,
+        1061,
+        1573
+      ]
+    },
+    {
+      "seed": 2033,
+      "rune": "blast",
+      "won": true,
+      "death_wave": null,
+      "battle_seconds": 334.167,
+      "first_target_equip_after_wave": 2,
+      "first_target_equip_entering_wave": 3,
+      "full_target_build_after_wave": 4,
+      "target_runes_at_end": 4,
+      "final_gold": 1559,
+      "reason": "无面祭司已被击败。你的余烬仍在燃烧。",
+      "shop_gold_after_wave_1_to_7": [
+        10,
+        28,
+        137,
+        267,
+        535,
+        961,
+        1505
+      ]
+    },
+    {
+      "seed": 2034,
+      "rune": "pierce",
+      "won": true,
+      "death_wave": null,
+      "battle_seconds": 347.367,
+      "first_target_equip_after_wave": 2,
+      "first_target_equip_entering_wave": 3,
+      "full_target_build_after_wave": 3,
+      "target_runes_at_end": 4,
+      "final_gold": 1856,
+      "reason": "无面祭司已被击败。你的余烬仍在燃烧。",
+      "shop_gold_after_wave_1_to_7": [
+        9,
+        76,
+        12,
+        246,
+        636,
+        1141,
+        1710
+      ]
+    },
+    {
+      "seed": 2034,
+      "rune": "bounce",
+      "won": true,
+      "death_wave": null,
+      "battle_seconds": 332.967,
+      "first_target_equip_after_wave": 1,
+      "first_target_equip_entering_wave": 2,
+      "full_target_build_after_wave": 2,
+      "target_runes_at_end": 4,
+      "final_gold": 1626,
+      "reason": "无面祭司已被击败。你的余烬仍在燃烧。",
+      "shop_gold_after_wave_1_to_7": [
+        18,
+        23,
+        71,
+        303,
+        624,
+        1019,
+        1553
+      ]
+    },
+    {
+      "seed": 2034,
+      "rune": "blast",
+      "won": true,
+      "death_wave": null,
+      "battle_seconds": 332.367,
+      "first_target_equip_after_wave": 2,
+      "first_target_equip_entering_wave": 3,
+      "full_target_build_after_wave": 3,
+      "target_runes_at_end": 4,
+      "final_gold": 1700,
+      "reason": "无面祭司已被击败。你的余烬仍在燃烧。",
+      "shop_gold_after_wave_1_to_7": [
+        9,
+        42,
+        5,
+        217,
+        587,
+        1099,
+        1642
+      ]
+    },
+    {
+      "seed": 2035,
+      "rune": "pierce",
+      "won": true,
+      "death_wave": null,
+      "battle_seconds": 325.55,
+      "first_target_equip_after_wave": 2,
+      "first_target_equip_entering_wave": 3,
+      "full_target_build_after_wave": 3,
+      "target_runes_at_end": 4,
+      "final_gold": 1647,
+      "reason": "无面祭司已被击败。你的余烬仍在燃烧。",
+      "shop_gold_after_wave_1_to_7": [
+        19,
+        74,
+        116,
+        379,
+        681,
+        1027,
+        1612
+      ]
+    },
+    {
+      "seed": 2035,
+      "rune": "bounce",
+      "won": true,
+      "death_wave": null,
+      "battle_seconds": 320.417,
+      "first_target_equip_after_wave": 2,
+      "first_target_equip_entering_wave": 3,
+      "full_target_build_after_wave": 2,
+      "target_runes_at_end": 4,
+      "final_gold": 1695,
+      "reason": "无面祭司已被击败。你的余烬仍在燃烧。",
+      "shop_gold_after_wave_1_to_7": [
+        21,
+        30,
+        136,
+        415,
+        720,
+        1115,
+        1690
+      ]
+    },
+    {
+      "seed": 2035,
+      "rune": "blast",
+      "won": true,
+      "death_wave": null,
+      "battle_seconds": 328.7,
+      "first_target_equip_after_wave": 2,
+      "first_target_equip_entering_wave": 3,
+      "full_target_build_after_wave": 5,
+      "target_runes_at_end": 4,
+      "final_gold": 1382,
+      "reason": "无面祭司已被击败。你的余烬仍在燃烧。",
+      "shop_gold_after_wave_1_to_7": [
+        13,
+        75,
+        142,
+        315,
+        508,
+        863,
+        1337
+      ]
+    }
+  ],
+  "raw_diagnostic_lines": [],
+  "field_semantics": {
+    "first_target_equip_after_wave": "Shop following this completed wave; null means never equipped.",
+    "shop_gold_after_wave_1_to_7": "Post-shop wallets in wave order. Null means the run never completed that shop. Reconstructed from traced income/buy/reroll gold and checked against terminal gold.",
+    "battle_seconds": "Only simulated combat seconds, not shopping or human decision time."
+  },
+  "limitations": [
+    "These are the same thirty fixed seed/rune pairs under one unchanged robot policy, not human difficulty or a population win rate.",
+    "Core correctness changes intentionally affect collision resolution, slowing and terminal processing. Trace or trajectory equality with the baseline is not required.",
+    "An outcome change cannot be assigned to a particular fix from this aggregate experiment.",
+    "Later-wave aggregates have survivor selection; paired wave economy uses only pairs reaching the same wave or shop.",
+    "The trace lacks the complete offer set, so missing target rune equipment does not establish stock absence, affordability, or human behavior.",
+    "The headless campaign excludes World drawing and its feedback costs; this is not a rendering performance test."
+  ]
+}

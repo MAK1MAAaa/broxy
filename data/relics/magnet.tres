@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ContentDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/content_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "magnet"
+kind = "relic"
+display_name = "引魂铃"
+subtitle = "遗物 · 最多叠加3层"
+description = "拾取范围 +22"
+icon = "magnet"
+color = Color(0.6, 0.75, 0.92, 1)
+price = 16
+stat = "pickup_radius"
+amount = 22.0

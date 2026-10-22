@@ -1,0 +1,13 @@
+{
+	"average_fps": 58.9659830406823,
+	"duration_seconds": 300.0,
+	"enemies": 300,
+	"internal_resolution": "1280x720",
+	"os": "macOS",
+	"p99_frame_ms": 30.581,
+	"passed": true,
+	"pickups": 200,
+	"projectiles": 600,
+	"renderer": "gl_compatibility",
+	"samples": 17691
+}

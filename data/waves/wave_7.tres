@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="ContentDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/content_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "wave_7"
+kind = "wave"
+display_name = "第7波"
+description = "撑到计时结束。"
+duration = 45.0
+spawn_interval = 0.42
+cap = 150
+spawn_weights = {"chaser": 0.4, "rusher": 0.3, "tank": 0.15, "caster": 0.15}
+boss_wave = false

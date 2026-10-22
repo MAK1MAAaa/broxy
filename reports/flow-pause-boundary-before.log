@@ -1,0 +1,37 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+ERROR: Settlement clears both pause states and the overlay: shop_escape
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_flow.gd:223)
+       [1] _test_terminal_pause_boundary (res://tests/test_flow.gd:186)
+       [2] _settle (res://tests/test_flow.gd:216)
+ERROR: Next-wave physics advances without a hidden pause: shop_escape
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_flow.gd:223)
+       [1] _test_terminal_pause_boundary (res://tests/test_flow.gd:207)
+ERROR: Settlement clears both pause states and the overlay: upgrade_focus
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_flow.gd:223)
+       [1] _test_terminal_pause_boundary (res://tests/test_flow.gd:186)
+       [2] _settle (res://tests/test_flow.gd:216)
+ERROR: Next-wave physics advances without a hidden pause: upgrade_focus
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_flow.gd:223)
+       [1] _test_terminal_pause_boundary (res://tests/test_flow.gd:207)
+ERROR: Settlement clears both pause states and the overlay: boss_escape
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_flow.gd:223)
+       [1] _test_terminal_pause_boundary (res://tests/test_flow.gd:186)
+       [2] _settle (res://tests/test_flow.gd:216)
+ERROR: Settlement clears both pause states and the overlay: timeout_focus
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_flow.gd:223)
+       [1] _test_terminal_pause_boundary (res://tests/test_flow.gd:186)
+       [2] _settle (res://tests/test_flow.gd:216)
+Flow: 62 assertions, 6 failures; first wave 2701 fixed ticks; boss terminal conditions are fixtures, not balance tests

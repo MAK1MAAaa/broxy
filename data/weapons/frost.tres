@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="ContentDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/content_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "frost"
+kind = "weapon"
+display_name = "霜矛"
+subtitle = "寒霜法器 · 减速控场"
+description = "霜矛令命中的敌人减速25%，持续1.5秒。"
+icon = "frost"
+color = Color(0.43, 0.8, 0.89, 1)
+price = 24
+damage = 11.0
+cooldown = 0.62
+projectile_speed = 340.0
+projectile_radius = 6.0
+range = 540.0
+slow = 0.25
+duration = 1.5

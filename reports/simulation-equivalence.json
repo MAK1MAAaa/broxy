@@ -1,0 +1,68 @@
+{
+  "runs": 9,
+  "wins": 8,
+  "balance_version": "prototype-0.1.0+b011663ef4d4",
+  "policy_version": "orbit-avoid-v1/shop-v1+cf468b4c5f0f",
+  "current_source_hash": "b011663ef4d4",
+  "all_behavior_identical": true,
+  "comparisons": [
+    {
+      "seed": 2026,
+      "rune": "pierce",
+      "identical_except_balance_version": true,
+      "different_fields": []
+    },
+    {
+      "seed": 2026,
+      "rune": "bounce",
+      "identical_except_balance_version": true,
+      "different_fields": []
+    },
+    {
+      "seed": 2026,
+      "rune": "blast",
+      "identical_except_balance_version": true,
+      "different_fields": []
+    },
+    {
+      "seed": 2027,
+      "rune": "pierce",
+      "identical_except_balance_version": true,
+      "different_fields": []
+    },
+    {
+      "seed": 2027,
+      "rune": "bounce",
+      "identical_except_balance_version": true,
+      "different_fields": []
+    },
+    {
+      "seed": 2027,
+      "rune": "blast",
+      "identical_except_balance_version": true,
+      "different_fields": []
+    },
+    {
+      "seed": 2028,
+      "rune": "pierce",
+      "identical_except_balance_version": true,
+      "different_fields": []
+    },
+    {
+      "seed": 2028,
+      "rune": "bounce",
+      "identical_except_balance_version": true,
+      "different_fields": []
+    },
+    {
+      "seed": 2028,
+      "rune": "blast",
+      "identical_except_balance_version": true,
+      "different_fields": []
+    }
+  ],
+  "comparison_kind": "Collision-query optimization before ember homing was enabled",
+  "left_report": "reports/simulation-before-optimization.jsonl",
+  "right_report": "reports/simulation-before-homing.jsonl",
+  "note": "Historical optimization comparison. Ember homing was enabled afterward; current simulation.jsonl intentionally contains new trajectories."
+}

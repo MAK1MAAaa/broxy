@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ContentDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/content_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "vitality"
+kind = "relic"
+display_name = "心瓮"
+subtitle = "遗物 · 最多叠加3层"
+description = "生命上限 +20，并回复20生命"
+icon = "vitality"
+color = Color(0.89, 0.4, 0.51, 1)
+price = 22
+stat = "max_health"
+amount = 20.0

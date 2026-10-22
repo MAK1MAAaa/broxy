@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="ContentDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/content_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "bounce"
+kind = "rune"
+display_name = "弹射符文"
+subtitle = "行为改装 · 连锁清场"
+description = "命中后向附近未命中的敌人弹射，最多额外2次，每次伤害衰减25%。"
+icon = "bounce"
+color = Color(0.55, 0.75, 0.98, 1)
+price = 20
+stat = "bounce"
+amount = 2.0
+range = 230.0

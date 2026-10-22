@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+<defs>
+<linearGradient id="robe" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#49506e"/><stop offset=".42" stop-color="#293047"/><stop offset="1" stop-color="#121a2b"/></linearGradient>
+<linearGradient id="violet" x1="0" y1="0" x2=".8" y2="1"><stop stop-color="#b78bd8"/><stop offset=".5" stop-color="#79538d"/><stop offset="1" stop-color="#463651"/></linearGradient>
+<linearGradient id="bone" x1="0" y1="0" x2=".6" y2="1"><stop stop-color="#f1e6cb"/><stop offset=".55" stop-color="#c9ba98"/><stop offset="1" stop-color="#8b806a"/></linearGradient>
+<linearGradient id="steel" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#9ca5b7"/><stop offset=".4" stop-color="#576378"/><stop offset="1" stop-color="#263044"/></linearGradient>
+<linearGradient id="blood" x1="0" y1="0" x2=".5" y2="1"><stop stop-color="#be746e"/><stop offset=".55" stop-color="#783d48"/><stop offset="1" stop-color="#3d293b"/></linearGradient>
+<linearGradient id="ghost" x1="0" y1="0" x2=".5" y2="1"><stop stop-color="#b4e4d8"/><stop offset=".45" stop-color="#6eacae"/><stop offset="1" stop-color="#345866" stop-opacity=".35"/></linearGradient>
+<linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f6dea0"/><stop offset=".5" stop-color="#c49a5b"/><stop offset="1" stop-color="#7f5b3b"/></linearGradient>
+<linearGradient id="flame" x1="0" y1="0" x2=".4" y2="1"><stop stop-color="#f6d9a0"/><stop offset=".4" stop-color="#e89a65"/><stop offset="1" stop-color="#9d4d57"/></linearGradient>
+<radialGradient id="aura"><stop stop-color="#7b628c" stop-opacity=".23"/><stop offset="1" stop-color="#382b50" stop-opacity="0"/></radialGradient>
+</defs>
+<path d="M20 8 L44 8 49 15 49 48 42 58 22 58 15 48 15 15Z" fill="#302633" stroke="#b39368" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" /><path d="M32 49 Q20 39 21 29 Q23 22 29 26 L30 18 36 16 37 26 Q44 25 44 33 Q44 42 32 49Z" fill="url(#blood)" stroke="#18121e" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" /><path d="M29 21 L33 30 30 35 M36 27 L37 35 32 43 M18 18 L23 13 M41 13 L46 18" fill="none" stroke="#d4a795" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" /><path d="M19 46 L24 52H40 L45 46 M23 11H41" fill="none" stroke="#dcc499" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round" />
+</svg>

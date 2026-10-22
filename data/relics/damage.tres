@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ContentDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/content_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "damage"
+kind = "relic"
+display_name = "血棘"
+subtitle = "遗物 · 最多叠加3层"
+description = "伤害 +15%"
+icon = "damage"
+color = Color(0.9, 0.36, 0.42, 1)
+price = 20
+stat = "damage"
+amount = 0.15

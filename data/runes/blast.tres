@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="ContentDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/content_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "blast"
+kind = "rune"
+display_name = "爆破符文"
+subtitle = "行为改装 · 范围打击"
+description = "首次命中引发68像素范围爆破，周围敌人承受55%伤害。爆破不递归触发。"
+icon = "blast"
+color = Color(0.98, 0.65, 0.33, 1)
+price = 22
+stat = "blast"
+amount = 68.0
+damage = 0.55

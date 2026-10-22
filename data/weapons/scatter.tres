@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="ContentDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/content_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "scatter"
+kind = "weapon"
+display_name = "散魂"
+subtitle = "散射法器 · 扇面清扫"
+description = "同时射出三枚魂片，适合近距离清理密集敌群。"
+icon = "scatter"
+color = Color(0.74, 0.58, 0.94, 1)
+price = 26
+damage = 8.0
+cooldown = 0.78
+projectile_speed = 390.0
+projectile_radius = 4.0
+range = 470.0
+shots = 3
+spread = 0.28

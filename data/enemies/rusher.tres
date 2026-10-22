@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ContentDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/content_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "rusher"
+kind = "enemy"
+display_name = "裂颅犬"
+description = "高速逼近的猎手。"
+color = Color(0.82, 0.4, 0.38, 1)
+health = 18.0
+speed = 116.0
+damage = 7.0
+radius = 11.0
+cooldown = 2.0

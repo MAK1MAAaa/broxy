@@ -1,0 +1,175 @@
+WorkerThreadPool: 10 threads, 3 max low-priority.
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+TextServer: Added interface "Dummy"
+TextServer: Added interface "ICU / HarfBuzz / Graphite (Built-in)"
+SDL: Init OK!
+Accessibility: AccessKit driver loaded.
+Accessibility: window 0 adapter created.
+Using "default" pen tablet driver...
+OpenGL debugging not supported!
+Shader 'CanvasSdfShaderGLES3' SHA256: 2c02992750422d0a2684894bb0c504f90877a42e1d9d6a4e8f61c8e7ec2c7a57
+Shader 'SkeletonShaderGLES3' SHA256: 4c4add4b54bec61d7d80ac9f0d05ffe8ddc0c5aba3830b88332cc060221d8057
+Shader 'ParticlesShaderGLES3' SHA256: 65e1f71f6896c7c360eb859792191d3006466121b89fcacd8d2321492a6d655a
+Shader 'ParticlesCopyShaderGLES3' SHA256: 79895ea9f06a9313d4b262a968a0298361c830f577d63e5081ae2d11381468c1
+Shader 'CopyShaderGLES3' SHA256: 8554343db2d85f101a2215a4139e262eae9f0a8f4432fa311c7dfba56fbb0ca6
+Shader 'CubemapFilterShaderGLES3' SHA256: 71561c9c9500513aae7b9f3bfa5d4cff990b6dd31177ed3706219661f92c522b
+Shader 'GlowShaderGLES3' SHA256: 060ac5ddf21b1c1edb7b8fda650eb4783b588c25292359b9bc0cb06845ed81f2
+Shader 'PostShaderGLES3' SHA256: 992b5e6acec81ac1364c47bcfc4f5f23ab28e84b3c69173a580688d58b6f0b5c
+Shader 'FeedShaderGLES3' SHA256: 187c3c4d3974f2c687e49fc4d3769bc976a9ec8788e828fac9e288846761c378
+Shader 'CanvasShaderGLES3' SHA256: 02d65dec2f7383555a0e375e838a0f671c89a9dc5d68c8d4b06036511a425019
+Shader 'CanvasOcclusionShaderGLES3' SHA256: 1f33c9844bf4e76cabb3218323a6d8b98712d2a09af19e27eb0b74a70818a0e1
+Shader 'SceneShaderGLES3' SHA256: 07a55577ecf54e5610e49e344255c43c7c0f3e21bfea5c895ab37a486473ad21
+Shader 'SkyShaderGLES3' SHA256: 05989b8046eea598245c92a10fdc098448e60c3350ea46b0217249c4ef4c48c9
+Shader 'TexBlitShaderGLES3' SHA256: 694333655d8abb3f6a9caf59d0d2d8bc583171b105aedd0e44c4216151b83588
+OpenGL API 4.1 Metal - 91.7 - Compatibility - Using Device: Apple - Apple M5
+CoreAudio: detected 2 channels
+CoreAudio: output sampling rate: 48000 Hz
+CoreAudio: output audio buffer frames: 512 calculated latency: 10ms
+
+TextServer: Primary interface set to: "ICU / HarfBuzz / Graphite (Built-in)".
+CORE API HASH: 2004498165
+EDITOR API HASH: 1696660745
+SceneTreeFTI: traversal method DEFAULT
+Loaded system CA certificates
+Loading resource: res://scenes/main.tscn remapped: res://scenes/main.tscn
+Loading resource: res://scripts/main.gd remapped: res://scripts/main.gd
+Loading resource: res://data/waves/wave_1.tres remapped: res://data/waves/wave_1.tres
+Loading resource: res://scripts/data/content_def.gd remapped: res://scripts/data/content_def.gd
+Completed load for: 'res://scripts/data/content_def.gd' remapped 'res://scripts/data/content_def.gd' at thread -1
+Completed load for: 'res://data/waves/wave_1.tres' remapped 'res://data/waves/wave_1.tres' at thread -1
+Loading resource: res://data/waves/wave_2.tres remapped: res://data/waves/wave_2.tres
+Completed load for: 'res://data/waves/wave_2.tres' remapped 'res://data/waves/wave_2.tres' at thread -1
+Loading resource: res://data/waves/wave_3.tres remapped: res://data/waves/wave_3.tres
+Completed load for: 'res://data/waves/wave_3.tres' remapped 'res://data/waves/wave_3.tres' at thread -1
+Loading resource: res://data/waves/wave_4.tres remapped: res://data/waves/wave_4.tres
+Completed load for: 'res://data/waves/wave_4.tres' remapped 'res://data/waves/wave_4.tres' at thread -1
+Loading resource: res://data/waves/wave_5.tres remapped: res://data/waves/wave_5.tres
+Completed load for: 'res://data/waves/wave_5.tres' remapped 'res://data/waves/wave_5.tres' at thread -1
+Loading resource: res://data/waves/wave_6.tres remapped: res://data/waves/wave_6.tres
+Completed load for: 'res://data/waves/wave_6.tres' remapped 'res://data/waves/wave_6.tres' at thread -1
+Loading resource: res://data/waves/wave_7.tres remapped: res://data/waves/wave_7.tres
+Completed load for: 'res://data/waves/wave_7.tres' remapped 'res://data/waves/wave_7.tres' at thread -1
+Loading resource: res://data/waves/wave_8.tres remapped: res://data/waves/wave_8.tres
+Completed load for: 'res://data/waves/wave_8.tres' remapped 'res://data/waves/wave_8.tres' at thread -1
+Loading resource: res://data/weapons/bone.tres remapped: res://data/weapons/bone.tres
+Completed load for: 'res://data/weapons/bone.tres' remapped 'res://data/weapons/bone.tres' at thread -1
+Loading resource: res://data/weapons/frost.tres remapped: res://data/weapons/frost.tres
+Completed load for: 'res://data/weapons/frost.tres' remapped 'res://data/weapons/frost.tres' at thread -1
+Loading resource: res://data/weapons/ember.tres remapped: res://data/weapons/ember.tres
+Completed load for: 'res://data/weapons/ember.tres' remapped 'res://data/weapons/ember.tres' at thread -1
+Loading resource: res://data/weapons/scatter.tres remapped: res://data/weapons/scatter.tres
+Completed load for: 'res://data/weapons/scatter.tres' remapped 'res://data/weapons/scatter.tres' at thread -1
+Loading resource: res://data/runes/pierce.tres remapped: res://data/runes/pierce.tres
+Completed load for: 'res://data/runes/pierce.tres' remapped 'res://data/runes/pierce.tres' at thread -1
+Loading resource: res://data/runes/bounce.tres remapped: res://data/runes/bounce.tres
+Completed load for: 'res://data/runes/bounce.tres' remapped 'res://data/runes/bounce.tres' at thread -1
+Loading resource: res://data/runes/blast.tres remapped: res://data/runes/blast.tres
+Completed load for: 'res://data/runes/blast.tres' remapped 'res://data/runes/blast.tres' at thread -1
+Loading resource: res://data/relics/damage.tres remapped: res://data/relics/damage.tres
+Completed load for: 'res://data/relics/damage.tres' remapped 'res://data/relics/damage.tres' at thread -1
+Loading resource: res://data/relics/haste.tres remapped: res://data/relics/haste.tres
+Completed load for: 'res://data/relics/haste.tres' remapped 'res://data/relics/haste.tres' at thread -1
+Loading resource: res://data/relics/speed.tres remapped: res://data/relics/speed.tres
+Completed load for: 'res://data/relics/speed.tres' remapped 'res://data/relics/speed.tres' at thread -1
+Loading resource: res://data/relics/vitality.tres remapped: res://data/relics/vitality.tres
+Completed load for: 'res://data/relics/vitality.tres' remapped 'res://data/relics/vitality.tres' at thread -1
+Loading resource: res://data/relics/armor.tres remapped: res://data/relics/armor.tres
+Completed load for: 'res://data/relics/armor.tres' remapped 'res://data/relics/armor.tres' at thread -1
+Loading resource: res://data/relics/magnet.tres remapped: res://data/relics/magnet.tres
+Completed load for: 'res://data/relics/magnet.tres' remapped 'res://data/relics/magnet.tres' at thread -1
+Loading resource: res://data/enemies/chaser.tres remapped: res://data/enemies/chaser.tres
+Completed load for: 'res://data/enemies/chaser.tres' remapped 'res://data/enemies/chaser.tres' at thread -1
+Loading resource: res://data/enemies/rusher.tres remapped: res://data/enemies/rusher.tres
+Completed load for: 'res://data/enemies/rusher.tres' remapped 'res://data/enemies/rusher.tres' at thread -1
+Loading resource: res://data/enemies/tank.tres remapped: res://data/enemies/tank.tres
+Completed load for: 'res://data/enemies/tank.tres' remapped 'res://data/enemies/tank.tres' at thread -1
+Loading resource: res://data/enemies/caster.tres remapped: res://data/enemies/caster.tres
+Completed load for: 'res://data/enemies/caster.tres' remapped 'res://data/enemies/caster.tres' at thread -1
+Loading resource: res://data/enemies/boss.tres remapped: res://data/enemies/boss.tres
+Completed load for: 'res://data/enemies/boss.tres' remapped 'res://data/enemies/boss.tres' at thread -1
+Completed load for: 'res://scripts/main.gd' remapped 'res://scripts/main.gd' at thread -1
+Completed load for: 'res://scenes/main.tscn' remapped 'res://scenes/main.tscn' at thread -1
+Loading resource: res://assets/audio/shoot.wav remapped: res://assets/audio/shoot.wav
+Loading resource: res://.godot/imported/shoot.wav-87079c2fcb36403855e4cbb1b77a9904.sample remapped: res://.godot/imported/shoot.wav-87079c2fcb36403855e4cbb1b77a9904.sample
+Completed load for: 'res://assets/audio/shoot.wav' remapped 'res://assets/audio/shoot.wav' at thread -1
+Loading resource: res://assets/audio/hit.wav remapped: res://assets/audio/hit.wav
+Loading resource: res://.godot/imported/hit.wav-96dc477cdf4a42f381370dba6e3f75ce.sample remapped: res://.godot/imported/hit.wav-96dc477cdf4a42f381370dba6e3f75ce.sample
+Completed load for: 'res://assets/audio/hit.wav' remapped 'res://assets/audio/hit.wav' at thread -1
+Loading resource: res://assets/audio/hurt.wav remapped: res://assets/audio/hurt.wav
+Loading resource: res://.godot/imported/hurt.wav-e638edfaf88190ba3ffee0adc26b7375.sample remapped: res://.godot/imported/hurt.wav-e638edfaf88190ba3ffee0adc26b7375.sample
+Completed load for: 'res://assets/audio/hurt.wav' remapped 'res://assets/audio/hurt.wav' at thread -1
+Loading resource: res://assets/audio/death.wav remapped: res://assets/audio/death.wav
+Loading resource: res://.godot/imported/death.wav-021a45cab225299ddf24ec88f548f45a.sample remapped: res://.godot/imported/death.wav-021a45cab225299ddf24ec88f548f45a.sample
+Completed load for: 'res://assets/audio/death.wav' remapped 'res://assets/audio/death.wav' at thread -1
+Loading resource: res://assets/audio/buy.wav remapped: res://assets/audio/buy.wav
+Loading resource: res://.godot/imported/buy.wav-6e21632cccac1281425865fe59d9d2c6.sample remapped: res://.godot/imported/buy.wav-6e21632cccac1281425865fe59d9d2c6.sample
+Completed load for: 'res://assets/audio/buy.wav' remapped 'res://assets/audio/buy.wav' at thread -1
+Loading resource: res://assets/audio/rune.wav remapped: res://assets/audio/rune.wav
+Loading resource: res://.godot/imported/rune.wav-0e45c2de3222a396c4d8db07b1683f0a.sample remapped: res://.godot/imported/rune.wav-0e45c2de3222a396c4d8db07b1683f0a.sample
+Completed load for: 'res://assets/audio/rune.wav' remapped 'res://assets/audio/rune.wav' at thread -1
+Loading resource: res://assets/audio/level.wav remapped: res://assets/audio/level.wav
+Loading resource: res://.godot/imported/level.wav-5ce5e39cbd899481c66220f27724e372.sample remapped: res://.godot/imported/level.wav-5ce5e39cbd899481c66220f27724e372.sample
+Completed load for: 'res://assets/audio/level.wav' remapped 'res://assets/audio/level.wav' at thread -1
+Loading resource: res://assets/audio/victory.wav remapped: res://assets/audio/victory.wav
+Loading resource: res://.godot/imported/victory.wav-d893d32ad919f27e15cf04d35e288b78.sample remapped: res://.godot/imported/victory.wav-d893d32ad919f27e15cf04d35e288b78.sample
+Completed load for: 'res://assets/audio/victory.wav' remapped 'res://assets/audio/victory.wav' at thread -1
+Loading resource: res://assets/audio/defeat.wav remapped: res://assets/audio/defeat.wav
+Loading resource: res://.godot/imported/defeat.wav-2c373cdad262b5fb9203b05423989caa.sample remapped: res://.godot/imported/defeat.wav-2c373cdad262b5fb9203b05423989caa.sample
+Completed load for: 'res://assets/audio/defeat.wav' remapped 'res://assets/audio/defeat.wav' at thread -1
+Loading resource: res://assets/audio/ambience.wav remapped: res://assets/audio/ambience.wav
+Loading resource: res://.godot/imported/ambience.wav-c4e6e35e7a9e0e868516f43e62765e9c.sample remapped: res://.godot/imported/ambience.wav-c4e6e35e7a9e0e868516f43e62765e9c.sample
+Completed load for: 'res://assets/audio/ambience.wav' remapped 'res://assets/audio/ambience.wav' at thread -1
+Loading resource: res://assets/arena.svg remapped: res://assets/arena.svg
+Loading resource: res://.godot/imported/arena.svg-9994018648fdce10127919d5715b12b5.ctex remapped: res://.godot/imported/arena.svg-9994018648fdce10127919d5715b12b5.ctex
+Completed load for: 'res://assets/arena.svg' remapped 'res://assets/arena.svg' at thread -1
+Loading resource: res://assets/icons/soul.svg remapped: res://assets/icons/soul.svg
+Loading resource: res://.godot/imported/soul.svg-12bc9190f0cf256a80b60e9bf67a42ec.ctex remapped: res://.godot/imported/soul.svg-12bc9190f0cf256a80b60e9bf67a42ec.ctex
+Completed load for: 'res://assets/icons/soul.svg' remapped 'res://assets/icons/soul.svg' at thread -1
+Loading resource: res://assets/sprites/player.svg remapped: res://assets/sprites/player.svg
+Loading resource: res://.godot/imported/player.svg-e9a52b4a43ef444ad4256d80bfcfc328.ctex remapped: res://.godot/imported/player.svg-e9a52b4a43ef444ad4256d80bfcfc328.ctex
+Completed load for: 'res://assets/sprites/player.svg' remapped 'res://assets/sprites/player.svg' at thread -1
+Loading resource: res://assets/sprites/chaser.svg remapped: res://assets/sprites/chaser.svg
+Loading resource: res://.godot/imported/chaser.svg-90675efa9655c69ab628fa502b74b342.ctex remapped: res://.godot/imported/chaser.svg-90675efa9655c69ab628fa502b74b342.ctex
+Completed load for: 'res://assets/sprites/chaser.svg' remapped 'res://assets/sprites/chaser.svg' at thread -1
+Loading resource: res://assets/sprites/rusher.svg remapped: res://assets/sprites/rusher.svg
+Loading resource: res://.godot/imported/rusher.svg-6ee34cefc7e535b2253dd213b8382f74.ctex remapped: res://.godot/imported/rusher.svg-6ee34cefc7e535b2253dd213b8382f74.ctex
+Completed load for: 'res://assets/sprites/rusher.svg' remapped 'res://assets/sprites/rusher.svg' at thread -1
+Loading resource: res://assets/sprites/tank.svg remapped: res://assets/sprites/tank.svg
+Loading resource: res://.godot/imported/tank.svg-a2afc3758d01a2093905d29e2033115e.ctex remapped: res://.godot/imported/tank.svg-a2afc3758d01a2093905d29e2033115e.ctex
+Completed load for: 'res://assets/sprites/tank.svg' remapped 'res://assets/sprites/tank.svg' at thread -1
+Loading resource: res://assets/sprites/caster.svg remapped: res://assets/sprites/caster.svg
+Loading resource: res://.godot/imported/caster.svg-4af6d9856db1c4495e0128a51b375b6f.ctex remapped: res://.godot/imported/caster.svg-4af6d9856db1c4495e0128a51b375b6f.ctex
+Completed load for: 'res://assets/sprites/caster.svg' remapped 'res://assets/sprites/caster.svg' at thread -1
+Loading resource: res://assets/sprites/boss.svg remapped: res://assets/sprites/boss.svg
+Loading resource: res://.godot/imported/boss.svg-59ab3b816f39d04def1e378c701bae55.ctex remapped: res://.godot/imported/boss.svg-59ab3b816f39d04def1e378c701bae55.ctex
+Completed load for: 'res://assets/sprites/boss.svg' remapped 'res://assets/sprites/boss.svg' at thread -1
+Loading resource: res://assets/icons/bone.svg remapped: res://assets/icons/bone.svg
+Loading resource: res://.godot/imported/bone.svg-d4052c81b1e397ee1913208110a41415.ctex remapped: res://.godot/imported/bone.svg-d4052c81b1e397ee1913208110a41415.ctex
+Completed load for: 'res://assets/icons/bone.svg' remapped 'res://assets/icons/bone.svg' at thread -1
+Loading resource: res://assets/icons/frost.svg remapped: res://assets/icons/frost.svg
+Loading resource: res://.godot/imported/frost.svg-c811e14ba6c0c7495b3975214f7791ba.ctex remapped: res://.godot/imported/frost.svg-c811e14ba6c0c7495b3975214f7791ba.ctex
+Completed load for: 'res://assets/icons/frost.svg' remapped 'res://assets/icons/frost.svg' at thread -1
+Loading resource: res://assets/icons/ember.svg remapped: res://assets/icons/ember.svg
+Loading resource: res://.godot/imported/ember.svg-7b6ae3afa76f013c5acc267037dc0191.ctex remapped: res://.godot/imported/ember.svg-7b6ae3afa76f013c5acc267037dc0191.ctex
+Completed load for: 'res://assets/icons/ember.svg' remapped 'res://assets/icons/ember.svg' at thread -1
+Loading resource: res://assets/icons/scatter.svg remapped: res://assets/icons/scatter.svg
+Loading resource: res://.godot/imported/scatter.svg-c8d3166ee0b89662ab20bffb0501705b.ctex remapped: res://.godot/imported/scatter.svg-c8d3166ee0b89662ab20bffb0501705b.ctex
+Completed load for: 'res://assets/icons/scatter.svg' remapped 'res://assets/icons/scatter.svg' at thread -1
+Loading resource: res://assets/menu_art.svg remapped: res://assets/menu_art.svg
+Loading resource: res://.godot/imported/menu_art.svg-93194887e289b0beb30f2a6ec62a09a7.ctex remapped: res://.godot/imported/menu_art.svg-93194887e289b0beb30f2a6ec62a09a7.ctex
+Completed load for: 'res://assets/menu_art.svg' remapped 'res://assets/menu_art.svg' at thread -1
+CAPTURE res://reports/ui-focus-smoke.png result=0
+WARNING: 2 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 1 resources still in use at exit.
+   at: clear (core/io/resource.cpp:817)
+XR: Clearing primary interface
+XR: Removed interface "Native mobile"
+XR: Removed interface "OpenXR"
+Accessibility: window 0 adapter destroyed.
+Leaked instance: AudioStreamPlaybackWAV:9223372076432229915 - Reference count: 1
+Leaked instance: AudioStreamWAV:9223372076381898269 - Reference count: 1
+Hint: Leaked instances typically happen when nodes are removed from the scene tree (with `remove_child()`) but not freed (with `free()` or `queue_free()`).
+Resource still in use: res://assets/audio/ambience.wav (AudioStreamWAV)
+Orphan StringName: Master (static: 0, total: 2)
+StringName: 1 unclaimed string names at exit.

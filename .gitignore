@@ -1,0 +1,11 @@
+.godot/
+.tools/
+build/
+reports/*.png
+reports/*.jsonl
+reports/*.zip
+reports/*raw.log
+reports/*.import
+__pycache__/
+*.py[cod]
+.DS_Store
