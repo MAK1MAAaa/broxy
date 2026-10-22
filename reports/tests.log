@@ -3,6 +3,9 @@ Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
 Rules: 204 assertions, 0 failures
 Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
 
+PurchaseQuery: 119 assertions, 0 failures
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
 Combat: 302 assertions, 0 failures
 Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
 
@@ -28,6 +31,9 @@ ShopActions: 106 assertions, 0 failures
 Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
 
 ShopDetails: 51 assertions, 0 failures
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+ShopAvailability: 166 assertions, 0 failures
 Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
 
 ProfileModes: 25 assertions, 0 failures; mode=normal

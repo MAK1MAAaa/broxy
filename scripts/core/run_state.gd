@@ -155,34 +155,45 @@ func generate_shop() -> void:
 	last_error = ""
 	changed.emit()
 
-func buy_offer(index: int) -> bool:
+func purchase_error(index: int) -> String:
+	# UI previews share the transaction checks without emitting or changing state.
 	if index < 0 or index >= offers.size():
-		return _fail("无效的商品。")
+		return "无效的商品。"
 	var offer: Dictionary = offers[index]
 	if bool(offer.get("sold", false)):
-		return _fail("这件商品已售出。")
+		return "这件商品已售出。"
 	var price: int = int(offer.get("price", 0))
 	if gold < price:
-		return _fail("魂屑不足。")
+		return "魂屑不足。"
 	var item_id: String = str(offer.get("id", ""))
 	var kind: String = str(offer.get("kind", ""))
 	if kind == "weapon":
 		if GameCatalog.weapon(item_id) == null:
-			return _fail("法器不存在。")
+			return "法器不存在。"
 		if loadout.size() >= WEAPON_CAP:
-			return _fail("法器槽已满，请先出售一件法器。")
+			return "法器槽已满，请先出售一件法器。"
 	elif kind == "rune":
 		if GameCatalog.rune(item_id) == null:
-			return _fail("符文不存在。")
+			return "符文不存在。"
 		if rune_bag.size() >= RUNE_BAG_CAP:
-			return _fail("备用符文已满，请先装备或出售。")
+			return "备用符文已满，请先装备或出售。"
 	elif kind == "relic":
 		if GameCatalog.relic(item_id) == null:
-			return _fail("遗物不存在。")
+			return "遗物不存在。"
 		if int(relic_counts.get(item_id, 0)) >= RELIC_CAP:
-			return _fail("该遗物已达到3层上限。")
+			return "该遗物已达到3层上限。"
 	else:
-		return _fail("未知的商品类型。")
+		return "未知的商品类型。"
+	return ""
+
+func buy_offer(index: int) -> bool:
+	var error: String = purchase_error(index)
+	if not error.is_empty():
+		return _fail(error)
+	var offer: Dictionary = offers[index]
+	var price: int = int(offer.get("price", 0))
+	var item_id: String = str(offer.get("id", ""))
+	var kind: String = str(offer.get("kind", ""))
 	gold -= price
 	if kind == "weapon":
 		loadout.append({"id": item_id, "paid": price, "rune": {}})

@@ -46,11 +46,13 @@ Godot自身可能在标准输出打印版本信息。保存为JSONL时，仅保�
 
 ## 已运行结果
 
-### 最近完整批次：幽焰反向追踪修复的30局配对
+### 最近完整批次：商店只读校验的30局配对
 
-本轮仅修改GameUI通知与首领状态布局，未改核心/资源/策略，也未重跑30局。以下143核心数据仍对应现有模拟，但不替代本轮UI时序回归。
+将购买条件提取为纯查询后，核心指纹变为`prototype-0.1.0+fb2ccf1ca5f1`。种子2026—2035×贯穿/弹射/爆破，沿用`orbit-avoid-v1/shop-v1+7c19c01f20e4`，30局退出0；与下述143核心批次逐字段比较，仅排除`balance_version`，包括完整trace、wave_results与shop_observations的所有剩余字段均一致，仍29胜1败。见[purchase-simulation.json](../reports/purchase-simulation.json)，本地JSONL为`reports/simulation-30-purchase.jsonl`，SHA-256为`6dc407886ecf6f923c913ba79d6c6fa1e13d566bc18bab5035fb5b3889d7a1e8`。这只约束所测固定机器人样本，不证明真人购物理解、胜率或图形性能。
 
-当前核心为`prototype-0.1.0+143fbc0963af`。使用种子2026—2035、贯穿/弹射/爆破三个目标符文策略各10局，重新运行30局，退出0；策略保持`orbit-avoid-v1/shop-v1+7c19c01f20e4`。与预警阶段`4f7be4bdb91f`相比，修复前后均为29胜1败，没有胜负转换。完整配对及源文件核对见[homing-simulation.json](../reports/homing-simulation.json)，本地原始`reports/simulation-30-homing.jsonl` SHA-256为`fe8443aa3eed8b49c6e5ec511e69a8a1f5e663e33999ba96b9879841a67a3271`。
+### 历史：幽焰反向追踪修复的30局配对
+
+该阶段核心为`prototype-0.1.0+143fbc0963af`。使用种子2026—2035、贯穿/弹射/爆破三个目标符文策略各10局，重新运行30局，退出0；策略保持`orbit-avoid-v1/shop-v1+7c19c01f20e4`。与预警阶段`4f7be4bdb91f`相比，修复前后均为29胜1败，没有胜负转换。完整配对及源文件核对见[homing-simulation.json](../reports/homing-simulation.json)，本地原始`reports/simulation-30-homing.jsonl` SHA-256为`fe8443aa3eed8b49c6e5ec511e69a8a1f5e663e33999ba96b9879841a67a3271`。
 
 仅排除`balance_version`后，27/30局的全部字段一致，包含完整trace、逐波结果与shop_observations；其余3局（seed2027爆破、seed2032弹射、seed2034弹射）的`gold`、`trace`、`shop_observations`和`wave_results`发生变化，其中前两局的`kills`也变化。因此本轮不能称为全等价回归，胜负相同也不表示战斗过程未变。
 
@@ -110,7 +112,7 @@ initial记录自动装备备用符文前的商店，decision记录每次候选�
 
 旧记录无观测时，分析器标记 `unknown_unobserved`。只有包含初始快照、从0到末次刷新连续的4项报价及结束事件，`stock_history_complete` 才为true；片段缺失时，即使已记录快照未见目标符文，缺失部分仍未知。重复decision/stop事件不是独立的新一轮库存，只有initial/reroll计为报价快照。这批固定机器人样本不能用于估计真人通关率。
 
-当前 [tests.log](../reports/tests.log) 已完整记录Godot共2188条无界面断言通过（Rules204、Combat302、Homing45、UI157、Notifications65、Modal37、ChoiceActions44、UpgradePreviews350、ShopActions106、ShopDetails51、ProfileModes105（六入口）、Flow76、Feedback64、ProjectilePainter77、EnemyTelegraphs121、ShopObservation384），另有14项Python分析器测试通过。EnemyTelegraphs在headless明确跳过12项实例读回；[原生套件](../reports/enemy-telegraphs-native.log)134条断言全部通过，实际执行这12项读回，并强制检查原生读回可用。商店测试含105组冻结shop-v1的购物trace、钱包、库存和RNG状态对照，并覆盖拒绝优先级、低血生命遗物例外、快照不被后续购买污染及停止刷新边界。
+当前 [tests.log](../reports/tests.log) 已完整记录Godot共2473条无界面断言通过（Rules204、PurchaseQuery119、Combat302、Homing45、UI157、Notifications65、Modal37、ChoiceActions44、UpgradePreviews350、ShopActions106、ShopDetails51、ShopAvailability166、ProfileModes105（六入口）、Flow76、Feedback64、ProjectilePainter77、EnemyTelegraphs121、ShopObservation384），另有14项Python分析器测试通过。EnemyTelegraphs在headless明确跳过12项实例读回；[原生套件](../reports/enemy-telegraphs-native.log)134条断言全部通过，实际执行这12项读回，并强制检查原生读回可用。商店测试含105组冻结shop-v1的购物trace、钱包、库存和RNG状态对照，并覆盖拒绝优先级、低血生命遗物例外、快照不被后续购买污染及停止刷新边界。
 
 ### 历史：战斗修复阶段30局配对回归
 

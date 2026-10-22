@@ -1,0 +1,439 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+ERROR: The visible buy label reflects formal availability: 法器槽已满 · 24魂屑
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_availability.gd:352)
+       [1] _assert_offer (res://tests/test_shop_availability.gd:251)
+       [2] _test_render_is_read_only (res://tests/test_shop_availability.gd:95)
+       [3] _new_ui (res://tests/test_shop_availability.gd:81)
+       [4] _settle (res://tests/test_shop_availability.gd:340)
+ERROR: The tooltip carries the formal purchase rejection without substituting another rule: 法器槽已满
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_availability.gd:352)
+       [1] _assert_offer (res://tests/test_shop_availability.gd:254)
+       [2] _test_render_is_read_only (res://tests/test_shop_availability.gd:95)
+       [3] _new_ui (res://tests/test_shop_availability.gd:81)
+       [4] _settle (res://tests/test_shop_availability.gd:340)
+ERROR: The visible buy label reflects formal availability: 备用符文已满 · 20魂屑
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_availability.gd:352)
+       [1] _assert_offer (res://tests/test_shop_availability.gd:251)
+       [2] _test_render_is_read_only (res://tests/test_shop_availability.gd:96)
+       [3] _new_ui (res://tests/test_shop_availability.gd:81)
+       [4] _settle (res://tests/test_shop_availability.gd:340)
+ERROR: The tooltip carries the formal purchase rejection without substituting another rule: 备用符文已满
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_availability.gd:352)
+       [1] _assert_offer (res://tests/test_shop_availability.gd:254)
+       [2] _test_render_is_read_only (res://tests/test_shop_availability.gd:96)
+       [3] _new_ui (res://tests/test_shop_availability.gd:81)
+       [4] _settle (res://tests/test_shop_availability.gd:340)
+ERROR: Full-reserve guidance explicitly names an empty installation slot or sale, rather than implying any swap frees capacity
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_availability.gd:352)
+       [1] _assert_offer (res://tests/test_shop_availability.gd:256)
+       [2] _test_render_is_read_only (res://tests/test_shop_availability.gd:96)
+       [3] _new_ui (res://tests/test_shop_availability.gd:81)
+       [4] _settle (res://tests/test_shop_availability.gd:340)
+ERROR: The visible buy label reflects formal availability: 遗物已满3层 · 20魂屑
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_availability.gd:352)
+       [1] _assert_offer (res://tests/test_shop_availability.gd:251)
+       [2] _test_render_is_read_only (res://tests/test_shop_availability.gd:97)
+       [3] _new_ui (res://tests/test_shop_availability.gd:81)
+       [4] _settle (res://tests/test_shop_availability.gd:340)
+ERROR: The tooltip carries the formal purchase rejection without substituting another rule: 遗物已满3层
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_availability.gd:352)
+       [1] _assert_offer (res://tests/test_shop_availability.gd:254)
+       [2] _test_render_is_read_only (res://tests/test_shop_availability.gd:97)
+       [3] _new_ui (res://tests/test_shop_availability.gd:81)
+       [4] _settle (res://tests/test_shop_availability.gd:340)
+ERROR: The visible buy label reflects formal availability: 魂屑不足 · 24魂屑
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_availability.gd:352)
+       [1] _assert_offer (res://tests/test_shop_availability.gd:251)
+       [2] _test_render_is_read_only (res://tests/test_shop_availability.gd:107)
+       [3] _settle (res://tests/test_shop_availability.gd:340)
+ERROR: The tooltip carries the formal purchase rejection without substituting another rule: 魂屑不足
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_availability.gd:352)
+       [1] _assert_offer (res://tests/test_shop_availability.gd:254)
+       [2] _test_render_is_read_only (res://tests/test_shop_availability.gd:107)
+       [3] _settle (res://tests/test_shop_availability.gd:340)
+ERROR: The visible buy label reflects formal availability: 魂屑不足 · 20魂屑
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_availability.gd:352)
+       [1] _assert_offer (res://tests/test_shop_availability.gd:251)
+       [2] _test_render_is_read_only (res://tests/test_shop_availability.gd:107)
+       [3] _settle (res://tests/test_shop_availability.gd:340)
+ERROR: The tooltip carries the formal purchase rejection without substituting another rule: 魂屑不足
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_availability.gd:352)
+       [1] _assert_offer (res://tests/test_shop_availability.gd:254)
+       [2] _test_render_is_read_only (res://tests/test_shop_availability.gd:107)
+       [3] _settle (res://tests/test_shop_availability.gd:340)
+ERROR: The visible buy label reflects formal availability: 魂屑不足 · 20魂屑
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_availability.gd:352)
+       [1] _assert_offer (res://tests/test_shop_availability.gd:251)
+       [2] _test_render_is_read_only (res://tests/test_shop_availability.gd:107)
+       [3] _settle (res://tests/test_shop_availability.gd:340)
+ERROR: The tooltip carries the formal purchase rejection without substituting another rule: 魂屑不足
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_availability.gd:352)
+       [1] _assert_offer (res://tests/test_shop_availability.gd:254)
+       [2] _test_render_is_read_only (res://tests/test_shop_availability.gd:107)
+       [3] _settle (res://tests/test_shop_availability.gd:340)
+ERROR: The visible buy label reflects formal availability: 魂屑不足 · 22魂屑
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_availability.gd:352)
+       [1] _assert_offer (res://tests/test_shop_availability.gd:251)
+       [2] _test_render_is_read_only (res://tests/test_shop_availability.gd:107)
+       [3] _settle (res://tests/test_shop_availability.gd:340)
+ERROR: The tooltip carries the formal purchase rejection without substituting another rule: 魂屑不足
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_availability.gd:352)
+       [1] _assert_offer (res://tests/test_shop_availability.gd:254)
+       [2] _test_render_is_read_only (res://tests/test_shop_availability.gd:107)
+       [3] _settle (res://tests/test_shop_availability.gd:340)
+ERROR: The visible buy label reflects formal availability: 魂屑不足 · 24魂屑
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_availability.gd:352)
+       [1] _assert_offer (res://tests/test_shop_availability.gd:251)
+       [2] _test_blocked_keyboard_actions (res://tests/test_shop_availability.gd:142)
+       [3] _new_ui (res://tests/test_shop_availability.gd:81)
+       [4] _settle (res://tests/test_shop_availability.gd:340)
+ERROR: The tooltip carries the formal purchase rejection without substituting another rule: 魂屑不足
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_availability.gd:352)
+       [1] _assert_offer (res://tests/test_shop_availability.gd:254)
+       [2] _test_blocked_keyboard_actions (res://tests/test_shop_availability.gd:142)
+       [3] _new_ui (res://tests/test_shop_availability.gd:81)
+       [4] _settle (res://tests/test_shop_availability.gd:340)
+ERROR: The visible buy label reflects formal availability: 魂屑不足 · 24魂屑
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_availability.gd:352)
+       [1] _assert_offer (res://tests/test_shop_availability.gd:251)
+       [2] _test_blocked_keyboard_actions (res://tests/test_shop_availability.gd:154)
+       [3] _settle (res://tests/test_shop_availability.gd:340)
+ERROR: The tooltip carries the formal purchase rejection without substituting another rule: 魂屑不足
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_availability.gd:352)
+       [1] _assert_offer (res://tests/test_shop_availability.gd:254)
+       [2] _test_blocked_keyboard_actions (res://tests/test_shop_availability.gd:154)
+       [3] _settle (res://tests/test_shop_availability.gd:340)
+ERROR: The visible buy label reflects formal availability: 法器槽已满 · 24魂屑
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_availability.gd:352)
+       [1] _assert_offer (res://tests/test_shop_availability.gd:251)
+       [2] _test_blocked_keyboard_actions (res://tests/test_shop_availability.gd:142)
+       [3] _new_ui (res://tests/test_shop_availability.gd:81)
+       [4] _settle (res://tests/test_shop_availability.gd:340)
+ERROR: The tooltip carries the formal purchase rejection without substituting another rule: 法器槽已满
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_availability.gd:352)
+       [1] _assert_offer (res://tests/test_shop_availability.gd:254)
+       [2] _test_blocked_keyboard_actions (res://tests/test_shop_availability.gd:142)
+       [3] _new_ui (res://tests/test_shop_availability.gd:81)
+       [4] _settle (res://tests/test_shop_availability.gd:340)
+ERROR: The visible buy label reflects formal availability: 法器槽已满 · 24魂屑
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_availability.gd:352)
+       [1] _assert_offer (res://tests/test_shop_availability.gd:251)
+       [2] _test_blocked_keyboard_actions (res://tests/test_shop_availability.gd:154)
+       [3] _settle (res://tests/test_shop_availability.gd:340)
+ERROR: The tooltip carries the formal purchase rejection without substituting another rule: 法器槽已满
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_availability.gd:352)
+       [1] _assert_offer (res://tests/test_shop_availability.gd:254)
+       [2] _test_blocked_keyboard_actions (res://tests/test_shop_availability.gd:154)
+       [3] _settle (res://tests/test_shop_availability.gd:340)
+ERROR: The visible buy label reflects formal availability: 备用符文已满 · 20魂屑
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_availability.gd:352)
+       [1] _assert_offer (res://tests/test_shop_availability.gd:251)
+       [2] _test_blocked_keyboard_actions (res://tests/test_shop_availability.gd:142)
+       [3] _new_ui (res://tests/test_shop_availability.gd:81)
+       [4] _settle (res://tests/test_shop_availability.gd:340)
+ERROR: The tooltip carries the formal purchase rejection without substituting another rule: 备用符文已满
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_availability.gd:352)
+       [1] _assert_offer (res://tests/test_shop_availability.gd:254)
+       [2] _test_blocked_keyboard_actions (res://tests/test_shop_availability.gd:142)
+       [3] _new_ui (res://tests/test_shop_availability.gd:81)
+       [4] _settle (res://tests/test_shop_availability.gd:340)
+ERROR: Full-reserve guidance explicitly names an empty installation slot or sale, rather than implying any swap frees capacity
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_availability.gd:352)
+       [1] _assert_offer (res://tests/test_shop_availability.gd:256)
+       [2] _test_blocked_keyboard_actions (res://tests/test_shop_availability.gd:142)
+       [3] _new_ui (res://tests/test_shop_availability.gd:81)
+       [4] _settle (res://tests/test_shop_availability.gd:340)
+ERROR: The visible buy label reflects formal availability: 备用符文已满 · 20魂屑
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_availability.gd:352)
+       [1] _assert_offer (res://tests/test_shop_availability.gd:251)
+       [2] _test_blocked_keyboard_actions (res://tests/test_shop_availability.gd:154)
+       [3] _settle (res://tests/test_shop_availability.gd:340)
+ERROR: The tooltip carries the formal purchase rejection without substituting another rule: 备用符文已满
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_availability.gd:352)
+       [1] _assert_offer (res://tests/test_shop_availability.gd:254)
+       [2] _test_blocked_keyboard_actions (res://tests/test_shop_availability.gd:154)
+       [3] _settle (res://tests/test_shop_availability.gd:340)
+ERROR: Full-reserve guidance explicitly names an empty installation slot or sale, rather than implying any swap frees capacity
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_availability.gd:352)
+       [1] _assert_offer (res://tests/test_shop_availability.gd:256)
+       [2] _test_blocked_keyboard_actions (res://tests/test_shop_availability.gd:154)
+       [3] _settle (res://tests/test_shop_availability.gd:340)
+ERROR: The visible buy label reflects formal availability: 遗物已满3层 · 20魂屑
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_availability.gd:352)
+       [1] _assert_offer (res://tests/test_shop_availability.gd:251)
+       [2] _test_blocked_keyboard_actions (res://tests/test_shop_availability.gd:142)
+       [3] _new_ui (res://tests/test_shop_availability.gd:81)
+       [4] _settle (res://tests/test_shop_availability.gd:340)
+ERROR: The tooltip carries the formal purchase rejection without substituting another rule: 遗物已满3层
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_availability.gd:352)
+       [1] _assert_offer (res://tests/test_shop_availability.gd:254)
+       [2] _test_blocked_keyboard_actions (res://tests/test_shop_availability.gd:142)
+       [3] _new_ui (res://tests/test_shop_availability.gd:81)
+       [4] _settle (res://tests/test_shop_availability.gd:340)
+ERROR: The visible buy label reflects formal availability: 遗物已满3层 · 20魂屑
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_availability.gd:352)
+       [1] _assert_offer (res://tests/test_shop_availability.gd:251)
+       [2] _test_blocked_keyboard_actions (res://tests/test_shop_availability.gd:154)
+       [3] _settle (res://tests/test_shop_availability.gd:340)
+ERROR: The tooltip carries the formal purchase rejection without substituting another rule: 遗物已满3层
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_availability.gd:352)
+       [1] _assert_offer (res://tests/test_shop_availability.gd:254)
+       [2] _test_blocked_keyboard_actions (res://tests/test_shop_availability.gd:154)
+       [3] _settle (res://tests/test_shop_availability.gd:340)
+ERROR: The visible buy label reflects formal availability: 魂屑不足 · 24魂屑
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_availability.gd:352)
+       [1] _assert_offer (res://tests/test_shop_availability.gd:251)
+       [2] _test_balance_and_sold_refresh (res://tests/test_shop_availability.gd:163)
+       [3] _new_ui (res://tests/test_shop_availability.gd:81)
+       [4] _settle (res://tests/test_shop_availability.gd:340)
+ERROR: The tooltip carries the formal purchase rejection without substituting another rule: 魂屑不足
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_availability.gd:352)
+       [1] _assert_offer (res://tests/test_shop_availability.gd:254)
+       [2] _test_balance_and_sold_refresh (res://tests/test_shop_availability.gd:163)
+       [3] _new_ui (res://tests/test_shop_availability.gd:81)
+       [4] _settle (res://tests/test_shop_availability.gd:340)
+ERROR: Real Tab skips the disabled sold offer
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_availability.gd:352)
+       [1] _test_balance_and_sold_refresh (res://tests/test_shop_availability.gd:172)
+       [2] _press_shop (res://tests/test_shop_availability.gd:301)
+       [3] _settle (res://tests/test_shop_availability.gd:340)
+ERROR: The visible buy label reflects formal availability: 魂屑不足 · 20魂屑
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_availability.gd:352)
+       [1] _assert_offer (res://tests/test_shop_availability.gd:251)
+       [2] _test_balance_and_sold_refresh (res://tests/test_shop_availability.gd:173)
+       [3] _press_shop (res://tests/test_shop_availability.gd:301)
+       [4] _settle (res://tests/test_shop_availability.gd:340)
+ERROR: The tooltip carries the formal purchase rejection without substituting another rule: 魂屑不足
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_availability.gd:352)
+       [1] _assert_offer (res://tests/test_shop_availability.gd:254)
+       [2] _test_balance_and_sold_refresh (res://tests/test_shop_availability.gd:173)
+       [3] _press_shop (res://tests/test_shop_availability.gd:301)
+       [4] _settle (res://tests/test_shop_availability.gd:340)
+ERROR: The visible buy label reflects formal availability: 魂屑不足 · 60魂屑
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_availability.gd:352)
+       [1] _assert_offer (res://tests/test_shop_availability.gd:251)
+       [2] _test_balance_and_sold_refresh (res://tests/test_shop_availability.gd:180)
+       [3] _settle (res://tests/test_shop_availability.gd:340)
+ERROR: The tooltip carries the formal purchase rejection without substituting another rule: 魂屑不足
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_availability.gd:352)
+       [1] _assert_offer (res://tests/test_shop_availability.gd:254)
+       [2] _test_balance_and_sold_refresh (res://tests/test_shop_availability.gd:180)
+       [3] _settle (res://tests/test_shop_availability.gd:340)
+ERROR: The visible buy label reflects formal availability: 法器槽已满 · 24魂屑
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_availability.gd:352)
+       [1] _assert_offer (res://tests/test_shop_availability.gd:251)
+       [2] _test_weapon_sale_frees_capacity (res://tests/test_shop_availability.gd:192)
+       [3] _new_ui (res://tests/test_shop_availability.gd:81)
+       [4] _settle (res://tests/test_shop_availability.gd:340)
+ERROR: The tooltip carries the formal purchase rejection without substituting another rule: 法器槽已满
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_availability.gd:352)
+       [1] _assert_offer (res://tests/test_shop_availability.gd:254)
+       [2] _test_weapon_sale_frees_capacity (res://tests/test_shop_availability.gd:192)
+       [3] _new_ui (res://tests/test_shop_availability.gd:81)
+       [4] _settle (res://tests/test_shop_availability.gd:340)
+ERROR: The visible buy label reflects formal availability: 备用符文已满 · 20魂屑
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_availability.gd:352)
+       [1] _assert_offer (res://tests/test_shop_availability.gd:251)
+       [2] _test_rune_capacity_remedies (res://tests/test_shop_availability.gd:206)
+       [3] _new_ui (res://tests/test_shop_availability.gd:81)
+       [4] _settle (res://tests/test_shop_availability.gd:340)
+ERROR: The tooltip carries the formal purchase rejection without substituting another rule: 备用符文已满
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_availability.gd:352)
+       [1] _assert_offer (res://tests/test_shop_availability.gd:254)
+       [2] _test_rune_capacity_remedies (res://tests/test_shop_availability.gd:206)
+       [3] _new_ui (res://tests/test_shop_availability.gd:81)
+       [4] _settle (res://tests/test_shop_availability.gd:340)
+ERROR: Full-reserve guidance explicitly names an empty installation slot or sale, rather than implying any swap frees capacity
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_availability.gd:352)
+       [1] _assert_offer (res://tests/test_shop_availability.gd:256)
+       [2] _test_rune_capacity_remedies (res://tests/test_shop_availability.gd:206)
+       [3] _new_ui (res://tests/test_shop_availability.gd:81)
+       [4] _settle (res://tests/test_shop_availability.gd:340)
+ERROR: The visible buy label reflects formal availability: 备用符文已满 · 20魂屑
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_availability.gd:352)
+       [1] _assert_offer (res://tests/test_shop_availability.gd:251)
+       [2] _test_rune_capacity_remedies (res://tests/test_shop_availability.gd:221)
+       [3] _press_shop (res://tests/test_shop_availability.gd:301)
+       [4] _settle (res://tests/test_shop_availability.gd:340)
+ERROR: The tooltip carries the formal purchase rejection without substituting another rule: 备用符文已满
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_availability.gd:352)
+       [1] _assert_offer (res://tests/test_shop_availability.gd:254)
+       [2] _test_rune_capacity_remedies (res://tests/test_shop_availability.gd:221)
+       [3] _press_shop (res://tests/test_shop_availability.gd:301)
+       [4] _settle (res://tests/test_shop_availability.gd:340)
+ERROR: Full-reserve guidance explicitly names an empty installation slot or sale, rather than implying any swap frees capacity
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_availability.gd:352)
+       [1] _assert_offer (res://tests/test_shop_availability.gd:256)
+       [2] _test_rune_capacity_remedies (res://tests/test_shop_availability.gd:221)
+       [3] _press_shop (res://tests/test_shop_availability.gd:301)
+       [4] _settle (res://tests/test_shop_availability.gd:340)
+ERROR: The visible buy label reflects formal availability: 法器槽已满 · 26魂屑
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_availability.gd:352)
+       [1] _assert_offer (res://tests/test_shop_availability.gd:251)
+       [2] _test_mixed_full_layout (res://tests/test_shop_availability.gd:238)
+       [3] _new_ui (res://tests/test_shop_availability.gd:81)
+       [4] _settle (res://tests/test_shop_availability.gd:340)
+ERROR: The tooltip carries the formal purchase rejection without substituting another rule: 法器槽已满
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_availability.gd:352)
+       [1] _assert_offer (res://tests/test_shop_availability.gd:254)
+       [2] _test_mixed_full_layout (res://tests/test_shop_availability.gd:238)
+       [3] _new_ui (res://tests/test_shop_availability.gd:81)
+       [4] _settle (res://tests/test_shop_availability.gd:340)
+ERROR: The visible buy label reflects formal availability: 备用符文已满 · 22魂屑
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_availability.gd:352)
+       [1] _assert_offer (res://tests/test_shop_availability.gd:251)
+       [2] _test_mixed_full_layout (res://tests/test_shop_availability.gd:239)
+       [3] _new_ui (res://tests/test_shop_availability.gd:81)
+       [4] _settle (res://tests/test_shop_availability.gd:340)
+ERROR: The tooltip carries the formal purchase rejection without substituting another rule: 备用符文已满
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_availability.gd:352)
+       [1] _assert_offer (res://tests/test_shop_availability.gd:254)
+       [2] _test_mixed_full_layout (res://tests/test_shop_availability.gd:239)
+       [3] _new_ui (res://tests/test_shop_availability.gd:81)
+       [4] _settle (res://tests/test_shop_availability.gd:340)
+ERROR: Full-reserve guidance explicitly names an empty installation slot or sale, rather than implying any swap frees capacity
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_availability.gd:352)
+       [1] _assert_offer (res://tests/test_shop_availability.gd:256)
+       [2] _test_mixed_full_layout (res://tests/test_shop_availability.gd:239)
+       [3] _new_ui (res://tests/test_shop_availability.gd:81)
+       [4] _settle (res://tests/test_shop_availability.gd:340)
+ERROR: The visible buy label reflects formal availability: 遗物已满3层 · 20魂屑
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_availability.gd:352)
+       [1] _assert_offer (res://tests/test_shop_availability.gd:251)
+       [2] _test_mixed_full_layout (res://tests/test_shop_availability.gd:240)
+       [3] _new_ui (res://tests/test_shop_availability.gd:81)
+       [4] _settle (res://tests/test_shop_availability.gd:340)
+ERROR: The tooltip carries the formal purchase rejection without substituting another rule: 遗物已满3层
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_availability.gd:352)
+       [1] _assert_offer (res://tests/test_shop_availability.gd:254)
+       [2] _test_mixed_full_layout (res://tests/test_shop_availability.gd:240)
+       [3] _new_ui (res://tests/test_shop_availability.gd:81)
+       [4] _settle (res://tests/test_shop_availability.gd:340)
+ERROR: The visible buy label reflects formal availability: 遗物已满3层 · 20魂屑
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_availability.gd:352)
+       [1] _assert_offer (res://tests/test_shop_availability.gd:251)
+       [2] _test_mixed_full_layout (res://tests/test_shop_availability.gd:241)
+       [3] _new_ui (res://tests/test_shop_availability.gd:81)
+       [4] _settle (res://tests/test_shop_availability.gd:340)
+ERROR: The tooltip carries the formal purchase rejection without substituting another rule: 遗物已满3层
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_availability.gd:352)
+       [1] _assert_offer (res://tests/test_shop_availability.gd:254)
+       [2] _test_mixed_full_layout (res://tests/test_shop_availability.gd:241)
+       [3] _new_ui (res://tests/test_shop_availability.gd:81)
+       [4] _settle (res://tests/test_shop_availability.gd:340)
+ShopAvailability: 166 assertions, 57 failures

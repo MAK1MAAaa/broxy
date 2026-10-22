@@ -1,0 +1,331 @@
+{
+  "schema_version": 1,
+  "baseline_commit": "05a4c55",
+  "production_files_changed": [
+    "scripts/core/run_state.gd",
+    "scripts/ui/game_ui.gd"
+  ],
+  "core_version": "prototype-0.1.0+fb2ccf1ca5f1",
+  "policy_version": "orbit-avoid-v1/shop-v1+7c19c01f20e4",
+  "current_runtime_sha256": {
+    "scripts/core/run_state.gd": "7864a8860951b5dcf1b924257fee4dd91d9c07888a97714865a863a63c98e06b",
+    "scripts/ui/game_ui.gd": "75dd3fc240e7db432a4b52fff77b6ba82458872d65eaec1ae108f1edf1411cfc",
+    "scripts/main.gd": "66b193ae057775163c02ff6efc7728d36f6734b84421b86da1171fb96e171ba4",
+    "scripts/core/game_store.gd": "13f95880667763d262cdfa5af6ceefbeb27ba3c098e1b4ac94cd5eab56041150",
+    "scripts/combat/combat_sim.gd": "5bca9f0367c8cdcb5f698f672e4f3b9b0689dc684f73a20a30edf97e4ee73e34",
+    "scripts/combat/combat_world.gd": "4cf1b8bcc68f299a3e8defbef421c634f1cce0e8eeff6f445c8d83ed79fdc5c1",
+    "scripts/combat/projectile_painter.gd": "dc06af10a75453536ded8b37325f564be4e1fbaf7e56e3b14925ad2475930a3e",
+    "scripts/combat/enemy_telegraph_painter.gd": "4750e8c434ef2eac723d1cb6cb3bef5386734cd369a80f001b0467a3211af2e6",
+    "scripts/combat/bot_policy.gd": "a78c47c7c5002f06928cc8af373851fb81f853ec401f6fa929a28efd303d613b",
+    "tests/simulate_runs.gd": "361cf71e03712a882de74a3ec0fc36b0d430ac7554ab5127a4813a23932e6486"
+  },
+  "unchanged_runtime_from_baseline": [
+    "scripts/main.gd",
+    "scripts/core/game_store.gd",
+    "scripts/combat/combat_sim.gd",
+    "scripts/combat/combat_world.gd",
+    "scripts/combat/projectile_painter.gd",
+    "scripts/combat/enemy_telegraph_painter.gd",
+    "scripts/combat/bot_policy.gd",
+    "tests/simulate_runs.gd"
+  ],
+  "core_fingerprint_sources_sha256": {
+    "data/enemies/boss.tres": "d8832c910af8845821579d29d5fb8ff4b30ba1333a53004347b1c6272fe934cb",
+    "data/enemies/caster.tres": "c2f1dffc0aaeb4b74837ef109d78a0bb536c583a9efc9cc5347b3b55ddb67e86",
+    "data/enemies/chaser.tres": "67b655cd3ad1919cfe4eea86cbc50ae32ee4ae8dcc426b70341b013a055b4c11",
+    "data/enemies/rusher.tres": "85f4a04a54297ccf16e4caf9f39444b97ec0fbfe4d5516263e322f953635e3aa",
+    "data/enemies/tank.tres": "7901efcd7ec48940d8bce6559dea80daf9c2d911ddd12257ed72d1fe80100b1a",
+    "data/relics/armor.tres": "e710ca293f9ea27557427299b8909ed6da9fc3d385a62067f2c3b02b25c3913a",
+    "data/relics/damage.tres": "bf30c9fd0fb8f7511d6c27a292a5388ac9d2340a6aa4724c6acc08f891a464b8",
+    "data/relics/haste.tres": "75525cf02bf18c9913482ed9ca77650fe3a6eadd8f861074991e163514fa3cdb",
+    "data/relics/magnet.tres": "4abf5f92e1f2150e16e32017a8bfa2002704916bc51882000973246a11987e43",
+    "data/relics/speed.tres": "ef52dce76e11c417c2a016ab94b5e15f3e905307265a2c20207942df7424c9aa",
+    "data/relics/vitality.tres": "4b4e296ebefb06e4533685d40099641fc0f7a78a29a23807a50c480d33899f84",
+    "data/runes/blast.tres": "2174763839b25d2c32b09a70e40bde43e5080fb46a29f423195590d660d433fb",
+    "data/runes/bounce.tres": "05dadcae56f093389b76f9179b34c2877c82ad764730633bf95b3ed3192ed5b5",
+    "data/runes/pierce.tres": "2cebfde32d6b9107dc1547f99f5c0720f171cdd79ea2e5758a436d3401796459",
+    "data/waves/wave_1.tres": "0806ec860e50ff356f2446e0d36c26f7421bd54b4caef77c2c6b52c87d77f897",
+    "data/waves/wave_2.tres": "c215ce4849981a33e6f143e510ec4b29e5559efdc168e6c888f8ffa42a57dd70",
+    "data/waves/wave_3.tres": "40a1d88ca1d4e1b6fb6473eaa77c3f3a49b01b9ad39b6d642d10d275c7da5dfc",
+    "data/waves/wave_4.tres": "962f10a533021cca45e6227f42dedc58789558e8bccf21bd35802db18d732861",
+    "data/waves/wave_5.tres": "1da70e90df8b263cf7f17b22d64994bdd1849782629c9b69bbf05f0846349582",
+    "data/waves/wave_6.tres": "eacf2c8c19f344b7e16e3c1e253b30d0f789d60f3c23c508bd4cad85df963803",
+    "data/waves/wave_7.tres": "41e6b80f98711486684b71d3d086bfc6c7199596d4a085c6cd56f4afb7ac36ff",
+    "data/waves/wave_8.tres": "2a810cf965bb95c7c62d49528557863a923d9e4e66842df9c40de8c7a8ca7474",
+    "data/weapons/bone.tres": "ff1776e43a64eabfe56da2c6b04b23198cfe8edbf3706ba38fb5e1f84bd7f9b6",
+    "data/weapons/ember.tres": "5f1d0097bbe81ce00cec8ed6eaa26743f8e02feb9ac394c1b8e63b1b8f15a00d",
+    "data/weapons/frost.tres": "6f88f647f26a409f9aa448e732c498ef811ae0ec6d580def0fbcb2b0ac52012c",
+    "data/weapons/scatter.tres": "b7c0737e60036999ded31d1ffcb11b5e34b5039c25401bca8fb38c4f90b0b8da",
+    "scripts/combat/combat_sim.gd": "5bca9f0367c8cdcb5f698f672e4f3b9b0689dc684f73a20a30edf97e4ee73e34",
+    "scripts/core/run_state.gd": "7864a8860951b5dcf1b924257fee4dd91d9c07888a97714865a863a63c98e06b"
+  },
+  "test_source_sha256": {
+    "tests/test_purchase_query.gd": "b2d8077cb6887fc56ce694d6d7c992f698b7b06c8d8c83f8d944501623c72774",
+    "tests/test_shop_availability.gd": "9d99f29c5e62c311d8b8e2d057c497c507fb4374c9140bb0b7bc6cb63f844649",
+    "tools/preview_shop_status.gd": "e4e1c6c67cc3c9d5dc7eec8f53934e88d025c0e769a5ec237dd12c19f7627451",
+    "tools/test.sh": "83045c298505c3170e893f834c17ce736669c71c22475fbfdd63b533a8efd00b"
+  },
+  "headless_suites_by_process": [
+    {
+      "suite": "Rules",
+      "assertions": 204,
+      "failures": 0
+    },
+    {
+      "suite": "PurchaseQuery",
+      "assertions": 119,
+      "failures": 0
+    },
+    {
+      "suite": "Combat",
+      "assertions": 302,
+      "failures": 0
+    },
+    {
+      "suite": "Homing",
+      "assertions": 45,
+      "failures": 0
+    },
+    {
+      "suite": "UI",
+      "assertions": 157,
+      "failures": 0
+    },
+    {
+      "suite": "Notifications",
+      "assertions": 65,
+      "failures": 0
+    },
+    {
+      "suite": "Modal",
+      "assertions": 37,
+      "failures": 0
+    },
+    {
+      "suite": "ChoiceActions",
+      "assertions": 44,
+      "failures": 0
+    },
+    {
+      "suite": "UpgradePreviews",
+      "assertions": 350,
+      "failures": 0
+    },
+    {
+      "suite": "ShopActions",
+      "assertions": 106,
+      "failures": 0
+    },
+    {
+      "suite": "ShopDetails",
+      "assertions": 51,
+      "failures": 0
+    },
+    {
+      "suite": "ShopAvailability",
+      "assertions": 166,
+      "failures": 0
+    },
+    {
+      "suite": "ProfileModes",
+      "assertions": 25,
+      "failures": 0
+    },
+    {
+      "suite": "Flow",
+      "assertions": 76,
+      "failures": 0
+    },
+    {
+      "suite": "Feedback",
+      "assertions": 64,
+      "failures": 0
+    },
+    {
+      "suite": "ProjectilePainter",
+      "assertions": 77,
+      "failures": 0
+    },
+    {
+      "suite": "EnemyTelegraphs",
+      "assertions": 121,
+      "failures": 0
+    },
+    {
+      "suite": "ShopObservation",
+      "assertions": 384,
+      "failures": 0
+    },
+    {
+      "suite": "ProfileModes",
+      "assertions": 16,
+      "failures": 0
+    },
+    {
+      "suite": "ProfileModes",
+      "assertions": 16,
+      "failures": 0
+    },
+    {
+      "suite": "ProfileModes",
+      "assertions": 16,
+      "failures": 0
+    },
+    {
+      "suite": "ProfileModes",
+      "assertions": 16,
+      "failures": 0
+    },
+    {
+      "suite": "ProfileModes",
+      "assertions": 16,
+      "failures": 0
+    }
+  ],
+  "godot_suite_count": 18,
+  "godot_process_count": 23,
+  "godot_total_assertions": 2473,
+  "godot_total_failures": 0,
+  "python_tests": 14,
+  "full_test_exit_code": 0,
+  "new_test_evidence": {
+    "PurchaseQuery": {
+      "missing_api_gate_before": {
+        "assertions": 1,
+        "failures": 1,
+        "script_errors": 0
+      },
+      "final": {
+        "assertions": 119,
+        "failures": 0
+      },
+      "note": "The absent API guard is not a 119-assertion old-rule failure; existing Rules and full paired simulations verify behavior preservation."
+    },
+    "ShopAvailability": {
+      "same_test_source": true,
+      "before": {
+        "assertions": 166,
+        "failures": 57
+      },
+      "intermediate": {
+        "assertions": 166,
+        "failures": 1,
+        "reason": "Disabled sold offer still received Tab focus; corrected with explicit FOCUS_NONE."
+      },
+      "final": {
+        "assertions": 166,
+        "failures": 0
+      }
+    }
+  },
+  "log_sha256": {
+    "reports/tests.log": "2c41736514b1d5dee9b1ab2e684966cd6e6423c502a4f9d06c2c6adfd99e3b22",
+    "reports/purchase-query-before.log": "1674b7265e7fc2d17266e2c50f93d40ba5f405be3dc0ad6be91a101176cc65b1",
+    "reports/purchase-query-after.log": "d6a0e9cc00c0168666dc38ca51bd6e21ac05ac3f12897a2ca2a5e47f960810e6",
+    "reports/shop-availability-before.log": "7fe581ed01002412f23bb0c958b01167567f78f9aaa52de0bfa5a869636cd876",
+    "reports/shop-availability-intermediate.log": "f4601a88b398928e629d9471f95487e5c7e22f45bede669034b7aac7be9797fb",
+    "reports/shop-availability-after.log": "bf88c025c8853d5c0d17606e9a46695698586a7c5efa430745ac3cc4374ea3af",
+    "reports/build-shop-status.log": "de71a5a54d4357232e78cb6e6222a6a71239afaf0118e73f018710c1ab44430c",
+    "reports/app-boot-shop-status.log": "6c536b7ab6a1ee8e7ac91fdd27709abb484073b092cabb70d205c4f987e47ddd",
+    "reports/archive-shop-status.log": "a1579926de5d13bfc2e19df57898e5c70d42c88f1e88755c187c3668f4a3341e"
+  },
+  "native_rendered_fixtures": [
+    {
+      "stage": "before",
+      "view": "full",
+      "screenshot": "reports/shop-status-before-full.png",
+      "screenshot_sha256": "f030bac23ebc4567b0c26a5d8158e9d1f2ab704e1665242676eec0d1bf332aa2",
+      "log": "reports/shop-status-before-full.log",
+      "log_sha256": "9c0ba4183cc954d6355a6490736d23293cedf6b5b6884fe10c77e37c1cd2ede1",
+      "exit_code": 0,
+      "image_reviewed": true
+    },
+    {
+      "stage": "before",
+      "view": "poor",
+      "screenshot": "reports/shop-status-before-poor.png",
+      "screenshot_sha256": "0301ecfb1c67b38802d449d89f485330445dc0826fabd3d9c6e8422a3630fa73",
+      "log": "reports/shop-status-before-poor.log",
+      "log_sha256": "a16118dc2d6b5cadc71c97c92d65375283d915da91f127c323545a755637cb68",
+      "exit_code": 0,
+      "image_reviewed": true
+    },
+    {
+      "stage": "after",
+      "view": "full",
+      "screenshot": "reports/shop-status-after-full.png",
+      "screenshot_sha256": "33428b809588e03a84a7375ab3c3ef1ee619dad04f96dca889ada9a92466f09f",
+      "log": "reports/shop-status-after-full.log",
+      "log_sha256": "0858f71d6b632da69a3c17b5f3f61a8fe71d0031cdf063165a4528cc9c270dd6",
+      "exit_code": 0,
+      "image_reviewed": true
+    },
+    {
+      "stage": "after",
+      "view": "poor",
+      "screenshot": "reports/shop-status-after-poor.png",
+      "screenshot_sha256": "56ff00464e9ce3bf2d96bddee1f19479a1f05c0dce99e595ea2064bce6e5a1ec",
+      "log": "reports/shop-status-after-poor.log",
+      "log_sha256": "2f97d5f1135ff89f1222a619d9ce365836d4bb6ae8e07e3d3ae99696794129d5",
+      "exit_code": 0,
+      "image_reviewed": true
+    }
+  ],
+  "native_input": {
+    "attempted": true,
+    "completed": false,
+    "reason": "CUA getApp reported the Mac is locked; no native keyboard actions performed.",
+    "hold_process_exit_code": 143,
+    "hold_exit_note": "Only the created preview process was terminated after the lock report; not counted as interactive pass.",
+    "input_coverage": "Headless Godot InputEvent Tab/Return with actual shop controls; tooltip metadata is not evidence of a native tooltip appearing.",
+    "log": "reports/shop-status-native.log",
+    "log_sha256": "0858f71d6b632da69a3c17b5f3f61a8fe71d0031cdf063165a4528cc9c270dd6"
+  },
+  "paired_simulation": {
+    "report": "reports/purchase-simulation.json",
+    "report_sha256": "1b49a95f2724852c4ac06367ffb560d11cf7eb250b554f6d8f9f041cbad99e12",
+    "runs": 30,
+    "wins": 29,
+    "losses": 1,
+    "comparison_excluded_fields": [
+      "balance_version"
+    ],
+    "all_remaining_fields_equal": true
+  },
+  "build": {
+    "app": "build/Embers-shop-status.app",
+    "architecture": "arm64",
+    "ad_hoc_strict_signature": true,
+    "info_plist_valid": true,
+    "build_exit_code": 0,
+    "packaged_headless_boot_exit_code": 0,
+    "boot_args": [
+      "--headless",
+      "--quit-after",
+      "3",
+      "--",
+      "--capture-only"
+    ],
+    "zip_integrity_exit_code": 0,
+    "artifact_sha256": {
+      "build/Embers-shop-status.app/Contents/MacOS/秘术余烬": "9d849bdf2e4b4be1adc6a4db0703d66cd466a90da7569520483cd37f91c31ce6",
+      "build/Embers-shop-status.app/Contents/Resources/秘术余烬.pck": "20514c778ed699874a2aef0092c57031e5e9e8ceedab1250710e1fb378cf49df",
+      "build/Embers-shop-status-mac-arm64.zip": "50dfa751bf5601d69c6664e723603386d55a20223a1beda98542c7167f2b950c"
+    },
+    "old_apps_and_paused_run_preserved": true
+  },
+  "performance": {
+    "rerun_this_round": false,
+    "latest_complete_sample_commit": "e64bb18",
+    "average_fps": 90.8467231586951,
+    "p99_ms": 25.4,
+    "duration_s": 300,
+    "note": "Historical 143 core sample; no new graphical performance claim."
+  },
+  "limitations": [
+    "No new native CUA input or packaged normal-menu launch due to lock; original static native rendering succeeded.",
+    "Fixed shop fixtures use explicit test budgets and public purchases; not actual earned inventories.",
+    "Capacity subtitle text is visually reviewed in screenshots, not directly asserted in the new automated suite.",
+    "The fixed bot sample does not establish human balance, UI comprehension or fun; five-person playtest remains undone."
+  ]
+}

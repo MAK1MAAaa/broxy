@@ -690,7 +690,12 @@ func _offer_card(parent: Control, index: int) -> void:
 	names.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	name_row.add_child(names)
 	names.add_child(_label(definition.display_name, 21, BONE))
-	names.add_child(_label({"weapon": "法器", "rune": "符文", "relic": "遗物"}.get(kind, kind) + "  /  " + definition.subtitle.get_slice(" · ", 1), 11, category))
+	var ownership: String = ""
+	match kind:
+		"weapon": ownership = "法器%d/%d槽" % [run.loadout.size(), RunState.WEAPON_CAP]
+		"rune": ownership = "备用%d/%d" % [run.rune_bag.size(), RunState.RUNE_BAG_CAP]
+		"relic": ownership = "持有%d/%d层" % [int(run.relic_counts.get(definition.id, 0)), RunState.RELIC_CAP]
+	names.add_child(_label({"weapon": "法器", "rune": "符文", "relic": "遗物"}.get(kind, kind) + "  /  " + definition.subtitle.get_slice(" · ", 1) + " · " + ownership, 11, category))
 	var description := _wrap(definition.description, 14, MUTED)
 	description.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	body.add_child(description)
@@ -700,11 +705,32 @@ func _offer_card(parent: Control, index: int) -> void:
 		_enable_tooltip(stats, _weapon_stats_note())
 		body.add_child(stats)
 	var sold := bool(offer.get("sold", false))
-	var buy := _shop_button("已购买" if sold else "购买  %d 魂屑" % int(offer.get("price", 0)), _buy.bind(index), "buy:%d" % index, Vector2(0, 35))
+	var price: int = int(offer.get("price", 0))
+	var error: String = run.purchase_error(index)
+	var blocked: bool = not sold and not error.is_empty()
+	var buy_text: String = "已购买" if sold else "购买  %d 魂屑" % price
+	if blocked:
+		var reason: String = {
+			"魂屑不足。": "魂屑不足",
+			"法器槽已满，请先出售一件法器。": "法器槽已满",
+			"备用符文已满，请先装备或出售。": "备用符文已满",
+			"该遗物已达到3层上限。": "遗物已满3层",
+		}.get(error, "暂不可购")
+		buy_text = "%s · %d魂屑" % [reason, price]
+	var buy := _shop_button(buy_text, _buy.bind(index), "buy:%d" % index, Vector2(0, 35))
 	buy.add_theme_font_size_override("font_size", 16)
-	buy.add_theme_color_override("font_color", GOLD)
-	buy.add_theme_stylebox_override("normal", _box(Color("232231"), Color(category, 0.48)))
+	buy.add_theme_color_override("font_color", MUTED if blocked else GOLD)
+	buy.add_theme_stylebox_override("normal", _box(Color("1a1d29") if blocked else Color("232231"), Color(MUTED, 0.3) if blocked else Color(category, 0.48)))
+	buy.tooltip_text = error
+	if error == "魂屑不足。":
+		buy.tooltip_text += "还差%d魂屑。" % (price - run.gold)
+	elif error == "备用符文已满，请先装备或出售。":
+		buy.tooltip_text += "\n把备用符文装入无符文法器，或出售备用符文；替换已有符文不会腾位。"
+	elif error == "法器槽已满，请先出售一件法器。":
+		buy.tooltip_text += "\n出售带符文的法器，需要1个备用符文空位。"
+	# Blocked unsold offers stay focusable so keyboard users can read the reason.
 	buy.disabled = sold
+	buy.focus_mode = Control.FOCUS_NONE if sold else Control.FOCUS_ALL
 	body.add_child(buy)
 
 

@@ -4,7 +4,15 @@
 
 本轮先修复可复现的战斗与交互问题，再用固定种子回归检查影响。机器人策略和资源平衡参数保持不变；自动模拟、界面测试、原生运行与真人试玩分别记录，不互相替代。
 
-## 当前：HUD通知与首领状态避让
+## 当前：商店购买条件与已售商品导航
+
+- 固定满库存与低余额画面确认，原按钮只区分已购买，四类限制必须点击才知道。现复用原按钮显示售价和明确原因，副标题关联当前数量；低强调受阻项仍可Tab/Return，已售商品显式FOCUS_NONE。
+- `purchase_error()`提取原校验顺序供UI只读使用，购买保留原事务与错误；119条新API检查通过，缺API前仅1项门控失败。商店同源码166条由57失败变0，覆盖正式拒绝/无成功音/保焦点、售出跳过Tab、真实出售腾位、空槽装配、满袋交换不腾位、补款恢复和完整六遗物布局。中间轮1失败是disabled售出卡仍获Tab焦点，已显式修复。
+- 十八类Godot共2473条和14项Python全过。原2026—2035×三流派及7c19策略30局，核心143→fb2ccf1ca5f1，仅排除balance_version后全部字段相同，含完整trace/逐波/shop_observations；仍29胜1败，不推断真人结果。见[purchase-simulation.json](../reports/purchase-simulation.json)。
+- full/poor原生前后四图均退出0并已查看。固定预算与合法库存不等于实际对局，未读写个人档案；CUA补测遇Mac锁屏，本轮无原生键盘输入，自建hold预览终止143不算交互通过。未重跑5分钟压力，90.847 FPS/P99 25.400毫秒仍为e64bb18测量。
+- 另存Embers-shop-status.app/ZIP，arm64、严格签名、Info.plist、无存档包启动与ZIP完整性通过；旧应用/暂停对局保留。源码/日志/图/包指纹见[purchase-validation.json](../reports/purchase-validation.json)，本轮验证后本地commit；持续优化仍在进行。
+
+## 上一轮：HUD通知与首领状态避让
 
 - 原检查仅确认通知不与ARENA相交，漏掉角色在碰撞中心上方伸出50像素的贴图。固定原生截图确认上边界面具被通知遮住、中央首领条也覆盖角色。现两者共用顶部状态栏空白第二行，不改战场、碰撞、主HUD读数、血量/经验与装备位置。
 - 新通知为13px单行、省略超宽内容，首领姓名16px与8px血条内联右置。65条同源码回归由6失败变0；连续保守包络含呼吸、倾斜、震屏、环绕法器/符文，顶界95，新信息区止于82。字形与读数、长文/换行、移动输入、2.8秒暂停计时/替换/跨页均通过。
@@ -104,6 +112,7 @@
 | 测试套件 | 断言 | 失败 |
 | --- | ---: | ---: |
 | Rules | 204 | 0 |
+| PurchaseQuery | 119 | 0 |
 | Combat | 302 | 0 |
 | Homing | 45 | 0 |
 | UI | 157 | 0 |
@@ -118,8 +127,9 @@
 | ShopObservation | 384 | 0 |
 | ShopActions | 106 | 0 |
 | ShopDetails | 51 | 0 |
+| ShopAvailability | 166 | 0 |
 | ProfileModes（六入口） | 105 | 0 |
-| Godot合计 | **2188** | **0** |
+| Godot合计 | **2473** | **0** |
 
 另有14项Python分析器测试通过；完整记录同在`reports/tests.log`。商店观测的105组冻结策略对照额外核对trace、库存、钱包和RNG状态；分析器将缺失报价和少于四件商品的库存片段保留为未完整观测，不推断缺货。
 
@@ -145,7 +155,7 @@ Flow 的普通首波耗时为 2701 个固定步。Boss 终局检查使用加速�
 | 验收项 | 当前账本状态 | 证据与边界 |
 | --- | --- | --- |
 | 上轮e64bb18真实符文场景5分钟压力测试 | 历史通过，本轮未重测 | Apple M5 / Compatibility / 1280×720，预热5秒、正式300秒、27,255帧；300/600/200，平均90.847 FPS、P99 25.400毫秒；performance.json标记rune-feedback及实际默认设置/无存档状态，退出0 |
-| 本轮独立 macOS 构建与包启动 | 已通过 | `Embers-hud.app`；`build-hud.log`记录arm64、Info.plist和严格签名；`app-boot-hud.log`为无存档入口退出0；`archive-hud.log`检查ZIP完整，旧用户对局保留 |
+| 本轮独立 macOS 构建与包启动 | 已通过 | `Embers-shop-status.app`；`build-shop-status.log`记录arm64、Info.plist和严格签名；`app-boot-shop-status.log`为无存档入口退出0；`archive-shop-status.log`检查ZIP完整，旧用户对局保留 |
 | 上轮暂停与设置原生输入 | 固定场景通过 | `modal-native.log`与`modal-native.gd.txt`；实际CUA Tab/Return/Esc、恢复商店及下一波45→37；个人存档读写关闭 |
 | 较早阶段原生约47秒流程 | 已通过普通首波结束检查 | `feedback-flow-native.log`与`feedback-first-wave-complete.png`：45秒正常波次进入“秘术觉醒”，退出0。使用自动走位，未使用压力模式或跳过计时 |
 | 商店原生键盘装配 | 已通过 | 在明确标注的固定商店夹具中按真实Return：骨针装入贯穿、备用归零、焦点到“卸符”，仍停留商店；不代表真人整局通关 |
