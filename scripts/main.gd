@@ -25,6 +25,12 @@ func _ready() -> void:
 	# VSync schedules presentation; a second 60 Hz software limiter can miss vblank.
 	Engine.max_fps = 0
 	args = OS.get_cmdline_user_args()
+	# Direct CLI validation must be as isolated as the standalone preview fixtures.
+	# Preserve a caller's explicit persistent=false even for ordinary startup.
+	for diagnostic: String in ["--smoke", "--autoplay", "--shop-preview", "--benchmark", "--capture-only"]:
+		if diagnostic in args:
+			store.persistent = false
+			break
 	store.load_profile()
 	sound = SoundBank.new()
 	add_child(sound)
@@ -56,7 +62,7 @@ func _ready() -> void:
 	if "--autoplay" in args:
 		_start_run("bone")
 		world.autopilot = true
-		get_window().title = "秘术余烬 · 自动流程验证"
+		get_window().title = "秘术余烬 · 自动流程验证（不保存设置与成绩）"
 		ui.notify("自动走位验证 · 普通关卡在 45 秒后正常结算")
 	if "--shop-preview" in args:
 		_start_run("bone")
@@ -132,7 +138,7 @@ func _open_shop() -> void:
 	sound.play("buy", -15.0)
 
 func _title() -> void:
-	get_window().title = "秘术余烬"
+	get_window().title = "秘术余烬" if store.persistent else "秘术余烬 · 验证模式（不保存设置与成绩）"
 	get_tree().paused = false
 	paused = false
 	screen = Screen.TITLE
@@ -219,9 +225,9 @@ func _start_benchmark() -> void:
 		if argument.begins_with("--seconds="):
 			_benchmark_seconds = maxf(5.0, argument.trim_prefix("--seconds=").to_float())
 	world.benchmark_time_left = _benchmark_seconds + 5.0
-	get_window().title = "秘术余烬 · 性能压力测试（非普通关卡）"
+	get_window().title = "秘术余烬 · 性能压力测试（非普通关卡，不保存设置与成绩）"
 	if world.rune_stress_mode:
-		get_window().title = "秘术余烬 · 符文反馈压力测试（非普通关卡）"
+		get_window().title = "秘术余烬 · 符文反馈压力测试（非普通关卡，不保存设置与成绩）"
 	ui.update_hud(world.hud_snapshot())
 	ui.notify("性能压力测试 · 不结算关卡 · 采样结束后自动关闭")
 	print("BENCHMARK_START 300 enemies / 600 projectiles / 200 drops, ", _benchmark_seconds, "s + 5s warmup")

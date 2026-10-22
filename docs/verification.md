@@ -16,13 +16,14 @@
 | 敌方预警测试 | 121条headless断言，0失败；另134条原生断言覆盖GPU实例读回、边界和颜色；headless明确跳过12项读回 | [tests.log](../reports/tests.log)、[native](../reports/enemy-telegraphs-native.log) |
 | 商店动作时序 | 106条断言，0失败；刷新旧报价、同帧重复出售/选错UID、覆盖层、切波和重开旧控件均受保护；相同测试修前19失败 | [tests.log](../reports/tests.log)、[before](../reports/shop-actions-before.log) |
 | 商店信息与焦点 | 51条断言，0失败；卸符拒绝/成功焦点、装配语义、商品数值与所有装备说明；数值对照正式CombatSim发射结果 | [tests.log](../reports/tests.log)、[before](../reports/shop-details-before.log) |
+| 档案入口隔离 | 六入口105条断言通过；实际Main与临时ConfigFile验证正常加载保存、五诊断不读取/改写、预设persistent=false兼容与标题提示 | [profile-modes-validation.json](../reports/profile-modes-validation.json) |
 | 商店观测测试 | 384条断言，0失败；105组冻结shop-v1对照保持trace、库存、钱包和RNG一致，覆盖拒绝原因、停止条件与快照不变性 | [tests.log](../reports/tests.log) |
 | 离线分析工具 | 14项Python测试通过；覆盖配对旧字段一致性、完整库存与片段区别、缺观测保持未知、坏JSON及混合版本拒绝 | [tests.log](../reports/tests.log) |
 | 实际窗口首波 | 实际运行约47秒；普通45秒首波结束后进入“秘术觉醒”，进程退出码0 | [feedback-flow-native.log](../reports/feedback-flow-native.log)、[首波结束截图](../reports/feedback-first-wave-complete.png) |
 | 实际窗口商店输入 | 固定商店夹具中以CUA按Return成功装配贯穿符文，仍留在商店，没有误触“开始下一波” | 负责人原生CUA操作观察；[商店过程截图](../reports/feedback-shop.png)、[原生日志](../reports/feedback-shop-native.log) |
 | 同种子整局配对模拟 | 2026—2035十个种子×三种符文策略，共30局；本轮29胜1败，与上轮f29除版本外全部字段相同；上轮反冲修复曾改变24局轨迹/统计 | [当前等价报告](../reports/telegraph-equivalence.json)、[上轮配对报告](../reports/modal-recoil-simulation.json) |
 
-十一套Godot行为测试共 **1579条headless断言，0失败**，另有14项Python测试通过。流程测试中的Boss终局使用加速条件；商店原生操作使用固定夹具，均只验证对应流程或交互，不代表真实整局通关。
+十二套Godot行为测试共 **1684条headless断言，0失败**，另有14项Python测试通过。流程测试中的Boss终局使用加速条件；商店原生操作使用固定夹具，均只验证对应流程或交互，不代表真实整局通关。
 
 前一阶段新增暂停边界修复：`main._finish_wave`在离开战斗前统一清除SceneTree及主场景的暂停状态。用`ended`回调中的真实`push_input(Esc)`或失焦通知，人为控制“终局已确定、deferred结算尚未执行”的时序；修复前62条中6条失败，修复后全部通过，覆盖商店、升级、Boss胜利与超时失败。普通波进入下一波后实际physics计时继续推进。该回归证明状态健壮性，尚未原生复现普通OS输入会自然落入该窄窗口，不认定它是之前倒计时反馈的唯一原因。证据为`flow-pause-boundary-before.log`和`flow-pause-boundary-after.log`。
 
@@ -36,7 +37,15 @@
 
 新证据区分了两类情况：seed2026贯穿首店曾出现18魂屑符文，策略从65魂屑先买两件24魂屑法器后剩17，才拒绝符文；次店四轮未出现目标符文。seed2032爆破的前两店全部已记录报价未出现目标符文；seed2029贯穿也在前两店未见目标符文，最终仍通关。它们不证明未成型就是死亡原因，也不支持仅据此调整正式价格或强制发放指定符文。第5—7店停止刷新有57次策略饱和、27次达到策略刷新上限，不等于无合法消费。此前缺完整报价的局限仍适用于旧报告，不能用新观测补写旧报告的原始证据。
 
-## 本轮商店交易与信息
+## 当前：诊断入口档案隔离
+
+此前直接CLI的五种验证入口启动均会读取个人档案，关闭均可写回；自动流程与商店预览继续结算还会把测试成绩记为个人最佳。现在于load_profile之前对五入口设置persistent=false，仅保留本进程内的设置/成绩，普通启动不反向覆盖调用者已有的false。窗口明确标注不保存设置与成绩，普通正常持久化标题保持不变。没有清理或改写任何已有个人记录，也不推断旧记录的来源。
+
+GameStore新增可选内部构造path，默认仍为原user://profile.cfg，现有调用与格式不变。六进程使用真实Main、真实CLI参数与唯一/private/tmp文件：修前98条25失败，修后原检查全部通过，另加7条标题检查，合计105条0失败；正常模式也验证真实读回与保存设置/成绩。十二类Godot测试共1684条及14项Python通过。原生shop-preview+capture-only截图正常、退出0，viewport不包含Mac标题栏；无CUA标题可视确认，标题由真实Main属性断言覆盖。见[报告](../reports/profile-modes-validation.json)。
+
+此逻辑提交尚未重新导出应用；当前Embers-shop.app仍为745a5bb。本轮诊断修复未改战斗核心、资源或策略，未重跑30局及5分钟压力。已复现的幽焰反向追踪退化另行修复与验证，不由本段声称完成。
+
+## 上一轮商店交易与信息
 
 旧卡片只绑定数组index：刷新已换报价、deferred重绘未执行时，旧“幽焰24”按钮可买到新“散魂26”；同帧Return出售备用A、Tab移至旧B、Return选择时会选中已移到该index的C。当前按钮捕获建页代次，统一拒绝数据待重绘、旧页、非商店或覆盖层下的回调。新页仍按原规则接收购买、出售、装配与下波请求。106条同一时序测试由19失败转为0；包含真实Godot InputEventKey与刻意触发旧Button信号的夹具，不声称已经通过普通真人OS输入自然复现。
 

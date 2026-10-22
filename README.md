@@ -65,6 +65,8 @@ BROXY_APP_PATH="$PWD/build/Embers-shop.app" ./tools/build_macos.sh
 
 ## 验证
 
+直接CLI入口`--smoke`、`--autoplay`、`--shop-preview`、`--benchmark`、`--capture-only`会在读取档案前关闭持久化；本进程的设置和成绩只留在内存，窗口标注“不保存设置与成绩”。普通启动保持原有保存行为。独立预览脚本仍各自关闭持久化。当前二进制Embers-shop.app来自745a5bb，此诊断隔离源码修复尚未重新导出；打包状态以验收记录为准。
+
 ```sh
 ./tools/run.sh --headless --script res://tests/test_rules.gd
 ./tools/run.sh --headless --script res://tests/test_combat.gd
@@ -82,7 +84,7 @@ python3 -m unittest discover -s tests -p 'test_shop_analysis.py'
 ./tools/run.sh -- --benchmark --benchmark-runes --seconds=300
 ```
 
-也可以用 `./tools/test.sh` 一次运行十一套Godot行为测试和Python分析器测试。当前1579条Godot无界面断言及14项Python测试全部通过；上一轮原生预警套件另通过134条断言（含12项GPU读回），记录见 `reports/tests.log` 与 `reports/enemy-telegraphs-native.log`。系统字体测试需要正常 macOS 字体访问权限；文件沙箱可能阻止 SystemFont 枚举。请在常规终端运行。性能测试会打开明确标记的窗口并显示采样倒计时，保持300敌人、至少600投射物与200掉落，预热5秒后采样300秒，输出 `reports/performance.json`。`--benchmark-runes`使用四种法器与三类符文的真实伤害弹体，报告标记为`rune-feedback`；省略该参数为含零伤害维持弹体的历史`baseline`场景，两者分别记录。测试时保持该窗口可见、Mac未锁屏，避免同时运行其他图形负载。
+也可以用 `./tools/test.sh` 一次运行十二套Godot行为测试和Python分析器测试。当前1684条Godot无界面断言及14项Python测试全部通过（ProfileModes的六种入口分进程执行）；上一轮原生预警套件另通过134条断言（含12项GPU读回），记录见 `reports/tests.log` 与 `reports/enemy-telegraphs-native.log`。系统字体测试需要正常 macOS 字体访问权限；文件沙箱可能阻止 SystemFont 枚举。请在常规终端运行。性能测试会打开明确标记的窗口并显示采样倒计时，保持300敌人、至少600投射物与200掉落，预热5秒后采样300秒，输出 `reports/performance.json`。`--benchmark-runes`使用四种法器与三类符文的真实伤害弹体，报告标记为`rune-feedback`；省略该参数为含零伤害维持弹体的历史`baseline`场景，两者分别记录。测试时保持该窗口可见、Mac未锁屏，避免同时运行其他图形负载。
 
 最近完整5分钟采样对应上一轮fb22ce9，在Apple M5真实符文场景达到平均95.480 FPS、P99 25.588毫秒，维持300敌人/600弹体/200掉落并实际产生主/次伤害，退出0。本轮仅调整商店界面与交互，未重跑完整压力或30局模拟；核心、资源及绘制源码未改变。另用340个静止预警单独短测，共享网格后全施法119.56 FPS、混合116.68 FPS；两个负载分别记录，设备与场景边界见 `docs/verification.md`。
 
