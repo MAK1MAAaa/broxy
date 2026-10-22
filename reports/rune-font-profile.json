@@ -1,0 +1,100 @@
+{
+	"limits": "Headless CPU only, no GPU/draw-command submission/native audio device; same loaded classes in one process. Font-null retains all strings/events but uses production estimated width fallback.",
+	"results": [
+		{
+			"counts_max": "(300, 600, 200)",
+			"counts_min": "(300, 600, 200)",
+			"damage_listener_ms_per_step": 0.0654875,
+			"mode": "feedback_real_font",
+			"number_peak": 45,
+			"player_listener_ms_per_step": 0.000204166666666667,
+			"primary_hits_sample": 11424,
+			"primary_hits_total": 24222,
+			"rune_listener_ms_per_step": 0.00980833333333333,
+			"rune_peak": 32,
+			"secondary_hits_sample": 22842,
+			"secondary_hits_total": 45561,
+			"sections": {
+				"advance_feedback": {
+					"average_ms": 0.00969166666666667,
+					"max_ms": 0.03,
+					"percent": 0.137602033149903
+				},
+				"maintain_stress": {
+					"average_ms": 0.1701,
+					"max_ms": 1.072,
+					"percent": 2.41507540899039
+				},
+				"rune_line_geometry": {
+					"average_ms": 0.04575,
+					"max_ms": 0.11,
+					"percent": 0.649557318996534
+				},
+				"step_including_listeners": {
+					"average_ms": 6.81771666666667,
+					"max_ms": 7.955,
+					"percent": 96.7977652388632
+				}
+			},
+			"simulation_signature": "1ef99680830f2f3786f6b50712b7fccff2997c62445b11b6df98dc555faf16c7",
+			"text_update_calls": 470,
+			"text_update_ms_per_step": 0.00535833333333333,
+			"total_average_ms": 7.04325833333333
+		},
+		{
+			"counts_max": "(300, 600, 200)",
+			"counts_min": "(300, 600, 200)",
+			"damage_listener_ms_per_step": 0.0613583333333333,
+			"mode": "feedback_null_font",
+			"number_peak": 45,
+			"player_listener_ms_per_step": 0.000129166666666667,
+			"primary_hits_sample": 11424,
+			"primary_hits_total": 24222,
+			"rune_listener_ms_per_step": 0.00937916666666667,
+			"rune_peak": 32,
+			"secondary_hits_sample": 22842,
+			"secondary_hits_total": 45561,
+			"sections": {
+				"advance_feedback": {
+					"average_ms": 0.009525,
+					"max_ms": 0.027,
+					"percent": 0.135384192622213
+				},
+				"maintain_stress": {
+					"average_ms": 0.165395833333333,
+					"max_ms": 0.244,
+					"percent": 2.35086418466262
+				},
+				"rune_line_geometry": {
+					"average_ms": 0.0450291666666667,
+					"max_ms": 0.065,
+					"percent": 0.640024921114722
+				},
+				"step_including_listeners": {
+					"average_ms": 6.81558333333333,
+					"max_ms": 8.178,
+					"percent": 96.8737267016004
+				}
+			},
+			"simulation_signature": "1ef99680830f2f3786f6b50712b7fccff2997c62445b11b6df98dc555faf16c7",
+			"text_update_calls": 470,
+			"text_update_ms_per_step": 0.001825,
+			"total_average_ms": 7.03553333333333
+		}
+	],
+	"sample_steps": 240,
+	"scenario": "production populate_stress + enable_rune_stress + maintain_stress; real positive damage",
+	"seed": 20261022,
+	"simulation_signatures_match": true,
+	"source_hashes_end": {
+		"res://scripts/combat/combat_sim.gd": "2cc474484ae496067c82897647b2e6e26eb25ae14529d9f36df53ce59b8a0a76",
+		"res://scripts/combat/combat_world.gd": "056a7ec55cf177e6794ecf71b1ed25aaa0d069309d70e78e1a9874a4ac4cdd5d",
+		"res://scripts/core/sound_bank.gd": "91a3e2f474ac504c321b36706d31112a9c9d551f1475e65e95b7fcdda3a3a01f"
+	},
+	"source_hashes_start": {
+		"res://scripts/combat/combat_sim.gd": "2cc474484ae496067c82897647b2e6e26eb25ae14529d9f36df53ce59b8a0a76",
+		"res://scripts/combat/combat_world.gd": "056a7ec55cf177e6794ecf71b1ed25aaa0d069309d70e78e1a9874a4ac4cdd5d",
+		"res://scripts/core/sound_bank.gd": "91a3e2f474ac504c321b36706d31112a9c9d551f1475e65e95b7fcdda3a3a01f"
+	},
+	"warmup_steps": 120
+}

@@ -46,17 +46,23 @@ Godot自身可能在标准输出打印版本信息。保存为JSONL时，仅保�
 
 ## 已运行结果
 
-### 当前：30局商店完整观测
+### 当前：符文反馈与查询优化的30局等价回归
+
+2026年10月22日，用相同2026—2035十个种子与三类符文策略，运行当前核心`prototype-0.1.0+bdd5240c97ca`。策略保持`orbit-avoid-v1/shop-v1+7c19c01f20e4`，仍28胜2败。与下述商店观测基线配对，除`balance_version`外全部输出字段一致，包括完整trace、逐波生命/时间、构筑、余额与2490条shop_observations。见[配对及源码指纹报告](../reports/rune-vfx-equivalence.json)；最终JSONL SHA-256为`3ca87ce9d7fb41cf66f507a641c962b0fcb6720ce63cc81d47a0e1b07d850b61`，原始JSONL与日志仅保留本地。
+
+核心变动是实际符文事件及保持原顺序的空间查询优化；此等价结果只覆盖指定30局。原生符文可读性、渲染成本与真人难度另行验收。仅事件改造的中间批次`09f82a86de4c`单独保存在`rune-vfx-equivalence-before-query.json`，不与最终批次混用。
+
+### 前一阶段：30局商店完整观测
 
 2026年10月22日，Godot 4.7.2，种子2026—2035、三个符文流派各10局，仍为28胜2败。核心版本保持 `prototype-0.1.0+dad5c03f6439`；策略脚本指纹更新为 `orbit-avoid-v1/shop-v1+7c19c01f20e4`，只增加观测和统一评分报告，没有改变shop-v1决策、RNG调用、移动策略或数值。完整记录见 [simulation-30-observed.jsonl](../reports/simulation-30-observed.jsonl)，原始输出见 [raw.log](../reports/simulation-30-observed.raw.log)，分析见 [shop-analysis.json](../reports/shop-analysis.json)。
 
 分析器与 `simulation-30-feedback.jsonl` 严格配对：30局全部旧字段逐项相同，包括完整trace、逐波生命与用时、构筑、击杀及魂屑；仅策略指纹和新增观测元数据被排除比较。两批旧字段内容哈希均为 `4791e5662912d55526ab729fd0cd1c80908a107b4e6a595f39d9c0e18b1f9aa9`。这里验证的是观测改造保持行为，与下文战斗修复前后会改变轨迹的比较不同。
 
-可重新采样并分析，也可将第2条命令的输入替换为已保存的JSONL：
+当前源码可重新采样并分析，也可将第2条命令的输入替换为已保存的JSONL。要复现本段的历史配对，需要相应`dad5c03f6439`源码；分析器`--baseline`会拒绝混合核心版本，跨版本的本轮等价报告单独仅排除`balance_version`核对：
 
 ```sh
 tools/run.sh --headless --script res://tests/simulate_runs.gd -- --seed=2026 --count=10 > /tmp/broxy-observed.raw.log
-python3 tools/analyze_shop_runs.py /tmp/broxy-observed.raw.log --baseline reports/simulation-30-feedback.jsonl --output /tmp/broxy-shop-analysis.json
+python3 tools/analyze_shop_runs.py /tmp/broxy-observed.raw.log --output /tmp/broxy-shop-analysis.json
 ```
 
 分析器接受Godot版本提示混入的原始输出，不需要手动过滤。当前共2490个事件、201个商店，所有事件均有4项报价和对应评估，201店均通过库存历史完整性检查。观测结构为 `shop-observations-v1`：
@@ -84,7 +90,7 @@ initial记录自动装备备用符文前的商店，decision记录每次候选�
 
 旧记录无观测时，分析器标记 `unknown_unobserved`。只有包含初始快照、从0到末次刷新连续的4项报价及结束事件，`stock_history_complete` 才为true；片段缺失时，即使已记录快照未见目标符文，缺失部分仍未知。重复decision/stop事件不是独立的新一轮库存，只有initial/reroll计为报价快照。这批固定机器人样本不能用于估计真人通关率。
 
-当前 [tests.log](../reports/tests.log) 已完整记录Godot共954条断言通过（Rules204、Combat152、UI131、Flow62、Feedback21、ShopObservation384），另有14项Python分析器测试通过。商店测试含105组冻结shop-v1的购物trace、钱包、库存和RNG状态对照，并覆盖拒绝优先级、低血生命遗物例外、快照不被后续购买污染及停止刷新边界。
+当前 [tests.log](../reports/tests.log) 已完整记录Godot共1175条断言通过（Rules204、Combat259、UI131、Flow62、Feedback58、ProjectilePainter77、ShopObservation384），另有14项Python分析器测试通过。商店测试含105组冻结shop-v1的购物trace、钱包、库存和RNG状态对照，并覆盖拒绝优先级、低血生命遗物例外、快照不被后续购买污染及停止刷新边界。
 
 ### 历史：战斗修复阶段30局配对回归
 

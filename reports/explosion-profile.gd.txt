@@ -1,0 +1,53 @@
+extends SceneTree
+
+const CALLS: int = 4000
+const ROUNDS: int = 5
+
+func _initialize() -> void:
+	var positions: Array[Vector2] = []
+	for index: int in 100:
+		positions.append(Vector2(100 + (index * 137) % 1080, 150 + (index * 73) % 440))
+	var results: Array[Dictionary] = []
+	for mode: String in ["production", "reference_linear"]:
+		var totals: Array[int] = []
+		var hits: int = 0
+		for round_number: int in ROUNDS:
+			var state: RunState = RunState.new()
+			state.begin(20261022, "bone")
+			var sim: CombatSim = CombatSim.new()
+			sim.begin(state)
+			for index: int in 300:
+				var enemy: CombatSim.Enemy = sim.spawn_enemy("chaser", Vector2(sim.rng.randf_range(100, 1180), sim.rng.randf_range(150, 590)))
+				enemy.health = 100000000.0
+				enemy.max_health = enemy.health
+			sim._rebuild_grid()
+			for property: Dictionary in sim.get_property_list():
+				if property["name"] == "_explosion_grid_active":
+					sim.set("_explosion_grid_active", true)
+			for index: int in 100:
+				if mode == "production":
+					sim._explode(positions[index], 1.0, "ember", {})
+				else:
+					_linear(sim, positions[index])
+			var start: int = Time.get_ticks_usec()
+			for index: int in CALLS:
+				if mode == "production":
+					sim._explode(positions[index % 100], 1.0, "ember", {})
+				else:
+					_linear(sim, positions[index % 100])
+			totals.append(Time.get_ticks_usec() - start)
+			hits = sim.secondary_hits
+		totals.sort()
+		results.append({"mode": mode, "median_ms": float(totals[ROUNDS / 2]) / 1000.0, "rounds_usec": totals, "secondary_hits": hits})
+	print("EXPLOSION_PROFILE ", JSON.stringify({"enemies": 300, "calls_per_round": CALLS, "rounds": ROUNDS, "results": results}))
+	quit(0)
+
+func _linear(sim: CombatSim, position: Vector2) -> void:
+	sim.add_effect(position, Color("df9cfa"), 68.0, 0.35, 0)
+	for enemy: CombatSim.Enemy in sim.enemies:
+		if sim.complete:
+			return
+		if not enemy.active:
+			continue
+		if enemy.position.distance_squared_to(position) < pow(68.0 + enemy.radius, 2):
+			sim.apply_damage(enemy, 1.0, "ember", true)

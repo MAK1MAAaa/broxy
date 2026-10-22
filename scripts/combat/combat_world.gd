@@ -19,9 +19,30 @@ var _visual_time: float = 0.0
 var _last_kills: int = 0
 var autopilot: bool = false
 var stress_mode: bool = false
+var rune_stress_mode: bool = false
 var benchmark_time_left: float = 0.0
 
 const NUMBER_LIMIT: int = 48
+const RUNE_FLASH_LIMIT: int = 32
+const RUNE_FLASH_LIFE: float = 0.24
+const RUNE_KINDS: Dictionary = {"pierce": 0, "bounce": 1, "blast": 2}
+const RUNE_COLORS: Array[Color] = [Color("b8d6b2"), Color("9ec5dc"), Color("dfbc87")]
+
+class RuneFlash:
+	var kind: int = 0
+	var origin: Vector2 = Vector2.ZERO
+	var incoming: Vector2 = Vector2.ZERO
+	var outgoing: Vector2 = Vector2.ZERO
+	var life: float = 0.0
+
+class RuneLineBatch:
+	var points: PackedVector2Array = PackedVector2Array()
+	var color: Color = Color.WHITE
+
+var _rune_pool: Array[RuneFlash] = []
+var _rune_free: Array[RuneFlash] = []
+var _rune_flashes: Array[RuneFlash] = []
+var _rune_batches: Array[RuneLineBatch] = []
 
 class FloatingNumber:
 	var position: Vector2 = Vector2.ZERO
@@ -40,22 +61,26 @@ class FloatingNumber:
 var _number_pool: Array[FloatingNumber] = []
 var _number_free: Array[FloatingNumber] = []
 var _numbers: Array[FloatingNumber] = []
+var _number_lookup: Dictionary = {}
 var _number_font: Font
 var _feedback_serial: int = 0
 var _damage_flash: float = 0.0
 var _damage_direction: Vector2 = Vector2.ZERO
 
-class TrailBatch:
-	var points: PackedVector2Array = PackedVector2Array()
-	var wings: PackedVector2Array = PackedVector2Array()
-	var color: Color = Color.WHITE
-	var width: float = 3.0
-
-var _trail_batches: Dictionary = {}
+const PROJECTILE_PAINTER_SCRIPT = preload("res://scripts/combat/projectile_painter.gd")
+var _projectile_painter: PROJECTILE_PAINTER_SCRIPT = PROJECTILE_PAINTER_SCRIPT.new()
 
 func _init() -> void:
 	for index: int in NUMBER_LIMIT:
 		_number_pool.append(FloatingNumber.new())
+	for index: int in RUNE_FLASH_LIMIT:
+		_rune_pool.append(RuneFlash.new())
+	# Three fade stages per family keep the render-command budget fixed at 18.
+	for kind: int in 3:
+		for stage: int in 3:
+			var batch := RuneLineBatch.new()
+			batch.color = Color(RUNE_COLORS[kind], [0.80, 0.58, 0.30][stage])
+			_rune_batches.append(batch)
 	_reset_feedback()
 
 func _ready() -> void:
@@ -80,6 +105,7 @@ func begin(state: RunState) -> void:
 	sim.player_hurt.connect(_on_player_hurt)
 	sim.damage_dealt.connect(_on_damage_dealt)
 	sim.player_damaged.connect(_on_player_damaged)
+	sim.rune_activated.connect(_on_rune_activated)
 	_reset_feedback()
 	active = true
 	_last_kills = state.kills
@@ -136,8 +162,20 @@ func _on_player_damaged(amount: float, _source_id: String, _kind: String, origin
 	_damage_flash = 0.22
 	_damage_direction = (origin - sim.player_position).normalized() if origin.is_finite() else Vector2.ZERO
 
+func _on_rune_activated(rune_id: String, origin: Vector2, incoming: Vector2, outgoing: Vector2) -> void:
+	if not RUNE_KINDS.has(rune_id) or not origin.is_finite() or not incoming.is_finite() or not outgoing.is_finite() or _rune_free.is_empty():
+		return
+	var flash: RuneFlash = _rune_free.pop_back()
+	flash.kind = int(RUNE_KINDS[rune_id])
+	flash.origin = origin
+	flash.incoming = incoming.normalized()
+	flash.outgoing = outgoing.normalized()
+	flash.life = RUNE_FLASH_LIFE
+	_rune_flashes.append(flash)
+
 func _reset_feedback() -> void:
 	_numbers.clear()
+	_number_lookup.clear()
 	_number_free.clear()
 	for number: FloatingNumber in _number_pool:
 		number.life = 0.0
@@ -145,16 +183,26 @@ func _reset_feedback() -> void:
 	_feedback_serial = 0
 	_damage_flash = 0.0
 	_damage_direction = Vector2.ZERO
+	_rune_flashes.clear()
+	_rune_free.clear()
+	for flash: RuneFlash in _rune_pool:
+		flash.life = 0.0
+		_rune_free.append(flash)
+	for batch: RuneLineBatch in _rune_batches:
+		batch.points.clear()
 
 func _spawn_number(point: Vector2, amount: float, source: String, player_hit: bool, secondary: bool, target_uid: int = -1) -> void:
 	if amount <= 0.0:
 		return
 	# Merge near-simultaneous hits at the same target instead of covering packs in text.
-	for number: FloatingNumber in _numbers:
-		if number.player_hit == player_hit and number.source == source and number.target_uid == target_uid and number.total - number.life < 0.075 and number.position.distance_squared_to(point) < 24.0 * 24.0:
-			number.amount += amount
-			_update_number_text(number)
-			return
+	if _number_lookup.has(source):
+		var targets: Dictionary = _number_lookup[source]
+		if targets.has(target_uid):
+			for number: FloatingNumber in targets[target_uid]:
+				if number.player_hit == player_hit and number.total - number.life < 0.075 and number.position.distance_squared_to(point) < 24.0 * 24.0:
+					number.amount += amount
+					_update_number_text(number)
+					return
 	# Keep room for incoming damage even while many enemies are hit together.
 	if _number_free.is_empty() or (not player_hit and _number_free.size() <= 4):
 		return
@@ -179,6 +227,12 @@ func _spawn_number(point: Vector2, amount: float, source: String, player_hit: bo
 				insertion = index
 				break
 	_numbers.insert(insertion, number)
+	if not _number_lookup.has(source):
+		_number_lookup[source] = {}
+	var targets: Dictionary = _number_lookup[source]
+	if not targets.has(target_uid):
+		targets[target_uid] = []
+	targets[target_uid].append(number)
 
 func _update_number_text(number: FloatingNumber) -> void:
 	number.text = _damage_text(number.amount, number.player_hit)
@@ -190,11 +244,24 @@ static func _damage_text(amount: float, player_hit: bool) -> String:
 
 func _advance_feedback(delta: float) -> void:
 	_damage_flash = maxf(0.0, _damage_flash - delta)
+	for index: int in range(_rune_flashes.size() - 1, -1, -1):
+		var flash: RuneFlash = _rune_flashes[index]
+		flash.life -= delta
+		if flash.life <= 0.0:
+			_rune_flashes.remove_at(index)
+			_rune_free.append(flash)
 	for index: int in range(_numbers.size() - 1, -1, -1):
 		var number: FloatingNumber = _numbers[index]
 		number.life -= delta
 		if number.life <= 0.0:
 			_numbers.remove_at(index)
+			var targets: Dictionary = _number_lookup[number.source]
+			var candidates: Array = targets[number.target_uid]
+			candidates.erase(number)
+			if candidates.is_empty():
+				targets.erase(number.target_uid)
+			if targets.is_empty():
+				_number_lookup.erase(number.source)
 			_number_free.append(number)
 		else:
 			number.position += number.velocity * delta
@@ -224,9 +291,70 @@ func _draw() -> void:
 	_draw_friendly_shots()
 	_draw_player()
 	_draw_effects()
+	_draw_rune_feedback()
 	_draw_feedback()
 	# Hostile projectiles and telegraphs stay above all friendly spell effects.
 	_draw_danger()
+
+func _draw_rune_feedback() -> void:
+	_rebuild_rune_lines()
+	for batch: RuneLineBatch in _rune_batches:
+		if batch.points.is_empty():
+			continue
+		draw_multiline(batch.points, Color(0.025, 0.035, 0.06, batch.color.a * 0.8), 4.0, true)
+		draw_multiline(batch.points, batch.color, 1.8, true)
+
+func _rebuild_rune_lines() -> void:
+	for batch: RuneLineBatch in _rune_batches:
+		batch.points.clear()
+	for flash: RuneFlash in _rune_flashes:
+		var progress: float = clampf(1.0 - flash.life / RUNE_FLASH_LIFE, 0.0, 1.0)
+		var stage: int = mini(2, int(progress * 3.0))
+		var batch: RuneLineBatch = _rune_batches[flash.kind * 3 + stage]
+		var axis: Vector2 = flash.outgoing
+		var side: Vector2 = axis.orthogonal()
+		var point: Vector2 = flash.origin
+		if flash.kind == 0 and axis.length_squared() > 0.1:
+			var head: Vector2 = point + axis * (14.0 + progress * 14.0)
+			var tail: Vector2 = point - axis * 9.0
+			_rune_segment(batch, tail + side * 4.0, head + side * 4.0)
+			_rune_segment(batch, tail - side * 4.0, head - side * 4.0)
+			_rune_segment(batch, head + side * 7.0, head + axis * 8.0)
+			_rune_segment(batch, head - side * 7.0, head + axis * 8.0)
+		elif flash.kind == 1:
+			_rune_diamond(batch, point, 4.0 + progress * 2.0)
+			# Only a short corner is drawn; the projectile must still travel to its target.
+			if flash.incoming.length_squared() > 0.1:
+				_rune_segment(batch, point - flash.incoming * 14.0, point)
+			if axis.length_squared() > 0.1:
+				var head: Vector2 = point + axis * (18.0 + progress * 10.0)
+				_rune_segment(batch, point, head)
+				_rune_segment(batch, head - axis * 6.0 + side * 4.0, head)
+				_rune_segment(batch, head - axis * 6.0 - side * 4.0, head)
+		elif flash.kind == 2:
+			# Decorative rays stay inside the real 68 px explosion ring.
+			var inner: float = 12.0 + progress * 18.0
+			for index: int in 8:
+				var direction: Vector2 = Vector2.from_angle(float(index) * TAU / 8.0)
+				_rune_segment(batch, point + direction * inner, point + direction * (inner + 8.0 * (1.0 - progress)))
+			_rune_diamond(batch, point, 4.0)
+		else:
+			# Stationary overlapping shots get a neutral impact mark, not a fake direction.
+			_rune_diamond(batch, point, 4.0)
+
+func _rune_segment(batch: RuneLineBatch, start: Vector2, end: Vector2) -> void:
+	batch.points.append(start)
+	batch.points.append(end)
+
+func _rune_diamond(batch: RuneLineBatch, center: Vector2, radius: float) -> void:
+	var top: Vector2 = center + Vector2.UP * radius
+	var right: Vector2 = center + Vector2.RIGHT * radius
+	var bottom: Vector2 = center + Vector2.DOWN * radius
+	var left: Vector2 = center + Vector2.LEFT * radius
+	_rune_segment(batch, top, right)
+	_rune_segment(batch, right, bottom)
+	_rune_segment(batch, bottom, left)
+	_rune_segment(batch, left, top)
 
 func _draw_feedback() -> void:
 	if _number_font != null:
@@ -290,58 +418,8 @@ func _draw_enemies() -> void:
 				draw_line(origin, origin + Vector2(34.0 * enemy.health / enemy.max_health, 0), Color("a9a7a3"), 2.0)
 
 func _draw_friendly_shots() -> void:
-	for batch: TrailBatch in _trail_batches.values():
-		batch.points.clear()
-		batch.wings.clear()
-	for shot: CombatSim.Shot in sim.shots:
-		if not shot.active or shot.hostile:
-			continue
-		var direction: Vector2 = shot.velocity.normalized()
-		var trail_length: float = 25.0 if shot.source == "frost" else 18.0
-		if shot.source == "scatter":
-			trail_length = 9.0
-		var tail: Vector2 = shot.position - direction * trail_length
-		var color: Color = shot.color
-		if shot.source == "ember":
-			# Friendly fire stays pale gold; hostile rounds retain saturated coral.
-			color = Color("dab779")
-		if shot.rune == "blast":
-			color = color.lerp(Color("dca0fa"), 0.35)
-		if shot.source == "ember":
-			draw_circle(shot.position, shot.radius * 2.0, Color(color, 0.10))
-			draw_line(tail - direction * 6.0, shot.position, Color(color, 0.4), shot.radius * 1.2, true)
-			draw_circle(shot.position, shot.radius, color)
-			draw_circle(shot.position, shot.radius * 0.4, Color("f8efe2"))
-		else:
-			var key: String = shot.source + ":" + shot.rune
-			if not _trail_batches.has(key):
-				_trail_batches[key] = TrailBatch.new()
-			var batch: TrailBatch = _trail_batches[key]
-			batch.color = color
-			batch.width = shot.radius * 1.2
-			batch.points.append(tail)
-			batch.points.append(shot.position)
-			if shot.rune == "pierce" or shot.source == "frost":
-				var wing: Vector2 = direction.orthogonal() * 3.0
-				batch.wings.append(tail + wing)
-				batch.wings.append(shot.position + direction * 5.0)
-				batch.wings.append(tail - wing)
-				batch.wings.append(shot.position + direction * 5.0)
-			draw_circle(shot.position, shot.radius * 0.55, Color("f5efe0"))
-		if shot.rune == "bounce":
-			draw_arc(shot.position, shot.radius + 3.0, 0.0, TAU, 8, Color("c7b0f3"), 1.0, true)
-		elif shot.rune == "pierce" and shot.source == "ember":
-			var wing: Vector2 = direction.orthogonal() * 3.0
-			draw_line(tail + wing, shot.position + direction * 5.0, Color(color, 0.65), 1.0, true)
-			draw_line(tail - wing, shot.position + direction * 5.0, Color(color, 0.65), 1.0, true)
-	# One multiline command per visual family replaces thousands of individual trails.
-	for batch: TrailBatch in _trail_batches.values():
-		if batch.points.is_empty():
-			continue
-		draw_multiline(batch.points, Color(batch.color, 0.20), batch.width * 2.33, true)
-		draw_multiline(batch.points, batch.color, batch.width, true)
-		if not batch.wings.is_empty():
-			draw_multiline(batch.wings, Color(batch.color, 0.65), 1.0, true)
+	_projectile_painter.rebuild(sim.shots)
+	_projectile_painter.draw(self)
 
 func _draw_player() -> void:
 	var center: Vector2 = sim.player_position
@@ -429,8 +507,20 @@ func _maintain_stress() -> void:
 		if shot.active:
 			shot.position = Vector2(wrapf(shot.position.x, 85.0, 1195.0), wrapf(shot.position.y, 135.0, 620.0))
 	while sim.shot_count < 600:
-		var shot: CombatSim.Shot = sim.fire_weapon("bone", "pierce", Vector2(sim.rng.randf_range(100, 1180), sim.rng.randf_range(160, 610)), Vector2.from_angle(sim.rng.randf() * TAU))
-		shot.damage = 0.0
+		var weapon: String = ["bone", "frost", "ember", "scatter"][sim.shot_count % 4] if rune_stress_mode else "bone"
+		var rune_id: String = ["pierce", "bounce", "blast"][sim.shot_count % 3] if rune_stress_mode else "pierce"
+		var shot: CombatSim.Shot = sim.fire_weapon(weapon, rune_id, Vector2(sim.rng.randf_range(100, 1180), sim.rng.randf_range(160, 610)), Vector2.from_angle(sim.rng.randf() * TAU))
+		if not rune_stress_mode:
+			shot.damage = 0.0
 		shot.life = 10000.0
 	while sim.soul_count < 200:
 		sim._drop_soul(Vector2(sim.rng.randf_range(100, 1180), sim.rng.randf_range(160, 610)), 1)
+
+func enable_rune_stress() -> void:
+	# Explicit QA variant: use real weapon damage and all rune families instead of
+	# the baseline's zero-damage filler. Keep the original benchmark reproducible.
+	rune_stress_mode = true
+	for shot: CombatSim.Shot in sim.shots:
+		if shot.active:
+			sim._release_shot(shot)
+	_maintain_stress()

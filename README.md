@@ -4,7 +4,7 @@ Godot 4.7.2 普通版、带类型标注的 GDScript 开发的 macOS 单人割草
 
 当前美术版本为 `engraved-02`：重绘六类角色、青灰石板祭坛、蚀月菜单插画及秘术图标，统一雕刻边框与商品类别层级，并加入轻微呼吸、倾身和脚下符印。中文优先使用系统 Hiragino Sans GB，避免本机苹方字体映射造成简体缺字。美术合同与来源见 `docs/art-direction.md`。
 
-战斗现在显示实际伤害与承伤浮字，并提示受击方向；敌方危险预警保持最高显示层级。结算新增最后受击来源和各法器实际伤害贡献。购买符文后会自动选中，并把键盘焦点移到法器的“装入”按钮，便于完成改装。
+战斗现在显示实际伤害与承伤浮字，并提示受击方向。贯穿命中显示淡绿双轨，弹射显示真实转向的冷蓝折角，爆破显示暖金放射纹；敌方预警始终位于最上层。弹体圆点、弹射环和拖尾采用批量绘制。结算新增最后受击来源和各法器实际伤害贡献。购买符文后会自动选中，并把键盘焦点移到法器的“装入”按钮，便于完成改装。
 
 波末结算会清理暂停状态，避免暂停事件与结算相邻时，下一波留下不可见的暂停状态。
 
@@ -67,15 +67,18 @@ python3 tools/fetch_macos_template.py
 ./tools/run.sh --headless --script res://tests/test_ui.gd
 ./tools/run.sh --headless --script res://tests/test_flow.gd
 ./tools/run.sh --headless --script res://tests/test_feedback.gd
+./tools/run.sh --headless --script res://tests/test_projectile_painter.gd
 ./tools/run.sh --headless --script res://tests/test_simulation_shop.gd
 python3 -m unittest discover -s tests -p 'test_shop_analysis.py'
 ./tools/run.sh --headless --script res://tests/simulate_runs.gd -- --seed=2027 --require-win
-./tools/run.sh -- --benchmark --seconds=300
+./tools/run.sh -- --benchmark --benchmark-runes --seconds=300
 ```
 
-也可以用 `./tools/test.sh` 一次运行六套Godot行为测试和Python分析器测试。当前954条Godot断言及14项Python测试全部通过，记录见 `reports/tests.log`。系统字体测试需要正常 macOS 字体访问权限；文件沙箱可能阻止 SystemFont 枚举。请在常规终端运行。性能测试会打开明确标记“性能压力测试”的窗口，显示真实采样倒计时，保持300敌人、至少600投射物与200掉落，预热5秒后采样300秒，输出 `reports/performance.json`。测试时保持该窗口可见、Mac未锁屏，避免同时运行其他图形负载。
+也可以用 `./tools/test.sh` 一次运行七套Godot行为测试和Python分析器测试。当前1175条Godot断言及14项Python测试全部通过，记录见 `reports/tests.log`。系统字体测试需要正常 macOS 字体访问权限；文件沙箱可能阻止 SystemFont 枚举。请在常规终端运行。性能测试会打开明确标记的窗口并显示采样倒计时，保持300敌人、至少600投射物与200掉落，预热5秒后采样300秒，输出 `reports/performance.json`。`--benchmark-runes`使用四种法器与三类符文的真实伤害弹体，报告标记为`rune-feedback`；省略该参数为含零伤害维持弹体的历史`baseline`场景，两者分别记录。测试时保持该窗口可见、Mac未锁屏，避免同时运行其他图形负载。
 
-完整模拟复用正式 `RunState`、`CombatSim.step` 与商店价格，没有额外金币、无敌或专用 Boss 数值。当前30局配对回归修复前后均为28局通关，战斗轨迹有变化；它不代表真人胜率。策略与证据见 `docs/simulation.md`，试玩流程见 `docs/playtest.md`，持续工作记录见 `docs/optimization-log.md`。
+最新5分钟真实符文压力场景在Apple M5上达到平均95.64 FPS、P99 26.02毫秒；设备与场景边界见 `docs/verification.md`。
+
+完整模拟复用正式 `RunState`、`CombatSim.step` 与商店价格，没有额外金币、无敌或专用 Boss 数值。最新核心版本`bdd5240c97ca`的30局回归为28胜2败，与商店观测基线除核心版本字段外全部一致；更早的战斗正确性修复曾改变轨迹。它不代表真人胜率。策略与证据见 `docs/simulation.md`，试玩流程见 `docs/playtest.md`，持续工作记录见 `docs/optimization-log.md`。
 
 模拟还会记录完整商店报价、余额、候选评分及停止购买/刷新原因。`tools/analyze_shop_runs.py`可生成观测分析，并用`--baseline`严格比较旧对局字段和购物trace。本轮30局新增观测前后旧字段完全一致，证据见`reports/shop-analysis.json`；该结果只证明所测样本不受观测影响，不表示此前的战斗修复没有改变轨迹。
 
@@ -93,3 +96,7 @@ python3 -m unittest discover -s tests -p 'test_shop_analysis.py'
 - `tests/`：行为断言、界面回归与完整整局模拟。
 
 当前为原型：自动模拟结果不能代替真人难度、趣味性与可读性评估；五人试玩尚未开展。
+
+符文命中陈列使用 `./tools/run.sh --script res://tools/preview_runes.gd`，输出 `reports/rune-showcase.png`。该场景通过正式发射和碰撞生成贯穿、弹射与爆破反馈，明确标记为固定验证场景。性能与完整回归证据见 `docs/verification.md`。
+
+本地仓库使用`main`分支，每轮修改验证后创建本地commit；引擎、缓存、构建与大型原始报告由`.gitignore`排除。

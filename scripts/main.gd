@@ -18,6 +18,7 @@ var _benchmark_start: int = 0
 var _benchmark_warmup: int = 0
 var _frame_samples: Array[float] = []
 var _last_frame_usec: int = 0
+var _peak_rune_flashes: int = 0
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -201,7 +202,11 @@ func _start_benchmark() -> void:
 	_start_run("bone")
 	_benchmark = true
 	world.stress_mode = true
+	world.rune_stress_mode = false
 	world.sim.populate_stress()
+	_peak_rune_flashes = 0
+	if "--benchmark-runes" in args:
+		world.enable_rune_stress()
 	_benchmark_start = Time.get_ticks_usec()
 	_last_frame_usec = _benchmark_start
 	_benchmark_warmup = _benchmark_start + 5000000
@@ -210,12 +215,17 @@ func _start_benchmark() -> void:
 			_benchmark_seconds = maxf(5.0, argument.trim_prefix("--seconds=").to_float())
 	world.benchmark_time_left = _benchmark_seconds + 5.0
 	get_window().title = "秘术余烬 · 性能压力测试（非普通关卡）"
+	if world.rune_stress_mode:
+		get_window().title = "秘术余烬 · 符文反馈压力测试（非普通关卡）"
 	ui.update_hud(world.hud_snapshot())
 	ui.notify("性能压力测试 · 不结算关卡 · 采样结束后自动关闭")
 	print("BENCHMARK_START 300 enemies / 600 projectiles / 200 drops, ", _benchmark_seconds, "s + 5s warmup")
+	if world.rune_stress_mode:
+		print("BENCHMARK_SCENARIO rune-feedback: positive weapon damage, all rune families")
 
 func _record_benchmark() -> void:
 	var now: int = Time.get_ticks_usec()
+	_peak_rune_flashes = maxi(_peak_rune_flashes, world._rune_flashes.size())
 	world.benchmark_time_left = maxf(0.0, _benchmark_seconds - float(now - _benchmark_warmup) / 1000000.0)
 	if now > _benchmark_warmup:
 		_frame_samples.append(float(now - _last_frame_usec) / 1000.0)
@@ -229,6 +239,10 @@ func _record_benchmark() -> void:
 	var p99: float = _frame_samples[mini(_frame_samples.size() - 1, int(float(_frame_samples.size()) * 0.99))]
 	var fps: float = 1000.0 * float(_frame_samples.size()) / maxf(1.0, total)
 	var result: Dictionary = {"duration_seconds": _benchmark_seconds, "samples": _frame_samples.size(), "average_fps": fps, "p99_frame_ms": p99, "enemies": world.sim.enemy_count, "projectiles": world.sim.shot_count, "pickups": world.sim.soul_count, "internal_resolution": "1280x720", "os": OS.get_name(), "renderer": "gl_compatibility", "passed": fps >= 58.0 and p99 <= 33.0}
+	result["scenario"] = "rune-feedback" if world.rune_stress_mode else "baseline"
+	result["rune_visual_peak"] = _peak_rune_flashes
+	result["primary_hits"] = world.sim.primary_hits
+	result["secondary_hits"] = world.sim.secondary_hits
 	var output: FileAccess = FileAccess.open("res://reports/performance.json", FileAccess.WRITE)
 	output.store_string(JSON.stringify(result, "\t"))
 	print("BENCHMARK_RESULT ", JSON.stringify(result))

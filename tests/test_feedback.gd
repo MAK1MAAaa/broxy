@@ -82,11 +82,121 @@ func _test() -> void:
 	for number: CombatWorld.FloatingNumber in world._number_free:
 		distinct[number.get_instance_id()] = true
 	_check(distinct.size() == CombatWorld.NUMBER_LIMIT, "Repeated reuse never duplicates or leaks feedback pool entries")
+	await _test_rune_feedback(world)
+	_test_number_lookup(world)
 	print("Feedback: %d assertions, %d failures" % [_checks, _failures])
 	world.queue_free()
 	sound.queue_free()
 	await process_frame
 	quit(0 if _failures == 0 else 1)
+
+func _test_rune_feedback(world: CombatWorld) -> void:
+	for rune_id: String in ["pierce", "bounce", "blast"]:
+		var state := RunState.new()
+		state.begin(2027, "bone")
+		world.begin(state)
+		world.set_physics_process(false)
+		var simulation: CombatSim = world.sim
+		simulation.sandbox = true
+		simulation.player_position = Vector2(200, 500)
+		simulation._cooldowns.fill(1000.0)
+		for point: Vector2 in [Vector2(520, 300), Vector2(600, 370) if rune_id == "bounce" else Vector2(560, 300)]:
+			var enemy: CombatSim.Enemy = simulation.spawn_enemy("tank", point)
+			enemy.health = 1000.0
+			enemy.max_health = 1000.0
+		simulation.fire_weapon("bone", rune_id, Vector2(470, 300), Vector2.RIGHT)
+		for frame: int in 12:
+			simulation.step(1.0 / 60.0, Vector2.ZERO)
+			if not world._rune_flashes.is_empty():
+				break
+		_check(not world._rune_flashes.is_empty(), "A real projectile collision creates the correct rune visual: " + rune_id)
+		if world._rune_flashes.is_empty():
+			continue
+		var flash: CombatWorld.RuneFlash = world._rune_flashes[0]
+		_check(flash.kind == CombatWorld.RUNE_KINDS[rune_id] and flash.origin.is_finite(), "Rune shape family and real impact origin reach the renderer: " + rune_id)
+		if rune_id == "pierce":
+			_check(flash.incoming == Vector2.RIGHT and flash.outgoing == Vector2.RIGHT, "Piercing strokes follow the actual continuing trajectory")
+		elif rune_id == "bounce":
+			_check(flash.incoming == Vector2.RIGHT and flash.outgoing.y > 0.4, "The bounce corner uses real incoming and retargeted directions")
+		else:
+			_check(flash.outgoing == Vector2.ZERO and simulation.effects[0].radius == 68.0, "Blast ornamentation accompanies the existing real-radius explosion")
+		world._rebuild_rune_lines()
+		var point_count: int = 0
+		var finite: bool = true
+		var blast_bounded: bool = true
+		for batch: CombatWorld.RuneLineBatch in world._rune_batches:
+			point_count += batch.points.size()
+			for point: Vector2 in batch.points:
+				finite = finite and point.is_finite()
+				blast_bounded = blast_bounded and point.distance_to(flash.origin) < 68.0
+		_check(point_count > 0 and finite, "Visible finite line geometry is built for the activated family: " + rune_id)
+		if rune_id == "blast":
+			_check(blast_bounded, "Decorative blast rays never imply a larger explosion radius")
+		world.set_physics_process(true)
+		paused = true
+		var life_before: float = flash.life
+		await process_frame
+		await process_frame
+		_check(is_equal_approx(flash.life, life_before), "Rune visuals pause with the actual scene tree: " + rune_id)
+		paused = false
+		await physics_frame
+		await physics_frame
+		await physics_frame
+		world.set_physics_process(false)
+		_check(flash.life < life_before, "Rune visuals resume and age with physics: " + rune_id)
+		world._advance_feedback(1.0)
+		_check(world._rune_flashes.is_empty() and world._rune_free.size() == CombatWorld.RUNE_FLASH_LIMIT, "Expired rune visuals return every instance to the pool: " + rune_id)
+	var state_before: Dictionary = world.sim.run.summary()
+	var rng_before: int = world.sim.rng.state
+	world._on_rune_activated("unknown", Vector2.ZERO, Vector2.RIGHT, Vector2.RIGHT)
+	world._on_rune_activated("pierce", Vector2.INF, Vector2.RIGHT, Vector2.RIGHT)
+	world._on_rune_activated("bounce", Vector2.ZERO, Vector2.INF, Vector2.RIGHT)
+	_check(world._rune_flashes.is_empty(), "Invalid rune observations cannot introduce unknown or nonfinite geometry")
+	for index: int in 200:
+		world._on_rune_activated("bounce", Vector2(300, 300), Vector2.RIGHT, Vector2.DOWN)
+	world._rebuild_rune_lines()
+	var points: int = 0
+	for batch: CombatWorld.RuneLineBatch in world._rune_batches:
+		points += batch.points.size()
+	_check(world._rune_pool.size() == CombatWorld.RUNE_FLASH_LIMIT and world._rune_flashes.size() == CombatWorld.RUNE_FLASH_LIMIT and world._rune_free.is_empty(), "A dense rune barrage uses a fixed 32-object budget")
+	_check(world._rune_batches.size() == 9 and points <= CombatWorld.RUNE_FLASH_LIMIT * 24, "Family/fade batching keeps geometry and draw-command budgets bounded")
+	_check(world.sim.run.summary() == state_before and world.sim.rng.state == rng_before, "Purely cosmetic rune feedback never mutates progression or consumes simulation RNG")
+	world.sim.invulnerability = 0.0
+	world.sim._hurt_player(1.0, "caster", "projectile", Vector2(700, 300))
+	_check(_player_numbers(world) == 1, "A full rune-visual pool cannot exhaust incoming-damage feedback capacity")
+	world.stop()
+	world._rebuild_rune_lines()
+	_check(world._rune_flashes.is_empty() and world._rune_free.size() == CombatWorld.RUNE_FLASH_LIMIT, "Leaving combat clears all rune visuals")
+	_check(world._rune_batches.all(func(batch: CombatWorld.RuneLineBatch) -> bool: return batch.points.is_empty()), "No cached rune lines remain behind menus or the next wave")
+	world.begin(world.sim.run)
+	world.set_physics_process(false)
+	_check(world._rune_flashes.is_empty() and world._rune_free.size() == CombatWorld.RUNE_FLASH_LIMIT, "Beginning another wave starts with a fully reset rune-visual pool")
+	for cycle: int in 12:
+		world._on_rune_activated("pierce", Vector2(400, 300), Vector2.ZERO, Vector2.ZERO)
+		world._rebuild_rune_lines()
+		world._advance_feedback(1.0)
+	var distinct: Dictionary = {}
+	for flash: CombatWorld.RuneFlash in world._rune_free:
+		distinct[flash.get_instance_id()] = true
+	_check(distinct.size() == CombatWorld.RUNE_FLASH_LIMIT, "Stationary overlaps and repeated reuse neither fabricate direction nor duplicate pool entries")
+
+func _test_number_lookup(world: CombatWorld) -> void:
+	world.begin(world.sim.run)
+	world.set_physics_process(false)
+	world._on_damage_dealt(Vector2(300, 300), 1.0, "bone", false, 42)
+	world._on_damage_dealt(Vector2(400, 300), 2.0, "bone", false, 42)
+	world._on_damage_dealt(Vector2(300, 300), 3.0, "bone", false, 42)
+	_check(world._numbers.size() == 2 and world._numbers[0].amount == 4.0 and world._numbers[1].amount == 2.0, "Indexed candidates retain the old earliest-compatible spatial merge order")
+	_check(world._number_lookup["bone"][42].size() == 2, "One source/target bucket can retain separate spatially incompatible numbers")
+	world._advance_feedback(0.08)
+	world._on_damage_dealt(Vector2(300, 300), 5.0, "bone", false, 42)
+	_check(world._numbers.size() == 3 and world._number_lookup["bone"][42].size() == 3, "Indexed feedback still starts a new number after the original merge window")
+	world._advance_feedback(1.0)
+	_check(world._number_lookup.is_empty() and world._number_free.size() == CombatWorld.NUMBER_LIMIT, "Expiry removes lookup references before pooled numbers are reused")
+	world._on_damage_dealt(Vector2(300, 300), 7.0, "frost", false, 99)
+	_check(world._number_lookup.size() == 1 and world._number_lookup.has("frost") and world._numbers[0].amount == 7.0, "Reused instances enter only their new source and target bucket")
+	world.stop()
+	_check(world._number_lookup.is_empty(), "Screen changes also clear the damage-number lookup")
 
 func _player_numbers(world: CombatWorld) -> int:
 	var count: int = 0

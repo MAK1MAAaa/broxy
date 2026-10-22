@@ -1,6 +1,71 @@
 extends SceneTree
 
 const DELTA: float = 1.0 / 60.0
+
+class ExplosionProbeSim extends CombatSim:
+	var use_linear: bool = false
+	var spawn_after_grid: Vector2 = Vector2.INF
+	var deferred_enemy: Enemy
+	var freeze_enemy_updates: bool = false
+	var nearest_queries: Array[Dictionary] = []
+	var nearest_results: Array[int] = []
+	var nearest_reference: Array[int] = []
+	var nearest_grid_flags: Array[bool] = []
+	var nearest_kill_slot: int = -1
+	var nearest_rng_unchanged: bool = true
+
+	func _update_enemies(delta: float) -> void:
+		if not freeze_enemy_updates:
+			super._update_enemies(delta)
+
+	func _update_weapons(delta: float) -> void:
+		if spawn_after_grid != Vector2.INF:
+			deferred_enemy = spawn_enemy("tank", spawn_after_grid)
+			deferred_enemy.health = 10000.0
+			deferred_enemy.max_health = 10000.0
+			deferred_enemy.slow_timer = 9999.0
+			deferred_enemy.slow_factor = 0.0
+			deferred_enemy.action_timer = 9999.0
+			spawn_after_grid = Vector2.INF
+		if nearest_kill_slot >= 0:
+			apply_damage(enemies[nearest_kill_slot], enemies[nearest_kill_slot].health, "bone")
+			nearest_kill_slot = -1
+		var rng_before: int = rng.state
+		for query: Dictionary in nearest_queries:
+			nearest_grid_flags.append(_explosion_grid_active)
+			var actual: Enemy = _nearest(query["position"], float(query["range"]), query.get("excluded", {}))
+			var expected: Enemy = _nearest_oracle(query["position"], float(query["range"]), query.get("excluded", {}))
+			nearest_results.append(actual.uid if actual != null else -1)
+			nearest_reference.append(expected.uid if expected != null else -1)
+		nearest_rng_unchanged = nearest_rng_unchanged and rng.state == rng_before
+		super._update_weapons(delta)
+
+	func _nearest_oracle(position: Vector2, distance: float, excluded: Dictionary) -> Enemy:
+		var result: Enemy
+		var best: float = distance * distance
+		for enemy: Enemy in enemies:
+			if not enemy.active or excluded.has(enemy.uid):
+				continue
+			var squared: float = enemy.position.distance_squared_to(position)
+			if squared < best:
+				best = squared
+				result = enemy
+		return result
+
+	func _explode(position: Vector2, amount: float, source: String, excluded: Dictionary) -> void:
+		if not use_linear:
+			super._explode(position, amount, source, excluded)
+			return
+		# Freeze the pre-optimization full-pool ordering as an independent oracle.
+		add_effect(position, Color("df9cfa"), 68.0, 0.35, 0)
+		for enemy: Enemy in enemies:
+			if complete:
+				return
+			if not enemy.active or excluded.has(enemy.uid):
+				continue
+			if enemy.position.distance_squared_to(position) < pow(68.0 + enemy.radius, 2):
+				apply_damage(enemy, amount, source, true)
+
 var _checks: int = 0
 var _failures: int = 0
 
@@ -9,6 +74,9 @@ func _initialize() -> void:
 	_test_pierce()
 	_test_bounce()
 	_test_blast()
+	_test_rune_activation_guards()
+	_test_explosion_spatial_equivalence()
+	_test_nearest_spatial_equivalence()
 	_test_caster_aim()
 	_test_ember_homing()
 	_test_damage_accounting()
@@ -53,10 +121,21 @@ func _advance(simulation: CombatSim, frames: int) -> void:
 	for index: int in range(frames):
 		simulation.step(DELTA, Vector2.ZERO)
 
+func _rune_events(simulation: CombatSim) -> Array[Dictionary]:
+	var events: Array[Dictionary] = []
+	var simulation_ref: WeakRef = weakref(simulation)
+	if simulation.has_signal("rune_activated"):
+		simulation.connect("rune_activated", func(rune_id: String, origin: Vector2, incoming_direction: Vector2, outgoing_direction: Vector2) -> void:
+			var current: CombatSim = simulation_ref.get_ref() as CombatSim
+			events.append({"rune": rune_id, "origin": origin, "incoming_direction": incoming_direction, "outgoing_direction": outgoing_direction, "primary_hits": current.primary_hits, "secondary_hits": current.secondary_hits, "complete": current.complete})
+		)
+	return events
+
 func _test_weapon_rune_matrix() -> void:
 	for weapon: ContentDef in GameCatalog.weapons():
 		for rune: ContentDef in GameCatalog.runes():
 			var simulation: CombatSim = _simulation(90, 1, weapon.id)
+			var activations: Array[Dictionary] = _rune_events(simulation)
 			simulation.player_position = Vector2(200, 300)
 			simulation.run.loadout[0]["rune"] = {"id": rune.id, "paid": 0, "uid": 1}
 			var first: CombatSim.Enemy = _target(simulation, Vector2(340, 300))
@@ -69,11 +148,13 @@ func _test_weapon_rune_matrix() -> void:
 			_advance(simulation, 60)
 			_check(simulation.primary_hits > 0, "Weapon/rune combination hits an enemy: " + weapon.id + "/" + rune.id)
 			_check(float(simulation.damage_by_weapon.get(weapon.id, 0.0)) > 0.0, "Combination accounts damage under its weapon")
+			_check(not activations.is_empty(), "All four weapons report an executed rune behavior: " + weapon.id + "/" + rune.id)
 			if weapon.id == "frost":
 				_check(first.slow_timer > 0.0 and is_equal_approx(first.slow_factor, 0.75), "Frost applies its advertised 25% slow")
 
 func _test_pierce() -> void:
 	var simulation: CombatSim = _simulation()
+	var activations: Array[Dictionary] = _rune_events(simulation)
 	var targets: Array[CombatSim.Enemy] = []
 	for index: int in range(4):
 		targets.append(_target(simulation, Vector2(300 + index * 40, 300)))
@@ -84,9 +165,14 @@ func _test_pierce() -> void:
 	for index: int in range(3):
 		_check(is_equal_approx(targets[index].health, 9986.0), "Pierce applies one full hit to each traversed target")
 	_check(targets[3].health == 10000.0, "Pierce does not hit a fourth enemy")
+	_check(activations.size() == 2, "Three pierce hits report only the two actual continuations")
+	if activations.size() == 2:
+		_check(activations[0]["primary_hits"] == 1 and activations[1]["primary_hits"] == 2, "Pierce feedback follows positive hits and excludes its exhausted third hit")
+		_check(activations[0]["rune"] == "pierce" and activations[0]["origin"] == targets[0].position and activations[0]["incoming_direction"] == Vector2.RIGHT and activations[0]["outgoing_direction"] == Vector2.RIGHT, "Pierce feedback reports its impact and unchanged real directions")
 
 func _test_bounce() -> void:
 	var simulation: CombatSim = _simulation()
+	var activations: Array[Dictionary] = _rune_events(simulation)
 	var first: CombatSim.Enemy = _target(simulation, Vector2(330, 300))
 	var second: CombatSim.Enemy = _target(simulation, Vector2(390, 340))
 	var third: CombatSim.Enemy = _target(simulation, Vector2(450, 300))
@@ -98,9 +184,17 @@ func _test_bounce() -> void:
 	_check(is_equal_approx(10000.0 - second.health, 10.5), "First bounce applies 25% decay")
 	_check(is_equal_approx(10000.0 - third.health, 7.875), "Second bounce compounds its decay")
 	_check(distant.health == 10000.0 and not shot.active, "Bounce neither exceeds its budget nor returns to a prior target")
+	_check(activations.size() == 2, "Three bounce hits report only the two successful redirections")
+	if activations.size() == 2:
+		_check(activations[0]["origin"] == first.position and activations[1]["origin"] == second.position, "Bounce feedback originates at each real hit")
+		_check(activations[0]["rune"] == "bounce" and (activations[0]["outgoing_direction"] as Vector2).is_equal_approx((second.position - first.position).normalized()), "First bounce feedback uses its new direction toward the next target")
+		_check((activations[1]["outgoing_direction"] as Vector2).is_equal_approx((third.position - second.position).normalized()), "Second bounce feedback uses the next actual outgoing direction")
+		_check(activations[0]["incoming_direction"] == Vector2.RIGHT and (activations[1]["incoming_direction"] as Vector2).is_equal_approx(activations[0]["outgoing_direction"]), "Bounce reports the real incoming direction at each turn")
+		_check(activations[0]["primary_hits"] == 1 and activations[1]["primary_hits"] == 2, "Bounce feedback precedes future target damage and excludes the exhausted hit")
 
 func _test_blast() -> void:
 	var simulation: CombatSim = _simulation()
+	var activations: Array[Dictionary] = _rune_events(simulation)
 	var primary: CombatSim.Enemy = _target(simulation, Vector2(330, 300))
 	var neighbor: CombatSim.Enemy = _target(simulation, Vector2(385, 300))
 	var chain_only: CombatSim.Enemy = _target(simulation, Vector2(440, 300))
@@ -110,6 +204,315 @@ func _test_blast() -> void:
 	_check(is_equal_approx(10000.0 - neighbor.health, 7.7), "Blast deals 55% damage to its neighbor")
 	_check(chain_only.health == 10000.0, "Secondary blast damage does not recursively explode")
 	_check(simulation.primary_hits == 1 and simulation.secondary_hits == 1, "Primary and secondary hit accounting stays distinct")
+	_check(activations.size() == 1, "A blast emits once without secondary recursion")
+	if activations.size() == 1:
+		_check(activations[0]["origin"] == primary.position and activations[0]["primary_hits"] == 1 and activations[0]["secondary_hits"] == 0, "Blast feedback starts at the real impact after primary damage and before the explosion")
+		_check(activations[0]["rune"] == "blast" and (activations[0]["incoming_direction"] as Vector2).is_normalized() and activations[0]["outgoing_direction"] == Vector2.ZERO and not activations[0]["complete"], "Blast feedback retains incoming direction, ends its projectile and never starts after terminal state")
+
+func _test_rune_activation_guards() -> void:
+	var plain: CombatSim = _simulation()
+	var plain_events: Array[Dictionary] = _rune_events(plain)
+	_target(plain, Vector2(330, 300))
+	plain.fire_weapon("bone", "", Vector2(200, 300), Vector2.RIGHT)
+	_advance(plain, 60)
+	_check(plain.has_signal("rune_activated"), "Combat exposes the read-only rune activation signal")
+	_check(plain.primary_hits == 1 and plain_events.is_empty(), "Ordinary positive damage never emits rune activation")
+	for rune_id: String in ["pierce", "bounce", "blast"]:
+		var zero: CombatSim = _simulation()
+		var zero_events: Array[Dictionary] = _rune_events(zero)
+		_target(zero, Vector2(330, 300))
+		_target(zero, Vector2(385, 300))
+		_target(zero, Vector2(440, 300))
+		var zero_shot: CombatSim.Shot = zero.fire_weapon("bone", rune_id, Vector2(200, 300), Vector2.RIGHT)
+		zero_shot.damage = 0.0
+		_advance(zero, 90)
+		_check(zero.primary_hits == 0 and zero.secondary_hits == 0 and zero_events.is_empty(), "Zero-loss hits never activate " + rune_id + " feedback")
+		var terminal: CombatSim = _simulation(8, 8)
+		var terminal_events: Array[Dictionary] = _rune_events(terminal)
+		terminal.boss.health = 1.0
+		terminal.fire_weapon("bone", rune_id, terminal.boss.position, Vector2.RIGHT)
+		terminal.step(DELTA, Vector2.ZERO)
+		_check(terminal.complete and terminal.victory and terminal_events.is_empty(), "A lethal primary Boss hit does not begin terminal " + rune_id + " behavior")
+		terminal.fire_weapon("bone", rune_id, terminal.boss.position, Vector2.RIGHT)
+		terminal._update_shots(DELTA)
+		_check(terminal_events.is_empty(), "Already-ended shots never emit " + rune_id + " feedback")
+	var isolated: CombatSim = _simulation()
+	var isolated_events: Array[Dictionary] = _rune_events(isolated)
+	_target(isolated, Vector2(330, 300))
+	isolated.fire_weapon("bone", "bounce", Vector2(200, 300), Vector2.RIGHT)
+	_advance(isolated, 60)
+	_check(isolated.primary_hits == 1 and isolated_events.is_empty(), "Bounce without an actual next target emits no redirection")
+	for rune_id: String in ["pierce", "bounce"]:
+		var exhausted: CombatSim = _simulation()
+		var exhausted_events: Array[Dictionary] = _rune_events(exhausted)
+		_target(exhausted, Vector2(330, 300))
+		_target(exhausted, Vector2(385, 300))
+		var shot: CombatSim.Shot = exhausted.fire_weapon("bone", rune_id, Vector2(200, 300), Vector2.RIGHT)
+		shot.remaining = 0
+		_advance(exhausted, 60)
+		_check(exhausted.primary_hits == 1 and not shot.active and exhausted_events.is_empty(), "An exhausted " + rune_id + " does not claim continuation")
+	var secondary: CombatSim = _simulation()
+	var secondary_events: Array[Dictionary] = _rune_events(secondary)
+	_target(secondary, Vector2(330, 300))
+	secondary._explode(Vector2(330, 300), 10.0, "bone", {})
+	_check(secondary.secondary_hits == 1 and secondary_events.is_empty(), "Secondary-only explosion damage never dispatches rune activation")
+	var boss_blast: CombatSim = _simulation(8, 8)
+	var boss_blast_events: Array[Dictionary] = _rune_events(boss_blast)
+	boss_blast.boss.position = Vector2(385, 300)
+	boss_blast.boss.health = 1.0
+	boss_blast.boss.action_timer = 9999.0
+	boss_blast.boss.slow_timer = 9999.0
+	boss_blast.boss.slow_factor = 0.0
+	var blast_primary: CombatSim.Enemy = _target(boss_blast, Vector2(330, 300))
+	blast_primary.health = 1.0
+	var pending_target: CombatSim.Enemy = _target(boss_blast, Vector2(800, 300))
+	boss_blast.fire_weapon("bone", "blast", blast_primary.position, Vector2.RIGHT)
+	boss_blast.fire_weapon("bone", "pierce", pending_target.position, Vector2.RIGHT)
+	boss_blast.step(DELTA, Vector2.ZERO)
+	_check(boss_blast.complete and boss_blast.victory and boss_blast.primary_hits == 1 and boss_blast.secondary_hits == 1, "Secondary blast can end the run before a pending rune projectile")
+	_check(boss_blast_events.size() == 1 and boss_blast_events[0]["rune"] == "blast" and not boss_blast_events[0]["complete"], "The real explosion emits once before its secondary Boss kill")
+	_advance(boss_blast, 3)
+	_check(pending_target.health == 10000.0 and boss_blast_events.size() == 1, "Secondary Boss victory prevents all later rune damage and activation")
+	for rune_id: String in ["pierce", "bounce", "blast"]:
+		var observed: CombatSim = _simulation(717)
+		var unobserved: CombatSim = _simulation(717)
+		_rune_events(observed)
+		for simulation: CombatSim in [observed, unobserved]:
+			for index: int in range(3):
+				_target(simulation, Vector2(330 + index * 55, 300))
+			simulation.fire_weapon("bone", rune_id, Vector2(200, 300), Vector2.RIGHT)
+			_advance(simulation, 90)
+		_check(observed.snapshot() == unobserved.snapshot() and observed.run.summary() == unobserved.run.summary(), "A read-only rune listener does not change combat or run statistics: " + rune_id)
+		_check(observed.run.rng.state == unobserved.run.rng.state, "Rune feedback never consumes random state: " + rune_id)
+
+func _explosion_probe(use_linear: bool, boss_slot: int = -1) -> ExplosionProbeSim:
+	var state: RunState = RunState.new()
+	state.begin(9031, "bone")
+	state.wave = 8 if boss_slot >= 0 else 1
+	var sim: ExplosionProbeSim = ExplosionProbeSim.new()
+	sim.use_linear = use_linear
+	if boss_slot > 0:
+		sim._enemy_free.erase(boss_slot)
+		sim._enemy_free.append(boss_slot)
+	sim.begin(state)
+	sim.sandbox = true
+	sim._cooldowns.fill(9999.0)
+	sim.player_position = Vector2(1050, 550)
+	if sim.boss != null:
+		sim.boss.position = Vector2(400, 320)
+		sim.boss.health = 1.0
+		sim.boss.action_timer = 9999.0
+		sim.boss.slow_timer = 9999.0
+		sim.boss.slow_factor = 0.0
+	return sim
+
+func _explosion_events(sim: CombatSim) -> Array:
+	var events: Array = []
+	sim.damage_dealt.connect(func(point: Vector2, amount: float, source: String, secondary: bool, uid: int) -> void:
+		events.append(["damage", point, amount, source, secondary, uid])
+	)
+	sim.enemy_killed.connect(func(point: Vector2, color: Color) -> void: events.append(["kill", point, color]))
+	sim.rune_activated.connect(func(id: String, point: Vector2, incoming: Vector2, outgoing: Vector2) -> void:
+		events.append(["rune", id, point, incoming, outgoing])
+	)
+	sim.ended.connect(func(won: bool, reason: String) -> void: events.append(["ended", won, reason]))
+	return events
+
+func _explosion_digest(sim: CombatSim, events: Array) -> Dictionary:
+	var health: Array = []
+	var drops: Array = []
+	var effects: Array = []
+	for enemy: CombatSim.Enemy in sim.enemies:
+		health.append([enemy.slot, enemy.uid, enemy.active, enemy.health, enemy.position, enemy.radius])
+	for soul: CombatSim.Soul in sim.souls:
+		if soul.active:
+			drops.append([soul.slot, soul.position, soul.value])
+	for effect: CombatSim.Effect in sim.effects:
+		effects.append([effect.position, effect.radius, effect.color, effect.life, effect.kind])
+	return {"run": sim.run.summary(), "health": health, "drops": drops, "effects": effects, "events": events,
+		"enemy_free": sim._enemy_free.duplicate(), "soul_free": sim._soul_free.duplicate(),
+		"rng": sim.rng.state, "run_rng": sim.run.rng.state, "primary": sim.primary_hits,
+		"secondary": sim.secondary_hits, "damage": sim.damage_by_weapon.duplicate(true),
+		"enemy_count": sim.enemy_count, "shot_count": sim.shot_count, "soul_count": sim.soul_count}
+
+func _test_explosion_spatial_equivalence() -> void:
+	# Query through the real shot phase, including a radius larger than all resources,
+	# a cell boundary, exact tangency, both sides of the strict edge and UID exclusion.
+	var outcomes: Array[Dictionary] = []
+	for use_linear: bool in [false, true]:
+		var sim: ExplosionProbeSim = _explosion_probe(use_linear)
+		var events: Array = _explosion_events(sim)
+		var primary: CombatSim.Enemy = _target(sim, Vector2(400, 320))
+		var large: CombatSim.Enemy = _target(sim, Vector2(550, 320))
+		large.radius = 90.0
+		var tangent: CombatSim.Enemy = _target(sim, Vector2(485, 320))
+		var inside: CombatSim.Enemy = _target(sim, Vector2(484.999, 320))
+		var outside: CombatSim.Enemy = _target(sim, Vector2(485.001, 320))
+		var across: CombatSim.Enemy = _target(sim, Vector2(315.001, 320))
+		for edge: CombatSim.Enemy in [tangent, inside, outside, across]:
+			edge.radius = 17.0
+		var excluded: CombatSim.Enemy = _target(sim, Vector2(400, 370))
+		var shot: CombatSim.Shot = sim.fire_weapon("bone", "blast", primary.position, Vector2.RIGHT)
+		shot.hit_ids[excluded.uid] = true
+		sim.step(DELTA, Vector2.ZERO)
+		_check(large.health < 10000.0 and inside.health < 10000.0 and across.health < 10000.0, "Blast broad phase includes large radii, near edges and neighboring cells")
+		_check(tangent.health == 10000.0 and outside.health == 10000.0 and excluded.health == 10000.0, "Blast preserves strict tangency/outside rejection and UID exclusion")
+		_check(primary.health == 9986.0 and sim.secondary_hits == 3 and not sim._explosion_grid_active, "Blast excludes its primary and closes the grid query window after the step")
+		outcomes.append(_explosion_digest(sim, events))
+	_check(outcomes[0] == outcomes[1], "Spatial blast matches linear events, HP, damage, drops, effects and RNG across boundary cases")
+	# Direct calls must remain correct without a grid and after external pose/radius edits.
+	for grid_state: int in range(3):
+		outcomes.clear()
+		for use_linear: bool in [false, true]:
+			var sim: ExplosionProbeSim = _explosion_probe(use_linear)
+			var events: Array = _explosion_events(sim)
+			var moved: CombatSim.Enemy = _target(sim, Vector2(1000, 500))
+			if grid_state == 1:
+				sim._rebuild_grid()
+			elif grid_state == 2:
+				sim.step(DELTA, Vector2.ZERO)
+			moved.position = Vector2(580, 320)
+			moved.radius = 120.0
+			sim._explode(Vector2(400, 320), 3.0, "ember", {})
+			_check(moved.health == 9997.0, "Direct blast respects current position/radius with grid state " + str(grid_state))
+			outcomes.append(_explosion_digest(sim, events))
+		_check(outcomes[0] == outcomes[1], "Direct stale/empty-grid blast remains equivalent: " + str(grid_state))
+	var empty: ExplosionProbeSim = _explosion_probe(false)
+	empty._explode(Vector2(400, 320), 3.0, "ember", {})
+	_check(empty.secondary_hits == 0 and empty.effects.size() == 1, "An empty direct blast retains its effect without phantom hits")
+	# A spawn after grid construction reuses an old slot at a new position and UID.
+	outcomes.clear()
+	for use_linear: bool in [false, true]:
+		var sim: ExplosionProbeSim = _explosion_probe(use_linear)
+		var events: Array = _explosion_events(sim)
+		var primary: CombatSim.Enemy = _target(sim, Vector2(330, 320))
+		var retired: CombatSim.Enemy = _target(sim, Vector2(1000, 500))
+		var old_uid: int = retired.uid
+		var old_slot: int = retired.slot
+		sim.apply_damage(retired, 10000.0, "frost")
+		sim.spawn_after_grid = Vector2(370, 320)
+		var shot: CombatSim.Shot = sim.fire_weapon("bone", "blast", primary.position, Vector2.RIGHT)
+		shot.hit_ids[old_uid] = true
+		sim.step(DELTA, Vector2.ZERO)
+		_check(sim.deferred_enemy.slot == old_slot and sim.deferred_enemy.uid != old_uid and sim.deferred_enemy.health < 10000.0, "A post-grid recycled slot is hit under its new UID and position")
+		outcomes.append(_explosion_digest(sim, events))
+	_check(outcomes[0] == outcomes[1], "Post-grid spawning falls back without changing pool, drop or damage ordering")
+	# A maximum-radius enemy dying earlier in the same shot phase only leaves a
+	# conservative query bound; its stale bucket entry must not be hit again.
+	outcomes.clear()
+	for use_linear: bool in [false, true]:
+		var sim: ExplosionProbeSim = _explosion_probe(use_linear)
+		var events: Array = _explosion_events(sim)
+		var largest: CombatSim.Enemy = _target(sim, Vector2(550, 320))
+		largest.radius = 90.0
+		largest.health = 1.0
+		var primary: CombatSim.Enemy = _target(sim, Vector2(400, 320))
+		var neighbor: CombatSim.Enemy = _target(sim, Vector2(450, 320))
+		sim.fire_weapon("bone", "", largest.position, Vector2.UP)
+		sim.fire_weapon("bone", "blast", primary.position, Vector2.RIGHT)
+		sim.step(DELTA, Vector2.ZERO)
+		_check(sim.run.kills == 1 and sim.primary_hits == 2 and sim.secondary_hits == 1 and is_equal_approx(neighbor.health, 9992.3), "A stale largest-radius bucket neither duplicates its kill nor omits a surviving neighbor")
+		outcomes.append(_explosion_digest(sim, events))
+	_check(outcomes[0] == outcomes[1], "An earlier maximum-radius death preserves linear blast results and ordering")
+	# Boss first versus Boss after lower pool slots must preserve the old terminal cut.
+	for boss_slot: int in [0, 5]:
+		outcomes.clear()
+		for use_linear: bool in [false, true]:
+			var sim: ExplosionProbeSim = _explosion_probe(use_linear, boss_slot)
+			var events: Array = _explosion_events(sim)
+			for index: int in 7:
+				var neighbor: CombatSim.Enemy = _target(sim, Vector2(330, 320) + Vector2.from_angle(float(index) * TAU / 7.0) * 55.0)
+				neighbor.health = 1.0
+			var primary: CombatSim.Enemy = _target(sim, Vector2(330, 320))
+			primary.health = 1.0
+			sim.fire_weapon("bone", "blast", primary.position, Vector2.RIGHT)
+			sim.step(DELTA, Vector2.ZERO)
+			var expected_kills: int = 2 if boss_slot == 0 else 7
+			_check(sim.complete and sim.victory and sim.run.kills == expected_kills and sim.run.gold == expected_kills, "Boss terminal blast retains lower-slot kills/drops only: " + str(boss_slot))
+			outcomes.append(_explosion_digest(sim, events))
+		_check(outcomes[0] == outcomes[1], "Spatial ordering exactly matches the linear Boss terminal sequence: " + str(boss_slot))
+
+func _test_nearest_spatial_equivalence() -> void:
+	# Exercise the actual fresh-grid window, with an independent frozen full scan.
+	# Test-only frozen positions also cover negative/out-of-arena grid cells.
+	for seed_value: int in range(10):
+		var sim: ExplosionProbeSim = _explosion_probe(false)
+		sim.freeze_enemy_updates = true
+		var samples: RandomNumberGenerator = RandomNumberGenerator.new()
+		samples.seed = 7001 + seed_value
+		for index: int in 160:
+			_target(sim, Vector2(samples.randf_range(-250.0, 1450.0), samples.randf_range(-200.0, 850.0)))
+		for index: int in 128:
+			var excluded: Dictionary = {}
+			for omitted: int in range(index % 7):
+				excluded[sim.enemies[samples.randi_range(0, 159)].uid] = true
+			var radii: Array[float] = [0.0, 0.001, 79.999, 80.0, 80.001, -230.0, 420.0, 620.0, 1280.0, 2000.0]
+			sim.nearest_queries.append({"position": Vector2(samples.randf_range(-400.0, 1600.0), samples.randf_range(-350.0, 1000.0)), "range": radii[index % radii.size()], "excluded": excluded})
+		sim.step(DELTA, Vector2.ZERO)
+		_check(sim.nearest_results == sim.nearest_reference, "Ring queries equal the frozen oracle for 128 positions/ranges/exclusions: seed " + str(seed_value))
+		_check(sim.nearest_grid_flags.count(true) == 128 and sim.nearest_rng_unchanged, "Randomized nearest queries use a fresh grid without RNG calls")
+	# The lower-slot tie is in the next ring. A 64-bit pruning square can exceed
+	# Vector2's rounded best distance here and incorrectly return the higher slot.
+	var rounded: ExplosionProbeSim = _explosion_probe(false)
+	rounded.freeze_enemy_updates = true
+	var low: CombatSim.Enemy = _target(rounded, Vector2(80, 40))
+	var high: CombatSim.Enemy = _target(rounded, Vector2(79.399993896484375, 40))
+	var rounded_origin: Vector2 = Vector2(79.7, 40)
+	_check(low.position.distance_squared_to(rounded_origin) == high.position.distance_squared_to(rounded_origin), "Float boundary fixture has an exact Vector2 distance tie")
+	rounded.nearest_queries = [{"position": rounded_origin, "range": 2.0}]
+	rounded.step(DELTA, Vector2.ZERO)
+	_check(rounded.nearest_results == [low.uid] and rounded.nearest_results == rounded.nearest_reference, "A rounded next-ring tie still chooses the original lower slot")
+	var edges: ExplosionProbeSim = _explosion_probe(false)
+	edges.freeze_enemy_updates = true
+	var first: CombatSim.Enemy = _target(edges, Vector2(-80, 0))
+	_target(edges, Vector2(0, 80))
+	_target(edges, Vector2(80, 0))
+	_target(edges, Vector2(0, -80))
+	edges.nearest_queries = [
+		{"position": Vector2.ZERO, "range": 80.0},
+		{"position": Vector2.ZERO, "range": -80.0},
+		{"position": Vector2.ZERO, "range": 80.001},
+		{"position": first.position, "range": 0.0},
+		{"position": Vector2.ZERO, "range": -80.001},
+		{"position": Vector2.ZERO, "range": 81.0, "excluded": {first.uid: true}},
+		{"position": Vector2(80, 80), "range": 100.0},
+		{"position": Vector2(5000, 5000), "range": 420.0},
+		{"position": Vector2.ZERO, "range": INF},
+		{"position": Vector2.ZERO, "range": NAN},
+	]
+	edges.step(DELTA, Vector2.ZERO)
+	_check(edges.nearest_results == edges.nearest_reference, "Exact corners, negative cells, wide/NaN/INF ranges and exclusions preserve linear choices")
+	_check(edges.nearest_results[0] == -1 and edges.nearest_results[1] == -1 and edges.nearest_results[3] == -1, "Strict range tangency and zero range never select an enemy")
+	_check(edges.nearest_results[2] == first.uid and edges.nearest_results[4] == first.uid, "Positive and negative range use the same strict radius and slot tie")
+	# Dead entries remain in buckets but must lose to the next active candidate.
+	var dead: ExplosionProbeSim = _explosion_probe(false)
+	dead.freeze_enemy_updates = true
+	var removed: CombatSim.Enemy = _target(dead, Vector2(400, 320))
+	var survivor: CombatSim.Enemy = _target(dead, Vector2(450, 320))
+	dead.nearest_kill_slot = removed.slot
+	dead.nearest_queries = [{"position": removed.position, "range": 100.0}, {"position": removed.position, "range": 100.0, "excluded": {survivor.uid: true}}]
+	dead.step(DELTA, Vector2.ZERO)
+	_check(dead.nearest_results == [survivor.uid, -1] and dead.nearest_results == dead.nearest_reference, "Nearest ignores stale inactive entries and excluded surviving UIDs")
+	# Recycled post-grid spawns invalidate the window, retaining current UID/position.
+	var spawned: ExplosionProbeSim = _explosion_probe(false)
+	spawned.freeze_enemy_updates = true
+	var retired: CombatSim.Enemy = _target(spawned, Vector2(900, 500))
+	var old_uid: int = retired.uid
+	spawned.apply_damage(retired, retired.health, "bone")
+	spawned.spawn_after_grid = Vector2(-20, -30)
+	spawned.nearest_queries = [{"position": Vector2(-20, -30), "range": 10.0, "excluded": {old_uid: true}}]
+	spawned.step(DELTA, Vector2.ZERO)
+	_check(spawned.nearest_grid_flags == [false] and spawned.nearest_results == [spawned.deferred_enemy.uid] and spawned.nearest_results == spawned.nearest_reference, "Post-grid spawn falls back and does not confuse a new UID with its recycled slot")
+	# External calls after a pose edit must never trust a previously built grid.
+	for phase: int in range(3):
+		var external: ExplosionProbeSim = _explosion_probe(false)
+		var moved: CombatSim.Enemy = _target(external, Vector2(900, 500))
+		if phase == 1:
+			external._rebuild_grid()
+		elif phase == 2:
+			external.step(DELTA, Vector2.ZERO)
+		moved.position = Vector2(-100, -100)
+		_check(external._nearest(moved.position, 1.0) == moved and external._nearest(moved.position, 1.0) == external._nearest_oracle(moved.position, 1.0, {}), "Direct nearest uses current positions with stale/empty grid phase " + str(phase))
 
 func _test_soul_accounting() -> void:
 	var simulation: CombatSim = _simulation()

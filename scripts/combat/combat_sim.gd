@@ -8,6 +8,7 @@ signal enemy_killed(position: Vector2, color: Color)
 signal player_hurt
 signal damage_dealt(position: Vector2, amount: float, source: String, secondary: bool, target_uid: int)
 signal player_damaged(amount: float, source_id: String, kind: String, origin: Vector2)
+signal rune_activated(rune_id: String, origin: Vector2, incoming_direction: Vector2, outgoing_direction: Vector2)
 signal ended(victory: bool, reason: String)
 
 const ARENA: Rect2 = Rect2(66, 140, 1148, 450)
@@ -105,6 +106,7 @@ var _shot_free: Array[int] = []
 var _soul_free: Array[int] = []
 var _grid: Dictionary = {}
 var _largest_enemy_radius: float = 0.0
+var _explosion_grid_active: bool = false
 var _cooldowns: Array[float] = []
 var _uid: int = 0
 var _spawn_timer: float = 0.0
@@ -143,6 +145,7 @@ func begin(state: RunState) -> void:
 	_spawn_timer = 0.6
 
 func step(delta: float, movement: Vector2) -> void:
+	_explosion_grid_active = false
 	if complete:
 		return
 	elapsed += delta
@@ -157,8 +160,10 @@ func step(delta: float, movement: Vector2) -> void:
 		_finish(false, _death_reason())
 		return
 	_rebuild_grid()
+	_explosion_grid_active = true
 	_update_weapons(delta)
 	_update_shots(delta)
+	_explosion_grid_active = false
 	if complete:
 		return
 	_update_souls(delta)
@@ -186,6 +191,7 @@ func step(delta: float, movement: Vector2) -> void:
 func spawn_enemy(id: String, position: Vector2 = Vector2.INF) -> Enemy:
 	if _enemy_free.is_empty():
 		return null
+	_explosion_grid_active = false
 	var enemy: Enemy = enemies[_enemy_free.pop_back()]
 	enemy.active = true
 	enemy.definition = GameCatalog.enemy(id)
@@ -338,6 +344,50 @@ func _rebuild_grid() -> void:
 		(_grid[cell] as Array).append(enemy)
 
 func _nearest(position: Vector2, distance: float, excluded: Dictionary = {}) -> Enemy:
+	# Outside the stable shot-phase window, keep direct/stale-grid calls unchanged.
+	# Very wide or non-finite diagnostic queries also favor the bounded pool scan.
+	if not _explosion_grid_active or not position.is_finite() or not is_finite(distance) or absf(distance) > CELL * 16.0:
+		return _nearest_linear(position, distance, excluded)
+	if distance == 0.0:
+		return null
+	var result: Enemy
+	var best: float = distance * distance
+	var center: Vector2i = Vector2i((position / CELL).floor())
+	var max_ring: int = int(floorf(absf(distance) / CELL)) + 1
+	for ring: int in range(max_ring + 1):
+		var side: int = ring * 2
+		var count: int = 1 if ring == 0 else ring * 8
+		for index: int in count:
+			var cell: Vector2i = center
+			if ring > 0:
+				var offset: int = index % side
+				match int(index / side):
+					0: cell += Vector2i(-ring + offset, -ring)
+					1: cell += Vector2i(ring, -ring + offset)
+					2: cell += Vector2i(ring - offset, ring)
+					3: cell += Vector2i(-ring, ring - offset)
+			if not _grid.has(cell):
+				continue
+			for enemy: Enemy in _grid[cell]:
+				if not enemy.active or excluded.has(enemy.uid):
+					continue
+				var squared: float = enemy.position.distance_squared_to(position)
+				if squared < best or (result != null and squared == best and enemy.slot < result.slot):
+					best = squared
+					result = enemy
+		var left: float = float(center.x - ring) * CELL
+		var top: float = float(center.y - ring) * CELL
+		var right: float = float(center.x + ring + 1) * CELL
+		var bottom: float = float(center.y + ring + 1) * CELL
+		var edge: float = maxf(0.0, minf(minf(position.x - left, right - position.x), minf(position.y - top, bottom - position.y)))
+		# Match Vector2's distance precision, and only prune conservatively. Selection
+		# ties above stay exact; a next-ring equal-distance lower slot must still win.
+		var lower_bound: float = Vector2(edge, 0.0).length_squared()
+		if lower_bound > best and not is_equal_approx(lower_bound, best):
+			break
+	return result
+
+func _nearest_linear(position: Vector2, distance: float, excluded: Dictionary) -> Enemy:
 	var result: Enemy
 	var best: float = distance * distance
 	for enemy: Enemy in enemies:
@@ -450,15 +500,22 @@ func _update_shots(delta: float) -> void:
 			hit_count += 1
 			shot.hit_ids[impact.uid] = true
 			var impact_position: Vector2 = impact.position
+			var health_before: float = impact.health
+			var incoming_direction: Vector2 = shot.velocity.normalized()
 			apply_damage(impact, shot.damage, shot.source, false, shot.slow)
+			var positive_hit: bool = impact.health < health_before
 			if complete:
 				_release_shot(shot)
 				return
 			if shot.rune == "blast":
 				_release_shot(shot)
+				if positive_hit:
+					rune_activated.emit("blast", impact_position, incoming_direction, Vector2.ZERO)
 				_explode(impact_position, shot.damage * 0.55, shot.source, shot.hit_ids)
 			elif shot.rune == "pierce" and shot.remaining > 0:
 				shot.remaining -= 1
+				if positive_hit:
+					rune_activated.emit("pierce", impact_position, incoming_direction, incoming_direction)
 				impact = _first_collision(shot)
 				continue
 			elif shot.rune == "bounce" and shot.remaining > 0:
@@ -470,6 +527,8 @@ func _update_shots(delta: float) -> void:
 					shot.remaining -= 1
 					shot.life = maxf(shot.life, 0.7)
 					add_effect(impact_position, Color("dcc5ff"), 12.0, 0.18, 1)
+					if positive_hit:
+						rune_activated.emit("bounce", impact_position, incoming_direction, shot.velocity.normalized())
 				else:
 					_release_shot(shot)
 			else:
@@ -550,14 +609,38 @@ func apply_damage(enemy: Enemy, amount: float, source: String, secondary: bool =
 
 func _explode(position: Vector2, amount: float, source: String, excluded: Dictionary) -> void:
 	add_effect(position, Color("df9cfa"), 68.0, 0.35, 0)
-	for enemy: Enemy in enemies:
+	for slot: int in _explosion_slots(position):
 		if complete:
 			return
+		var enemy: Enemy = enemies[slot]
 		if not enemy.active or excluded.has(enemy.uid):
 			continue
 		if enemy.position.distance_squared_to(position) < pow(68.0 + enemy.radius, 2):
 			# Secondary damage deliberately never enters the rune dispatch path.
 			apply_damage(enemy, amount, source, true)
+
+func _explosion_slots(position: Vector2) -> PackedInt32Array:
+	var slots: PackedInt32Array = PackedInt32Array()
+	# Only this step's shot phase has stable positions/radii. Direct calls may follow
+	# external edits or an empty/stale grid, so retain their original full scan.
+	if not _explosion_grid_active:
+		for index: int in enemies.size():
+			slots.append(index)
+		return slots
+	var reach: Vector2 = Vector2.ONE * (68.0 + _largest_enemy_radius)
+	var start: Vector2i = Vector2i(((position - reach) / CELL).floor())
+	var end: Vector2i = Vector2i(((position + reach) / CELL).floor())
+	for x: int in range(start.x, end.x + 1):
+		for y: int in range(start.y, end.y + 1):
+			var cell: Vector2i = Vector2i(x, y)
+			if not _grid.has(cell):
+				continue
+			for enemy: Enemy in _grid[cell]:
+				if enemy.active:
+					slots.append(enemy.slot)
+	# Damage/kill/terminal order is observable; preserve the original pool-slot order.
+	slots.sort()
+	return slots
 
 func _kill_enemy(enemy: Enemy) -> void:
 	enemy.active = false

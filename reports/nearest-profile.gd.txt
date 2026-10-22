@@ -1,0 +1,64 @@
+extends "res://tests/simulate_runs.gd"
+## Small CPU-only query benchmark; no movement, rendering, campaign or state changes.
+
+const QUERY_COUNT: int = 4000
+const PROFILE_ROUNDS: int = 3
+
+func _initialize() -> void:
+	var state: RunState = RunState.new()
+	state.begin(20261022, "bone")
+	var sim: CombatSim = CombatSim.new()
+	sim.begin(state)
+	var inputs: RandomNumberGenerator = RandomNumberGenerator.new()
+	inputs.seed = 20261022
+	for index: int in 300:
+		sim.spawn_enemy("chaser", Vector2(inputs.randf_range(100, 1180), inputs.randf_range(150, 590)))
+	sim._rebuild_grid()
+	sim._explosion_grid_active = true
+	var queries: Array[Dictionary] = []
+	for index: int in 200:
+		var excluded: Dictionary = {}
+		for omitted: int in range(index % 4):
+			excluded[sim.enemies[inputs.randi_range(0, 299)].uid] = true
+		queries.append({"position": Vector2(inputs.randf_range(100, 1180), inputs.randf_range(150, 590)), "range": 230.0 if index % 4 == 0 else 420.0, "excluded": excluded})
+	var rng_before: int = sim.rng.state
+	var actual: Array[int] = []
+	var oracle: Array[int] = []
+	for query: Dictionary in queries:
+		var selected: CombatSim.Enemy = sim._nearest(query["position"], query["range"], query["excluded"])
+		actual.append(selected.uid if selected != null else -1)
+		var expected: CombatSim.Enemy = _linear_oracle(sim, query["position"], query["range"], query["excluded"])
+		oracle.append(expected.uid if expected != null else -1)
+	var results: Array[Dictionary] = []
+	for mode: String in ["production_ring", "frozen_linear_oracle"]:
+		var timings: Array[int] = []
+		var checksum: int = 0
+		for round_number: int in PROFILE_ROUNDS:
+			var start: int = Time.get_ticks_usec()
+			for index: int in QUERY_COUNT:
+				var query: Dictionary = queries[index % queries.size()]
+				var target: CombatSim.Enemy
+				if mode == "production_ring":
+					target = sim._nearest(query["position"], query["range"], query["excluded"])
+				else:
+					target = _linear_oracle(sim, query["position"], query["range"], query["excluded"])
+				checksum += target.uid if target != null else -1
+			timings.append(Time.get_ticks_usec() - start)
+		timings.sort()
+		results.append({"mode": mode, "median_ms": float(timings[1]) / 1000.0, "rounds_usec": timings, "target_uid_checksum": checksum})
+	var sim_source: String = FileAccess.get_file_as_string("res://scripts/combat/combat_sim.gd")
+	var output: Dictionary = {"mode": "headless nearest query microbenchmark; no rendering or frame-rate claim", "seed": 20261022, "enemies": 300, "unique_queries": queries.size(), "queries_per_round": QUERY_COUNT, "rounds": PROFILE_ROUNDS, "query_ranges": [230, 420], "oracle_equal": actual == oracle, "oracle_target_sha256": JSON.stringify(oracle).sha256_text(), "rng_unchanged": sim.rng.state == rng_before, "balance_version": _content_version(), "combat_source_sha256": sim_source.sha256_text(), "results": results}
+	print("NEAREST_PROFILE ", JSON.stringify(output))
+	quit(0 if actual == oracle and sim.rng.state == rng_before else 1)
+
+func _linear_oracle(sim: CombatSim, position: Vector2, distance: float, excluded: Dictionary) -> CombatSim.Enemy:
+	var result: CombatSim.Enemy
+	var best: float = distance * distance
+	for enemy: CombatSim.Enemy in sim.enemies:
+		if not enemy.active or excluded.has(enemy.uid):
+			continue
+		var squared: float = enemy.position.distance_squared_to(position)
+		if squared < best:
+			best = squared
+			result = enemy
+	return result
