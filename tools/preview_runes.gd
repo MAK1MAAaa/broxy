@@ -141,9 +141,7 @@ func _overlay(primary_hits: int, secondary_hits: int) -> void:
 	canvas.size = Vector2(1280, 720)
 	canvas.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var theme := Theme.new()
-	var font := SystemFont.new()
-	font.font_names = PackedStringArray(["Hiragino Sans GB", "PingFang SC", "Heiti SC", "Arial"])
-	theme.default_font = font
+	theme.default_font = GameUI.create_ui_font()
 	canvas.theme = theme
 	layer.add_child(canvas)
 	_panel(canvas, Rect2(24, 16, 1232, 112))

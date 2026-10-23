@@ -9,3 +9,8 @@ reports/*.import
 __pycache__/
 *.py[cod]
 .DS_Store
+reports/windows/*.log
+reports/windows/*.jsonl
+reports/windows/*.png
+reports/windows/*.import
+reports/windows/*-raw.json

@@ -1,0 +1,200 @@
+{
+  "schema_version": 1,
+  "date_local": "2026-10-23",
+  "created_at_utc": "2026-10-23T08:01:48.257435+00:00",
+  "source_base_commit": "d49ef899770bee1da42741e67c68ef8e1d6d4a6a",
+  "branch": "feature/windows",
+  "engine": "4.7.2.stable.official.ed1daf0bf",
+  "device": {
+    "os": "Windows 11 Pro for Workstations 10.0.26200 x86_64",
+    "cpu": "Intel i5-13600KF",
+    "gpu": "NVIDIA GeForce RTX 4070 SUPER",
+    "driver": "591.86"
+  },
+  "tests": {
+    "tests-bash.log": {
+      "godot_assertions": 2574,
+      "python_tests": 22,
+      "passed": true
+    },
+    "tests-powershell.log": {
+      "godot_assertions": 2574,
+      "python_tests": 22,
+      "passed": true
+    }
+  },
+  "native_telegraphs": {
+    "assertions": 134,
+    "renderer_readbacks": 12,
+    "passed": true
+  },
+  "simulation": {
+    "runs": 30,
+    "wins": 29,
+    "losses": 1,
+    "full_cross_platform_trace_comparison": false
+  },
+  "performance": {
+    "average_fps": 117.956060555826,
+    "duration_seconds": 300.0,
+    "enemies": 300,
+    "impact_draw_commands_at_end": 6,
+    "impact_visual_capacity": 32,
+    "impact_visual_peak": 32,
+    "impact_visual_revision": "primary-impact-v1",
+    "internal_resolution": "1280x720",
+    "os": "Windows",
+    "p99_frame_ms": 18.234,
+    "passed": true,
+    "persistent_profile": false,
+    "pickups": 200,
+    "primary_hits": 472823,
+    "projectiles": 600,
+    "renderer": "gl_compatibility",
+    "run_seed": 1792101457,
+    "rune_visual_peak": 32,
+    "samples": 35389,
+    "scenario": "rune-feedback",
+    "secondary_hits": 1222001,
+    "settings": {
+      "flash": true,
+      "shake": true,
+      "volume": 0.65
+    }
+  },
+  "performance_evidence": {
+    "warmup_seconds": 5,
+    "measurement_seconds": 300,
+    "vsync": "project default retained",
+    "engine_max_fps": 0,
+    "renderer": "OpenGL 3.3.0 NVIDIA 591.86 / Compatibility",
+    "native_viewport_capture_seconds": 120,
+    "native_window_title_observed": true,
+    "concurrent_godot_tests_or_builds": false,
+    "log_result_matches_json": true,
+    "canonical_macos_performance_restored": true
+  },
+  "assets": {
+    "assets": 35,
+    "generated_files": 37,
+    "two_runs_identical": true,
+    "different_from_committed_macos_files": [],
+    "encoding": "UTF-8",
+    "newlines": "LF"
+  },
+  "distribution": {
+    "architecture": "x86_64",
+    "authenticode_signed": false,
+    "zip_crc_passed": true,
+    "files": [
+      "Embers.exe",
+      "Embers.pck",
+      "licenses/Godot-COPYRIGHT.txt",
+      "licenses/Godot-LICENSE.txt",
+      "licenses/README.md"
+    ],
+    "sha256": {
+      "build/Embers-windows-x86_64/Embers.exe": "d34d36f3be1a6c49c56525ae86469b92e4f417ddf0b43cf00dd80c385c4b0562",
+      "build/Embers-windows-x86_64/Embers.pck": "9ea49984d3d4e171d53714147d0a1e4084f852111d2f0c787e0ad61d3c537aec",
+      "build/Embers-windows-x86_64.zip": "d7d67a46831d465807dd3031870f09ff74dfd06b04a7ea37370eb2fb8c44bca5"
+    }
+  },
+  "source_sha256": {
+    ".gitattributes": "d60f352d0db1404c70afb4bb8b2ca3fd1c610572aa40720e8a0b7baa7885418c",
+    "export_presets.cfg": "ca6024c033ec24a8ea84f8a108d43f7de3f9c7e43387685f78dd5374ef97517f",
+    "project.godot": "243b092054cff0748423392064c7b243a195bc5a0513430b96b904f5b8ee405d",
+    "scripts/main.gd": "6c096bdc0154b9dd9f66547272d815aea00ffc103f37db3866245874791db7c7",
+    "scripts/ui/game_ui.gd": "b4aedb95d717f03e7dcd4692f86a11286ae3323fa017796c8c2ecb83ca66185d",
+    "scripts/combat/combat_sim.gd": "5bca9f0367c8cdcb5f698f672e4f3b9b0689dc684f73a20a30edf97e4ee73e34",
+    "scripts/core/run_state.gd": "7864a8860951b5dcf1b924257fee4dd91d9c07888a97714865a863a63c98e06b",
+    "scripts/combat/bot_policy.gd": "a78c47c7c5002f06928cc8af373851fb81f853ec401f6fa929a28efd303d613b",
+    "tests/simulate_runs.gd": "361cf71e03712a882de74a3ec0fc36b0d430ac7554ab5127a4813a23932e6486",
+    "tests/test_ui.gd": "3e9e2ef20b99b7234e839351608debcdef34ac41ad07e218e183695407d92cbb",
+    "tests/test_profile_modes.gd": "b18042fc441c581615fa881c3531256bc098770a49d351c77aeaac2f1db09b14",
+    "tests/test_godot_download.py": "ebce6ec7a150d97f65b1c232b1cc63e01c74650eb445b8cd61828a29a5d92d3c",
+    "tools/run.ps1": "390ececce101af91df67e6b07b2973a44a75d1a4fa204b8b5f569ca378bceb30",
+    "tools/test.ps1": "47959f07c02eb12d18d236e26c01104724142f09d886eb3dbdaaea779f9140f7",
+    "tools/build_windows.ps1": "25f766d48dee0f986fa9383affb4cb799c81462bdb8e2bdafd7052f3d32b1438",
+    "tools/run.sh": "2267c436665b6daab2d2415c0dacdf728dbd4ecd0e9f0790dad0efeba8c9ec6c",
+    "tools/test.sh": "a58a42451f9986aa4810d297ac5c681b3f383dffdef0e9ed330e9fddef2789b5",
+    "tools/fetch_godot.py": "bfc2dca1928294bd7942a54d571b2beb273078cde6cc9e5cfa8c273da337f293",
+    "tools/fetch_windows_template.py": "6d9d885731e22031d5d269764de42293d3c884b8c74a3efa948eb678b47a1300",
+    "tools/godot_download.py": "2a9a7661b1ae9c674f80692351e15ba0d83ec955d2bc3f253a983cf1eca17bc7",
+    "tools/generate_assets.py": "0afa87468d374befd3ffed2817dddb558b744a93d123c0545544059c7bd06b11",
+    "tools/preview_impacts.gd": "cc54a71b934b0789528477a1801c8f161017e2b7ed29733deccecb016ba12730",
+    "tools/preview_runes.gd": "9764261eb91eb712aa28b3fec9e4cb53ba7bb6f7b9a3b6b67ed0b8436c4f75fe",
+    "tools/preview_shop.gd": "b51d305f3bff404b67800b118dd1e6a4fe6cec941cf5a6025575d59a4a2095ae",
+    "assets/manifest.json": "a93bc09266d909a59b0639168362cca78eabb25283b321c2d7665281a65834e8"
+  },
+  "evidence_sha256": {
+    "tests-bash.log": "dcc1494c65f937c7c04fbc192b2847f37b89575134ab39dc38b937965e19d6a6",
+    "tests-powershell.log": "e70aa4701d63ad30914c434c89ac750e80006a5f4cc3c4ec51342a426873e831",
+    "enemy-telegraphs-native.log": "7fc4353ac36749acbbb184c1f7bec68c2dcbfb3eb1d58faed3fe3bb3845604fc",
+    "simulation.jsonl": "0fc249aac582b40c874b6b350055e573c562400bc8273a3ea0552c8c4f6a6461",
+    "simulation.json": "e9f2f8e98ac6a29a28957b690489c02d2b52d6479f7a15b84dace04c682d67f5",
+    "benchmark.log": "8baa970e3fe3bf50381ede961cd0453875b40a21305f1f8f8482760f75262053",
+    "performance.json": "598ecf22d7ca9c0a4c64b601f4c2aa52b23b09bdbcfa30af9c585bb0b5015008",
+    "build-windows.log": "610af386e4981c1eb91c5b1f8788f49a6fccdc8c39d90b48a9eed7f73a5eff86",
+    "export-smoke.log": "0623f679c7f8ce23e969e2cdf5eb378fabbe6cc7e18b7b56e313472b604174d8"
+  },
+  "screenshots": {
+    "title.png": {
+      "width": 1280,
+      "height": 720,
+      "sha256": "485e1e7e870c897d0c95a6a01b621c4fbf98d0616843180da6b51efe2ebb7e23"
+    },
+    "result.png": {
+      "width": 1280,
+      "height": 720,
+      "sha256": "f1e633f1fb5f0e22cb8790ba2676ca3cf6c6f62b3ffb5b8e9aced341dc09ea06"
+    },
+    "shop-fullbag.png": {
+      "width": 1280,
+      "height": 720,
+      "sha256": "62c4caa1d845654ca0bb881b0444402e2809eb2660bda55cac711501f389d9a3"
+    },
+    "upgrades-boosted.png": {
+      "width": 1280,
+      "height": 720,
+      "sha256": "dc264020e394b4b108d42ab04b113604867dc53d3cce1adcd9af6c44648eb6dc"
+    },
+    "notice-boss.png": {
+      "width": 1280,
+      "height": 720,
+      "sha256": "203ec6cf1a9b12da06bcf639b44b73a88456628d21d1d6103244e4803d7738b6"
+    },
+    "art-showcase.png": {
+      "width": 1280,
+      "height": 720,
+      "sha256": "2b60d07175c5be3235c71ffbb5fab42f59f9765f32053552d11ea06a3ce501bb"
+    },
+    "impact-showcase.png": {
+      "width": 1280,
+      "height": 720,
+      "sha256": "cc29a57f51a108fd34cf345a5c2a1472766de6aeb541c24ca39d92470ecbe708"
+    },
+    "rune-showcase.png": {
+      "width": 1280,
+      "height": 720,
+      "sha256": "75ed31862c7e1a64b1630b7cdc04bcd05726a638190434ed4a39cf09f71a6c8e"
+    },
+    "export-smoke.png": {
+      "width": 1280,
+      "height": 720,
+      "sha256": "5e2e9ff15c0b059b4ce8bce690bd568b60d70f9ab0d7158df3952d54d0a6d4cb"
+    },
+    "benchmark.png": {
+      "width": 1280,
+      "height": 720,
+      "sha256": "f46381e1d9851848d3e77cfde41481c2b19ab4476cc7f99b833ae69bd05a9dc3"
+    }
+  },
+  "limits": [
+    "One Windows 11 device; no human playtest or Authenticode signing.",
+    "Historical macOS JSONL is absent; matched outcome and fingerprints do not prove full floating-point trace identity.",
+    "Process frame intervals include a single viewport screenshot during the sample; they are not GPU timings.",
+    "Hit totals and pool peaks include warmup; the final batch count is not a maximum or GPU drawcall count.",
+    "macOS build_macos.sh was not rerun on Windows."
+  ],
+  "passed": true
+}

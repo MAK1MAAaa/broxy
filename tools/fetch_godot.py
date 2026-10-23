@@ -1,62 +1,40 @@
 #!/usr/bin/env python3
-"""Fetch and verify the pinned official standard macOS editor into .tools/."""
-import concurrent.futures
-import hashlib
-import pathlib
-import re
-import shutil
+"""Fetch and verify the pinned official standard Windows or macOS Godot editor."""
+from __future__ import annotations
+
+import argparse
+import platform
 import subprocess
-import zipfile
+from pathlib import Path
 
-ROOT = pathlib.Path(__file__).resolve().parents[1]
-VERSION = "4.7.2-stable"
-NAME = "Godot_v%s_macos.universal.zip" % VERSION
-URL = "https://github.com/godotengine/godot/releases/download/%s/%s" % (VERSION, NAME)
-SIZE = 170622178
-PARTS = ROOT / ".tools" / "engine-parts"
-PARTS.mkdir(parents=True, exist_ok=True)
+from godot_download import MACOS_EDITOR, ROOT, VERSION, WINDOWS_EDITOR, extract_member, fetch_archive, validate_windows_x86_64
 
 
-def fetch(index):
-    start = SIZE * index // 10
-    end = SIZE * (index + 1) // 10 - 1
-    destination = PARTS / ("%02d.part" % index)
-    if destination.exists() and destination.stat().st_size == end - start + 1:
-        return destination
-    headers = PARTS / ("%02d.headers" % index)
-    subprocess.run([
-        "curl", "-L", "--fail", "--silent", "--show-error", "--retry", "3",
-        "--connect-timeout", "20", "--range", "%d-%d" % (start, end),
-        "-D", str(headers), URL + "?broxy_part=%d" % index, "-o", str(destination),
-    ], check=True)
-    ranges = re.findall(r"content-range:\s*bytes\s+(\d+)-(\d+)/(\d+)", headers.read_text(), re.I)
-    if not ranges or tuple(map(int, ranges[-1])) != (start, end, SIZE):
-        raise RuntimeError("Server returned an unexpected byte range for part %d" % index)
-    if destination.stat().st_size != end - start + 1:
-        raise RuntimeError("Truncated range %d" % index)
-    print("Editor part %d/10 complete" % (index + 1), flush=True)
-    return destination
-
-
-def main():
-    with concurrent.futures.ThreadPoolExecutor(max_workers=10) as pool:
-        parts = list(pool.map(fetch, range(10)))
-    archive = ROOT / ".tools" / "godot-verified.zip"
-    with archive.open("wb") as output:
-        for part in parts:
-            with part.open("rb") as source:
-                shutil.copyfileobj(source, output)
-    sums_path = ROOT / ".tools" / "SHA512-SUMS.txt"
-    if not sums_path.exists():
-        subprocess.run(["curl", "-L", "--fail", "--silent", "--show-error", URL.rsplit("/", 1)[0] + "/SHA512-SUMS.txt", "-o", str(sums_path)], check=True)
-    expected = next(line.split()[0] for line in sums_path.read_text().splitlines() if line.split()[-1] == NAME)
-    actual = hashlib.sha512(archive.read_bytes()).hexdigest()
-    if actual != expected:
-        raise RuntimeError("Official SHA-512 checksum mismatch")
-    target = ROOT / ".tools" / "godot"
-    target.mkdir(exist_ok=True)
-    subprocess.run(["ditto", "-x", "-k", str(archive), str(target)], check=True)
-    print("Verified official editor: %s" % (target / "Godot.app"), flush=True)
+def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--platform", choices=("windows", "macos"), default=None)
+    parser.add_argument("--workers", type=int, default=8)
+    parser.add_argument("--output", type=Path, default=ROOT / ".tools" / "godot")
+    args = parser.parse_args()
+    target_platform = args.platform or {"Windows": "windows", "Darwin": "macos"}.get(platform.system())
+    if target_platform is None:
+        parser.error("Host platform is unsupported; explicitly select --platform windows or --platform macos")
+    if args.workers < 1:
+        parser.error("--workers must be positive")
+    asset = WINDOWS_EDITOR if target_platform == "windows" else MACOS_EDITOR
+    archive = fetch_archive(asset, args.workers)
+    args.output.mkdir(parents=True, exist_ok=True)
+    if target_platform == "windows":
+        for suffix in ("win64.exe", "win64_console.exe"):
+            filename = f"Godot_v{VERSION}_{suffix}"
+            executable = args.output / filename
+            extract_member(archive, filename, executable)
+            validate_windows_x86_64(executable)
+        print(f"Verified official editor: {executable}", flush=True)
+    else:
+        # ditto preserves macOS bundle permissions and symbolic links.
+        subprocess.run(["ditto", "-x", "-k", str(archive), str(args.output)], check=True)
+        print(f"Verified official editor: {args.output / 'Godot.app'}", flush=True)
 
 
 if __name__ == "__main__":

@@ -26,9 +26,14 @@ func _test() -> void:
 	if not selected.is_empty():
 		_mode = selected[0].trim_prefix("--")
 	var diagnostic: bool = not selected.is_empty()
-	var directory: String = "/private/tmp/broxy-profile-mode-%d-%d" % [OS.get_process_id(), Time.get_ticks_usec()]
+	var temporary: DirAccess = DirAccess.create_temp("broxy-profile-mode", true)
+	_check(temporary != null, "The test creates a unique system temporary profile directory")
+	if temporary == null:
+		quit(1)
+		return
+	var directory: String = temporary.get_current_dir()
+	temporary = null
 	var path: String = directory.path_join("profile.cfg")
-	_check(DirAccess.make_dir_recursive_absolute(directory) == OK, "The test creates a unique temporary profile directory")
 	var seed_profile := ConfigFile.new()
 	for key: String in SAVED_SETTINGS:
 		seed_profile.set_value("settings", key, SAVED_SETTINGS[key])

@@ -7,4 +7,11 @@ done
 for BROXY_DIAGNOSTIC in --smoke --autoplay --shop-preview --benchmark --capture-only; do
   "$BROXY_ROOT/tools/run.sh" --headless --script res://tests/test_profile_modes.gd -- "$BROXY_DIAGNOSTIC"
 done
-PYTHONPYCACHEPREFIX="${TMPDIR:-/tmp}/broxy-pycache" python3 -m unittest discover -s "$BROXY_ROOT/tests" -p 'test_shop_analysis.py'
+if [ -n "${BROXY_PYTHON:-}" ]; then
+  BROXY_PYTHON_BIN=$BROXY_PYTHON
+elif command -v python3 >/dev/null 2>&1; then
+  BROXY_PYTHON_BIN=python3
+else
+  BROXY_PYTHON_BIN=python
+fi
+PYTHONPYCACHEPREFIX="${TMPDIR:-/tmp}/broxy-pycache" "$BROXY_PYTHON_BIN" -m unittest discover -s "$BROXY_ROOT/tests" -p 'test_*.py'
