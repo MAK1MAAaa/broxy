@@ -1,6 +1,6 @@
 # 原型验收记录
 
-最新符文装入预览、受击材质和30局配对结果见 [符文工坊验收](rune-workbench.md)。此前遗物购前对照与尾迹见 [祭坛对照验收](altar-comparison.md)，新增七法器/十遗物见 [内容扩充记录](content-expansion.md)。下列平台适配和 macOS 记录保留其原提交的验证范围。
+最新商店锁定、14181条断言、原生满构筑与30局配对结果见 [商店锁定验收](shop-locks.md)。此前符文装入预览与受击材质见 [符文工坊验收](rune-workbench.md)，遗物购前对照与尾迹见 [祭坛对照验收](altar-comparison.md)，新增七法器/十遗物见 [内容扩充记录](content-expansion.md)。下列平台适配和 macOS 记录保留其原提交的验证范围。
 
 Windows 分支的独立复现结果见 [Windows 验证记录](windows.md)，原始日志与截图保存在本地 `reports/windows/`。下列 macOS 历史结果和指纹保留原样。
 

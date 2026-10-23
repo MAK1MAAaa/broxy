@@ -6,6 +6,7 @@ signal changed
 const WEAPON_CAP: int = 4
 const RUNE_BAG_CAP: int = 4
 const RELIC_CAP: int = 3
+const SHOP_LOCK_CAP: int = 2
 const BASE_STATS: Dictionary = {
 	"max_health": 100.0,
 	"damage": 1.0,
@@ -49,6 +50,7 @@ var _wave_income: int = 0
 var _wave_finished: bool = false
 var _upgrade_bonuses: Dictionary = {}
 var _upgrade_options: Array[Dictionary] = []
+var _locked_offers: Dictionary = {}
 
 func begin(seed_value: int, starter: String) -> void:
 	_run_seed = seed_value
@@ -76,6 +78,7 @@ func begin(seed_value: int, starter: String) -> void:
 	_wave_finished = false
 	_upgrade_bonuses.clear()
 	_upgrade_options.clear()
+	_locked_offers.clear()
 	var starting_weapon: String = starter if GameCatalog.weapon(starter) != null else "bone"
 	loadout.append({"id": starting_weapon, "paid": 0, "rune": {}})
 	changed.emit()
@@ -159,16 +162,101 @@ func next_wave() -> void:
 	changed.emit()
 
 func generate_shop() -> void:
+	_prune_locked_offers()
 	offers.clear()
+	var guaranteed_kind: String = "weapon" if wave == 1 else "rune" if wave == 2 else ""
+	var guarantee_satisfied: bool = false
+	for locked: Dictionary in _locked_offers.values():
+		if str(locked.get("kind", "")) == guaranteed_kind:
+			guarantee_satisfied = true
 	for index: int in range(4):
+		if _locked_offers.has(index):
+			var retained: Dictionary = (_locked_offers[index] as Dictionary).duplicate(true)
+			retained["price"] = shop_price(_offer_definition(retained))
+			offers.append(retained)
+			_locked_offers[index] = retained.duplicate(true)
+			continue
 		var kind: String = _random_offer_kind()
-		if index == 0 and wave == 1:
-			kind = "weapon"
-		elif index == 0 and wave == 2:
-			kind = "rune"
+		if not guaranteed_kind.is_empty() and not guarantee_satisfied:
+			kind = guaranteed_kind
+			guarantee_satisfied = true
 		offers.append(_make_offer(kind))
 	last_error = ""
 	changed.emit()
+
+func is_offer_locked(index: int) -> bool:
+	if index < 0 or index >= offers.size() or not _locked_offers.has(index):
+		return false
+	var retained: Dictionary = _locked_offers[index]
+	return _valid_locked_offer(retained) and not bool(offers[index].get("sold", false)) and _same_offer(offers[index], retained)
+
+func locked_offer_count() -> int:
+	var count: int = 0
+	for retained: Dictionary in _locked_offers.values():
+		if _valid_locked_offer(retained):
+			count += 1
+	return count
+
+func shop_lock_error(index: int) -> String:
+	if index < 0 or index >= offers.size():
+		return "无效的商品。"
+	var offer: Dictionary = offers[index]
+	if bool(offer.get("sold", false)):
+		return "已售商品无法锁定。"
+	if _offer_definition(offer) == null:
+		return "商品不存在，无法锁定。"
+	if str(offer.get("kind", "")) == "relic" and int(relic_counts.get(str(offer.get("id", "")), 0)) >= RELIC_CAP:
+		return "该遗物已达到3层上限。"
+	if not is_offer_locked(index) and locked_offer_count() >= SHOP_LOCK_CAP:
+		return "最多锁定2件商品，请先解锁一件。"
+	return ""
+
+func set_offer_locked(index: int, locked: bool) -> bool:
+	if index < 0 or index >= offers.size():
+		return _fail("无效的商品。")
+	if not locked:
+		if not _locked_offers.has(index):
+			return true
+		_locked_offers.erase(index)
+	elif is_offer_locked(index):
+		return true
+	else:
+		var error: String = shop_lock_error(index)
+		if not error.is_empty():
+			return _fail(error)
+		_prune_locked_offers()
+		_locked_offers[index] = offers[index].duplicate(true)
+	last_error = ""
+	changed.emit()
+	return true
+
+func _offer_definition(offer: Dictionary) -> ContentDef:
+	var id: String = str(offer.get("id", ""))
+	match str(offer.get("kind", "")):
+		"weapon":
+			return GameCatalog.weapon(id)
+		"rune":
+			return GameCatalog.rune(id)
+		"relic":
+			return GameCatalog.relic(id)
+	return null
+
+func _valid_locked_offer(offer: Dictionary) -> bool:
+	if bool(offer.get("sold", false)) or _offer_definition(offer) == null:
+		return false
+	return str(offer.get("kind", "")) != "relic" or int(relic_counts.get(str(offer.get("id", "")), 0)) < RELIC_CAP
+
+static func _same_offer(first: Dictionary, second: Dictionary) -> bool:
+	return str(first.get("kind", "")) == str(second.get("kind", "")) and str(first.get("id", "")) == str(second.get("id", "")) and int(first.get("price", 0)) == int(second.get("price", 0))
+
+func _prune_locked_offers() -> void:
+	for index: int in _locked_offers.keys():
+		var retained: Dictionary = _locked_offers[index]
+		var invalid: bool = not _valid_locked_offer(retained)
+		if index >= 0 and index < offers.size():
+			invalid = invalid or bool(offers[index].get("sold", false)) or not _same_offer(offers[index], retained)
+		if invalid:
+			_locked_offers.erase(index)
 
 func purchase_error(index: int) -> String:
 	# UI previews share the transaction checks without emitting or changing state.
@@ -273,6 +361,8 @@ func buy_offer(index: int) -> bool:
 		relic_counts[item_id] = int(relic_counts.get(item_id, 0)) + 1
 		health = _health_after_relic_purchase(health, previous_max, stat("max_health"))
 	offer["sold"] = true
+	_locked_offers.erase(index)
+	_prune_locked_offers()
 	last_error = ""
 	changed.emit()
 	return true

@@ -29,3 +29,8 @@ reports/rune-lab/*.jsonl
 reports/rune-lab/*.png
 reports/rune-lab/*.import
 reports/rune-lab/*-raw.json
+reports/shop-locks/*.log
+reports/shop-locks/*.jsonl
+reports/shop-locks/*.png
+reports/shop-locks/*.import
+reports/shop-locks/*-raw.json

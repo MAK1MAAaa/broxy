@@ -18,13 +18,15 @@ Godot 4.7.2 普通版、带类型标注的 GDScript 开发的 macOS / Windows �
 
 商店商品直接显示魂屑不足、法器槽满、备用符文满或遗物满3层，同时保留售价和当前持有数量。暂不可买的商品仍可用键盘聚焦并查看拒绝反馈；已售商品跳过Tab。腾出容量或补足余额后，商品恢复正常购买提示。
 
+商店可免费锁定最多2件未售商品，刷新及跨波后保留在原位置；锁定不保价，下一波商店按当波规则重新定价。购买后自动解锁，重开试炼清空锁定；缺钱、法器槽满或备用符文满仍可先锁定，已满3层的遗物报价自动解锁。卡片标题小按钮与旧金边框标出“已锁”，计数与说明复用现有行高。行为与验证见 [商店锁定](docs/shop-locks.md)。
+
 遗物商品新增“对照”：购前查看总属性、实际补血、余额和每个已装备法器的每枚伤害／标称间隔变化，明确显示裂砂漏的负面取舍。缺钱时标明缺额，已售或满层不假设第四层；Tab/Enter打开、Esc返回，查询不影响状态和随机数。友方尾迹主体与外晕同时收窄、降低透明度，保留弹体头部、新法器轮廓及敌方危险层。设计和验证见 `docs/altar-comparison.md`。
 
 选择备用符文后，可在各法器槽打开“预览”，通过键盘查看装入后触发时机、逐弹目标上限及旧符文返袋。月镰爆破明确需要第二次直接命中；满袋替换显示4→4，装入空槽显示4→3，原按钮仍可直接装入。敌人受击改为最初60毫秒短促衰减，保留寒霜状态色，减少连续命中后的整身泛白。规则、指纹及验证见 `docs/rune-workbench.md`。
 
 ## 直接游玩
 
-Windows x86_64 版本由 `feature/windows` 分支构建，入口为 `build/Embers-windows-x86_64/Embers.exe`，分发包为 `build/Embers-windows-x86_64.zip`。解压后保留同目录的 `Embers.pck` 与 `licenses/`，再启动游戏；当前包包含7种法器、10种遗物、`engraved-05` 静态美术、遗物购前对照、符文装入预览与改进后的尾迹及受击材质。Windows 使用微软雅黑显示中文。最初Windows适配验证见 `docs/windows.md`，内容扩充见 `docs/content-expansion.md`，最近验收见 `docs/rune-workbench.md`，下文的Mac历史证据保留原样。
+Windows x86_64 版本由 `feature/windows` 分支构建，入口为 `build/Embers-windows-x86_64/Embers.exe`，分发包为 `build/Embers-windows-x86_64.zip`。解压后保留同目录的 `Embers.pck` 与 `licenses/`，再启动游戏；当前包包含7种法器、10种遗物、`engraved-05` 静态美术、商店商品锁定、遗物购前对照、符文装入预览与改进后的尾迹及受击材质。Windows 使用微软雅黑显示中文。最初Windows适配验证见 `docs/windows.md`，内容扩充见 `docs/content-expansion.md`，最近验收见 `docs/shop-locks.md`，下文的Mac历史证据保留原样。
 
 macOS 内容扩充前的应用为 `build/Embers-impact.app`（压缩包`build/Embers-impact-mac-arm64.zip`），新增普通法器命中刻痕，包含此前的主角布料、竞技场石材、商店条件提示、HUD避让、强化预览、诊断档案隔离和幽焰追踪修复。旧`build/Embers.app`文件保留；若旧版正在运行，先结束再打开新版。选择骨针或幽焰开局。应用面向 Apple Silicon、macOS 13 及以上；已采用本地 ad-hoc 签名，尚未进行 Developer ID 公证。
 
@@ -48,6 +50,7 @@ macOS 内容扩充前的应用为 `build/Embers-impact.app`（压缩包`build/Em
 - 商店先选择备用符文，再点击目标法器装配。换下的符文回到背包；备用最多4份，免费拆换。
 - 出售返还实际购买价的50%，向下取整。不能卖掉最后一件法器；符文背包满时，出售带符文法器或卸下符文会被完整拒绝。
 - 十种遗物各最多3层。新增月蚀吊坠（伤害/攻速）、巡礼靴（移速/拾取）、骨盾印（护甲/生命）与裂砂漏（攻速提升但伤害下降）。每次商店4件商品；首店保证法器，第二店保证符文。刷新价格随本店刷新次数增长，下波重置。
+- 最多锁定2件未售商品，锁定与解锁免费，不增加刷新次数。锁定商品在刷新与跨波时保留原槽，下一波重算售价；购买成功、遗物达到3层或重开试炼会清除对应锁定。首店法器和第二店符文的保底仍生效，已有锁定满足保底类别时计入，否则从未锁槽补足。
 - 本地仅保存设置和最佳成绩，没有永久属性成长、联网、中途续局或内购。
 
 ## 从源码运行
@@ -143,17 +146,17 @@ python3 -m unittest discover -s tests -p 'test_shop_analysis.py'
 ./tools/run.sh -- --benchmark --benchmark-content --seconds=300
 ```
 
-也可以用 `./tools/test.sh` 一次运行二十七套Godot行为测试及Python测试。当前符文装入预览与受击材质版在Windows通过10345条Godot无界面断言与22项Python测试；ProfileModes的六种入口分进程执行。专项装入预测2986条、原生装入UI63条、受击调色513条断言通过，完整记录见 `docs/rune-workbench.md` 与 `reports/rune-lab/validation.json`。此前6783条购前对照和3099条内容扩充的记录分别保留在 `reports/altar/validation.json`、`reports/content/validation.json`。系统字体验证需要正常桌面字体访问权限。
+也可以用 `./tools/test.sh` 一次运行三十套Godot行为测试及Python测试。当前商店锁定版在Windows通过14181条Godot无界面断言与22项Python测试；ProfileModes的六种入口分进程执行。锁定规则3763条、锁定UI58条、Main跨波流程15条通过，另在原生窗口重跑锁定UI、跨波流程、遗物对照与符文预览；完整记录见 `docs/shop-locks.md` 与 `reports/shop-locks/validation.json`。此前符文预览、购前对照和内容扩充的记录分别保留在 `reports/rune-lab/validation.json`、`reports/altar/validation.json`、`reports/content/validation.json`。系统字体验证需要正常桌面字体访问权限。
 
 性能测试会打开明确标记的窗口，预热5秒后采样300秒，保持300敌人、至少600投射物与200掉落，并输出 `reports/performance.json`。`--benchmark-content`使用全部7件法器、3类符文的真实伤害弹体，标记为`content-feedback`；`--benchmark-runes`保留原4件法器的`rune-feedback`场景；省略二者为历史`baseline`。不同场景独立记录，不能直接推断性能差异来源。报告记录实际武器来源、默认设置、持久化状态与本次种子，内容场景另记录各法器实际伤害和末段弹体家族。测试时保持窗口可见、电脑未锁屏，避免其他图形负载；保留历史记录时先备份原性能JSON。
 
-本轮符文预览与受击材质版Windows七法器300秒原生采样通过：平均61.368 FPS、P99 28.011ms，末尾300敌人／600弹体／200掉落，见 `reports/rune-lab/performance.json`。上一轮61.204 FPS记录仍保留在 `reports/altar/performance.json`；各次种子不同，这是单台设备的独立验收，不把差额归因于单项视觉调整。
+最近一次完整压力采样为符文预览与受击材质版：Windows七法器300秒平均61.368 FPS、P99 28.011ms，末尾300敌人／600弹体／200掉落，见 `reports/rune-lab/performance.json`。本轮仅修改商店状态与界面，战斗源码、素材和数值保持，未重复300秒采样。此前61.204 FPS记录仍保留在 `reports/altar/performance.json`；各次种子不同，不把差额归因于单项视觉调整。
 
 此前内容扩充版Windows七法器300秒原生采样通过：平均60.710 FPS、P99 28.418ms，末尾300敌人／600弹体／200掉落；结果见 `reports/content/performance.json`。首次54.60 FPS的失败采样、弹体几何缓存优化与同夹具CPU微测一并保留在 `docs/content-expansion.md`，各次原生采样种子不同，不把全部帧率差额归因于单项修改。
 
 内容扩充前的macOS源码`2a6c4b9`曾在Apple M5完成5分钟原生真实符文场景采样：27,895帧，平均92.979 FPS、P99帧间隔26.191毫秒，达到≥58 FPS / ≤33毫秒门槛，退出0。末尾300敌人/600弹体/200掉落；主/次命中473,662/1,223,944，刻痕池峰值32、容量32，结束时最近准备7个非空批次。峰值和命中累计含5秒预热，末段批次不是全程最大或GPU drawcall数。默认设置且不读写个人档案，四次CUA观察确认可见窗口和采样推进。结果见`reports/impact-performance-validation.json`；原实现验证`reports/impact-validation.json`保留当时锁屏未测的历史状态。该历史补测只记录性能，未更改源码/素材、重跑30局或重新打包，当时交付同一Embers-impact.app。旧e64bb18的90.847 FPS/P99 25.400毫秒原样另存`performance-before-impacts.json`与`benchmark-before-impacts.log`，跨种子与跨版本差额不能单独归因于刻痕。详见`docs/verification.md`。
 
-完整模拟复用正式 `RunState`、`CombatSim.step` 与商店价格，没有额外金币、无敌或专用 Boss 数值。当前核心版本`467908d843ec`在seed2026—2035、三类符文共30局中23胜7败；与前版`15a5ba98e084`相比，排除内容和运行脚本两个指纹字段后，完整购物与战斗轨迹等全部输出逐字段一致，见 `reports/rune-lab/simulation-comparison.json`。运行脚本仅将共享符文规则纳入内容指纹，策略代码字节保持，因旧散列同时包含整份运行脚本，策略哈希自然更新。旧机器人未购买新遗物，其预测和实际购买由专项断言核对；该批次不代表真人胜率或完整遗物搭配平衡。此前购买校验阶段的29胜1败及轨迹证明保留在 `docs/simulation.md`、`reports/purchase-simulation.json`；试玩流程见 `docs/playtest.md`，持续记录见 `docs/optimization-log.md`。
+完整模拟复用正式 `RunState`、`CombatSim.step` 与商店价格，没有额外金币、无敌或专用 Boss 数值。当前核心版本`724650407895`在seed2026—2035、三类符文共30局中23胜7败；与前版`467908d843ec`相比，仅排除`balance_version`后，完整购物与战斗轨迹等全部输出逐字段一致，见 `reports/shop-locks/simulation-comparison.json`。策略及运行脚本字节保持，policy仍为`orbit-avoid-v1/shop-v1+1d336100ecaa`。旧机器人不使用锁定，也未购买四种新遗物；该批次只证明未锁定路径的样本兼容，不代表锁定策略或真人通关率，相关交易由专项断言验证。此前购买校验阶段的29胜1败及轨迹证明保留在 `docs/simulation.md`、`reports/purchase-simulation.json`；试玩流程见 `docs/playtest.md`，持续记录见 `docs/optimization-log.md`。
 
 模拟还会记录完整商店报价、余额、候选评分及停止购买/刷新原因。`tools/analyze_shop_runs.py`可生成观测分析，并用`--baseline`严格比较旧对局字段和购物trace。商店观测阶段的30局在新增观测前后旧字段完全一致，证据见`reports/shop-analysis.json`；该结果只证明所测样本不受观测影响，不表示此前的战斗修复没有改变轨迹。
 

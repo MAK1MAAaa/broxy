@@ -633,7 +633,16 @@ func _build_shop() -> void:
 	goods.custom_minimum_size.x = 670
 	goods.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	columns.add_child(goods)
-	_section_heading(goods, "本次供奉", GOLD, 18)
+	var stock_heading := HBoxContainer.new()
+	stock_heading.add_theme_constant_override("separation", 14)
+	goods.add_child(stock_heading)
+	var lock_count := _label("本次供奉 · 已锁 %d / %d" % [run.locked_offer_count(), RunState.SHOP_LOCK_CAP], 18, GOLD)
+	lock_count.name = "ShopLockCount"
+	stock_heading.add_child(lock_count)
+	var stock_rule := RitualRule.new()
+	stock_rule.custom_minimum_size.x = 28
+	stock_rule.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	stock_heading.add_child(stock_rule)
 	var grid := GridContainer.new()
 	grid.columns = 2
 	grid.add_theme_constant_override("h_separation", 12)
@@ -663,8 +672,12 @@ func _build_shop() -> void:
 	var footer := HBoxContainer.new()
 	footer.add_theme_constant_override("separation", 12)
 	shell.add_child(footer)
-	footer.add_child(_shop_button("刷新  %d 魂屑" % run.reroll_cost(), _reroll, "reroll", Vector2(180, 46)))
-	var hint := _label("拆换符文保留原符文；出售不可撤回。", 14, MUTED)
+	var reroll := _shop_button(("刷新未锁  %d 魂屑" if run.locked_offer_count() > 0 else "刷新  %d 魂屑") % run.reroll_cost(), _reroll, "reroll", Vector2(180, 46))
+	reroll.add_theme_font_size_override("font_size", 16)
+	reroll.tooltip_text = "刷新仅替换未锁定商品；锁定商品跨波保留，价格随波次调整。"
+	footer.add_child(reroll)
+	var hint := _label("锁定跨波保留，价格随波次调整；拆换免费，出售不可撤回。", 14, MUTED)
+	hint.name = "ShopLockGuide"
 	hint.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	footer.add_child(hint)
 	var next := _shop_button("开始下一波", _next_wave, "next_wave", Vector2(210, 46))
@@ -680,7 +693,9 @@ func _offer_card(parent: Control, index: int) -> void:
 	var card := _panel(parent, Vector2(320, 190))
 	card.name = "Offer%d" % (index + 1)
 	var category: Color = {"weapon": GOLD, "rune": PURPLE, "relic": CYAN}.get(kind, GOLD)
-	var border := _box(Color("171c29"), Color(category, 0.48))
+	var locked: bool = run.is_offer_locked(index)
+	var sold: bool = bool(offer.get("sold", false))
+	var border := _box(Color("171c29"), Color(GOLD, 0.74) if locked else Color(category, 0.48))
 	border.border_width_left = 3
 	card.add_theme_stylebox_override("panel", border)
 	card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -694,9 +709,35 @@ func _offer_card(parent: Control, index: int) -> void:
 	names.add_theme_constant_override("separation", 2)
 	names.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	name_row.add_child(names)
+	var title_row := HBoxContainer.new()
+	title_row.add_theme_constant_override("separation", 6)
+	names.add_child(title_row)
 	var name_label := _label(definition.display_name, 21, BONE)
+	name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_enable_tooltip(name_label, definition.description)
-	names.add_child(name_label)
+	title_row.add_child(name_label)
+	var lock_marker := _label("已锁" if locked else "", 11, GOLD)
+	lock_marker.name = "OfferLockMarker%d" % index
+	lock_marker.custom_minimum_size.x = 22
+	title_row.add_child(lock_marker)
+	var lock_button := _shop_button("已售" if sold else "解锁" if locked else "锁定", _toggle_offer_lock.bind(index, _shop_epoch, offer.duplicate(true), locked), "lock:%d" % index, Vector2(56, 24))
+	lock_button.name = "OfferLock%d" % index
+	lock_button.add_theme_font_size_override("font_size", 12)
+	lock_button.disabled = sold
+	lock_button.focus_mode = Control.FOCUS_NONE if sold else Control.FOCUS_ALL
+	lock_button.tooltip_text = "已售商品不能锁定。" if sold else "解锁后，下次刷新会替换此商品。" if locked else "锁定此商品，刷新和跨波保留；价格随波次调整，最多锁定%d件。" % RunState.SHOP_LOCK_CAP
+	if not sold and not locked:
+		var lock_error: String = run.shop_lock_error(index)
+		if not lock_error.is_empty():
+			lock_button.tooltip_text += "\n" + lock_error
+	for state: String in ["normal", "hover", "pressed", "disabled", "focus"]:
+		var style := _box(Color(0, 0, 0, 0) if state == "focus" else Color("292834") if locked else PANEL_LIGHT, CYAN if state == "focus" else GOLD if locked else Color(GOLD, 0.45))
+		style.content_margin_left = 6
+		style.content_margin_right = 6
+		style.content_margin_top = 2
+		style.content_margin_bottom = 2
+		lock_button.add_theme_stylebox_override(state, style)
+	title_row.add_child(lock_button)
 	var ownership: String = ""
 	match kind:
 		"weapon": ownership = "法器%d/%d槽" % [run.loadout.size(), RunState.WEAPON_CAP]
@@ -714,7 +755,6 @@ func _offer_card(parent: Control, index: int) -> void:
 		stats.name = "WeaponStats"
 		_enable_tooltip(stats, _weapon_stats_note())
 		body.add_child(stats)
-	var sold := bool(offer.get("sold", false))
 	var price: int = int(offer.get("price", 0))
 	var error: String = run.purchase_error(index)
 	var blocked: bool = not sold and not error.is_empty()
@@ -754,6 +794,18 @@ func _offer_card(parent: Control, index: int) -> void:
 		actions.add_child(compare)
 	else:
 		body.add_child(buy)
+
+
+func _toggle_offer_lock(index: int, epoch: int, expected_offer: Dictionary, was_locked: bool) -> void:
+	if _screen != "shop" or _refresh_queued or not _overlay_mode.is_empty() or epoch != _shop_epoch:
+		return
+	if run == null or index < 0 or index >= run.offers.size() or run.offers[index] != expected_offer or run.is_offer_locked(index) != was_locked:
+		return
+	_requested_shop_focus = "lock:%d" % index
+	var success: bool = run.set_offer_locked(index, not was_locked)
+	var definition: ContentDef = _definition(str(expected_offer["kind"]), str(expected_offer["id"]))
+	var message: String = "%s已解锁，下次刷新可替换。" % definition.display_name if was_locked else "%s已锁定（%d / %d）；跨波保留，价格随波次调整。" % [definition.display_name, run.locked_offer_count(), RunState.SHOP_LOCK_CAP]
+	_handle_action(success, "", message)
 
 
 func _compare_relic(index: int, epoch: int, expected_offer: Dictionary) -> void:

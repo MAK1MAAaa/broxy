@@ -1,0 +1,129 @@
+{
+  "schema_version": 1,
+  "scope": "Shop reservations for weapon, rune and relic build planning; ongoing goal remains active",
+  "created_at_utc": "2026-10-23T13:40:29.146918+00:00",
+  "date_local": "2026-10-23",
+  "source_base_commit": "15b992cc833d9b3c0cb250b02f18e9049c0654ff",
+  "source_state": "Verified working tree before local shop-reservation commit",
+  "engine": "4.7.2.stable.official.ed1daf0bf",
+  "tests": {
+    "godot_headless_assertions": 14181,
+    "python_tests": 22,
+    "suite_invocations": 35,
+    "lock_core_assertions": 3763,
+    "lock_ui_assertions": 58,
+    "main_flow_assertions": 15,
+    "native_assertions": {
+      "shop_lock_ui": 58,
+      "shop_lock_flow": 15,
+      "rune_equip_comparison": 63,
+      "relic_comparison": 50
+    },
+    "all_passed": true
+  },
+  "simulation": {
+    "runs": 30,
+    "wins": 23,
+    "losses": 7,
+    "core_version": "prototype-0.1.0+724650407895",
+    "baseline_core_version": "prototype-0.1.0+467908d843ec",
+    "policy_version": "orbit-avoid-v1/shop-v1+1d336100ecaa",
+    "all_fields_except_balance_version_equal": true,
+    "policy_source_audit": {
+      "bot_policy_bytes_unchanged": true,
+      "runner_bytes_unchanged": true
+    }
+  },
+  "native_visual_review": {
+    "cases": [
+      "full",
+      "repriced",
+      "bought"
+    ],
+    "viewport": [
+      1280,
+      720
+    ],
+    "four_weapons_four_runes_ten_relic_types": true,
+    "visible_locks": [
+      2,
+      2,
+      1
+    ],
+    "notifications_settled_before_capture": true,
+    "reviewed_by_root_and_art_agent": true,
+    "blocking_findings": 0
+  },
+  "performance": {
+    "rerun_this_iteration": false,
+    "reason": "Only shop state and shop UI changed; combat sources, assets, data and main loop are unchanged.",
+    "previous_report": "reports/rune-lab/performance.json",
+    "previous_report_sha256": "a95fbacfb4fce6c3accdcce5463a0bbf34d6bcb4ef8f5999782cb664244259b0",
+    "previous_sample_seconds": 300
+  },
+  "static_assets": {
+    "count": 42,
+    "art_revision": "engraved-05",
+    "identical_to_previous_commit": true
+  },
+  "distribution": {
+    "zip_crc_passed": true,
+    "x86_64_valid": true,
+    "smoke_exit_code": 0,
+    "previous_zip_preserved": true,
+    "sha256": {
+      "build/Embers-windows-x86_64/Embers.exe": "d34d36f3be1a6c49c56525ae86469b92e4f417ddf0b43cf00dd80c385c4b0562",
+      "build/Embers-windows-x86_64/Embers.pck": "18997b09d3b7c6e44ec98c0dde67503a5a9d5e4872c85a8b2a3f03c822902d88",
+      "build/Embers-windows-x86_64.zip": "74a9558e7a282c640176cd0da5f0158094352f331646dd92d14d555722c5d9a8"
+    }
+  },
+  "source_sha256": {
+    ".gitignore": "4fc7007ea83efc959f01f01eefe33a713f698f3b87350e1479ac75f86922608f",
+    "README.md": "ccfb296cdfe41a0cb3fe211d73dfa579fac5b495c6eddc16b811100b69e53813",
+    "docs/optimization-log.md": "ab1a48613778e74171d344fb6f5c44f63bbf407ee6e9de077151dc2f14ebb7b0",
+    "docs/shop-locks.md": "ce75b450df5241900c1b6b97a2e940cc2494979dd53f0f19c4b043f4388a56a2",
+    "docs/verification.md": "b46b9d6b489358b14d1e7989e96caddd69e04a2376284c8048cf8ec2f506e182",
+    "scripts/core/run_state.gd": "045a3776223d29d7fe691ea346d9ba17d5159197f2b6977ee77a5eb188daba38",
+    "scripts/ui/game_ui.gd": "142b4e988486a86e8798a86d26d2396714d388c33c62dacb76ccef7316851dae",
+    "tests/test_shop_lock_flow.gd": "6ce7a70ed6321de506ce84528803b399d2abff307f8aebd000bdb507d431a907",
+    "tests/test_shop_lock_flow.gd.uid": "90344332258cc7c10f485b8362cd3ec7cae65f801d05898da81f15bfc4933659",
+    "tests/test_shop_lock_ui.gd": "86f38493cdf8cecb57c915af10ca07acd9e1feaf4461ea59e05fb4f90dc8e574",
+    "tests/test_shop_lock_ui.gd.uid": "5534154ac7fbe365a11d8116ed8faef292a46d14ca467ef5e7fba9682205454c",
+    "tests/test_shop_locks.gd": "c64203d8057b845693f4d2ccaa8f50ab863753793d075f7586a79396e778889b",
+    "tests/test_shop_locks.gd.uid": "f7dd458f2b3329ee623df237c7473344d4d8f20dde4acf949f06f3f9b6791031",
+    "tools/preview_shop_locks.gd": "1af71dfa30b07e75b926c6962d1e778d9a4d0bb80c8e4c0b920b47b03cd540ec",
+    "tools/preview_shop_locks.gd.uid": "0743cc4de9020421a03fe49aa6d1ad529d31f3b1b30c6ad5f484a00fd03610c9",
+    "tools/test.ps1": "2cf575e5a43a9718bf4160fb7d919b68a246ada16af03da548d66e3cb8cdae51",
+    "tools/test.sh": "b958e3cfdd90f25a353fe6064960aeba52b060356b3771377cad8da7fb350d70"
+  },
+  "evidence_sha256": {
+    "tests.log": "deea6d494bf0dd63543d15b4ad518e47831335528afa1c475ca8124a12f579a1",
+    "shop_locks-headless.log": "6acd718b04e76a12550d505ea22e01fca46f0714fcbe566efa98cda7f36038b4",
+    "shop_lock_ui-native.log": "1e4acd2b719f9194120c01cf4768e899cd270a3b10cb12b1a1d4cf8775eb14ec",
+    "shop_lock_flow-native.log": "07eda422e337d5d3b952c9b4d5eb2832c129fe846bfcd16913330d9b26470bbd",
+    "rune_equip_comparison-native.log": "2b1ac1a48a949ba1e3a7eb3b54239e8cd7290fb9a01bd9aea0192fda1b5d61c2",
+    "relic_comparison-native.log": "c8b98aa0ed884b61ae7d4b1c2742e1ecea5eb79e945f3f07900732602a74b7fa",
+    "simulation.jsonl": "7c7ae9042b107df5e1e848f0096388b9dc792da08923795bc62e65748e4db5b6",
+    "simulation-comparison.json": "201a1dbc668c68dd446861164e4fe6d7fae813f17ff009db37efec6e2a9684bb",
+    "ui-fixtures.json": "26040420a0432fb1b6dab39a4ac960448c4f6a9c8846cd35863ef57bdd48abff",
+    "build.log": "3b71e95c6667d8c9fcbed3e8e82d5c8445e0fabfc7d4244d0097a0a93a75def2",
+    "export-smoke.log": "db3152be1caf2fc609684bf68ed795c2cf2ab18b93d6207ed6b3356bd4a2affc",
+    "full.log": "f26015a46ed170b73b714957f4250bd93a37a68ffa20903fed4fe0f76f1cbe55",
+    "repriced.log": "1f02dd791df040425ee209b0b40f1eae103fe4a78bfffb244cf8a994ff23dd54",
+    "bought.log": "d501f8198b79c53a04033811d0f0bfad01261481698bff1032b40dd081d2a958"
+  },
+  "screenshots_sha256": {
+    "full.png": "e0605272b9c3b7b02c2017e2a7de189ea1e22b724bee970c3cdef034b0ccf53d",
+    "repriced.png": "d2bde560fc962bcfc1fd638082014620dac7a04db2908fd2bb8fca9a049c4bac",
+    "bought.png": "2cb70cbe297c6307227146f7fee594beb08791a673c78e87e22513615cae1d30",
+    "export-smoke.png": "ec869bd681c9a14944500a40546f6f6f07f1067ce013b10a13f40ffe2bf0d1b1"
+  },
+  "limits": [
+    "Legacy policy does not reserve offers; this sample proves no-lock compatibility, not a winning reservation strategy.",
+    "Main-scene lock flow accelerates wave completion and does not establish normal-run balance.",
+    "Native images are fixed full-build shop fixtures and do not replace human playtesting.",
+    "The previous 300-second combat performance sample was preserved, not rerun or attributed to shop reservations.",
+    "macOS build was not rerun on Windows; Authenticode signing is not configured."
+  ],
+  "passed": true
+}
