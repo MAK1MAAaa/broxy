@@ -1,6 +1,6 @@
 # 秘术余烬 / Embers
 
-Godot 4.7.2 普通版、带类型标注的 GDScript 开发的 macOS 单人割草原型。围绕四个法器槽与可拆换行为符文，完成短波次战斗、经验强化、商店改装和最终 Boss。
+Godot 4.7.2 普通版、带类型标注的 GDScript 开发的 macOS / Windows 单人割草原型。围绕四个法器槽与可拆换行为符文，完成短波次战斗、经验强化、商店改装和最终 Boss。
 
 当前美术版本为 `engraved-04`：主角披风和衣摆使用更连贯的灰紫亮面与深色褶谷，在68px游戏尺寸下拉开布料层次；面具、金链与原轮廓保持。竞技场沿用上一轮低对比石材，角色和敌方预警优先；保留轻微呼吸、倾身和脚下符印。中文优先使用系统 Hiragino Sans GB，避免本机苹方字体映射造成简体缺字。美术合同与来源见 `docs/art-direction.md`。
 
@@ -19,6 +19,8 @@ Godot 4.7.2 普通版、带类型标注的 GDScript 开发的 macOS 单人割草
 商店商品直接显示魂屑不足、法器槽满、备用符文满或遗物满3层，同时保留售价和当前持有数量。暂不可买的商品仍可用键盘聚焦并查看拒绝反馈；已售商品跳过Tab。腾出容量或补足余额后，商品恢复正常购买提示。
 
 ## 直接游玩
+
+Windows x86_64 版本由 `feature/windows` 分支构建，入口为 `build/Embers-windows-x86_64/Embers.exe`，分发包为 `build/Embers-windows-x86_64.zip`。解压后保留同目录的 `Embers.pck` 与 `licenses/`，再启动游戏；包含已合入的 macOS 玩法、美术与命中反馈。Windows 使用微软雅黑显示中文。Windows 复现结果单独记录在 `docs/windows.md`，下文的 Mac 历史证据保持原样。
 
 本轮最新应用为 `build/Embers-impact.app`（压缩包`build/Embers-impact-mac-arm64.zip`），新增普通法器命中刻痕，包含此前的主角布料、竞技场石材、商店条件提示、HUD避让、强化预览、诊断档案隔离和幽焰追踪修复。旧`build/Embers.app`文件保留；若旧版正在运行，先结束再打开新版。选择骨针或幽焰开局。应用面向 Apple Silicon、macOS 13 及以上；已采用本地 ad-hoc 签名，尚未进行 Developer ID 公证。
 
@@ -45,6 +47,34 @@ Godot 4.7.2 普通版、带类型标注的 GDScript 开发的 macOS 单人割草
 - 本地仅保存设置和最佳成绩，没有永久属性成长、联网、中途续局或内购。
 
 ## 从源码运行
+
+### Windows
+
+需要 Windows x86_64、Python 3.10+ 和 Windows PowerShell 5.1+（或 PowerShell 7）。在仓库根目录运行：
+
+```powershell
+python tools/fetch_godot.py
+python tools/fetch_windows_template.py
+powershell -NoProfile -ExecutionPolicy Bypass -File tools/run.ps1 --headless --editor --import --quit
+powershell -NoProfile -ExecutionPolicy Bypass -File tools/run.ps1 --editor
+powershell -NoProfile -ExecutionPolicy Bypass -File tools/run.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File tools/test.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File tools/build_windows.ps1
+```
+
+下载入口使用 Python 标准库，校验官方 SHA-512，安装到被忽略的 `.tools/`，不会修改系统 Godot 安装。Windows 模板首次下载约 1.2 GiB，以校验完整官方归档；下载包和分片缓存在 `.tools/downloads/`，重跑可复用。`GODOT_BIN` 可覆盖引擎路径；`BROXY_PYTHON` 可为测试指定真实的 Python 可执行路径，Microsoft Store 占位入口不能运行测试。脚本会传播失败退出码。Git Bash 用户可继续使用 `./tools/run.sh` 和 `./tools/test.sh`。`.gitattributes` 将源码与素材保持为 LF，避免 shell 入口失效及模拟指纹因 Windows 换行转换而变化。
+
+原生验证命令如下。性能场景会运行 5 秒预热和 300 秒采样，并打开游戏窗口；运行时保持窗口可见，避免同时运行其他图形负载：
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File tools/run.ps1 --script res://tests/test_enemy_telegraphs.gd
+powershell -NoProfile -ExecutionPolicy Bypass -File tools/run.ps1 --headless --script res://tests/simulate_runs.gd '--' --seed=2026 --count=10
+powershell -NoProfile -ExecutionPolicy Bypass -File tools/run.ps1 '--' --benchmark --benchmark-runes --seconds=300
+```
+
+PowerShell 中的用户参数分隔符需写为 `'--'`，防止被 PowerShell 吞掉。性能程序默认写入 `reports/performance.json`；保留已有 macOS 记录时，先备份该文件，完成后把 Windows 结果另存，再恢复原文件。诊断参数仍不读写个人档案。Windows 普通游戏档案位于 `%APPDATA%/Godot/app_userdata/秘术余烬/`。构建尚未配置 Authenticode 签名，首次运行可能显示 Windows 的发布者提示。
+
+### macOS
 
 项目内已准备官方引擎和匹配模板，均放在被忽略的 `.tools/`，不修改系统应用目录。使用其他引擎路径时设置 `GODOT_BIN`。
 
@@ -114,7 +144,9 @@ python3 -m unittest discover -s tests -p 'test_shop_analysis.py'
 
 预警/HUD可用 `./tools/run.sh --script res://tools/preview_threats.gd` 与追加 `-- --view=boss` 检查；分别保存 `reports/threat-showcase.png` 和 `reports/boss-deadline.png`。这是42个正式固定步推进后冻结的无存档陈列，Boss剩余9秒为排版夹具，不是实际打了81秒。
 
-商店数值与排版可用 `./tools/run.sh --script res://tools/preview_shop.gd -- --view=base` 检查；也支持 `boosted`、`fullbag` 和 `transactions`，追加 `--hold` 留在交互窗口。固定夹具通过正式购买接口布置库存，提供独立测试预算，不读写个人存档，不代表正式对局或难度验收。
+商店数值与排版可用 `./tools/run.sh --script res://tools/preview_shop.gd -- --view=base` 检查；也支持 `boosted`、`fullbag` 和 `transactions`，追加 `--hold` 留在交互窗口，或用 `--capture=path` 将截图另存。固定夹具通过正式购买接口布置库存，提供独立测试预算，不读写个人存档，不代表正式对局或难度验收。
+
+素材生成器显式写入 UTF-8/LF；Windows 上两次重建的 35 项素材及清单/来源文件与已提交的 macOS 版本逐字节一致。
 
 ## 项目组织
 
@@ -131,7 +163,7 @@ python3 -m unittest discover -s tests -p 'test_shop_analysis.py'
 
 普通命中陈列使用 `./tools/run.sh --script res://tools/preview_impacts.gd -- --output=res://reports/impacts-after.png`，可追加`--age-shift=0.05`或`0.12`检查淡出。12只高生命幽魂通过正式碰撞产生18次主命中；年龄偏移仅推进反馈，不能代表完整自然时间线，也不替代动态战斗或真人试玩。
 
-本地仓库使用`main`分支，每轮修改验证后创建本地commit；引擎、缓存、构建与大型原始报告由`.gitignore`排除。
+macOS 已完成的内容已合入 `main`；Windows 适配在 `feature/windows` 分支进行。每轮修改验证后创建本地 commit；引擎、缓存、构建与大型原始报告由 `.gitignore` 排除，不自动推送远程。
 
 强化排版使用 `./tools/run.sh --script res://tools/preview_upgrades.gd -- --view=base` 检查，也支持 `boosted` 与 `sequence --hold`。base种子2、boosted种子7覆盖六类强化；固定预算通过正式购买获得遗物，102魂屑结算两次升级，不读写个人档案。当前回归、原生操作与构建指纹见 `reports/choices-validation.json`。
 

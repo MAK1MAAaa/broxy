@@ -423,11 +423,18 @@ func _test_chinese_font(ui: GameUI) -> void:
 	_check(font.has_char("敌".unicode_at(0)), "The actual theme font covers the enemy character that previously rendered as a box")
 	_check(font.has_char("杀".unicode_at(0)), "The actual theme font covers the kill character that previously rendered as a box")
 	var sample: String = "敌杀范围击中魂屑法器符文生命护甲移速拾取试炼祭坛恢复商店选择开始暂停余烬"
+	var catalog_groups: Array = [GameCatalog.weapons(), GameCatalog.runes(), GameCatalog.relics(), GameCatalog.enemies(), GameCatalog.waves()]
+	for group: Array in catalog_groups:
+		for definition: ContentDef in group:
+			for character: String in definition.display_name + definition.description + definition.subtitle:
+				var codepoint: int = character.unicode_at(0)
+				if codepoint >= 0x3400 and codepoint <= 0x9fff and not sample.contains(character):
+					sample += character
 	var missing: PackedStringArray = []
 	for character: String in sample:
 		if not font.has_char(character.unicode_at(0)):
 			missing.append(character)
-	_check(missing.is_empty(), "The actual theme font covers common Chinese UI characters; missing: " + "".join(missing))
+	_check(missing.is_empty(), "The actual theme font covers Chinese UI and catalog characters; missing: " + "".join(missing))
 	var line: TextLine = TextLine.new()
 	line.add_string(sample, font, 17)
 	var ts: TextServer = TextServerManager.get_primary_interface()

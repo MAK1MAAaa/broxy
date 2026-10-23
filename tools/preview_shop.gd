@@ -6,14 +6,17 @@ func _initialize() -> void:
 
 func _preview() -> void:
 	var view: String = "boosted"
+	var destination: String = ""
 	var hold: bool = false
 	for argument: String in OS.get_cmdline_user_args():
 		if argument.begins_with("--view="):
 			view = argument.trim_prefix("--view=")
+		elif argument.begins_with("--capture="):
+			destination = argument.trim_prefix("--capture=")
 		elif argument == "--hold":
 			hold = true
 		else:
-			push_error("Use --view=base|boosted|fullbag|transactions and optional --hold")
+			push_error("Use --view=base|boosted|fullbag|transactions, optional --capture=path and --hold")
 			quit(2)
 			return
 	if view not in ["base", "boosted", "fullbag", "transactions"] or DisplayServer.get_name() == "headless":
@@ -68,7 +71,8 @@ func _preview() -> void:
 	await process_frame
 	await process_frame
 	await RenderingServer.frame_post_draw
-	var destination: String = "res://reports/shop-" + view + ".png"
+	if destination.is_empty():
+		destination = "res://reports/shop-" + view + ".png"
 	var result: Error = root.get_texture().get_image().save_png(destination)
 	print("SHOP_PREVIEW view=", view, " result=", result, " persistent=false damage=", state.stat("damage"), " attack_speed=", state.stat("attack_speed"))
 	if not hold:

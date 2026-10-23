@@ -1437,12 +1437,20 @@ func _bar_style(color: Color) -> StyleBoxFlat:
 	return style
 
 
-func _make_theme() -> Theme:
-	var theme := Theme.new()
+static func create_ui_font() -> SystemFont:
 	var font := SystemFont.new()
 	# Some macOS installations resolve PingFang SC to HK without simplified glyphs.
-	font.font_names = PackedStringArray(["Hiragino Sans GB", "PingFang SC", "Heiti SC", "Arial"])
-	theme.default_font = font
+	font.font_names = PackedStringArray([
+		"Hiragino Sans GB", "PingFang SC", "Heiti SC",
+		"Microsoft YaHei UI", "Microsoft YaHei", "DengXian", "SimHei", "SimSun",
+		"Noto Sans CJK SC", "Noto Sans SC", "Arial",
+	])
+	return font
+
+
+func _make_theme() -> Theme:
+	var theme := Theme.new()
+	theme.default_font = create_ui_font()
 	theme.default_font_size = 17
 	theme.set_color("font_color", "Label", BONE)
 	theme.set_color("font_color", "Button", BONE)
