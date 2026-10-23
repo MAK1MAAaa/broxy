@@ -1,0 +1,206 @@
+{
+  "schema_version": 1,
+  "exit_code": 0,
+  "runs": 30,
+  "wins": 23,
+  "baseline": "reports/content/simulation.jsonl",
+  "baseline_sha256": "29ba7fdb5c8b6e39722aa9b93a80e5b2d555d17c1f7b3bfe6c97ba12cdd58831",
+  "current_sha256": "3c752bfd5ed3f68cc626c2bca0943987e00c9aa12db177e939d93779d9bba4be",
+  "baseline_core_versions": [
+    "prototype-0.1.0+7b6edecdab6b"
+  ],
+  "core_versions": [
+    "prototype-0.1.0+15a5ba98e084"
+  ],
+  "policy_versions": [
+    "orbit-avoid-v1/shop-v1+7c19c01f20e4"
+  ],
+  "compared_fields": "Every JSON field and nested trace/observation; only balance_version is excluded",
+  "comparisons": [
+    {
+      "seed": 2026,
+      "rune": "pierce",
+      "won": false,
+      "all_fields_except_core_version_equal": true
+    },
+    {
+      "seed": 2026,
+      "rune": "bounce",
+      "won": true,
+      "all_fields_except_core_version_equal": true
+    },
+    {
+      "seed": 2026,
+      "rune": "blast",
+      "won": true,
+      "all_fields_except_core_version_equal": true
+    },
+    {
+      "seed": 2027,
+      "rune": "pierce",
+      "won": true,
+      "all_fields_except_core_version_equal": true
+    },
+    {
+      "seed": 2027,
+      "rune": "bounce",
+      "won": true,
+      "all_fields_except_core_version_equal": true
+    },
+    {
+      "seed": 2027,
+      "rune": "blast",
+      "won": true,
+      "all_fields_except_core_version_equal": true
+    },
+    {
+      "seed": 2028,
+      "rune": "pierce",
+      "won": false,
+      "all_fields_except_core_version_equal": true
+    },
+    {
+      "seed": 2028,
+      "rune": "bounce",
+      "won": true,
+      "all_fields_except_core_version_equal": true
+    },
+    {
+      "seed": 2028,
+      "rune": "blast",
+      "won": true,
+      "all_fields_except_core_version_equal": true
+    },
+    {
+      "seed": 2029,
+      "rune": "pierce",
+      "won": false,
+      "all_fields_except_core_version_equal": true
+    },
+    {
+      "seed": 2029,
+      "rune": "bounce",
+      "won": true,
+      "all_fields_except_core_version_equal": true
+    },
+    {
+      "seed": 2029,
+      "rune": "blast",
+      "won": true,
+      "all_fields_except_core_version_equal": true
+    },
+    {
+      "seed": 2030,
+      "rune": "pierce",
+      "won": false,
+      "all_fields_except_core_version_equal": true
+    },
+    {
+      "seed": 2030,
+      "rune": "bounce",
+      "won": false,
+      "all_fields_except_core_version_equal": true
+    },
+    {
+      "seed": 2030,
+      "rune": "blast",
+      "won": true,
+      "all_fields_except_core_version_equal": true
+    },
+    {
+      "seed": 2031,
+      "rune": "pierce",
+      "won": false,
+      "all_fields_except_core_version_equal": true
+    },
+    {
+      "seed": 2031,
+      "rune": "bounce",
+      "won": false,
+      "all_fields_except_core_version_equal": true
+    },
+    {
+      "seed": 2031,
+      "rune": "blast",
+      "won": true,
+      "all_fields_except_core_version_equal": true
+    },
+    {
+      "seed": 2032,
+      "rune": "pierce",
+      "won": true,
+      "all_fields_except_core_version_equal": true
+    },
+    {
+      "seed": 2032,
+      "rune": "bounce",
+      "won": true,
+      "all_fields_except_core_version_equal": true
+    },
+    {
+      "seed": 2032,
+      "rune": "blast",
+      "won": true,
+      "all_fields_except_core_version_equal": true
+    },
+    {
+      "seed": 2033,
+      "rune": "pierce",
+      "won": true,
+      "all_fields_except_core_version_equal": true
+    },
+    {
+      "seed": 2033,
+      "rune": "bounce",
+      "won": true,
+      "all_fields_except_core_version_equal": true
+    },
+    {
+      "seed": 2033,
+      "rune": "blast",
+      "won": true,
+      "all_fields_except_core_version_equal": true
+    },
+    {
+      "seed": 2034,
+      "rune": "pierce",
+      "won": true,
+      "all_fields_except_core_version_equal": true
+    },
+    {
+      "seed": 2034,
+      "rune": "bounce",
+      "won": true,
+      "all_fields_except_core_version_equal": true
+    },
+    {
+      "seed": 2034,
+      "rune": "blast",
+      "won": true,
+      "all_fields_except_core_version_equal": true
+    },
+    {
+      "seed": 2035,
+      "rune": "pierce",
+      "won": true,
+      "all_fields_except_core_version_equal": true
+    },
+    {
+      "seed": 2035,
+      "rune": "bounce",
+      "won": true,
+      "all_fields_except_core_version_equal": true
+    },
+    {
+      "seed": 2035,
+      "rune": "blast",
+      "won": true,
+      "all_fields_except_core_version_equal": true
+    }
+  ],
+  "wall_seconds": 205.36,
+  "passed": true,
+  "limits": [
+    "Fixed legacy policy over ten seeds and three runes; this proves sampled equivalence, not human decision quality or new relic full-run balance."
+  ]
+}

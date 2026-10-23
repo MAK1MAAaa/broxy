@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "pairs": {
+    "sparse": {
+      "seed": 20261024,
+      "frames": 20,
+      "state_hash": "f3166279abb95dadac16b289993270404fed28d6eec969596a274688b3a67000",
+      "endpoint_hash": "afdc42303f327433d5afbc69cbc5c1f0cd002f15e9d9ad2ff3bf87b162afdd1e",
+      "projectiles": {
+        "allocated_instances": 3203,
+        "body_instances": 1,
+        "bounce_instances": 3,
+        "core_instances": 10,
+        "family_counts": {
+          "bone:pierce": 1,
+          "comet:bounce": 2,
+          "crescent:blast": 1,
+          "ember:blast": 1,
+          "frost:bounce": 1,
+          "frost:pierce": 1,
+          "scatter:": 1,
+          "storm:pierce": 2
+        },
+        "friendly_count": 10,
+        "total_visible_instances": 14,
+        "trail_families": 8
+      },
+      "primary_hits": 4,
+      "secondary_hits": 1,
+      "arena_roi": [
+        85,
+        135,
+        1195,
+        615
+      ],
+      "changed_pixels": 2951,
+      "grayscale_180_or_brighter_before_after": [
+        3549,
+        3187
+      ],
+      "mean_grayscale_before_after": [
+        42.82837837837838,
+        42.66688063063063
+      ],
+      "hostile_core_3x3_equal": true,
+      "sparse_player_region_equal": true,
+      "screenshots_sha256": {
+        "before": "ddcd70d84584b86249d65be76b27f8fe718079c4648597e906a59d47d8618274",
+        "after": "a939fca59307eb24463ea5b4974352fe8e0beb6635ec345abc26d0f7eca3999b"
+      }
+    },
+    "dense": {
+      "seed": 20261024,
+      "frames": 20,
+      "state_hash": "6c53baa4610e9a1c002dbc536106aca65d09ee54d9c8ade359f0aeea9534b5a3",
+      "endpoint_hash": "79b862e46eff2ba527fe9325a6d22fd36a6239334028449a1fc3291c21e68d2e",
+      "projectiles": {
+        "allocated_instances": 3376,
+        "body_instances": 75,
+        "bounce_instances": 176,
+        "core_instances": 601,
+        "family_counts": {
+          "bone:blast": 14,
+          "bone:bounce": 26,
+          "bone:pierce": 48,
+          "comet:blast": 23,
+          "comet:bounce": 18,
+          "comet:pierce": 48,
+          "crescent:blast": 31,
+          "crescent:bounce": 35,
+          "crescent:pierce": 40,
+          "ember:blast": 10,
+          "ember:bounce": 19,
+          "ember:pierce": 46,
+          "frost:blast": 14,
+          "frost:bounce": 27,
+          "frost:pierce": 44,
+          "scatter:blast": 16,
+          "scatter:bounce": 32,
+          "scatter:pierce": 52,
+          "storm:blast": 10,
+          "storm:bounce": 19,
+          "storm:pierce": 29
+        },
+        "friendly_count": 601,
+        "total_visible_instances": 852,
+        "trail_families": 21
+      },
+      "primary_hits": 2918,
+      "secondary_hits": 5146,
+      "arena_roi": [
+        85,
+        135,
+        1195,
+        615
+      ],
+      "changed_pixels": 133165,
+      "grayscale_180_or_brighter_before_after": [
+        126230,
+        108780
+      ],
+      "mean_grayscale_before_after": [
+        104.76902965465466,
+        98.78420608108108
+      ],
+      "hostile_core_3x3_equal": true,
+      "sparse_player_region_equal": null,
+      "screenshots_sha256": {
+        "before": "90dd11245f9e97d7409fb50698b05063650d2948baae7c0433eaad6e1d0e2dbd",
+        "after": "286362869683a0fba6e696f09698fa390eefbb5c34aae867ebf69a379e1e8ce1"
+      }
+    }
+  },
+  "scope": "Same fixed seed and 20 formal simulation steps; arena pixel statistics are a brightness proxy, not human readability measurements.",
+  "passed": true
+}

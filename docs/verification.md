@@ -1,6 +1,6 @@
 # 原型验收记录
 
-新增美术、七法器与十遗物的本轮结果见 [内容扩充记录](content-expansion.md)。下列平台适配和 macOS 记录保留其原提交的验证范围。
+最新遗物购前对照、尾迹收敛和30局完整等价结果见 [祭坛对照验收](altar-comparison.md)。此前新增美术、七法器与十遗物的结果见 [内容扩充记录](content-expansion.md)。下列平台适配和 macOS 记录保留其原提交的验证范围。
 
 Windows 分支的独立复现结果见 [Windows 验证记录](windows.md)，原始日志与截图保存在本地 `reports/windows/`。下列 macOS 历史结果和指纹保留原样。
 

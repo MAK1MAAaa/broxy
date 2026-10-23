@@ -1,0 +1,285 @@
+{
+  "schema_version": 1,
+  "scope": "Altar purchase comparison and subdued friendly trails iteration; ongoing optimization goal remains active",
+  "created_at_utc": "2026-10-23T12:40:42.807400+00:00",
+  "date_local": "2026-10-23",
+  "source_base_commit": "78e3f869aeb437bd569d28f7c630fc2b93849775",
+  "source_state": "Verified working tree before the local altar-comparison commit",
+  "engine": "4.7.2.stable.official.ed1daf0bf",
+  "tests": {
+    "godot_headless_assertions": 6783,
+    "python_tests": 22,
+    "suite_invocations": 29,
+    "relic_projection_assertions": 3483,
+    "native_comparison_assertions": 50,
+    "trail_style_assertions": 151,
+    "all_passed": true
+  },
+  "simulation": {
+    "runs": 30,
+    "wins": 23,
+    "losses": 7,
+    "current_core_version": "prototype-0.1.0+15a5ba98e084",
+    "baseline_core_version": "prototype-0.1.0+7b6edecdab6b",
+    "all_fields_except_core_version_equal": true,
+    "policy_versions": [
+      "orbit-avoid-v1/shop-v1+7c19c01f20e4"
+    ]
+  },
+  "visual_comparison": {
+    "schema_version": 1,
+    "pairs": {
+      "sparse": {
+        "seed": 20261024,
+        "frames": 20,
+        "state_hash": "f3166279abb95dadac16b289993270404fed28d6eec969596a274688b3a67000",
+        "endpoint_hash": "afdc42303f327433d5afbc69cbc5c1f0cd002f15e9d9ad2ff3bf87b162afdd1e",
+        "projectiles": {
+          "allocated_instances": 3203,
+          "body_instances": 1,
+          "bounce_instances": 3,
+          "core_instances": 10,
+          "family_counts": {
+            "bone:pierce": 1,
+            "comet:bounce": 2,
+            "crescent:blast": 1,
+            "ember:blast": 1,
+            "frost:bounce": 1,
+            "frost:pierce": 1,
+            "scatter:": 1,
+            "storm:pierce": 2
+          },
+          "friendly_count": 10,
+          "total_visible_instances": 14,
+          "trail_families": 8
+        },
+        "primary_hits": 4,
+        "secondary_hits": 1,
+        "arena_roi": [
+          85,
+          135,
+          1195,
+          615
+        ],
+        "changed_pixels": 2951,
+        "grayscale_180_or_brighter_before_after": [
+          3549,
+          3187
+        ],
+        "mean_grayscale_before_after": [
+          42.82837837837838,
+          42.66688063063063
+        ],
+        "hostile_core_3x3_equal": true,
+        "sparse_player_region_equal": true,
+        "screenshots_sha256": {
+          "before": "ddcd70d84584b86249d65be76b27f8fe718079c4648597e906a59d47d8618274",
+          "after": "a939fca59307eb24463ea5b4974352fe8e0beb6635ec345abc26d0f7eca3999b"
+        }
+      },
+      "dense": {
+        "seed": 20261024,
+        "frames": 20,
+        "state_hash": "6c53baa4610e9a1c002dbc536106aca65d09ee54d9c8ade359f0aeea9534b5a3",
+        "endpoint_hash": "79b862e46eff2ba527fe9325a6d22fd36a6239334028449a1fc3291c21e68d2e",
+        "projectiles": {
+          "allocated_instances": 3376,
+          "body_instances": 75,
+          "bounce_instances": 176,
+          "core_instances": 601,
+          "family_counts": {
+            "bone:blast": 14,
+            "bone:bounce": 26,
+            "bone:pierce": 48,
+            "comet:blast": 23,
+            "comet:bounce": 18,
+            "comet:pierce": 48,
+            "crescent:blast": 31,
+            "crescent:bounce": 35,
+            "crescent:pierce": 40,
+            "ember:blast": 10,
+            "ember:bounce": 19,
+            "ember:pierce": 46,
+            "frost:blast": 14,
+            "frost:bounce": 27,
+            "frost:pierce": 44,
+            "scatter:blast": 16,
+            "scatter:bounce": 32,
+            "scatter:pierce": 52,
+            "storm:blast": 10,
+            "storm:bounce": 19,
+            "storm:pierce": 29
+          },
+          "friendly_count": 601,
+          "total_visible_instances": 852,
+          "trail_families": 21
+        },
+        "primary_hits": 2918,
+        "secondary_hits": 5146,
+        "arena_roi": [
+          85,
+          135,
+          1195,
+          615
+        ],
+        "changed_pixels": 133165,
+        "grayscale_180_or_brighter_before_after": [
+          126230,
+          108780
+        ],
+        "mean_grayscale_before_after": [
+          104.76902965465466,
+          98.78420608108108
+        ],
+        "hostile_core_3x3_equal": true,
+        "sparse_player_region_equal": null,
+        "screenshots_sha256": {
+          "before": "90dd11245f9e97d7409fb50698b05063650d2948baae7c0433eaad6e1d0e2dbd",
+          "after": "286362869683a0fba6e696f09698fa390eefbb5c34aae867ebf69a379e1e8ce1"
+        }
+      }
+    },
+    "scope": "Same fixed seed and 20 formal simulation steps; arena pixel statistics are a brightness proxy, not human readability measurements.",
+    "passed": true
+  },
+  "performance": {
+    "average_fps": 61.2042486367557,
+    "damage_by_weapon": {
+      "bone": 565151.999999995,
+      "comet": 2576598.52500021,
+      "crescent": 7342686.90007903,
+      "ember": 2825252.50000158,
+      "frost": 2881831.01248815,
+      "scatter": 477258.100000001,
+      "storm": 1353881.02499347
+    },
+    "duration_seconds": 300.0,
+    "enemies": 300,
+    "impact_draw_commands_at_end": 10,
+    "impact_visual_capacity": 32,
+    "impact_visual_peak": 32,
+    "impact_visual_revision": "primary-impact-v1",
+    "internal_resolution": "1280x720",
+    "os": "Windows",
+    "p99_frame_ms": 28.26,
+    "passed": true,
+    "persistent_profile": false,
+    "pickups": 200,
+    "primary_hits": 314665,
+    "projectile_families_at_end": {
+      "bone:bounce": 61,
+      "bone:pierce": 8,
+      "comet:blast": 5,
+      "comet:pierce": 113,
+      "crescent:blast": 76,
+      "crescent:bounce": 32,
+      "crescent:pierce": 1,
+      "ember:blast": 9,
+      "ember:pierce": 92,
+      "frost:blast": 65,
+      "frost:bounce": 8,
+      "scatter:bounce": 79,
+      "scatter:pierce": 24,
+      "storm:blast": 27
+    },
+    "projectile_visual_revision": "arsenal-lines-v3",
+    "projectiles": 600,
+    "renderer": "gl_compatibility",
+    "run_seed": 1792082541,
+    "rune_visual_peak": 32,
+    "samples": 18363,
+    "scenario": "content-feedback",
+    "secondary_hits": 1417048,
+    "settings": {
+      "flash": true,
+      "shake": true,
+      "volume": 0.65
+    },
+    "weapon_ids": [
+      "bone",
+      "frost",
+      "ember",
+      "scatter",
+      "crescent",
+      "storm",
+      "comet"
+    ]
+  },
+  "performance_context": {
+    "device": "Windows 11 Pro for Workstations / i5-13600KF / RTX 4070 SUPER / NVIDIA 591.86",
+    "warmup_seconds": 5,
+    "sample_seconds": 300,
+    "vsync": "retained",
+    "concurrent_godot_tests_builds_or_simulation": false,
+    "native_window_title_observed": true,
+    "viewport_capture_seconds": 120,
+    "historical_reports_preserved": true,
+    "cross_seed_fps_delta_not_attributed_to_visual_change": true
+  },
+  "static_assets": {
+    "count": 42,
+    "art_revision": "engraved-05",
+    "identical_to_previous_commit": true
+  },
+  "distribution": {
+    "zip_crc_passed": true,
+    "x86_64_valid": true,
+    "smoke_exit_code": 0,
+    "previous_zip_preserved": true,
+    "sha256": {
+      "build/Embers-windows-x86_64/Embers.exe": "d34d36f3be1a6c49c56525ae86469b92e4f417ddf0b43cf00dd80c385c4b0562",
+      "build/Embers-windows-x86_64/Embers.pck": "5adc251c7a08a76a5d7e388ae061232befcd3c46bfc0e2c93c340797ab69d260",
+      "build/Embers-windows-x86_64.zip": "14bdad4e1c2281ecfeffc8e782a2b2b80506c1c80da9a9476eb69887c628e9a9"
+    }
+  },
+  "source_sha256": {
+    "scripts/core/run_state.gd": "87bdab1fb7723f9a13119fec821a12087d1f1b3c848a674fd541e574eeeb9c67",
+    "scripts/ui/game_ui.gd": "9dc84296fec274c05647ce101c7f88ac4293e6d63017b3304aa53eaa7dd37e2c",
+    "scripts/combat/projectile_painter.gd": "d99d53013bef145fe651b18e73dac26489c58f6262fce884f776d52abdd9f954",
+    "scripts/main.gd": "e4095b0d34952e778069951540d3132026bcc589959e461e56da5dab535d2bc4",
+    "tests/test_relic_preview.gd": "0daed58ee176706cef1d5a25eec910bc36f26d6d99138ce875410c95281708ad",
+    "tests/test_relic_comparison.gd": "377830d4fe166e44d843b8eda687629e154318a8730503f1b2acdd2f32643ccf",
+    "tests/test_trail_readability.gd": "e8e737b9e8d32feff5bfd19c2e670cc93cf94f705a52ed16abb3bceed4e0f44e",
+    "tools/preview_relic_comparison.gd": "fbe746df54a6936b07d81537f71904e69a49ca7c2856d941cba63345da3faedc",
+    "tools/preview_trail_readability.gd": "fd25d468a78ab5769110bce263e9307befae10c80ad07e1bb7105dcb970c5ce1",
+    "tools/test.sh": "681d6bec27e5abc291487dbebef11e31ac0e647a841a396b669e366d07c46daa",
+    "tools/test.ps1": "c2872ce41ce32059695ac5f2582f16c41709dcc6d26cf643856701a2370f981e",
+    "README.md": "ca0072c71f465e286f7a879e5eccf6b4be659d78d772172a4a033915ff8f7064",
+    "docs/altar-comparison.md": "5892d7f19295c094465ef9c68f29ec8e640a6a054c1a43a78106b05aac80108a",
+    "docs/art-direction.md": "7fb4851b7e4db3a6802a005b9828679210c84cc0e84463c7474582eed196b3a1",
+    "docs/verification.md": "dd1cb1816b87cdfb4613a83def2a01d3d21ef60a5a9c6356c8cb2b7d022554e4",
+    "docs/optimization-log.md": "c8c1508cf9c4eab874794599ab62979aeb18eabe25e9844edc67383549e4f69a"
+  },
+  "evidence_sha256": {
+    "tests.log": "a6fab8c564982e37a8e84796416207e27677710b934e335b780be0a6bd0f2223",
+    "relic_comparison-native.log": "c8b98aa0ed884b61ae7d4b1c2742e1ecea5eb79e945f3f07900732602a74b7fa",
+    "trail_readability-native.log": "1792fe7d4a8ae83cd9bda4b0b6ea6e1c7f33039614b06ec2b9cfafd9fa1344bb",
+    "simulation.jsonl": "3c752bfd5ed3f68cc626c2bca0943987e00c9aa12db177e939d93779d9bba4be",
+    "simulation-comparison.json": "2e3391ab6f83d7bbe66ff4c3121b5e43b7f02faa5b5f15193d7f4fba722f80b6",
+    "visual-comparison.json": "0d978304cff43232bd2ae01517d7a25fa23d486a32840ee90816b3b937cf6749",
+    "performance.json": "c61af61d7e285d6663769d2c0f4be5d92bfc5a69c73d32c57b2413bc42f0b40e",
+    "benchmark.log": "82a041587e27c414bb59d2cc78d2ac8d1c36b9ee1f11480343baa707482f2210",
+    "build.log": "cf5af2925ec4410c552891cc506b2b8b7607837b822a987bb401a0014b99e24d",
+    "export-smoke.log": "7927ad8d006ab8a4746e4a48bc170170524320e79b2a21578d15ac811be255c9"
+  },
+  "screenshots_sha256": {
+    "tradeoff.png": "c0d3fe5f79a074120d5914ffb9ea0d22ed1daf887a7a7d652e06792dd2879c12",
+    "bulwark.png": "7371db053ec420f3815994a4be489d88e630cf0528d7124a4144f3e933e4f335",
+    "capped.png": "c9b3ab6193e31563bbd8d39633025e9b0772a26e1861453fb1c76d9a06098b23",
+    "poor.png": "8f38b1e18d0ea70f04467f34360af64f211b895c8ef93fde602ac127e8d2516a",
+    "trails-sparse-before.png": "ddcd70d84584b86249d65be76b27f8fe718079c4648597e906a59d47d8618274",
+    "trails-sparse-after.png": "a939fca59307eb24463ea5b4974352fe8e0beb6635ec345abc26d0f7eca3999b",
+    "trails-dense-before.png": "90dd11245f9e97d7409fb50698b05063650d2948baae7c0433eaad6e1d0e2dbd",
+    "trails-dense-after.png": "286362869683a0fba6e696f09698fa390eefbb5c34aae867ebf69a379e1e8ce1",
+    "export-smoke.png": "7f35cc989e9f3d38507b04381ea7e6a14200d59e9f1ebd1c7caecb988b9348a4",
+    "benchmark.png": "e218228038a428ff1111f831867a4ac7e550a19316723aa6298b4d4aa3fea795"
+  },
+  "limits": [
+    "Fixed screenshots and grayscale thresholds do not prove human readability in dynamic battles.",
+    "Reference UI viewport verified at 1280x720; four-slot details use an explicit scroll region.",
+    "Legacy 30-run policy does not buy the four new relics; projection effects are checked against real purchases in focused tests.",
+    "Single Windows device and one 300-second native pressure sample, including one viewport capture; no GPU timing claim.",
+    "macOS build was not rerun on Windows; Authenticode signing is not configured."
+  ],
+  "passed": true
+}

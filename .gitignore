@@ -19,3 +19,8 @@ reports/content/*.jsonl
 reports/content/*.png
 reports/content/*.import
 reports/content/*-raw.json
+reports/altar/*.log
+reports/altar/*.jsonl
+reports/altar/*.png
+reports/altar/*.import
+reports/altar/*-raw.json

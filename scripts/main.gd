@@ -259,7 +259,7 @@ func _record_benchmark() -> void:
 	if world.content_stress_mode:
 		result["damage_by_weapon"] = run.damage_dealt_by_weapon.duplicate()
 		result["projectile_families_at_end"] = world._projectile_painter.get_stats()["family_counts"]
-		result["projectile_visual_revision"] = "arsenal-lines-v2"
+		result["projectile_visual_revision"] = ProjectilePainter.VISUAL_REVISION
 	result["settings"] = store.settings.duplicate()
 	result["persistent_profile"] = store.persistent
 	result["run_seed"] = run.summary()["seed"]

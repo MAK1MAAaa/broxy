@@ -81,16 +81,26 @@ func begin(seed_value: int, starter: String) -> void:
 	changed.emit()
 
 func stat(key: String) -> float:
+	return _stat_with_projected_relic(key)
+
+func _stat_with_projected_relic(key: String, additional: ContentDef = null) -> float:
 	var value: float = float(BASE_STATS.get(key, 0.0)) + float(_upgrade_bonuses.get(key, 0.0))
 	for relic_id: String in relic_counts:
 		var definition: ContentDef = GameCatalog.relic(relic_id)
 		if definition == null:
 			continue
 		var count: int = int(relic_counts[relic_id])
+		if additional != null and additional.id == relic_id:
+			count += 1
 		if definition.stat == key:
 			value += definition.amount * count
 		if definition.bonus_stat == key:
 			value += definition.bonus_amount * count
+	if additional != null and not relic_counts.has(additional.id):
+		if additional.stat == key:
+			value += additional.amount
+		if additional.bonus_stat == key:
+			value += additional.bonus_amount
 	return value
 
 func collect_souls(value: int) -> void:
@@ -191,6 +201,59 @@ func purchase_error(index: int) -> String:
 		return "未知的商品类型。"
 	return ""
 
+func relic_purchase_preview(index: int) -> Dictionary:
+	if index < 0 or index >= offers.size():
+		return {}
+	var offer: Dictionary = offers[index]
+	if str(offer.get("kind", "")) != "relic":
+		return {}
+	var id: String = str(offer.get("id", ""))
+	var definition: ContentDef = GameCatalog.relic(id)
+	if definition == null:
+		return {}
+	var error: String = purchase_error(index)
+	var can_buy: bool = error.is_empty()
+	var price: int = int(offer.get("price", 0))
+	var count: int = int(relic_counts.get(id, 0))
+	var has_projection: bool = not bool(offer.get("sold", false)) and count < RELIC_CAP
+	var stat_changes: Array[Dictionary] = []
+	var weapon_changes: Array[Dictionary] = []
+	var projected_health: float = health
+	if has_projection:
+		var keys: Array[String] = []
+		for key: String in [definition.stat, definition.bonus_stat]:
+			if key.is_empty() or keys.has(key):
+				continue
+			keys.append(key)
+			var before: float = stat(key)
+			var after: float = _stat_with_projected_relic(key, definition)
+			stat_changes.append({"key": key, "before": before, "after": after, "delta": after - before})
+		projected_health = _health_after_relic_purchase(health, stat("max_health"), _stat_with_projected_relic("max_health", definition))
+		var damage_before: float = stat("damage")
+		var damage_after: float = _stat_with_projected_relic("damage", definition)
+		var speed_before: float = stat("attack_speed")
+		var speed_after: float = _stat_with_projected_relic("attack_speed", definition)
+		for slot: int in loadout.size():
+			var weapon_id: String = str(loadout[slot].get("id", ""))
+			var weapon: ContentDef = GameCatalog.weapon(weapon_id)
+			if weapon == null:
+				continue
+			weapon_changes.append({
+				"slot": slot, "id": weapon_id, "shots": weapon.shots,
+				"damage_before": weapon.damage * damage_before, "damage_after": weapon.damage * damage_after,
+				"interval_before": weapon.cooldown / speed_before, "interval_after": weapon.cooldown / speed_after,
+			})
+	return {
+		"id": id, "can_buy": can_buy, "error": error, "price": price,
+		"gold_before": gold, "gold_after": gold - price if can_buy else gold, "shortfall": maxi(0, price - gold),
+		"stack_before": count, "stack_after": count + 1 if has_projection else count, "has_projection": has_projection,
+		"stat_changes": stat_changes, "health_before": health, "health_after": projected_health,
+		"weapon_changes": weapon_changes,
+	}
+
+static func _health_after_relic_purchase(current_health: float, previous_max: float, next_max: float) -> float:
+	return minf(next_max, current_health + next_max - previous_max)
+
 func buy_offer(index: int) -> bool:
 	var error: String = purchase_error(index)
 	if not error.is_empty():
@@ -208,7 +271,7 @@ func buy_offer(index: int) -> bool:
 	else:
 		var previous_max: float = stat("max_health")
 		relic_counts[item_id] = int(relic_counts.get(item_id, 0)) + 1
-		health = minf(stat("max_health"), health + stat("max_health") - previous_max)
+		health = _health_after_relic_purchase(health, previous_max, stat("max_health"))
 	offer["sold"] = true
 	last_error = ""
 	changed.emit()

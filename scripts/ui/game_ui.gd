@@ -407,7 +407,7 @@ func hide_pause() -> void:
 
 
 func handle_back() -> bool:
-	if _overlay_mode == "relic_details":
+	if _overlay_mode == "relic_details" or _overlay_mode == "relic_comparison":
 		hide_pause()
 		return true
 	if _overlay_mode == "settings_pause":
@@ -599,6 +599,8 @@ func notify(message: String) -> void:
 
 
 func _build_shop() -> void:
+	if _overlay_mode == "relic_comparison":
+		hide_pause()
 	_shop_epoch += 1
 	var focus_id := _requested_shop_focus
 	_requested_shop_focus = ""
@@ -726,7 +728,7 @@ func _offer_card(parent: Control, index: int) -> void:
 		}.get(error, "暂不可购")
 		buy_text = "%s · %d魂屑" % [reason, price]
 	var buy := _shop_button(buy_text, _buy.bind(index), "buy:%d" % index, Vector2(0, 35))
-	buy.add_theme_font_size_override("font_size", 16)
+	buy.add_theme_font_size_override("font_size", 14 if kind == "relic" else 16)
 	buy.add_theme_color_override("font_color", MUTED if blocked else GOLD)
 	buy.add_theme_stylebox_override("normal", _box(Color("1a1d29") if blocked else Color("232231"), Color(MUTED, 0.3) if blocked else Color(category, 0.48)))
 	buy.tooltip_text = error
@@ -739,7 +741,187 @@ func _offer_card(parent: Control, index: int) -> void:
 	# Blocked unsold offers stay focusable so keyboard users can read the reason.
 	buy.disabled = sold
 	buy.focus_mode = Control.FOCUS_NONE if sold else Control.FOCUS_ALL
-	body.add_child(buy)
+	if kind == "relic":
+		var actions := HBoxContainer.new()
+		actions.add_theme_constant_override("separation", 8)
+		body.add_child(actions)
+		buy.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		actions.add_child(buy)
+		var compare := _shop_button("对照", _compare_relic.bind(index, _shop_epoch, offer.duplicate(true)), "compare:%d" % index, Vector2(54, 35))
+		compare.name = "CompareRelic%d" % index
+		compare.add_theme_font_size_override("font_size", 13)
+		compare.tooltip_text = "查看当前与购入后的属性、生命和法器变化；不会购买。"
+		actions.add_child(compare)
+	else:
+		body.add_child(buy)
+
+
+func _compare_relic(index: int, epoch: int, expected_offer: Dictionary) -> void:
+	if _screen != "shop" or _refresh_queued or not _overlay_mode.is_empty() or epoch != _shop_epoch:
+		return
+	if run == null or index < 0 or index >= run.offers.size() or run.offers[index] != expected_offer:
+		return
+	var preview: Dictionary = run.relic_purchase_preview(index)
+	if preview.is_empty():
+		return
+	var definition: ContentDef = GameCatalog.relic(str(preview["id"]))
+	var source: Button = _shop_focus_button("compare:%d" % index)
+	if source != null:
+		source.grab_focus()
+	_begin_overlay("relic_comparison")
+	var body := _modal("购前对照 · " + definition.display_name, Vector2(1000, 660))
+	body.name = "RelicComparison"
+	body.add_theme_constant_override("separation", 8)
+	var header := HBoxContainer.new()
+	header.add_theme_constant_override("separation", 20)
+	body.add_child(header)
+	_add_icon(header, definition, 72)
+	var summary := VBoxContainer.new()
+	summary.add_theme_constant_override("separation", 3)
+	summary.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	header.add_child(summary)
+	summary.add_child(_wrap(definition.description, 16, CYAN))
+	var projected: bool = bool(preview["has_projection"])
+	var layers: String = "层数  %d / %d → %d / %d（购后）" % [int(preview["stack_before"]), RunState.RELIC_CAP, int(preview["stack_after"]), RunState.RELIC_CAP] if projected else "层数  %d / %d（保持，不再叠加）" % [int(preview["stack_before"]), RunState.RELIC_CAP]
+	var layer_label := _label(layers, 14, BONE)
+	layer_label.name = "ComparisonLayers"
+	summary.add_child(layer_label)
+	var balance: String = "价格 %d 魂屑   ·   余额 %d → %d（购后）" % [int(preview["price"]), int(preview["gold_before"]), int(preview["gold_after"])] if bool(preview["can_buy"]) else "价格 %d 魂屑   ·   当前余额 %d（预览不扣款）" % [int(preview["price"]), int(preview["gold_before"])]
+	var balance_label := _label(balance, 14, GOLD)
+	balance_label.name = "ComparisonBalance"
+	summary.add_child(balance_label)
+	var status_text: String = "购前效果预览，尚未购买；关闭后可直接购买。"
+	if not bool(preview["can_buy"]):
+		status_text = "效果预览，尚缺 %d 魂屑；当前不会扣款或增加层数。" % int(preview["shortfall"]) if projected and int(preview["shortfall"]) > 0 else "无法再次购入：%s 不产生新增效果。" % str(preview["error"])
+	var status := _wrap(status_text, 14, CYAN if bool(preview["can_buy"]) else GOLD)
+	status.name = "ComparisonStatus"
+	body.add_child(status)
+	var scroll := ScrollContainer.new()
+	scroll.name = "ComparisonScroll"
+	scroll.custom_minimum_size.y = 260
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+	scroll.focus_mode = Control.FOCUS_ALL
+	scroll.follow_focus = true
+	scroll.add_theme_stylebox_override("focus", _box(Color(0, 0, 0, 0), CYAN))
+	scroll.gui_input.connect(_comparison_scroll_input.bind(scroll, epoch))
+	body.add_child(scroll)
+	var content := VBoxContainer.new()
+	content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	content.add_theme_constant_override("separation", 10)
+	scroll.add_child(content)
+	if projected:
+		_build_relic_stat_comparison(content, preview)
+		_build_relic_weapon_comparison(content, preview)
+	else:
+		var unavailable := _wrap("已售出或达到层数上限；保留当前构筑，不展示额外一层的属性与法器变化。", 17, MUTED)
+		unavailable.name = "ComparisonNoProjection"
+		content.add_child(unavailable)
+	var note := _wrap("法器数值是每枚伤害与持续攻击时的标称间隔，未计符文追加命中；这些数值不是 DPS。\n滚轮滚动，或 Tab 选择表格区域后使用 PageUp / PageDown；Esc 返回商品。", 13, MUTED)
+	note.name = "ComparisonScope"
+	content.add_child(note)
+	var close := _button("返回商品", _close_relic_comparison.bind(epoch), Vector2(0, 42))
+	close.name = "CloseRelicComparison"
+	_accent(close)
+	body.add_child(close)
+	_focus_later(close)
+
+
+func _build_relic_stat_comparison(parent: Control, preview: Dictionary) -> void:
+	_section_heading(parent, "属性与实际生命补充", GOLD, 16)
+	var grid := GridContainer.new()
+	grid.columns = 4
+	grid.add_theme_constant_override("h_separation", 12)
+	grid.add_theme_constant_override("v_separation", 6)
+	parent.add_child(grid)
+	for heading: Array in [["属性", 170], ["当前", 150], ["购后", 150], ["变化", 260]]:
+		_comparison_cell(grid, str(heading[0]), GOLD, float(heading[1]))
+	var names: Dictionary = {"max_health": "生命上限", "damage": "伤害倍率", "attack_speed": "攻击速度倍率", "move_speed": "移动速度", "armor": "护甲", "pickup_radius": "拾取范围"}
+	for change: Dictionary in preview["stat_changes"]:
+		var key: String = str(change["key"])
+		var delta: float = float(change["delta"])
+		_comparison_cell(grid, str(names.get(key, key)), BONE, 170)
+		_comparison_cell(grid, _comparison_stat_value(key, float(change["before"])), MUTED, 150)
+		_comparison_cell(grid, _comparison_stat_value(key, float(change["after"])), BONE, 150)
+		var variation := _comparison_cell(grid, _comparison_delta(delta, "倍" if key in ["damage", "attack_speed"] else "", 2 if key in ["damage", "attack_speed"] else 0), _comparison_change_color(delta), 260)
+		variation.name = "ComparisonStat_" + key
+	var health_gain: float = float(preview["health_after"]) - float(preview["health_before"])
+	_comparison_cell(grid, "当前生命", BONE, 170)
+	_comparison_cell(grid, "%.1f" % float(preview["health_before"]), MUTED, 150)
+	_comparison_cell(grid, "%.1f" % float(preview["health_after"]), BONE, 150)
+	var healing := _comparison_cell(grid, "实际补充 %.1f 生命" % health_gain if health_gain > 0.0 else "不补充生命", _comparison_change_color(health_gain), 260)
+	healing.name = "ComparisonHealthGain"
+
+
+func _build_relic_weapon_comparison(parent: Control, preview: Dictionary) -> void:
+	_section_heading(parent, "现有法器 · 当前 → 购后", PURPLE, 16)
+	var grid := GridContainer.new()
+	grid.columns = 3
+	grid.add_theme_constant_override("h_separation", 12)
+	grid.add_theme_constant_override("v_separation", 8)
+	parent.add_child(grid)
+	for heading: Array in [["法器 / 每次枚数", 220], ["每枚伤害", 270], ["标称间隔", 300]]:
+		_comparison_cell(grid, str(heading[0]), GOLD, float(heading[1]))
+	for change: Dictionary in preview["weapon_changes"]:
+		var slot: int = int(change["slot"])
+		var definition: ContentDef = GameCatalog.weapon(str(change["id"]))
+		var name_label := _comparison_cell(grid, "%02d  %s / %d枚" % [slot + 1, definition.display_name, int(change["shots"])], BONE, 220)
+		_enable_tooltip(name_label, _equipment_tooltip(run.loadout[slot]))
+		var damage_delta: float = float(change["damage_after"]) - float(change["damage_before"])
+		var damage := _comparison_cell(grid, "%.1f → %.1f\n%s" % [float(change["damage_before"]), float(change["damage_after"]), _comparison_delta(damage_delta, "伤害", 1)], _comparison_change_color(damage_delta), 270)
+		damage.name = "ComparisonWeapon%dDamage" % slot
+		var interval_delta: float = float(change["interval_after"]) - float(change["interval_before"])
+		var interval := _comparison_cell(grid, "%.3f秒 → %.3f秒\n%s" % [float(change["interval_before"]), float(change["interval_after"]), _comparison_delta(interval_delta, "秒", 3) + ("（更快）" if interval_delta < -0.00001 else "（更慢）" if interval_delta > 0.00001 else "")], _comparison_change_color(-interval_delta), 300)
+		interval.name = "ComparisonWeapon%dInterval" % slot
+
+
+func _comparison_cell(parent: Control, text: String, color: Color, width: float) -> Label:
+	var label := _wrap(text, 14, color)
+	label.custom_minimum_size.x = width
+	parent.add_child(label)
+	return label
+
+
+static func _comparison_stat_value(key: String, value: float) -> String:
+	return "×%.2f" % value if key in ["damage", "attack_speed"] else "%.0f" % value
+
+
+static func _comparison_delta(delta: float, unit: String, decimals: int) -> String:
+	if absf(delta) < 0.00001:
+		return "保持不变"
+	var amount: String = ("%.3f" % absf(delta)) if decimals == 3 else ("%.2f" % absf(delta)) if decimals == 2 else ("%.1f" % absf(delta)) if decimals == 1 else ("%.0f" % absf(delta))
+	var direction: String = "增加" if delta > 0.0 else "减少"
+	return direction + ("约 " if decimals > 0 else " ") + amount + (" " + unit if not unit.is_empty() else "")
+
+
+static func _comparison_change_color(delta: float) -> Color:
+	return CYAN if delta > 0.00001 else RED if delta < -0.00001 else MUTED
+
+
+func _close_relic_comparison(epoch: int) -> void:
+	if _overlay_mode == "relic_comparison" and epoch == _shop_epoch:
+		hide_pause()
+
+
+func _comparison_scroll_input(event: InputEvent, scroll: ScrollContainer, epoch: int) -> void:
+	if epoch != _shop_epoch or _overlay_mode != "relic_comparison" or not event is InputEventKey:
+		return
+	var key_event := event as InputEventKey
+	if not key_event.pressed:
+		return
+	match key_event.keycode:
+		KEY_PAGEDOWN:
+			scroll.scroll_vertical += int(scroll.size.y * 0.8)
+		KEY_PAGEUP:
+			scroll.scroll_vertical -= int(scroll.size.y * 0.8)
+		KEY_HOME:
+			scroll.scroll_vertical = 0
+		KEY_END:
+			scroll.scroll_vertical = int(scroll.get_v_scroll_bar().max_value)
+		_:
+			return
+	scroll.accept_event()
 
 
 func _weapon_row(parent: Control, index: int) -> void:
@@ -1119,6 +1301,8 @@ func _handle_action(success: bool, sound: String = "", message: String = "") -> 
 
 
 func _on_state_changed() -> void:
+	if _overlay_mode == "relic_comparison":
+		hide_pause()
 	if _screen == "shop" or _screen == "upgrades":
 		_queue_refresh()
 

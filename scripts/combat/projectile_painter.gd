@@ -5,6 +5,20 @@ extends RefCounted
 const LIMIT: int = CombatSim.SHOT_LIMIT
 const DISC_SIDES: int = 16
 const RING_SIDES: int = 8
+const VISUAL_REVISION: String = "arsenal-lines-v3"
+const TRAIL_VISUAL_REVISION: String = "subdued-trails-v1"
+const TRAIL_MAIN_ALPHA: float = 0.58
+const TRAIL_MAIN_WIDTH_SCALE: float = 0.72
+const TRAIL_HALO_ALPHA: float = 0.10
+const TRAIL_HALO_WIDTH_SCALE: float = 1.55
+const EMBER_TRAIL_ALPHA: float = 0.40
+
+class TrailStyle:
+	var main_color: Color = Color.WHITE
+	var main_width: float = 0.0
+	var halo_color: Color = Color.TRANSPARENT
+	var halo_width: float = 0.0
+	var has_halo: bool = false
 
 class TrailBatch:
 	var points: PackedVector2Array = PackedVector2Array()
@@ -13,6 +27,7 @@ class TrailBatch:
 	var color: Color = Color.WHITE
 	var width: float = 3.0
 	var source: String = ""
+	var style: TrailStyle = TrailStyle.new()
 
 class RingBatch:
 	var radius: float = 0.0
@@ -130,6 +145,16 @@ func rebuild(shots: Array[CombatSim.Shot]) -> void:
 	for key: String in trails.keys():
 		if not family_counts.has(key):
 			trails.erase(key)
+		else:
+			_style_trail(trails[key])
+
+static func _style_trail(trail: TrailBatch) -> void:
+	var style: TrailStyle = trail.style
+	style.has_halo = trail.source != "ember"
+	style.main_color = Color(trail.color, TRAIL_MAIN_ALPHA if style.has_halo else EMBER_TRAIL_ALPHA)
+	style.main_width = trail.width * TRAIL_MAIN_WIDTH_SCALE if style.has_halo else trail.width
+	style.halo_color = Color(trail.color, TRAIL_HALO_ALPHA) if style.has_halo else Color.TRANSPARENT
+	style.halo_width = trail.width * TRAIL_HALO_WIDTH_SCALE if style.has_halo else 0.0
 
 func draw(canvas: CanvasItem) -> void:
 	# All commands stay in CombatWorld's CanvasItem, before its danger pass.
@@ -141,11 +166,10 @@ func draw(canvas: CanvasItem) -> void:
 		if ring.multimesh.visible_instance_count > 0:
 			canvas.draw_multimesh(ring.multimesh, null)
 	for trail: TrailBatch in trails.values():
-		if trail.source == "ember":
-			canvas.draw_multiline(trail.points, Color(trail.color, 0.4), trail.width, true)
-		else:
-			canvas.draw_multiline(trail.points, Color(trail.color, 0.20), trail.width * 2.33, true)
-			canvas.draw_multiline(trail.points, trail.color, trail.width, true)
+		var style: TrailStyle = trail.style
+		if style.has_halo:
+			canvas.draw_multiline(trail.points, style.halo_color, style.halo_width, true)
+		canvas.draw_multiline(trail.points, style.main_color, style.main_width, true)
 		if not trail.wings.is_empty():
 			canvas.draw_multiline(trail.wings, Color(trail.color, 0.65), 1.0, true)
 		if not trail.sigils.is_empty():
