@@ -19,6 +19,11 @@ var _benchmark_warmup: int = 0
 var _frame_samples: Array[float] = []
 var _last_frame_usec: int = 0
 var _peak_rune_flashes: int = 0
+var _run_generation: int = 0
+var _upgrade_request_sim: CombatSim
+var _upgrade_request_generation: int = -1
+var _combat_upgrade_sim: CombatSim
+var _combat_upgrade_generation: int = -1
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -51,9 +56,10 @@ func _ready() -> void:
 	ui.quit_requested.connect(_quit_game)
 	ui.setting_changed.connect(_setting_changed)
 	ui.feedback.connect(func(name: String) -> void: sound.play(name, -12.0))
-	ui.upgrades_finished.connect(_open_shop)
+	ui.upgrades_finished.connect(_upgrades_finished)
 	world.hud_changed.connect(ui.update_hud)
 	world.wave_ended.connect(_wave_ended)
+	run.changed.connect(_on_run_changed)
 	_title()
 	if "--smoke" in args:
 		_start_run("bone")
@@ -63,7 +69,7 @@ func _ready() -> void:
 		_start_run("bone")
 		world.autopilot = true
 		get_window().title = "秘术余烬 · 自动流程验证（不保存设置与成绩）"
-		ui.notify("自动走位验证 · 普通关卡在 45 秒后正常结算")
+		ui.notify("自动走位验证 · 升级时暂停，选择后继续当前波次")
 	if "--shop-preview" in args:
 		_start_run("bone")
 		world.stop()
@@ -86,6 +92,7 @@ func _start_run(starter: String) -> void:
 	_begin_run(starter)
 
 func _begin_run(starter: String, seed_value: int = 0) -> void:
+	_invalidate_combat_upgrades()
 	get_tree().paused = false
 	paused = false
 	run.begin(seed_value if seed_value > 0 else int(Time.get_unix_time_from_system()) ^ Time.get_ticks_usec(), starter)
@@ -93,11 +100,12 @@ func _begin_run(starter: String, seed_value: int = 0) -> void:
 	ui.show_hud()
 	world.begin(run)
 	sound.play("level", -15.0)
-	ui.notify("移动躲避 · 法器自动攻击 · 收集魂屑，波间改装")
+	ui.notify("移动躲避 · 自动攻击 · 升级暂停选择，波间改装")
 
 func _next_wave() -> void:
 	if screen != Screen.SHOP or paused or get_tree().paused:
 		return
+	_invalidate_combat_upgrades()
 	run.next_wave()
 	screen = Screen.COMBAT
 	ui.show_hud()
@@ -107,11 +115,17 @@ func _next_wave() -> void:
 
 func _wave_ended(won: bool, reason: String) -> void:
 	# Deferring avoids replacing a simulation while its final signal is still on the stack.
-	_finish_wave.call_deferred(won, reason)
+	_finish_wave_for_sim.call_deferred(won, reason, world.sim, _run_generation)
+
+func _finish_wave_for_sim(won: bool, reason: String, simulation: CombatSim, generation: int) -> void:
+	if generation != _run_generation or simulation != world.sim:
+		return
+	_finish_wave(won, reason)
 
 func _finish_wave(won: bool, reason: String) -> void:
-	if screen != Screen.COMBAT:
+	if screen != Screen.COMBAT and not (screen == Screen.UPGRADE and _combat_upgrades_active()):
 		return
+	_invalidate_combat_upgrades()
 	# A pause can arrive between ended and this deferred transition. Settlement
 	# replaces the overlay, so clear both pause states before leaving combat.
 	_resume()
@@ -130,8 +144,9 @@ func _finish_wave(won: bool, reason: String) -> void:
 		_open_shop()
 
 func _open_shop() -> void:
-	if screen != Screen.COMBAT and screen != Screen.UPGRADE:
+	if (screen != Screen.COMBAT and screen != Screen.UPGRADE) or _combat_upgrades_active():
 		return
+	_invalidate_combat_upgrades()
 	# The last upgrade can settle after a pause input but before its deferred shop.
 	# Replacing that overlay must also release the actual scene-tree pause.
 	_resume()
@@ -140,7 +155,68 @@ func _open_shop() -> void:
 	ui.show_shop()
 	sound.play("buy", -15.0)
 
+func _on_run_changed() -> void:
+	if not _can_open_combat_upgrades():
+		return
+	var simulation: CombatSim = world.sim
+	if _upgrade_request_sim == simulation and _upgrade_request_generation == _run_generation:
+		return
+	_upgrade_request_sim = simulation
+	_upgrade_request_generation = _run_generation
+	_open_combat_upgrades.call_deferred(simulation, _run_generation)
+
+func _can_open_combat_upgrades() -> bool:
+	return (
+		screen == Screen.COMBAT and not _benchmark and not paused
+		and run.pending_upgrades > 0 and run.health > 0.0
+		and world != null and world.active and world.sim != null and not world.sim.complete
+	)
+
+func _open_combat_upgrades(simulation: CombatSim, generation: int) -> void:
+	if _upgrade_request_sim != simulation or _upgrade_request_generation != generation:
+		return
+	_upgrade_request_sim = null
+	_upgrade_request_generation = -1
+	if generation != _run_generation or simulation != world.sim or not _can_open_combat_upgrades():
+		return
+	_combat_upgrade_sim = simulation
+	_combat_upgrade_generation = generation
+	screen = Screen.UPGRADE
+	get_tree().paused = true
+	ui.show_upgrades(true)
+	sound.play("level", -12.0)
+
+func _combat_upgrades_active() -> bool:
+	return _combat_upgrade_sim != null and _combat_upgrade_generation == _run_generation and world != null and _combat_upgrade_sim == world.sim
+
+func _upgrades_finished() -> void:
+	if screen != Screen.UPGRADE or run.pending_upgrades > 0:
+		return
+	if _combat_upgrade_sim != null and not _combat_upgrades_active():
+		return
+	if not _combat_upgrades_active():
+		_open_shop()
+		return
+	if not world.active or world.sim.complete:
+		return
+	_combat_upgrade_sim = null
+	_combat_upgrade_generation = -1
+	screen = Screen.COMBAT
+	ui.show_hud()
+	ui.update_hud(world.hud_snapshot())
+	get_tree().paused = paused
+	if paused:
+		ui.show_pause()
+
+func _invalidate_combat_upgrades() -> void:
+	_run_generation += 1
+	_upgrade_request_sim = null
+	_upgrade_request_generation = -1
+	_combat_upgrade_sim = null
+	_combat_upgrade_generation = -1
+
 func _title() -> void:
+	_invalidate_combat_upgrades()
 	get_window().title = "秘术余烬" if store.persistent else "秘术余烬 · 验证模式（不保存设置与成绩）"
 	get_tree().paused = false
 	paused = false
@@ -160,8 +236,9 @@ func _pause() -> void:
 
 func _resume() -> void:
 	paused = false
-	get_tree().paused = false
+	get_tree().paused = _combat_upgrades_active()
 	ui.hide_pause()
+	_on_run_changed()
 
 func _setting_changed(key: String, value: Variant) -> void:
 	store.settings[key] = value
@@ -185,7 +262,7 @@ func _unhandled_key_input(event: InputEvent) -> void:
 			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED if fullscreen else DisplayServer.WINDOW_MODE_FULLSCREEN)
 
 func _notification(what: int) -> void:
-	if what == NOTIFICATION_APPLICATION_FOCUS_OUT and screen == Screen.COMBAT and not paused and not _benchmark and not ("--smoke" in args) and not ("--autoplay" in args):
+	if what == NOTIFICATION_APPLICATION_FOCUS_OUT and (screen == Screen.COMBAT or _combat_upgrades_active()) and not paused and not _benchmark and not ("--smoke" in args) and not ("--autoplay" in args):
 		_pause()
 	elif what == NOTIFICATION_WM_CLOSE_REQUEST:
 		store.save_profile()

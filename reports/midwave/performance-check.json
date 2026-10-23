@@ -1,0 +1,26 @@
+{
+  "scope": "60-second native Main smoke/performance check, not a new 300-second acceptance sample",
+  "source_hashes_start": {
+    "scripts/main.gd": "40b953cb9d715fd6111515a5489a2156cf1a9c5f149dfebbc62589f2989f1a40",
+    "scripts/combat/combat_world.gd": "eaad8975f8984ca64db9aba21af1cacda6a68b7d4477d594b513f09d5643fb89",
+    "scripts/ui/game_ui.gd": "d577ad16ffaa9a473f6cf9cfcd799378da0ba688ca8bb671731e49ef07e23d60",
+    "scripts/combat/combat_sim.gd": "ea759d32ad33abeb3634f32233637f57d869c8ff7be923c2adbec189de18a0ab",
+    "scripts/core/run_state.gd": "54b874b7f241b790064c69df37b26c2433d0ba273579b93c8948a513b9ea128b",
+    "scripts/combat/projectile_painter.gd": "568d811fe349debd57a7700a0d9d8cf502adaf6f21c34518abb9e34af7ce9297"
+  },
+  "source_hashes_end": {
+    "scripts/main.gd": "40b953cb9d715fd6111515a5489a2156cf1a9c5f149dfebbc62589f2989f1a40",
+    "scripts/combat/combat_world.gd": "eaad8975f8984ca64db9aba21af1cacda6a68b7d4477d594b513f09d5643fb89",
+    "scripts/ui/game_ui.gd": "d577ad16ffaa9a473f6cf9cfcd799378da0ba688ca8bb671731e49ef07e23d60",
+    "scripts/combat/combat_sim.gd": "ea759d32ad33abeb3634f32233637f57d869c8ff7be923c2adbec189de18a0ab",
+    "scripts/core/run_state.gd": "54b874b7f241b790064c69df37b26c2433d0ba273579b93c8948a513b9ea128b",
+    "scripts/combat/projectile_painter.gd": "568d811fe349debd57a7700a0d9d8cf502adaf6f21c34518abb9e34af7ce9297"
+  },
+  "canonical_historical_report_restored_sha256": "0f722ddd93092af1c9ad682c20d0ca1c1ae45f4f16c238113a708c1c852df0c4",
+  "previous_300_second_report": "reports/return-ring/performance.json",
+  "previous_report_sha256": "7fed7732d6f400f48cab72b9d03fd8566971214ba314f0fa9e63a968b4f2637e",
+  "performance_report_sha256": "9d404c66e1728b249c6472ae8e9c79665e523b893075f2b5512cdc6792918dda",
+  "player_visual_revision": "foreground-player-v1",
+  "native_process_isolated": true,
+  "passed": true
+}

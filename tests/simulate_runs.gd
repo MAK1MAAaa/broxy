@@ -2,9 +2,9 @@ extends SceneTree
 ## Runs the shipped simulation and inventory rules without rendering or privileged rewards.
 
 const DELTA: float = 1.0 / 60.0
-const POLICY_VERSION: String = "orbit-avoid-v1/shop-v1"
+const POLICY_VERSION: String = "orbit-avoid-v1/shop-v1/upgrade-timing-v2"
 const SHOP_OBSERVATION_SCHEMA_VERSION: String = "shop-observations-v1"
-const POLICY_CHANGE_NOTE: String = "Observation-only shop-v1 refactor; decisions, RNG calls, movement and balance unchanged."
+const POLICY_CHANGE_NOTE: String = "Apply the existing upgrade priorities after each live combat tick; retain intermission fallback. Movement, shop priorities and resource values are unchanged."
 const RUNES: Array[String] = ["pierce", "bounce", "blast"]
 const MAX_REROLLS: int = 3
 
@@ -43,7 +43,7 @@ func _initialize() -> void:
 	quit(1 if _require_win and not all_won else 0)
 
 func _content_version() -> String:
-	var sources: Array[String] = ["res://scripts/core/run_state.gd", "res://scripts/combat/combat_sim.gd", "res://scripts/data/rune_rules.gd"]
+	var sources: Array[String] = ["res://scripts/core/run_state.gd", "res://scripts/combat/combat_sim.gd", "res://scripts/data/rune_rules.gd", "res://scripts/main.gd"]
 	var definitions: Array[ContentDef] = GameCatalog.weapons()
 	definitions.append_array(GameCatalog.runes())
 	definitions.append_array(GameCatalog.relics())
@@ -76,7 +76,7 @@ func _play_run(seed_value: int, rune_id: String) -> Dictionary:
 		for frame: int in range(frame_limit):
 			if simulation.complete:
 				break
-			simulation.step(DELTA, BotPolicy.movement(simulation))
+			_advance_combat_tick(simulation, state, trace)
 		wave_results.append({
 			"wave": number, "won": simulation.complete and simulation.victory,
 			"kills": state.kills - start_kills, "collected": state.gold - start_gold,
@@ -110,7 +110,14 @@ func _play_run(seed_value: int, rune_id: String) -> Dictionary:
 		"shop_observations": shop_observations,
 	}
 
-func _choose_upgrades(state: RunState, trace: Array[Dictionary]) -> void:
+func _advance_combat_tick(simulation: CombatSim, state: RunState, trace: Array[Dictionary]) -> void:
+	if simulation.complete:
+		return
+	simulation.step(DELTA, BotPolicy.movement(simulation))
+	if not simulation.complete and state.pending_upgrades > 0:
+		_choose_upgrades(state, trace, "combat", simulation.elapsed)
+
+func _choose_upgrades(state: RunState, trace: Array[Dictionary], context: String = "intermission", wave_elapsed: float = -1.0) -> void:
 	while state.pending_upgrades > 0:
 		var choices: Array[Dictionary] = state.upgrade_choices()
 		var chosen: Dictionary = choices[0]
@@ -127,7 +134,7 @@ func _choose_upgrades(state: RunState, trace: Array[Dictionary]) -> void:
 		if not state.choose_upgrade(id):
 			trace.append({"wave": state.wave, "action": "upgrade_rejected", "id": id, "error": state.last_error})
 			break
-		trace.append({"wave": state.wave, "action": "upgrade", "id": id, "offered": [choices[0]["id"], choices[1]["id"], choices[2]["id"]]})
+		trace.append({"wave": state.wave, "action": "upgrade", "id": id, "offered": [choices[0]["id"], choices[1]["id"], choices[2]["id"]], "context": context, "wave_elapsed": snappedf(wave_elapsed, 0.001)})
 
 func _shop(state: RunState, rune_id: String, trace: Array[Dictionary], observations: Array[Dictionary] = []) -> void:
 	_observe_shop(state, rune_id, observations, "initial", "shop_generated")

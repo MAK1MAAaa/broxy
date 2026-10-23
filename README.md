@@ -6,6 +6,8 @@ Godot 4.7.2 普通版、带类型标注的 GDScript 开发的 macOS / Windows �
 
 归魂环发射0.60秒后追随玩家当前位置返航，往返共享已命中目标，不会重复伤害同一敌人；本体可命中2个不同目标，成功弹射会永久取消返航。冷却独立推进，接回魂环不回复生命或魂屑。新增内容沿用商店购买、商品锁定、遗物购前对照和符文装入预览；本轮完整回归、原生画面、固定种子压力采样与Windows新包验证通过。八法器头部使用预生成图集与复用缓冲，保持危险提示优先。
 
+当前经验升级会暂停战斗，选完三选一后继续原位置、弹体、冷却与剩余时间；多级连续选择，Esc与设置仍可用，死亡和波末优先结算。生命强化显示实际生命补充。提前拾取可提前取得强化，让拾取范围与移速的取舍影响当前波次。角色与环绕法器现在显示在友方特效和输出数字上方，承伤提示与敌方危险信息继续置顶。规则、边界和验收见 [波内强化与玩家前景](docs/midwave-upgrades.md)。
+
 战斗现在显示实际伤害与承伤浮字，并提示受击方向。普通主命中新增四类短暂刻痕，持续0.12秒；贯穿显示淡绿双轨，弹射显示真实转向的冷蓝折角，爆破显示暖金放射纹，敌方预警始终位于最上层。刻痕采用32对象固定池与最多12批次绘制，次级溅射不再叠痕；暂停时关闭闪光会立即清除，重新开启不重播。弹体圆点、弹射环和拖尾采用批量绘制。结算新增最后受击来源和各法器实际伤害贡献。购买符文后会自动选中，并把键盘焦点移到法器的“装入”按钮，便于完成改装。
 
 冲锋蓄力显示短双轨方向箭头，施法蓄力显示闭合刻环；它们表示攻击意图，不代表完整碰撞范围或术士锁定瞄准。Boss战明确显示“击败首领”和“限时”，最后10秒使用静态暖色提醒。波末结算会清理暂停状态，避免下一波留下不可见的暂停。
@@ -28,7 +30,7 @@ Godot 4.7.2 普通版、带类型标注的 GDScript 开发的 macOS / Windows �
 
 ## 直接游玩
 
-Windows x86_64 版本由 `feature/windows` 分支构建，入口为 `build/Embers-windows-x86_64/Embers.exe`，分发包为 `build/Embers-windows-x86_64.zip`。解压后保留同目录的 `Embers.pck` 与 `licenses/`。本轮新包包含8法器、12遗物、`engraved-06`及图集弹体，已重新导出、校验ZIP并实际启动EXE。旧商店锁定版另存为 `build/Embers-windows-before-return-ring-2ec1585.zip`。Windows使用微软雅黑。最新验收见 [归魂环与取舍遗物](docs/return-ring.md)；macOS未在本轮重建，下文历史证据保持原样。
+Windows x86_64版本由 `feature/windows` 构建，入口为 `build/Embers-windows-x86_64/Embers.exe`，分发包为 `build/Embers-windows-x86_64.zip`。解压后保留同目录的 `Embers.pck` 与 `licenses/`。当前包包含8法器、12遗物、`engraved-06`、波内强化和玩家前景分层，已重新导出、校验ZIP并实际启动EXE。上一轮包另存 `build/Embers-windows-before-midwave-ee445dc.zip`。Windows使用微软雅黑；macOS本轮未重建，历史证据保留。
 
 macOS 内容扩充前的应用为 `build/Embers-impact.app`（压缩包`build/Embers-impact-mac-arm64.zip`），新增普通法器命中刻痕，包含此前的主角布料、竞技场石材、商店条件提示、HUD避让、强化预览、诊断档案隔离和幽焰追踪修复。旧`build/Embers.app`文件保留；若旧版正在运行，先结束再打开新版。选择骨针或幽焰开局。应用面向 Apple Silicon、macOS 13 及以上；已采用本地 ad-hoc 签名，尚未进行 Developer ID 公证。
 
@@ -44,7 +46,7 @@ macOS 内容扩充前的应用为 `build/Embers-impact.app`（压缩包`build/Em
 
 ## 游戏规则
 
-- 前七波各45秒，第八波为90秒 Boss 战。波末回收已掉落魂屑并在祭坛恢复全部生命，再完整结算已获得升级。
+- 前七波各45秒，第八波为90秒Boss战。波内达到经验门槛时暂停并选择强化，选完继续同一波；计时、弹体和冷却均冻结。波末回收剩余魂屑并在祭坛恢复生命，未处理的强化由波末兜底；死亡和最终胜利直接结算。
 - 魂屑同时增加金币和经验。每波最低收入为 `28 + 6 × (波次 - 1)`，击杀收入不足时补足；补足部分不产生经验。
 - 八种法器：骨针（快速单发）、霜矛（减速）、幽焰（追踪）、散魂（扇形三发）、月镰（本体贯穿）、雷灯（窄角双发）、星陨（慢速重击）、归魂环（本体贯穿与返航）。商店均可购买，可重复装备，同名不合成；开局仍选择骨针或幽焰。
 - 每件法器一个符文槽：贯穿额外命中2个目标；弹射额外跳转2次、每跳剩余75%伤害；爆破产生68像素半径、55%伤害的溅射。
@@ -149,17 +151,17 @@ python3 -m unittest discover -s tests -p 'test_shop_analysis.py'
 ./tools/run.sh -- --benchmark --benchmark-content --benchmark-seed=1792123517 --seconds=300
 ```
 
-可用 `./tools/test.sh` 运行Godot行为与Python测试。本轮Windows通过16040条Godot无界面断言（35套及5个额外ProfileModes入口）与27项Python测试；原生另通过归魂环UI88、呈现34、内容呈现547、敌方预警134、容量204、旧弹体89条断言。归魂环行为专项109条，覆盖旧武器兼容、返航、回收和符文预算。证据见 `reports/return-ring/validation.json` 与 `docs/return-ring.md`。历史商店锁定、符文预览和购前对照结果仍分别保留。系统字体验证需要正常桌面字体访问权限。
+可用 `./tools/test.sh` 运行Godot与Python测试。本轮Windows通过16332条Godot断言（39套及5个额外档案入口）与27项Python测试。波内流程76、升级UI152、玩家前景50、runner时序14条通过；原生另重跑前三套及命中反馈、通知、敌方预警。证据见 `reports/midwave/validation.json`，原生首波升级/恢复与前景对照见 `reports/midwave/native-fixtures.json`。此前归魂环、商店与符文验收原样保留；系统字体验证需要桌面字体访问权限。
 
 性能测试会打开明确标记的窗口，预热5秒后采样300秒，保持300敌人、至少600投射物与200掉落，并输出 `reports/performance.json`。`--benchmark-content`使用内容目录中的法器与3类符文的真实伤害弹体，标记为`content-feedback`；`--benchmark-runes`保留原4件法器的`rune-feedback`场景；省略二者为历史`baseline`。可加 `--benchmark-seed=<正整数>` 复现生成序列；只在基准模式解析，省略时维持原随机种子，普通游戏不受影响。不同场景独立记录，不能直接推断性能差异来源。报告记录实际武器来源、默认设置、持久化状态与本次种子，内容场景另记录各法器实际伤害和末段弹体家族。测试时保持窗口可见、电脑未锁屏，避免其他图形负载；保留历史记录时先备份原性能JSON。
 
-最新Windows八法器300秒原生压力通过：35485帧，平均118.282 FPS、P99 16.217ms，末尾300敌人／600弹体／200掉落，默认设置、无个人档案。首次同种子1792123517为52.348 FPS、P99 30.805ms，失败记录保留；经容量复用、批量缓冲和头部图集优化后按同种子重测，未减少实体、伤害或反馈预算。结果见 `reports/return-ring/performance.json`，候选短测与局限见 `docs/return-ring.md`。此前七法器61.368 FPS及其他历史记录保持，不能跨场景直接归因。
+本轮正常Main八法器60秒原生检查通过：平均117.789FPS、P99 17.757ms，末尾300敌人/600弹体/200掉落，默认设置且不读写个人档案；确认基准未被波内强化暂停，见 `reports/midwave/performance-60s.json`。本轮没有重复300秒验收。最近完整300秒仍是ee445dc的118.282FPS/P99 16.217ms，保留在 `reports/return-ring/performance.json`；首次52.348FPS失败及图集优化证据也保留，不能将不同时长、轨迹和源码的数字当作性能提升对照。
 
 此前内容扩充版Windows七法器300秒原生采样通过：平均60.710 FPS、P99 28.418ms，末尾300敌人／600弹体／200掉落；结果见 `reports/content/performance.json`。首次54.60 FPS的失败采样、弹体几何缓存优化与同夹具CPU微测一并保留在 `docs/content-expansion.md`，各次原生采样种子不同，不把全部帧率差额归因于单项修改。
 
 内容扩充前的macOS源码`2a6c4b9`曾在Apple M5完成5分钟原生真实符文场景采样：27,895帧，平均92.979 FPS、P99帧间隔26.191毫秒，达到≥58 FPS / ≤33毫秒门槛，退出0。末尾300敌人/600弹体/200掉落；主/次命中473,662/1,223,944，刻痕池峰值32、容量32，结束时最近准备7个非空批次。峰值和命中累计含5秒预热，末段批次不是全程最大或GPU drawcall数。默认设置且不读写个人档案，四次CUA观察确认可见窗口和采样推进。结果见`reports/impact-performance-validation.json`；原实现验证`reports/impact-validation.json`保留当时锁屏未测的历史状态。该历史补测只记录性能，未更改源码/素材、重跑30局或重新打包，当时交付同一Embers-impact.app。旧e64bb18的90.847 FPS/P99 25.400毫秒原样另存`performance-before-impacts.json`与`benchmark-before-impacts.log`，跨种子与跨版本差额不能单独归因于刻痕。详见`docs/verification.md`。
 
-完整模拟复用正式 `RunState`、`CombatSim.step` 和商店价格，没有额外金币、无敌或专用Boss数值。本轮核心 `133f6d931535`、seed2026—2035×三类符文策略共30局为26胜4败，归魂环购买与装配各7次。报价池变化改变购物和战斗轨迹，不能把相对前版23胜7败的差异归因于单件武器。policy仍为 `orbit-avoid-v1/shop-v1+1d336100ecaa`，策略及运行脚本字节保持；旧策略不购买新两件遗物或使用锁定，实际交易另由专项覆盖。实验碰撞预计算被舍弃，最终源码逐字节回到原30局同一核心，因此复用该批次并记录回滚审计；实验批30局也仅除核心指纹外全字段一致。见 `reports/return-ring/simulation.json`。历史结果、真人试玩流程与持续记录分别见 `docs/simulation.md`、`docs/playtest.md`、`docs/optimization-log.md`。
+完整模拟复用正式 `RunState` 与 `CombatSim.step`，没有额外金币、无敌或专用Boss数值。当前核心 `prototype-0.1.0+2161ed68c2ae`、seed2026—2035×三类符文共30局为28胜2败，战斗内强化258次、波末兜底129次。runner改为每个存活战斗步后选择原有强化，终局保留兜底；policy为 `orbit-avoid-v1/shop-v1/upgrade-timing-v2+f9be8607dd88`。走位及购物/升级偏好保持，但时机改变随机选择和后续轨迹，不与旧26胜4败声称等价，也不据此推断真人难度。Main的升级编排现纳入核心指纹。见 `reports/midwave/simulation.json`；真人试玩、打断频率与选择耗时仍待按 `docs/playtest.md` 记录。
 
 模拟还会记录完整商店报价、余额、候选评分及停止购买/刷新原因。`tools/analyze_shop_runs.py`可生成观测分析，并用`--baseline`严格比较旧对局字段和购物trace。商店观测阶段的30局在新增观测前后旧字段完全一致，证据见`reports/shop-analysis.json`；该结果只证明所测样本不受观测影响，不表示此前的战斗修复没有改变轨迹。
 

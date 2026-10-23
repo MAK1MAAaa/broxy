@@ -39,3 +39,8 @@ reports/return-ring/*.jsonl
 reports/return-ring/*.png
 reports/return-ring/*.import
 reports/return-ring/*-raw.json
+reports/midwave/*.log
+reports/midwave/*.jsonl
+reports/midwave/*.png
+reports/midwave/*.import
+reports/midwave/*-raw.json

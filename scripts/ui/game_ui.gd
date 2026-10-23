@@ -80,6 +80,7 @@ var _best: Dictionary = {}
 var _requested_shop_focus := ""
 var _shop_epoch: int = 0
 var _upgrade_epoch: int = 0
+var _upgrades_during_combat: bool = false
 var _overlay_mode := ""
 var _page_focus: Control
 var _page_focus_id := ""
@@ -374,8 +375,9 @@ func show_shop() -> void:
 	_build_shop()
 
 
-func show_upgrades() -> void:
+func show_upgrades(during_combat: bool = false) -> void:
 	_set_screen("upgrades")
+	_upgrades_during_combat = during_combat
 	_build_upgrades()
 
 
@@ -1248,13 +1250,15 @@ func _build_upgrades() -> void:
 		return
 	if run.pending_upgrades <= 0:
 		_screen = "transition"
-		_finish_upgrades.call_deferred()
+		_finish_upgrades.call_deferred(_upgrade_epoch)
 		return
 	var shell := _shell(60, 88)
 	var title := _label("秘术觉醒", 40, BONE)
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	shell.add_child(title)
-	var sub := _label("选择一项强化  ·  待选择 %d 次" % run.pending_upgrades, 18, MUTED)
+	var context: String = "战斗已暂停，选完强化继续当前波次。  " if _upgrades_during_combat else ""
+	var sub := _label(context + "选择一项强化  ·  待选择 %d 次" % run.pending_upgrades, 18, MUTED)
+	sub.name = "UpgradeContext"
 	sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	shell.add_child(sub)
 	_spacer(shell, 34)
@@ -1289,6 +1293,11 @@ func _build_upgrades() -> void:
 		var values := _label(_upgrade_stat_preview(choice), 20, CYAN)
 		values.name = "UpgradePreview"
 		preview.add_child(values)
+		if str(choice.get("stat", "")) == "max_health":
+			var after_health: float = minf(run.stat("max_health") + float(choice.get("amount", 0.0)), run.health + float(choice.get("amount", 0.0)))
+			var health := _label("生命  %.0f → %.0f（回复 %.0f）" % [run.health, after_health, after_health - run.health], 16, CYAN)
+			health.name = "UpgradeHealthPreview"
+			preview.add_child(health)
 		var button := _button("选择强化", _perform_upgrade_action.bind(str(choice["id"]), _upgrade_epoch), Vector2(0, 46))
 		_accent(button)
 		body.add_child(button)
@@ -1475,8 +1484,8 @@ func _choose_upgrade(id: String) -> void:
 	_handle_action(run.choose_upgrade(id), "level")
 
 
-func _finish_upgrades() -> void:
-	if _screen == "transition":
+func _finish_upgrades(epoch: int) -> void:
+	if _screen == "transition" and epoch == _upgrade_epoch:
 		upgrades_finished.emit()
 
 
@@ -1515,6 +1524,8 @@ func _refresh() -> void:
 
 func _set_screen(screen: String) -> void:
 	_screen = screen
+	if screen != "upgrades":
+		_upgrades_during_combat = false
 	_requested_shop_focus = ""
 	_overlay_mode = ""
 	_page_focus = null

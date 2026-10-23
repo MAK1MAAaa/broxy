@@ -33,6 +33,7 @@ const ENEMY_HIT_VISUAL_REVISION: String = "tempered-hit-v1"
 const ENEMY_HIT_PULSE_SECONDS: float = 0.06
 const ENEMY_HIT_TIMER_CUTOFF: float = 0.04
 const ENEMY_HIT_PEAK_GAIN: float = 0.22
+const PLAYER_FOREGROUND_VISUAL_REVISION: String = "foreground-player-v1"
 
 class RuneFlash:
 	var kind: int = 0
@@ -316,10 +317,12 @@ func _draw() -> void:
 	_draw_souls()
 	_draw_enemies()
 	_draw_friendly_shots()
-	_draw_player()
+	_draw_player_ground()
 	_draw_effects()
 	_draw_impact_feedback()
 	_draw_rune_feedback()
+	_draw_outgoing_feedback()
+	_draw_player()
 	_draw_feedback()
 	# Hostile projectiles and telegraphs stay above all friendly spell effects.
 	_draw_danger()
@@ -388,13 +391,27 @@ func _rune_diamond(batch: RuneLineBatch, center: Vector2, radius: float) -> void
 	_rune_segment(batch, bottom, left)
 	_rune_segment(batch, left, top)
 
+func _draw_outgoing_feedback() -> void:
+	_draw_numbers(false)
+
+func _draw_numbers(player_hit: bool) -> void:
+	for number: FloatingNumber in _numbers:
+		if number.player_hit == player_hit:
+			_draw_number(number)
+
+func _draw_number(number: FloatingNumber) -> void:
+	if _number_font == null:
+		return
+	var alpha: float = minf(1.0, number.life / 0.24)
+	var point: Vector2 = number.position - Vector2(number.text_width * 0.5, 0)
+	draw_string_outline(_number_font, point, number.text, HORIZONTAL_ALIGNMENT_LEFT, -1, number.font_size, 3, Color(0.025, 0.035, 0.06, alpha * 0.9))
+	draw_string(_number_font, point, number.text, HORIZONTAL_ALIGNMENT_LEFT, -1, number.font_size, Color(number.color, alpha))
+
 func _draw_feedback() -> void:
-	if _number_font != null:
-		for number: FloatingNumber in _numbers:
-			var alpha: float = minf(1.0, number.life / 0.24)
-			var point: Vector2 = number.position - Vector2(number.text_width * 0.5, 0)
-			draw_string_outline(_number_font, point, number.text, HORIZONTAL_ALIGNMENT_LEFT, -1, number.font_size, 3, Color(0.025, 0.035, 0.06, alpha * 0.9))
-			draw_string(_number_font, point, number.text, HORIZONTAL_ALIGNMENT_LEFT, -1, number.font_size, Color(number.color, alpha))
+	_draw_numbers(true)
+	_draw_player_damage_direction()
+
+func _draw_player_damage_direction() -> void:
 	if _damage_flash > 0.0 and bool(settings.get("flash", true)):
 		var alpha: float = _damage_flash / 0.22
 		var center: Vector2 = sim.player_position + Vector2(0, -8)
@@ -458,16 +475,23 @@ func _draw_friendly_shots() -> void:
 	_projectile_painter.rebuild(sim.shots)
 	_projectile_painter.draw(self)
 
-func _draw_player() -> void:
+func _draw_player_ground() -> void:
 	var center: Vector2 = sim.player_position
-	var bob: float = sin(_visual_time * 9.0) * minf(2.0, sim.player_velocity.length() * 0.012)
 	draw_texture_rect(glow_texture, Rect2(center - Vector2(44, 34), Vector2(88, 70)), false, Color(0.89, 0.78, 1.0, 0.35))
 	draw_set_transform(center + Vector2(0, 9), 0.0, Vector2(1.0, 0.48))
 	draw_texture_rect(seal_texture, Rect2(-Vector2.ONE * 32.0, Vector2.ONE * 64.0), false, Color(1.0, 0.95, 0.85, 0.55 + sin(_visual_time * 1.6) * 0.08))
 	draw_set_transform(Vector2.ZERO)
+
+func _player_tint() -> Color:
 	var tint: Color = Color.WHITE
 	if sim.invulnerability > 0.0 and bool(settings.get("flash", true)):
 		tint.a = 0.55 + sin(_visual_time * 35.0) * 0.30
+	return tint
+
+func _draw_player() -> void:
+	var center: Vector2 = sim.player_position
+	var bob: float = sin(_visual_time * 9.0) * minf(2.0, sim.player_velocity.length() * 0.012)
+	var tint: Color = _player_tint()
 	var lean: float = clampf(sim.player_velocity.x * 0.0002, -0.045, 0.045)
 	draw_set_transform(center, lean)
 	draw_texture_rect(textures["player"], Rect2(Vector2(-34, -50 + bob), Vector2(68, 68)), false, tint)
