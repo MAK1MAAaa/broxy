@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "baseline_commit": "745a5bb",
+  "before": [
+    {
+      "mode": "normal",
+      "assertions": 23,
+      "failures": 0,
+      "raw_sha256": "c8c8895376882d40e65f3146f0586e6a3d9a8a5f70961ff11faca264fcaf6d3a"
+    },
+    {
+      "mode": "smoke",
+      "assertions": 15,
+      "failures": 5,
+      "raw_sha256": "9d1062fc6b97a59d04a7ab4d4d33fc69d54affde7c545dc83f46f3f4aaa103f3"
+    },
+    {
+      "mode": "autoplay",
+      "assertions": 15,
+      "failures": 5,
+      "raw_sha256": "e192a028e78c7e999e37c08aceb01afb45cd9698a3990c55ae376fa9c36ee5cd"
+    },
+    {
+      "mode": "shop-preview",
+      "assertions": 15,
+      "failures": 5,
+      "raw_sha256": "805438c44bb9f90e1c8c7ba3d0ae9d908954759272b9f9d4289976425f7541d1"
+    },
+    {
+      "mode": "benchmark",
+      "assertions": 15,
+      "failures": 5,
+      "raw_sha256": "ed9339439d8137cb731a624d3dc92ae47ee97e963ea75409f4d785ad67e6eccf"
+    },
+    {
+      "mode": "capture-only",
+      "assertions": 15,
+      "failures": 5,
+      "raw_sha256": "1583c40d51dc74d2222d72b052c80e57542000bd4a0c2959b67617b516a78d9a"
+    }
+  ],
+  "before_assertions": 98,
+  "before_failures": 25,
+  "after": [
+    {
+      "mode": "normal",
+      "assertions": 25,
+      "failures": 0
+    },
+    {
+      "mode": "smoke",
+      "assertions": 16,
+      "failures": 0
+    },
+    {
+      "mode": "autoplay",
+      "assertions": 16,
+      "failures": 0
+    },
+    {
+      "mode": "shop-preview",
+      "assertions": 16,
+      "failures": 0
+    },
+    {
+      "mode": "benchmark",
+      "assertions": 16,
+      "failures": 0
+    },
+    {
+      "mode": "capture-only",
+      "assertions": 16,
+      "failures": 0
+    }
+  ],
+  "new_title_assertions_added_after_red": 7,
+  "after_assertions": 105,
+  "after_failures": 0,
+  "all_godot_assertions": 1684,
+  "python_tests": 14,
+  "personal_profile_read_or_written_by_tests": false,
+  "isolation_method": "Actual Main _ready with actual CLI args; real ConfigFile seeded in a unique /private/tmp directory through optional GameStore constructor path. Every temp cfg and directory cleaned.",
+  "normal_mode_retains_storage": true,
+  "manual_persistent_false_retained": true,
+  "native_command": "./tools/run.sh -- --shop-preview --capture-only --capture=res://reports/diagnostic-shop.png --capture-delay=8",
+  "native_exit_code": 0,
+  "native_capture_result": 0,
+  "native_limits": "Viewport screenshot reviewed; it excludes macOS title bar. Window no-save labels asserted through actual Main window property in six headless-mode processes; no CUA title visual claim.",
+  "core_version_unchanged": "prototype-0.1.0+4f7be4bdb91f",
+  "policy_version_unchanged": "orbit-avoid-v1/shop-v1+7c19c01f20e4",
+  "build_export_rerun": false,
+  "last_app_build_commit": "745a5bb",
+  "performance_and_simulation_rerun": false,
+  "artifact_sha256": {
+    "scripts/main.gd": "92fc78e2976721aa419993d7e0254388106de630d3358dfc8ba1497499085110",
+    "scripts/core/game_store.gd": "13f95880667763d262cdfa5af6ceefbeb27ba3c098e1b4ac94cd5eab56041150",
+    "tests/test_profile_modes.gd": "b06cc43cc108f6ff496922d2fd4d583b7d11e07f94d0a9da3a927523d6aaa29d",
+    "tools/test.sh": "ded891e45f1997efe3033581abe0d61ffaf516e49f22cad17171d32ec571f6f4",
+    "reports/tests.log": "2eeaec5286c19ed4a9c7d5307e87070f4415971394866a26045952eaf390c1ad",
+    "reports/tests-before-profile.log": "7d8a4f51686f25d95d6faa57d061cf451cd3669694276daa312e686670c9e783",
+    "reports/diagnostic-native.log": "1706f8ef429f503b46d7eb3336428f1dd157921183eceb4a487956e114344af9",
+    "reports/diagnostic-shop.png": "4004b700ceb9442d941d3795970e595d8b83eeefde020ffd6cbeb205fde0371f"
+  },
+  "limits": [
+    "Does not alter, delete or attempt to classify existing personal records. Prevents future diagnostic IO.",
+    "Core combat/homing fix is a separate pending change; this report does not claim that defect resolved.",
+    "No five-human playtest, full new native battle sampling, external signing or new Mac model acceptance."
+  ]
+}

@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ContentDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/content_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "armor"
+kind = "relic"
+display_name = "黑曜甲"
+subtitle = "遗物 · 最多叠加3层"
+description = "护甲 +2"
+icon = "armor"
+color = Color(0.65, 0.68, 0.79, 1)
+price = 20
+stat = "armor"
+amount = 2.0

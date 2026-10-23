@@ -1,0 +1,936 @@
+{
+  "baseline_balance_versions": [
+    "prototype-0.1.0+863244db2817"
+  ],
+  "after_balance_version": "prototype-0.1.0+9b59680253ee",
+  "unchanged_policy_version": "orbit-avoid-v1/shop-v1+cf468b4c5f0f",
+  "pairs": 30,
+  "before": {
+    "runs": 30,
+    "wins": 28,
+    "robot_win_fraction": 0.9333,
+    "death_wave_counts": {
+      "3": 1,
+      "4": 1
+    },
+    "first_target_equip_after_wave_counts": {
+      "1": 9,
+      "2": 18,
+      "3": 2,
+      "never": 1
+    },
+    "target_equipped_before_start_of_wave_3": 27,
+    "never_equipped_target_count": 1,
+    "full_target_build_after_wave_counts": {
+      "2": 9,
+      "3": 11,
+      "4": 5,
+      "5": 2,
+      "7": 1,
+      "never": 2
+    },
+    "final_gold": {
+      "n": 30,
+      "min": 212,
+      "median": 1614.0,
+      "mean": 1513.2,
+      "max": 1839
+    },
+    "battle_seconds_wins_only": {
+      "n": 28,
+      "min": 319.717,
+      "median": 323.092,
+      "mean": 327.456,
+      "max": 350.183
+    }
+  },
+  "after": {
+    "runs": 30,
+    "wins": 28,
+    "robot_win_fraction": 0.9333,
+    "death_wave_counts": {
+      "3": 1,
+      "4": 1
+    },
+    "first_target_equip_after_wave_counts": {
+      "1": 9,
+      "2": 18,
+      "3": 2,
+      "never": 1
+    },
+    "target_equipped_before_start_of_wave_3": 27,
+    "never_equipped_target_count": 1,
+    "full_target_build_after_wave_counts": {
+      "2": 9,
+      "3": 11,
+      "4": 5,
+      "5": 2,
+      "7": 1,
+      "never": 2
+    },
+    "final_gold": {
+      "n": 30,
+      "min": 213,
+      "median": 1609.5,
+      "mean": 1511.067,
+      "max": 1856
+    },
+    "battle_seconds_wins_only": {
+      "n": 28,
+      "min": 319.717,
+      "median": 325.275,
+      "mean": 327.476,
+      "max": 347.367
+    }
+  },
+  "outcome_transitions": {
+    "loss_to_loss": 2,
+    "win_to_win": 28
+  },
+  "changed_outcome_pairs": [],
+  "first_target_equipment_changed_pairs": [],
+  "paired_wave_economy": [
+    {
+      "wave": 1,
+      "common_reached_pairs": 30,
+      "combat_income_delta_after_minus_before": {
+        "n": 30,
+        "min": 0,
+        "median": 0.0,
+        "mean": 0,
+        "max": 0
+      },
+      "common_shop_pairs": 30,
+      "gold_after_shop_delta_after_minus_before": {
+        "n": 30,
+        "min": 0,
+        "median": 0.0,
+        "mean": 0,
+        "max": 0
+      }
+    },
+    {
+      "wave": 2,
+      "common_reached_pairs": 30,
+      "combat_income_delta_after_minus_before": {
+        "n": 30,
+        "min": -6,
+        "median": 0.0,
+        "mean": -0.633,
+        "max": 7
+      },
+      "common_shop_pairs": 30,
+      "gold_after_shop_delta_after_minus_before": {
+        "n": 30,
+        "min": -22,
+        "median": 0.0,
+        "mean": -1.6,
+        "max": 1
+      }
+    },
+    {
+      "wave": 3,
+      "common_reached_pairs": 30,
+      "combat_income_delta_after_minus_before": {
+        "n": 30,
+        "min": -16,
+        "median": 0.0,
+        "mean": -0.267,
+        "max": 11
+      },
+      "common_shop_pairs": 29,
+      "gold_after_shop_delta_after_minus_before": {
+        "n": 29,
+        "min": -8,
+        "median": -2,
+        "mean": -0.586,
+        "max": 9
+      }
+    },
+    {
+      "wave": 4,
+      "common_reached_pairs": 29,
+      "combat_income_delta_after_minus_before": {
+        "n": 29,
+        "min": -12,
+        "median": 2,
+        "mean": 3.276,
+        "max": 22
+      },
+      "common_shop_pairs": 28,
+      "gold_after_shop_delta_after_minus_before": {
+        "n": 28,
+        "min": -12,
+        "median": 0.5,
+        "mean": 1.786,
+        "max": 24
+      }
+    },
+    {
+      "wave": 5,
+      "common_reached_pairs": 28,
+      "combat_income_delta_after_minus_before": {
+        "n": 28,
+        "min": -19,
+        "median": -0.5,
+        "mean": -0.429,
+        "max": 27
+      },
+      "common_shop_pairs": 28,
+      "gold_after_shop_delta_after_minus_before": {
+        "n": 28,
+        "min": -27,
+        "median": 2.0,
+        "mean": 0.286,
+        "max": 26
+      }
+    },
+    {
+      "wave": 6,
+      "common_reached_pairs": 28,
+      "combat_income_delta_after_minus_before": {
+        "n": 28,
+        "min": -42,
+        "median": 0.0,
+        "mean": 1.393,
+        "max": 50
+      },
+      "common_shop_pairs": 28,
+      "gold_after_shop_delta_after_minus_before": {
+        "n": 28,
+        "min": -42,
+        "median": 0.0,
+        "mean": 1.679,
+        "max": 51
+      }
+    },
+    {
+      "wave": 7,
+      "common_reached_pairs": 28,
+      "combat_income_delta_after_minus_before": {
+        "n": 28,
+        "min": -40,
+        "median": -2.0,
+        "mean": -3.393,
+        "max": 28
+      },
+      "common_shop_pairs": 28,
+      "gold_after_shop_delta_after_minus_before": {
+        "n": 28,
+        "min": -68,
+        "median": -2.0,
+        "mean": -1.714,
+        "max": 51
+      }
+    },
+    {
+      "wave": 8,
+      "common_reached_pairs": 28,
+      "combat_income_delta_after_minus_before": {
+        "n": 28,
+        "min": -80,
+        "median": 0.0,
+        "mean": -1.429,
+        "max": 51
+      },
+      "common_shop_pairs": 0,
+      "gold_after_shop_delta_after_minus_before": {
+        "n": 0,
+        "min": null,
+        "median": null,
+        "mean": null,
+        "max": null
+      }
+    }
+  ],
+  "comparisons": [
+    {
+      "seed": 2026,
+      "rune": "pierce",
+      "transition": "loss_to_loss",
+      "death_wave_before": 3,
+      "death_wave_after": 3,
+      "first_target_equip_after_wave_before": null,
+      "first_target_equip_after_wave_after": null,
+      "target_runes_at_end_before": 0,
+      "target_runes_at_end_after": 0,
+      "final_gold_before": 212,
+      "final_gold_after": 213,
+      "battle_seconds_before": 123.1,
+      "battle_seconds_after": 123.1,
+      "trace_changed": true,
+      "changed_top_level_fields": [
+        "gold",
+        "kills",
+        "reason",
+        "trace",
+        "wave_results"
+      ]
+    },
+    {
+      "seed": 2026,
+      "rune": "bounce",
+      "transition": "win_to_win",
+      "death_wave_before": null,
+      "death_wave_after": null,
+      "first_target_equip_after_wave_before": 2,
+      "first_target_equip_after_wave_after": 2,
+      "target_runes_at_end_before": 4,
+      "target_runes_at_end_after": 4,
+      "final_gold_before": 1218,
+      "final_gold_after": 1245,
+      "battle_seconds_before": 321.267,
+      "battle_seconds_after": 321.133,
+      "trace_changed": true,
+      "changed_top_level_fields": [
+        "elapsed",
+        "gold",
+        "kills",
+        "trace",
+        "wave_results"
+      ]
+    },
+    {
+      "seed": 2026,
+      "rune": "blast",
+      "transition": "win_to_win",
+      "death_wave_before": null,
+      "death_wave_after": null,
+      "first_target_equip_after_wave_before": 1,
+      "first_target_equip_after_wave_after": 1,
+      "target_runes_at_end_before": 4,
+      "target_runes_at_end_after": 4,
+      "final_gold_before": 1558,
+      "final_gold_after": 1606,
+      "battle_seconds_before": 330.783,
+      "battle_seconds_after": 331.15,
+      "trace_changed": true,
+      "changed_top_level_fields": [
+        "elapsed",
+        "gold",
+        "kills",
+        "trace",
+        "wave_results"
+      ]
+    },
+    {
+      "seed": 2027,
+      "rune": "pierce",
+      "transition": "win_to_win",
+      "death_wave_before": null,
+      "death_wave_after": null,
+      "first_target_equip_after_wave_before": 2,
+      "first_target_equip_after_wave_after": 2,
+      "target_runes_at_end_before": 4,
+      "target_runes_at_end_after": 4,
+      "final_gold_before": 1660,
+      "final_gold_after": 1716,
+      "battle_seconds_before": 323.367,
+      "battle_seconds_after": 326.183,
+      "trace_changed": true,
+      "changed_top_level_fields": [
+        "elapsed",
+        "gold",
+        "kills",
+        "trace",
+        "wave_results"
+      ]
+    },
+    {
+      "seed": 2027,
+      "rune": "bounce",
+      "transition": "win_to_win",
+      "death_wave_before": null,
+      "death_wave_after": null,
+      "first_target_equip_after_wave_before": 2,
+      "first_target_equip_after_wave_after": 2,
+      "target_runes_at_end_before": 4,
+      "target_runes_at_end_after": 4,
+      "final_gold_before": 1725,
+      "final_gold_after": 1690,
+      "battle_seconds_before": 322.817,
+      "battle_seconds_after": 322.683,
+      "trace_changed": true,
+      "changed_top_level_fields": [
+        "elapsed",
+        "gold",
+        "kills",
+        "trace",
+        "wave_results"
+      ]
+    },
+    {
+      "seed": 2027,
+      "rune": "blast",
+      "transition": "win_to_win",
+      "death_wave_before": null,
+      "death_wave_after": null,
+      "first_target_equip_after_wave_before": 2,
+      "first_target_equip_after_wave_after": 2,
+      "target_runes_at_end_before": 4,
+      "target_runes_at_end_after": 4,
+      "final_gold_before": 1627,
+      "final_gold_after": 1612,
+      "battle_seconds_before": 328.233,
+      "battle_seconds_after": 325.0,
+      "trace_changed": true,
+      "changed_top_level_fields": [
+        "elapsed",
+        "gold",
+        "kills",
+        "trace",
+        "wave_results"
+      ]
+    },
+    {
+      "seed": 2028,
+      "rune": "pierce",
+      "transition": "win_to_win",
+      "death_wave_before": null,
+      "death_wave_after": null,
+      "first_target_equip_after_wave_before": 1,
+      "first_target_equip_after_wave_after": 1,
+      "target_runes_at_end_before": 4,
+      "target_runes_at_end_after": 4,
+      "final_gold_before": 1633,
+      "final_gold_after": 1694,
+      "battle_seconds_before": 320.617,
+      "battle_seconds_after": 331.833,
+      "trace_changed": true,
+      "changed_top_level_fields": [
+        "elapsed",
+        "gold",
+        "kills",
+        "loadout",
+        "trace",
+        "wave_results"
+      ]
+    },
+    {
+      "seed": 2028,
+      "rune": "bounce",
+      "transition": "win_to_win",
+      "death_wave_before": null,
+      "death_wave_after": null,
+      "first_target_equip_after_wave_before": 1,
+      "first_target_equip_after_wave_after": 1,
+      "target_runes_at_end_before": 4,
+      "target_runes_at_end_after": 4,
+      "final_gold_before": 1570,
+      "final_gold_after": 1546,
+      "battle_seconds_before": 321.667,
+      "battle_seconds_after": 321.567,
+      "trace_changed": true,
+      "changed_top_level_fields": [
+        "elapsed",
+        "gold",
+        "kills",
+        "trace",
+        "wave_results"
+      ]
+    },
+    {
+      "seed": 2028,
+      "rune": "blast",
+      "transition": "win_to_win",
+      "death_wave_before": null,
+      "death_wave_after": null,
+      "first_target_equip_after_wave_before": 2,
+      "first_target_equip_after_wave_after": 2,
+      "target_runes_at_end_before": 4,
+      "target_runes_at_end_after": 4,
+      "final_gold_before": 1703,
+      "final_gold_after": 1699,
+      "battle_seconds_before": 328.75,
+      "battle_seconds_after": 329.183,
+      "trace_changed": true,
+      "changed_top_level_fields": [
+        "elapsed",
+        "gold",
+        "kills",
+        "trace",
+        "wave_results"
+      ]
+    },
+    {
+      "seed": 2029,
+      "rune": "pierce",
+      "transition": "win_to_win",
+      "death_wave_before": null,
+      "death_wave_after": null,
+      "first_target_equip_after_wave_before": 3,
+      "first_target_equip_after_wave_after": 3,
+      "target_runes_at_end_before": 4,
+      "target_runes_at_end_after": 4,
+      "final_gold_before": 1544,
+      "final_gold_after": 1567,
+      "battle_seconds_before": 320.383,
+      "battle_seconds_after": 320.383,
+      "trace_changed": true,
+      "changed_top_level_fields": [
+        "gold",
+        "kills",
+        "trace",
+        "wave_results"
+      ]
+    },
+    {
+      "seed": 2029,
+      "rune": "bounce",
+      "transition": "win_to_win",
+      "death_wave_before": null,
+      "death_wave_after": null,
+      "first_target_equip_after_wave_before": 1,
+      "first_target_equip_after_wave_after": 1,
+      "target_runes_at_end_before": 4,
+      "target_runes_at_end_after": 4,
+      "final_gold_before": 1607,
+      "final_gold_after": 1564,
+      "battle_seconds_before": 320.25,
+      "battle_seconds_after": 320.567,
+      "trace_changed": true,
+      "changed_top_level_fields": [
+        "elapsed",
+        "gold",
+        "kills",
+        "trace",
+        "wave_results"
+      ]
+    },
+    {
+      "seed": 2029,
+      "rune": "blast",
+      "transition": "win_to_win",
+      "death_wave_before": null,
+      "death_wave_after": null,
+      "first_target_equip_after_wave_before": 1,
+      "first_target_equip_after_wave_after": 1,
+      "target_runes_at_end_before": 4,
+      "target_runes_at_end_after": 4,
+      "final_gold_before": 1675,
+      "final_gold_after": 1670,
+      "battle_seconds_before": 335.867,
+      "battle_seconds_after": 335.867,
+      "trace_changed": true,
+      "changed_top_level_fields": [
+        "gold",
+        "kills",
+        "trace",
+        "wave_results"
+      ]
+    },
+    {
+      "seed": 2030,
+      "rune": "pierce",
+      "transition": "win_to_win",
+      "death_wave_before": null,
+      "death_wave_after": null,
+      "first_target_equip_after_wave_before": 2,
+      "first_target_equip_after_wave_after": 2,
+      "target_runes_at_end_before": 4,
+      "target_runes_at_end_after": 4,
+      "final_gold_before": 1647,
+      "final_gold_after": 1658,
+      "battle_seconds_before": 320.283,
+      "battle_seconds_after": 320.283,
+      "trace_changed": true,
+      "changed_top_level_fields": [
+        "gold",
+        "kills",
+        "trace",
+        "wave_results"
+      ]
+    },
+    {
+      "seed": 2030,
+      "rune": "bounce",
+      "transition": "win_to_win",
+      "death_wave_before": null,
+      "death_wave_after": null,
+      "first_target_equip_after_wave_before": 2,
+      "first_target_equip_after_wave_after": 2,
+      "target_runes_at_end_before": 4,
+      "target_runes_at_end_after": 4,
+      "final_gold_before": 1672,
+      "final_gold_after": 1648,
+      "battle_seconds_before": 322.667,
+      "battle_seconds_after": 322.817,
+      "trace_changed": true,
+      "changed_top_level_fields": [
+        "elapsed",
+        "gold",
+        "kills",
+        "trace",
+        "wave_results"
+      ]
+    },
+    {
+      "seed": 2030,
+      "rune": "blast",
+      "transition": "win_to_win",
+      "death_wave_before": null,
+      "death_wave_after": null,
+      "first_target_equip_after_wave_before": 2,
+      "first_target_equip_after_wave_after": 2,
+      "target_runes_at_end_before": 4,
+      "target_runes_at_end_after": 4,
+      "final_gold_before": 1529,
+      "final_gold_after": 1528,
+      "battle_seconds_before": 322.417,
+      "battle_seconds_after": 322.417,
+      "trace_changed": true,
+      "changed_top_level_fields": [
+        "gold",
+        "kills",
+        "trace",
+        "wave_results"
+      ]
+    },
+    {
+      "seed": 2031,
+      "rune": "pierce",
+      "transition": "win_to_win",
+      "death_wave_before": null,
+      "death_wave_after": null,
+      "first_target_equip_after_wave_before": 2,
+      "first_target_equip_after_wave_after": 2,
+      "target_runes_at_end_before": 4,
+      "target_runes_at_end_after": 4,
+      "final_gold_before": 1541,
+      "final_gold_after": 1534,
+      "battle_seconds_before": 319.717,
+      "battle_seconds_after": 319.717,
+      "trace_changed": true,
+      "changed_top_level_fields": [
+        "gold",
+        "kills",
+        "trace",
+        "wave_results"
+      ]
+    },
+    {
+      "seed": 2031,
+      "rune": "bounce",
+      "transition": "win_to_win",
+      "death_wave_before": null,
+      "death_wave_after": null,
+      "first_target_equip_after_wave_before": 2,
+      "first_target_equip_after_wave_after": 2,
+      "target_runes_at_end_before": 4,
+      "target_runes_at_end_after": 4,
+      "final_gold_before": 1598,
+      "final_gold_after": 1607,
+      "battle_seconds_before": 322.35,
+      "battle_seconds_after": 322.35,
+      "trace_changed": true,
+      "changed_top_level_fields": [
+        "gold",
+        "kills",
+        "trace",
+        "wave_results"
+      ]
+    },
+    {
+      "seed": 2031,
+      "rune": "blast",
+      "transition": "win_to_win",
+      "death_wave_before": null,
+      "death_wave_after": null,
+      "first_target_equip_after_wave_before": 1,
+      "first_target_equip_after_wave_after": 1,
+      "target_runes_at_end_before": 4,
+      "target_runes_at_end_after": 4,
+      "final_gold_before": 1547,
+      "final_gold_after": 1479,
+      "battle_seconds_before": 320.6,
+      "battle_seconds_after": 320.6,
+      "trace_changed": true,
+      "changed_top_level_fields": [
+        "gold",
+        "kills",
+        "trace",
+        "wave_results"
+      ]
+    },
+    {
+      "seed": 2032,
+      "rune": "pierce",
+      "transition": "win_to_win",
+      "death_wave_before": null,
+      "death_wave_after": null,
+      "first_target_equip_after_wave_before": 2,
+      "first_target_equip_after_wave_after": 2,
+      "target_runes_at_end_before": 4,
+      "target_runes_at_end_after": 4,
+      "final_gold_before": 1475,
+      "final_gold_after": 1489,
+      "battle_seconds_before": 331.517,
+      "battle_seconds_after": 331.283,
+      "trace_changed": true,
+      "changed_top_level_fields": [
+        "elapsed",
+        "gold",
+        "kills",
+        "trace",
+        "wave_results"
+      ]
+    },
+    {
+      "seed": 2032,
+      "rune": "bounce",
+      "transition": "win_to_win",
+      "death_wave_before": null,
+      "death_wave_after": null,
+      "first_target_equip_after_wave_before": 1,
+      "first_target_equip_after_wave_after": 1,
+      "target_runes_at_end_before": 4,
+      "target_runes_at_end_after": 4,
+      "final_gold_before": 1549,
+      "final_gold_after": 1494,
+      "battle_seconds_before": 322.183,
+      "battle_seconds_after": 324.6,
+      "trace_changed": true,
+      "changed_top_level_fields": [
+        "elapsed",
+        "gold",
+        "kills",
+        "trace",
+        "wave_results"
+      ]
+    },
+    {
+      "seed": 2032,
+      "rune": "blast",
+      "transition": "loss_to_loss",
+      "death_wave_before": 4,
+      "death_wave_after": 4,
+      "first_target_equip_after_wave_before": 3,
+      "first_target_equip_after_wave_after": 3,
+      "target_runes_at_end_before": 1,
+      "target_runes_at_end_after": 1,
+      "final_gold_before": 278,
+      "final_gold_after": 301,
+      "battle_seconds_before": 171.883,
+      "battle_seconds_after": 179.067,
+      "trace_changed": true,
+      "changed_top_level_fields": [
+        "elapsed",
+        "gold",
+        "kills",
+        "reason",
+        "trace",
+        "wave_results"
+      ]
+    },
+    {
+      "seed": 2033,
+      "rune": "pierce",
+      "transition": "win_to_win",
+      "death_wave_before": null,
+      "death_wave_after": null,
+      "first_target_equip_after_wave_before": 2,
+      "first_target_equip_after_wave_after": 2,
+      "target_runes_at_end_before": 4,
+      "target_runes_at_end_after": 4,
+      "final_gold_before": 1677,
+      "final_gold_after": 1662,
+      "battle_seconds_before": 349.417,
+      "battle_seconds_after": 342.783,
+      "trace_changed": true,
+      "changed_top_level_fields": [
+        "elapsed",
+        "gold",
+        "kills",
+        "trace",
+        "wave_results"
+      ]
+    },
+    {
+      "seed": 2033,
+      "rune": "bounce",
+      "transition": "win_to_win",
+      "death_wave_before": null,
+      "death_wave_after": null,
+      "first_target_equip_after_wave_before": 1,
+      "first_target_equip_after_wave_after": 1,
+      "target_runes_at_end_before": 4,
+      "target_runes_at_end_after": 4,
+      "final_gold_before": 1636,
+      "final_gold_after": 1645,
+      "battle_seconds_before": 331.55,
+      "battle_seconds_after": 335.383,
+      "trace_changed": true,
+      "changed_top_level_fields": [
+        "elapsed",
+        "gold",
+        "kills",
+        "trace",
+        "wave_results"
+      ]
+    },
+    {
+      "seed": 2033,
+      "rune": "blast",
+      "transition": "win_to_win",
+      "death_wave_before": null,
+      "death_wave_after": null,
+      "first_target_equip_after_wave_before": 2,
+      "first_target_equip_after_wave_after": 2,
+      "target_runes_at_end_before": 4,
+      "target_runes_at_end_after": 4,
+      "final_gold_before": 1594,
+      "final_gold_after": 1559,
+      "battle_seconds_before": 350.183,
+      "battle_seconds_after": 334.167,
+      "trace_changed": true,
+      "changed_top_level_fields": [
+        "elapsed",
+        "gold",
+        "kills",
+        "trace",
+        "wave_results"
+      ]
+    },
+    {
+      "seed": 2034,
+      "rune": "pierce",
+      "transition": "win_to_win",
+      "death_wave_before": null,
+      "death_wave_after": null,
+      "first_target_equip_after_wave_before": 2,
+      "first_target_equip_after_wave_after": 2,
+      "target_runes_at_end_before": 4,
+      "target_runes_at_end_after": 4,
+      "final_gold_before": 1839,
+      "final_gold_after": 1856,
+      "battle_seconds_before": 347.367,
+      "battle_seconds_after": 347.367,
+      "trace_changed": true,
+      "changed_top_level_fields": [
+        "gold",
+        "kills",
+        "trace",
+        "wave_results"
+      ]
+    },
+    {
+      "seed": 2034,
+      "rune": "bounce",
+      "transition": "win_to_win",
+      "death_wave_before": null,
+      "death_wave_after": null,
+      "first_target_equip_after_wave_before": 1,
+      "first_target_equip_after_wave_after": 1,
+      "target_runes_at_end_before": 4,
+      "target_runes_at_end_after": 4,
+      "final_gold_before": 1621,
+      "final_gold_after": 1626,
+      "battle_seconds_before": 327.483,
+      "battle_seconds_after": 332.967,
+      "trace_changed": true,
+      "changed_top_level_fields": [
+        "elapsed",
+        "gold",
+        "kills",
+        "trace",
+        "wave_results"
+      ]
+    },
+    {
+      "seed": 2034,
+      "rune": "blast",
+      "transition": "win_to_win",
+      "death_wave_before": null,
+      "death_wave_after": null,
+      "first_target_equip_after_wave_before": 2,
+      "first_target_equip_after_wave_after": 2,
+      "target_runes_at_end_before": 4,
+      "target_runes_at_end_after": 4,
+      "final_gold_before": 1691,
+      "final_gold_after": 1700,
+      "battle_seconds_before": 332.367,
+      "battle_seconds_after": 332.367,
+      "trace_changed": true,
+      "changed_top_level_fields": [
+        "gold",
+        "kills",
+        "trace",
+        "wave_results"
+      ]
+    },
+    {
+      "seed": 2035,
+      "rune": "pierce",
+      "transition": "win_to_win",
+      "death_wave_before": null,
+      "death_wave_after": null,
+      "first_target_equip_after_wave_before": 2,
+      "first_target_equip_after_wave_after": 2,
+      "target_runes_at_end_before": 4,
+      "target_runes_at_end_after": 4,
+      "final_gold_before": 1669,
+      "final_gold_after": 1647,
+      "battle_seconds_before": 325.55,
+      "battle_seconds_after": 325.55,
+      "trace_changed": true,
+      "changed_top_level_fields": [
+        "gold",
+        "kills",
+        "trace",
+        "wave_results"
+      ]
+    },
+    {
+      "seed": 2035,
+      "rune": "bounce",
+      "transition": "win_to_win",
+      "death_wave_before": null,
+      "death_wave_after": null,
+      "first_target_equip_after_wave_before": 2,
+      "first_target_equip_after_wave_after": 2,
+      "target_runes_at_end_before": 4,
+      "target_runes_at_end_after": 4,
+      "final_gold_before": 1710,
+      "final_gold_after": 1695,
+      "battle_seconds_before": 320.417,
+      "battle_seconds_after": 320.417,
+      "trace_changed": true,
+      "changed_top_level_fields": [
+        "gold",
+        "kills",
+        "trace",
+        "wave_results"
+      ]
+    },
+    {
+      "seed": 2035,
+      "rune": "blast",
+      "transition": "win_to_win",
+      "death_wave_before": null,
+      "death_wave_after": null,
+      "first_target_equip_after_wave_before": 2,
+      "first_target_equip_after_wave_after": 2,
+      "target_runes_at_end_before": 4,
+      "target_runes_at_end_after": 4,
+      "final_gold_before": 1391,
+      "final_gold_after": 1382,
+      "battle_seconds_before": 328.7,
+      "battle_seconds_after": 328.7,
+      "trace_changed": true,
+      "changed_top_level_fields": [
+        "gold",
+        "kills",
+        "trace",
+        "wave_results"
+      ]
+    }
+  ],
+  "limitations": [
+    "These are the same thirty fixed seed/rune pairs under one unchanged robot policy, not human difficulty or a population win rate.",
+    "Core correctness changes intentionally affect collision resolution, slowing and terminal processing. Trace or trajectory equality with the baseline is not required.",
+    "An outcome change cannot be assigned to a particular fix from this aggregate experiment.",
+    "Later-wave aggregates have survivor selection; paired wave economy uses only pairs reaching the same wave or shop.",
+    "The trace lacks the complete offer set, so missing target rune equipment does not establish stock absence, affordability, or human behavior.",
+    "The headless campaign excludes World drawing and its feedback costs; this is not a rendering performance test."
+  ]
+}

@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="ContentDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/content_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "bone"
+kind = "weapon"
+display_name = "骨针"
+subtitle = "迅捷法器 · 精准点杀"
+description = "发射高速骨针，持续压制最近的敌人。"
+icon = "bone"
+color = Color(0.83, 0.85, 0.74, 1)
+price = 18
+damage = 14.0
+cooldown = 0.46
+projectile_speed = 470.0
+projectile_radius = 4.0
+range = 620.0

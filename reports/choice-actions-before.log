@@ -1,0 +1,131 @@
+ERROR: Failed to open 'user://logs/godot2026-10-22T20.56.01.log'.
+   at: copy (core/io/dir_access.cpp:429)
+ERROR: Failed to open log file for writing: user://logs/godot.log
+   at: rotate_file (core/io/logger.cpp:169)
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+ERROR: Condition "ret != noErr" is true. Returning: ""
+   at: get_system_ca_certificates (platform/macos/os_macos.mm:1035)
+ERROR: A second Return before rebuilding cannot consume an unseen upgrade
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_choice_actions.gd:253)
+       [1] _test_same_frame_upgrade_returns (res://tests/test_choice_actions.gd:66)
+       [2] _new_upgrade_ui (res://tests/test_choice_actions.gd:39)
+       [3] _settle (res://tests/test_choice_actions.gd:241)
+ERROR: Rejected duplicate input leaves bonuses, options, RNG, errors and queued state untouched
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_choice_actions.gd:253)
+       [1] _test_same_frame_upgrade_returns (res://tests/test_choice_actions.gd:67)
+       [2] _new_upgrade_ui (res://tests/test_choice_actions.gd:39)
+       [3] _settle (res://tests/test_choice_actions.gd:241)
+ERROR: The next visible choices and RNG match one ordinary selection
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_choice_actions.gd:253)
+       [1] _test_same_frame_upgrade_returns (res://tests/test_choice_actions.gd:69)
+       [2] _settle (res://tests/test_choice_actions.gd:241)
+ERROR: The rebuilt page still presents the remaining choice
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_choice_actions.gd:253)
+       [1] _test_same_frame_upgrade_returns (res://tests/test_choice_actions.gd:71)
+       [2] _settle (res://tests/test_choice_actions.gd:241)
+ERROR: A prior page's live old signal cannot apply its still-valid choice ID
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_choice_actions.gd:253)
+       [1] _test_reopened_upgrade_page (res://tests/test_choice_actions.gd:92)
+       [2] _new_upgrade_ui (res://tests/test_choice_actions.gd:39)
+       [3] _settle (res://tests/test_choice_actions.gd:241)
+ERROR: The new page remains actionable after rejecting its old generation
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_choice_actions.gd:253)
+       [1] _test_reopened_upgrade_page (res://tests/test_choice_actions.gd:99)
+       [2] _settle (res://tests/test_choice_actions.gd:241)
+ERROR: An old upgrade cannot mutate a run after returning to the title
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_choice_actions.gd:253)
+       [1] _test_upgrade_after_screen_change (res://tests/test_choice_actions.gd:110)
+       [2] _new_upgrade_ui (res://tests/test_choice_actions.gd:39)
+       [3] _settle (res://tests/test_choice_actions.gd:241)
+ERROR: A controlled old upgrade signal cannot consume choices beneath pause
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_choice_actions.gd:253)
+       [1] _test_upgrade_under_overlay (res://tests/test_choice_actions.gd:127)
+       [2] _new_upgrade_ui (res://tests/test_choice_actions.gd:39)
+       [3] _settle (res://tests/test_choice_actions.gd:241)
+ERROR: The modal keeps its input focus and both unconsumed choices: pause
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_choice_actions.gd:253)
+       [1] _test_upgrade_under_overlay (res://tests/test_choice_actions.gd:129)
+       [2] _settle (res://tests/test_choice_actions.gd:241)
+ERROR: Closing the modal does not permanently disable normal upgrade input: pause
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_choice_actions.gd:253)
+       [1] _test_upgrade_under_overlay (res://tests/test_choice_actions.gd:138)
+       [2] _settle (res://tests/test_choice_actions.gd:241)
+ERROR: A controlled old upgrade signal cannot consume choices beneath settings
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_choice_actions.gd:253)
+       [1] _test_upgrade_under_overlay (res://tests/test_choice_actions.gd:127)
+       [2] _new_upgrade_ui (res://tests/test_choice_actions.gd:39)
+       [3] _settle (res://tests/test_choice_actions.gd:241)
+ERROR: The modal keeps its input focus and both unconsumed choices: settings
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_choice_actions.gd:253)
+       [1] _test_upgrade_under_overlay (res://tests/test_choice_actions.gd:129)
+       [2] _settle (res://tests/test_choice_actions.gd:241)
+ERROR: Closing the modal does not permanently disable normal upgrade input: settings
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_choice_actions.gd:253)
+       [1] _test_upgrade_under_overlay (res://tests/test_choice_actions.gd:138)
+       [2] _settle (res://tests/test_choice_actions.gd:241)
+ERROR: An abandoned upgrade callback cannot inject an error or bonus into the new run
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_choice_actions.gd:253)
+       [1] _test_old_controls_after_restart (res://tests/test_choice_actions.gd:162)
+       [2] _new_upgrade_ui (res://tests/test_choice_actions.gd:39)
+       [3] _settle (res://tests/test_choice_actions.gd:241)
+ERROR: An old start callback cannot restart the newly active run a second time
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_choice_actions.gd:253)
+       [1] _test_old_controls_after_restart (res://tests/test_choice_actions.gd:164)
+       [2] _new_upgrade_ui (res://tests/test_choice_actions.gd:39)
+       [3] _settle (res://tests/test_choice_actions.gd:241)
+ERROR: A queued starter update cannot silently close newly opened settings
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_choice_actions.gd:253)
+       [1] _test_starter_refresh_preserves_settings (res://tests/test_choice_actions.gd:190)
+       [2] _settle (res://tests/test_choice_actions.gd:241)
+ERROR: Settings retain modal keyboard focus through the delayed starter update
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_choice_actions.gd:253)
+       [1] _test_starter_refresh_preserves_settings (res://tests/test_choice_actions.gd:191)
+       [2] _settle (res://tests/test_choice_actions.gd:241)
+ERROR: The preserved settings layer still consumes Back normally
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_choice_actions.gd:253)
+       [1] _test_starter_refresh_preserves_settings (res://tests/test_choice_actions.gd:192)
+       [2] _settle (res://tests/test_choice_actions.gd:241)
+ERROR: Closing settings after a starter update restores its settings source focus
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_choice_actions.gd:253)
+       [1] _test_starter_refresh_preserves_settings (res://tests/test_choice_actions.gd:198)
+       [2] _settle (res://tests/test_choice_actions.gd:241)
+ChoiceActions: 44 assertions, 19 failures

@@ -1,0 +1,66 @@
+extends SceneTree
+class SilentSoundBank:
+    extends SoundBank
+    func _ready() -> void:
+        pass
+func _initialize() -> void:
+    _run.call_deferred()
+func _run() -> void:
+    root.size = Vector2i(1280,720)
+    root.title = "秘术余烬 · 340预警绘制夹具（静止场景，非普通对局）"
+    Engine.max_fps = 0
+    var sound := SilentSoundBank.new()
+    root.add_child(sound)
+    var world := CombatWorld.new()
+    world.sound = sound
+    root.add_child(world)
+    var label := Label.new()
+    label.position = Vector2(28,28)
+    label.text = "340 敌人蓄力绘制夹具 · NPC静止 / 无战斗推进 · 非5分钟验收场景"
+    label.add_theme_font_size_override("font_size",22)
+    var font := SystemFont.new()
+    font.font_names = PackedStringArray(["Hiragino Sans GB","PingFang SC","Heiti SC","Arial"])
+    label.add_theme_font_override("font",font)
+    root.add_child(label)
+    var results: Array[Dictionary] = []
+    for mode: String in ["all_caster", "mixed"]:
+        var state := RunState.new()
+        state.begin(20261022,"bone")
+        world.begin(state)
+        world.set_physics_process(false)
+        var sim: CombatSim = world.sim
+        sim.sandbox = true
+        for index: int in CombatSim.ENEMY_LIMIT:
+            var id: String = "rusher" if mode=="mixed" and index%2==0 else "caster"
+            var enemy: CombatSim.Enemy = sim.spawn_enemy(id,Vector2(105+float(index%20)*54,180+float(index/20)*23))
+            enemy.mode = 1
+            enemy.action_timer = 0.00001 if mode=="all_caster" else (CombatSim.RUSHER_WINDUP if id=="rusher" else CombatSim.CASTER_WINDUP)*[0.9,0.5,0.1][index%3]
+            enemy.charge_direction = Vector2.RIGHT.rotated(float(index%8)*TAU/8.0)
+        var sample: Array[float] = []
+        var draw_sum: float = 0.0
+        var start: int = Time.get_ticks_usec()
+        var last: int = start
+        while Time.get_ticks_usec()-start < 12000000:
+            world.queue_redraw()
+            await process_frame
+            var now: int = Time.get_ticks_usec()
+            if now-start >= 2000000:
+                sample.append(float(now-last)/1000.0)
+                draw_sum += Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME)
+            last = now
+        var total: float = 0.0
+        for ms: float in sample:
+            total += ms
+        sample.sort()
+        var data: Dictionary = {"mode":mode,"duration_target_seconds":10,"warmup_seconds":2,"frames":sample.size(),"average_fps":1000.0*sample.size()/total,"p99_frame_ms":sample[int(sample.size()*0.99)],"mean_draw_calls":draw_sum/sample.size(),"warning_stats":world._enemy_telegraphs.get_stats(),"enemies":sim.enemy_count,"physics_ticks":0}
+        results.append(data)
+        print("TELEGRAPH_DRAW_PROFILE ",JSON.stringify(data))
+    var hashes: Dictionary = {}
+    for path: String in ["res://scripts/combat/combat_world.gd","res://scripts/combat/enemy_telegraph_painter.gd"]:
+        hashes[path] = FileAccess.get_file_as_string(path).sha256_text()
+    var output: FileAccess = FileAccess.open("/private/tmp/broxy-telegraph-native.json",FileAccess.WRITE)
+    output.store_string(JSON.stringify({"kind":"Short frozen-warning rendering profile; not full battle acceptance","source_sha256":hashes,"results":results,"limits":"340 static windup NPCs. No physics, enemy attacks, real damage or600 projectiles. Native Compatibility, VSync kept, max_fps=0."},"\t"))
+    sound.shutdown()
+    world.queue_free()
+    await process_frame
+    quit()

@@ -1,0 +1,414 @@
+{
+  "schema_version": 1,
+  "created_at_utc": "2026-10-22T15:49:45.750599+00:00",
+  "baseline_commit": "80d18fa",
+  "static_art_revision": "engraved-04",
+  "runtime_visual_revision": "primary-impact-v1",
+  "scope": "Primary damage decorations and immediate paused visual settings; no combat simulation, data, policy or static asset changes.",
+  "source_sha256": {
+    "scripts/combat/impact_painter.gd": "35a8e91da90421dc1dcb6d43314c42e80e4e47bac874c0bef3c7885833f7289b",
+    "scripts/combat/combat_world.gd": "d47b30af6b04b2cfa3f057c92b84cfcce095971ce031ec9a0768efc465543bb0",
+    "scripts/main.gd": "6c096bdc0154b9dd9f66547272d815aea00ffc103f37db3866245874791db7c7",
+    "tests/test_impact_feedback.gd": "0417694cd8c2a2f45d0161af4272f0b53350356c75c53b547b6bcccdcec3fb03",
+    "tools/preview_impacts.gd": "919a96b157b26e5f1e94bbafa72bf27e8aa129198374fe4ac8f56bbc74954179",
+    "tools/preview_runes.gd": "f229155f64d77c9d84d24c040c83d5a729326482e5fa06a452ee0cbb1bc8f3fb",
+    "tools/test.sh": "70816bc5af43b17015c847d889eae44e0e370add22d94796554f95358c74b3d2",
+    "project.godot": "243b092054cff0748423392064c7b243a195bc5a0513430b96b904f5b8ee405d",
+    "export_presets.cfg": "cf847013d66b3d7a03a24c5c66edb27946356bc1c4de3688932a60065f461d25"
+  },
+  "unchanged_file_count_vs_baseline": 67,
+  "unchanged_file_sha256": {
+    "assets/sprites/player.svg": "26822f17b6563a862d3ef426afdba7a68395de802eb996b2421ecc9ea622033c",
+    "assets/sprites/chaser.svg": "5aae1d1650c08a3fc9d3fe1a12b5ec000934deafe345c34d2b9edd61f92f3e43",
+    "assets/sprites/rusher.svg": "bea93130efe902762f440b57664fd69a5dd413735c3d971da2362cef97fba647",
+    "assets/sprites/tank.svg": "4672d1b3d23ad3125eca2792ceb440a69436bf639e2ed4766468ac287e0e32c6",
+    "assets/sprites/caster.svg": "92de97777b197d1e36faa93046f3f78ecba0c6c70fd659761dd9a7b5933e53d3",
+    "assets/sprites/boss.svg": "8d466578c6a16f25cb821ceb1bc6e3c2441d8f5a83ca6b431da0b50e685a3e98",
+    "assets/arena.svg": "ffc2e47dd60f017d18d164aa73c44d48c5fdcd7741f6ade643a845d1a17b9137",
+    "assets/menu_art.svg": "897cd1d33d1c3dc074341dfb0c6c874ae6f4cf5c15b00486f032b500afcf44ec",
+    "assets/icons/bone.svg": "fed510ab206659d89245701d64e714ceeafd07eaaf8f1d224732e1a590d2f95e",
+    "assets/icons/frost.svg": "7a4c4d4ab9d51b25bc794e1b880a12d4beaec03fc9be9021cc82f50cb935c1cb",
+    "assets/icons/ember.svg": "a3aedd7805495a4a8060a80e615ca92763ffa6b92bfce3d928cddd2f41ea90f2",
+    "assets/icons/scatter.svg": "b7e4fcd60f6bb83a42cc64896926d29bdfe4d7c93d7caed5a7e684e8324b9562",
+    "assets/icons/pierce.svg": "5eba063ccb82ee68b5815d3c70fcce60059a2f0a7a2a349a9b344bdb233849a6",
+    "assets/icons/bounce.svg": "d1496174ecdd3bbdaaef10927f49b2a7a66b8e288a24ac75a0117b641df9d43d",
+    "assets/icons/blast.svg": "063b763b74b85ceb01b95bff5c82074eca23261b6333af1e26b1e3915d0fe255",
+    "assets/icons/damage.svg": "29da93aa6234571b4634b6cb5252df96e69e71f7db08fd79bfdbab67b3314c13",
+    "assets/icons/haste.svg": "f7d25f52c26d13580f8ff52d76df364f9dfb649cc461d97ae52569b1357c8e0a",
+    "assets/icons/speed.svg": "f3d7303d4a0a90c27d50971dcc6f2f3ed9b155c9b89fc2e1bf1bcdd24eab91c7",
+    "assets/icons/vitality.svg": "1b6dec7c8605b24295d4cf4535498b0e5623072333c31c606ad841f4e35d94c1",
+    "assets/icons/armor.svg": "9fd54e3bb7625db5eddbd446277a9e4c9943383a928278334eeaf9ada9481203",
+    "assets/icons/magnet.svg": "cae7be65fe426b6e19a8c571599c58148b03deaf3439e2da9ee3b8eb81aead32",
+    "assets/icons/soul.svg": "1c33ec6f6caef925bb15855c6a609267ee98e67c5ee186aa4489f67869647d0f",
+    "assets/fx/glow.svg": "a8ce6d65037444dc2f4c70759aebb4d97e5a8a9b6b6181ea21c96e8b45234fbe",
+    "assets/fx/seal.svg": "d3cbbe6732fdf6660182591457f0a21af15acaf5682dc3ab4546a74dfcf2de61",
+    "assets/icon.svg": "8fab446de72653255765e7841dbf43e011f6f4feb9e0d17fe39aece7cee56c45",
+    "assets/audio/shoot.wav": "f1e80cdc436880575bf138b5f62afe7ad8dd45abe4bc1e081c945b7f44104989",
+    "assets/audio/hit.wav": "09458a7d591ce9d38e98598f3c9862f9f253a4a0c492224318f85474a02563b5",
+    "assets/audio/hurt.wav": "15d151d2a6c6c820323e75ccda4dfdf11e8b196894c096bddb6f3766347c242c",
+    "assets/audio/death.wav": "0ebd789967a2e45412d831cb4c96f7efa09cd9d4c593b4f9bd9a7d90e0a8f727",
+    "assets/audio/buy.wav": "e5d8978e42077addaaa66d095e144520e176a5eb28768c2ea286100426cd4eab",
+    "assets/audio/rune.wav": "07b09e7994fb80cc780592d33a8152f22636a19573a46e1f9357f125c4fcd60c",
+    "assets/audio/level.wav": "9e3f1bc1ce6d53cd07a3e21d21ecf66232341c76b7da663600598ece5284a479",
+    "assets/audio/victory.wav": "9dd143be5d808cb6aa74ff1a1cd9e8ca93b504802dc39af91185628f28f6e76a",
+    "assets/audio/defeat.wav": "d728334078a700976c613df59e9ab71ed72036f5b3a69ab05ef19147db12a4d1",
+    "assets/audio/ambience.wav": "3d3013317384ee836e33d9602d4330d6a60ed30cde93dfbeddfb12bc1faea42e",
+    "assets/manifest.json": "a93bc09266d909a59b0639168362cca78eabb25283b321c2d7665281a65834e8",
+    "assets/PROVENANCE.md": "a8d1aa015ca4928b5ae46510f186f3053eaefcb84c77b31039be0613288a1030",
+    "scripts/core/run_state.gd": "7864a8860951b5dcf1b924257fee4dd91d9c07888a97714865a863a63c98e06b",
+    "scripts/combat/combat_sim.gd": "5bca9f0367c8cdcb5f698f672e4f3b9b0689dc684f73a20a30edf97e4ee73e34",
+    "data/enemies/boss.tres": "d8832c910af8845821579d29d5fb8ff4b30ba1333a53004347b1c6272fe934cb",
+    "data/enemies/caster.tres": "c2f1dffc0aaeb4b74837ef109d78a0bb536c583a9efc9cc5347b3b55ddb67e86",
+    "data/enemies/chaser.tres": "67b655cd3ad1919cfe4eea86cbc50ae32ee4ae8dcc426b70341b013a055b4c11",
+    "data/enemies/rusher.tres": "85f4a04a54297ccf16e4caf9f39444b97ec0fbfe4d5516263e322f953635e3aa",
+    "data/enemies/tank.tres": "7901efcd7ec48940d8bce6559dea80daf9c2d911ddd12257ed72d1fe80100b1a",
+    "data/relics/armor.tres": "e710ca293f9ea27557427299b8909ed6da9fc3d385a62067f2c3b02b25c3913a",
+    "data/relics/damage.tres": "bf30c9fd0fb8f7511d6c27a292a5388ac9d2340a6aa4724c6acc08f891a464b8",
+    "data/relics/haste.tres": "75525cf02bf18c9913482ed9ca77650fe3a6eadd8f861074991e163514fa3cdb",
+    "data/relics/magnet.tres": "4abf5f92e1f2150e16e32017a8bfa2002704916bc51882000973246a11987e43",
+    "data/relics/speed.tres": "ef52dce76e11c417c2a016ab94b5e15f3e905307265a2c20207942df7424c9aa",
+    "data/relics/vitality.tres": "4b4e296ebefb06e4533685d40099641fc0f7a78a29a23807a50c480d33899f84",
+    "data/runes/blast.tres": "2174763839b25d2c32b09a70e40bde43e5080fb46a29f423195590d660d433fb",
+    "data/runes/bounce.tres": "05dadcae56f093389b76f9179b34c2877c82ad764730633bf95b3ed3192ed5b5",
+    "data/runes/pierce.tres": "2cebfde32d6b9107dc1547f99f5c0720f171cdd79ea2e5758a436d3401796459",
+    "data/waves/wave_1.tres": "0806ec860e50ff356f2446e0d36c26f7421bd54b4caef77c2c6b52c87d77f897",
+    "data/waves/wave_2.tres": "c215ce4849981a33e6f143e510ec4b29e5559efdc168e6c888f8ffa42a57dd70",
+    "data/waves/wave_3.tres": "40a1d88ca1d4e1b6fb6473eaa77c3f3a49b01b9ad39b6d642d10d275c7da5dfc",
+    "data/waves/wave_4.tres": "962f10a533021cca45e6227f42dedc58789558e8bccf21bd35802db18d732861",
+    "data/waves/wave_5.tres": "1da70e90df8b263cf7f17b22d64994bdd1849782629c9b69bbf05f0846349582",
+    "data/waves/wave_6.tres": "eacf2c8c19f344b7e16e3c1e253b30d0f789d60f3c23c508bd4cad85df963803",
+    "data/waves/wave_7.tres": "41e6b80f98711486684b71d3d086bfc6c7199596d4a085c6cd56f4afb7ac36ff",
+    "data/waves/wave_8.tres": "2a810cf965bb95c7c62d49528557863a923d9e4e66842df9c40de8c7a8ca7474",
+    "data/weapons/bone.tres": "ff1776e43a64eabfe56da2c6b04b23198cfe8edbf3706ba38fb5e1f84bd7f9b6",
+    "data/weapons/ember.tres": "5f1d0097bbe81ce00cec8ed6eaa26743f8e02feb9ac394c1b8e63b1b8f15a00d",
+    "data/weapons/frost.tres": "6f88f647f26a409f9aa448e732c498ef811ae0ec6d580def0fbcb2b0ac52012c",
+    "data/weapons/scatter.tres": "b7c0737e60036999ded31d1ffcb11b5e34b5039c25401bca8fb38c4f90b0b8da",
+    "scripts/combat/bot_policy.gd": "a78c47c7c5002f06928cc8af373851fb81f853ec401f6fa929a28efd303d613b",
+    "tests/simulate_runs.gd": "361cf71e03712a882de74a3ec0fc36b0d430ac7554ab5127a4813a23932e6486"
+  },
+  "core_version": "prototype-0.1.0+fb2ccf1ca5f1",
+  "policy_version": "orbit-avoid-v1/shop-v1+7c19c01f20e4",
+  "static_asset_count": 35,
+  "impact_contract": {
+    "capacity": 32,
+    "life_seconds": 0.12,
+    "merge_window_seconds_exclusive": 0.05,
+    "batch_limit": 12,
+    "origin": "Enemy center from accepted finite positive primary damage; not contact point or incoming direction.",
+    "overflow": "Drop decoration only",
+    "secondary_damage": "No impact mark",
+    "settings": "flash=false clears immediately, including through paused Main; enabling does not replay old marks",
+    "lifecycle": "Pause freezes age; begin/stop/end clear; rebuild(true)/draw do not change mark age or simulation/RNG"
+  },
+  "regression_evidence": {
+    "pre_world_integration": {
+      "assertions": 53,
+      "failures": 1,
+      "exit_code": 1,
+      "log": "reports/impact-feedback-before.log",
+      "limits": "Only the World integration existence check failed; 52 helper checks already passed. Not the final 101-assertion red run."
+    },
+    "paused_main_settings_before": {
+      "assertions": 101,
+      "failures": 3,
+      "exit_code": 1,
+      "log": "reports/impact-settings-before.log",
+      "test_source_sha256": "0417694cd8c2a2f45d0161af4272f0b53350356c75c53b547b6bcccdcec3fb03",
+      "cases": [
+        "Immediate stale marks and cached strokes",
+        "Still stale after paused redraw opportunities",
+        "Old hit can replay after re-enabling flash"
+      ]
+    },
+    "after": {
+      "assertions": 101,
+      "failures": 0,
+      "exit_code": 0,
+      "log": "reports/impact-feedback-after.log",
+      "test_source_sha256": "0417694cd8c2a2f45d0161af4272f0b53350356c75c53b547b6bcccdcec3fb03"
+    },
+    "limits": "Real Main/UI signal and real SceneTree pause; automated fixture, not physical OS input or human playtest."
+  },
+  "headless_suites_by_process": [
+    {
+      "suite": "Rules",
+      "assertions": 204,
+      "failures": 0
+    },
+    {
+      "suite": "PurchaseQuery",
+      "assertions": 119,
+      "failures": 0
+    },
+    {
+      "suite": "Combat",
+      "assertions": 302,
+      "failures": 0
+    },
+    {
+      "suite": "Homing",
+      "assertions": 45,
+      "failures": 0
+    },
+    {
+      "suite": "UI",
+      "assertions": 157,
+      "failures": 0
+    },
+    {
+      "suite": "Notifications",
+      "assertions": 65,
+      "failures": 0
+    },
+    {
+      "suite": "Modal",
+      "assertions": 37,
+      "failures": 0
+    },
+    {
+      "suite": "ChoiceActions",
+      "assertions": 44,
+      "failures": 0
+    },
+    {
+      "suite": "UpgradePreviews",
+      "assertions": 350,
+      "failures": 0
+    },
+    {
+      "suite": "ShopActions",
+      "assertions": 106,
+      "failures": 0
+    },
+    {
+      "suite": "ShopDetails",
+      "assertions": 51,
+      "failures": 0
+    },
+    {
+      "suite": "ShopAvailability",
+      "assertions": 166,
+      "failures": 0
+    },
+    {
+      "suite": "ProfileModes",
+      "assertions": 25,
+      "failures": 0
+    },
+    {
+      "suite": "Flow",
+      "assertions": 76,
+      "failures": 0
+    },
+    {
+      "suite": "Feedback",
+      "assertions": 64,
+      "failures": 0
+    },
+    {
+      "suite": "ImpactFeedback",
+      "assertions": 101,
+      "failures": 0
+    },
+    {
+      "suite": "ProjectilePainter",
+      "assertions": 77,
+      "failures": 0
+    },
+    {
+      "suite": "EnemyTelegraphs",
+      "assertions": 121,
+      "failures": 0
+    },
+    {
+      "suite": "ShopObservation",
+      "assertions": 384,
+      "failures": 0
+    },
+    {
+      "suite": "ProfileModes",
+      "assertions": 16,
+      "failures": 0
+    },
+    {
+      "suite": "ProfileModes",
+      "assertions": 16,
+      "failures": 0
+    },
+    {
+      "suite": "ProfileModes",
+      "assertions": 16,
+      "failures": 0
+    },
+    {
+      "suite": "ProfileModes",
+      "assertions": 16,
+      "failures": 0
+    },
+    {
+      "suite": "ProfileModes",
+      "assertions": 16,
+      "failures": 0
+    }
+  ],
+  "godot_suite_count": 19,
+  "godot_process_count": 24,
+  "godot_total_assertions": 2574,
+  "godot_total_failures": 0,
+  "python_tests": 14,
+  "full_test_exit_code": 0,
+  "headless_renderer_skips": "EnemyTelegraphs explicitly skips 12 GPU readbacks; historical native suite has 134 assertions, not rerun in this iteration.",
+  "native_images": [
+    {
+      "view": "before",
+      "image": "reports/impacts-before.png",
+      "image_sha256": "69b4e713876c720c5e9b0198b1d7447c4ecea7cf0c5b3931f3c495eaf1636475",
+      "log": "reports/impacts-before.log",
+      "exit_code": 0,
+      "image_reviewed": true,
+      "impact_stats": {
+        "available": false
+      },
+      "rng_state": 8004272308702064159,
+      "target_receipts_sha256": "04dcbfa31fe6a31c897ce54ff6f5ab289098ad4f1751498054a1658e47a900be"
+    },
+    {
+      "view": "after",
+      "image": "reports/impacts-after.png",
+      "image_sha256": "ec1556347e549a94e5c4edb3f9f96c62b0773a7746fe372ac395a0126bef24eb",
+      "log": "reports/impacts-after.log",
+      "exit_code": 0,
+      "image_reviewed": true,
+      "impact_stats": {
+        "active_marks": 12,
+        "allocated_marks": 32,
+        "available": true,
+        "capacity": 32,
+        "draw_commands": 12,
+        "free_marks": 20,
+        "peak_active": 12
+      },
+      "rng_state": 8004272308702064159,
+      "target_receipts_sha256": "04dcbfa31fe6a31c897ce54ff6f5ab289098ad4f1751498054a1658e47a900be"
+    },
+    {
+      "view": "fading",
+      "image": "reports/impacts-fading.png",
+      "image_sha256": "f890760fea7de4aa35cf5693cf294ab493a90bd2820812ae86a13056387a4ea3",
+      "log": "reports/impacts-fading.log",
+      "exit_code": 0,
+      "image_reviewed": true,
+      "impact_stats": {
+        "active_marks": 8,
+        "allocated_marks": 32,
+        "available": true,
+        "capacity": 32,
+        "draw_commands": 8,
+        "free_marks": 24,
+        "peak_active": 12
+      },
+      "rng_state": 8004272308702064159,
+      "target_receipts_sha256": "04dcbfa31fe6a31c897ce54ff6f5ab289098ad4f1751498054a1658e47a900be"
+    },
+    {
+      "view": "expired",
+      "image": "reports/impacts-expired.png",
+      "image_sha256": "e3f93ceb13ec52d247feccc5fd2397e6cdd9c2a2714123c6576742ea7df80186",
+      "log": "reports/impacts-expired.log",
+      "exit_code": 0,
+      "image_reviewed": true,
+      "impact_stats": {
+        "active_marks": 0,
+        "allocated_marks": 32,
+        "available": true,
+        "capacity": 32,
+        "draw_commands": 0,
+        "free_marks": 32,
+        "peak_active": 12
+      },
+      "rng_state": 8004272308702064159,
+      "target_receipts_sha256": "04dcbfa31fe6a31c897ce54ff6f5ab289098ad4f1751498054a1658e47a900be"
+    }
+  ],
+  "native_fixture_comparison": {
+    "target_receipts_and_rng_equal_in_all_four_views": true,
+    "resolution": [
+      1280,
+      720
+    ],
+    "primary_hits": 18,
+    "secondary_hits": 0,
+    "active_after_fading_expired": [
+      12,
+      8,
+      0
+    ],
+    "targets": "12 static high-health chasers only",
+    "limits": "Age shifts only advance feedback, not the entire natural simulation timeline. Warning and hostile projectile at lower-right are explicit layer fixtures. Does not cover all enemies, moving dense combat or human recognition."
+  },
+  "rune_mix": {
+    "image": "reports/impacts-rune-mix.png",
+    "image_sha256": "7bcc3496749ee7d25356ceb095d1e30455dd9643d6c00e7a51fe15cc2dd6151c",
+    "log": "reports/impacts-rune-mix.log",
+    "exit_code": 0,
+    "image_reviewed": true,
+    "primary_hits": 5,
+    "secondary_hits": 2,
+    "rune_events": {
+      "pierce": 2,
+      "bounce": 1,
+      "blast": 1
+    },
+    "limits": "Frozen native fixture, not a natural completed run or performance measurement."
+  },
+  "log_sha256": {
+    "reports/tests.log": "016c68c0e68509b3d8969c698f6affda06a06b18c40b14a1a01fb24bc6461f5c",
+    "reports/impact-feedback-before.log": "0eb8b7e216e56d3aef8d967624c7f4226986769f83be5d3b8815734704766fb1",
+    "reports/impact-settings-before.log": "df5a199f6131b9a98ce90e2b0c491c9cbd6393b6c1bcf60a9bd384b4086f2904",
+    "reports/impact-feedback-after.log": "5673c20ef50833eb41bd6030385085260fad03a907cf7c4671d28a6dccb213e0",
+    "reports/impacts-before.log": "bbead8ed31cb8cc599e11d10905abd9bd7cb72835613a06086bfa8745a613f48",
+    "reports/impacts-after.log": "20b03995bce02484959b0e8fee0fed11f8cdeb6cb43caba2ad0c2de3dc6a6a02",
+    "reports/impacts-fading.log": "ba921a903b1b80e6baa9cc5c9c93466b6f78c3754b22d29224d0af48ce8631a3",
+    "reports/impacts-expired.log": "a288ab788aa5494338686c505f05d90ca9205a17cb5f3763665ba643d5fc370c",
+    "reports/impacts-rune-mix.log": "2eebcd0ddd2fa7194592e0ae07cf898860e9abff69e83b314577ee1105a2a9cc",
+    "reports/build-impact.log": "043d59cd9b7afbd9c6462dfa87a8dc00f14621fa021d97c30b1fb8254c8b60c2",
+    "reports/app-boot-impact.log": "6c536b7ab6a1ee8e7ac91fdd27709abb484073b092cabb70d205c4f987e47ddd",
+    "reports/archive-impact.log": "e052cddf0c6ef996a01b3dd41770fefc6757ea5663afecc467248b6509b1834f"
+  },
+  "build": {
+    "app": "build/Embers-impact.app",
+    "architecture": "arm64",
+    "ad_hoc_strict_signature": true,
+    "info_plist_valid": true,
+    "build_exit_code": 0,
+    "packaged_headless_boot_exit_code": 0,
+    "boot_args": [
+      "--headless",
+      "--quit-after",
+      "3",
+      "--",
+      "--capture-only"
+    ],
+    "zip_integrity_exit_code": 0,
+    "artifact_sha256": {
+      "build/Embers-impact.app/Contents/MacOS/秘术余烬": "9bb096ec4a516d6d161310b9edb1de9cdca1f0c39ff3cd2de551eda13c43caf2",
+      "build/Embers-impact.app/Contents/Resources/秘术余烬.pck": "88fe6d6598ad0d2bf49de5498fa93d3e8f1b818d94700e69b9897220dfd418ac",
+      "build/Embers-impact-mac-arm64.zip": "5f7d7a82883f703dcf14de591cc2a1b680e585ef0da0b7ef2701ce55a86bde50"
+    },
+    "old_apps_and_paused_run_preserved": true
+  },
+  "not_rerun": [
+    "30-run paired simulation: core/data/policy unchanged from 80d18fa",
+    "5-minute native graphical stress: Mac locked; unlock requested, no reply received before this report",
+    "Native keyboard interaction, dynamic dense combat recognition and 5-person playtest"
+  ],
+  "performance_status": {
+    "current_iteration_measured": false,
+    "blocker": "CUA inventory reports Mac locked; no visible-window 5-minute sampling run attempted.",
+    "latest_complete_historical_commit": "e64bb18",
+    "historical_average_fps": 90.8467231586951,
+    "historical_p99_ms": 25.4,
+    "historical_duration_seconds": 300,
+    "limits": "Historical performance.json/benchmark.log retained untouched; not evidence of current primary-impact-v1 performance."
+  }
+}

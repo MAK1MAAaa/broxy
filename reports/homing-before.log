@@ -1,0 +1,41 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+ERROR: Condition "ret != noErr" is true. Returning: ""
+   at: get_system_ca_certificates (platform/macos/os_macos.mm:1035)
+ERROR: Ember changes heading when a real finisher leaves the selected target directly behind
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_homing.gd:23)
+       [1] _test_real_volley_retarget (res://tests/test_homing.gd:74)
+       [2] _initialize (res://tests/test_homing.gd:9)
+ERROR: Antiparallel weight 0.04 begins a gradual turn instead of staying straight, stopping or snapping back
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_homing.gd:23)
+       [1] _test_antiparallel_weights (res://tests/test_homing.gd:90)
+       [2] _initialize (res://tests/test_homing.gd:10)
+ERROR: Antiparallel weight 0.50 preserves finite nonzero projectile speed
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_homing.gd:23)
+       [1] _test_antiparallel_weights (res://tests/test_homing.gd:89)
+       [2] _initialize (res://tests/test_homing.gd:10)
+ERROR: Antiparallel weight 0.50 begins a gradual turn instead of staying straight, stopping or snapping back
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_homing.gd:23)
+       [1] _test_antiparallel_weights (res://tests/test_homing.gd:90)
+       [2] _initialize (res://tests/test_homing.gd:10)
+ERROR: Near-antiparallel steering honors the tiny cross sign instead of selecting an arbitrary opposite side
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_homing.gd:23)
+       [1] _test_near_antiparallel_side (res://tests/test_homing.gd:103)
+       [2] _initialize (res://tests/test_homing.gd:11)
+ERROR: Near-antiparallel steering honors the tiny cross sign instead of selecting an arbitrary opposite side
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_homing.gd:23)
+       [1] _test_near_antiparallel_side (res://tests/test_homing.gd:103)
+       [2] _initialize (res://tests/test_homing.gd:11)
+Homing: 45 assertions, 6 failures

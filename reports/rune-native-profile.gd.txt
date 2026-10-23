@@ -1,0 +1,192 @@
+extends SceneTree
+
+const WARMUP_MS: int = 2000
+const SAMPLE_MS: int = 10000
+
+class MeasuredWorld:
+	extends CombatWorld
+	var draw_mode: String = "full"
+	var physics_ticks: int = 0
+	var physics_usec: int = 0
+	var draw_frames: int = 0
+	var draw_usec: int = 0
+	var section_usec: Dictionary = {"effects": 0, "shots": 0, "numbers": 0, "runes": 0, "enemies": 0}
+	var prefixes: Dictionary = {}
+	var rune_peak: int = 0
+	var number_peak: int = 0
+
+	func _movement() -> Vector2:
+		return Vector2.ZERO
+
+	func _physics_process(delta: float) -> void:
+		var before: int = Time.get_ticks_usec()
+		super._physics_process(delta)
+		physics_usec += Time.get_ticks_usec() - before
+		physics_ticks += 1
+		rune_peak = maxi(rune_peak, _rune_flashes.size())
+		number_peak = maxi(number_peak, _numbers.size())
+		if physics_ticks % 120 == 0:
+			prefixes[str(physics_ticks)] = JSON.stringify([sim.rng.state, sim.primary_hits, sim.secondary_hits,
+				sim.player_position, sim.run.health, sim.run.elapsed, sim.damage_by_weapon]).sha256_text()
+
+	func _draw() -> void:
+		var before: int = Time.get_ticks_usec()
+		if draw_mode != "nodraw":
+			super._draw()
+		draw_usec += Time.get_ticks_usec() - before
+		draw_frames += 1
+
+	func _draw_effects() -> void:
+		if draw_mode == "noeffects":
+			return
+		var before: int = Time.get_ticks_usec()
+		super._draw_effects()
+		section_usec["effects"] = int(section_usec["effects"]) + Time.get_ticks_usec() - before
+
+	func _draw_friendly_shots() -> void:
+		if draw_mode == "noshots":
+			return
+		var before: int = Time.get_ticks_usec()
+		super._draw_friendly_shots()
+		section_usec["shots"] = int(section_usec["shots"]) + Time.get_ticks_usec() - before
+
+	func _draw_feedback() -> void:
+		var before: int = Time.get_ticks_usec()
+		super._draw_feedback()
+		section_usec["numbers"] = int(section_usec["numbers"]) + Time.get_ticks_usec() - before
+
+	func _draw_rune_feedback() -> void:
+		var before: int = Time.get_ticks_usec()
+		super._draw_rune_feedback()
+		section_usec["runes"] = int(section_usec["runes"]) + Time.get_ticks_usec() - before
+
+	func _draw_enemies() -> void:
+		var before: int = Time.get_ticks_usec()
+		super._draw_enemies()
+		section_usec["enemies"] = int(section_usec["enemies"]) + Time.get_ticks_usec() - before
+
+func _initialize() -> void:
+	_profile.call_deferred()
+
+func _profile() -> void:
+	Engine.max_fps = 0
+	root.size = Vector2i(1280, 720)
+	root.title = "秘术余烬 · 原生性能分析夹具（非实际通关）"
+	var start_hashes: Dictionary = _hashes()
+	var label := Label.new()
+	var font := SystemFont.new()
+	font.font_names = PackedStringArray(["Hiragino Sans GB", "PingFang SC", "Arial"])
+	label.add_theme_font_override("font", font)
+	label.add_theme_font_size_override("font_size", 17)
+	label.position = Vector2(25, 24)
+	label.modulate = Color("e6d7b7")
+	var layer := CanvasLayer.new()
+	layer.layer = 10
+	root.add_child(layer)
+	layer.add_child(label)
+	var results: Array[Dictionary] = []
+	for mode: String in ["full", "noeffects", "noshots", "nodraw"]:
+		label.text = "性能分析固定场景，非实际通关 · %s · 300敌/600真实符文弹/200掉落 · 2秒预热+10秒采样" % mode
+		root.title = "秘术余烬 · 性能分析夹具 / %s（非实际通关）" % mode
+		var result: Dictionary = await _case(mode)
+		results.append(result)
+		print("RUNE_NATIVE_PROFILE ", JSON.stringify(result))
+	var common_prefixes: Dictionary = results[0]["prefixes"].duplicate()
+	var prefixes_match: bool = true
+	for result: Dictionary in results:
+		for tick: String in common_prefixes.keys():
+			if not result["prefixes"].has(tick):
+				common_prefixes.erase(tick)
+			elif result["prefixes"][tick] != common_prefixes[tick]:
+				prefixes_match = false
+	var report: Dictionary = {"kind": "short native render isolation; not the five-minute acceptance benchmark",
+		"seed": 20261022, "warmup_ms": WARMUP_MS, "sample_target_ms": SAMPLE_MS,
+		"source_hashes_start": start_hashes, "source_hashes_end": _hashes(), "results": results,
+		"common_fixed_tick_prefix_count": common_prefixes.size(), "common_fixed_tick_prefixes_match": prefixes_match,
+		"limits": "Same seeded production logic per physics tick. Wall-time windows have different tick counts; totals are not equivalent workloads. noEffects skips only CombatWorld._draw_effects; noShots skips only _draw_friendly_shots; noDraw skips CombatWorld drawing; no Main/GameStore/HUD. VSync retained; max_fps=0."}
+	var output: FileAccess = FileAccess.open("/private/tmp/broxy-rune-native-profile.json", FileAccess.WRITE)
+	output.store_string(JSON.stringify(report, "\t"))
+	output.close()
+	await process_frame
+	await process_frame
+	print("RUNE_NATIVE_PROFILE_COMPLETE prefixes_match=", prefixes_match)
+	quit(0 if prefixes_match else 1)
+
+func _case(mode: String) -> Dictionary:
+	var sound := SoundBank.new()
+	root.add_child(sound)
+	sound.set_volume(0.0)
+	var world := MeasuredWorld.new()
+	world.sound = sound
+	world.draw_mode = mode
+	root.add_child(world)
+	var state := RunState.new()
+	state.begin(20261022, "bone")
+	world.begin(state)
+	world.stress_mode = true
+	world.sim.populate_stress()
+	world.enable_rune_stress()
+	var started: int = Time.get_ticks_msec()
+	while Time.get_ticks_msec() - started < WARMUP_MS:
+		await process_frame
+	var tick_start: int = world.physics_ticks
+	var cpu_start: int = world.physics_usec
+	var primary_start: int = world.sim.primary_hits
+	var secondary_start: int = world.sim.secondary_hits
+	world.draw_frames = 0
+	world.draw_usec = 0
+	for key: String in world.section_usec:
+		world.section_usec[key] = 0
+	var samples: Array[int] = []
+	var draw_calls: float = 0.0
+	var primitives: float = 0.0
+	var last: int = Time.get_ticks_usec()
+	var sample_started: int = last
+	while Time.get_ticks_usec() - sample_started < SAMPLE_MS * 1000:
+		await process_frame
+		var now: int = Time.get_ticks_usec()
+		samples.append(now - last)
+		last = now
+		draw_calls += Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME)
+		primitives += Performance.get_monitor(Performance.RENDER_TOTAL_PRIMITIVES_IN_FRAME)
+	world.set_physics_process(false)
+	var duration: float = float(last - sample_started) / 1000000.0
+	var ticks: int = world.physics_ticks - tick_start
+	var sections: Dictionary = {}
+	for key: String in world.section_usec:
+		sections[key] = float(world.section_usec[key]) / maxf(1.0, world.draw_frames) / 1000.0
+	samples.sort()
+	var result: Dictionary = {"mode": mode, "duration_seconds": duration, "frames": samples.size(),
+		"average_fps": float(samples.size()) / duration, "p99_frame_ms": float(samples[mini(samples.size() - 1, int(samples.size() * 0.99))]) / 1000.0,
+		"physics_ticks": ticks, "physics_ticks_per_render_frame": float(ticks) / samples.size(),
+		"physics_cpu_ms_per_tick": float(world.physics_usec - cpu_start) / maxf(1.0, ticks) / 1000.0,
+		"world_draw_cpu_ms_per_draw": float(world.draw_usec) / maxf(1.0, world.draw_frames) / 1000.0,
+		"world_draw_section_cpu_ms_per_draw": sections,
+		"draw_calls_per_frame": draw_calls / samples.size(), "primitives_per_frame": primitives / samples.size(),
+		"primary_hits_sample": world.sim.primary_hits - primary_start, "secondary_hits_sample": world.sim.secondary_hits - secondary_start,
+		"primary_hits_per_tick": float(world.sim.primary_hits - primary_start) / maxf(1.0, ticks),
+		"secondary_hits_per_tick": float(world.sim.secondary_hits - secondary_start) / maxf(1.0, ticks),
+		"total_physics_ticks": world.physics_ticks, "primary_hits_total": world.sim.primary_hits,
+		"secondary_hits_total": world.sim.secondary_hits, "counts": [world.sim.enemy_count, world.sim.shot_count, world.sim.soul_count],
+		"rune_peak": world.rune_peak, "number_peak": world.number_peak, "prefixes": world.prefixes.duplicate()}
+	await RenderingServer.frame_post_draw
+	root.get_texture().get_image().save_png("/private/tmp/broxy-rune-native-%s.png" % mode)
+	world.stop()
+	for signal_name: StringName in [&"damage_dealt", &"player_damaged", &"rune_activated", &"enemy_hit", &"shot_fired", &"player_hurt", &"enemy_killed", &"ended"]:
+		for connection: Dictionary in world.sim.get_signal_connection_list(signal_name):
+			world.sim.disconnect(signal_name, connection["callable"])
+	world.sim = null
+	world.sound = null
+	world.free()
+	sound.shutdown()
+	await process_frame
+	await process_frame
+	sound.free()
+	await process_frame
+	return result
+
+func _hashes() -> Dictionary:
+	var hashes: Dictionary = {}
+	for path: String in ["res://scripts/combat/combat_sim.gd", "res://scripts/combat/combat_world.gd", "res://scripts/core/sound_bank.gd"]:
+		hashes[path] = FileAccess.get_sha256(path)
+	return hashes

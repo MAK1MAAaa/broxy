@@ -1,0 +1,4 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+MODAL_BEFORE {"focus_sequence":["继续试炼","设置","返回主菜单","退出游戏","购买  18 魂屑","购买  18 魂屑","购买  25 魂屑","购买  22 魂屑","售","空","空","空","空","刷新  3 魂屑","开始下一波"],"next_wave_requests_while_paused":1,"overlay_children":2,"tree_paused":true,"underlying_page_reached":true}
+UPGRADE_DEFERRED_FOCUS_BEFORE {"focus_in_underlying_page":true,"focus_text":"选择强化","overlay_children":2,"pending":1}

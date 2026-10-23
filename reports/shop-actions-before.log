@@ -1,0 +1,136 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+ERROR: Condition "ret != noErr" is true. Returning: ""
+   at: get_system_ca_certificates (platform/macos/os_macos.mm:1035)
+ERROR: A still-live old buy card cannot purchase the refreshed item or price before rebuilding
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_actions.gd:28)
+       [1] _test_reroll_stale_buy (res://tests/test_shop_actions.gd:113)
+       [2] _new_ui (res://tests/test_shop_actions.gd:48)
+       [3] _settle (res://tests/test_shop_actions.gd:52)
+ERROR: Repeating an old rune-sale button cannot sell the rune shifted into its index
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_actions.gd:28)
+       [1] _test_repeated_rune_sale (res://tests/test_shop_actions.gd:129)
+       [2] _new_ui (res://tests/test_shop_actions.gd:48)
+       [3] _settle (res://tests/test_shop_actions.gd:52)
+ERROR: Repeating an old weapon-sale button cannot sell the weapon shifted into its index
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_actions.gd:28)
+       [1] _test_repeated_weapon_sale (res://tests/test_shop_actions.gd:147)
+       [2] _new_ui (res://tests/test_shop_actions.gd:48)
+       [3] _settle (res://tests/test_shop_actions.gd:52)
+ERROR: An old blast sale cannot sell the pierce UID returned to its former index
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_actions.gd:28)
+       [1] _test_swap_stale_uid_sale (res://tests/test_shop_actions.gd:167)
+       [2] _settle (res://tests/test_shop_actions.gd:52)
+ERROR: A previous shop epoch rejects its still-live old action
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_actions.gd:28)
+       [1] _test_reopened_shop (res://tests/test_shop_actions.gd:183)
+       [2] _new_ui (res://tests/test_shop_actions.gd:48)
+       [3] _settle (res://tests/test_shop_actions.gd:52)
+ERROR: A previous shop epoch rejects its still-live old action
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_actions.gd:28)
+       [1] _test_reopened_shop (res://tests/test_shop_actions.gd:183)
+       [2] _new_ui (res://tests/test_shop_actions.gd:48)
+       [3] _settle (res://tests/test_shop_actions.gd:52)
+ERROR: A previous shop epoch rejects its still-live old action
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_actions.gd:28)
+       [1] _test_reopened_shop (res://tests/test_shop_actions.gd:183)
+       [2] _new_ui (res://tests/test_shop_actions.gd:48)
+       [3] _settle (res://tests/test_shop_actions.gd:52)
+ERROR: An overlay blocks all stale underlying shop state actions: pause
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_actions.gd:28)
+       [1] _test_overlay_actions (res://tests/test_shop_actions.gd:204)
+       [2] _new_ui (res://tests/test_shop_actions.gd:48)
+       [3] _settle (res://tests/test_shop_actions.gd:52)
+ERROR: An overlay blocks all stale underlying shop state actions: pause
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_actions.gd:28)
+       [1] _test_overlay_actions (res://tests/test_shop_actions.gd:204)
+       [2] _new_ui (res://tests/test_shop_actions.gd:48)
+       [3] _settle (res://tests/test_shop_actions.gd:52)
+ERROR: An overlay blocks all stale underlying shop state actions: pause
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_actions.gd:28)
+       [1] _test_overlay_actions (res://tests/test_shop_actions.gd:204)
+       [2] _new_ui (res://tests/test_shop_actions.gd:48)
+       [3] _settle (res://tests/test_shop_actions.gd:52)
+ERROR: An underlying next-wave button emits no transition through the overlay
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_actions.gd:28)
+       [1] _test_overlay_actions (res://tests/test_shop_actions.gd:205)
+       [2] _new_ui (res://tests/test_shop_actions.gd:48)
+       [3] _settle (res://tests/test_shop_actions.gd:52)
+ERROR: An overlay blocks all stale underlying shop state actions: settings
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_actions.gd:28)
+       [1] _test_overlay_actions (res://tests/test_shop_actions.gd:204)
+       [2] _new_ui (res://tests/test_shop_actions.gd:48)
+       [3] _settle (res://tests/test_shop_actions.gd:52)
+ERROR: An overlay blocks all stale underlying shop state actions: settings
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_actions.gd:28)
+       [1] _test_overlay_actions (res://tests/test_shop_actions.gd:204)
+       [2] _new_ui (res://tests/test_shop_actions.gd:48)
+       [3] _settle (res://tests/test_shop_actions.gd:52)
+ERROR: An overlay blocks all stale underlying shop state actions: settings
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_actions.gd:28)
+       [1] _test_overlay_actions (res://tests/test_shop_actions.gd:204)
+       [2] _new_ui (res://tests/test_shop_actions.gd:48)
+       [3] _settle (res://tests/test_shop_actions.gd:52)
+ERROR: An underlying next-wave button emits no transition through the overlay
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_actions.gd:28)
+       [1] _test_overlay_actions (res://tests/test_shop_actions.gd:205)
+       [2] _new_ui (res://tests/test_shop_actions.gd:48)
+       [3] _settle (res://tests/test_shop_actions.gd:52)
+ERROR: Pending shop rebuilding blocks next-wave requests until the current view is ready
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_actions.gd:28)
+       [1] _test_pending_transition_and_other_screen (res://tests/test_shop_actions.gd:220)
+       [2] _new_ui (res://tests/test_shop_actions.gd:48)
+       [3] _settle (res://tests/test_shop_actions.gd:52)
+ERROR: Old shop controls cannot charge gold or generate/buy offers after entering combat
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_actions.gd:28)
+       [1] _test_pending_transition_and_other_screen (res://tests/test_shop_actions.gd:232)
+       [2] _settle (res://tests/test_shop_actions.gd:52)
+ERROR: Even a failed transaction invalidates old actions while its feedback refresh is pending
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_actions.gd:28)
+       [1] _test_failed_transaction_and_valid_swap (res://tests/test_shop_actions.gd:249)
+       [2] _new_ui (res://tests/test_shop_actions.gd:48)
+       [3] _settle (res://tests/test_shop_actions.gd:52)
+ERROR: A second same-frame Return cannot select the wrong UID through an old index
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_shop_actions.gd:28)
+       [1] _test_same_frame_keyboard (res://tests/test_shop_actions.gd:283)
+       [2] _new_ui (res://tests/test_shop_actions.gd:48)
+       [3] _settle (res://tests/test_shop_actions.gd:52)
+ShopActions: 106 assertions, 19 failures

@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="ContentDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/content_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "chaser"
+kind = "enemy"
+display_name = "游魂"
+description = "持续追逐你的脆弱亡魂。"
+color = Color(0.53, 0.66, 0.6, 1)
+health = 14.0
+speed = 66.0
+damage = 8.0
+radius = 13.0

@@ -1,0 +1,8 @@
+{
+  "scripts/combat/combat_sim.gd": "3dbef0e8cb03359532f2e7d883305fd147f6abe8deffe18eb3e524914234cbbc",
+  "scripts/combat/combat_world.gd": "4cf1b8bcc68f299a3e8defbef421c634f1cce0e8eeff6f445c8d83ed79fdc5c1",
+  "scripts/combat/enemy_telegraph_painter.gd": "4750e8c434ef2eac723d1cb6cb3bef5386734cd369a80f001b0467a3211af2e6",
+  "scripts/combat/projectile_painter.gd": "dc06af10a75453536ded8b37325f564be4e1fbaf7e56e3b14925ad2475930a3e",
+  "scripts/ui/game_ui.gd": "4310706e5953505f41c04a2a961127149adebc20ad45c214359bc400373d7aa2",
+  "scripts/main.gd": "d36ed4f958d5fe6d61f5eb091db6a20f857dcfe5377a4e55dfebb47835fefb61"
+}

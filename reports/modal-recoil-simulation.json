@@ -1,0 +1,583 @@
+{
+  "schema_version": 1,
+  "simulation_exit_code": 0,
+  "command": "tools/run.sh --headless --script res://tests/simulate_runs.gd -- --seed=2026 --count=10",
+  "paired_runs": 30,
+  "baseline_file": "reports/simulation-30-rune-final.jsonl",
+  "baseline_sha256": "3ca87ce9d7fb41cf66f507a641c962b0fcb6720ce63cc81d47a0e1b07d850b61",
+  "current_file": "reports/simulation-30-modal-recoil.jsonl",
+  "current_sha256": "dbcb51fd7f717226679d2f6066a9842e1cbeb903a53b7514bb2ee7e3a9d5d1fa",
+  "before_core_versions": [
+    "prototype-0.1.0+bdd5240c97ca"
+  ],
+  "current_core_version": "prototype-0.1.0+f29c7008e475",
+  "source_version_matches_runtime": true,
+  "policy_versions": [
+    "orbit-avoid-v1/shop-v1+7c19c01f20e4"
+  ],
+  "before_wins": 28,
+  "after_wins": 29,
+  "changed_runs_excluding_core_version": 24,
+  "changed_field_counts": {
+    "gold": 24,
+    "kills": 22,
+    "shop_observations": 24,
+    "trace": 24,
+    "wave_results": 24,
+    "loadout": 2,
+    "elapsed": 2,
+    "equipped_target_runes": 1,
+    "reason": 1,
+    "relic_counts": 1,
+    "wave": 1,
+    "won": 1
+  },
+  "pairs": [
+    {
+      "seed": 2026,
+      "rune": "blast",
+      "changed_fields": [
+        "gold",
+        "kills",
+        "shop_observations",
+        "trace",
+        "wave_results"
+      ],
+      "before_won": true,
+      "after_won": true,
+      "before_wave": 8,
+      "after_wave": 8,
+      "before_kills": 1849,
+      "after_kills": 1855,
+      "before_elapsed": 331.15,
+      "after_elapsed": 331.15
+    },
+    {
+      "seed": 2026,
+      "rune": "bounce",
+      "changed_fields": [
+        "gold",
+        "kills",
+        "shop_observations",
+        "trace",
+        "wave_results"
+      ],
+      "before_won": true,
+      "after_won": true,
+      "before_wave": 8,
+      "after_wave": 8,
+      "before_kills": 1631,
+      "after_kills": 1616,
+      "before_elapsed": 321.133,
+      "after_elapsed": 321.133
+    },
+    {
+      "seed": 2026,
+      "rune": "pierce",
+      "changed_fields": [],
+      "before_won": false,
+      "after_won": false,
+      "before_wave": 3,
+      "after_wave": 3,
+      "before_kills": 315,
+      "after_kills": 315,
+      "before_elapsed": 123.1,
+      "after_elapsed": 123.1
+    },
+    {
+      "seed": 2027,
+      "rune": "blast",
+      "changed_fields": [
+        "gold",
+        "kills",
+        "loadout",
+        "shop_observations",
+        "trace",
+        "wave_results"
+      ],
+      "before_won": true,
+      "after_won": true,
+      "before_wave": 8,
+      "after_wave": 8,
+      "before_kills": 1837,
+      "after_kills": 1839,
+      "before_elapsed": 325.0,
+      "after_elapsed": 325.0
+    },
+    {
+      "seed": 2027,
+      "rune": "bounce",
+      "changed_fields": [
+        "gold",
+        "kills",
+        "shop_observations",
+        "trace",
+        "wave_results"
+      ],
+      "before_won": true,
+      "after_won": true,
+      "before_wave": 8,
+      "after_wave": 8,
+      "before_kills": 1859,
+      "after_kills": 1861,
+      "before_elapsed": 322.683,
+      "after_elapsed": 322.683
+    },
+    {
+      "seed": 2027,
+      "rune": "pierce",
+      "changed_fields": [],
+      "before_won": true,
+      "after_won": true,
+      "before_wave": 8,
+      "after_wave": 8,
+      "before_kills": 1878,
+      "after_kills": 1878,
+      "before_elapsed": 326.183,
+      "after_elapsed": 326.183
+    },
+    {
+      "seed": 2028,
+      "rune": "blast",
+      "changed_fields": [
+        "gold",
+        "kills",
+        "shop_observations",
+        "trace",
+        "wave_results"
+      ],
+      "before_won": true,
+      "after_won": true,
+      "before_wave": 8,
+      "after_wave": 8,
+      "before_kills": 1857,
+      "after_kills": 1854,
+      "before_elapsed": 329.183,
+      "after_elapsed": 329.183
+    },
+    {
+      "seed": 2028,
+      "rune": "bounce",
+      "changed_fields": [],
+      "before_won": true,
+      "after_won": true,
+      "before_wave": 8,
+      "after_wave": 8,
+      "before_kills": 1754,
+      "after_kills": 1754,
+      "before_elapsed": 321.567,
+      "after_elapsed": 321.567
+    },
+    {
+      "seed": 2028,
+      "rune": "pierce",
+      "changed_fields": [
+        "gold",
+        "kills",
+        "shop_observations",
+        "trace",
+        "wave_results"
+      ],
+      "before_won": true,
+      "after_won": true,
+      "before_wave": 8,
+      "after_wave": 8,
+      "before_kills": 1893,
+      "after_kills": 1895,
+      "before_elapsed": 331.833,
+      "after_elapsed": 331.833
+    },
+    {
+      "seed": 2029,
+      "rune": "blast",
+      "changed_fields": [
+        "gold",
+        "kills",
+        "shop_observations",
+        "trace",
+        "wave_results"
+      ],
+      "before_won": true,
+      "after_won": true,
+      "before_wave": 8,
+      "after_wave": 8,
+      "before_kills": 1922,
+      "after_kills": 1940,
+      "before_elapsed": 335.867,
+      "after_elapsed": 335.867
+    },
+    {
+      "seed": 2029,
+      "rune": "bounce",
+      "changed_fields": [],
+      "before_won": true,
+      "after_won": true,
+      "before_wave": 8,
+      "after_wave": 8,
+      "before_kills": 1813,
+      "after_kills": 1813,
+      "before_elapsed": 320.567,
+      "after_elapsed": 320.567
+    },
+    {
+      "seed": 2029,
+      "rune": "pierce",
+      "changed_fields": [
+        "gold",
+        "kills",
+        "shop_observations",
+        "trace",
+        "wave_results"
+      ],
+      "before_won": true,
+      "after_won": true,
+      "before_wave": 8,
+      "after_wave": 8,
+      "before_kills": 1829,
+      "after_kills": 1827,
+      "before_elapsed": 320.383,
+      "after_elapsed": 320.383
+    },
+    {
+      "seed": 2030,
+      "rune": "blast",
+      "changed_fields": [
+        "gold",
+        "kills",
+        "shop_observations",
+        "trace",
+        "wave_results"
+      ],
+      "before_won": true,
+      "after_won": true,
+      "before_wave": 8,
+      "after_wave": 8,
+      "before_kills": 1808,
+      "after_kills": 1817,
+      "before_elapsed": 322.417,
+      "after_elapsed": 322.417
+    },
+    {
+      "seed": 2030,
+      "rune": "bounce",
+      "changed_fields": [],
+      "before_won": true,
+      "after_won": true,
+      "before_wave": 8,
+      "after_wave": 8,
+      "before_kills": 1926,
+      "after_kills": 1926,
+      "before_elapsed": 322.817,
+      "after_elapsed": 322.817
+    },
+    {
+      "seed": 2030,
+      "rune": "pierce",
+      "changed_fields": [
+        "gold",
+        "shop_observations",
+        "trace",
+        "wave_results"
+      ],
+      "before_won": true,
+      "after_won": true,
+      "before_wave": 8,
+      "after_wave": 8,
+      "before_kills": 1865,
+      "after_kills": 1865,
+      "before_elapsed": 320.283,
+      "after_elapsed": 320.283
+    },
+    {
+      "seed": 2031,
+      "rune": "blast",
+      "changed_fields": [
+        "gold",
+        "kills",
+        "shop_observations",
+        "trace",
+        "wave_results"
+      ],
+      "before_won": true,
+      "after_won": true,
+      "before_wave": 8,
+      "after_wave": 8,
+      "before_kills": 1790,
+      "after_kills": 1807,
+      "before_elapsed": 320.6,
+      "after_elapsed": 320.6
+    },
+    {
+      "seed": 2031,
+      "rune": "bounce",
+      "changed_fields": [
+        "elapsed",
+        "gold",
+        "kills",
+        "shop_observations",
+        "trace",
+        "wave_results"
+      ],
+      "before_won": true,
+      "after_won": true,
+      "before_wave": 8,
+      "after_wave": 8,
+      "before_kills": 1839,
+      "after_kills": 1825,
+      "before_elapsed": 322.35,
+      "after_elapsed": 320.617
+    },
+    {
+      "seed": 2031,
+      "rune": "pierce",
+      "changed_fields": [
+        "gold",
+        "kills",
+        "shop_observations",
+        "trace",
+        "wave_results"
+      ],
+      "before_won": true,
+      "after_won": true,
+      "before_wave": 8,
+      "after_wave": 8,
+      "before_kills": 1793,
+      "after_kills": 1798,
+      "before_elapsed": 319.717,
+      "after_elapsed": 319.717
+    },
+    {
+      "seed": 2032,
+      "rune": "blast",
+      "changed_fields": [
+        "elapsed",
+        "equipped_target_runes",
+        "gold",
+        "kills",
+        "loadout",
+        "reason",
+        "relic_counts",
+        "shop_observations",
+        "trace",
+        "wave",
+        "wave_results",
+        "won"
+      ],
+      "before_won": false,
+      "after_won": true,
+      "before_wave": 4,
+      "after_wave": 8,
+      "before_kills": 570,
+      "after_kills": 1701,
+      "before_elapsed": 179.067,
+      "after_elapsed": 331.833
+    },
+    {
+      "seed": 2032,
+      "rune": "bounce",
+      "changed_fields": [
+        "gold",
+        "kills",
+        "shop_observations",
+        "trace",
+        "wave_results"
+      ],
+      "before_won": true,
+      "after_won": true,
+      "before_wave": 8,
+      "after_wave": 8,
+      "before_kills": 1807,
+      "after_kills": 1811,
+      "before_elapsed": 324.6,
+      "after_elapsed": 324.6
+    },
+    {
+      "seed": 2032,
+      "rune": "pierce",
+      "changed_fields": [
+        "gold",
+        "kills",
+        "shop_observations",
+        "trace",
+        "wave_results"
+      ],
+      "before_won": true,
+      "after_won": true,
+      "before_wave": 8,
+      "after_wave": 8,
+      "before_kills": 1800,
+      "after_kills": 1798,
+      "before_elapsed": 331.283,
+      "after_elapsed": 331.283
+    },
+    {
+      "seed": 2033,
+      "rune": "blast",
+      "changed_fields": [
+        "gold",
+        "kills",
+        "shop_observations",
+        "trace",
+        "wave_results"
+      ],
+      "before_won": true,
+      "after_won": true,
+      "before_wave": 8,
+      "after_wave": 8,
+      "before_kills": 1868,
+      "after_kills": 1847,
+      "before_elapsed": 334.167,
+      "after_elapsed": 334.167
+    },
+    {
+      "seed": 2033,
+      "rune": "bounce",
+      "changed_fields": [
+        "gold",
+        "kills",
+        "shop_observations",
+        "trace",
+        "wave_results"
+      ],
+      "before_won": true,
+      "after_won": true,
+      "before_wave": 8,
+      "after_wave": 8,
+      "before_kills": 1892,
+      "after_kills": 1877,
+      "before_elapsed": 335.383,
+      "after_elapsed": 335.383
+    },
+    {
+      "seed": 2033,
+      "rune": "pierce",
+      "changed_fields": [
+        "gold",
+        "shop_observations",
+        "trace",
+        "wave_results"
+      ],
+      "before_won": true,
+      "after_won": true,
+      "before_wave": 8,
+      "after_wave": 8,
+      "before_kills": 1910,
+      "after_kills": 1910,
+      "before_elapsed": 342.783,
+      "after_elapsed": 342.783
+    },
+    {
+      "seed": 2034,
+      "rune": "blast",
+      "changed_fields": [
+        "gold",
+        "kills",
+        "shop_observations",
+        "trace",
+        "wave_results"
+      ],
+      "before_won": true,
+      "after_won": true,
+      "before_wave": 8,
+      "after_wave": 8,
+      "before_kills": 1874,
+      "after_kills": 1880,
+      "before_elapsed": 332.367,
+      "after_elapsed": 332.367
+    },
+    {
+      "seed": 2034,
+      "rune": "bounce",
+      "changed_fields": [
+        "gold",
+        "kills",
+        "shop_observations",
+        "trace",
+        "wave_results"
+      ],
+      "before_won": true,
+      "after_won": true,
+      "before_wave": 8,
+      "after_wave": 8,
+      "before_kills": 1868,
+      "after_kills": 1870,
+      "before_elapsed": 332.967,
+      "after_elapsed": 332.967
+    },
+    {
+      "seed": 2034,
+      "rune": "pierce",
+      "changed_fields": [
+        "gold",
+        "kills",
+        "shop_observations",
+        "trace",
+        "wave_results"
+      ],
+      "before_won": true,
+      "after_won": true,
+      "before_wave": 8,
+      "after_wave": 8,
+      "before_kills": 2016,
+      "after_kills": 2006,
+      "before_elapsed": 347.367,
+      "after_elapsed": 347.367
+    },
+    {
+      "seed": 2035,
+      "rune": "blast",
+      "changed_fields": [
+        "gold",
+        "kills",
+        "shop_observations",
+        "trace",
+        "wave_results"
+      ],
+      "before_won": true,
+      "after_won": true,
+      "before_wave": 8,
+      "after_wave": 8,
+      "before_kills": 1762,
+      "after_kills": 1748,
+      "before_elapsed": 328.7,
+      "after_elapsed": 328.7
+    },
+    {
+      "seed": 2035,
+      "rune": "bounce",
+      "changed_fields": [
+        "gold",
+        "kills",
+        "shop_observations",
+        "trace",
+        "wave_results"
+      ],
+      "before_won": true,
+      "after_won": true,
+      "before_wave": 8,
+      "after_wave": 8,
+      "before_kills": 1888,
+      "after_kills": 1887,
+      "before_elapsed": 320.417,
+      "after_elapsed": 320.417
+    },
+    {
+      "seed": 2035,
+      "rune": "pierce",
+      "changed_fields": [],
+      "before_won": true,
+      "after_won": true,
+      "before_wave": 8,
+      "after_wave": 8,
+      "before_kills": 1900,
+      "after_kills": 1900,
+      "before_elapsed": 325.55,
+      "after_elapsed": 325.55
+    }
+  ],
+  "limits": [
+    "Contact recoil intentionally changes enemy positions; this is not an equivalence claim.",
+    "Thirty fixed bot seed/rune pairs do not measure human difficulty.",
+    "UI modal behavior is checked separately by real input regressions and native fixtures."
+  ]
+}

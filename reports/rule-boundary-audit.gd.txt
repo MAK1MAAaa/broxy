@@ -1,0 +1,51 @@
+extends SceneTree
+
+const STEP: float = 1.0 / 60.0
+
+func _initialize() -> void:
+	var retreat: CombatSim = _sim(1)
+	retreat.player_position = Vector2(640, 365)
+	var caster: CombatSim.Enemy = retreat.spawn_enemy("caster", Vector2(640, 385))
+	caster.action_timer = 9999.0
+	var distance_before: float = caster.position.distance_to(retreat.player_position)
+	retreat.step(STEP, Vector2.ZERO)
+	print("AUDIT ", JSON.stringify({"case": "retreat_contact_knockback", "distance_before": distance_before, "distance_after": caster.position.distance_to(retreat.player_position), "enemy_position_after": [caster.position.x, caster.position.y], "health_after": retreat.run.health, "last_hit": retreat.run.last_hit}))
+	var boundary: CombatSim = _sim(1)
+	boundary.player_position = Vector2(82, 365)
+	var chaser: CombatSim.Enemy = boundary.spawn_enemy("chaser", Vector2(67, 365))
+	chaser.action_timer = 9999.0
+	boundary.step(STEP, Vector2.ZERO)
+	print("AUDIT ", JSON.stringify({"case": "contact_push_outside_arena", "enemy_x_after": chaser.position.x, "arena_left": CombatSim.ARENA.position.x, "inside_arena": CombatSim.ARENA.has_point(chaser.position), "health_after": boundary.run.health}))
+	var cap: CombatSim = _sim(8)
+	cap.player_position = Vector2(1050, 550)
+	for index: int in 99:
+		var enemy: CombatSim.Enemy = cap.spawn_enemy("chaser", Vector2(100 + (index % 20) * 10, 180 + int(index / 20) * 20))
+		enemy.action_timer = 9999.0
+		enemy.slow_timer = 9999.0
+		enemy.slow_factor = 0.0
+	cap.boss.action_timer = 0.0
+	cap._boss_cycle = 1
+	var count_before: int = cap.enemy_count
+	cap.step(STEP, Vector2.ZERO)
+	print("AUDIT ", JSON.stringify({"case": "boss_summon_above_wave_cap", "wave": cap.run.wave, "resource_cap": GameCatalog.wave(8).cap, "enemies_before": count_before, "enemies_after": cap.enemy_count, "boss_cycle_after": cap._boss_cycle, "complete": cap.complete}))
+	for wave_number: int in [1, 7]:
+		var ranged: CombatSim = _sim(wave_number)
+		ranged.player_position = Vector2(640, 365)
+		var ranged_caster: CombatSim.Enemy = ranged.spawn_enemy("caster", Vector2(640, 465))
+		ranged_caster.action_timer = 0.0
+		ranged.step(STEP, Vector2.ZERO)
+		for shot: CombatSim.Shot in ranged.shots:
+			if shot.active and shot.hostile and shot.attacker_id == "caster":
+				print("AUDIT ", JSON.stringify({"case": "caster_projectile_wave_scaling", "wave": wave_number, "definition_damage": ranged_caster.definition.damage, "projectile_damage": shot.damage, "contact_formula_damage": ranged_caster.definition.damage * (1.0 + 0.09 * float(wave_number - 1))}))
+				break
+	quit(0)
+
+func _sim(wave_number: int) -> CombatSim:
+	var state: RunState = RunState.new()
+	state.begin(9031, "bone")
+	state.wave = wave_number
+	var sim: CombatSim = CombatSim.new()
+	sim.begin(state)
+	sim.sandbox = true
+	sim._cooldowns.fill(9999.0)
+	return sim

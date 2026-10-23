@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "date_local": "2026-10-23",
+  "source_commit": "2a6c4b9e42970776a3df6e4098a60d6d1321c46a",
+  "app_path": "/Users/makima/Desktop/code/game/broxy/.tools/godot/Godot.app",
+  "method": "CUA native app inventory, AX window selection, Raise and window screenshots; no screen scraping outside CUA.",
+  "initial_unlocked_inventory": true,
+  "initial_process_check": "ps with Godot/game executable patterns returned no matching processes; no apps were terminated.",
+  "window_title": "秘术余烬 · 符文反馈压力测试（非普通关卡，不保存设置与成绩） (DEBUG)",
+  "observations": [
+    {
+      "sample_time_remaining": "04:53",
+      "enemies": 300,
+      "projectiles": 600,
+      "window_rendering": true,
+      "source": "CUA screenshot in current conversation"
+    },
+    {
+      "sample_time_remaining": "03:02",
+      "enemies": 300,
+      "projectiles": 600,
+      "window_rendering": true,
+      "source": "CUA screenshot in current conversation"
+    },
+    {
+      "sample_time_remaining": "01:45",
+      "enemies": 300,
+      "projectiles": 600,
+      "window_rendering": true,
+      "source": "CUA screenshot in current conversation"
+    },
+    {
+      "sample_time_remaining": "00:45",
+      "enemies": 300,
+      "projectiles": 600,
+      "window_rendering": true,
+      "source": "CUA screenshot in current conversation"
+    }
+  ],
+  "window_raised_during_early_sampling": true,
+  "exit_code": 0,
+  "final_cua_inventory_godot_running": false,
+  "concurrent_work": "No other Godot tests, builds, simulations or additional game windows were started during sampling. Existing unrelated desktop apps remained open; this is not an isolated or bare machine.",
+  "limits": [
+    "HUD observations verify visible progress and enemy/projectile counts at sampled moments, not every frame.",
+    "Pickup count is checked in the final report, not the HUD screenshots.",
+    "CUA observations are spot checks, not a full continuous recording or human playtest."
+  ]
+}

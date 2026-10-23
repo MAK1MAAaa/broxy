@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-10-22T10:56:28.442865+00:00",
+  "engine": "Godot 4.7.2.stable.official.ed1daf0bf",
+  "art_version": "engraved-02",
+  "core_version": "prototype-0.1.0+bdd5240c97ca",
+  "source_sha256": {
+    "scripts/core/run_state.gd": "0787d0442dc8e03d782808dc37ac7277ed1478a0c77d7d672e5acb2de7deeb4e",
+    "scripts/combat/combat_sim.gd": "bb3189889629478a4478d61f610b8835e9ec9caf9058b605638b7ee387bc19a1",
+    "scripts/combat/combat_world.gd": "633ff6016bbf34b51231655d5b9e692e8b3fe32f1fb9c1fd8ab14a4b9e12bbe1",
+    "scripts/combat/projectile_painter.gd": "dc06af10a75453536ded8b37325f564be4e1fbaf7e56e3b14925ad2475930a3e",
+    "scripts/main.gd": "364ac824605926feea117dbc9058bcd81d5c18bea58ec57e816c597e072cc9a2",
+    "scripts/combat/bot_policy.gd": "a78c47c7c5002f06928cc8af373851fb81f853ec401f6fa929a28efd303d613b"
+  },
+  "godot_suites": {
+    "Rules": {
+      "assertions": 204,
+      "failures": 0
+    },
+    "Combat": {
+      "assertions": 259,
+      "failures": 0
+    },
+    "UI": {
+      "assertions": 131,
+      "failures": 0
+    },
+    "Flow": {
+      "assertions": 62,
+      "failures": 0
+    },
+    "Feedback": {
+      "assertions": 58,
+      "failures": 0
+    },
+    "ProjectilePainter": {
+      "assertions": 77,
+      "failures": 0
+    },
+    "ShopObservation": {
+      "assertions": 384,
+      "failures": 0
+    }
+  },
+  "godot_assertions_total": 1175,
+  "python_tests": 14,
+  "performance": {
+    "average_fps": 95.6418004118617,
+    "duration_seconds": 300.0,
+    "enemies": 300,
+    "internal_resolution": "1280x720",
+    "os": "macOS",
+    "p99_frame_ms": 26.022,
+    "passed": true,
+    "pickups": 200,
+    "primary_hits": 484677,
+    "projectiles": 600,
+    "renderer": "gl_compatibility",
+    "rune_visual_peak": 32,
+    "samples": 28694,
+    "scenario": "rune-feedback",
+    "secondary_hits": 1258294
+  },
+  "performance_json_sha256": "783ca1096a77d2c35d96ffd7fb0959d8c383c68c08a7b26ca4ad62d1e4ae13c2",
+  "benchmark_log_sha256": "f67353fb4f33758e69294fac79c47e93d067932b8bc49c34a67f3f11d4e43501",
+  "simulation_equivalence_report_sha256": "af7890db200d74867928d86691a788f46ee849a343b91f04cdd5a87a962b3cee",
+  "rune_preview": {
+    "fixture_not_real_run": true,
+    "primary_hits": 5,
+    "secondary_hits": 2,
+    "rune_events": {
+      "pierce": 2,
+      "bounce": 1,
+      "blast": 1
+    },
+    "exit_code": 0
+  },
+  "mac_app": {
+    "architecture": "arm64",
+    "signing": "ad-hoc; codesign deep strict verified",
+    "executable_sha256": "352a9e62bfdadcae17c5521b81039719ff3522831ced6311af1b95ec60817eac",
+    "archive_sha256": "32eeb30cbda996b083b3f1d48247f0c3db6b0f86215405c12152ed689737184e",
+    "headless_boot_exit_code": 0,
+    "archive_integrity_exit_code": 0,
+    "normal_menu_verified_via_CUA": true
+  },
+  "limits": [
+    "Single Apple M5 native graphics sample; not all Mac hardware.",
+    "Thirty fixed bot seed/rune pairs are not human difficulty or playtest evidence.",
+    "Five-person human playtest remains pending.",
+    "Performance baseline with zero-damage filler remains a distinct historical scenario."
+  ]
+}

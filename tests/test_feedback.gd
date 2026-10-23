@@ -1,0 +1,255 @@
+extends SceneTree
+## Real combat events drive bounded feedback without creating per-hit scene nodes.
+
+var _checks: int = 0
+var _failures: int = 0
+
+func _initialize() -> void:
+	_test.call_deferred()
+
+func _test() -> void:
+	var sound := SoundBank.new()
+	root.add_child(sound)
+	var world := CombatWorld.new()
+	world.sound = sound
+	world.process_mode = Node.PROCESS_MODE_PAUSABLE
+	root.add_child(world)
+	var run := RunState.new()
+	run.begin(2026, "bone")
+	world.begin(run)
+	world.set_physics_process(false)
+	var sim: CombatSim = world.sim
+	sim.sandbox = true
+	sim._cooldowns.fill(1000.0)
+	var target: CombatSim.Enemy = sim.spawn_enemy("tank", Vector2(860, 300))
+	target.health = 1000.0
+	sim.apply_damage(target, 14.0, "bone")
+	_check(world._numbers.size() == 1 and is_equal_approx(world._numbers[0].amount, 14.0), "A real accepted hit emits its actual damage into the world feedback")
+	sim.apply_damage(target, 3.5, "bone", true)
+	_check(world._numbers.size() == 1 and world._numbers[0].text == "17.5", "Near-simultaneous primary and splash damage coalesce without losing fractional damage")
+	sim.apply_damage(target, 5.0, "frost")
+	_check(world._numbers.size() == 2, "Different weapon sources remain distinguishable rather than merging together")
+	sim.apply_damage(target, 0.0, "bone")
+	_check(world._numbers.size() == 2 and world._numbers[0].text == "17.5", "Zero damage does not create or inflate a combat number")
+	var neighbor: CombatSim.Enemy = sim.spawn_enemy("tank", Vector2(880, 300))
+	sim.apply_damage(neighbor, 14.0, "bone")
+	_check(world._numbers.size() == 3 and world._numbers[0].text == "17.5", "Adjacent enemies keep separate damage numbers using target identity rather than proximity")
+	_check(world._numbers[0].text_width > 0.0, "Damage text has a cached layout width for centered native rendering")
+	var position_before: Vector2 = world._numbers[0].position
+	world._advance_feedback(0.1)
+	_check(world._numbers[0].position.y < position_before.y, "Combat numbers drift upward as time advances")
+	world.set_physics_process(true)
+	paused = true
+	var life_before: float = world._numbers[0].life
+	await process_frame
+	await process_frame
+	_check(is_equal_approx(world._numbers[0].life, life_before), "Pausing freezes feedback lifetime along with combat")
+	paused = false
+	await physics_frame
+	await physics_frame
+	await physics_frame
+	world.set_physics_process(false)
+	_check(world._numbers[0].life < life_before, "Resuming the real physics loop resumes feedback motion and expiry")
+	sim._hurt_player(8.0, "caster", "projectile", Vector2(760, 300))
+	var player_count: int = _player_numbers(world)
+	_check(player_count == 1 and is_equal_approx(run.health, 92.0), "Actual incoming damage creates one player number and the same health loss")
+	sim._hurt_player(8.0, "caster", "projectile", Vector2(760, 300))
+	_check(_player_numbers(world) == player_count and is_equal_approx(run.health, 92.0), "Invulnerability produces neither repeated damage nor misleading incoming numbers")
+	_check(world._damage_direction.is_finite() and world._damage_direction.x > 0.0, "Incoming feedback points toward the actual source location")
+	world._on_damage_dealt(world._numbers.back().position + Vector2(0, 22), 14.0, "scatter", false, 9999)
+	_check(world._numbers.back().player_hit, "Later outgoing damage never draws on top of an existing incoming-damage number")
+	world._advance_feedback(2.0)
+	_check(world._numbers.is_empty() and world._number_free.size() == CombatWorld.NUMBER_LIMIT, "Expired feedback returns every object to the fixed pool")
+	_check(is_zero_approx(world._damage_flash), "The transient damage ring expires completely")
+	for index: int in 200:
+		world._on_damage_dealt(Vector2(float(index) * 40.0, 300), 1.0, "bone", false)
+	_check(world._numbers.size() <= CombatWorld.NUMBER_LIMIT - 1, "A barrage remains bounded and preserves capacity for incoming damage")
+	sim.invulnerability = 0.0
+	sim._hurt_player(3.0, "chaser", "contact", Vector2(550, 350))
+	_check(_player_numbers(world) == 1 and world._numbers.size() <= CombatWorld.NUMBER_LIMIT, "Incoming damage remains visible when friendly damage fills its visual budget")
+	world.stop()
+	_check(world._numbers.is_empty() and world._number_free.size() == CombatWorld.NUMBER_LIMIT, "Stopping combat clears stale numbers before menus or another run")
+	world.begin(run)
+	world.set_physics_process(false)
+	world._on_player_damaged(2.5, "unknown", "unknown", Vector2.INF)
+	_check(world._damage_direction == Vector2.ZERO, "An unspecified source never produces an infinite or NaN direction")
+	var player_text: String = world._numbers[0].text
+	_check(player_text == "−2.5", "Player feedback retains the loss sign and real fractional amount")
+	for cycle: int in 10:
+		world._on_damage_dealt(Vector2(200, 200), 1.0, "bone", false)
+		world._advance_feedback(2.0)
+	var distinct: Dictionary = {}
+	for number: CombatWorld.FloatingNumber in world._number_free:
+		distinct[number.get_instance_id()] = true
+	_check(distinct.size() == CombatWorld.NUMBER_LIMIT, "Repeated reuse never duplicates or leaks feedback pool entries")
+	await _test_rune_feedback(world)
+	_test_number_lookup(world)
+	await _test_enemy_warning_lifecycle(world)
+	print("Feedback: %d assertions, %d failures" % [_checks, _failures])
+	world.queue_free()
+	sound.queue_free()
+	await process_frame
+	quit(0 if _failures == 0 else 1)
+
+func _test_rune_feedback(world: CombatWorld) -> void:
+	for rune_id: String in ["pierce", "bounce", "blast"]:
+		var state := RunState.new()
+		state.begin(2027, "bone")
+		world.begin(state)
+		world.set_physics_process(false)
+		var simulation: CombatSim = world.sim
+		simulation.sandbox = true
+		simulation.player_position = Vector2(200, 500)
+		simulation._cooldowns.fill(1000.0)
+		for point: Vector2 in [Vector2(520, 300), Vector2(600, 370) if rune_id == "bounce" else Vector2(560, 300)]:
+			var enemy: CombatSim.Enemy = simulation.spawn_enemy("tank", point)
+			enemy.health = 1000.0
+			enemy.max_health = 1000.0
+		simulation.fire_weapon("bone", rune_id, Vector2(470, 300), Vector2.RIGHT)
+		for frame: int in 12:
+			simulation.step(1.0 / 60.0, Vector2.ZERO)
+			if not world._rune_flashes.is_empty():
+				break
+		_check(not world._rune_flashes.is_empty(), "A real projectile collision creates the correct rune visual: " + rune_id)
+		if world._rune_flashes.is_empty():
+			continue
+		var flash: CombatWorld.RuneFlash = world._rune_flashes[0]
+		_check(flash.kind == CombatWorld.RUNE_KINDS[rune_id] and flash.origin.is_finite(), "Rune shape family and real impact origin reach the renderer: " + rune_id)
+		if rune_id == "pierce":
+			_check(flash.incoming == Vector2.RIGHT and flash.outgoing == Vector2.RIGHT, "Piercing strokes follow the actual continuing trajectory")
+		elif rune_id == "bounce":
+			_check(flash.incoming == Vector2.RIGHT and flash.outgoing.y > 0.4, "The bounce corner uses real incoming and retargeted directions")
+		else:
+			_check(flash.outgoing == Vector2.ZERO and simulation.effects[0].radius == 68.0, "Blast ornamentation accompanies the existing real-radius explosion")
+		world._rebuild_rune_lines()
+		var point_count: int = 0
+		var finite: bool = true
+		var blast_bounded: bool = true
+		for batch: CombatWorld.RuneLineBatch in world._rune_batches:
+			point_count += batch.points.size()
+			for point: Vector2 in batch.points:
+				finite = finite and point.is_finite()
+				blast_bounded = blast_bounded and point.distance_to(flash.origin) < 68.0
+		_check(point_count > 0 and finite, "Visible finite line geometry is built for the activated family: " + rune_id)
+		if rune_id == "blast":
+			_check(blast_bounded, "Decorative blast rays never imply a larger explosion radius")
+		world.set_physics_process(true)
+		paused = true
+		var life_before: float = flash.life
+		await process_frame
+		await process_frame
+		_check(is_equal_approx(flash.life, life_before), "Rune visuals pause with the actual scene tree: " + rune_id)
+		paused = false
+		await physics_frame
+		await physics_frame
+		await physics_frame
+		world.set_physics_process(false)
+		_check(flash.life < life_before, "Rune visuals resume and age with physics: " + rune_id)
+		world._advance_feedback(1.0)
+		_check(world._rune_flashes.is_empty() and world._rune_free.size() == CombatWorld.RUNE_FLASH_LIMIT, "Expired rune visuals return every instance to the pool: " + rune_id)
+	var state_before: Dictionary = world.sim.run.summary()
+	var rng_before: int = world.sim.rng.state
+	world._on_rune_activated("unknown", Vector2.ZERO, Vector2.RIGHT, Vector2.RIGHT)
+	world._on_rune_activated("pierce", Vector2.INF, Vector2.RIGHT, Vector2.RIGHT)
+	world._on_rune_activated("bounce", Vector2.ZERO, Vector2.INF, Vector2.RIGHT)
+	_check(world._rune_flashes.is_empty(), "Invalid rune observations cannot introduce unknown or nonfinite geometry")
+	for index: int in 200:
+		world._on_rune_activated("bounce", Vector2(300, 300), Vector2.RIGHT, Vector2.DOWN)
+	world._rebuild_rune_lines()
+	var points: int = 0
+	for batch: CombatWorld.RuneLineBatch in world._rune_batches:
+		points += batch.points.size()
+	_check(world._rune_pool.size() == CombatWorld.RUNE_FLASH_LIMIT and world._rune_flashes.size() == CombatWorld.RUNE_FLASH_LIMIT and world._rune_free.is_empty(), "A dense rune barrage uses a fixed 32-object budget")
+	_check(world._rune_batches.size() == 9 and points <= CombatWorld.RUNE_FLASH_LIMIT * 24, "Family/fade batching keeps geometry and draw-command budgets bounded")
+	_check(world.sim.run.summary() == state_before and world.sim.rng.state == rng_before, "Purely cosmetic rune feedback never mutates progression or consumes simulation RNG")
+	world.sim.invulnerability = 0.0
+	world.sim._hurt_player(1.0, "caster", "projectile", Vector2(700, 300))
+	_check(_player_numbers(world) == 1, "A full rune-visual pool cannot exhaust incoming-damage feedback capacity")
+	world.stop()
+	world._rebuild_rune_lines()
+	_check(world._rune_flashes.is_empty() and world._rune_free.size() == CombatWorld.RUNE_FLASH_LIMIT, "Leaving combat clears all rune visuals")
+	_check(world._rune_batches.all(func(batch: CombatWorld.RuneLineBatch) -> bool: return batch.points.is_empty()), "No cached rune lines remain behind menus or the next wave")
+	world.begin(world.sim.run)
+	world.set_physics_process(false)
+	_check(world._rune_flashes.is_empty() and world._rune_free.size() == CombatWorld.RUNE_FLASH_LIMIT, "Beginning another wave starts with a fully reset rune-visual pool")
+	for cycle: int in 12:
+		world._on_rune_activated("pierce", Vector2(400, 300), Vector2.ZERO, Vector2.ZERO)
+		world._rebuild_rune_lines()
+		world._advance_feedback(1.0)
+	var distinct: Dictionary = {}
+	for flash: CombatWorld.RuneFlash in world._rune_free:
+		distinct[flash.get_instance_id()] = true
+	_check(distinct.size() == CombatWorld.RUNE_FLASH_LIMIT, "Stationary overlaps and repeated reuse neither fabricate direction nor duplicate pool entries")
+
+func _test_number_lookup(world: CombatWorld) -> void:
+	world.begin(world.sim.run)
+	world.set_physics_process(false)
+	world._on_damage_dealt(Vector2(300, 300), 1.0, "bone", false, 42)
+	world._on_damage_dealt(Vector2(400, 300), 2.0, "bone", false, 42)
+	world._on_damage_dealt(Vector2(300, 300), 3.0, "bone", false, 42)
+	_check(world._numbers.size() == 2 and world._numbers[0].amount == 4.0 and world._numbers[1].amount == 2.0, "Indexed candidates retain the old earliest-compatible spatial merge order")
+	_check(world._number_lookup["bone"][42].size() == 2, "One source/target bucket can retain separate spatially incompatible numbers")
+	world._advance_feedback(0.08)
+	world._on_damage_dealt(Vector2(300, 300), 5.0, "bone", false, 42)
+	_check(world._numbers.size() == 3 and world._number_lookup["bone"][42].size() == 3, "Indexed feedback still starts a new number after the original merge window")
+	world._advance_feedback(1.0)
+	_check(world._number_lookup.is_empty() and world._number_free.size() == CombatWorld.NUMBER_LIMIT, "Expiry removes lookup references before pooled numbers are reused")
+	world._on_damage_dealt(Vector2(300, 300), 7.0, "frost", false, 99)
+	_check(world._number_lookup.size() == 1 and world._number_lookup.has("frost") and world._numbers[0].amount == 7.0, "Reused instances enter only their new source and target bucket")
+	world.stop()
+	_check(world._number_lookup.is_empty(), "Screen changes also clear the damage-number lookup")
+
+func _player_numbers(world: CombatWorld) -> int:
+	var count: int = 0
+	for number: CombatWorld.FloatingNumber in world._numbers:
+		if number.player_hit:
+			count += 1
+	return count
+
+func _check(condition: bool, message: String) -> void:
+	_checks += 1
+	if not condition:
+		_failures += 1
+		push_error(message)
+
+
+func _test_enemy_warning_lifecycle(world: CombatWorld) -> void:
+	var state := RunState.new()
+	state.begin(20261022, "bone")
+	world.begin(state)
+	world.set_physics_process(false)
+	var sim: CombatSim = world.sim
+	sim.sandbox = true
+	sim._cooldowns.fill(9999.0)
+	sim.player_position = Vector2(640, 540)
+	var enemy: CombatSim.Enemy = sim.spawn_enemy("rusher", Vector2(640, 260))
+	enemy.action_timer = 0.0
+	sim.step(1.0 / 60.0, Vector2.ZERO)
+	world._enemy_telegraphs.rebuild(sim.enemies)
+	_check(enemy.mode == 1 and world._enemy_telegraphs.charge_count == 1, "Production windup state populates a world-owned enemy warning")
+	var remaining: float = enemy.action_timer
+	world.set_physics_process(true)
+	paused = true
+	await process_frame
+	await process_frame
+	_check(is_equal_approx(enemy.action_timer, remaining), "Pausing freezes the real windup timer rather than animating a cosmetic deadline")
+	paused = false
+	await physics_frame
+	await physics_frame
+	world.set_physics_process(false)
+	_check(enemy.action_timer < remaining, "Resuming continues the same windup timer")
+	world._enemy_telegraphs.rebuild(sim.enemies)
+	world.stop()
+	_check(world._enemy_telegraphs.get_stats()["segments"] == 0, "Stopping clears cached warning strokes before menus")
+	world.begin(state)
+	world.set_physics_process(false)
+	_check(world._enemy_telegraphs.get_stats()["segments"] == 0, "A new encounter starts without cached warnings")
+	sim = world.sim
+	sim.sandbox = true
+	sim._cooldowns.fill(9999.0)
+	enemy = sim.spawn_enemy("caster", Vector2(850, 300))
+	enemy.action_timer = CombatSim.CASTER_WINDUP * 0.5
+	sim.step(1.0 / 60.0, Vector2.ZERO)
+	world._enemy_telegraphs.rebuild(sim.enemies)
+	sim._finish(false, "Fixed terminal warning regression")
+	_check(not world.active and world._enemy_telegraphs.get_stats()["segments"] == 0, "A terminal event removes stale windup warnings without deleting final damage feedback")

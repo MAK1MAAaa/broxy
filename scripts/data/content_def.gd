@@ -1,0 +1,30 @@
+class_name ContentDef
+extends Resource
+
+@export var id: String = ""
+@export var kind: String = ""
+@export var display_name: String = ""
+@export var subtitle: String = ""
+@export_multiline var description: String = ""
+@export var color: Color = Color.WHITE
+@export var icon: String = ""
+@export var price: int = 0
+@export var damage: float = 0.0
+@export var cooldown: float = 1.0
+@export var projectile_speed: float = 360.0
+@export var projectile_radius: float = 5.0
+@export var range: float = 500.0
+@export var shots: int = 1
+@export var spread: float = 0.0
+@export var homing: float = 0.0
+@export var slow: float = 0.0
+@export var health: float = 0.0
+@export var speed: float = 0.0
+@export var radius: float = 14.0
+@export var stat: String = ""
+@export var amount: float = 0.0
+@export var duration: float = 30.0
+@export var spawn_interval: float = 0.7
+@export var cap: int = 80
+@export var spawn_weights: Dictionary = {}
+@export var boss_wave: bool = false

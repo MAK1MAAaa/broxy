@@ -1,0 +1,188 @@
+{
+	"common_fixed_tick_prefix_count": 5,
+	"common_fixed_tick_prefixes_match": true,
+	"kind": "short native render isolation; not the five-minute acceptance benchmark",
+	"limits": "Same seeded production logic per physics tick. Wall-time windows have different tick counts; totals are not equivalent workloads. noEffects skips only CombatWorld._draw_effects; noShots skips only _draw_friendly_shots; noDraw skips CombatWorld drawing; no Main/GameStore/HUD. VSync retained; max_fps=0.",
+	"results": [
+		{
+			"average_fps": 7.26558799557655,
+			"counts": [
+				300,
+				600,
+				200
+			],
+			"draw_calls_per_frame": 2339.97260273973,
+			"duration_seconds": 10.047363,
+			"frames": 73,
+			"mode": "full",
+			"number_peak": 45,
+			"p99_frame_ms": 148.938,
+			"physics_cpu_ms_per_tick": 7.12820898100173,
+			"physics_ticks": 579,
+			"physics_ticks_per_render_frame": 7.93150684931507,
+			"prefixes": {
+				"120": "73a5467c7d938f289e0dba46d6ed31c0335baea7b4846931eba38603480ddb8d",
+				"240": "90934b0eeeedf9d52883153d8aff4e9f4522063661042b0c2dc5e72681dcf2f3",
+				"360": "ab32ce6af9ed7c829d0f37ab207267f19df1d88d83a5c15e425f46fb3ba4969a",
+				"480": "ebc226014e67d3f47112322e7db73721069aeb03c9302b603cbca3aaee7ee44c",
+				"600": "3c0844ed78bedeb27a85975671b3f68a34f5aca583405f9ecff93bb3b495f38b"
+			},
+			"primary_hits_per_tick": 41.2366148531952,
+			"primary_hits_sample": 23876,
+			"primary_hits_total": 35255,
+			"primitives_per_frame": 128790.109589041,
+			"rune_peak": 32,
+			"secondary_hits_per_tick": 88.993091537133,
+			"secondary_hits_sample": 51527,
+			"secondary_hits_total": 71646,
+			"total_physics_ticks": 682,
+			"world_draw_cpu_ms_per_draw": 4.84703972366149,
+			"world_draw_section_cpu_ms_per_draw": {
+				"effects": 1.110402417962,
+				"enemies": 0.235540587219344,
+				"numbers": 0.0611813471502591,
+				"runes": 0.0874283246977547,
+				"shots": 3.11561312607945
+			}
+		},
+		{
+			"average_fps": 9.13293412484106,
+			"counts": [
+				300,
+				600,
+				200
+			],
+			"draw_calls_per_frame": 1871.48913043478,
+			"duration_seconds": 10.073433,
+			"frames": 92,
+			"mode": "noeffects",
+			"number_peak": 45,
+			"p99_frame_ms": 144.27,
+			"physics_cpu_ms_per_tick": 7.09961019736842,
+			"physics_ticks": 608,
+			"physics_ticks_per_render_frame": 6.60869565217391,
+			"prefixes": {
+				"120": "73a5467c7d938f289e0dba46d6ed31c0335baea7b4846931eba38603480ddb8d",
+				"240": "90934b0eeeedf9d52883153d8aff4e9f4522063661042b0c2dc5e72681dcf2f3",
+				"360": "ab32ce6af9ed7c829d0f37ab207267f19df1d88d83a5c15e425f46fb3ba4969a",
+				"480": "ebc226014e67d3f47112322e7db73721069aeb03c9302b603cbca3aaee7ee44c",
+				"600": "3c0844ed78bedeb27a85975671b3f68a34f5aca583405f9ecff93bb3b495f38b",
+				"720": "b285f887ba3cba90d4c78f8a28c65d7da4333c080f6aae6e26394c771f0f458c"
+			},
+			"primary_hits_per_tick": 39.0756578947368,
+			"primary_hits_sample": 23758,
+			"primary_hits_total": 36416,
+			"primitives_per_frame": 110244.619565217,
+			"rune_peak": 32,
+			"secondary_hits_per_tick": 85.5197368421053,
+			"secondary_hits_sample": 51996,
+			"secondary_hits_total": 74396,
+			"total_physics_ticks": 726,
+			"world_draw_cpu_ms_per_draw": 4.25252302631579,
+			"world_draw_section_cpu_ms_per_draw": {
+				"effects": 0.0,
+				"enemies": 0.241358552631579,
+				"numbers": 0.0592516447368421,
+				"runes": 0.0866151315789474,
+				"shots": 3.634875
+			}
+		},
+		{
+			"average_fps": 87.7746068062509,
+			"counts": [
+				300,
+				600,
+				200
+			],
+			"draw_calls_per_frame": 589.928246013667,
+			"duration_seconds": 10.002893,
+			"frames": 878,
+			"mode": "noshots",
+			"number_peak": 45,
+			"p99_frame_ms": 21.01,
+			"physics_cpu_ms_per_tick": 7.29817333333333,
+			"physics_ticks": 600,
+			"physics_ticks_per_render_frame": 0.683371298405467,
+			"prefixes": {
+				"120": "73a5467c7d938f289e0dba46d6ed31c0335baea7b4846931eba38603480ddb8d",
+				"240": "90934b0eeeedf9d52883153d8aff4e9f4522063661042b0c2dc5e72681dcf2f3",
+				"360": "ab32ce6af9ed7c829d0f37ab207267f19df1d88d83a5c15e425f46fb3ba4969a",
+				"480": "ebc226014e67d3f47112322e7db73721069aeb03c9302b603cbca3aaee7ee44c",
+				"600": "3c0844ed78bedeb27a85975671b3f68a34f5aca583405f9ecff93bb3b495f38b",
+				"720": "b285f887ba3cba90d4c78f8a28c65d7da4333c080f6aae6e26394c771f0f458c"
+			},
+			"primary_hits_per_tick": 38.9933333333333,
+			"primary_hits_sample": 23396,
+			"primary_hits_total": 36268,
+			"primitives_per_frame": 30448.9578587699,
+			"rune_peak": 32,
+			"secondary_hits_per_tick": 85.665,
+			"secondary_hits_sample": 51399,
+			"secondary_hits_total": 74218,
+			"total_physics_ticks": 721,
+			"world_draw_cpu_ms_per_draw": 1.23539666666667,
+			"world_draw_section_cpu_ms_per_draw": {
+				"effects": 0.589918333333333,
+				"enemies": 0.246553333333333,
+				"numbers": 0.0645516666666667,
+				"runes": 0.0925416666666667,
+				"shots": 0.0
+			}
+		},
+		{
+			"average_fps": 118.277444491336,
+			"counts": [
+				300,
+				600,
+				200
+			],
+			"draw_calls_per_frame": 1.0,
+			"duration_seconds": 10.001907,
+			"frames": 1183,
+			"mode": "nodraw",
+			"number_peak": 45,
+			"p99_frame_ms": 19.485,
+			"physics_cpu_ms_per_tick": 7.624825,
+			"physics_ticks": 600,
+			"physics_ticks_per_render_frame": 0.507185122569738,
+			"prefixes": {
+				"120": "73a5467c7d938f289e0dba46d6ed31c0335baea7b4846931eba38603480ddb8d",
+				"240": "90934b0eeeedf9d52883153d8aff4e9f4522063661042b0c2dc5e72681dcf2f3",
+				"360": "ab32ce6af9ed7c829d0f37ab207267f19df1d88d83a5c15e425f46fb3ba4969a",
+				"480": "ebc226014e67d3f47112322e7db73721069aeb03c9302b603cbca3aaee7ee44c",
+				"600": "3c0844ed78bedeb27a85975671b3f68a34f5aca583405f9ecff93bb3b495f38b",
+				"720": "b285f887ba3cba90d4c78f8a28c65d7da4333c080f6aae6e26394c771f0f458c"
+			},
+			"primary_hits_per_tick": 38.9933333333333,
+			"primary_hits_sample": 23396,
+			"primary_hits_total": 36268,
+			"primitives_per_frame": 104.0,
+			"rune_peak": 32,
+			"secondary_hits_per_tick": 85.665,
+			"secondary_hits_sample": 51399,
+			"secondary_hits_total": 74218,
+			"total_physics_ticks": 721,
+			"world_draw_cpu_ms_per_draw": 0.0000783333333333333,
+			"world_draw_section_cpu_ms_per_draw": {
+				"effects": 0.0,
+				"enemies": 0.0,
+				"numbers": 0.0,
+				"runes": 0.0,
+				"shots": 0.0
+			}
+		}
+	],
+	"sample_target_ms": 10000,
+	"seed": 20261022,
+	"source_hashes_end": {
+		"res://scripts/combat/combat_sim.gd": "2cc474484ae496067c82897647b2e6e26eb25ae14529d9f36df53ce59b8a0a76",
+		"res://scripts/combat/combat_world.gd": "056a7ec55cf177e6794ecf71b1ed25aaa0d069309d70e78e1a9874a4ac4cdd5d",
+		"res://scripts/core/sound_bank.gd": "91a3e2f474ac504c321b36706d31112a9c9d551f1475e65e95b7fcdda3a3a01f"
+	},
+	"source_hashes_start": {
+		"res://scripts/combat/combat_sim.gd": "2cc474484ae496067c82897647b2e6e26eb25ae14529d9f36df53ce59b8a0a76",
+		"res://scripts/combat/combat_world.gd": "056a7ec55cf177e6794ecf71b1ed25aaa0d069309d70e78e1a9874a4ac4cdd5d",
+		"res://scripts/core/sound_bank.gd": "91a3e2f474ac504c321b36706d31112a9c9d551f1475e65e95b7fcdda3a3a01f"
+	},
+	"warmup_ms": 2000
+}

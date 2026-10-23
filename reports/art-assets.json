@@ -1,0 +1,1043 @@
+{
+  "art_revision": "engraved-02",
+  "asset_count": 35,
+  "vector_count": 25,
+  "audio_count": 10,
+  "generator_command": "PYTHONPYCACHEPREFIX=/tmp/broxy-pycache python3 tools/generate_assets.py",
+  "generator_exit_code": 0,
+  "generator_stdout": "Generated 35 original assets in /Users/makima/Desktop/code/game/broxy/assets",
+  "generator_stderr": "",
+  "deterministic": true,
+  "changed_assets": [],
+  "manifest_unchanged": true,
+  "source_files_unchanged": true,
+  "combined_sha256_before": "2fda7c2e1dc89cf7cc186a490788787dcec101404df43089cd3def7a60de4686",
+  "combined_sha256_after": "2fda7c2e1dc89cf7cc186a490788787dcec101404df43089cd3def7a60de4686",
+  "forbidden_elements": [
+    "filter",
+    "foreignObject",
+    "iframe",
+    "image",
+    "mask",
+    "pattern",
+    "script",
+    "style",
+    "text",
+    "use"
+  ],
+  "checks": [
+    "manifest IDs/paths unique and complete",
+    "SVG XML dimensions and viewBox match manifest",
+    "SVG IDs unique per document; all local URL references resolve",
+    "no external references, fonts, embedded images, filters, masks or patterns",
+    "WAV format and duration match manifest",
+    "SVG and WAV bytes unchanged after generator rerun",
+    "source code unchanged"
+  ],
+  "engine_or_gui_started": false,
+  "passed": true,
+  "errors": [],
+  "assets": [
+    {
+      "id": "sprites_player",
+      "path": "assets/sprites/player.svg",
+      "type": "vector",
+      "sha256_before": "610d8158d82be5eca4d016c9b5634aa4f893c5899e8fe56d17fc1e08982ee9a1",
+      "sha256_after": "610d8158d82be5eca4d016c9b5634aa4f893c5899e8fe56d17fc1e08982ee9a1",
+      "source": "tools/art_sprites.py",
+      "size": [
+        96,
+        96
+      ],
+      "view_box": [
+        0.0,
+        0.0,
+        96.0,
+        96.0
+      ],
+      "elements": {
+        "svg": 1,
+        "defs": 2,
+        "linearGradient": 10,
+        "stop": 32,
+        "radialGradient": 1,
+        "ellipse": 8,
+        "path": 23
+      },
+      "unique_svg_ids": 11,
+      "local_url_references": 6,
+      "forbidden_element_count": 0,
+      "unresolved_reference_count": 0,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "sprites_chaser",
+      "path": "assets/sprites/chaser.svg",
+      "type": "vector",
+      "sha256_before": "5aae1d1650c08a3fc9d3fe1a12b5ec000934deafe345c34d2b9edd61f92f3e43",
+      "sha256_after": "5aae1d1650c08a3fc9d3fe1a12b5ec000934deafe345c34d2b9edd61f92f3e43",
+      "source": "tools/art_sprites.py",
+      "size": [
+        64,
+        64
+      ],
+      "view_box": [
+        0.0,
+        0.0,
+        64.0,
+        64.0
+      ],
+      "elements": {
+        "svg": 1,
+        "defs": 2,
+        "linearGradient": 9,
+        "stop": 29,
+        "radialGradient": 1,
+        "ellipse": 1,
+        "path": 10
+      },
+      "unique_svg_ids": 10,
+      "local_url_references": 1,
+      "forbidden_element_count": 0,
+      "unresolved_reference_count": 0,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "sprites_rusher",
+      "path": "assets/sprites/rusher.svg",
+      "type": "vector",
+      "sha256_before": "bea93130efe902762f440b57664fd69a5dd413735c3d971da2362cef97fba647",
+      "sha256_after": "bea93130efe902762f440b57664fd69a5dd413735c3d971da2362cef97fba647",
+      "source": "tools/art_sprites.py",
+      "size": [
+        64,
+        64
+      ],
+      "view_box": [
+        0.0,
+        0.0,
+        64.0,
+        64.0
+      ],
+      "elements": {
+        "svg": 1,
+        "defs": 2,
+        "linearGradient": 9,
+        "stop": 29,
+        "radialGradient": 1,
+        "ellipse": 1,
+        "path": 12
+      },
+      "unique_svg_ids": 10,
+      "local_url_references": 4,
+      "forbidden_element_count": 0,
+      "unresolved_reference_count": 0,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "sprites_tank",
+      "path": "assets/sprites/tank.svg",
+      "type": "vector",
+      "sha256_before": "4672d1b3d23ad3125eca2792ceb440a69436bf639e2ed4766468ac287e0e32c6",
+      "sha256_after": "4672d1b3d23ad3125eca2792ceb440a69436bf639e2ed4766468ac287e0e32c6",
+      "source": "tools/art_sprites.py",
+      "size": [
+        80,
+        80
+      ],
+      "view_box": [
+        0.0,
+        0.0,
+        80.0,
+        80.0
+      ],
+      "elements": {
+        "svg": 1,
+        "defs": 2,
+        "linearGradient": 9,
+        "stop": 29,
+        "radialGradient": 1,
+        "ellipse": 1,
+        "path": 16
+      },
+      "unique_svg_ids": 10,
+      "local_url_references": 3,
+      "forbidden_element_count": 0,
+      "unresolved_reference_count": 0,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "sprites_caster",
+      "path": "assets/sprites/caster.svg",
+      "type": "vector",
+      "sha256_before": "92de97777b197d1e36faa93046f3f78ecba0c6c70fd659761dd9a7b5933e53d3",
+      "sha256_after": "92de97777b197d1e36faa93046f3f78ecba0c6c70fd659761dd9a7b5933e53d3",
+      "source": "tools/art_sprites.py",
+      "size": [
+        72,
+        72
+      ],
+      "view_box": [
+        0.0,
+        0.0,
+        72.0,
+        72.0
+      ],
+      "elements": {
+        "svg": 1,
+        "defs": 2,
+        "linearGradient": 9,
+        "stop": 29,
+        "radialGradient": 1,
+        "ellipse": 1,
+        "path": 20
+      },
+      "unique_svg_ids": 10,
+      "local_url_references": 5,
+      "forbidden_element_count": 0,
+      "unresolved_reference_count": 0,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "sprites_boss",
+      "path": "assets/sprites/boss.svg",
+      "type": "vector",
+      "sha256_before": "8d466578c6a16f25cb821ceb1bc6e3c2441d8f5a83ca6b431da0b50e685a3e98",
+      "sha256_after": "8d466578c6a16f25cb821ceb1bc6e3c2441d8f5a83ca6b431da0b50e685a3e98",
+      "source": "tools/art_sprites.py",
+      "size": [
+        160,
+        160
+      ],
+      "view_box": [
+        0.0,
+        0.0,
+        160.0,
+        160.0
+      ],
+      "elements": {
+        "svg": 1,
+        "defs": 2,
+        "linearGradient": 10,
+        "stop": 32,
+        "radialGradient": 1,
+        "ellipse": 2,
+        "path": 30
+      },
+      "unique_svg_ids": 11,
+      "local_url_references": 8,
+      "forbidden_element_count": 0,
+      "unresolved_reference_count": 0,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "arena",
+      "path": "assets/arena.svg",
+      "type": "vector",
+      "sha256_before": "c6d645f02624d97c56c29ce6f13b0b89814816d3670945b3b670709b49d6a5fe",
+      "sha256_after": "c6d645f02624d97c56c29ce6f13b0b89814816d3670945b3b670709b49d6a5fe",
+      "source": "tools/art_environment.py",
+      "size": [
+        1280,
+        720
+      ],
+      "view_box": [
+        0.0,
+        0.0,
+        1280.0,
+        720.0
+      ],
+      "elements": {
+        "svg": 1,
+        "defs": 2,
+        "linearGradient": 14,
+        "stop": 55,
+        "radialGradient": 4,
+        "rect": 29,
+        "path": 524,
+        "ellipse": 137,
+        "circle": 18,
+        "g": 20
+      },
+      "unique_svg_ids": 18,
+      "local_url_references": 51,
+      "forbidden_element_count": 0,
+      "unresolved_reference_count": 0,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "menu_art",
+      "path": "assets/menu_art.svg",
+      "type": "vector",
+      "sha256_before": "897cd1d33d1c3dc074341dfb0c6c874ae6f4cf5c15b00486f032b500afcf44ec",
+      "sha256_after": "897cd1d33d1c3dc074341dfb0c6c874ae6f4cf5c15b00486f032b500afcf44ec",
+      "source": "tools/art_environment.py",
+      "size": [
+        640,
+        720
+      ],
+      "view_box": [
+        0.0,
+        0.0,
+        640.0,
+        720.0
+      ],
+      "elements": {
+        "svg": 1,
+        "defs": 3,
+        "linearGradient": 18,
+        "stop": 78,
+        "radialGradient": 7,
+        "rect": 2,
+        "ellipse": 38,
+        "path": 185,
+        "g": 23,
+        "circle": 22
+      },
+      "unique_svg_ids": 25,
+      "local_url_references": 38,
+      "forbidden_element_count": 0,
+      "unresolved_reference_count": 0,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "icons_bone",
+      "path": "assets/icons/bone.svg",
+      "type": "vector",
+      "sha256_before": "fed510ab206659d89245701d64e714ceeafd07eaaf8f1d224732e1a590d2f95e",
+      "sha256_after": "fed510ab206659d89245701d64e714ceeafd07eaaf8f1d224732e1a590d2f95e",
+      "source": "tools/art_icons.py",
+      "size": [
+        64,
+        64
+      ],
+      "view_box": [
+        0.0,
+        0.0,
+        64.0,
+        64.0
+      ],
+      "elements": {
+        "svg": 1,
+        "defs": 1,
+        "linearGradient": 8,
+        "stop": 26,
+        "radialGradient": 1,
+        "path": 5
+      },
+      "unique_svg_ids": 9,
+      "local_url_references": 2,
+      "forbidden_element_count": 0,
+      "unresolved_reference_count": 0,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "icons_frost",
+      "path": "assets/icons/frost.svg",
+      "type": "vector",
+      "sha256_before": "7a4c4d4ab9d51b25bc794e1b880a12d4beaec03fc9be9021cc82f50cb935c1cb",
+      "sha256_after": "7a4c4d4ab9d51b25bc794e1b880a12d4beaec03fc9be9021cc82f50cb935c1cb",
+      "source": "tools/art_icons.py",
+      "size": [
+        64,
+        64
+      ],
+      "view_box": [
+        0.0,
+        0.0,
+        64.0,
+        64.0
+      ],
+      "elements": {
+        "svg": 1,
+        "defs": 1,
+        "linearGradient": 8,
+        "stop": 26,
+        "radialGradient": 1,
+        "path": 5,
+        "polygon": 2
+      },
+      "unique_svg_ids": 9,
+      "local_url_references": 0,
+      "forbidden_element_count": 0,
+      "unresolved_reference_count": 0,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "icons_ember",
+      "path": "assets/icons/ember.svg",
+      "type": "vector",
+      "sha256_before": "a3aedd7805495a4a8060a80e615ca92763ffa6b92bfce3d928cddd2f41ea90f2",
+      "sha256_after": "a3aedd7805495a4a8060a80e615ca92763ffa6b92bfce3d928cddd2f41ea90f2",
+      "source": "tools/art_icons.py",
+      "size": [
+        64,
+        64
+      ],
+      "view_box": [
+        0.0,
+        0.0,
+        64.0,
+        64.0
+      ],
+      "elements": {
+        "svg": 1,
+        "defs": 1,
+        "linearGradient": 8,
+        "stop": 26,
+        "radialGradient": 1,
+        "path": 4
+      },
+      "unique_svg_ids": 9,
+      "local_url_references": 1,
+      "forbidden_element_count": 0,
+      "unresolved_reference_count": 0,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "icons_scatter",
+      "path": "assets/icons/scatter.svg",
+      "type": "vector",
+      "sha256_before": "b7e4fcd60f6bb83a42cc64896926d29bdfe4d7c93d7caed5a7e684e8324b9562",
+      "sha256_after": "b7e4fcd60f6bb83a42cc64896926d29bdfe4d7c93d7caed5a7e684e8324b9562",
+      "source": "tools/art_icons.py",
+      "size": [
+        64,
+        64
+      ],
+      "view_box": [
+        0.0,
+        0.0,
+        64.0,
+        64.0
+      ],
+      "elements": {
+        "svg": 1,
+        "defs": 1,
+        "linearGradient": 8,
+        "stop": 26,
+        "radialGradient": 1,
+        "path": 4,
+        "circle": 1,
+        "polygon": 1
+      },
+      "unique_svg_ids": 9,
+      "local_url_references": 2,
+      "forbidden_element_count": 0,
+      "unresolved_reference_count": 0,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "icons_pierce",
+      "path": "assets/icons/pierce.svg",
+      "type": "vector",
+      "sha256_before": "5eba063ccb82ee68b5815d3c70fcce60059a2f0a7a2a349a9b344bdb233849a6",
+      "sha256_after": "5eba063ccb82ee68b5815d3c70fcce60059a2f0a7a2a349a9b344bdb233849a6",
+      "source": "tools/art_icons.py",
+      "size": [
+        64,
+        64
+      ],
+      "view_box": [
+        0.0,
+        0.0,
+        64.0,
+        64.0
+      ],
+      "elements": {
+        "svg": 1,
+        "defs": 1,
+        "linearGradient": 8,
+        "stop": 26,
+        "radialGradient": 1,
+        "path": 4
+      },
+      "unique_svg_ids": 9,
+      "local_url_references": 1,
+      "forbidden_element_count": 0,
+      "unresolved_reference_count": 0,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "icons_bounce",
+      "path": "assets/icons/bounce.svg",
+      "type": "vector",
+      "sha256_before": "d1496174ecdd3bbdaaef10927f49b2a7a66b8e288a24ac75a0117b641df9d43d",
+      "sha256_after": "d1496174ecdd3bbdaaef10927f49b2a7a66b8e288a24ac75a0117b641df9d43d",
+      "source": "tools/art_icons.py",
+      "size": [
+        64,
+        64
+      ],
+      "view_box": [
+        0.0,
+        0.0,
+        64.0,
+        64.0
+      ],
+      "elements": {
+        "svg": 1,
+        "defs": 1,
+        "linearGradient": 8,
+        "stop": 26,
+        "radialGradient": 1,
+        "path": 4,
+        "circle": 2,
+        "polygon": 2
+      },
+      "unique_svg_ids": 9,
+      "local_url_references": 1,
+      "forbidden_element_count": 0,
+      "unresolved_reference_count": 0,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "icons_blast",
+      "path": "assets/icons/blast.svg",
+      "type": "vector",
+      "sha256_before": "063b763b74b85ceb01b95bff5c82074eca23261b6333af1e26b1e3915d0fe255",
+      "sha256_after": "063b763b74b85ceb01b95bff5c82074eca23261b6333af1e26b1e3915d0fe255",
+      "source": "tools/art_icons.py",
+      "size": [
+        64,
+        64
+      ],
+      "view_box": [
+        0.0,
+        0.0,
+        64.0,
+        64.0
+      ],
+      "elements": {
+        "svg": 1,
+        "defs": 1,
+        "linearGradient": 8,
+        "stop": 26,
+        "radialGradient": 1,
+        "circle": 3,
+        "path": 1,
+        "polygon": 2
+      },
+      "unique_svg_ids": 9,
+      "local_url_references": 0,
+      "forbidden_element_count": 0,
+      "unresolved_reference_count": 0,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "icons_damage",
+      "path": "assets/icons/damage.svg",
+      "type": "vector",
+      "sha256_before": "29da93aa6234571b4634b6cb5252df96e69e71f7db08fd79bfdbab67b3314c13",
+      "sha256_after": "29da93aa6234571b4634b6cb5252df96e69e71f7db08fd79bfdbab67b3314c13",
+      "source": "tools/art_icons.py",
+      "size": [
+        64,
+        64
+      ],
+      "view_box": [
+        0.0,
+        0.0,
+        64.0,
+        64.0
+      ],
+      "elements": {
+        "svg": 1,
+        "defs": 1,
+        "linearGradient": 8,
+        "stop": 26,
+        "radialGradient": 1,
+        "path": 4,
+        "circle": 1,
+        "polygon": 1
+      },
+      "unique_svg_ids": 9,
+      "local_url_references": 1,
+      "forbidden_element_count": 0,
+      "unresolved_reference_count": 0,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "icons_haste",
+      "path": "assets/icons/haste.svg",
+      "type": "vector",
+      "sha256_before": "f7d25f52c26d13580f8ff52d76df364f9dfb649cc461d97ae52569b1357c8e0a",
+      "sha256_after": "f7d25f52c26d13580f8ff52d76df364f9dfb649cc461d97ae52569b1357c8e0a",
+      "source": "tools/art_icons.py",
+      "size": [
+        64,
+        64
+      ],
+      "view_box": [
+        0.0,
+        0.0,
+        64.0,
+        64.0
+      ],
+      "elements": {
+        "svg": 1,
+        "defs": 1,
+        "linearGradient": 8,
+        "stop": 26,
+        "radialGradient": 1,
+        "path": 4
+      },
+      "unique_svg_ids": 9,
+      "local_url_references": 1,
+      "forbidden_element_count": 0,
+      "unresolved_reference_count": 0,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "icons_speed",
+      "path": "assets/icons/speed.svg",
+      "type": "vector",
+      "sha256_before": "f3d7303d4a0a90c27d50971dcc6f2f3ed9b155c9b89fc2e1bf1bcdd24eab91c7",
+      "sha256_after": "f3d7303d4a0a90c27d50971dcc6f2f3ed9b155c9b89fc2e1bf1bcdd24eab91c7",
+      "source": "tools/art_icons.py",
+      "size": [
+        64,
+        64
+      ],
+      "view_box": [
+        0.0,
+        0.0,
+        64.0,
+        64.0
+      ],
+      "elements": {
+        "svg": 1,
+        "defs": 1,
+        "linearGradient": 8,
+        "stop": 26,
+        "radialGradient": 1,
+        "path": 4
+      },
+      "unique_svg_ids": 9,
+      "local_url_references": 2,
+      "forbidden_element_count": 0,
+      "unresolved_reference_count": 0,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "icons_vitality",
+      "path": "assets/icons/vitality.svg",
+      "type": "vector",
+      "sha256_before": "1b6dec7c8605b24295d4cf4535498b0e5623072333c31c606ad841f4e35d94c1",
+      "sha256_after": "1b6dec7c8605b24295d4cf4535498b0e5623072333c31c606ad841f4e35d94c1",
+      "source": "tools/art_icons.py",
+      "size": [
+        64,
+        64
+      ],
+      "view_box": [
+        0.0,
+        0.0,
+        64.0,
+        64.0
+      ],
+      "elements": {
+        "svg": 1,
+        "defs": 1,
+        "linearGradient": 8,
+        "stop": 26,
+        "radialGradient": 1,
+        "path": 4
+      },
+      "unique_svg_ids": 9,
+      "local_url_references": 1,
+      "forbidden_element_count": 0,
+      "unresolved_reference_count": 0,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "icons_armor",
+      "path": "assets/icons/armor.svg",
+      "type": "vector",
+      "sha256_before": "9fd54e3bb7625db5eddbd446277a9e4c9943383a928278334eeaf9ada9481203",
+      "sha256_after": "9fd54e3bb7625db5eddbd446277a9e4c9943383a928278334eeaf9ada9481203",
+      "source": "tools/art_icons.py",
+      "size": [
+        64,
+        64
+      ],
+      "view_box": [
+        0.0,
+        0.0,
+        64.0,
+        64.0
+      ],
+      "elements": {
+        "svg": 1,
+        "defs": 1,
+        "linearGradient": 8,
+        "stop": 26,
+        "radialGradient": 1,
+        "path": 3,
+        "circle": 4
+      },
+      "unique_svg_ids": 9,
+      "local_url_references": 1,
+      "forbidden_element_count": 0,
+      "unresolved_reference_count": 0,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "icons_magnet",
+      "path": "assets/icons/magnet.svg",
+      "type": "vector",
+      "sha256_before": "cae7be65fe426b6e19a8c571599c58148b03deaf3439e2da9ee3b8eb81aead32",
+      "sha256_after": "cae7be65fe426b6e19a8c571599c58148b03deaf3439e2da9ee3b8eb81aead32",
+      "source": "tools/art_icons.py",
+      "size": [
+        64,
+        64
+      ],
+      "view_box": [
+        0.0,
+        0.0,
+        64.0,
+        64.0
+      ],
+      "elements": {
+        "svg": 1,
+        "defs": 1,
+        "linearGradient": 8,
+        "stop": 26,
+        "radialGradient": 1,
+        "path": 3,
+        "circle": 2,
+        "polygon": 1
+      },
+      "unique_svg_ids": 9,
+      "local_url_references": 2,
+      "forbidden_element_count": 0,
+      "unresolved_reference_count": 0,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "icons_soul",
+      "path": "assets/icons/soul.svg",
+      "type": "vector",
+      "sha256_before": "1c33ec6f6caef925bb15855c6a609267ee98e67c5ee186aa4489f67869647d0f",
+      "sha256_after": "1c33ec6f6caef925bb15855c6a609267ee98e67c5ee186aa4489f67869647d0f",
+      "source": "tools/art_icons.py",
+      "size": [
+        64,
+        64
+      ],
+      "view_box": [
+        0.0,
+        0.0,
+        64.0,
+        64.0
+      ],
+      "elements": {
+        "svg": 1,
+        "defs": 1,
+        "linearGradient": 8,
+        "stop": 26,
+        "radialGradient": 1,
+        "path": 5
+      },
+      "unique_svg_ids": 9,
+      "local_url_references": 0,
+      "forbidden_element_count": 0,
+      "unresolved_reference_count": 0,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "fx_glow",
+      "path": "assets/fx/glow.svg",
+      "type": "vector",
+      "sha256_before": "a8ce6d65037444dc2f4c70759aebb4d97e5a8a9b6b6181ea21c96e8b45234fbe",
+      "sha256_after": "a8ce6d65037444dc2f4c70759aebb4d97e5a8a9b6b6181ea21c96e8b45234fbe",
+      "source": "tools/art_icons.py",
+      "size": [
+        96,
+        96
+      ],
+      "view_box": [
+        0.0,
+        0.0,
+        96.0,
+        96.0
+      ],
+      "elements": {
+        "svg": 1,
+        "defs": 2,
+        "linearGradient": 8,
+        "stop": 30,
+        "radialGradient": 2,
+        "circle": 1
+      },
+      "unique_svg_ids": 10,
+      "local_url_references": 1,
+      "forbidden_element_count": 0,
+      "unresolved_reference_count": 0,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "fx_seal",
+      "path": "assets/fx/seal.svg",
+      "type": "vector",
+      "sha256_before": "d3cbbe6732fdf6660182591457f0a21af15acaf5682dc3ab4546a74dfcf2de61",
+      "sha256_after": "d3cbbe6732fdf6660182591457f0a21af15acaf5682dc3ab4546a74dfcf2de61",
+      "source": "tools/art_icons.py",
+      "size": [
+        96,
+        96
+      ],
+      "view_box": [
+        0.0,
+        0.0,
+        96.0,
+        96.0
+      ],
+      "elements": {
+        "svg": 1,
+        "defs": 1,
+        "linearGradient": 8,
+        "stop": 26,
+        "radialGradient": 1,
+        "circle": 2,
+        "path": 2
+      },
+      "unique_svg_ids": 9,
+      "local_url_references": 0,
+      "forbidden_element_count": 0,
+      "unresolved_reference_count": 0,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "icon",
+      "path": "assets/icon.svg",
+      "type": "vector",
+      "sha256_before": "8fab446de72653255765e7841dbf43e011f6f4feb9e0d17fe39aece7cee56c45",
+      "sha256_after": "8fab446de72653255765e7841dbf43e011f6f4feb9e0d17fe39aece7cee56c45",
+      "source": "tools/art_icons.py",
+      "size": [
+        256,
+        256
+      ],
+      "view_box": [
+        0.0,
+        0.0,
+        256.0,
+        256.0
+      ],
+      "elements": {
+        "svg": 1,
+        "defs": 1,
+        "linearGradient": 8,
+        "stop": 26,
+        "radialGradient": 1,
+        "rect": 1,
+        "circle": 3,
+        "path": 5,
+        "g": 1,
+        "polygon": 2
+      },
+      "unique_svg_ids": 9,
+      "local_url_references": 2,
+      "forbidden_element_count": 0,
+      "unresolved_reference_count": 0,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "audio_shoot",
+      "path": "assets/audio/shoot.wav",
+      "type": "audio",
+      "sha256_before": "f1e80cdc436880575bf138b5f62afe7ad8dd45abe4bc1e081c945b7f44104989",
+      "sha256_after": "f1e80cdc436880575bf138b5f62afe7ad8dd45abe4bc1e081c945b7f44104989",
+      "source": "tools/generate_assets.py",
+      "audio_format": {
+        "channels": 1,
+        "sample_width_bytes": 2,
+        "sample_rate": 22050,
+        "frames": 3087
+      },
+      "duration_seconds": 0.14,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "audio_hit",
+      "path": "assets/audio/hit.wav",
+      "type": "audio",
+      "sha256_before": "09458a7d591ce9d38e98598f3c9862f9f253a4a0c492224318f85474a02563b5",
+      "sha256_after": "09458a7d591ce9d38e98598f3c9862f9f253a4a0c492224318f85474a02563b5",
+      "source": "tools/generate_assets.py",
+      "audio_format": {
+        "channels": 1,
+        "sample_width_bytes": 2,
+        "sample_rate": 22050,
+        "frames": 2866
+      },
+      "duration_seconds": 0.12997732426303854,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "audio_hurt",
+      "path": "assets/audio/hurt.wav",
+      "type": "audio",
+      "sha256_before": "15d151d2a6c6c820323e75ccda4dfdf11e8b196894c096bddb6f3766347c242c",
+      "sha256_after": "15d151d2a6c6c820323e75ccda4dfdf11e8b196894c096bddb6f3766347c242c",
+      "source": "tools/generate_assets.py",
+      "audio_format": {
+        "channels": 1,
+        "sample_width_bytes": 2,
+        "sample_rate": 22050,
+        "frames": 7276
+      },
+      "duration_seconds": 0.32997732426303855,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "audio_death",
+      "path": "assets/audio/death.wav",
+      "type": "audio",
+      "sha256_before": "0ebd789967a2e45412d831cb4c96f7efa09cd9d4c593b4f9bd9a7d90e0a8f727",
+      "sha256_after": "0ebd789967a2e45412d831cb4c96f7efa09cd9d4c593b4f9bd9a7d90e0a8f727",
+      "source": "tools/generate_assets.py",
+      "audio_format": {
+        "channels": 1,
+        "sample_width_bytes": 2,
+        "sample_rate": 22050,
+        "frames": 8379
+      },
+      "duration_seconds": 0.38,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "audio_buy",
+      "path": "assets/audio/buy.wav",
+      "type": "audio",
+      "sha256_before": "e5d8978e42077addaaa66d095e144520e176a5eb28768c2ea286100426cd4eab",
+      "sha256_after": "e5d8978e42077addaaa66d095e144520e176a5eb28768c2ea286100426cd4eab",
+      "source": "tools/generate_assets.py",
+      "audio_format": {
+        "channels": 1,
+        "sample_width_bytes": 2,
+        "sample_rate": 22050,
+        "frames": 6174
+      },
+      "duration_seconds": 0.28,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "audio_rune",
+      "path": "assets/audio/rune.wav",
+      "type": "audio",
+      "sha256_before": "07b09e7994fb80cc780592d33a8152f22636a19573a46e1f9357f125c4fcd60c",
+      "sha256_after": "07b09e7994fb80cc780592d33a8152f22636a19573a46e1f9357f125c4fcd60c",
+      "source": "tools/generate_assets.py",
+      "audio_format": {
+        "channels": 1,
+        "sample_width_bytes": 2,
+        "sample_rate": 22050,
+        "frames": 10143
+      },
+      "duration_seconds": 0.46,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "audio_level",
+      "path": "assets/audio/level.wav",
+      "type": "audio",
+      "sha256_before": "9e3f1bc1ce6d53cd07a3e21d21ecf66232341c76b7da663600598ece5284a479",
+      "sha256_after": "9e3f1bc1ce6d53cd07a3e21d21ecf66232341c76b7da663600598ece5284a479",
+      "source": "tools/generate_assets.py",
+      "audio_format": {
+        "channels": 1,
+        "sample_width_bytes": 2,
+        "sample_rate": 22050,
+        "frames": 14332
+      },
+      "duration_seconds": 0.6499773242630386,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "audio_victory",
+      "path": "assets/audio/victory.wav",
+      "type": "audio",
+      "sha256_before": "9dd143be5d808cb6aa74ff1a1cd9e8ca93b504802dc39af91185628f28f6e76a",
+      "sha256_after": "9dd143be5d808cb6aa74ff1a1cd9e8ca93b504802dc39af91185628f28f6e76a",
+      "source": "tools/generate_assets.py",
+      "audio_format": {
+        "channels": 1,
+        "sample_width_bytes": 2,
+        "sample_rate": 22050,
+        "frames": 17199
+      },
+      "duration_seconds": 0.78,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "audio_defeat",
+      "path": "assets/audio/defeat.wav",
+      "type": "audio",
+      "sha256_before": "d728334078a700976c613df59e9ab71ed72036f5b3a69ab05ef19147db12a4d1",
+      "sha256_after": "d728334078a700976c613df59e9ab71ed72036f5b3a69ab05ef19147db12a4d1",
+      "source": "tools/generate_assets.py",
+      "audio_format": {
+        "channels": 1,
+        "sample_width_bytes": 2,
+        "sample_rate": 22050,
+        "frames": 16538
+      },
+      "duration_seconds": 0.7500226757369615,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "audio_ambience",
+      "path": "assets/audio/ambience.wav",
+      "type": "audio",
+      "sha256_before": "3d3013317384ee836e33d9602d4330d6a60ed30cde93dfbeddfb12bc1faea42e",
+      "sha256_after": "3d3013317384ee836e33d9602d4330d6a60ed30cde93dfbeddfb12bc1faea42e",
+      "source": "tools/generate_assets.py",
+      "audio_format": {
+        "channels": 1,
+        "sample_width_bytes": 2,
+        "sample_rate": 22050,
+        "frames": 176400
+      },
+      "duration_seconds": 8.0,
+      "passed": true,
+      "errors": []
+    }
+  ]
+}

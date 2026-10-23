@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="ContentDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/content_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "caster"
+kind = "enemy"
+display_name = "盲眼祭司"
+description = "在远处向你释放危险的秘术弹。"
+color = Color(0.73, 0.49, 0.7, 1)
+health = 38.0
+speed = 45.0
+damage = 8.0
+radius = 15.0
+cooldown = 2.6
+projectile_speed = 185.0
+projectile_radius = 7.0
+range = 360.0

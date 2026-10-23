@@ -1,0 +1,283 @@
+{
+  "schema_version": 1,
+  "baseline_commit": "37be1ea",
+  "art_revision": "engraved-03",
+  "scope": "Static arena stone surfaces only; all runtime code and simulation resources unchanged.",
+  "source_sha256": {
+    "tools/art_environment.py": "8a648e92bdc9eca109c9d3d4c4b255f8f620e5dffed10f3b83844143adc640bc",
+    "tools/generate_assets.py": "82a399fe4dc8d86d17afa832edbf9500019ae3dfc1ba14e246ae53dac1d22311",
+    "tools/preview_art.gd": "7e5a60cc80189d90dcbe9072d758ffec4bbe18dbbd8dd41da7cce54b323cfd50",
+    "tools/preview_threats.gd": "f94ee388c70f2c718d75585a3d1e5ed2e53bbf078573c00d019a3bbb544b5eff",
+    "assets/arena.svg": "ffc2e47dd60f017d18d164aa73c44d48c5fdcd7741f6ade643a845d1a17b9137",
+    "assets/manifest.json": "a389be2c1c0dc5b32956ee0631d13b108dc6d4a242d240b5bc45e947f25264a7",
+    "assets/PROVENANCE.md": "a1126deb372e8aa802efd9ba1b4220593e131fc88e3518891672fc71752ac4b6"
+  },
+  "unchanged_runtime_and_simulation_sha256": {
+    "data/enemies/boss.tres": "d8832c910af8845821579d29d5fb8ff4b30ba1333a53004347b1c6272fe934cb",
+    "data/enemies/caster.tres": "c2f1dffc0aaeb4b74837ef109d78a0bb536c583a9efc9cc5347b3b55ddb67e86",
+    "data/enemies/chaser.tres": "67b655cd3ad1919cfe4eea86cbc50ae32ee4ae8dcc426b70341b013a055b4c11",
+    "data/enemies/rusher.tres": "85f4a04a54297ccf16e4caf9f39444b97ec0fbfe4d5516263e322f953635e3aa",
+    "data/enemies/tank.tres": "7901efcd7ec48940d8bce6559dea80daf9c2d911ddd12257ed72d1fe80100b1a",
+    "data/relics/armor.tres": "e710ca293f9ea27557427299b8909ed6da9fc3d385a62067f2c3b02b25c3913a",
+    "data/relics/damage.tres": "bf30c9fd0fb8f7511d6c27a292a5388ac9d2340a6aa4724c6acc08f891a464b8",
+    "data/relics/haste.tres": "75525cf02bf18c9913482ed9ca77650fe3a6eadd8f861074991e163514fa3cdb",
+    "data/relics/magnet.tres": "4abf5f92e1f2150e16e32017a8bfa2002704916bc51882000973246a11987e43",
+    "data/relics/speed.tres": "ef52dce76e11c417c2a016ab94b5e15f3e905307265a2c20207942df7424c9aa",
+    "data/relics/vitality.tres": "4b4e296ebefb06e4533685d40099641fc0f7a78a29a23807a50c480d33899f84",
+    "data/runes/blast.tres": "2174763839b25d2c32b09a70e40bde43e5080fb46a29f423195590d660d433fb",
+    "data/runes/bounce.tres": "05dadcae56f093389b76f9179b34c2877c82ad764730633bf95b3ed3192ed5b5",
+    "data/runes/pierce.tres": "2cebfde32d6b9107dc1547f99f5c0720f171cdd79ea2e5758a436d3401796459",
+    "data/waves/wave_1.tres": "0806ec860e50ff356f2446e0d36c26f7421bd54b4caef77c2c6b52c87d77f897",
+    "data/waves/wave_2.tres": "c215ce4849981a33e6f143e510ec4b29e5559efdc168e6c888f8ffa42a57dd70",
+    "data/waves/wave_3.tres": "40a1d88ca1d4e1b6fb6473eaa77c3f3a49b01b9ad39b6d642d10d275c7da5dfc",
+    "data/waves/wave_4.tres": "962f10a533021cca45e6227f42dedc58789558e8bccf21bd35802db18d732861",
+    "data/waves/wave_5.tres": "1da70e90df8b263cf7f17b22d64994bdd1849782629c9b69bbf05f0846349582",
+    "data/waves/wave_6.tres": "eacf2c8c19f344b7e16e3c1e253b30d0f789d60f3c23c508bd4cad85df963803",
+    "data/waves/wave_7.tres": "41e6b80f98711486684b71d3d086bfc6c7199596d4a085c6cd56f4afb7ac36ff",
+    "data/waves/wave_8.tres": "2a810cf965bb95c7c62d49528557863a923d9e4e66842df9c40de8c7a8ca7474",
+    "data/weapons/bone.tres": "ff1776e43a64eabfe56da2c6b04b23198cfe8edbf3706ba38fb5e1f84bd7f9b6",
+    "data/weapons/ember.tres": "5f1d0097bbe81ce00cec8ed6eaa26743f8e02feb9ac394c1b8e63b1b8f15a00d",
+    "data/weapons/frost.tres": "6f88f647f26a409f9aa448e732c498ef811ae0ec6d580def0fbcb2b0ac52012c",
+    "data/weapons/scatter.tres": "b7c0737e60036999ded31d1ffcb11b5e34b5039c25401bca8fb38c4f90b0b8da",
+    "project.godot": "243b092054cff0748423392064c7b243a195bc5a0513430b96b904f5b8ee405d",
+    "scenes/main.tscn": "0d1a22532da1a02ae8891b362b96d8c1493c66fa67d6a87a7f12dcd79186dfc0",
+    "scripts/combat/bot_policy.gd": "a78c47c7c5002f06928cc8af373851fb81f853ec401f6fa929a28efd303d613b",
+    "scripts/combat/combat_sim.gd": "5bca9f0367c8cdcb5f698f672e4f3b9b0689dc684f73a20a30edf97e4ee73e34",
+    "scripts/combat/combat_world.gd": "4cf1b8bcc68f299a3e8defbef421c634f1cce0e8eeff6f445c8d83ed79fdc5c1",
+    "scripts/combat/enemy_telegraph_painter.gd": "4750e8c434ef2eac723d1cb6cb3bef5386734cd369a80f001b0467a3211af2e6",
+    "scripts/combat/projectile_painter.gd": "dc06af10a75453536ded8b37325f564be4e1fbaf7e56e3b14925ad2475930a3e",
+    "scripts/core/game_store.gd": "13f95880667763d262cdfa5af6ceefbeb27ba3c098e1b4ac94cd5eab56041150",
+    "scripts/core/run_state.gd": "7864a8860951b5dcf1b924257fee4dd91d9c07888a97714865a863a63c98e06b",
+    "scripts/core/sound_bank.gd": "91a3e2f474ac504c321b36706d31112a9c9d551f1475e65e95b7fcdda3a3a01f",
+    "scripts/data/content_def.gd": "944c19eed8d1c89e1ec0a615418ea0ff01bbd9a76de68ca12ebb376cca5f5f36",
+    "scripts/data/game_catalog.gd": "92fe9e50905e90b6c121f50d43b7d9f74d406460bccdd279fe645e2d7e41c079",
+    "scripts/main.gd": "66b193ae057775163c02ff6efc7728d36f6734b84421b86da1171fb96e171ba4",
+    "scripts/ui/game_ui.gd": "75dd3fc240e7db432a4b52fff77b6ba82458872d65eaec1ae108f1edf1411cfc",
+    "tests/simulate_runs.gd": "361cf71e03712a882de74a3ec0fc36b0d430ac7554ab5127a4813a23932e6486"
+  },
+  "core_version_unchanged": "prototype-0.1.0+fb2ccf1ca5f1",
+  "policy_version_unchanged": "orbit-avoid-v1/shop-v1+7c19c01f20e4",
+  "asset_qa": {
+    "report": "reports/arena-assets-qa.json",
+    "report_sha256": "84ea25f2e08876572746ac2c1c49cebbc74dc87415c534b7f6a7e2dc6609f0a3",
+    "passed": true,
+    "asset_count": 35,
+    "svg_count": 25,
+    "wav_count": 10,
+    "unchanged_non_arena_assets": 34,
+    "dimensions_pivots_and_references_preserved": true,
+    "regenerated_twice_byte_identical": true
+  },
+  "rendering_contract": {
+    "arena_texture_size": [
+      1280,
+      720
+    ],
+    "arena_texture_count": 1,
+    "background_submission_path_unchanged": "CombatWorld._draw() draw_texture_rect(arena_texture, Rect2(Vector2.ZERO, Vector2(1280,720)), false)",
+    "note": "SVG details are rasterized on import; unchanged texture extent and submission path do not constitute a new FPS measurement."
+  },
+  "native_images": [
+    {
+      "view": "before",
+      "description": "baseline arena with current HUD",
+      "screenshot": "reports/art-arena-before.png",
+      "screenshot_sha256": "57bf5e33271ab881506c7492777574bf0242a6fe57cfef624c7efd6a5fa03ff1",
+      "log": "reports/art-arena-before.log",
+      "log_sha256": "aa29ba7db2d0e324bf5242cb98d394189bbdd8754e8a1d84e69d3043dca5884f",
+      "exit_code": 0,
+      "reviewed_at_native_1280x720": true
+    },
+    {
+      "view": "after",
+      "description": "final arena with identical frozen scene",
+      "screenshot": "reports/art-arena-after.png",
+      "screenshot_sha256": "14af48a088f503c34fd0d584fc0aa6b9ebc975f8acd645d98e5bf561e949db82",
+      "log": "reports/art-arena-after.log",
+      "log_sha256": "2c3b8caf4c2fb6b406feec53796be567fa04e6468956c9e4745ba401117da0cd",
+      "exit_code": 0,
+      "reviewed_at_native_1280x720": true
+    },
+    {
+      "view": "threats",
+      "description": "three windup stages, actual enemy shot and edge player; 42 steps then frozen",
+      "screenshot": "reports/art-arena-threats.png",
+      "screenshot_sha256": "ff30603f8f604862d2ad769cf7ae623d9a2b551baf4f9ea80d2d0c6f2129e0e3",
+      "log": "reports/art-arena-threats.log",
+      "log_sha256": "9d3d8a38ca9f7b7d8c1e6c4197772359087d51235eab6a14d38e4c1864faf7e1",
+      "exit_code": 0,
+      "reviewed_at_native_1280x720": true
+    }
+  ],
+  "visual_review": {
+    "first_draft": "Continuous bevels read as raised panels; final lips were narrowed, broken and dimmed. Draft is exploratory, not final acceptance.",
+    "final": "Subtle short cracks, small edge chips and irregular wear provide more stone depth. Player and enemy silhouettes, low-contrast central rings and coral telegraphs remain clear in these three static views.",
+    "independent_review": "A second agent viewed all three final/baseline fixtures and found no blocking visual issue.",
+    "limits": "Fixed native static fixtures, not dense dynamic gameplay, CUA input, human recognition rate or playtest evidence."
+  },
+  "headless_suites_by_process": [
+    {
+      "suite": "Rules",
+      "assertions": 204,
+      "failures": 0
+    },
+    {
+      "suite": "PurchaseQuery",
+      "assertions": 119,
+      "failures": 0
+    },
+    {
+      "suite": "Combat",
+      "assertions": 302,
+      "failures": 0
+    },
+    {
+      "suite": "Homing",
+      "assertions": 45,
+      "failures": 0
+    },
+    {
+      "suite": "UI",
+      "assertions": 157,
+      "failures": 0
+    },
+    {
+      "suite": "Notifications",
+      "assertions": 65,
+      "failures": 0
+    },
+    {
+      "suite": "Modal",
+      "assertions": 37,
+      "failures": 0
+    },
+    {
+      "suite": "ChoiceActions",
+      "assertions": 44,
+      "failures": 0
+    },
+    {
+      "suite": "UpgradePreviews",
+      "assertions": 350,
+      "failures": 0
+    },
+    {
+      "suite": "ShopActions",
+      "assertions": 106,
+      "failures": 0
+    },
+    {
+      "suite": "ShopDetails",
+      "assertions": 51,
+      "failures": 0
+    },
+    {
+      "suite": "ShopAvailability",
+      "assertions": 166,
+      "failures": 0
+    },
+    {
+      "suite": "ProfileModes",
+      "assertions": 25,
+      "failures": 0
+    },
+    {
+      "suite": "Flow",
+      "assertions": 76,
+      "failures": 0
+    },
+    {
+      "suite": "Feedback",
+      "assertions": 64,
+      "failures": 0
+    },
+    {
+      "suite": "ProjectilePainter",
+      "assertions": 77,
+      "failures": 0
+    },
+    {
+      "suite": "EnemyTelegraphs",
+      "assertions": 121,
+      "failures": 0
+    },
+    {
+      "suite": "ShopObservation",
+      "assertions": 384,
+      "failures": 0
+    },
+    {
+      "suite": "ProfileModes",
+      "assertions": 16,
+      "failures": 0
+    },
+    {
+      "suite": "ProfileModes",
+      "assertions": 16,
+      "failures": 0
+    },
+    {
+      "suite": "ProfileModes",
+      "assertions": 16,
+      "failures": 0
+    },
+    {
+      "suite": "ProfileModes",
+      "assertions": 16,
+      "failures": 0
+    },
+    {
+      "suite": "ProfileModes",
+      "assertions": 16,
+      "failures": 0
+    }
+  ],
+  "godot_suite_count": 18,
+  "godot_process_count": 23,
+  "godot_total_assertions": 2473,
+  "godot_total_failures": 0,
+  "python_tests": 14,
+  "full_test_exit_code": 0,
+  "log_sha256": {
+    "reports/tests.log": "2c41736514b1d5dee9b1ab2e684966cd6e6423c502a4f9d06c2c6adfd99e3b22",
+    "reports/art-arena-generation.log": "186449b313dcd562350bafe5ddd7faa16663ade1fbd148df1fc9e0158e809556",
+    "reports/art-arena-import.log": "7359a08f1b7e3d7650621eafb922ad57c72bde60fc228ec4c2ebb97948773549",
+    "reports/build-stone.log": "b8a2bb2f61682184aad9326459402f706a8d8d72778ba9f2f2f986de8ea1f62e",
+    "reports/app-boot-stone.log": "6c536b7ab6a1ee8e7ac91fdd27709abb484073b092cabb70d205c4f987e47ddd",
+    "reports/archive-stone.log": "1d96656364f9a658f8b77ce68965e128cabe143be61083b0c9f5fdca20c3abd4"
+  },
+  "build": {
+    "app": "build/Embers-stone.app",
+    "architecture": "arm64",
+    "ad_hoc_strict_signature": true,
+    "info_plist_valid": true,
+    "build_exit_code": 0,
+    "packaged_headless_boot_exit_code": 0,
+    "boot_args": [
+      "--headless",
+      "--quit-after",
+      "3",
+      "--",
+      "--capture-only"
+    ],
+    "zip_integrity_exit_code": 0,
+    "artifact_sha256": {
+      "build/Embers-stone.app/Contents/MacOS/秘术余烬": "80916537fd63e4519bf95b52297d7b06ad018c2c69d667e81af3f8fe84703cb4",
+      "build/Embers-stone.app/Contents/Resources/秘术余烬.pck": "8a01ffdc640a8b306d6020deb16bf3d50a98925bb21fb6ba6a5a236e32d6f85a",
+      "build/Embers-stone-mac-arm64.zip": "844a91fe5cfce7dfe14cb86d70d0a624223af4f99f360fd58a85d1257ca8afe9"
+    },
+    "old_apps_and_paused_run_preserved": true
+  },
+  "not_rerun": [
+    "30-run paired simulation; runtime and simulation resources match 37be1ea",
+    "5-minute native graphical stress test",
+    "Native keyboard interaction and human playtest"
+  ],
+  "latest_complete_performance": {
+    "commit": "e64bb18",
+    "average_fps": 90.8467231586951,
+    "p99_ms": 25.4,
+    "duration_s": 300,
+    "note": "Historical pre-engraved-03 measurement, not claimed for this revision."
+  }
+}

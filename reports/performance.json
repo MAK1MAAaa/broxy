@@ -1,0 +1,28 @@
+{
+	"average_fps": 92.9787640469391,
+	"duration_seconds": 300.0,
+	"enemies": 300,
+	"impact_draw_commands_at_end": 7,
+	"impact_visual_capacity": 32,
+	"impact_visual_peak": 32,
+	"impact_visual_revision": "primary-impact-v1",
+	"internal_resolution": "1280x720",
+	"os": "macOS",
+	"p99_frame_ms": 26.191,
+	"passed": true,
+	"persistent_profile": false,
+	"pickups": 200,
+	"primary_hits": 473662,
+	"projectiles": 600,
+	"renderer": "gl_compatibility",
+	"run_seed": 1792432484,
+	"rune_visual_peak": 32,
+	"samples": 27895,
+	"scenario": "rune-feedback",
+	"secondary_hits": 1223944,
+	"settings": {
+		"flash": true,
+		"shake": true,
+		"volume": 0.65
+	}
+}

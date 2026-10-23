@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+<defs>
+<linearGradient id="robe" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#49506e"/><stop offset=".42" stop-color="#293047"/><stop offset="1" stop-color="#121a2b"/></linearGradient>
+<linearGradient id="violet" x1="0" y1="0" x2=".8" y2="1"><stop stop-color="#b78bd8"/><stop offset=".5" stop-color="#79538d"/><stop offset="1" stop-color="#463651"/></linearGradient>
+<linearGradient id="bone" x1="0" y1="0" x2=".6" y2="1"><stop stop-color="#f1e6cb"/><stop offset=".55" stop-color="#c9ba98"/><stop offset="1" stop-color="#8b806a"/></linearGradient>
+<linearGradient id="steel" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#9ca5b7"/><stop offset=".4" stop-color="#576378"/><stop offset="1" stop-color="#263044"/></linearGradient>
+<linearGradient id="blood" x1="0" y1="0" x2=".5" y2="1"><stop stop-color="#be746e"/><stop offset=".55" stop-color="#783d48"/><stop offset="1" stop-color="#3d293b"/></linearGradient>
+<linearGradient id="ghost" x1="0" y1="0" x2=".5" y2="1"><stop stop-color="#b4e4d8"/><stop offset=".45" stop-color="#6eacae"/><stop offset="1" stop-color="#345866" stop-opacity=".35"/></linearGradient>
+<linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f6dea0"/><stop offset=".5" stop-color="#c49a5b"/><stop offset="1" stop-color="#7f5b3b"/></linearGradient>
+<linearGradient id="flame" x1="0" y1="0" x2=".4" y2="1"><stop stop-color="#f6d9a0"/><stop offset=".4" stop-color="#e89a65"/><stop offset="1" stop-color="#9d4d57"/></linearGradient>
+<radialGradient id="aura"><stop stop-color="#7b628c" stop-opacity=".23"/><stop offset="1" stop-color="#382b50" stop-opacity="0"/></radialGradient>
+</defs>
+<path d="M32 3 L43 23 39 44 32 60 25 44 21 23Z" fill="#416a87" stroke="#101e2b" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" /><path d="M32 3 L32 48 21 23Z" fill="#c1e8e7" stroke="none" stroke-width="0" stroke-linejoin="round" stroke-linecap="round" /><path d="M32 4 L43 23 32 31Z" fill="#7db5c5" stroke="none" stroke-width="0" stroke-linejoin="round" stroke-linecap="round" /><path d="M21 23 L32 31 43 23 M25 44 L32 37 39 44 M32 4V58" fill="none" stroke="#d8f1e8" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" /><path d="M15 35 L21 40 16 46 M48 32 L43 39 49 44" fill="none" stroke="#83b8c4" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round" /><polygon points="49.00,7.00 50.23,11.77 55.00,13.00 50.23,14.23 49.00,19.00 47.77,14.23 43.00,13.00 47.77,11.77" fill="#deeee1"/><polygon points="13.00,21.00 13.62,23.38 16.00,24.00 13.62,24.62 13.00,27.00 12.38,24.62 10.00,24.00 12.38,23.38" fill="#8eafb8"/>
+</svg>

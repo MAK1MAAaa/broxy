@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ContentDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/content_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "pierce"
+kind = "rune"
+display_name = "贯穿符文"
+subtitle = "行为改装 · 穿过敌阵"
+description = "弹体额外贯穿2个敌人；每个敌人仅命中一次。"
+icon = "pierce"
+color = Color(0.6, 0.88, 0.7, 1)
+price = 18
+stat = "pierce"
+amount = 2.0

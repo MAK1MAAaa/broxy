@@ -1,0 +1,294 @@
+{
+  "schema_version": 1,
+  "baseline_commit": "3f61d66",
+  "art_revision": "engraved-04",
+  "scope": "Only player cloth colors/gradient and subtle etch opacity; original source subpath geometry and all runtime code retained.",
+  "source_sha256": {
+    "tools/art_sprites.py": "600b1ae033e50db891830760a709fb29054e1c8a3c17335f5b28a0fc0377cffa",
+    "tools/generate_assets.py": "95ecfbc4ba8c23ec2551cf7724053de990f416594c47f78a91000c54eee7883a",
+    "tools/check_player_material.gd": "ea4469ee81383c652bef60f3df453b93601a0610c1e538340a3ae526e60e0ecb",
+    "assets/sprites/player.svg": "26822f17b6563a862d3ef426afdba7a68395de802eb996b2421ecc9ea622033c",
+    "assets/manifest.json": "a93bc09266d909a59b0639168362cca78eabb25283b321c2d7665281a65834e8",
+    "assets/PROVENANCE.md": "a8d1aa015ca4928b5ae46510f186f3053eaefcb84c77b31039be0613288a1030",
+    "tools/preview_art.gd": "7e5a60cc80189d90dcbe9072d758ffec4bbe18dbbd8dd41da7cce54b323cfd50",
+    "tools/preview_threats.gd": "f94ee388c70f2c718d75585a3d1e5ed2e53bbf078573c00d019a3bbb544b5eff"
+  },
+  "unchanged_runtime_sha256": {
+    "scripts/core/run_state.gd": "7864a8860951b5dcf1b924257fee4dd91d9c07888a97714865a863a63c98e06b",
+    "scripts/core/game_store.gd": "13f95880667763d262cdfa5af6ceefbeb27ba3c098e1b4ac94cd5eab56041150",
+    "scripts/main.gd": "66b193ae057775163c02ff6efc7728d36f6734b84421b86da1171fb96e171ba4",
+    "scripts/ui/game_ui.gd": "75dd3fc240e7db432a4b52fff77b6ba82458872d65eaec1ae108f1edf1411cfc",
+    "scripts/combat/combat_sim.gd": "5bca9f0367c8cdcb5f698f672e4f3b9b0689dc684f73a20a30edf97e4ee73e34",
+    "scripts/combat/combat_world.gd": "4cf1b8bcc68f299a3e8defbef421c634f1cce0e8eeff6f445c8d83ed79fdc5c1",
+    "scripts/combat/projectile_painter.gd": "dc06af10a75453536ded8b37325f564be4e1fbaf7e56e3b14925ad2475930a3e",
+    "scripts/combat/enemy_telegraph_painter.gd": "4750e8c434ef2eac723d1cb6cb3bef5386734cd369a80f001b0467a3211af2e6",
+    "scripts/combat/bot_policy.gd": "a78c47c7c5002f06928cc8af373851fb81f853ec401f6fa929a28efd303d613b",
+    "tests/simulate_runs.gd": "361cf71e03712a882de74a3ec0fc36b0d430ac7554ab5127a4813a23932e6486",
+    "project.godot": "243b092054cff0748423392064c7b243a195bc5a0513430b96b904f5b8ee405d",
+    "export_presets.cfg": "cf847013d66b3d7a03a24c5c66edb27946356bc1c4de3688932a60065f461d25"
+  },
+  "core_version_unchanged": "prototype-0.1.0+fb2ccf1ca5f1",
+  "policy_version_unchanged": "orbit-avoid-v1/shop-v1+7c19c01f20e4",
+  "asset_qa": {
+    "report": "reports/character-assets-qa.json",
+    "report_sha256": "beb92131eaad2f643e7f77ad884379890d31d48903efc55260efcef5c0d8d868",
+    "passed": true,
+    "asset_count": 35,
+    "unchanged_non_player_assets": 34,
+    "unchanged_other_manifest_entries": 34,
+    "source_geometry_preserved": true,
+    "regenerated_twice_byte_identical": true
+  },
+  "independent_svg_raster": {
+    "report": "reports/player-material-raster.json",
+    "report_sha256": "e9346db8e9cccfb4c41817b467aae4c80675421c3bfbc60691ff9be24d3a3b11",
+    "size": [
+      96,
+      96
+    ],
+    "alpha_diff_pixels": 0,
+    "head_y_lt_40_rgba_diff_pixels": 0,
+    "color_diff_pixels": 1025,
+    "rgba_diff_bbox": [
+      15,
+      46,
+      66,
+      41
+    ],
+    "visible_alpha_nonzero_bbox": [
+      11,
+      5,
+      74,
+      87
+    ],
+    "exit_code": 0,
+    "negative_cases": [
+      {
+        "case": "missing --baseline",
+        "executor": "QA sub-agent using the same frozen helper",
+        "expected_exit_code": 2,
+        "actual_exit_code": 2,
+        "log": "reports/player-material-missing.log"
+      },
+      {
+        "case": "current SVG compared to itself",
+        "executor": "QA sub-agent using the same frozen helper",
+        "expected_exit_code": 1,
+        "actual_exit_code": 1,
+        "report": "reports/player-material-no-change.json",
+        "report_sha256": "0bd21281d7c26f74cec8e7e61c6ef12efcdab805c30da05e99cad1e13da14c5e"
+      }
+    ],
+    "limits": "Independent Image.load_svg_from_string at source size; does not inspect the imported runtime texture, 68px animation, recognition or performance."
+  },
+  "native_images": [
+    {
+      "view": "before",
+      "screenshot": "reports/art-cloth-before.png",
+      "screenshot_sha256": "14af48a088f503c34fd0d584fc0aa6b9ebc975f8acd645d98e5bf561e949db82",
+      "log": "reports/art-cloth-before.log",
+      "log_sha256": "d4596c1570424734f91bfdd5d09b30a77ffeb9f74076ff652954f5c7bb40b729",
+      "exit_code": 0,
+      "image_reviewed": true
+    },
+    {
+      "view": "after",
+      "screenshot": "reports/art-cloth-after.png",
+      "screenshot_sha256": "d6df1da56a7127ecf7ec42d8ac12c1bfbb66a13922c2a4bad60fd2673aaf7619",
+      "log": "reports/art-cloth-after.log",
+      "log_sha256": "f906e3e3df16ec98baa265274228cdede617361cef5be84cf53bdd297782c2fe",
+      "exit_code": 0,
+      "image_reviewed": true
+    },
+    {
+      "view": "threats",
+      "screenshot": "reports/art-cloth-threats.png",
+      "screenshot_sha256": "1011a38d4740822d5f942fa02297aefeeebfe322acd75ea9fa1e5099bffa1544",
+      "log": "reports/art-cloth-threats.log",
+      "log_sha256": "9d3d8a38ca9f7b7d8c1e6c4197772359087d51235eab6a14d38e4c1864faf7e1",
+      "exit_code": 0,
+      "image_reviewed": true
+    }
+  ],
+  "comparison_integrity": {
+    "before_image_equals_3f61d66_arena_after": true,
+    "adopted_draft_equals_final_image": true,
+    "runtime_player_draw_size_px": 68,
+    "canvas_size": [
+      1280,
+      720
+    ]
+  },
+  "visual_review": {
+    "verdict": "Broad left cloth planes separate from the dark foot shadow; face and chain remain the main highlights. No visible plastic shine, metallic rim or added line noise in the reviewed static views.",
+    "independent_review": "A second agent viewed before and adopted draft at native size; found no blocking visual issue.",
+    "limits": "Frozen static fixtures, not dense moving combat, invulnerability flashing, native keyboard interaction or human recognition rate."
+  },
+  "headless_suites_by_process": [
+    {
+      "suite": "Rules",
+      "assertions": 204,
+      "failures": 0
+    },
+    {
+      "suite": "PurchaseQuery",
+      "assertions": 119,
+      "failures": 0
+    },
+    {
+      "suite": "Combat",
+      "assertions": 302,
+      "failures": 0
+    },
+    {
+      "suite": "Homing",
+      "assertions": 45,
+      "failures": 0
+    },
+    {
+      "suite": "UI",
+      "assertions": 157,
+      "failures": 0
+    },
+    {
+      "suite": "Notifications",
+      "assertions": 65,
+      "failures": 0
+    },
+    {
+      "suite": "Modal",
+      "assertions": 37,
+      "failures": 0
+    },
+    {
+      "suite": "ChoiceActions",
+      "assertions": 44,
+      "failures": 0
+    },
+    {
+      "suite": "UpgradePreviews",
+      "assertions": 350,
+      "failures": 0
+    },
+    {
+      "suite": "ShopActions",
+      "assertions": 106,
+      "failures": 0
+    },
+    {
+      "suite": "ShopDetails",
+      "assertions": 51,
+      "failures": 0
+    },
+    {
+      "suite": "ShopAvailability",
+      "assertions": 166,
+      "failures": 0
+    },
+    {
+      "suite": "ProfileModes",
+      "assertions": 25,
+      "failures": 0
+    },
+    {
+      "suite": "Flow",
+      "assertions": 76,
+      "failures": 0
+    },
+    {
+      "suite": "Feedback",
+      "assertions": 64,
+      "failures": 0
+    },
+    {
+      "suite": "ProjectilePainter",
+      "assertions": 77,
+      "failures": 0
+    },
+    {
+      "suite": "EnemyTelegraphs",
+      "assertions": 121,
+      "failures": 0
+    },
+    {
+      "suite": "ShopObservation",
+      "assertions": 384,
+      "failures": 0
+    },
+    {
+      "suite": "ProfileModes",
+      "assertions": 16,
+      "failures": 0
+    },
+    {
+      "suite": "ProfileModes",
+      "assertions": 16,
+      "failures": 0
+    },
+    {
+      "suite": "ProfileModes",
+      "assertions": 16,
+      "failures": 0
+    },
+    {
+      "suite": "ProfileModes",
+      "assertions": 16,
+      "failures": 0
+    },
+    {
+      "suite": "ProfileModes",
+      "assertions": 16,
+      "failures": 0
+    }
+  ],
+  "godot_suite_count": 18,
+  "godot_process_count": 23,
+  "godot_total_assertions": 2473,
+  "godot_total_failures": 0,
+  "python_tests": 14,
+  "full_test_exit_code": 0,
+  "log_sha256": {
+    "reports/tests.log": "2c41736514b1d5dee9b1ab2e684966cd6e6423c502a4f9d06c2c6adfd99e3b22",
+    "reports/art-cloth-generation.log": "186449b313dcd562350bafe5ddd7faa16663ade1fbd148df1fc9e0158e809556",
+    "reports/art-cloth-import.log": "f714216c23a82f651246c799992a0d5bc23e6753abde05a9b3086de284714416",
+    "reports/player-material-raster.log": "66d131bb7b8ec28f3c3151e8572ebec96e7b01717879d471ef07680b3543948e",
+    "reports/player-material-missing.log": "7d84e2c48ed38b88bab74fafb393f1a2675ba701e16363d890308100ba0b3a41",
+    "reports/build-cloth.log": "e2c0fff99f7abae3364197bbd6b18365633ac28e78ebb473cb7bd10673e16e5b",
+    "reports/app-boot-cloth.log": "6c536b7ab6a1ee8e7ac91fdd27709abb484073b092cabb70d205c4f987e47ddd",
+    "reports/archive-cloth.log": "4e413997a9e14d247a4beced749be0fae42ad0ca6053dc7e64c5bdb5be5108e1"
+  },
+  "build": {
+    "app": "build/Embers-cloth.app",
+    "architecture": "arm64",
+    "ad_hoc_strict_signature": true,
+    "info_plist_valid": true,
+    "build_exit_code": 0,
+    "packaged_headless_boot_exit_code": 0,
+    "boot_args": [
+      "--headless",
+      "--quit-after",
+      "3",
+      "--",
+      "--capture-only"
+    ],
+    "zip_integrity_exit_code": 0,
+    "artifact_sha256": {
+      "build/Embers-cloth.app/Contents/MacOS/秘术余烬": "8e6cb13f6aa634d5827f7d9d75672ccda7de22bda945236c40d8c18e87b5f544",
+      "build/Embers-cloth.app/Contents/Resources/秘术余烬.pck": "dc64c82252aa57929b1ca35ebd0abe77e04da3cc51dc9b470a13f924a82bf3cd",
+      "build/Embers-cloth-mac-arm64.zip": "4ea9d2e9516c963faa1da3d94072adbded30d85e2280c08428987edaccd75436"
+    },
+    "old_apps_and_paused_run_preserved": true
+  },
+  "not_rerun": [
+    "30-run paired simulation; runtime/data/strategy unchanged from 3f61d66",
+    "5-minute native graphical stress test",
+    "Moving combat, invulnerability animation, native keyboard interaction and human playtest"
+  ],
+  "latest_complete_performance": {
+    "commit": "e64bb18",
+    "average_fps": 90.8467231586951,
+    "p99_ms": 25.4,
+    "duration_s": 300,
+    "note": "Historical measurement; no new FPS claim for engraved-04."
+  }
+}

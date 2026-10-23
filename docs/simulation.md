@@ -1,0 +1,194 @@
+# 无画面通关验证
+
+`tests/simulate_runs.gd` 调用正式游戏使用的 `CombatSim.step()`、`BotPolicy.movement()` 和 `RunState`。固定步长为1/60秒，不创建窗口，不读取或改写玩家存档。
+
+## 运行
+
+将下面的 `godot` 替换为本机Godot可执行文件路径：
+
+```sh
+godot --headless --path . --script res://tests/test_rules.gd
+godot --headless --path . --script res://tests/test_combat.gd
+godot --headless --path . --script res://tests/simulate_runs.gd -- --seed=2026
+godot --headless --path . --script res://tests/simulate_runs.gd -- --seed=2026 --rune=blast --count=3
+```
+
+默认分别运行贯穿、弹射、爆破各一局。`--rune=all|pierce|bounce|blast` 选择流派；`--count=N` 为每个所选流派运行N个连续种子，从 `--seed` 开始，范围1—100。
+
+默认退出码0表示采样完成，失败的对局仍会完整输出结果。追加 `--require-win` 后，任意一局失败都会返回退出码1，适合检查指定种子的通关回归；参数中的未知符文返回2。
+
+## 策略与约束
+
+- 每局仅携带正式规则给出的初始骨针，从0魂屑开始；不修改生命、法器伤害、敌人生命或随机结果。
+- 普通波结束后按正式规则补足最低收入，由祭坛恢复至生命上限，结算全部待选强化，再通过公开购买、刷新和装备接口操作商店。失败即结束，不跳过未完成波次；第8波必须击败Boss。
+- 商店优先补足4件法器，购买所选流派符文并免费装入空槽；低生命时优先生命遗物，后续购买伤害、攻速和防御。每个商店最多3次有偿刷新，且保留足够购买目标物品的预算。
+- 贯穿优先散魂/骨针，弹射优先骨针/霜矛，爆破优先幽焰/散魂。法器由随机商店合法购买，不保证固定装备组合。没有购得符文的局仍标记为该策略的尝试，最终实际装备数量单独记录。
+- 强化优先伤害、攻速；生命低于60%时优先生命强化。移动使用同一份固定的绕场避让策略。策略表现不代表真人通关率。
+
+## 输出与复现
+
+每局打印一行JSON，主要字段如下：
+
+| 字段 | 含义 |
+| --- | --- |
+| `seed`、`rune` | 本局种子和目标符文策略 |
+| `balance_version` | 资源、局内经济和战斗代码内容哈希；修改平衡后自动变化 |
+| `policy_version` | 移动及购物策略版本和对应脚本内容哈希 |
+| `wave`、`won`、`reason` | 实际抵达波次、是否最终通关、结束原因 |
+| `kills`、`gold`、`elapsed` | 击杀、结余魂屑、模拟战斗总时长；不含购物时间 |
+| `equipped_target_runes`、`loadout`、`relic_counts` | 实际获得的构筑，避免把未成型的策略尝试算作流派验证 |
+| `wave_results` | 每波胜负、击杀、收入、开始/结束生命和用时 |
+| `trace` | 每次保底收入、强化选项与选择、购买实付价格、刷新及装备操作 |
+| `shop_observation_schema_version`、`policy_change_note` | 商店观测结构版本及本次策略脚本变更说明 |
+| `shop_observations` | 每次商店报价、选择前状态、评分、拒绝及停止原因的独立快照；不改写原trace |
+
+Godot自身可能在标准输出打印版本信息。保存为JSONL时，仅保留以 `{` 开头的完整记录。使用相同种子、相同代码和资源、相同策略版本可复现；跨平衡版本的结果不可直接合并。
+
+## 已运行结果
+
+本轮primary-impact-v1只增加World命中装饰、设置即时清理与Main性能观测；CombatSim、RunState、data资源和策略与80d18fa一致，未重跑30局。绘制只读与RNG由独立行为测试覆盖；静态35素材仍engraved-04。以下fb2核心记录仍是最近完整模拟，不能验证本轮美感或动态性能。
+
+### 最近完整批次：商店只读校验的30局配对
+
+将购买条件提取为纯查询后，核心指纹变为`prototype-0.1.0+fb2ccf1ca5f1`。种子2026—2035×贯穿/弹射/爆破，沿用`orbit-avoid-v1/shop-v1+7c19c01f20e4`，30局退出0；与下述143核心批次逐字段比较，仅排除`balance_version`，包括完整trace、wave_results与shop_observations的所有剩余字段均一致，仍29胜1败。见[purchase-simulation.json](../reports/purchase-simulation.json)，本地JSONL为`reports/simulation-30-purchase.jsonl`，SHA-256为`6dc407886ecf6f923c913ba79d6c6fa1e13d566bc18bab5035fb5b3889d7a1e8`。这只约束所测固定机器人样本，不证明真人购物理解、胜率或图形性能。
+
+### 历史：幽焰反向追踪修复的30局配对
+
+该阶段核心为`prototype-0.1.0+143fbc0963af`。使用种子2026—2035、贯穿/弹射/爆破三个目标符文策略各10局，重新运行30局，退出0；策略保持`orbit-avoid-v1/shop-v1+7c19c01f20e4`。与预警阶段`4f7be4bdb91f`相比，修复前后均为29胜1败，没有胜负转换。完整配对及源文件核对见[homing-simulation.json](../reports/homing-simulation.json)，本地原始`reports/simulation-30-homing.jsonl` SHA-256为`fe8443aa3eed8b49c6e5ec511e69a8a1f5e663e33999ba96b9879841a67a3271`。
+
+仅排除`balance_version`后，27/30局的全部字段一致，包含完整trace、逐波结果与shop_observations；其余3局（seed2027爆破、seed2032弹射、seed2034弹射）的`gold`、`trace`、`shop_observations`和`wave_results`发生变化，其中前两局的`kills`也变化。因此本轮不能称为全等价回归，胜负相同也不表示战斗过程未变。
+
+此前诊断入口与档案隔离修复（`f122`）未改变模拟数值。本次只修复幽焰在近180度反向目标下的转向退化，没有更换资源、价格或移动/购物策略；它不保证幽焰能追上后方目标。这30个固定机器人样本不能用于推断真人胜率，也不测量原生性能、危险辨识度或趣味性。
+
+### 历史：预警时长常量的30局等价回归
+
+该阶段`prototype-0.1.0+4f7be4bdb91f`仅将正式冲锋0.65秒、施法0.45秒蓄力提取为供绘制共享的常量。相同2026—2035种子、三流派及`7c19c01f20e4`固定策略重新跑30局，退出0；与`f29c7008e475`逐字段比较，仅排除`balance_version`，完整trace、逐波结果及shop_observations全部相同，仍29胜1败。见[telegraph-equivalence.json](../reports/telegraph-equivalence.json)，本地原始`simulation-30-telegraph.jsonl` SHA-256为`a702b962fdddfbc03ec07b4dc302dcc0a4cc31127aad036ed88c4f90ea3a6d9a`。预警绘制独立验证不修改模拟或RNG；该样本等价不证明性能或真人辨识度。
+
+### 上一阶段：接触反冲修复的30局配对
+
+核心`prototype-0.1.0+f29c7008e475`修正退避/冲锋方向被复用于接触反冲，以及反冲后可能越出场地的问题。种子仍为2026—2035、三个目标符文策略各10局，策略仍为`orbit-avoid-v1/shop-v1+7c19c01f20e4`。与上一阶段`bdd5240c97ca`的28胜2败相比，当前29胜1败；只有seed2032爆破由第4波失败变为通关，seed2026贯穿仍在第3波失败。
+
+24/30局在排除核心版本后仍有字段变化：24局改变金币/trace/逐波结果/商店观测，22局改变击杀，2局改变最终装备，1局改变胜负。因此本轮不作行为等价声明。资源、伤害公式、RunState和策略源码均未改；差异来自正式战斗中的反冲位置修复，不能据此推断真人胜率。完整差异、配对键及输入/输出SHA见[modal-recoil-simulation.json](../reports/modal-recoil-simulation.json)，本地原始数据为`reports/simulation-30-modal-recoil.jsonl`。
+
+### 上一阶段：符文反馈与查询优化的30局等价回归
+
+2026年10月22日，用相同2026—2035十个种子与三类符文策略，运行当时核心`prototype-0.1.0+bdd5240c97ca`。策略保持`orbit-avoid-v1/shop-v1+7c19c01f20e4`，仍28胜2败。与下述商店观测基线配对，除`balance_version`外全部输出字段一致，包括完整trace、逐波生命/时间、构筑、余额与2490条shop_observations。见[配对及源码指纹报告](../reports/rune-vfx-equivalence.json)；最终JSONL SHA-256为`3ca87ce9d7fb41cf66f507a641c962b0fcb6720ce63cc81d47a0e1b07d850b61`，原始JSONL与日志仅保留本地。
+
+核心变动是实际符文事件及保持原顺序的空间查询优化；此等价结果只覆盖指定30局。原生符文可读性、渲染成本与真人难度另行验收。仅事件改造的中间批次`09f82a86de4c`单独保存在`rune-vfx-equivalence-before-query.json`，不与最终批次混用。
+
+### 前一阶段：30局商店完整观测
+
+2026年10月22日，Godot 4.7.2，种子2026—2035、三个符文流派各10局，仍为28胜2败。核心版本保持 `prototype-0.1.0+dad5c03f6439`；策略脚本指纹更新为 `orbit-avoid-v1/shop-v1+7c19c01f20e4`，只增加观测和统一评分报告，没有改变shop-v1决策、RNG调用、移动策略或数值。完整记录见 [simulation-30-observed.jsonl](../reports/simulation-30-observed.jsonl)，原始输出见 [raw.log](../reports/simulation-30-observed.raw.log)，分析见 [shop-analysis.json](../reports/shop-analysis.json)。
+
+分析器与 `simulation-30-feedback.jsonl` 严格配对：30局全部旧字段逐项相同，包括完整trace、逐波生命与用时、构筑、击杀及魂屑；仅策略指纹和新增观测元数据被排除比较。两批旧字段内容哈希均为 `4791e5662912d55526ab729fd0cd1c80908a107b4e6a595f39d9c0e18b1f9aa9`。这里验证的是观测改造保持行为，与下文战斗修复前后会改变轨迹的比较不同。
+
+当前源码可重新采样并分析，也可将第2条命令的输入替换为已保存的JSONL。要复现本段的历史配对，需要相应`dad5c03f6439`源码；分析器`--baseline`会拒绝混合核心版本，跨版本的上一阶段等价报告单独仅排除`balance_version`核对；本轮反冲修复的配对报告如实记录差异：
+
+```sh
+tools/run.sh --headless --script res://tests/simulate_runs.gd -- --seed=2026 --count=10 > /tmp/broxy-observed.raw.log
+python3 tools/analyze_shop_runs.py /tmp/broxy-observed.raw.log --output /tmp/broxy-shop-analysis.json
+```
+
+分析器接受Godot版本提示混入的原始输出，不需要手动过滤。当前共2490个事件、201个商店，所有事件均有4项报价和对应评估，201店均通过库存历史完整性检查。观测结构为 `shop-observations-v1`：
+
+| 字段 | 语义 |
+| --- | --- |
+| `wave`、`phase`、`reason` | 波次、事件阶段和明确原因；阶段包括initial、reroll、decision、stop_buying、stop_reroll、purchase_rejected |
+| `wallet`、`loadout`、`rune_bag`、`relic_counts` | 该事件时的钱包、法器及已装符文、备用符文和遗物层数的深复制快照 |
+| `offers`、`evaluations`、`selected_offer_index` | 四项报价的id/kind/price/sold；逐项score/reason/required_reserve；选中槽位或null。拒绝评分为null，不输出Infinity |
+| `rerolls`、`reroll_cost`、`reserve`、`paid` | 已刷新次数、下一次费用、搜索预留预算、此次实际刷新费用；不适用的paid为null |
+
+initial记录自动装备备用符文前的商店，decision记录每次候选选择之前的实际状态，reroll记录刷新后的新报价。拒绝原因区分已售、买不起、法器满槽、非目标符文、无空符文槽或被备用占用、备用满、遗物满层及预算预留；停止刷新区分余款不足、保留预算、3次上限和策略饱和。评分与原因来自同一评估函数，分析器按记录报告，不重新推演决策。
+
+#### 早期目标符文的实际路径
+
+| 样本 | 前两店的完整报价记录与选择 | 结果 |
+| --- | --- | --- |
+| seed2026贯穿 | 第一店刷新后钱包65，贯穿18为eligible、100分；霜矛24得113.04分、幽焰24得111.04分，策略依次购买两件法器后只剩17，贯穿才变为unaffordable。第二店初始及3次刷新共4组报价均无贯穿 | 第3波失败，未装目标符文 |
+| seed2032爆破 | 第一店1组、第二店初始及3次刷新共4组报价均无爆破；第一店以reserve_budget停止，第二店到刷新上限 | 第3店取得首个爆破，第4波失败 |
+| seed2029贯穿 | 第一店初始及2次刷新共3组、第二店共4组报价均无贯穿 | 第3店取得首个贯穿，最终通关 |
+
+这些记录区分了实际未出现、出现且可买但优先买法器、随后余款不足。两局失败的直接记录均为缚棺者接触攻击，不能据此判定缺符文导致死亡；晚取得符文的通关样本也不能证明早期随机性对玩家体验没有影响。本轮未因此调价或保证指定符文。
+
+第5—7店共84次停止刷新中，`policy_saturated` 为57次，`reroll_limit` 为27次。前者表示shop-v1搜索目标已满足，后者表示达到策略刷新上限；二者都不能证明游戏已无合法消费，也不能仅从剩余魂屑认定经济缺乏消耗。
+
+旧记录无观测时，分析器标记 `unknown_unobserved`。只有包含初始快照、从0到末次刷新连续的4项报价及结束事件，`stock_history_complete` 才为true；片段缺失时，即使已记录快照未见目标符文，缺失部分仍未知。重复decision/stop事件不是独立的新一轮库存，只有initial/reroll计为报价快照。这批固定机器人样本不能用于估计真人通关率。
+
+当前 [tests.log](../reports/tests.log) 已完整记录Godot共2574条无界面断言通过（Rules204、PurchaseQuery119、Combat302、Homing45、UI157、Notifications65、Modal37、ChoiceActions44、UpgradePreviews350、ShopActions106、ShopDetails51、ShopAvailability166、ProfileModes105（六入口）、Flow76、Feedback64、ImpactFeedback101、ProjectilePainter77、EnemyTelegraphs121、ShopObservation384），另有14项Python分析器测试通过。EnemyTelegraphs在headless明确跳过12项实例读回；[原生套件](../reports/enemy-telegraphs-native.log)134条断言全部通过，实际执行这12项读回，并强制检查原生读回可用。商店测试含105组冻结shop-v1的购物trace、钱包、库存和RNG状态对照，并覆盖拒绝优先级、低血生命遗物例外、快照不被后续购买污染及停止刷新边界。
+
+### 历史：战斗修复阶段30局配对回归
+
+该阶段于2026年10月22日使用Godot 4.7.2，种子2026—2035、贯穿/弹射/爆破各10局。模拟规则版本为 `prototype-0.1.0+dad5c03f6439`，报告导出时已核对源文件哈希一致；机器人策略保持 `orbit-avoid-v1/shop-v1+cf468b4c5f0f`。逐局数据见 [simulation-30-feedback.jsonl](../reports/simulation-30-feedback.jsonl)，汇总见 [summary](../reports/simulation-30-feedback-summary.json)，与原863版本的逐对比较见 [comparison](../reports/simulation-30-feedback-comparison.json)。
+
+```sh
+tools/run.sh --headless --script res://tests/simulate_runs.gd -- --seed=2026 --count=10
+```
+
+同一30对样本在修复前后均为28局通关、2局失败，胜负对应关系及首次装备目标符文的时点全部保持；这不表示战斗轨迹完全相同。
+
+| 流派 | 通关 / 样本 | 第1波后首次装备 | 第2波后首次装备 | 第3波后首次装备 | 始终未装备 |
+| --- | --- | --- | --- | --- | --- |
+| 贯穿 | 9 / 10 | 1 | 7 | 1 | 1 |
+| 弹射 | 10 / 10 | 5 | 5 | 0 | 0 |
+| 爆破 | 9 / 10 | 3 | 6 | 1 | 0 |
+| 合计 | 28 / 30 | 9 | 18 | 2 | 1 |
+
+“第N波后”指该波完成后的商店。27局进入第3波前已经装备目标符文；全部28局通关时均有4个目标符文。两局失败为seed2026贯穿（第3波、0目标符文）和seed2032爆破（第4波、1目标符文），均记录为缚棺者的接触攻击致死。记录没有完整商品报价，未装备目标符文不能直接归因为商店缺货或买不起。
+
+#### 该阶段修复与统计
+
+该阶段未改敌人/法器资源数值、波次密度、价格和收入公式，也未更换机器人策略，修复了三个实际行为问题：
+
+- Boss被主伤或次级爆破击败后，终局阻止后续爆破、贯穿和外部伤害继续改变击杀、掉落及伤害统计。
+- 冲锋、后退等状态选定移动速度后统一应用霜矛减速；Boss移动同样生效，减速结束后恢复，避免状态分支覆盖效果或重复乘算。
+- 弹体按扫掠圆的实际入点排序，而非圆心投影；覆盖起点在圆内、切线、线段端点、零长度及交换实体池槽位的回归。
+
+新增统计仅记录真实HP损失：按法器跨波累计输出、护甲后的承伤总量和受击次数，保留最后受击的来源、类型、波次与时间；新局清空。承伤复用原有一次状态通知，输出统计不额外触发界面重建。输出伤害事件包含实际伤害、法器来源及目标UID，承伤事件包含攻击者来源、类型及位置；旧无参信号保留兼容。
+
+规则修复会改变实际命中、减速轨迹和终局时序。30对样本的购物trace均有变化；第1波收入逐对相同，后续只比较双方都到达同一波/商店的样本。终局魂屑中位数从1614变为1609.5，逐对差值范围为−68到+61，不能据此认定收入公式变更。通关战斗用时中位数从323.092秒变为325.275秒；不能把变化单独归因于某一个修复。最后仅补充目标UID的版本，与其前一版 `9b59680253ee` 的30条记录除版本号外完全一致。
+
+这些是10个固定种子、同一自动策略的配对样本；28/30是样本结果，不代表真人或总体通关率。后期统计存在幸存者筛选；无画面采样也不覆盖World绘制和伤害反馈的性能成本。
+
+该阶段完成时，Rules204、Combat152、Feedback21、UI131、Flow45条断言均通过，合计553条、0失败；当前完整测试数量见上方商店观测小节。统计、终局、减速和几何碰撞由行为测试验证，不能仅以整局胜负相同替代。
+
+### 历史：863版9局及此前迭代
+
+以下保留原报告的版本、样本和结果；它们不属于上面的当前30局报告，不能将旧数值与新批次混用。
+
+2026年10月22日，Godot 4.7.2，历史采样资源与规则版本为 `prototype-0.1.0+863244db2817`，已与当时定稿源文件内容哈希核对一致；策略始终为 `orbit-avoid-v1/shop-v1+cf468b4c5f0f`。最终战斗区域为 `Rect2(66, 140, 1148, 450)`；普通波结束恢复至生命上限。当时9局完整记录在 `reports/simulation.jsonl`：
+
+| 种子 | 贯穿 | 弹射 | 爆破 |
+| --- | --- | --- | --- |
+| 2026 | 第3波失败，0目标符文 | Boss通关，321.267秒 | Boss通关，330.783秒 |
+| 2027 | Boss通关，323.367秒 | Boss通关，322.817秒 | Boss通关，328.233秒 |
+| 2028 | Boss通关，320.617秒 | Boss通关，321.667秒 | Boss通关，328.750秒 |
+
+9局中8局通关，所有通关局都通过合法购买装备了4个目标符文。seed2027和2028分别提供三个流派的完整通关路径。唯一失败的seed2026贯穿策略已有4件法器及伤害、攻速、护甲强化，第二商店用完3次刷新仍未获得目标符文，第三波33.067秒死亡，不能计作已成型贯穿的强度验证。默认seed2026的三局中包含这一失败，脚本没有替换成更有利的默认种子。
+
+#### 历史配对实验与设计判断
+
+最初游魂基础生命22，骨针伤害14、冷却0.46秒，需要两发击杀，理论单体击杀约1.09只/秒；第一波生成上限为2只/0.85秒，约2.35只/秒。固定自动策略实测首波仅击杀41—42只，导致开局清怪、购物预算和首次升级都较紧张。
+
+最终只将游魂基础生命22降至14，保留其他敌人、Boss、波次密度、经验阈值和策略。使用完全相同的三个种子、三个流派，通关从3/9变为8/9；首波击杀和收入从41—42变为86—88，首波结束生命分别从44/36/76变为100/84/100，每个种子第一商店都获得一次强化。这一参数改善了早期清怪与学习空间；游魂后续仍按原有波次系数变硬，没有全局降低敌人生命。
+
+| 阶段 | 验证结果 | 保留记录 |
+| --- | --- | --- |
+| 初始规则，未恢复生命 | seed2026，0/3通关 | `reports/simulation-baseline.jsonl`，`d54fb3d487e1` |
+| 正式加入波末祭坛恢复 | seed2026，3/3通关 | `reports/simulation-heal-baseline.jsonl`，`248f0abba274` |
+| 最终场地和胜负顺序修复，游魂22生命 | seed2026—2028，3/9通关 | `reports/simulation-pre-chaser-tuning.jsonl`，`7002479de4ea` |
+| 仅游魂改为14生命，施法者修复前 | 同一9局，8/9通关 | `reports/simulation-before-caster-fix.jsonl`，`b6babc767ede` |
+| 施法者近距瞄准与资源参数读取修复 | 同一9局，8/9通关 | `reports/simulation-before-optimization.jsonl`，`53f3c4e37251` |
+| 碰撞查询性能优化，幽焰追踪补齐前 | 同一9局，8/9通关 | `reports/simulation-before-homing.jsonl`，`b011663ef4d4` |
+| 幽焰补齐既定缓慢追踪行为 | 同一9局，8/9通关 | `reports/simulation.jsonl`，`863244db2817` |
+
+碰撞查询优化将固定48像素扩展改为当帧最大活跃敌人半径。对优化前后9条完整记录逐字段比较，除 `balance_version` 外全部一致，包括最终结果、逐波生命与用时、购买、刷新、升级和装备trace。比较结果保存在 `reports/simulation-equivalence.json`，对应 `simulation-before-optimization.jsonl` 与 `simulation-before-homing.jsonl`；这证明该次优化在所测9局中保持行为，不能替代对所有输入的形式证明。此比较发生在幽焰启用追踪前，不表示追踪改动前后轨迹相同。
+
+幽焰使用已有的追踪实现，仅在Resource中配置 `homing = 2.4`，保留原有290像素/秒飞行速度、29伤害及0.95秒冷却。新增行为测试确认弹体向离轴目标实际转向并产生曲线路径，同时保持速度；贯穿命中仍存活的敌人后会转向下一个未命中目标。当时9局覆盖启用追踪后的全部流派，未替换移动或购物策略。
+
+旧9局中，seed2027的贯穿/爆破策略第一商店仅购得第二件法器，余款不足刷新并保留购买预算；但seed2028已经合法携带三件法器并取得一次伤害强化，仍在第二波约43.6秒死亡。因此问题不能只归因于商店资源，前段清怪压力、刷怪轨迹和自动走位也影响结果。
+
+#### 历史样本边界
+
+这只是3个固定种子、同一自动策略的小样本结果，不能据此估计整体胜率或真人难度。当时9局中，已完成波次的最小结束生命为44.141，来自seed2026弹射策略；失败局仍按真实死亡终止。各版本记录保留了失败和未成型尝试，没有为自动策略添加额外资源。
+
+该历史版本的规则测试193条断言、战斗测试99条断言全部通过；后者覆盖敌弹致死后禁止同帧反杀Boss、Boss先死后不再处理敌弹，以及施法者后退时仍朝玩家开火、远距正常开火、弹速和冷却读取资源，以及幽焰实际追踪轨迹和已命中目标排除的确定性回归。

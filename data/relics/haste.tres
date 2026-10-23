@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ContentDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/content_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "haste"
+kind = "relic"
+display_name = "时砂"
+subtitle = "遗物 · 最多叠加3层"
+description = "攻击速度 +12%"
+icon = "haste"
+color = Color(0.89, 0.71, 0.42, 1)
+price = 20
+stat = "attack_speed"
+amount = 0.12

@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="ContentDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/content_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "tank"
+kind = "enemy"
+display_name = "缚棺者"
+description = "移动缓慢，但拥有坚固身躯。"
+color = Color(0.59, 0.53, 0.71, 1)
+health = 92.0
+speed = 40.0
+damage = 14.0
+radius = 22.0

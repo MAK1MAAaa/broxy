@@ -1,0 +1,1227 @@
+{
+  "schema_version": 1,
+  "baseline_commit": "37be1ea1e7c9ca64396ebeaac2baae02b7898430",
+  "baseline_snapshot_sha256": "117a50f6c09432d91a7d99a89dff2dbf283da6563f664c501e2d42010318e2ef",
+  "art_revision": "engraved-03",
+  "manifest_sha256": "a389be2c1c0dc5b32956ee0631d13b108dc6d4a242d240b5bc45e947f25264a7",
+  "asset_count": 35,
+  "asset_types": {
+    "vector": 25,
+    "audio": 10
+  },
+  "only_changed_asset_paths": [
+    "assets/arena.svg"
+  ],
+  "unchanged_non_arena_assets": 34,
+  "all_dimensions_and_pivots_preserved": true,
+  "forbidden_elements_checked": [
+    "clipPath",
+    "filter",
+    "font",
+    "font-face",
+    "foreignObject",
+    "image",
+    "mask",
+    "pattern",
+    "script",
+    "style",
+    "text",
+    "use"
+  ],
+  "regeneration_evidence": {
+    "executor": "Root agent; this QA independently compares the two supplied file-hash maps and current bytes, without invoking generation",
+    "first_file": "reports/arena-generation-first.json",
+    "first_sha256": "99d9de60e468cad1350072052ce2db58e2629e9e8c8d2323784c0fffd82f3763",
+    "second_file": "reports/arena-generation-second.json",
+    "second_sha256": "99d9de60e468cad1350072052ce2db58e2629e9e8c8d2323784c0fffd82f3763",
+    "file_count": 40,
+    "fingerprints_equal": true,
+    "current_file_mismatches": []
+  },
+  "generator_sources_sha256": {
+    "tools/generate_assets.py": "82a399fe4dc8d86d17afa832edbf9500019ae3dfc1ba14e246ae53dac1d22311",
+    "tools/art_environment.py": "8a648e92bdc9eca109c9d3d4c4b255f8f620e5dffed10f3b83844143adc640bc",
+    "tools/art_sprites.py": "6bf6a2925f5fb04934d48c48f5fc15d6a17659ff29589b44ba40740a4338eea3",
+    "tools/art_icons.py": "79b405061cfacae19fe521430fb54c7612feb01233344e0938410cf33cc3fcbd"
+  },
+  "passed": true,
+  "errors": [],
+  "limits": [
+    "Technical asset validation only; XML correctness does not establish visual quality, danger recognition or runtime frame performance.",
+    "No engine, GUI or gameplay simulation was run by this QA agent.",
+    "Regeneration execution and native visual review are root-agent evidence; this report verifies supplied generation fingerprint equality against actual output files."
+  ],
+  "assets": [
+    {
+      "id": "sprites_player",
+      "path": "assets/sprites/player.svg",
+      "type": "vector",
+      "bytes": 6573,
+      "sha256_before": "610d8158d82be5eca4d016c9b5634aa4f893c5899e8fe56d17fc1e08982ee9a1",
+      "sha256_after": "610d8158d82be5eca4d016c9b5634aa4f893c5899e8fe56d17fc1e08982ee9a1",
+      "size": [
+        96,
+        96
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "view_box": [
+        0.0,
+        0.0,
+        96.0,
+        96.0
+      ],
+      "elements": {
+        "svg": 1,
+        "defs": 2,
+        "linearGradient": 10,
+        "stop": 32,
+        "radialGradient": 1,
+        "ellipse": 8,
+        "path": 23
+      },
+      "unique_svg_ids": 11,
+      "local_references": 6,
+      "unresolved_references": [],
+      "external_references": [],
+      "event_attributes": [],
+      "font_attributes": [],
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "sprites_chaser",
+      "path": "assets/sprites/chaser.svg",
+      "type": "vector",
+      "bytes": 3702,
+      "sha256_before": "5aae1d1650c08a3fc9d3fe1a12b5ec000934deafe345c34d2b9edd61f92f3e43",
+      "sha256_after": "5aae1d1650c08a3fc9d3fe1a12b5ec000934deafe345c34d2b9edd61f92f3e43",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "view_box": [
+        0.0,
+        0.0,
+        64.0,
+        64.0
+      ],
+      "elements": {
+        "svg": 1,
+        "defs": 2,
+        "linearGradient": 9,
+        "stop": 29,
+        "radialGradient": 1,
+        "ellipse": 1,
+        "path": 10
+      },
+      "unique_svg_ids": 10,
+      "local_references": 1,
+      "unresolved_references": [],
+      "external_references": [],
+      "event_attributes": [],
+      "font_attributes": [],
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "sprites_rusher",
+      "path": "assets/sprites/rusher.svg",
+      "type": "vector",
+      "bytes": 3960,
+      "sha256_before": "bea93130efe902762f440b57664fd69a5dd413735c3d971da2362cef97fba647",
+      "sha256_after": "bea93130efe902762f440b57664fd69a5dd413735c3d971da2362cef97fba647",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "view_box": [
+        0.0,
+        0.0,
+        64.0,
+        64.0
+      ],
+      "elements": {
+        "svg": 1,
+        "defs": 2,
+        "linearGradient": 9,
+        "stop": 29,
+        "radialGradient": 1,
+        "ellipse": 1,
+        "path": 12
+      },
+      "unique_svg_ids": 10,
+      "local_references": 4,
+      "unresolved_references": [],
+      "external_references": [],
+      "event_attributes": [],
+      "font_attributes": [],
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "sprites_tank",
+      "path": "assets/sprites/tank.svg",
+      "type": "vector",
+      "bytes": 4525,
+      "sha256_before": "4672d1b3d23ad3125eca2792ceb440a69436bf639e2ed4766468ac287e0e32c6",
+      "sha256_after": "4672d1b3d23ad3125eca2792ceb440a69436bf639e2ed4766468ac287e0e32c6",
+      "size": [
+        80,
+        80
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "view_box": [
+        0.0,
+        0.0,
+        80.0,
+        80.0
+      ],
+      "elements": {
+        "svg": 1,
+        "defs": 2,
+        "linearGradient": 9,
+        "stop": 29,
+        "radialGradient": 1,
+        "ellipse": 1,
+        "path": 16
+      },
+      "unique_svg_ids": 10,
+      "local_references": 3,
+      "unresolved_references": [],
+      "external_references": [],
+      "event_attributes": [],
+      "font_attributes": [],
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "sprites_caster",
+      "path": "assets/sprites/caster.svg",
+      "type": "vector",
+      "bytes": 5092,
+      "sha256_before": "92de97777b197d1e36faa93046f3f78ecba0c6c70fd659761dd9a7b5933e53d3",
+      "sha256_after": "92de97777b197d1e36faa93046f3f78ecba0c6c70fd659761dd9a7b5933e53d3",
+      "size": [
+        72,
+        72
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "view_box": [
+        0.0,
+        0.0,
+        72.0,
+        72.0
+      ],
+      "elements": {
+        "svg": 1,
+        "defs": 2,
+        "linearGradient": 9,
+        "stop": 29,
+        "radialGradient": 1,
+        "ellipse": 1,
+        "path": 20
+      },
+      "unique_svg_ids": 10,
+      "local_references": 5,
+      "unresolved_references": [],
+      "external_references": [],
+      "event_attributes": [],
+      "font_attributes": [],
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "sprites_boss",
+      "path": "assets/sprites/boss.svg",
+      "type": "vector",
+      "bytes": 7513,
+      "sha256_before": "8d466578c6a16f25cb821ceb1bc6e3c2441d8f5a83ca6b431da0b50e685a3e98",
+      "sha256_after": "8d466578c6a16f25cb821ceb1bc6e3c2441d8f5a83ca6b431da0b50e685a3e98",
+      "size": [
+        160,
+        160
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "view_box": [
+        0.0,
+        0.0,
+        160.0,
+        160.0
+      ],
+      "elements": {
+        "svg": 1,
+        "defs": 2,
+        "linearGradient": 10,
+        "stop": 32,
+        "radialGradient": 1,
+        "ellipse": 2,
+        "path": 30
+      },
+      "unique_svg_ids": 11,
+      "local_references": 8,
+      "unresolved_references": [],
+      "external_references": [],
+      "event_attributes": [],
+      "font_attributes": [],
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "arena",
+      "path": "assets/arena.svg",
+      "type": "vector",
+      "bytes": 176480,
+      "sha256_before": "c6d645f02624d97c56c29ce6f13b0b89814816d3670945b3b670709b49d6a5fe",
+      "sha256_after": "ffc2e47dd60f017d18d164aa73c44d48c5fdcd7741f6ade643a845d1a17b9137",
+      "size": [
+        1280,
+        720
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "view_box": [
+        0.0,
+        0.0,
+        1280.0,
+        720.0
+      ],
+      "elements": {
+        "svg": 1,
+        "defs": 2,
+        "linearGradient": 14,
+        "stop": 55,
+        "radialGradient": 4,
+        "rect": 29,
+        "path": 855,
+        "ellipse": 35,
+        "circle": 18,
+        "g": 20
+      },
+      "unique_svg_ids": 18,
+      "local_references": 51,
+      "unresolved_references": [],
+      "external_references": [],
+      "event_attributes": [],
+      "font_attributes": [],
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "menu_art",
+      "path": "assets/menu_art.svg",
+      "type": "vector",
+      "bytes": 43492,
+      "sha256_before": "897cd1d33d1c3dc074341dfb0c6c874ae6f4cf5c15b00486f032b500afcf44ec",
+      "sha256_after": "897cd1d33d1c3dc074341dfb0c6c874ae6f4cf5c15b00486f032b500afcf44ec",
+      "size": [
+        640,
+        720
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "view_box": [
+        0.0,
+        0.0,
+        640.0,
+        720.0
+      ],
+      "elements": {
+        "svg": 1,
+        "defs": 3,
+        "linearGradient": 18,
+        "stop": 78,
+        "radialGradient": 7,
+        "rect": 2,
+        "ellipse": 38,
+        "path": 185,
+        "g": 23,
+        "circle": 22
+      },
+      "unique_svg_ids": 25,
+      "local_references": 38,
+      "unresolved_references": [],
+      "external_references": [],
+      "event_attributes": [],
+      "font_attributes": [],
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "icons_bone",
+      "path": "assets/icons/bone.svg",
+      "type": "vector",
+      "bytes": 2468,
+      "sha256_before": "fed510ab206659d89245701d64e714ceeafd07eaaf8f1d224732e1a590d2f95e",
+      "sha256_after": "fed510ab206659d89245701d64e714ceeafd07eaaf8f1d224732e1a590d2f95e",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "view_box": [
+        0.0,
+        0.0,
+        64.0,
+        64.0
+      ],
+      "elements": {
+        "svg": 1,
+        "defs": 1,
+        "linearGradient": 8,
+        "stop": 26,
+        "radialGradient": 1,
+        "path": 5
+      },
+      "unique_svg_ids": 9,
+      "local_references": 2,
+      "unresolved_references": [],
+      "external_references": [],
+      "event_attributes": [],
+      "font_attributes": [],
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "icons_frost",
+      "path": "assets/icons/frost.svg",
+      "type": "vector",
+      "bytes": 2676,
+      "sha256_before": "7a4c4d4ab9d51b25bc794e1b880a12d4beaec03fc9be9021cc82f50cb935c1cb",
+      "sha256_after": "7a4c4d4ab9d51b25bc794e1b880a12d4beaec03fc9be9021cc82f50cb935c1cb",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "view_box": [
+        0.0,
+        0.0,
+        64.0,
+        64.0
+      ],
+      "elements": {
+        "svg": 1,
+        "defs": 1,
+        "linearGradient": 8,
+        "stop": 26,
+        "radialGradient": 1,
+        "path": 5,
+        "polygon": 2
+      },
+      "unique_svg_ids": 9,
+      "local_references": 0,
+      "unresolved_references": [],
+      "external_references": [],
+      "event_attributes": [],
+      "font_attributes": [],
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "icons_ember",
+      "path": "assets/icons/ember.svg",
+      "type": "vector",
+      "bytes": 2441,
+      "sha256_before": "a3aedd7805495a4a8060a80e615ca92763ffa6b92bfce3d928cddd2f41ea90f2",
+      "sha256_after": "a3aedd7805495a4a8060a80e615ca92763ffa6b92bfce3d928cddd2f41ea90f2",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "view_box": [
+        0.0,
+        0.0,
+        64.0,
+        64.0
+      ],
+      "elements": {
+        "svg": 1,
+        "defs": 1,
+        "linearGradient": 8,
+        "stop": 26,
+        "radialGradient": 1,
+        "path": 4
+      },
+      "unique_svg_ids": 9,
+      "local_references": 1,
+      "unresolved_references": [],
+      "external_references": [],
+      "event_attributes": [],
+      "font_attributes": [],
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "icons_scatter",
+      "path": "assets/icons/scatter.svg",
+      "type": "vector",
+      "bytes": 2562,
+      "sha256_before": "b7e4fcd60f6bb83a42cc64896926d29bdfe4d7c93d7caed5a7e684e8324b9562",
+      "sha256_after": "b7e4fcd60f6bb83a42cc64896926d29bdfe4d7c93d7caed5a7e684e8324b9562",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "view_box": [
+        0.0,
+        0.0,
+        64.0,
+        64.0
+      ],
+      "elements": {
+        "svg": 1,
+        "defs": 1,
+        "linearGradient": 8,
+        "stop": 26,
+        "radialGradient": 1,
+        "path": 4,
+        "circle": 1,
+        "polygon": 1
+      },
+      "unique_svg_ids": 9,
+      "local_references": 2,
+      "unresolved_references": [],
+      "external_references": [],
+      "event_attributes": [],
+      "font_attributes": [],
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "icons_pierce",
+      "path": "assets/icons/pierce.svg",
+      "type": "vector",
+      "bytes": 2287,
+      "sha256_before": "5eba063ccb82ee68b5815d3c70fcce60059a2f0a7a2a349a9b344bdb233849a6",
+      "sha256_after": "5eba063ccb82ee68b5815d3c70fcce60059a2f0a7a2a349a9b344bdb233849a6",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "view_box": [
+        0.0,
+        0.0,
+        64.0,
+        64.0
+      ],
+      "elements": {
+        "svg": 1,
+        "defs": 1,
+        "linearGradient": 8,
+        "stop": 26,
+        "radialGradient": 1,
+        "path": 4
+      },
+      "unique_svg_ids": 9,
+      "local_references": 1,
+      "unresolved_references": [],
+      "external_references": [],
+      "event_attributes": [],
+      "font_attributes": [],
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "icons_bounce",
+      "path": "assets/icons/bounce.svg",
+      "type": "vector",
+      "bytes": 2672,
+      "sha256_before": "d1496174ecdd3bbdaaef10927f49b2a7a66b8e288a24ac75a0117b641df9d43d",
+      "sha256_after": "d1496174ecdd3bbdaaef10927f49b2a7a66b8e288a24ac75a0117b641df9d43d",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "view_box": [
+        0.0,
+        0.0,
+        64.0,
+        64.0
+      ],
+      "elements": {
+        "svg": 1,
+        "defs": 1,
+        "linearGradient": 8,
+        "stop": 26,
+        "radialGradient": 1,
+        "path": 4,
+        "circle": 2,
+        "polygon": 2
+      },
+      "unique_svg_ids": 9,
+      "local_references": 1,
+      "unresolved_references": [],
+      "external_references": [],
+      "event_attributes": [],
+      "font_attributes": [],
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "icons_blast",
+      "path": "assets/icons/blast.svg",
+      "type": "vector",
+      "bytes": 2422,
+      "sha256_before": "063b763b74b85ceb01b95bff5c82074eca23261b6333af1e26b1e3915d0fe255",
+      "sha256_after": "063b763b74b85ceb01b95bff5c82074eca23261b6333af1e26b1e3915d0fe255",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "view_box": [
+        0.0,
+        0.0,
+        64.0,
+        64.0
+      ],
+      "elements": {
+        "svg": 1,
+        "defs": 1,
+        "linearGradient": 8,
+        "stop": 26,
+        "radialGradient": 1,
+        "circle": 3,
+        "path": 1,
+        "polygon": 2
+      },
+      "unique_svg_ids": 9,
+      "local_references": 0,
+      "unresolved_references": [],
+      "external_references": [],
+      "event_attributes": [],
+      "font_attributes": [],
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "icons_damage",
+      "path": "assets/icons/damage.svg",
+      "type": "vector",
+      "bytes": 2480,
+      "sha256_before": "29da93aa6234571b4634b6cb5252df96e69e71f7db08fd79bfdbab67b3314c13",
+      "sha256_after": "29da93aa6234571b4634b6cb5252df96e69e71f7db08fd79bfdbab67b3314c13",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "view_box": [
+        0.0,
+        0.0,
+        64.0,
+        64.0
+      ],
+      "elements": {
+        "svg": 1,
+        "defs": 1,
+        "linearGradient": 8,
+        "stop": 26,
+        "radialGradient": 1,
+        "path": 4,
+        "circle": 1,
+        "polygon": 1
+      },
+      "unique_svg_ids": 9,
+      "local_references": 1,
+      "unresolved_references": [],
+      "external_references": [],
+      "event_attributes": [],
+      "font_attributes": [],
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "icons_haste",
+      "path": "assets/icons/haste.svg",
+      "type": "vector",
+      "bytes": 2342,
+      "sha256_before": "f7d25f52c26d13580f8ff52d76df364f9dfb649cc461d97ae52569b1357c8e0a",
+      "sha256_after": "f7d25f52c26d13580f8ff52d76df364f9dfb649cc461d97ae52569b1357c8e0a",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "view_box": [
+        0.0,
+        0.0,
+        64.0,
+        64.0
+      ],
+      "elements": {
+        "svg": 1,
+        "defs": 1,
+        "linearGradient": 8,
+        "stop": 26,
+        "radialGradient": 1,
+        "path": 4
+      },
+      "unique_svg_ids": 9,
+      "local_references": 1,
+      "unresolved_references": [],
+      "external_references": [],
+      "event_attributes": [],
+      "font_attributes": [],
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "icons_speed",
+      "path": "assets/icons/speed.svg",
+      "type": "vector",
+      "bytes": 2338,
+      "sha256_before": "f3d7303d4a0a90c27d50971dcc6f2f3ed9b155c9b89fc2e1bf1bcdd24eab91c7",
+      "sha256_after": "f3d7303d4a0a90c27d50971dcc6f2f3ed9b155c9b89fc2e1bf1bcdd24eab91c7",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "view_box": [
+        0.0,
+        0.0,
+        64.0,
+        64.0
+      ],
+      "elements": {
+        "svg": 1,
+        "defs": 1,
+        "linearGradient": 8,
+        "stop": 26,
+        "radialGradient": 1,
+        "path": 4
+      },
+      "unique_svg_ids": 9,
+      "local_references": 2,
+      "unresolved_references": [],
+      "external_references": [],
+      "event_attributes": [],
+      "font_attributes": [],
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "icons_vitality",
+      "path": "assets/icons/vitality.svg",
+      "type": "vector",
+      "bytes": 2384,
+      "sha256_before": "1b6dec7c8605b24295d4cf4535498b0e5623072333c31c606ad841f4e35d94c1",
+      "sha256_after": "1b6dec7c8605b24295d4cf4535498b0e5623072333c31c606ad841f4e35d94c1",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "view_box": [
+        0.0,
+        0.0,
+        64.0,
+        64.0
+      ],
+      "elements": {
+        "svg": 1,
+        "defs": 1,
+        "linearGradient": 8,
+        "stop": 26,
+        "radialGradient": 1,
+        "path": 4
+      },
+      "unique_svg_ids": 9,
+      "local_references": 1,
+      "unresolved_references": [],
+      "external_references": [],
+      "event_attributes": [],
+      "font_attributes": [],
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "icons_armor",
+      "path": "assets/icons/armor.svg",
+      "type": "vector",
+      "bytes": 2533,
+      "sha256_before": "9fd54e3bb7625db5eddbd446277a9e4c9943383a928278334eeaf9ada9481203",
+      "sha256_after": "9fd54e3bb7625db5eddbd446277a9e4c9943383a928278334eeaf9ada9481203",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "view_box": [
+        0.0,
+        0.0,
+        64.0,
+        64.0
+      ],
+      "elements": {
+        "svg": 1,
+        "defs": 1,
+        "linearGradient": 8,
+        "stop": 26,
+        "radialGradient": 1,
+        "path": 3,
+        "circle": 4
+      },
+      "unique_svg_ids": 9,
+      "local_references": 1,
+      "unresolved_references": [],
+      "external_references": [],
+      "event_attributes": [],
+      "font_attributes": [],
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "icons_magnet",
+      "path": "assets/icons/magnet.svg",
+      "type": "vector",
+      "bytes": 2455,
+      "sha256_before": "cae7be65fe426b6e19a8c571599c58148b03deaf3439e2da9ee3b8eb81aead32",
+      "sha256_after": "cae7be65fe426b6e19a8c571599c58148b03deaf3439e2da9ee3b8eb81aead32",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "view_box": [
+        0.0,
+        0.0,
+        64.0,
+        64.0
+      ],
+      "elements": {
+        "svg": 1,
+        "defs": 1,
+        "linearGradient": 8,
+        "stop": 26,
+        "radialGradient": 1,
+        "path": 3,
+        "circle": 2,
+        "polygon": 1
+      },
+      "unique_svg_ids": 9,
+      "local_references": 2,
+      "unresolved_references": [],
+      "external_references": [],
+      "event_attributes": [],
+      "font_attributes": [],
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "icons_soul",
+      "path": "assets/icons/soul.svg",
+      "type": "vector",
+      "bytes": 2396,
+      "sha256_before": "1c33ec6f6caef925bb15855c6a609267ee98e67c5ee186aa4489f67869647d0f",
+      "sha256_after": "1c33ec6f6caef925bb15855c6a609267ee98e67c5ee186aa4489f67869647d0f",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "view_box": [
+        0.0,
+        0.0,
+        64.0,
+        64.0
+      ],
+      "elements": {
+        "svg": 1,
+        "defs": 1,
+        "linearGradient": 8,
+        "stop": 26,
+        "radialGradient": 1,
+        "path": 5
+      },
+      "unique_svg_ids": 9,
+      "local_references": 0,
+      "unresolved_references": [],
+      "external_references": [],
+      "event_attributes": [],
+      "font_attributes": [],
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "fx_glow",
+      "path": "assets/fx/glow.svg",
+      "type": "vector",
+      "bytes": 2090,
+      "sha256_before": "a8ce6d65037444dc2f4c70759aebb4d97e5a8a9b6b6181ea21c96e8b45234fbe",
+      "sha256_after": "a8ce6d65037444dc2f4c70759aebb4d97e5a8a9b6b6181ea21c96e8b45234fbe",
+      "size": [
+        96,
+        96
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "view_box": [
+        0.0,
+        0.0,
+        96.0,
+        96.0
+      ],
+      "elements": {
+        "svg": 1,
+        "defs": 2,
+        "linearGradient": 8,
+        "stop": 30,
+        "radialGradient": 2,
+        "circle": 1
+      },
+      "unique_svg_ids": 10,
+      "local_references": 1,
+      "unresolved_references": [],
+      "external_references": [],
+      "event_attributes": [],
+      "font_attributes": [],
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "fx_seal",
+      "path": "assets/fx/seal.svg",
+      "type": "vector",
+      "bytes": 2282,
+      "sha256_before": "d3cbbe6732fdf6660182591457f0a21af15acaf5682dc3ab4546a74dfcf2de61",
+      "sha256_after": "d3cbbe6732fdf6660182591457f0a21af15acaf5682dc3ab4546a74dfcf2de61",
+      "size": [
+        96,
+        96
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "view_box": [
+        0.0,
+        0.0,
+        96.0,
+        96.0
+      ],
+      "elements": {
+        "svg": 1,
+        "defs": 1,
+        "linearGradient": 8,
+        "stop": 26,
+        "radialGradient": 1,
+        "circle": 2,
+        "path": 2
+      },
+      "unique_svg_ids": 9,
+      "local_references": 0,
+      "unresolved_references": [],
+      "external_references": [],
+      "event_attributes": [],
+      "font_attributes": [],
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "icon",
+      "path": "assets/icon.svg",
+      "type": "vector",
+      "bytes": 3269,
+      "sha256_before": "8fab446de72653255765e7841dbf43e011f6f4feb9e0d17fe39aece7cee56c45",
+      "sha256_after": "8fab446de72653255765e7841dbf43e011f6f4feb9e0d17fe39aece7cee56c45",
+      "size": [
+        256,
+        256
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "view_box": [
+        0.0,
+        0.0,
+        256.0,
+        256.0
+      ],
+      "elements": {
+        "svg": 1,
+        "defs": 1,
+        "linearGradient": 8,
+        "stop": 26,
+        "radialGradient": 1,
+        "rect": 1,
+        "circle": 3,
+        "path": 5,
+        "g": 1,
+        "polygon": 2
+      },
+      "unique_svg_ids": 9,
+      "local_references": 2,
+      "unresolved_references": [],
+      "external_references": [],
+      "event_attributes": [],
+      "font_attributes": [],
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "audio_shoot",
+      "path": "assets/audio/shoot.wav",
+      "type": "audio",
+      "bytes": 6218,
+      "sha256_before": "f1e80cdc436880575bf138b5f62afe7ad8dd45abe4bc1e081c945b7f44104989",
+      "sha256_after": "f1e80cdc436880575bf138b5f62afe7ad8dd45abe4bc1e081c945b7f44104989",
+      "size": null,
+      "pivot": null,
+      "audio_format": {
+        "channels": 1,
+        "sample_width_bytes": 2,
+        "sample_rate": 22050,
+        "frames": 3087,
+        "compression_type": "NONE"
+      },
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "audio_hit",
+      "path": "assets/audio/hit.wav",
+      "type": "audio",
+      "bytes": 5776,
+      "sha256_before": "09458a7d591ce9d38e98598f3c9862f9f253a4a0c492224318f85474a02563b5",
+      "sha256_after": "09458a7d591ce9d38e98598f3c9862f9f253a4a0c492224318f85474a02563b5",
+      "size": null,
+      "pivot": null,
+      "audio_format": {
+        "channels": 1,
+        "sample_width_bytes": 2,
+        "sample_rate": 22050,
+        "frames": 2866,
+        "compression_type": "NONE"
+      },
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "audio_hurt",
+      "path": "assets/audio/hurt.wav",
+      "type": "audio",
+      "bytes": 14596,
+      "sha256_before": "15d151d2a6c6c820323e75ccda4dfdf11e8b196894c096bddb6f3766347c242c",
+      "sha256_after": "15d151d2a6c6c820323e75ccda4dfdf11e8b196894c096bddb6f3766347c242c",
+      "size": null,
+      "pivot": null,
+      "audio_format": {
+        "channels": 1,
+        "sample_width_bytes": 2,
+        "sample_rate": 22050,
+        "frames": 7276,
+        "compression_type": "NONE"
+      },
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "audio_death",
+      "path": "assets/audio/death.wav",
+      "type": "audio",
+      "bytes": 16802,
+      "sha256_before": "0ebd789967a2e45412d831cb4c96f7efa09cd9d4c593b4f9bd9a7d90e0a8f727",
+      "sha256_after": "0ebd789967a2e45412d831cb4c96f7efa09cd9d4c593b4f9bd9a7d90e0a8f727",
+      "size": null,
+      "pivot": null,
+      "audio_format": {
+        "channels": 1,
+        "sample_width_bytes": 2,
+        "sample_rate": 22050,
+        "frames": 8379,
+        "compression_type": "NONE"
+      },
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "audio_buy",
+      "path": "assets/audio/buy.wav",
+      "type": "audio",
+      "bytes": 12392,
+      "sha256_before": "e5d8978e42077addaaa66d095e144520e176a5eb28768c2ea286100426cd4eab",
+      "sha256_after": "e5d8978e42077addaaa66d095e144520e176a5eb28768c2ea286100426cd4eab",
+      "size": null,
+      "pivot": null,
+      "audio_format": {
+        "channels": 1,
+        "sample_width_bytes": 2,
+        "sample_rate": 22050,
+        "frames": 6174,
+        "compression_type": "NONE"
+      },
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "audio_rune",
+      "path": "assets/audio/rune.wav",
+      "type": "audio",
+      "bytes": 20330,
+      "sha256_before": "07b09e7994fb80cc780592d33a8152f22636a19573a46e1f9357f125c4fcd60c",
+      "sha256_after": "07b09e7994fb80cc780592d33a8152f22636a19573a46e1f9357f125c4fcd60c",
+      "size": null,
+      "pivot": null,
+      "audio_format": {
+        "channels": 1,
+        "sample_width_bytes": 2,
+        "sample_rate": 22050,
+        "frames": 10143,
+        "compression_type": "NONE"
+      },
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "audio_level",
+      "path": "assets/audio/level.wav",
+      "type": "audio",
+      "bytes": 28708,
+      "sha256_before": "9e3f1bc1ce6d53cd07a3e21d21ecf66232341c76b7da663600598ece5284a479",
+      "sha256_after": "9e3f1bc1ce6d53cd07a3e21d21ecf66232341c76b7da663600598ece5284a479",
+      "size": null,
+      "pivot": null,
+      "audio_format": {
+        "channels": 1,
+        "sample_width_bytes": 2,
+        "sample_rate": 22050,
+        "frames": 14332,
+        "compression_type": "NONE"
+      },
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "audio_victory",
+      "path": "assets/audio/victory.wav",
+      "type": "audio",
+      "bytes": 34442,
+      "sha256_before": "9dd143be5d808cb6aa74ff1a1cd9e8ca93b504802dc39af91185628f28f6e76a",
+      "sha256_after": "9dd143be5d808cb6aa74ff1a1cd9e8ca93b504802dc39af91185628f28f6e76a",
+      "size": null,
+      "pivot": null,
+      "audio_format": {
+        "channels": 1,
+        "sample_width_bytes": 2,
+        "sample_rate": 22050,
+        "frames": 17199,
+        "compression_type": "NONE"
+      },
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "audio_defeat",
+      "path": "assets/audio/defeat.wav",
+      "type": "audio",
+      "bytes": 33120,
+      "sha256_before": "d728334078a700976c613df59e9ab71ed72036f5b3a69ab05ef19147db12a4d1",
+      "sha256_after": "d728334078a700976c613df59e9ab71ed72036f5b3a69ab05ef19147db12a4d1",
+      "size": null,
+      "pivot": null,
+      "audio_format": {
+        "channels": 1,
+        "sample_width_bytes": 2,
+        "sample_rate": 22050,
+        "frames": 16538,
+        "compression_type": "NONE"
+      },
+      "passed": true,
+      "errors": []
+    },
+    {
+      "id": "audio_ambience",
+      "path": "assets/audio/ambience.wav",
+      "type": "audio",
+      "bytes": 352844,
+      "sha256_before": "3d3013317384ee836e33d9602d4330d6a60ed30cde93dfbeddfb12bc1faea42e",
+      "sha256_after": "3d3013317384ee836e33d9602d4330d6a60ed30cde93dfbeddfb12bc1faea42e",
+      "size": null,
+      "pivot": null,
+      "audio_format": {
+        "channels": 1,
+        "sample_width_bytes": 2,
+        "sample_rate": 22050,
+        "frames": 176400,
+        "compression_type": "NONE"
+      },
+      "passed": true,
+      "errors": []
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "command": "tools/run.sh --headless --script res://tests/simulate_runs.gd -- --seed=2026 --count=10",
+  "simulation_exit_code": 0,
+  "paired_runs": 30,
+  "baseline_file": "reports/simulation-30-modal-recoil.jsonl",
+  "baseline_sha256": "dbcb51fd7f717226679d2f6066a9842e1cbeb903a53b7514bb2ee7e3a9d5d1fa",
+  "current_file": "reports/simulation-30-telegraph.jsonl",
+  "current_sha256": "a702b962fdddfbc03ec07b4dc302dcc0a4cc31127aad036ed88c4f90ea3a6d9a",
+  "baseline_core_versions": [
+    "prototype-0.1.0+f29c7008e475"
+  ],
+  "current_core_version": "prototype-0.1.0+4f7be4bdb91f",
+  "source_version_matches_runtime": true,
+  "policy_versions": [
+    "orbit-avoid-v1/shop-v1+7c19c01f20e4"
+  ],
+  "excluded_fields": [
+    "balance_version"
+  ],
+  "all_other_fields_identical": true,
+  "includes_full_trace_and_shop_observations": true,
+  "wins": 29,
+  "losses": 1,
+  "limits": [
+    "Only thirty fixed seed/rune pairs under one bot policy.",
+    "Core change extracts the same windup values into shared named constants; no timing or balance change.",
+    "Simulation equality does not prove graphics performance or human readability."
+  ]
+}

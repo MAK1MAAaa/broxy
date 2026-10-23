@@ -1,0 +1,231 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+[   0% ] [90m[1mfirst_scan_filesystem[22m | Started 项目初始化 (5 steps)[39m[0m
+[   0% ] [90m[1mfirst_scan_filesystem[22m | 正在扫描文件结构……[39m[0m
+[  16% ] [90m[1mfirst_scan_filesystem[22m | 正在加载全局类名……[39m[0m
+[  33% ] [90m[1mfirst_scan_filesystem[22m | 正在校验 GDExtension……[39m[0m
+[  50% ] [90m[1mfirst_scan_filesystem[22m | 正在创建自动加载脚本……[39m[0m
+[  66% ] [90m[1mfirst_scan_filesystem[22m | 正在初始化插件……[39m[0m
+[  83% ] [90m[1mfirst_scan_filesystem[22m | 正在启动文件扫描……[39m[0m
+[92m[ DONE ][39m [1mfirst_scan_filesystem[22m
+[0m
+[   0% ] [90m[1m_update_scan_actions[22m | Started 正在扫描动作…… (35 steps)[39m[0m
+[   0% ] [90m[1m_update_scan_actions[22m | ambience.wav[39m[0m
+[   2% ] [90m[1m_update_scan_actions[22m | buy.wav[39m[0m
+[   5% ] [90m[1m_update_scan_actions[22m | death.wav[39m[0m
+[   8% ] [90m[1m_update_scan_actions[22m | defeat.wav[39m[0m
+[  11% ] [90m[1m_update_scan_actions[22m | hit.wav[39m[0m
+[  13% ] [90m[1m_update_scan_actions[22m | hurt.wav[39m[0m
+[  16% ] [90m[1m_update_scan_actions[22m | level.wav[39m[0m
+[  19% ] [90m[1m_update_scan_actions[22m | rune.wav[39m[0m
+[  22% ] [90m[1m_update_scan_actions[22m | shoot.wav[39m[0m
+[  25% ] [90m[1m_update_scan_actions[22m | victory.wav[39m[0m
+[  27% ] [90m[1m_update_scan_actions[22m | glow.svg[39m[0m
+[  30% ] [90m[1m_update_scan_actions[22m | seal.svg[39m[0m
+[  33% ] [90m[1m_update_scan_actions[22m | armor.svg[39m[0m
+[  36% ] [90m[1m_update_scan_actions[22m | blast.svg[39m[0m
+[  38% ] [90m[1m_update_scan_actions[22m | bone.svg[39m[0m
+[  41% ] [90m[1m_update_scan_actions[22m | bounce.svg[39m[0m
+[  44% ] [90m[1m_update_scan_actions[22m | damage.svg[39m[0m
+[  47% ] [90m[1m_update_scan_actions[22m | ember.svg[39m[0m
+[  50% ] [90m[1m_update_scan_actions[22m | frost.svg[39m[0m
+[  52% ] [90m[1m_update_scan_actions[22m | haste.svg[39m[0m
+[  55% ] [90m[1m_update_scan_actions[22m | magnet.svg[39m[0m
+[  58% ] [90m[1m_update_scan_actions[22m | pierce.svg[39m[0m
+[  61% ] [90m[1m_update_scan_actions[22m | scatter.svg[39m[0m
+[  63% ] [90m[1m_update_scan_actions[22m | soul.svg[39m[0m
+[  66% ] [90m[1m_update_scan_actions[22m | speed.svg[39m[0m
+[  69% ] [90m[1m_update_scan_actions[22m | vitality.svg[39m[0m
+[  72% ] [90m[1m_update_scan_actions[22m | boss.svg[39m[0m
+[  75% ] [90m[1m_update_scan_actions[22m | caster.svg[39m[0m
+[  77% ] [90m[1m_update_scan_actions[22m | chaser.svg[39m[0m
+[  80% ] [90m[1m_update_scan_actions[22m | player.svg[39m[0m
+[  83% ] [90m[1m_update_scan_actions[22m | rusher.svg[39m[0m
+[  86% ] [90m[1m_update_scan_actions[22m | tank.svg[39m[0m
+[  88% ] [90m[1m_update_scan_actions[22m | arena.svg[39m[0m
+[  91% ] [90m[1m_update_scan_actions[22m | icon.svg[39m[0m
+[  94% ] [90m[1m_update_scan_actions[22m | menu_art.svg[39m[0m
+[92m[ DONE ][39m [1m_update_scan_actions[22m
+[0m
+[   0% ] [90m[1mloading_editor_layout[22m | Started 正在加载编辑器 (5 steps)[39m[0m
+[   0% ] [90m[1mloading_editor_layout[22m | 正在加载编辑器布局……[39m[0m
+[  16% ] [90m[1mloading_editor_layout[22m | 正在加载停靠面板……[39m[0m
+[92m[ DONE ][39m [1mloading_editor_layout[22m
+[0m
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+[   0% ] [90m[1mfirst_scan_filesystem[22m | Started 项目初始化 (5 steps)[39m[0m
+[   0% ] [90m[1mfirst_scan_filesystem[22m | 正在扫描文件结构……[39m[0m
+[  16% ] [90m[1mfirst_scan_filesystem[22m | 正在加载全局类名……[39m[0m
+[  33% ] [90m[1mfirst_scan_filesystem[22m | 正在校验 GDExtension……[39m[0m
+[  50% ] [90m[1mfirst_scan_filesystem[22m | 正在创建自动加载脚本……[39m[0m
+[  66% ] [90m[1mfirst_scan_filesystem[22m | 正在初始化插件……[39m[0m
+[  83% ] [90m[1mfirst_scan_filesystem[22m | 正在启动文件扫描……[39m[0m
+[92m[ DONE ][39m [1mfirst_scan_filesystem[22m
+[0m
+[   0% ] [90m[1mexport[22m | Started 正在为 macOS 导出 (3 steps)[39m[0m
+[   0% ] [90m[1mexport[22m | 正在创建应用捆绑包[39m[0m
+[  25% ] [90m[1mexport[22m | 正在制作 PKG[39m[0m
+[   0% ] [90m[1msavepack[22m | Started 打包中 (102 steps)[39m[0m
+[   1% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/imported/ambience.wav-c4e6e35e7a9e0e868516f43e62765e9c.sample[39m[0m
+[   1% ] [90m[1msavepack[22m | 正在保存文件：res://assets/audio/ambience.wav.import[39m[0m
+[   2% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/imported/buy.wav-6e21632cccac1281425865fe59d9d2c6.sample[39m[0m
+[   2% ] [90m[1msavepack[22m | 正在保存文件：res://assets/audio/buy.wav.import[39m[0m
+[   3% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/imported/death.wav-021a45cab225299ddf24ec88f548f45a.sample[39m[0m
+[   3% ] [90m[1msavepack[22m | 正在保存文件：res://assets/audio/death.wav.import[39m[0m
+[   5% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/imported/defeat.wav-2c373cdad262b5fb9203b05423989caa.sample[39m[0m
+[   5% ] [90m[1msavepack[22m | 正在保存文件：res://assets/audio/defeat.wav.import[39m[0m
+[   6% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/imported/hit.wav-96dc477cdf4a42f381370dba6e3f75ce.sample[39m[0m
+[   6% ] [90m[1msavepack[22m | 正在保存文件：res://assets/audio/hit.wav.import[39m[0m
+[   7% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/imported/hurt.wav-e638edfaf88190ba3ffee0adc26b7375.sample[39m[0m
+[   7% ] [90m[1msavepack[22m | 正在保存文件：res://assets/audio/hurt.wav.import[39m[0m
+[   9% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/imported/level.wav-5ce5e39cbd899481c66220f27724e372.sample[39m[0m
+[   9% ] [90m[1msavepack[22m | 正在保存文件：res://assets/audio/level.wav.import[39m[0m
+[  10% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/imported/rune.wav-0e45c2de3222a396c4d8db07b1683f0a.sample[39m[0m
+[  10% ] [90m[1msavepack[22m | 正在保存文件：res://assets/audio/rune.wav.import[39m[0m
+[  11% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/imported/shoot.wav-87079c2fcb36403855e4cbb1b77a9904.sample[39m[0m
+[  11% ] [90m[1msavepack[22m | 正在保存文件：res://assets/audio/shoot.wav.import[39m[0m
+[  13% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/imported/victory.wav-d893d32ad919f27e15cf04d35e288b78.sample[39m[0m
+[  13% ] [90m[1msavepack[22m | 正在保存文件：res://assets/audio/victory.wav.import[39m[0m
+[  14% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/imported/glow.svg-59da266fec557eb391c190b49222a9ba.ctex[39m[0m
+[  14% ] [90m[1msavepack[22m | 正在保存文件：res://assets/fx/glow.svg.import[39m[0m
+[  15% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/imported/seal.svg-67b815f2ef4bdbbdca0a6b418f5b9628.ctex[39m[0m
+[  15% ] [90m[1msavepack[22m | 正在保存文件：res://assets/fx/seal.svg.import[39m[0m
+[  17% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/imported/armor.svg-623487e018351d0d396cd2dd035854a7.ctex[39m[0m
+[  17% ] [90m[1msavepack[22m | 正在保存文件：res://assets/icons/armor.svg.import[39m[0m
+[  18% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/imported/blast.svg-eb02757b18cbb69daa4b4c3d3427be57.ctex[39m[0m
+[  18% ] [90m[1msavepack[22m | 正在保存文件：res://assets/icons/blast.svg.import[39m[0m
+[  19% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/imported/bone.svg-d4052c81b1e397ee1913208110a41415.ctex[39m[0m
+[  19% ] [90m[1msavepack[22m | 正在保存文件：res://assets/icons/bone.svg.import[39m[0m
+[  21% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/imported/bounce.svg-f1f4eff2d353feac9fa9e338c6c78e44.ctex[39m[0m
+[  21% ] [90m[1msavepack[22m | 正在保存文件：res://assets/icons/bounce.svg.import[39m[0m
+[  22% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/imported/damage.svg-6eeca1a3c12f03cf3b8bf0ed00f8e414.ctex[39m[0m
+[  22% ] [90m[1msavepack[22m | 正在保存文件：res://assets/icons/damage.svg.import[39m[0m
+[  23% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/imported/ember.svg-7b6ae3afa76f013c5acc267037dc0191.ctex[39m[0m
+[  23% ] [90m[1msavepack[22m | 正在保存文件：res://assets/icons/ember.svg.import[39m[0m
+[  25% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/imported/frost.svg-c811e14ba6c0c7495b3975214f7791ba.ctex[39m[0m
+[  25% ] [90m[1msavepack[22m | 正在保存文件：res://assets/icons/frost.svg.import[39m[0m
+[  26% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/imported/haste.svg-25145bce45727f09a163302c0b086228.ctex[39m[0m
+[  26% ] [90m[1msavepack[22m | 正在保存文件：res://assets/icons/haste.svg.import[39m[0m
+[  27% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/imported/magnet.svg-b2e0c868273aa54a013404c5b553982c.ctex[39m[0m
+[  27% ] [90m[1msavepack[22m | 正在保存文件：res://assets/icons/magnet.svg.import[39m[0m
+[  29% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/imported/pierce.svg-0c550cddeb9817dc5c94340c66d10f0a.ctex[39m[0m
+[  29% ] [90m[1msavepack[22m | 正在保存文件：res://assets/icons/pierce.svg.import[39m[0m
+[  30% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/imported/scatter.svg-c8d3166ee0b89662ab20bffb0501705b.ctex[39m[0m
+[  30% ] [90m[1msavepack[22m | 正在保存文件：res://assets/icons/scatter.svg.import[39m[0m
+[  31% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/imported/soul.svg-12bc9190f0cf256a80b60e9bf67a42ec.ctex[39m[0m
+[  31% ] [90m[1msavepack[22m | 正在保存文件：res://assets/icons/soul.svg.import[39m[0m
+[  33% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/imported/speed.svg-5fbccce0ccc23c41ad1fb2f3d11ae226.ctex[39m[0m
+[  33% ] [90m[1msavepack[22m | 正在保存文件：res://assets/icons/speed.svg.import[39m[0m
+[  33% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/imported/vitality.svg-2fda5604a12ce2856d8a5f080d90bfeb.ctex[39m[0m
+[  33% ] [90m[1msavepack[22m | 正在保存文件：res://assets/icons/vitality.svg.import[39m[0m
+[  34% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/imported/boss.svg-59ab3b816f39d04def1e378c701bae55.ctex[39m[0m
+[  34% ] [90m[1msavepack[22m | 正在保存文件：res://assets/sprites/boss.svg.import[39m[0m
+[  36% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/imported/caster.svg-4af6d9856db1c4495e0128a51b375b6f.ctex[39m[0m
+[  36% ] [90m[1msavepack[22m | 正在保存文件：res://assets/sprites/caster.svg.import[39m[0m
+[  37% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/imported/chaser.svg-90675efa9655c69ab628fa502b74b342.ctex[39m[0m
+[  37% ] [90m[1msavepack[22m | 正在保存文件：res://assets/sprites/chaser.svg.import[39m[0m
+[  38% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/imported/player.svg-e9a52b4a43ef444ad4256d80bfcfc328.ctex[39m[0m
+[  38% ] [90m[1msavepack[22m | 正在保存文件：res://assets/sprites/player.svg.import[39m[0m
+[  40% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/imported/rusher.svg-6ee34cefc7e535b2253dd213b8382f74.ctex[39m[0m
+[  40% ] [90m[1msavepack[22m | 正在保存文件：res://assets/sprites/rusher.svg.import[39m[0m
+[  41% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/imported/tank.svg-a2afc3758d01a2093905d29e2033115e.ctex[39m[0m
+[  41% ] [90m[1msavepack[22m | 正在保存文件：res://assets/sprites/tank.svg.import[39m[0m
+[  42% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/imported/arena.svg-9994018648fdce10127919d5715b12b5.ctex[39m[0m
+[  42% ] [90m[1msavepack[22m | 正在保存文件：res://assets/arena.svg.import[39m[0m
+[  44% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/imported/icon.svg-56083ea2a1f1a4f1e49773bdc6d7826c.ctex[39m[0m
+[  44% ] [90m[1msavepack[22m | 正在保存文件：res://assets/icon.svg.import[39m[0m
+[  45% ] [90m[1msavepack[22m | 正在保存文件：res://assets/manifest.json[39m[0m
+[  46% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/imported/menu_art.svg-93194887e289b0beb30f2a6ec62a09a7.ctex[39m[0m
+[  46% ] [90m[1msavepack[22m | 正在保存文件：res://assets/menu_art.svg.import[39m[0m
+[  48% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/exported/133200997/export-7316f933d9649787845a88c1aff039d6-boss.res[39m[0m
+[  49% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/exported/133200997/export-f9868bbebd73169f80327edb991d5746-caster.res[39m[0m
+[  50% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/exported/133200997/export-b531949ecbc50d78008bdcf8578c4399-chaser.res[39m[0m
+[  52% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/exported/133200997/export-42bee2ead2b9dea793a89197ba890138-rusher.res[39m[0m
+[  53% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/exported/133200997/export-7eb85a1c92a33802e5c44562cde7ae15-tank.res[39m[0m
+[  54% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/exported/133200997/export-55fdb589f5415a08bbd262d71295e7fb-armor.res[39m[0m
+[  56% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/exported/133200997/export-5e928951a5eda310e713425c8ea0db4d-damage.res[39m[0m
+[  57% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/exported/133200997/export-68a11b5c098d74773613da9332222b38-haste.res[39m[0m
+[  58% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/exported/133200997/export-43ec25ee08cd6c324d0a3613696dfc47-magnet.res[39m[0m
+[  60% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/exported/133200997/export-e5938b7c0793e6b90b43a7f14ce9c377-speed.res[39m[0m
+[  61% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/exported/133200997/export-6cff95468fa6cec85cd38c2e953a6e2b-vitality.res[39m[0m
+[  62% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/exported/133200997/export-cf926f483d0219c34b96025a3ff7a1e8-blast.res[39m[0m
+[  64% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/exported/133200997/export-d609fde4bc994631fe21f111054a0a4f-bounce.res[39m[0m
+[  65% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/exported/133200997/export-131a3a2e404739127955a2372f88cbf5-pierce.res[39m[0m
+[  66% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/exported/133200997/export-0706610f603bb670b62ba927a7da4bd8-wave_1.res[39m[0m
+[  67% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/exported/133200997/export-bf6c66a0ba13aec2b65d1633ca74b859-wave_2.res[39m[0m
+[  68% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/exported/133200997/export-c7864f1400e39567d4bc2f1fd5a88513-wave_3.res[39m[0m
+[  69% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/exported/133200997/export-aed95765b79a176425b2fb1f8b5e5b51-wave_4.res[39m[0m
+[  71% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/exported/133200997/export-38e54af2367875834376380fba16dd22-wave_5.res[39m[0m
+[  72% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/exported/133200997/export-b7403b6b532ea34135efc258746d0863-wave_6.res[39m[0m
+[  73% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/exported/133200997/export-5044c81ea8a86718c0dcb3b32df849b6-wave_7.res[39m[0m
+[  75% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/exported/133200997/export-db40d05d34df47ae6a5af15f61d3c348-wave_8.res[39m[0m
+[  76% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/exported/133200997/export-58a6dbefa97896b25bc9f1f9744f434f-bone.res[39m[0m
+[  77% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/exported/133200997/export-1ebe562bc1b7f168a8871c16e02ac7cf-ember.res[39m[0m
+[  79% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/exported/133200997/export-eeb707c4cdc9debf4b063c53bd970553-frost.res[39m[0m
+[  80% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/exported/133200997/export-f577bf80785d2a7dfa8e8504b46ca4db-scatter.res[39m[0m
+[  81% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/exported/133200997/export-3ad5c15c4f3250da0cc7c1af1770d85f-main.scn[39m[0m
+[  83% ] [90m[1msavepack[22m | 正在保存文件：res://scripts/combat/bot_policy.gdc[39m[0m
+[  84% ] [90m[1msavepack[22m | 正在保存文件：res://scripts/combat/combat_sim.gdc[39m[0m
+[  85% ] [90m[1msavepack[22m | 正在保存文件：res://scripts/combat/combat_world.gdc[39m[0m
+[  87% ] [90m[1msavepack[22m | 正在保存文件：res://scripts/combat/enemy_telegraph_painter.gdc[39m[0m
+[  88% ] [90m[1msavepack[22m | 正在保存文件：res://scripts/combat/projectile_painter.gdc[39m[0m
+[  89% ] [90m[1msavepack[22m | 正在保存文件：res://scripts/core/game_store.gdc[39m[0m
+[  91% ] [90m[1msavepack[22m | 正在保存文件：res://scripts/core/run_state.gdc[39m[0m
+[  92% ] [90m[1msavepack[22m | 正在保存文件：res://scripts/core/sound_bank.gdc[39m[0m
+[  93% ] [90m[1msavepack[22m | 正在保存文件：res://scripts/data/content_def.gdc[39m[0m
+[  95% ] [90m[1msavepack[22m | 正在保存文件：res://scripts/data/game_catalog.gdc[39m[0m
+[  96% ] [90m[1msavepack[22m | 正在保存文件：res://scripts/ui/game_ui.gdc[39m[0m
+[  97% ] [90m[1msavepack[22m | 正在保存文件：res://scripts/main.gdc[39m[0m
+[  97% ] [90m[1msavepack[22m | 正在保存文件：res://data/enemies/boss.tres.remap[39m[0m
+[  97% ] [90m[1msavepack[22m | 正在保存文件：res://data/enemies/caster.tres.remap[39m[0m
+[  97% ] [90m[1msavepack[22m | 正在保存文件：res://data/enemies/chaser.tres.remap[39m[0m
+[  97% ] [90m[1msavepack[22m | 正在保存文件：res://data/enemies/rusher.tres.remap[39m[0m
+[  97% ] [90m[1msavepack[22m | 正在保存文件：res://data/enemies/tank.tres.remap[39m[0m
+[  97% ] [90m[1msavepack[22m | 正在保存文件：res://data/relics/armor.tres.remap[39m[0m
+[  97% ] [90m[1msavepack[22m | 正在保存文件：res://data/relics/damage.tres.remap[39m[0m
+[  97% ] [90m[1msavepack[22m | 正在保存文件：res://data/relics/haste.tres.remap[39m[0m
+[  97% ] [90m[1msavepack[22m | 正在保存文件：res://data/relics/magnet.tres.remap[39m[0m
+[  97% ] [90m[1msavepack[22m | 正在保存文件：res://data/relics/speed.tres.remap[39m[0m
+[  97% ] [90m[1msavepack[22m | 正在保存文件：res://data/relics/vitality.tres.remap[39m[0m
+[  97% ] [90m[1msavepack[22m | 正在保存文件：res://data/runes/blast.tres.remap[39m[0m
+[  97% ] [90m[1msavepack[22m | 正在保存文件：res://data/runes/bounce.tres.remap[39m[0m
+[  97% ] [90m[1msavepack[22m | 正在保存文件：res://data/runes/pierce.tres.remap[39m[0m
+[  97% ] [90m[1msavepack[22m | 正在保存文件：res://data/waves/wave_1.tres.remap[39m[0m
+[  97% ] [90m[1msavepack[22m | 正在保存文件：res://data/waves/wave_2.tres.remap[39m[0m
+[  97% ] [90m[1msavepack[22m | 正在保存文件：res://data/waves/wave_3.tres.remap[39m[0m
+[  97% ] [90m[1msavepack[22m | 正在保存文件：res://data/waves/wave_4.tres.remap[39m[0m
+[  97% ] [90m[1msavepack[22m | 正在保存文件：res://data/waves/wave_5.tres.remap[39m[0m
+[  97% ] [90m[1msavepack[22m | 正在保存文件：res://data/waves/wave_6.tres.remap[39m[0m
+[  97% ] [90m[1msavepack[22m | 正在保存文件：res://data/waves/wave_7.tres.remap[39m[0m
+[  97% ] [90m[1msavepack[22m | 正在保存文件：res://data/waves/wave_8.tres.remap[39m[0m
+[  97% ] [90m[1msavepack[22m | 正在保存文件：res://data/weapons/bone.tres.remap[39m[0m
+[  97% ] [90m[1msavepack[22m | 正在保存文件：res://data/weapons/ember.tres.remap[39m[0m
+[  97% ] [90m[1msavepack[22m | 正在保存文件：res://data/weapons/frost.tres.remap[39m[0m
+[  97% ] [90m[1msavepack[22m | 正在保存文件：res://data/weapons/scatter.tres.remap[39m[0m
+[  97% ] [90m[1msavepack[22m | 正在保存文件：res://scenes/main.tscn.remap[39m[0m
+[  97% ] [90m[1msavepack[22m | 正在保存文件：res://scripts/combat/bot_policy.gd.remap[39m[0m
+[  97% ] [90m[1msavepack[22m | 正在保存文件：res://scripts/combat/combat_sim.gd.remap[39m[0m
+[  97% ] [90m[1msavepack[22m | 正在保存文件：res://scripts/combat/combat_world.gd.remap[39m[0m
+[  97% ] [90m[1msavepack[22m | 正在保存文件：res://scripts/combat/enemy_telegraph_painter.gd.remap[39m[0m
+[  97% ] [90m[1msavepack[22m | 正在保存文件：res://scripts/combat/projectile_painter.gd.remap[39m[0m
+[  97% ] [90m[1msavepack[22m | 正在保存文件：res://scripts/core/game_store.gd.remap[39m[0m
+[  97% ] [90m[1msavepack[22m | 正在保存文件：res://scripts/core/run_state.gd.remap[39m[0m
+[  97% ] [90m[1msavepack[22m | 正在保存文件：res://scripts/core/sound_bank.gd.remap[39m[0m
+[  97% ] [90m[1msavepack[22m | 正在保存文件：res://scripts/data/content_def.gd.remap[39m[0m
+[  97% ] [90m[1msavepack[22m | 正在保存文件：res://scripts/data/game_catalog.gd.remap[39m[0m
+[  97% ] [90m[1msavepack[22m | 正在保存文件：res://scripts/ui/game_ui.gd.remap[39m[0m
+[  97% ] [90m[1msavepack[22m | 正在保存文件：res://scripts/main.gd.remap[39m[0m
+[  97% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/global_script_class_cache.cfg[39m[0m
+[  97% ] [90m[1msavepack[22m | 正在保存文件：res://assets/icon.svg[39m[0m
+[  97% ] [90m[1msavepack[22m | 正在保存文件：res://.godot/uid_cache.bin[39m[0m
+[  97% ] [90m[1msavepack[22m | 正在保存文件：res://project.binary[39m[0m
+[92m[ DONE ][39m [1msavepack[22m
+[0m
+[  50% ] [90m[1mexport[22m | 正在对捆绑包进行代码签名[39m[0m
+[92m[ DONE ][39m [1mexport[22m
+[0m
+/Users/makima/Desktop/code/game/broxy/build/Embers-cloth.app: replacing existing signature
+/Users/makima/Desktop/code/game/broxy/build/Embers-cloth.app/Contents/Info.plist: OK
+Non-fat file: /Users/makima/Desktop/code/game/broxy/build/Embers-cloth.app/Contents/MacOS/秘术余烬 is architecture: arm64
+Built: /Users/makima/Desktop/code/game/broxy/build/Embers-cloth.app

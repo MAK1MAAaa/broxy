@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "command": "tools/run.sh --headless --script res://tests/simulate_runs.gd -- --seed=2026 --count=10",
+  "simulation_exit_code": 0,
+  "paired_runs": 30,
+  "baseline_file": "reports/simulation-30-observed.jsonl",
+  "baseline_sha256": "c7e53f41391f6a883f33e67fb341b262d497aefe4cb0430321d7bb0339f10388",
+  "current_file": "reports/simulation-30-rune-vfx.jsonl",
+  "current_sha256": "b5ac1ee67822e6ac8e22712ad0240d835fc81641efb5380b3d7e6c94085ba844",
+  "baseline_core_version": [
+    "prototype-0.1.0+dad5c03f6439"
+  ],
+  "current_core_version": "prototype-0.1.0+09f82a86de4c",
+  "source_version_matches_runtime": true,
+  "policy_versions": [
+    "orbit-avoid-v1/shop-v1+7c19c01f20e4"
+  ],
+  "excluded_fields": [
+    "balance_version"
+  ],
+  "all_other_fields_identical": true,
+  "includes_full_trace_and_shop_observations": true,
+  "wins": 28,
+  "losses": 2,
+  "limits": [
+    "Thirty specified seeds/runes under one fixed policy, not human difficulty.",
+    "Simulation equality does not measure rendering cost or visual readability.",
+    "Core fingerprint changes because cosmetic event observation was added."
+  ]
+}

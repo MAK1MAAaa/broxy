@@ -1,0 +1,5 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+OpenGL API 4.1 Metal - 91.7 - Compatibility - Using Device: Apple - Apple M5
+
+BENCHMARK_START 300 enemies / 600 projectiles / 200 drops, 300.0s + 5s warmup
+BENCHMARK_RESULT {"average_fps":57.5390080275019,"duration_seconds":300.0,"enemies":300,"internal_resolution":"1280x720","os":"macOS","p99_frame_ms":31.834,"passed":false,"pickups":200,"projectiles":600,"renderer":"gl_compatibility","samples":17262}

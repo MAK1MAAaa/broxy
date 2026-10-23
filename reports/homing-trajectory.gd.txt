@@ -1,0 +1,58 @@
+extends SceneTree
+
+const DT: float = 1.0 / 60.0
+
+func _initialize() -> void:
+	var state := RunState.new()
+	state.begin(431, "ember")
+	state.gold = 54
+	for index: int in 3:
+		state.offers = [{"id": "bone", "kind": "weapon", "price": state.shop_price(GameCatalog.weapon("bone")), "sold": false}]
+		if not state.buy_offer(0):
+			push_error("Fixture purchase failed")
+			quit(1)
+			return
+	var sim := CombatSim.new()
+	sim.begin(state)
+	sim.sandbox = true
+	sim._cooldowns.fill(0.0)
+	var behind: CombatSim.Enemy = sim.spawn_enemy("caster", Vector2(440, 365))
+	var forward: CombatSim.Enemy = sim.spawn_enemy("caster", Vector2(820, 365))
+	behind.action_timer = 9999.0
+	forward.action_timer = 9999.0
+	var rng_before: Array[int] = [sim.rng.state, state.rng.state]
+	sim.step(DT, Vector2.ZERO)
+	sim._cooldowns.fill(9999.0)
+	var ember: CombatSim.Shot = sim.shots[0]
+	var death_frame: int = -1
+	var first_relock: Dictionary = {}
+	var last_in_range: Dictionary = {}
+	var last_selected: Dictionary = {}
+	var first_outside: Dictionary = {}
+	var history: Array[Dictionary] = []
+	for frame: int in range(2, 190):
+		var before: Vector2 = ember.position
+		var before_distance: float = before.distance_to(behind.position)
+		var would_select: bool = not forward.active and before_distance < 420.0
+		sim.step(DT, Vector2.ZERO)
+		if death_frame < 0 and not forward.active:
+			death_frame = frame
+		var sample: Dictionary = {"frame": frame, "elapsed": sim.elapsed, "before": [before.x, before.y], "after": [ember.position.x, ember.position.y], "target_distance_before": before_distance, "target_distance_after": ember.position.distance_to(behind.position), "angle_degrees": rad_to_deg(ember.velocity.angle()), "speed": ember.velocity.length()}
+		if would_select:
+			last_selected = sample
+			if first_relock.is_empty():
+				first_relock = sample
+		if death_frame >= 0:
+			history.append(sample)
+			if ember.position.distance_to(behind.position) < 420.0:
+				last_in_range = sample
+			elif first_outside.is_empty():
+				first_outside = sample
+		if not ember.active:
+			break
+	var result: Dictionary = {"case": "auto_four_weapon_finisher_then_reverse_homing", "seed": 431, "delta": DT, "target": [behind.position.x, behind.position.y], "former_target_killed_frame": death_frame, "first_relock": first_relock, "last_frame_still_in_range": last_in_range, "last_homing_query_in_range": last_selected, "first_frame_outside_range": first_outside, "shot_active_at_end": ember.active, "target_health": behind.health, "target_max_health": behind.max_health, "damage_by_weapon": sim.damage_by_weapon, "primary_hits": sim.primary_hits, "rng_unchanged": rng_before == [sim.rng.state, state.rng.state], "history": history}
+	var output := FileAccess.open("/tmp/broxy-homing-path-after.json", FileAccess.WRITE)
+	output.store_string(JSON.stringify(result, "\t") + "\n")
+	result.erase("history")
+	print(JSON.stringify(result))
+	quit()

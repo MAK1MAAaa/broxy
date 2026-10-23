@@ -1,0 +1,10 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+ERROR: CombatWorld integrates the primary-hit painter
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_impact_feedback.gd:386)
+       [1] _test_world (res://tests/test_impact_feedback.gd:191)
+       [2] _test (res://tests/test_impact_feedback.gd:42)
+       [3] _test_geometry_and_readonly (res://tests/test_impact_feedback.gd:180)
+ImpactFeedback: 53 assertions, 1 failures

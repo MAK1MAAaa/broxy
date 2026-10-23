@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="ContentDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/content_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "ember"
+kind = "weapon"
+display_name = "幽焰"
+subtitle = "追踪法器 · 缓慢索敌"
+description = "凝聚缓慢飞行的幽焰，逐渐追踪附近尚未命中的敌人。"
+icon = "ember"
+color = Color(0.96, 0.48, 0.29, 1)
+price = 24
+damage = 29.0
+cooldown = 0.95
+projectile_speed = 290.0
+projectile_radius = 8.0
+range = 560.0
+homing = 2.4

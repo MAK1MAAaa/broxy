@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "native_reference_resolution": "1280x720",
+  "source_fixture": "tools/preview_upgrades.gd",
+  "static_previews": [
+    {
+      "view": "base",
+      "seed": 2,
+      "image": "reports/upgrades-base.png",
+      "attributes": [
+        "armor",
+        "max_health",
+        "move_speed"
+      ]
+    },
+    {
+      "view": "boosted",
+      "seed": 7,
+      "image": "reports/upgrades-boosted.png",
+      "attributes": [
+        "pickup_radius",
+        "attack_speed",
+        "damage"
+      ]
+    }
+  ],
+  "cua_upgrade_sequence": [
+    "Return on first armor card: pending 2 to 1, armor 0 to 1.",
+    "Next page visually shows armor 1 to 2; Tab twice, then Return selects it.",
+    "Shop becomes visible with armor 2; source log confirms pending 0 and one completed transition."
+  ],
+  "cua_title_settings": [
+    "Source Main launched with --capture-only; diagnostic title confirms settings/results not saved.",
+    "Mouse selects ember and opens settings; modal visible.",
+    "Escape returns to title; ember toggle, description and settings-button focus preserved."
+  ],
+  "sequence_events": [
+    {
+      "pending": 1,
+      "stats": {
+        "armor": 1.0,
+        "attack_speed": 1.0,
+        "damage": 1.0,
+        "max_health": 100.0,
+        "move_speed": 220.0,
+        "pickup_radius": 76.0
+      }
+    },
+    {
+      "pending": 0,
+      "stats": {
+        "armor": 2.0,
+        "attack_speed": 1.0,
+        "damage": 1.0,
+        "max_health": 100.0,
+        "move_speed": 220.0,
+        "pickup_radius": 76.0
+      }
+    }
+  ],
+  "exit_codes": {
+    "base_preview": 0,
+    "boosted_preview": 0,
+    "sequence_fixture": 0,
+    "title_settings": 0
+  },
+  "limits": [
+    "CUA actions are ordinarily spaced; same-frame safety is covered by controlled headless InputEventKey tests.",
+    "CUA screenshots are visible in the tool transcript; no separate title/sequence after-action PNG is claimed.",
+    "Fixtures use a fixed budget and formal purchases/XP, not a full run or human playtest."
+  ]
+}

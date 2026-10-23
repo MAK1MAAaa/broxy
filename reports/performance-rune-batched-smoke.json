@@ -1,0 +1,17 @@
+{
+	"average_fps": 93.3482166326266,
+	"duration_seconds": 15.0,
+	"enemies": 300,
+	"internal_resolution": "1280x720",
+	"os": "macOS",
+	"p99_frame_ms": 26.153,
+	"passed": true,
+	"pickups": 200,
+	"primary_hits": 45591,
+	"projectiles": 600,
+	"renderer": "gl_compatibility",
+	"rune_visual_peak": 32,
+	"samples": 1401,
+	"scenario": "rune-feedback",
+	"secondary_hits": 99242
+}

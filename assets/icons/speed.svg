@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+<defs>
+<linearGradient id="robe" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#49506e"/><stop offset=".42" stop-color="#293047"/><stop offset="1" stop-color="#121a2b"/></linearGradient>
+<linearGradient id="violet" x1="0" y1="0" x2=".8" y2="1"><stop stop-color="#b78bd8"/><stop offset=".5" stop-color="#79538d"/><stop offset="1" stop-color="#463651"/></linearGradient>
+<linearGradient id="bone" x1="0" y1="0" x2=".6" y2="1"><stop stop-color="#f1e6cb"/><stop offset=".55" stop-color="#c9ba98"/><stop offset="1" stop-color="#8b806a"/></linearGradient>
+<linearGradient id="steel" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#9ca5b7"/><stop offset=".4" stop-color="#576378"/><stop offset="1" stop-color="#263044"/></linearGradient>
+<linearGradient id="blood" x1="0" y1="0" x2=".5" y2="1"><stop stop-color="#be746e"/><stop offset=".55" stop-color="#783d48"/><stop offset="1" stop-color="#3d293b"/></linearGradient>
+<linearGradient id="ghost" x1="0" y1="0" x2=".5" y2="1"><stop stop-color="#b4e4d8"/><stop offset=".45" stop-color="#6eacae"/><stop offset="1" stop-color="#345866" stop-opacity=".35"/></linearGradient>
+<linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f6dea0"/><stop offset=".5" stop-color="#c49a5b"/><stop offset="1" stop-color="#7f5b3b"/></linearGradient>
+<linearGradient id="flame" x1="0" y1="0" x2=".4" y2="1"><stop stop-color="#f6d9a0"/><stop offset=".4" stop-color="#e89a65"/><stop offset="1" stop-color="#9d4d57"/></linearGradient>
+<radialGradient id="aura"><stop stop-color="#7b628c" stop-opacity=".23"/><stop offset="1" stop-color="#382b50" stop-opacity="0"/></radialGradient>
+</defs>
+<path d="M29 9 L44 13 40 33 52 42 49 54 20 54 13 46 25 36Z" fill="url(#robe)" stroke="#080c16" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" /><path d="M21 48H48 M30 16 L40 19 M28 23 L39 26 M27 30 L37 32" fill="none" stroke="#c7ae86" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" /><path d="M23 33 Q9 25 7 13 Q17 19 27 17 L25 23 15 20 23 27Z" fill="url(#bone)" stroke="#080c16" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round" /><path d="M9 37H19 M5 44H13 M7 51H12" fill="none" stroke="#a396af" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" />
+</svg>

@@ -1,0 +1,161 @@
+extends SceneTree
+
+const DELTA: float = 1.0 / 60.0
+const WARMUP: int = 120
+const SAMPLES: int = 240
+
+class MeteredWorld:
+	extends CombatWorld
+	var text_usec: int = 0
+	var text_calls: int = 0
+	func _update_number_text(number: CombatWorld.FloatingNumber) -> void:
+		var before: int = Time.get_ticks_usec()
+		super._update_number_text(number)
+		text_usec += Time.get_ticks_usec() - before
+		text_calls += 1
+const SOURCES: Array[String] = ["res://scripts/combat/combat_sim.gd", "res://scripts/combat/combat_world.gd", "res://scripts/core/sound_bank.gd"]
+
+func _initialize() -> void:
+	_profile.call_deferred()
+
+func _profile() -> void:
+	var start_hashes: Dictionary = _hashes()
+	var results: Array[Dictionary] = []
+	for mode: String in ["feedback_real_font", "feedback_null_font"]:
+		var result: Dictionary = _run(mode)
+		results.append(result)
+		print("RUNE_CPU_PROFILE ", JSON.stringify(result))
+	var signatures_match: bool = true
+	for result: Dictionary in results:
+		signatures_match = signatures_match and result["simulation_signature"] == results[0]["simulation_signature"]
+	var report: Dictionary = {"seed": 20261022, "warmup_steps": WARMUP, "sample_steps": SAMPLES,
+		"scenario": "production populate_stress + enable_rune_stress + maintain_stress; real positive damage",
+		"source_hashes_start": start_hashes, "source_hashes_end": _hashes(),
+		"simulation_signatures_match": signatures_match, "results": results,
+		"limits": "Headless CPU only, no GPU/draw-command submission/native audio device; same loaded classes in one process. Font-null retains all strings/events but uses production estimated width fallback."}
+	var output: FileAccess = FileAccess.open("/private/tmp/broxy-rune-font-profile.json", FileAccess.WRITE)
+	output.store_string(JSON.stringify(report, "\t"))
+	output.close()
+	await process_frame
+	await process_frame
+	print("RUNE_CPU_PROFILE_COMPLETE signatures_match=", signatures_match)
+	quit(0 if signatures_match else 1)
+
+func _run(mode: String) -> Dictionary:
+	var state := RunState.new()
+	state.begin(20261022, "bone")
+	var sim := CombatSim.new()
+	sim.begin(state)
+	sim.populate_stress()
+	var world := MeteredWorld.new()
+	world.sim = sim
+	world.stress_mode = true
+	world.enable_rune_stress()
+	world._number_font = null if mode == "feedback_null_font" else ThemeDB.fallback_font
+	var sound: SoundBank
+	var listener_usec: Array[int] = [0, 0, 0]
+	if mode != "bare_sim":
+		sim.damage_dealt.connect(func(point: Vector2, amount: float, source: String, secondary: bool, uid: int) -> void:
+			var before: int = Time.get_ticks_usec()
+			world._on_damage_dealt(point, amount, source, secondary, uid)
+			listener_usec[0] += Time.get_ticks_usec() - before
+		)
+		sim.player_damaged.connect(func(amount: float, source: String, kind: String, origin: Vector2) -> void:
+			var before: int = Time.get_ticks_usec()
+			world._on_player_damaged(amount, source, kind, origin)
+			listener_usec[1] += Time.get_ticks_usec() - before
+		)
+		sim.rune_activated.connect(func(id: String, origin: Vector2, incoming: Vector2, outgoing: Vector2) -> void:
+			var before: int = Time.get_ticks_usec()
+			world._on_rune_activated(id, origin, incoming, outgoing)
+			listener_usec[2] += Time.get_ticks_usec() - before
+		)
+	if mode == "feedback_real_font_and_sound":
+		sound = SoundBank.new()
+		root.add_child(sound)
+		for name: String in ["hit", "shoot", "hurt", "death"]:
+			sound.streams[name] = load("res://assets/audio/%s.wav" % name)
+		for index: int in 12:
+			var voice := AudioStreamPlayer.new()
+			sound.add_child(voice)
+			sound.voices.append(voice)
+		world.sound = sound
+		sim.enemy_hit.connect(func() -> void: sound.play("hit", -24.0))
+		sim.shot_fired.connect(func() -> void: sound.play("shoot", -24.0))
+		sim.player_hurt.connect(func() -> void: sound.play("hurt", -7.0))
+		sim.enemy_killed.connect(func(_point: Vector2, _color: Color) -> void: sound.play("death", -22.0))
+	var totals: Array[int] = [0, 0, 0, 0]
+	var maximums: Array[int] = [0, 0, 0, 0]
+	var primary_before: int = 0
+	var secondary_before: int = 0
+	var rune_peak: int = 0
+	var number_peak: int = 0
+	var count_min := Vector3i(2147483647, 2147483647, 2147483647)
+	var count_max := Vector3i.ZERO
+	for tick: int in WARMUP + SAMPLES:
+		if tick == WARMUP:
+			listener_usec.fill(0)
+			world.text_usec = 0
+			world.text_calls = 0
+			primary_before = sim.primary_hits
+			secondary_before = sim.secondary_hits
+		var before: int = Time.get_ticks_usec()
+		world._advance_feedback(DELTA)
+		var after_feedback: int = Time.get_ticks_usec()
+		sim.step(DELTA, Vector2.ZERO)
+		var after_step: int = Time.get_ticks_usec()
+		world._maintain_stress()
+		var after_maintain: int = Time.get_ticks_usec()
+		world._rebuild_rune_lines()
+		var after_geometry: int = Time.get_ticks_usec()
+		if tick < WARMUP:
+			continue
+		var times: Array[int] = [after_feedback - before, after_step - after_feedback,
+			after_maintain - after_step, after_geometry - after_maintain]
+		for index: int in 4:
+			totals[index] += times[index]
+			maximums[index] = maxi(maximums[index], times[index])
+		rune_peak = maxi(rune_peak, world._rune_flashes.size())
+		number_peak = maxi(number_peak, world._numbers.size())
+		count_min = Vector3i(mini(count_min.x, sim.enemy_count), mini(count_min.y, sim.shot_count), mini(count_min.z, sim.soul_count))
+		count_max = Vector3i(maxi(count_max.x, sim.enemy_count), maxi(count_max.y, sim.shot_count), maxi(count_max.z, sim.soul_count))
+	var times_by_section: Dictionary = {}
+	var names: Array[String] = ["advance_feedback", "step_including_listeners", "maintain_stress", "rune_line_geometry"]
+	var total_usec: int = 0
+	for value: int in totals:
+		total_usec += value
+	for index: int in 4:
+		times_by_section[names[index]] = {"average_ms": float(totals[index]) / float(SAMPLES) / 1000.0,
+			"max_ms": float(maximums[index]) / 1000.0, "percent": float(totals[index]) / float(total_usec) * 100.0}
+	var signature_data: Array = [sim.rng.state, sim.snapshot(), sim.damage_by_weapon, sim.primary_hits, sim.secondary_hits]
+	for enemy: CombatSim.Enemy in sim.enemies:
+		if enemy.active:
+			signature_data.append([enemy.slot, enemy.position, enemy.health])
+	for shot: CombatSim.Shot in sim.shots:
+		if shot.active:
+			signature_data.append([shot.slot, shot.position, shot.velocity, shot.source, shot.rune, shot.remaining, shot.damage, shot.hit_ids])
+	var result: Dictionary = {"mode": mode, "sections": times_by_section,
+		"total_average_ms": float(total_usec) / float(SAMPLES) / 1000.0,
+		"damage_listener_ms_per_step": float(listener_usec[0]) / SAMPLES / 1000.0,
+		"player_listener_ms_per_step": float(listener_usec[1]) / SAMPLES / 1000.0,
+		"rune_listener_ms_per_step": float(listener_usec[2]) / SAMPLES / 1000.0,
+		"text_update_ms_per_step": float(world.text_usec) / SAMPLES / 1000.0,
+		"text_update_calls": world.text_calls,
+		"primary_hits_sample": sim.primary_hits - primary_before, "secondary_hits_sample": sim.secondary_hits - secondary_before,
+		"primary_hits_total": sim.primary_hits, "secondary_hits_total": sim.secondary_hits,
+		"rune_peak": rune_peak, "number_peak": number_peak, "counts_min": str(count_min), "counts_max": str(count_max),
+		"simulation_signature": JSON.stringify(signature_data).sha256_text()}
+	for signal_name: StringName in [&"damage_dealt", &"player_damaged", &"rune_activated", &"enemy_hit", &"shot_fired", &"player_hurt", &"enemy_killed"]:
+		for connection: Dictionary in sim.get_signal_connection_list(signal_name):
+			sim.disconnect(signal_name, connection["callable"])
+	world.sim = null
+	world.free()
+	if sound != null:
+		sound.free()
+	return result
+
+func _hashes() -> Dictionary:
+	var result: Dictionary = {}
+	for path: String in SOURCES:
+		result[path] = FileAccess.get_sha256(path)
+	return result

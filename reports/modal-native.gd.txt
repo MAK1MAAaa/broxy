@@ -1,0 +1,27 @@
+extends SceneTree
+const MAIN: PackedScene = preload("res://scenes/main.tscn")
+var app: Node
+var started_at: int
+func _initialize() -> void:
+    _start.call_deferred()
+func _start() -> void:
+    root.size = Vector2i(1280,720)
+    app = MAIN.instantiate()
+    app.store.persistent = false
+    root.add_child(app)
+    await process_frame
+    app._start_run("bone")
+    app.world.stop()
+    app._open_shop()
+    await process_frame
+    await process_frame
+    app._pause()
+    root.title = "秘术余烬 · 暂停输入验证（固定场景，无个人存档）"
+    started_at = Time.get_ticks_msec()
+    print("MODAL_NATIVE_READY persistent=", app.store.persistent, " wave=",app.run.wave)
+func _process(_delta: float) -> bool:
+    if app != null and started_at > 0 and Time.get_ticks_msec()-started_at > 120000:
+        print("MODAL_NATIVE_END screen=",app.screen," paused=",paused," wave=",app.run.wave," persistent=",app.store.persistent)
+        started_at = 0
+        app._quit_game()
+    return false

@@ -1,0 +1,199 @@
+{
+  "schema_version": 1,
+  "baseline_commit": "e64bb18",
+  "production_files_changed": [
+    "scripts/ui/game_ui.gd"
+  ],
+  "core_version_unchanged": "prototype-0.1.0+143fbc0963af",
+  "policy_version_unchanged": "orbit-avoid-v1/shop-v1+7c19c01f20e4",
+  "baseline_ui_sha256": "4e40d2b5bc07c3aba797a41942b90008329de2b4f382138f668be1730cfd978b",
+  "unchanged_runtime_sha256": {
+    "scripts/main.gd": "66b193ae057775163c02ff6efc7728d36f6734b84421b86da1171fb96e171ba4",
+    "scripts/core/game_store.gd": "13f95880667763d262cdfa5af6ceefbeb27ba3c098e1b4ac94cd5eab56041150",
+    "scripts/core/run_state.gd": "0787d0442dc8e03d782808dc37ac7277ed1478a0c77d7d672e5acb2de7deeb4e",
+    "scripts/combat/combat_sim.gd": "5bca9f0367c8cdcb5f698f672e4f3b9b0689dc684f73a20a30edf97e4ee73e34",
+    "scripts/combat/combat_world.gd": "4cf1b8bcc68f299a3e8defbef421c634f1cce0e8eeff6f445c8d83ed79fdc5c1",
+    "scripts/combat/projectile_painter.gd": "dc06af10a75453536ded8b37325f564be4e1fbaf7e56e3b14925ad2475930a3e",
+    "scripts/combat/enemy_telegraph_painter.gd": "4750e8c434ef2eac723d1cb6cb3bef5386734cd369a80f001b0467a3211af2e6",
+    "scripts/combat/bot_policy.gd": "a78c47c7c5002f06928cc8af373851fb81f853ec401f6fa929a28efd303d613b",
+    "tests/simulate_runs.gd": "361cf71e03712a882de74a3ec0fc36b0d430ac7554ab5127a4813a23932e6486"
+  },
+  "headless_suites_by_process": [
+    {
+      "suite": "Rules",
+      "assertions": 204,
+      "failures": 0
+    },
+    {
+      "suite": "Combat",
+      "assertions": 302,
+      "failures": 0
+    },
+    {
+      "suite": "Homing",
+      "assertions": 45,
+      "failures": 0
+    },
+    {
+      "suite": "UI",
+      "assertions": 157,
+      "failures": 0
+    },
+    {
+      "suite": "Modal",
+      "assertions": 37,
+      "failures": 0
+    },
+    {
+      "suite": "ChoiceActions",
+      "assertions": 44,
+      "failures": 0
+    },
+    {
+      "suite": "UpgradePreviews",
+      "assertions": 350,
+      "failures": 0
+    },
+    {
+      "suite": "ShopActions",
+      "assertions": 106,
+      "failures": 0
+    },
+    {
+      "suite": "ShopDetails",
+      "assertions": 51,
+      "failures": 0
+    },
+    {
+      "suite": "ProfileModes",
+      "assertions": 25,
+      "failures": 0
+    },
+    {
+      "suite": "Flow",
+      "assertions": 76,
+      "failures": 0
+    },
+    {
+      "suite": "Feedback",
+      "assertions": 64,
+      "failures": 0
+    },
+    {
+      "suite": "ProjectilePainter",
+      "assertions": 77,
+      "failures": 0
+    },
+    {
+      "suite": "EnemyTelegraphs",
+      "assertions": 121,
+      "failures": 0
+    },
+    {
+      "suite": "ShopObservation",
+      "assertions": 384,
+      "failures": 0
+    },
+    {
+      "suite": "ProfileModes",
+      "assertions": 16,
+      "failures": 0
+    },
+    {
+      "suite": "ProfileModes",
+      "assertions": 16,
+      "failures": 0
+    },
+    {
+      "suite": "ProfileModes",
+      "assertions": 16,
+      "failures": 0
+    },
+    {
+      "suite": "ProfileModes",
+      "assertions": 16,
+      "failures": 0
+    },
+    {
+      "suite": "ProfileModes",
+      "assertions": 16,
+      "failures": 0
+    }
+  ],
+  "headless_assertions": 2123,
+  "suite_classes": 15,
+  "python_tests": 14,
+  "red_regressions": {
+    "ChoiceActions": {
+      "assertions": 44,
+      "failures": 19
+    },
+    "UpgradePreviews": {
+      "assertions": 350,
+      "failures": 193
+    }
+  },
+  "same_test_source_before_after": {
+    "tests/test_choice_actions.gd": "35282c60c0cac35ade826f602de80284cb99238c6ee57ad06fa72c53a43767b0",
+    "tests/test_upgrade_previews.gd": "ea3a46a82a35c8af898919270d38a7dbda519b48c43bcee82f69ec8c6f00b1d7"
+  },
+  "red_environment_diagnostics": "ChoiceActions red log includes sandbox user-log-write and macOS CA diagnostics; assertion failures are separately counted. Full final suite with normal font permissions has no ERROR or SCRIPT ERROR.",
+  "upgrade_preview_contract": "Read-only current stat and post-choice total. Damage and attack speed are multipliers, armor is points, life is max-health; no DPS or relative-percent claim.",
+  "headless_readbacks_skipped": 12,
+  "native_gpu_readbacks_rerun": false,
+  "native_observations": "reports/choices-native-observations.json",
+  "simulation_30_rerun": false,
+  "full_300s_benchmark_rerun": false,
+  "latest_simulation_and_performance_commit": "e64bb18",
+  "latest_performance": {
+    "average_fps": 90.8467231586951,
+    "p99_frame_ms": 25.4,
+    "duration_seconds": 300
+  },
+  "build_app": "build/Embers-choices.app",
+  "build_zip": "build/Embers-choices-mac-arm64.zip",
+  "packaged_boot_args": "--headless --quit-after 3 -- --capture-only",
+  "exit_codes": {
+    "all_tests": 0,
+    "base_preview": 0,
+    "boosted_preview": 0,
+    "native_sequence": 0,
+    "native_title": 0,
+    "build": 0,
+    "packaged_headless_boot": 0,
+    "archive_check": 0
+  },
+  "artifact_sha256": {
+    "scripts/ui/game_ui.gd": "cb147104ebc3713eb71c2086f3e3afaac08e3b3ff17a700392b78dc8d8454320",
+    "tools/test.sh": "56cd248184daa2ce96f627f1214a326f47a7782bf5804a2585306a310b4dc6c0",
+    "tools/preview_upgrades.gd": "193c4c8c79b4b74b3423cde1d88ce9a323196020929ad0781afe3e759e2bd3bb",
+    "tests/test_choice_actions.gd": "35282c60c0cac35ade826f602de80284cb99238c6ee57ad06fa72c53a43767b0",
+    "tests/test_upgrade_previews.gd": "ea3a46a82a35c8af898919270d38a7dbda519b48c43bcee82f69ec8c6f00b1d7",
+    "reports/tests.log": "bf3f16c07e112011ea9f310e6aa837ba06db11adce663a450464d99aef8cdfa2",
+    "reports/tests-before-choices.log": "4778d035e4f39e152a0e44974d3c73eebafec4fc41fcaa4259ecb90845564730",
+    "reports/choice-actions-before.log": "e53c7826db763f642252710c456844481ef2af3109163b7f24b7fe61cbec6ebf",
+    "reports/upgrade-previews-before.log": "fb799416949963eb6806cd51bdf2896070aefd000d31c2bd6438471ee23f00c1",
+    "reports/choices-native-observations.json": "615b8ef1a4f9849afc4a9a144eaf92f6127476aa3259500f92d48aa00941c27b",
+    "reports/upgrades-before.log": "1d251e5703c3500cccbb3510f2081f90fe3cbc13a363310a3b6b4cd996c17301",
+    "reports/upgrades-base.log": "1d251e5703c3500cccbb3510f2081f90fe3cbc13a363310a3b6b4cd996c17301",
+    "reports/upgrades-boosted.log": "bd1e8a76ca1b77463c4b0e775829788677af2e05aef3203e98f12f06eb0511e7",
+    "reports/upgrades-sequence-native.log": "f2ef786e2f854d2b074e305df0bcedb398c078f2afc5f80fb6667b6725398e72",
+    "reports/title-choice-native.log": "c8a80d694fb1f15a1fc235a83a551bbfb54a8e185e6d902f0ad6ef881bbf3702",
+    "reports/upgrades-before.png": "4f5bcc4e462938ba3c7a349da0a0183649b66b5ab5462f17dade702b3259f1e5",
+    "reports/upgrades-base.png": "79772b1a37c270f8d02a21e51558ec84391e61aa8805fd6f9f4967da17802b72",
+    "reports/upgrades-boosted.png": "2602f2f1e8d1e8a103f76a54059ffd41acbcb506ee449eda6b59745818a737a8",
+    "reports/build-choices.log": "3da8ad8cbb9093a725d5d60b620e2ff66dabfcc5aeb98db465b94e607f306d31",
+    "reports/app-boot-choices.log": "6c536b7ab6a1ee8e7ac91fdd27709abb484073b092cabb70d205c4f987e47ddd",
+    "reports/archive-choices.log": "dd3fb4c3884b0689305daa6740979ee2b8b030e103ae8fadc288133ebde65f4c",
+    "build/Embers-choices-mac-arm64.zip": "496b6e9fbffac54e2af8fe44fc3ff052a487d0c0d7c975b1f5c71a8262faeec7",
+    "build/Embers-choices.app/Contents/Resources/秘术余烬.pck": "0ac2bd56c5790710ff241fdb96aff6fc107dffe7a3c8a578463e44ad7277080c",
+    "build/Embers-choices.app/Contents/MacOS/秘术余烬": "d168b6478a65a125c32c5b9c48e2cf4011eaf070f25f1a5f59d8ec2b67a21242"
+  },
+  "limits": [
+    "Only current UI button callbacks are guarded; direct internal RunState methods keep their ordinary APIs.",
+    "Old start callbacks are rejected outside title/result or under an overlay; this is not a generation guard for every title/result action.",
+    "No new gameplay balance, resource, movement or bot-strategy change. Existing fixed bot results do not measure human behavior.",
+    "Five old bundles and the paused user run preserved. New package only headless-booted; native interaction uses matching source.",
+    "No new five-human playtest, other Mac model/macOS13 device check, Developer ID signing or notarization."
+  ]
+}

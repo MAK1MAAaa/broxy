@@ -1,0 +1,1353 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+ERROR: A visible card is identified by its actual upgrade ID: vitality
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:123)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The upgrade exposes a visible numeric preview label: vitality
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:124)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The visible before/after text agrees with real relic-stacked RunState selection: vitality -> 生命上限  160 → 172
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:125)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: Upgrade preview numbers retain a readable font size: vitality
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:126)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The numeric preview fits inside its own choice card: vitality
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:127)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: A visible card is identified by its actual upgrade ID: armor
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:123)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The upgrade exposes a visible numeric preview label: armor
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:124)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The visible before/after text agrees with real relic-stacked RunState selection: armor -> 护甲  6 → 7
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:125)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: Upgrade preview numbers retain a readable font size: armor
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:126)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The numeric preview fits inside its own choice card: armor
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:127)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: A visible card is identified by its actual upgrade ID: haste
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:123)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The upgrade exposes a visible numeric preview label: haste
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:124)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The visible before/after text agrees with real relic-stacked RunState selection: haste -> 攻速  ×1.36 → ×1.46
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:125)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: Upgrade preview numbers retain a readable font size: haste
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:126)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The numeric preview fits inside its own choice card: haste
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:127)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: All three named choice cards occupy separate visible areas
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:135)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: A visible card is identified by its actual upgrade ID: armor
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:123)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The upgrade exposes a visible numeric preview label: armor
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:124)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The visible before/after text agrees with real relic-stacked RunState selection: armor -> 护甲  6 → 7
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:125)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: Upgrade preview numbers retain a readable font size: armor
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:126)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The numeric preview fits inside its own choice card: armor
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:127)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: A visible card is identified by its actual upgrade ID: magnet
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:123)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The upgrade exposes a visible numeric preview label: magnet
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:124)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The visible before/after text agrees with real relic-stacked RunState selection: magnet -> 拾取范围  142 → 154
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:125)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: Upgrade preview numbers retain a readable font size: magnet
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:126)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The numeric preview fits inside its own choice card: magnet
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:127)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: A visible card is identified by its actual upgrade ID: haste
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:123)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The upgrade exposes a visible numeric preview label: haste
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:124)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The visible before/after text agrees with real relic-stacked RunState selection: haste -> 攻速  ×1.36 → ×1.46
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:125)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: Upgrade preview numbers retain a readable font size: haste
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:126)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The numeric preview fits inside its own choice card: haste
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:127)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: All three named choice cards occupy separate visible areas
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:135)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: A visible card is identified by its actual upgrade ID: armor
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:123)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The upgrade exposes a visible numeric preview label: armor
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:124)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The visible before/after text agrees with real relic-stacked RunState selection: armor -> 护甲  6 → 7
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:125)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: Upgrade preview numbers retain a readable font size: armor
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:126)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The numeric preview fits inside its own choice card: armor
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:127)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: A visible card is identified by its actual upgrade ID: vitality
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:123)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The upgrade exposes a visible numeric preview label: vitality
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:124)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The visible before/after text agrees with real relic-stacked RunState selection: vitality -> 生命上限  160 → 172
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:125)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: Upgrade preview numbers retain a readable font size: vitality
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:126)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The numeric preview fits inside its own choice card: vitality
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:127)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: A visible card is identified by its actual upgrade ID: speed
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:123)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The upgrade exposes a visible numeric preview label: speed
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:124)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The visible before/after text agrees with real relic-stacked RunState selection: speed -> 移速  274 → 286
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:125)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: Upgrade preview numbers retain a readable font size: speed
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:126)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The numeric preview fits inside its own choice card: speed
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:127)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: All three named choice cards occupy separate visible areas
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:135)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: A visible card is identified by its actual upgrade ID: speed
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:123)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The upgrade exposes a visible numeric preview label: speed
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:124)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The visible before/after text agrees with real relic-stacked RunState selection: speed -> 移速  274 → 286
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:125)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: Upgrade preview numbers retain a readable font size: speed
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:126)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The numeric preview fits inside its own choice card: speed
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:127)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: A visible card is identified by its actual upgrade ID: damage
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:123)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The upgrade exposes a visible numeric preview label: damage
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:124)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The visible before/after text agrees with real relic-stacked RunState selection: damage -> 伤害  ×1.45 → ×1.57
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:125)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: Upgrade preview numbers retain a readable font size: damage
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:126)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The numeric preview fits inside its own choice card: damage
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:127)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: A visible card is identified by its actual upgrade ID: armor
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:123)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The upgrade exposes a visible numeric preview label: armor
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:124)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The visible before/after text agrees with real relic-stacked RunState selection: armor -> 护甲  7 → 8
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:125)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: Upgrade preview numbers retain a readable font size: armor
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:126)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The numeric preview fits inside its own choice card: armor
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:127)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: All three named choice cards occupy separate visible areas
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:135)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: A visible card is identified by its actual upgrade ID: damage
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:123)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The upgrade exposes a visible numeric preview label: damage
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:124)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The visible before/after text agrees with real relic-stacked RunState selection: damage -> 伤害  ×1.45 → ×1.57
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:125)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: Upgrade preview numbers retain a readable font size: damage
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:126)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The numeric preview fits inside its own choice card: damage
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:127)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: A visible card is identified by its actual upgrade ID: armor
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:123)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The upgrade exposes a visible numeric preview label: armor
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:124)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The visible before/after text agrees with real relic-stacked RunState selection: armor -> 护甲  6 → 7
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:125)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: Upgrade preview numbers retain a readable font size: armor
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:126)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The numeric preview fits inside its own choice card: armor
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:127)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: A visible card is identified by its actual upgrade ID: magnet
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:123)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The upgrade exposes a visible numeric preview label: magnet
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:124)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The visible before/after text agrees with real relic-stacked RunState selection: magnet -> 拾取范围  142 → 154
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:125)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: Upgrade preview numbers retain a readable font size: magnet
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:126)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The numeric preview fits inside its own choice card: magnet
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:127)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: All three named choice cards occupy separate visible areas
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:135)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: A visible card is identified by its actual upgrade ID: vitality
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:123)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The upgrade exposes a visible numeric preview label: vitality
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:124)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The visible before/after text agrees with real relic-stacked RunState selection: vitality -> 生命上限  160 → 172
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:125)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: Upgrade preview numbers retain a readable font size: vitality
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:126)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The numeric preview fits inside its own choice card: vitality
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:127)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: A visible card is identified by its actual upgrade ID: armor
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:123)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The upgrade exposes a visible numeric preview label: armor
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:124)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The visible before/after text agrees with real relic-stacked RunState selection: armor -> 护甲  6 → 7
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:125)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: Upgrade preview numbers retain a readable font size: armor
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:126)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The numeric preview fits inside its own choice card: armor
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:127)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: A visible card is identified by its actual upgrade ID: haste
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:123)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The upgrade exposes a visible numeric preview label: haste
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:124)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The visible before/after text agrees with real relic-stacked RunState selection: haste -> 攻速  ×1.36 → ×1.46
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:125)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: Upgrade preview numbers retain a readable font size: haste
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:126)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The numeric preview fits inside its own choice card: haste
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:127)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: All three named choice cards occupy separate visible areas
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:135)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: A visible card is identified by its actual upgrade ID: vitality
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:123)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The upgrade exposes a visible numeric preview label: vitality
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:124)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The visible before/after text agrees with real relic-stacked RunState selection: vitality -> 生命上限  160 → 172
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:125)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: Upgrade preview numbers retain a readable font size: vitality
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:126)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The numeric preview fits inside its own choice card: vitality
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:127)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: A visible card is identified by its actual upgrade ID: magnet
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:123)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The upgrade exposes a visible numeric preview label: magnet
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:124)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The visible before/after text agrees with real relic-stacked RunState selection: magnet -> 拾取范围  142 → 154
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:125)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: Upgrade preview numbers retain a readable font size: magnet
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:126)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The numeric preview fits inside its own choice card: magnet
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:127)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: A visible card is identified by its actual upgrade ID: speed
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:123)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The upgrade exposes a visible numeric preview label: speed
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:124)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The visible before/after text agrees with real relic-stacked RunState selection: speed -> 移速  274 → 286
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:125)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: Upgrade preview numbers retain a readable font size: speed
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:126)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The numeric preview fits inside its own choice card: speed
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:127)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: All three named choice cards occupy separate visible areas
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:135)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: A visible card is identified by its actual upgrade ID: speed
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:123)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The upgrade exposes a visible numeric preview label: speed
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:124)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The visible before/after text agrees with real relic-stacked RunState selection: speed -> 移速  274 → 286
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:125)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: Upgrade preview numbers retain a readable font size: speed
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:126)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The numeric preview fits inside its own choice card: speed
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:127)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: A visible card is identified by its actual upgrade ID: damage
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:123)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The upgrade exposes a visible numeric preview label: damage
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:124)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The visible before/after text agrees with real relic-stacked RunState selection: damage -> 伤害  ×1.45 → ×1.57
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:125)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: Upgrade preview numbers retain a readable font size: damage
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:126)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The numeric preview fits inside its own choice card: damage
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:127)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: A visible card is identified by its actual upgrade ID: magnet
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:123)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The upgrade exposes a visible numeric preview label: magnet
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:124)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The visible before/after text agrees with real relic-stacked RunState selection: magnet -> 拾取范围  154 → 166
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:125)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: Upgrade preview numbers retain a readable font size: magnet
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:126)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The numeric preview fits inside its own choice card: magnet
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:127)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: All three named choice cards occupy separate visible areas
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:135)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: A visible card is identified by its actual upgrade ID: magnet
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:123)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The upgrade exposes a visible numeric preview label: magnet
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:124)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The visible before/after text agrees with real relic-stacked RunState selection: magnet -> 拾取范围  142 → 154
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:125)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: Upgrade preview numbers retain a readable font size: magnet
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:126)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The numeric preview fits inside its own choice card: magnet
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:127)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: A visible card is identified by its actual upgrade ID: speed
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:123)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The upgrade exposes a visible numeric preview label: speed
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:124)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The visible before/after text agrees with real relic-stacked RunState selection: speed -> 移速  274 → 286
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:125)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: Upgrade preview numbers retain a readable font size: speed
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:126)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The numeric preview fits inside its own choice card: speed
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:127)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: A visible card is identified by its actual upgrade ID: haste
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:123)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The upgrade exposes a visible numeric preview label: haste
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:124)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The visible before/after text agrees with real relic-stacked RunState selection: haste -> 攻速  ×1.36 → ×1.46
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:125)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: Upgrade preview numbers retain a readable font size: haste
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:126)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The numeric preview fits inside its own choice card: haste
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:127)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: All three named choice cards occupy separate visible areas
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:135)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: A visible card is identified by its actual upgrade ID: damage
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:123)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The upgrade exposes a visible numeric preview label: damage
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:124)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The visible before/after text agrees with real relic-stacked RunState selection: damage -> 伤害  ×1.45 → ×1.57
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:125)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: Upgrade preview numbers retain a readable font size: damage
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:126)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The numeric preview fits inside its own choice card: damage
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:127)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: A visible card is identified by its actual upgrade ID: armor
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:123)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The upgrade exposes a visible numeric preview label: armor
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:124)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The visible before/after text agrees with real relic-stacked RunState selection: armor -> 护甲  6 → 7
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:125)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: Upgrade preview numbers retain a readable font size: armor
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:126)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The numeric preview fits inside its own choice card: armor
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:127)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: A visible card is identified by its actual upgrade ID: speed
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:123)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The upgrade exposes a visible numeric preview label: speed
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:124)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The visible before/after text agrees with real relic-stacked RunState selection: speed -> 移速  286 → 298
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:125)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: Upgrade preview numbers retain a readable font size: speed
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:126)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The numeric preview fits inside its own choice card: speed
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:127)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: All three named choice cards occupy separate visible areas
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:135)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: A visible card is identified by its actual upgrade ID: magnet
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:123)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The upgrade exposes a visible numeric preview label: magnet
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:124)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The visible before/after text agrees with real relic-stacked RunState selection: magnet -> 拾取范围  142 → 154
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:125)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: Upgrade preview numbers retain a readable font size: magnet
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:126)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The numeric preview fits inside its own choice card: magnet
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:127)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: A visible card is identified by its actual upgrade ID: haste
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:123)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The upgrade exposes a visible numeric preview label: haste
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:124)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The visible before/after text agrees with real relic-stacked RunState selection: haste -> 攻速  ×1.36 → ×1.46
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:125)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: Upgrade preview numbers retain a readable font size: haste
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:126)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The numeric preview fits inside its own choice card: haste
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:127)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: A visible card is identified by its actual upgrade ID: damage
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:123)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The upgrade exposes a visible numeric preview label: damage
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:124)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The visible before/after text agrees with real relic-stacked RunState selection: damage -> 伤害  ×1.45 → ×1.57
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:125)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: Upgrade preview numbers retain a readable font size: damage
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:126)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The numeric preview fits inside its own choice card: damage
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:127)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: All three named choice cards occupy separate visible areas
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:135)
+       [2] _test (res://tests/test_upgrade_previews.gd:41)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: A visible card is identified by its actual upgrade ID: magnet
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:123)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The upgrade exposes a visible numeric preview label: magnet
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:124)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The visible before/after text agrees with real relic-stacked RunState selection: magnet -> 拾取范围  142 → 154
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:125)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: Upgrade preview numbers retain a readable font size: magnet
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:126)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The numeric preview fits inside its own choice card: magnet
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:127)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: A visible card is identified by its actual upgrade ID: speed
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:123)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The upgrade exposes a visible numeric preview label: speed
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:124)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The visible before/after text agrees with real relic-stacked RunState selection: speed -> 移速  274 → 286
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:125)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: Upgrade preview numbers retain a readable font size: speed
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:126)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The numeric preview fits inside its own choice card: speed
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:127)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: A visible card is identified by its actual upgrade ID: haste
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:123)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The upgrade exposes a visible numeric preview label: haste
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:124)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The visible before/after text agrees with real relic-stacked RunState selection: haste -> 攻速  ×1.46 → ×1.56
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:125)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: Upgrade preview numbers retain a readable font size: haste
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:126)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: The numeric preview fits inside its own choice card: haste
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:127)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: All three named choice cards occupy separate visible areas
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _assert_page (res://tests/test_upgrade_previews.gd:135)
+       [2] _test (res://tests/test_upgrade_previews.gd:61)
+       [3] _settle (res://tests/test_upgrade_previews.gd:222)
+ERROR: A repeated stat preview starts at the newly gained armor and shows the actual next choice result
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/test_upgrade_previews.gd:229)
+       [1] _test_repeated_stat (res://tests/test_upgrade_previews.gd:98)
+       [2] _settle (res://tests/test_upgrade_previews.gd:222)
+UpgradePreviews: 350 assertions, 193 failures

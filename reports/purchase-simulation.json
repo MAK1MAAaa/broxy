@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "baseline": "reports/simulation-30-homing.jsonl",
+  "baseline_sha256": "fe8443aa3eed8b49c6e5ec511e69a8a1f5e663e33999ba96b9879841a67a3271",
+  "current": "reports/simulation-30-purchase.jsonl",
+  "current_sha256": "6dc407886ecf6f923c913ba79d6c6fa1e13d566bc18bab5035fb5b3889d7a1e8",
+  "baseline_core": "prototype-0.1.0+143fbc0963af",
+  "current_core": "prototype-0.1.0+fb2ccf1ca5f1",
+  "policy_version": "orbit-avoid-v1/shop-v1+7c19c01f20e4",
+  "runs": 30,
+  "wins": 29,
+  "losses": 1,
+  "comparison_excluded_fields": [
+    "balance_version"
+  ],
+  "all_remaining_fields_equal": true,
+  "includes": [
+    "trace",
+    "wave_results",
+    "shop_observations"
+  ],
+  "changed_pairs": [],
+  "limits": "Fixed bot policy on seeds 2026-2035; does not establish human balance, UI usability or graphical performance."
+}

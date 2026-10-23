@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "kind": "Short native rendering comparison; not full battle acceptance",
+  "command": "./tools/run.sh --script /private/tmp/broxy-telegraph-native.gd",
+  "exit_codes": {
+    "before": 0,
+    "after": 0
+  },
+  "harness": "reports/telegraph-draw-harness.gd.txt",
+  "harness_sha256": "f1318bb91aa8bec75e2a37697075e1dfc0c4202ce3912ebc503433382486c3a0",
+  "before": {
+    "kind": "Short frozen-warning rendering profile; not full battle acceptance",
+    "limits": "340 static windup NPCs. No physics, enemy attacks, real damage or600 projectiles. Native Compatibility, VSync kept, max_fps=0.",
+    "results": [
+      {
+        "average_fps": 35.1716516089486,
+        "duration_target_seconds": 10,
+        "enemies": 340,
+        "frames": 353,
+        "mean_draw_calls": 57.0,
+        "mode": "all_caster",
+        "p99_frame_ms": 36.85,
+        "physics_ticks": 0,
+        "warmup_seconds": 2,
+        "warning_stats": {
+          "active_batches": 2,
+          "cast_count": 340,
+          "charge_count": 0,
+          "draw_commands": 4,
+          "neutral_charge_count": 0,
+          "segments": 12240
+        }
+      },
+      {
+        "average_fps": 65.0870414395816,
+        "duration_target_seconds": 10,
+        "enemies": 340,
+        "frames": 652,
+        "mean_draw_calls": 45.0,
+        "mode": "mixed",
+        "p99_frame_ms": 28.755,
+        "physics_ticks": 0,
+        "warmup_seconds": 2,
+        "warning_stats": {
+          "active_batches": 7,
+          "cast_count": 170,
+          "charge_count": 170,
+          "draw_commands": 14,
+          "neutral_charge_count": 8,
+          "segments": 6300
+        }
+      }
+    ],
+    "source_sha256": {
+      "res://scripts/combat/combat_world.gd": "4cf1b8bcc68f299a3e8defbef421c634f1cce0e8eeff6f445c8d83ed79fdc5c1",
+      "res://scripts/combat/enemy_telegraph_painter.gd": "7e60137a3a76c150fb5d53968000ef96e6b59833b7ba636fe3a3102e52a80bda"
+    }
+  },
+  "after": {
+    "kind": "Short frozen-warning rendering profile; not full battle acceptance",
+    "limits": "340 static windup NPCs. No physics, enemy attacks, real damage or600 projectiles. Native Compatibility, VSync kept, max_fps=0.",
+    "results": [
+      {
+        "average_fps": 119.555286322915,
+        "duration_target_seconds": 10,
+        "enemies": 340,
+        "frames": 1196,
+        "mean_draw_calls": 33.0,
+        "mode": "all_caster",
+        "p99_frame_ms": 13.429,
+        "physics_ticks": 0,
+        "warmup_seconds": 2,
+        "warning_stats": {
+          "active_batches": 3,
+          "allocated_instances": 1020,
+          "cast_count": 340,
+          "charge_count": 0,
+          "draw_commands": 3,
+          "neutral_charge_count": 0,
+          "segments": 11900,
+          "visible_instances": 1020
+        }
+      },
+      {
+        "average_fps": 116.677616847689,
+        "duration_target_seconds": 10,
+        "enemies": 340,
+        "frames": 1168,
+        "mean_draw_calls": 40.0,
+        "mode": "mixed",
+        "p99_frame_ms": 16.927,
+        "physics_ticks": 0,
+        "warmup_seconds": 2,
+        "warning_stats": {
+          "active_batches": 8,
+          "allocated_instances": 850,
+          "cast_count": 170,
+          "charge_count": 170,
+          "draw_commands": 11,
+          "neutral_charge_count": 8,
+          "segments": 6187,
+          "visible_instances": 510
+        }
+      }
+    ],
+    "source_sha256": {
+      "res://scripts/combat/combat_world.gd": "4cf1b8bcc68f299a3e8defbef421c634f1cce0e8eeff6f445c8d83ed79fdc5c1",
+      "res://scripts/combat/enemy_telegraph_painter.gd": "4750e8c434ef2eac723d1cb6cb3bef5386734cd369a80f001b0467a3211af2e6"
+    }
+  },
+  "limits": [
+    "Same 340 frozen enemy configurations, 2s warmup and 10s sample per case; no physics, real attacks or 600 projectiles.",
+    "Compatibility / Apple M5 / 1280x720 / VSync kept / max_fps=0. Paused old user app retained in background.",
+    "Arc geometry now floors progress to 16 segments instead of interpolating a partial segment; at most 28.125ms decorative progress delay. This changes maximum near-complete geometry by one segment per caster.",
+    "Wall-clock native results are not a guarantee for other Macs or every battle. Full 300s rune-feedback acceptance is separately recorded."
+  ]
+}

@@ -1,0 +1,105 @@
+{
+  "explosion-before": {
+    "calls_per_round": 4000,
+    "enemies": 300,
+    "results": [
+      {
+        "median_ms": 178.514,
+        "mode": "production",
+        "rounds_usec": [
+          173363,
+          176789,
+          178514,
+          179606,
+          181973
+        ],
+        "secondary_hits": 46863
+      },
+      {
+        "median_ms": 155.12,
+        "mode": "reference_linear",
+        "rounds_usec": [
+          150449,
+          150961,
+          155120,
+          159034,
+          159197
+        ],
+        "secondary_hits": 46863
+      }
+    ],
+    "rounds": 5
+  },
+  "explosion-after": {
+    "calls_per_round": 4000,
+    "enemies": 300,
+    "results": [
+      {
+        "median_ms": 58.227,
+        "mode": "production",
+        "rounds_usec": [
+          57960,
+          58168,
+          58227,
+          58322,
+          58670
+        ],
+        "secondary_hits": 46863
+      },
+      {
+        "median_ms": 148.357,
+        "mode": "reference_linear",
+        "rounds_usec": [
+          145900,
+          146738,
+          148357,
+          148655,
+          150613
+        ],
+        "secondary_hits": 46863
+      }
+    ],
+    "rounds": 5
+  },
+  "nearest-profile": {
+    "balance_version": "prototype-0.1.0+bdd5240c97ca",
+    "combat_source_sha256": "bb3189889629478a4478d61f610b8835e9ec9caf9058b605638b7ee387bc19a1",
+    "enemies": 300,
+    "mode": "headless nearest query microbenchmark; no rendering or frame-rate claim",
+    "oracle_equal": true,
+    "oracle_target_sha256": "318121d08f47c314a3f7a71d5cc2a43b630dee17352b8a5f0668a7c67d03efa5",
+    "queries_per_round": 4000,
+    "query_ranges": [
+      230,
+      420
+    ],
+    "results": [
+      {
+        "median_ms": 21.991,
+        "mode": "production_ring",
+        "rounds_usec": [
+          21800,
+          21991,
+          22024
+        ],
+        "target_uid_checksum": 1702740
+      },
+      {
+        "median_ms": 113.986,
+        "mode": "frozen_linear_oracle",
+        "rounds_usec": [
+          113903,
+          113986,
+          115070
+        ],
+        "target_uid_checksum": 1702740
+      }
+    ],
+    "rng_unchanged": true,
+    "rounds": 3,
+    "seed": 20261022,
+    "unique_queries": 200
+  },
+  "limits": "CPU microbenchmarks, not rendering/FPS acceptance. Explosion before/after ran separately; nearest pairs share one fixed input set. Original logs include a macOS system-certificate sandbox diagnostic; final behavioral suites run with normal system access.",
+  "current_core_sha256": "bb3189889629478a4478d61f610b8835e9ec9caf9058b605638b7ee387bc19a1"
+}

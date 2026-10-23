@@ -1,0 +1,35 @@
+{
+  "method": "CUA getApp with exact bundled editor path; native AX and actual screenshots inspected.",
+  "title": "秘术余烬 · 符文反馈压力测试（非普通关卡，不保存设置与成绩） (DEBUG)",
+  "observations": [
+    {
+      "sampling_time_left": "04:53",
+      "enemies": 300,
+      "projectiles": 600,
+      "visible": true
+    },
+    {
+      "sampling_time_left": "02:44",
+      "enemies": 300,
+      "projectiles": 600,
+      "visible": true
+    },
+    {
+      "sampling_time_left": "01:20",
+      "enemies": 300,
+      "projectiles": 600,
+      "visible": true
+    },
+    {
+      "sampling_time_left": "00:17",
+      "enemies": 300,
+      "projectiles": 600,
+      "visible": true
+    }
+  ],
+  "limits": [
+    "Screenshots appeared in the CUA tool transcript; no separate PNG is claimed here.",
+    "No other Godot test, build or simulation ran during this sample; the old user app remained paused.",
+    "The pressure fixture injects four weapon/rune families; its ordinary loadout HUD is not evidence of inventory acceptance."
+  ]
+}

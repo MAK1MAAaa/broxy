@@ -1,0 +1,9 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+ERROR: Condition "ret != noErr" is true. Returning: ""
+   at: get_system_ca_certificates (platform/macos/os_macos.mm:1035)
+AUDIT {"case":"retreat_contact_knockback","distance_after":2.57747411727905,"distance_before":20.0,"enemy_position_after":[639.906433105469,367.575775146484],"health_after":92.0,"last_hit":{"amount":8.0,"elapsed":0.0166666666666667,"kind":"contact","source_id":"caster","wave":1}}
+AUDIT {"arena_left":66.0,"case":"contact_push_outside_arena","enemy_x_after":50.0857620239258,"health_after":92.0,"inside_arena":false}
+AUDIT {"boss_cycle_after":2,"case":"boss_summon_above_wave_cap","complete":false,"enemies_after":102,"enemies_before":100,"resource_cap":100,"wave":8}
+AUDIT {"case":"caster_projectile_wave_scaling","contact_formula_damage":8.0,"definition_damage":8.0,"projectile_damage":8.0,"wave":1}
+AUDIT {"case":"caster_projectile_wave_scaling","contact_formula_damage":12.32,"definition_damage":8.0,"projectile_damage":8.0,"wave":7}

@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="ContentDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/content_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "wave_8"
+kind = "wave"
+display_name = "终末仪式"
+description = "击败无面祭司。"
+duration = 90.0
+spawn_interval = 0.6
+cap = 100
+spawn_weights = {"chaser": 0.6, "rusher": 0.2, "caster": 0.2}
+boss_wave = true
