@@ -24,3 +24,8 @@ reports/altar/*.jsonl
 reports/altar/*.png
 reports/altar/*.import
 reports/altar/*-raw.json
+reports/rune-lab/*.log
+reports/rune-lab/*.jsonl
+reports/rune-lab/*.png
+reports/rune-lab/*.import
+reports/rune-lab/*-raw.json

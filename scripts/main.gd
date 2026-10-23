@@ -266,6 +266,7 @@ func _record_benchmark() -> void:
 	result["rune_visual_peak"] = _peak_rune_flashes
 	var impact_stats: Dictionary = world._impact_painter.get_stats()
 	result["impact_visual_revision"] = "primary-impact-v1"
+	result["enemy_hit_visual_revision"] = CombatWorld.ENEMY_HIT_VISUAL_REVISION
 	result["impact_visual_peak"] = impact_stats["peak_active"]
 	result["impact_visual_capacity"] = impact_stats["capacity"]
 	result["impact_draw_commands_at_end"] = impact_stats["draw_commands"]

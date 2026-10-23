@@ -225,7 +225,9 @@ func _run_tests() -> void:
 	_check(reached_reserve, "Native keyboard traversal can reach a specific reserve rune in a full shop")
 	if reached_reserve:
 		await _accept_focus()
-		_check(_focus_id() == "equip:0" and _has_label_containing(ui, GameCatalog.rune("bounce").description), "Selecting a full-bag rune focuses the equip target and exposes its exact effect")
+		var guide: Label = ui.find_child("RuneGuide", true, false)
+		var preview: Button = ui._shop_focus_button("rune_preview:0")
+		_check(_focus_id() == "equip:0" and guide != null and guide.text.contains(GameCatalog.rune("bounce").display_name) and guide.text.contains("第2直接命中") and preview != null, "Selecting a full-bag rune focuses direct equip and exposes the weapon-specific keyboard preview")
 		_check(_buttons_inside(ui) and _text_inside(ui), "The selected-rune guide fits a fully populated shop")
 		await _accept_focus()
 		_check(int(state.loadout[0]["rune"].get("uid", 0)) == 24 and state.rune_bag.size() == 4, "Keyboard swapping with a full reserve equips the chosen rune and keeps all reserve slots")

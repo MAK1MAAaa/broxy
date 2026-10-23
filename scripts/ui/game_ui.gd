@@ -407,7 +407,7 @@ func hide_pause() -> void:
 
 
 func handle_back() -> bool:
-	if _overlay_mode == "relic_details" or _overlay_mode == "relic_comparison":
+	if _overlay_mode in ["relic_details", "relic_comparison", "rune_equip_comparison"]:
 		hide_pause()
 		return true
 	if _overlay_mode == "settings_pause":
@@ -599,7 +599,7 @@ func notify(message: String) -> void:
 
 
 func _build_shop() -> void:
-	if _overlay_mode == "relic_comparison":
+	if _overlay_mode in ["relic_comparison", "rune_equip_comparison"]:
 		hide_pause()
 	_shop_epoch += 1
 	var focus_id := _requested_shop_focus
@@ -905,7 +905,7 @@ func _close_relic_comparison(epoch: int) -> void:
 
 
 func _comparison_scroll_input(event: InputEvent, scroll: ScrollContainer, epoch: int) -> void:
-	if epoch != _shop_epoch or _overlay_mode != "relic_comparison" or not event is InputEventKey:
+	if epoch != _shop_epoch or _overlay_mode not in ["relic_comparison", "rune_equip_comparison"] or not event is InputEventKey:
 		return
 	var key_event := event as InputEventKey
 	if not key_event.pressed:
@@ -954,11 +954,134 @@ func _weapon_row(parent: Control, index: int) -> void:
 		var equip := _shop_button("装入", _equip.bind(index), "equip:%d" % index, Vector2(60, 33))
 		_accent(equip)
 		row.add_child(equip)
+		var incoming: Dictionary = run.rune_bag[_selected_rune]
+		var preview := _shop_button("预览", _preview_rune_equip.bind(index, _shop_epoch, incoming.duplicate(true), item.duplicate(true)), "rune_preview:%d" % index, Vector2(50, 33))
+		preview.name = "PreviewRuneSlot%d" % index
+		preview.add_theme_font_size_override("font_size", 13)
+		preview.tooltip_text = "查看本法器的逐弹触发、目标上限与符文返还；不会装入。"
+		row.add_child(preview)
 	elif not rune.is_empty():
 		row.add_child(_shop_button("卸符", _unequip.bind(index), "unequip:%d" % index, Vector2(60, 33)))
 	var sell := _shop_button("售", _sell_weapon.bind(index), "sell_weapon:%d" % index, Vector2(37, 33))
 	sell.tooltip_text = "出售获得 %d 魂屑；符文退回背包。至少保留一件法器。" % int(floorf(float(item.get("paid", 0)) * 0.5))
 	row.add_child(sell)
+
+
+func _preview_rune_equip(index: int, epoch: int, incoming_snapshot: Dictionary, weapon_snapshot: Dictionary) -> void:
+	if _screen != "shop" or _refresh_queued or not _overlay_mode.is_empty() or epoch != _shop_epoch:
+		return
+	if run == null or _selected_rune < 0 or _selected_rune >= run.rune_bag.size() or index < 0 or index >= run.loadout.size():
+		return
+	if run.rune_bag[_selected_rune] != incoming_snapshot or run.loadout[index] != weapon_snapshot:
+		return
+	var preview: Dictionary = run.rune_equip_preview(_selected_rune, index)
+	if preview.is_empty():
+		return
+	var weapon: ContentDef = GameCatalog.weapon(str(preview["weapon_id"]))
+	var incoming: ContentDef = GameCatalog.rune(str(preview["rune_id"]))
+	var returned: Dictionary = preview["returned_rune"]
+	var source: Button = _shop_focus_button("rune_preview:%d" % index)
+	if source != null:
+		source.grab_focus()
+	_begin_overlay("rune_equip_comparison")
+	var body := _modal("符文装入预览 · " + weapon.display_name, Vector2(1000, 660))
+	body.name = "RuneEquipComparison"
+	body.add_theme_constant_override("separation", 8)
+	var header := HBoxContainer.new()
+	header.add_theme_constant_override("separation", 18)
+	body.add_child(header)
+	_add_icon(header, weapon, 64)
+	var summary := VBoxContainer.new()
+	summary.add_theme_constant_override("separation", 5)
+	summary.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	header.add_child(summary)
+	var current_name: String = "无符文" if returned.is_empty() else GameCatalog.rune(str(returned["id"])).display_name
+	var socket := _wrap("当前 %s → 所选 %s" % [current_name, incoming.display_name], 21, BONE)
+	socket.name = "RuneEquipSocket"
+	summary.add_child(socket)
+	var capacity := _label("备用栏占用  %d / %d → %d / %d" % [int(preview["bag_before"]), RunState.RUNE_BAG_CAP, int(preview["bag_after"]), RunState.RUNE_BAG_CAP], 15, CYAN)
+	capacity.name = "RuneEquipBag"
+	summary.add_child(capacity)
+	_add_icon(header, incoming, 64)
+	var return_text: String = "取出所选符文；原法器没有符文，备用栏释放1个位置。" if returned.is_empty() else "%s完整退回备用栏，保留原购买价值；取出所选符文后，备用栏占用不变。" % current_name
+	var returns := _wrap(return_text, 15, GOLD)
+	returns.name = "RuneEquipReturn"
+	body.add_child(returns)
+	var scroll := ScrollContainer.new()
+	scroll.name = "RuneEquipScroll"
+	scroll.custom_minimum_size.y = 260
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+	scroll.focus_mode = Control.FOCUS_ALL
+	scroll.follow_focus = true
+	scroll.add_theme_stylebox_override("focus", _box(Color(0, 0, 0, 0), CYAN))
+	scroll.gui_input.connect(_comparison_scroll_input.bind(scroll, epoch))
+	body.add_child(scroll)
+	var content := VBoxContainer.new()
+	content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	content.add_theme_constant_override("separation", 12)
+	scroll.add_child(content)
+	_section_heading(content, "逐弹触发与理论上限", PURPLE, 17)
+	var trigger_hit: int = int(preview["trigger_hit"])
+	var trigger_text: String = "从第%d次直接命中触发符文。" % trigger_hit
+	if int(preview["innate_pierce"]) > 0:
+		trigger_text += "第1次直接命中仅执行本体贯穿，不触发符文。"
+	var trigger := _wrap(trigger_text, 17, PURPLE)
+	trigger.name = "RuneEquipTrigger"
+	content.add_child(trigger)
+	var targets := _wrap("每枚弹体理论最多 %d 个直接目标；每次发射 %d 枚，各枚独立计算。" % [int(preview["max_direct_targets"]), int(preview["shots"])], 16, BONE)
+	targets.name = "RuneEquipTargets"
+	content.add_child(targets)
+	match str(preview["rune_id"]):
+		"pierce":
+			var extra: int = int(preview["max_direct_targets"]) - trigger_hit
+			content.add_child(_wrap("第%d次直接命中后，继续贯穿最多 %d 个未命中过的目标；直接命中的每个目标均按该枚本体伤害计算。" % [trigger_hit, extra], 16, CYAN))
+		"bounce":
+			var scales: Array = preview["bounce_scales"]
+			var sequence: PackedStringArray = []
+			for scale: float in scales:
+				sequence.append(_rune_percent(scale))
+			var bounce := _wrap("各次直接命中的本体伤害比例：\n" + " → ".join(sequence), 18, GOLD)
+			bounce.name = "RuneEquipBounceScales"
+			content.add_child(bounce)
+			var reach := _wrap("第%d次直接命中后，寻找 %.0f 范围内最近的未命中目标，最多再转向 %d 次。" % [trigger_hit, float(preview["bounce_range"]), scales.size() - trigger_hit], 16, CYAN)
+			reach.name = "RuneEquipBounceRange"
+			content.add_child(reach)
+		"blast":
+			var blast := _wrap("在第%d次直接命中处引爆：半径 %.0f，溅射伤害为该枚本体伤害的 %s。" % [trigger_hit, float(preview["blast_radius"]), _rune_percent(float(preview["blast_multiplier"]))], 17, GOLD)
+			blast.name = "RuneEquipBlast"
+			content.add_child(blast)
+			if trigger_hit > 1:
+				var delayed := _wrap("只命中1个目标不会爆破；必须命中第2个直接目标才引爆。", 17, CORAL)
+				delayed.name = "RuneEquipDelayedBlast"
+				content.add_child(delayed)
+			var exclusions := _wrap("该枚已经直接命中的目标（含引爆目标）不再承受它的溅射。溅射不会再次触发符文；范围内额外目标数量另计。", 16, MUTED)
+			exclusions.name = "RuneEquipBlastExclusions"
+			content.add_child(exclusions)
+	var independent := _wrap("同一枚弹体不会重复直击已命中过的目标。不同弹体分别记录与排重，可以各自命中同一敌人；多发的符文效果也按每枚独立触发。", 15, CYAN)
+	independent.name = "RuneEquipIndependent"
+	content.add_child(independent)
+	var scope := _wrap("理论上限需要足够实际目标，并受射程、弹体存活时间和目标位置影响；不保证每次命中，不代表实战 DPS。\n此面板只预览，未装入符文；返回后可直接「装入」，拆换免费。\n滚轮滚动；Tab 选择内容区域后可用 PageUp / PageDown；Esc 返回原法器槽。", 14, MUTED)
+	scope.name = "RuneEquipScope"
+	content.add_child(scope)
+	var close := _button("返回法器槽", _close_rune_equip_comparison.bind(epoch), Vector2(0, 42))
+	close.name = "CloseRuneEquipComparison"
+	_accent(close)
+	body.add_child(close)
+	_focus_later(close)
+
+
+static func _rune_percent(scale: float) -> String:
+	var number: String = "%.2f" % (scale * 100.0)
+	while number.ends_with("0"):
+		number = number.substr(0, number.length() - 1)
+	return number.trim_suffix(".") + "%"
+
+
+func _close_rune_equip_comparison(epoch: int) -> void:
+	if _overlay_mode == "rune_equip_comparison" and epoch == _shop_epoch:
+		hide_pause()
 
 
 func _bag_slot(parent: Control, index: int) -> void:
@@ -1301,7 +1424,7 @@ func _handle_action(success: bool, sound: String = "", message: String = "") -> 
 
 
 func _on_state_changed() -> void:
-	if _overlay_mode == "relic_comparison":
+	if _overlay_mode in ["relic_comparison", "rune_equip_comparison"]:
 		hide_pause()
 	if _screen == "shop" or _screen == "upgrades":
 		_queue_refresh()
@@ -1384,8 +1507,8 @@ func _definition(kind: String, id: String) -> ContentDef:
 func _rune_guide() -> String:
 	if _selected_rune >= 0 and _selected_rune < run.rune_bag.size():
 		var definition: ContentDef = GameCatalog.rune(str(run.rune_bag[_selected_rune]["id"]))
-		return "已选%s：%s  选择法器「装入」，原符文会退回备用栏。" % [definition.display_name, definition.description]
-	return "购买法器与遗物；选择符文后点「装入」，拆换免费。波末祭坛恢复全部生命。"
+		return "已选%s：月镰先贯穿首目标，符文从第2直接命中生效；其余法器从首击生效。点「预览」看规则，或直接「装入」。" % definition.display_name
+	return "购买法器与遗物；选择符文后可「预览」或直接「装入」，拆换免费。波末祭坛恢复全部生命。"
 
 
 func _equipment_tooltip(item: Dictionary) -> String:

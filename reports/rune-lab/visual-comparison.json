@@ -1,0 +1,337 @@
+{
+  "schema_version": 1,
+  "scope": "Fixed actual-collision screenshots and bounded tint samples; near-white pixels are an appearance proxy, not human combat readability.",
+  "pairs": {
+    "normal": {
+      "state_hash": "b6ea646bc7ca2378e07a0617b89a3dbfc0347cda82988fd6f9997b44cc3fbdd4",
+      "endpoint_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "seed": 20261025,
+      "frames": 8,
+      "primary_hits": 15,
+      "secondary_hits": 0,
+      "budgets": {
+        "impacts": {
+          "active_marks": 15,
+          "allocated_marks": 32,
+          "capacity": 32,
+          "draw_commands": 2,
+          "free_marks": 17,
+          "peak_active": 15
+        },
+        "numbers": 15,
+        "projectiles": {
+          "allocated_instances": 3200,
+          "body_instances": 0,
+          "bounce_instances": 0,
+          "core_instances": 0,
+          "family_counts": {},
+          "friendly_count": 0,
+          "total_visible_instances": 0,
+          "trail_families": 0
+        },
+        "runes": 0,
+        "telegraphs": {
+          "active_batches": 0,
+          "allocated_instances": 680,
+          "cast_count": 0,
+          "charge_count": 0,
+          "draw_commands": 0,
+          "neutral_charge_count": 0,
+          "segments": 0,
+          "visible_instances": 0
+        }
+      },
+      "arena_roi": [
+        80,
+        135,
+        1220,
+        610
+      ],
+      "changed_pixels": 37898,
+      "rgb_all_channels_245_or_more_before_after": [
+        746,
+        0
+      ],
+      "expired_row_equal": true,
+      "sample_scope": "all fifteen matrix enemies",
+      "cold_count": 0,
+      "hurt_count": 10,
+      "sample_count": 15,
+      "sampled_hurt_timer_levels": [
+        0.0,
+        0.066667,
+        0.1
+      ],
+      "sampled_rgb_min": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "sampled_rgb_max": [
+        1.22000002861023,
+        1.22000002861023,
+        1.22000002861023
+      ],
+      "all_sample_alpha_one": true,
+      "full_rgb_samples_retained_in_local_log": true,
+      "screenshots_sha256": {
+        "before": "f1f8695e0b7dc541dc21ea0b9a084b7b397c97b6dad424a0c55ae42180595500",
+        "after": "d25f92eda06d08e71d9293f94ab139e01eb93540d03bbd5dcab65e152fda32c0"
+      }
+    },
+    "chilled": {
+      "state_hash": "4904e9e459fbee17c8f44a228fa67e78e28331bd4965182d6160575b66e12321",
+      "endpoint_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "seed": 20261025,
+      "frames": 8,
+      "primary_hits": 15,
+      "secondary_hits": 0,
+      "budgets": {
+        "impacts": {
+          "active_marks": 15,
+          "allocated_marks": 32,
+          "capacity": 32,
+          "draw_commands": 2,
+          "free_marks": 17,
+          "peak_active": 15
+        },
+        "numbers": 15,
+        "projectiles": {
+          "allocated_instances": 3200,
+          "body_instances": 0,
+          "bounce_instances": 0,
+          "core_instances": 0,
+          "family_counts": {},
+          "friendly_count": 0,
+          "total_visible_instances": 0,
+          "trail_families": 0
+        },
+        "runes": 0,
+        "telegraphs": {
+          "active_batches": 0,
+          "allocated_instances": 680,
+          "cast_count": 0,
+          "charge_count": 0,
+          "draw_commands": 0,
+          "neutral_charge_count": 0,
+          "segments": 0,
+          "visible_instances": 0
+        }
+      },
+      "arena_roi": [
+        80,
+        135,
+        1220,
+        610
+      ],
+      "changed_pixels": 38136,
+      "rgb_all_channels_245_or_more_before_after": [
+        764,
+        0
+      ],
+      "expired_row_equal": true,
+      "sample_scope": "all fifteen matrix enemies",
+      "cold_count": 15,
+      "hurt_count": 10,
+      "sample_count": 15,
+      "sampled_hurt_timer_levels": [
+        0.0,
+        0.066667,
+        0.1
+      ],
+      "sampled_rgb_min": [
+        0.705882370471954,
+        0.91372549533844,
+        0.929411768913269
+      ],
+      "sampled_rgb_max": [
+        0.861176490783691,
+        1.11474514007568,
+        1.13388240337372
+      ],
+      "all_sample_alpha_one": true,
+      "full_rgb_samples_retained_in_local_log": true,
+      "screenshots_sha256": {
+        "before": "24ceced4a8bd19458a7c138d69990e2c634b84ad5a677ce957e6895815d19fde",
+        "after": "04612cc5a061569b949e5921375d7d299347f392e3228223cd9993c66f7a6c16"
+      }
+    },
+    "dense": {
+      "state_hash": "5850b059f97b9835c3abc80662c49cf4017e1fd501311ad02a77247e3378f019",
+      "endpoint_hash": "855d59600030ccf7fad1f1328376dba78d902a4843f486eba6b9ca14336ff085",
+      "seed": 20261025,
+      "frames": 20,
+      "primary_hits": 3019,
+      "secondary_hits": 5167,
+      "budgets": {
+        "impacts": {
+          "active_marks": 32,
+          "allocated_marks": 32,
+          "capacity": 32,
+          "draw_commands": 4,
+          "free_marks": 0,
+          "peak_active": 32
+        },
+        "numbers": 44,
+        "projectiles": {
+          "allocated_instances": 3369,
+          "body_instances": 95,
+          "bounce_instances": 169,
+          "core_instances": 601,
+          "family_counts": {
+            "bone:blast": 11,
+            "bone:bounce": 25,
+            "bone:pierce": 39,
+            "comet:blast": 11,
+            "comet:bounce": 15,
+            "comet:pierce": 49,
+            "crescent:blast": 29,
+            "crescent:bounce": 33,
+            "crescent:pierce": 43,
+            "ember:blast": 15,
+            "ember:bounce": 21,
+            "ember:pierce": 59,
+            "frost:blast": 21,
+            "frost:bounce": 25,
+            "frost:pierce": 44,
+            "scatter:blast": 14,
+            "scatter:bounce": 31,
+            "scatter:pierce": 53,
+            "storm:blast": 14,
+            "storm:bounce": 19,
+            "storm:pierce": 30
+          },
+          "friendly_count": 601,
+          "total_visible_instances": 865,
+          "trail_families": 21
+        },
+        "runes": 32,
+        "telegraphs": {
+          "active_batches": 4,
+          "allocated_instances": 681,
+          "cast_count": 1,
+          "charge_count": 1,
+          "draw_commands": 5,
+          "neutral_charge_count": 0,
+          "segments": 37,
+          "visible_instances": 3
+        }
+      },
+      "arena_roi": [
+        80,
+        135,
+        1220,
+        610
+      ],
+      "changed_pixels": 260336,
+      "rgb_all_channels_245_or_more_before_after": [
+        14965,
+        0
+      ],
+      "expired_row_equal": null,
+      "sample_scope": "first 24 active enemies",
+      "cold_count": 202,
+      "hurt_count": 300,
+      "sample_count": 24,
+      "sampled_hurt_timer_levels": [
+        0.066667,
+        0.083333,
+        0.1
+      ],
+      "sampled_rgb_min": [
+        0.73655778169632,
+        0.953433096408844,
+        0.969801008701324
+      ],
+      "sampled_rgb_max": [
+        1.22000002861023,
+        1.22000002861023,
+        1.22000002861023
+      ],
+      "all_sample_alpha_one": true,
+      "full_rgb_samples_retained_in_local_log": true,
+      "screenshots_sha256": {
+        "before": "85b50503c50e2fb365fe97a8215268da9077ef67051fd05596f7c7c2247629bd",
+        "after": "eb4472740d4108f615f62b8b1d81afbeb71e9a1220f2c0e9f773c09c29759faf"
+      }
+    },
+    "disabled": {
+      "state_hash": "4904e9e459fbee17c8f44a228fa67e78e28331bd4965182d6160575b66e12321",
+      "endpoint_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "seed": 20261025,
+      "frames": 8,
+      "primary_hits": 15,
+      "secondary_hits": 0,
+      "budgets": {
+        "impacts": {
+          "active_marks": 0,
+          "allocated_marks": 32,
+          "capacity": 32,
+          "draw_commands": 0,
+          "free_marks": 32,
+          "peak_active": 0
+        },
+        "numbers": 15,
+        "projectiles": {
+          "allocated_instances": 3200,
+          "body_instances": 0,
+          "bounce_instances": 0,
+          "core_instances": 0,
+          "family_counts": {},
+          "friendly_count": 0,
+          "total_visible_instances": 0,
+          "trail_families": 0
+        },
+        "runes": 0,
+        "telegraphs": {
+          "active_batches": 0,
+          "allocated_instances": 680,
+          "cast_count": 0,
+          "charge_count": 0,
+          "draw_commands": 0,
+          "neutral_charge_count": 0,
+          "segments": 0,
+          "visible_instances": 0
+        }
+      },
+      "arena_roi": [
+        80,
+        135,
+        1220,
+        610
+      ],
+      "changed_pixels": 0,
+      "rgb_all_channels_245_or_more_before_after": [
+        0,
+        0
+      ],
+      "expired_row_equal": true,
+      "sample_scope": "all fifteen matrix enemies",
+      "cold_count": 15,
+      "hurt_count": 10,
+      "sample_count": 15,
+      "sampled_hurt_timer_levels": [
+        0.0,
+        0.066667,
+        0.1
+      ],
+      "sampled_rgb_min": [
+        0.705882370471954,
+        0.91372549533844,
+        0.929411768913269
+      ],
+      "sampled_rgb_max": [
+        0.705882370471954,
+        0.91372549533844,
+        0.929411768913269
+      ],
+      "all_sample_alpha_one": true,
+      "full_rgb_samples_retained_in_local_log": true,
+      "screenshots_sha256": {
+        "before": "5049be472a844cd2ed525a10648ff6ab5b9ad68d1202e706b9d78aaedcfe022e",
+        "after": "fe68516e930bc36ecb788ca120f030353030713b4aea6d52d38a080b0c5b6943"
+      }
+    }
+  },
+  "passed": true
+}

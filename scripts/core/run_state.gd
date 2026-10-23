@@ -303,6 +303,41 @@ func sell_rune(index: int) -> bool:
 	changed.emit()
 	return true
 
+func rune_equip_preview(bag_index: int, weapon_index: int) -> Dictionary:
+	if bag_index < 0 or bag_index >= rune_bag.size() or weapon_index < 0 or weapon_index >= loadout.size():
+		return {}
+	var weapon_id: String = str(loadout[weapon_index].get("id", ""))
+	var weapon: ContentDef = GameCatalog.weapon(weapon_id)
+	var incoming: Dictionary = rune_bag[bag_index]
+	var rune_id: String = str(incoming.get("id", ""))
+	var previous: Dictionary = loadout[weapon_index].get("rune", {})
+	if weapon == null or GameCatalog.rune(rune_id) == null:
+		return {}
+	if not previous.is_empty() and GameCatalog.rune(str(previous.get("id", ""))) == null:
+		return {}
+	var trigger_hit: int = 1 + weapon.innate_pierce
+	var max_direct_targets: int = trigger_hit
+	var bounce_scales: Array[float] = []
+	if rune_id == "pierce" or rune_id == "bounce":
+		max_direct_targets += RuneRules.EXTRA_HITS
+	if rune_id == "bounce":
+		for hit: int in trigger_hit:
+			bounce_scales.append(1.0)
+		var scale: float = 1.0
+		for jump: int in RuneRules.EXTRA_HITS:
+			scale *= RuneRules.BOUNCE_DAMAGE_FACTOR
+			bounce_scales.append(scale)
+	return {
+		"weapon_index": weapon_index, "weapon_id": weapon_id, "rune_id": rune_id,
+		"incoming_rune": incoming.duplicate(true), "returned_rune": previous.duplicate(true),
+		"bag_before": rune_bag.size(), "bag_after": rune_bag.size() - 1 + (0 if previous.is_empty() else 1),
+		"shots": weapon.shots, "innate_pierce": weapon.innate_pierce, "trigger_hit": trigger_hit,
+		"max_direct_targets": max_direct_targets, "bounce_scales": bounce_scales,
+		"blast_radius": RuneRules.BLAST_RADIUS if rune_id == "blast" else 0.0,
+		"blast_multiplier": RuneRules.BLAST_DAMAGE_FACTOR if rune_id == "blast" else 0.0,
+		"bounce_range": RuneRules.BOUNCE_RANGE if rune_id == "bounce" else 0.0,
+	}
+
 func equip_rune(bag_index: int, weapon_index: int) -> bool:
 	if bag_index < 0 or bag_index >= rune_bag.size():
 		return _fail("无效的符文。")

@@ -29,6 +29,10 @@ const RUNE_FLASH_LIMIT: int = 32
 const RUNE_FLASH_LIFE: float = 0.24
 const RUNE_KINDS: Dictionary = {"pierce": 0, "bounce": 1, "blast": 2}
 const RUNE_COLORS: Array[Color] = [Color("b8d6b2"), Color("9ec5dc"), Color("dfbc87")]
+const ENEMY_HIT_VISUAL_REVISION: String = "tempered-hit-v1"
+const ENEMY_HIT_PULSE_SECONDS: float = 0.06
+const ENEMY_HIT_TIMER_CUTOFF: float = 0.04
+const ENEMY_HIT_PEAK_GAIN: float = 0.22
 
 class RuneFlash:
 	var kind: int = 0
@@ -434,16 +438,21 @@ func _draw_enemies() -> void:
 			var bob: float = stride * (1.0 if id == "tank" else 2.0)
 			var breathing: float = sin(enemy.age * 2.0 + float(enemy.uid)) * 0.015
 			var width: float = size * (1.0 + breathing)
-			var tint: Color = Color.WHITE
-			if enemy.slow_timer > 0.0:
-				tint = Color("b4e9ed")
-			if enemy.hurt_timer > 0.0 and bool(settings.get("flash", true)):
-				tint = Color(1.7, 1.5, 1.5, 1.0)
+			var tint: Color = _enemy_tint(enemy)
 			draw_texture_rect(texture, Rect2(enemy.position + Vector2(-width * 0.5, -size * 0.66 + bob), Vector2(width, size)), false, tint)
 			if id == "tank" and enemy.health < enemy.max_health:
 				var origin: Vector2 = enemy.position + Vector2(-17, -size * 0.55)
 				draw_line(origin, origin + Vector2(34, 0), Color("242533"), 3.0)
 				draw_line(origin, origin + Vector2(34.0 * enemy.health / enemy.max_health, 0), Color("a9a7a3"), 2.0)
+
+func _enemy_tint(enemy: CombatSim.Enemy) -> Color:
+	var base: Color = Color("b4e9ed") if enemy.slow_timer > 0.0 else Color.WHITE
+	if not bool(settings.get("flash", true)) or not is_finite(enemy.hurt_timer) or enemy.hurt_timer <= ENEMY_HIT_TIMER_CUTOFF:
+		return base
+	# The simulation retains its 100ms receipt; only the first 60ms brighten the art.
+	var progress: float = clampf((enemy.hurt_timer - ENEMY_HIT_TIMER_CUTOFF) / ENEMY_HIT_PULSE_SECONDS, 0.0, 1.0)
+	var gain: float = 1.0 + ENEMY_HIT_PEAK_GAIN * progress * progress
+	return Color(base.r * gain, base.g * gain, base.b * gain, 1.0)
 
 func _draw_friendly_shots() -> void:
 	_projectile_painter.rebuild(sim.shots)

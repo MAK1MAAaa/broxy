@@ -9,7 +9,8 @@ try {
         'shop_details', 'shop_availability', 'profile_modes', 'flow',
         'feedback', 'impact_feedback', 'projectile_painter', 'enemy_telegraphs',
         'simulation_shop', 'content_expansion', 'content_presentation',
-        'relic_preview', 'relic_comparison', 'trail_readability'
+        'relic_preview', 'relic_comparison', 'trail_readability',
+        'rune_equip_preview', 'rune_equip_comparison', 'enemy_hit_style'
     )
     foreach ($suite in $suites) {
         & $runner --headless --script "res://tests/test_$suite.gd"

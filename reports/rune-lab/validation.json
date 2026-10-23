@@ -1,0 +1,534 @@
+{
+  "schema_version": 1,
+  "scope": "Rune equipment preview and enemy hit tint iteration; ongoing goal remains active",
+  "created_at_utc": "2026-10-23T13:24:47.076441+00:00",
+  "date_local": "2026-10-23",
+  "source_base_commit": "2373f65f1a68cb149f8f78aeb4567248882044f8",
+  "source_state": "Verified working tree before local rune-workbench commit",
+  "engine": "4.7.2.stable.official.ed1daf0bf",
+  "tests": {
+    "godot_headless_assertions": 10345,
+    "python_tests": 22,
+    "suite_invocations": 32,
+    "rune_projection_assertions": 2986,
+    "native_rune_ui_assertions": 63,
+    "enemy_hit_style_assertions": 513,
+    "all_passed": true
+  },
+  "simulation": {
+    "runs": 30,
+    "wins": 23,
+    "losses": 7,
+    "current_core_version": "prototype-0.1.0+467908d843ec",
+    "baseline_core_version": "prototype-0.1.0+15a5ba98e084",
+    "policy_versions": [
+      "orbit-avoid-v1/shop-v1+1d336100ecaa"
+    ],
+    "baseline_policy_versions": [
+      "orbit-avoid-v1/shop-v1+7c19c01f20e4"
+    ],
+    "all_fields_except_two_fingerprint_fields_equal": true,
+    "policy_source_audit": {
+      "bot_policy_bytes_unchanged": true,
+      "runner_only_adds_rune_rules_to_content_source_list": true,
+      "reason_for_policy_hash_change": "The existing hash also includes the full runner source, including this non-decision source-list change."
+    }
+  },
+  "visual_comparison": {
+    "schema_version": 1,
+    "scope": "Fixed actual-collision screenshots and bounded tint samples; near-white pixels are an appearance proxy, not human combat readability.",
+    "pairs": {
+      "normal": {
+        "state_hash": "b6ea646bc7ca2378e07a0617b89a3dbfc0347cda82988fd6f9997b44cc3fbdd4",
+        "endpoint_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "seed": 20261025,
+        "frames": 8,
+        "primary_hits": 15,
+        "secondary_hits": 0,
+        "budgets": {
+          "impacts": {
+            "active_marks": 15,
+            "allocated_marks": 32,
+            "capacity": 32,
+            "draw_commands": 2,
+            "free_marks": 17,
+            "peak_active": 15
+          },
+          "numbers": 15,
+          "projectiles": {
+            "allocated_instances": 3200,
+            "body_instances": 0,
+            "bounce_instances": 0,
+            "core_instances": 0,
+            "family_counts": {},
+            "friendly_count": 0,
+            "total_visible_instances": 0,
+            "trail_families": 0
+          },
+          "runes": 0,
+          "telegraphs": {
+            "active_batches": 0,
+            "allocated_instances": 680,
+            "cast_count": 0,
+            "charge_count": 0,
+            "draw_commands": 0,
+            "neutral_charge_count": 0,
+            "segments": 0,
+            "visible_instances": 0
+          }
+        },
+        "arena_roi": [
+          80,
+          135,
+          1220,
+          610
+        ],
+        "changed_pixels": 37898,
+        "rgb_all_channels_245_or_more_before_after": [
+          746,
+          0
+        ],
+        "expired_row_equal": true,
+        "sample_scope": "all fifteen matrix enemies",
+        "cold_count": 0,
+        "hurt_count": 10,
+        "sample_count": 15,
+        "sampled_hurt_timer_levels": [
+          0.0,
+          0.066667,
+          0.1
+        ],
+        "sampled_rgb_min": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "sampled_rgb_max": [
+          1.22000002861023,
+          1.22000002861023,
+          1.22000002861023
+        ],
+        "all_sample_alpha_one": true,
+        "full_rgb_samples_retained_in_local_log": true,
+        "screenshots_sha256": {
+          "before": "f1f8695e0b7dc541dc21ea0b9a084b7b397c97b6dad424a0c55ae42180595500",
+          "after": "d25f92eda06d08e71d9293f94ab139e01eb93540d03bbd5dcab65e152fda32c0"
+        }
+      },
+      "chilled": {
+        "state_hash": "4904e9e459fbee17c8f44a228fa67e78e28331bd4965182d6160575b66e12321",
+        "endpoint_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "seed": 20261025,
+        "frames": 8,
+        "primary_hits": 15,
+        "secondary_hits": 0,
+        "budgets": {
+          "impacts": {
+            "active_marks": 15,
+            "allocated_marks": 32,
+            "capacity": 32,
+            "draw_commands": 2,
+            "free_marks": 17,
+            "peak_active": 15
+          },
+          "numbers": 15,
+          "projectiles": {
+            "allocated_instances": 3200,
+            "body_instances": 0,
+            "bounce_instances": 0,
+            "core_instances": 0,
+            "family_counts": {},
+            "friendly_count": 0,
+            "total_visible_instances": 0,
+            "trail_families": 0
+          },
+          "runes": 0,
+          "telegraphs": {
+            "active_batches": 0,
+            "allocated_instances": 680,
+            "cast_count": 0,
+            "charge_count": 0,
+            "draw_commands": 0,
+            "neutral_charge_count": 0,
+            "segments": 0,
+            "visible_instances": 0
+          }
+        },
+        "arena_roi": [
+          80,
+          135,
+          1220,
+          610
+        ],
+        "changed_pixels": 38136,
+        "rgb_all_channels_245_or_more_before_after": [
+          764,
+          0
+        ],
+        "expired_row_equal": true,
+        "sample_scope": "all fifteen matrix enemies",
+        "cold_count": 15,
+        "hurt_count": 10,
+        "sample_count": 15,
+        "sampled_hurt_timer_levels": [
+          0.0,
+          0.066667,
+          0.1
+        ],
+        "sampled_rgb_min": [
+          0.705882370471954,
+          0.91372549533844,
+          0.929411768913269
+        ],
+        "sampled_rgb_max": [
+          0.861176490783691,
+          1.11474514007568,
+          1.13388240337372
+        ],
+        "all_sample_alpha_one": true,
+        "full_rgb_samples_retained_in_local_log": true,
+        "screenshots_sha256": {
+          "before": "24ceced4a8bd19458a7c138d69990e2c634b84ad5a677ce957e6895815d19fde",
+          "after": "04612cc5a061569b949e5921375d7d299347f392e3228223cd9993c66f7a6c16"
+        }
+      },
+      "dense": {
+        "state_hash": "5850b059f97b9835c3abc80662c49cf4017e1fd501311ad02a77247e3378f019",
+        "endpoint_hash": "855d59600030ccf7fad1f1328376dba78d902a4843f486eba6b9ca14336ff085",
+        "seed": 20261025,
+        "frames": 20,
+        "primary_hits": 3019,
+        "secondary_hits": 5167,
+        "budgets": {
+          "impacts": {
+            "active_marks": 32,
+            "allocated_marks": 32,
+            "capacity": 32,
+            "draw_commands": 4,
+            "free_marks": 0,
+            "peak_active": 32
+          },
+          "numbers": 44,
+          "projectiles": {
+            "allocated_instances": 3369,
+            "body_instances": 95,
+            "bounce_instances": 169,
+            "core_instances": 601,
+            "family_counts": {
+              "bone:blast": 11,
+              "bone:bounce": 25,
+              "bone:pierce": 39,
+              "comet:blast": 11,
+              "comet:bounce": 15,
+              "comet:pierce": 49,
+              "crescent:blast": 29,
+              "crescent:bounce": 33,
+              "crescent:pierce": 43,
+              "ember:blast": 15,
+              "ember:bounce": 21,
+              "ember:pierce": 59,
+              "frost:blast": 21,
+              "frost:bounce": 25,
+              "frost:pierce": 44,
+              "scatter:blast": 14,
+              "scatter:bounce": 31,
+              "scatter:pierce": 53,
+              "storm:blast": 14,
+              "storm:bounce": 19,
+              "storm:pierce": 30
+            },
+            "friendly_count": 601,
+            "total_visible_instances": 865,
+            "trail_families": 21
+          },
+          "runes": 32,
+          "telegraphs": {
+            "active_batches": 4,
+            "allocated_instances": 681,
+            "cast_count": 1,
+            "charge_count": 1,
+            "draw_commands": 5,
+            "neutral_charge_count": 0,
+            "segments": 37,
+            "visible_instances": 3
+          }
+        },
+        "arena_roi": [
+          80,
+          135,
+          1220,
+          610
+        ],
+        "changed_pixels": 260336,
+        "rgb_all_channels_245_or_more_before_after": [
+          14965,
+          0
+        ],
+        "expired_row_equal": null,
+        "sample_scope": "first 24 active enemies",
+        "cold_count": 202,
+        "hurt_count": 300,
+        "sample_count": 24,
+        "sampled_hurt_timer_levels": [
+          0.066667,
+          0.083333,
+          0.1
+        ],
+        "sampled_rgb_min": [
+          0.73655778169632,
+          0.953433096408844,
+          0.969801008701324
+        ],
+        "sampled_rgb_max": [
+          1.22000002861023,
+          1.22000002861023,
+          1.22000002861023
+        ],
+        "all_sample_alpha_one": true,
+        "full_rgb_samples_retained_in_local_log": true,
+        "screenshots_sha256": {
+          "before": "85b50503c50e2fb365fe97a8215268da9077ef67051fd05596f7c7c2247629bd",
+          "after": "eb4472740d4108f615f62b8b1d81afbeb71e9a1220f2c0e9f773c09c29759faf"
+        }
+      },
+      "disabled": {
+        "state_hash": "4904e9e459fbee17c8f44a228fa67e78e28331bd4965182d6160575b66e12321",
+        "endpoint_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "seed": 20261025,
+        "frames": 8,
+        "primary_hits": 15,
+        "secondary_hits": 0,
+        "budgets": {
+          "impacts": {
+            "active_marks": 0,
+            "allocated_marks": 32,
+            "capacity": 32,
+            "draw_commands": 0,
+            "free_marks": 32,
+            "peak_active": 0
+          },
+          "numbers": 15,
+          "projectiles": {
+            "allocated_instances": 3200,
+            "body_instances": 0,
+            "bounce_instances": 0,
+            "core_instances": 0,
+            "family_counts": {},
+            "friendly_count": 0,
+            "total_visible_instances": 0,
+            "trail_families": 0
+          },
+          "runes": 0,
+          "telegraphs": {
+            "active_batches": 0,
+            "allocated_instances": 680,
+            "cast_count": 0,
+            "charge_count": 0,
+            "draw_commands": 0,
+            "neutral_charge_count": 0,
+            "segments": 0,
+            "visible_instances": 0
+          }
+        },
+        "arena_roi": [
+          80,
+          135,
+          1220,
+          610
+        ],
+        "changed_pixels": 0,
+        "rgb_all_channels_245_or_more_before_after": [
+          0,
+          0
+        ],
+        "expired_row_equal": true,
+        "sample_scope": "all fifteen matrix enemies",
+        "cold_count": 15,
+        "hurt_count": 10,
+        "sample_count": 15,
+        "sampled_hurt_timer_levels": [
+          0.0,
+          0.066667,
+          0.1
+        ],
+        "sampled_rgb_min": [
+          0.705882370471954,
+          0.91372549533844,
+          0.929411768913269
+        ],
+        "sampled_rgb_max": [
+          0.705882370471954,
+          0.91372549533844,
+          0.929411768913269
+        ],
+        "all_sample_alpha_one": true,
+        "full_rgb_samples_retained_in_local_log": true,
+        "screenshots_sha256": {
+          "before": "5049be472a844cd2ed525a10648ff6ab5b9ad68d1202e706b9d78aaedcfe022e",
+          "after": "fe68516e930bc36ecb788ca120f030353030713b4aea6d52d38a080b0c5b6943"
+        }
+      }
+    },
+    "passed": true
+  },
+  "performance": {
+    "average_fps": 61.3677478454837,
+    "damage_by_weapon": {
+      "bone": 557016.074999997,
+      "comet": 2546797.27500008,
+      "crescent": 7218882.90007478,
+      "ember": 2802085.48750129,
+      "frost": 2819300.41248985,
+      "scatter": 473310.200000009,
+      "storm": 1351472.3999935
+    },
+    "duration_seconds": 300.0,
+    "enemies": 300,
+    "enemy_hit_visual_revision": "tempered-hit-v1",
+    "impact_draw_commands_at_end": 9,
+    "impact_visual_capacity": 32,
+    "impact_visual_peak": 32,
+    "impact_visual_revision": "primary-impact-v1",
+    "internal_resolution": "1280x720",
+    "os": "Windows",
+    "p99_frame_ms": 28.011,
+    "passed": true,
+    "persistent_profile": false,
+    "pickups": 200,
+    "primary_hits": 314238,
+    "projectile_families_at_end": {
+      "bone:bounce": 57,
+      "bone:pierce": 3,
+      "comet:pierce": 121,
+      "crescent:blast": 96,
+      "crescent:bounce": 39,
+      "crescent:pierce": 1,
+      "ember:blast": 5,
+      "ember:pierce": 83,
+      "frost:blast": 62,
+      "frost:bounce": 2,
+      "scatter:bounce": 76,
+      "scatter:pierce": 24,
+      "storm:blast": 30,
+      "storm:bounce": 1
+    },
+    "projectile_visual_revision": "arsenal-lines-v3",
+    "projectiles": 600,
+    "renderer": "gl_compatibility",
+    "run_seed": 1792035075,
+    "rune_visual_peak": 32,
+    "samples": 18412,
+    "scenario": "content-feedback",
+    "secondary_hits": 1390155,
+    "settings": {
+      "flash": true,
+      "shake": true,
+      "volume": 0.65
+    },
+    "weapon_ids": [
+      "bone",
+      "frost",
+      "ember",
+      "scatter",
+      "crescent",
+      "storm",
+      "comet"
+    ]
+  },
+  "performance_context": {
+    "device": "Windows 11 Pro for Workstations / i5-13600KF / RTX 4070 SUPER / NVIDIA 591.86",
+    "warmup_seconds": 5,
+    "sample_seconds": 300,
+    "vsync": "retained",
+    "concurrent_godot_tests_builds_or_simulation": false,
+    "native_window_title_observed": true,
+    "viewport_capture_seconds": 120,
+    "historical_reports_preserved": true,
+    "cross_seed_fps_delta_not_attributed_to_hit_tint": true
+  },
+  "test_fixture_correction": {
+    "initial_ui_assertions": 61,
+    "failures": 1,
+    "reason": "The 303px real text fits a 370px viewport; no scrolling was necessary.",
+    "final_real_input_overflow_fixture_verified": true,
+    "production_layout_not_changed_to_force_overflow": true
+  },
+  "static_assets": {
+    "count": 42,
+    "art_revision": "engraved-05",
+    "identical_to_previous_commit": true
+  },
+  "distribution": {
+    "zip_crc_passed": true,
+    "x86_64_valid": true,
+    "smoke_exit_code": 0,
+    "previous_zip_preserved": true,
+    "sha256": {
+      "build/Embers-windows-x86_64/Embers.exe": "d34d36f3be1a6c49c56525ae86469b92e4f417ddf0b43cf00dd80c385c4b0562",
+      "build/Embers-windows-x86_64/Embers.pck": "c44035f13bb79e33bf308e123cfb1cb4d7a5b7618571cc3e7806de567b86375e",
+      "build/Embers-windows-x86_64.zip": "9ea6c7be0863de12e3b343db53c5fb9b60300fed19f7e78a5f9a3fdc2db40950"
+    }
+  },
+  "source_sha256": {
+    "scripts/data/rune_rules.gd": "15fef07ae9b62853b94b1aecf6e7c4c83a8700b6aea0d5d6a8f80ae30169b692",
+    "scripts/core/run_state.gd": "3c7f8db14b0b84afb4715fc1cc47439c149ffef302d480d9d096e0d0a401e849",
+    "scripts/combat/combat_sim.gd": "e1ee2125080bd94bc5e4806f85edaa0d97aa075eca4bfa2f580b18a76232df38",
+    "scripts/combat/combat_world.gd": "5bbff1410a6f2288f00fe9415741696fb0591b7b074c2c3dc849236682ad1c00",
+    "scripts/ui/game_ui.gd": "0c70051a4ed017d0c38254f5453b3dd7938eaee357f0bcef5a675a559f2a00a1",
+    "scripts/main.gd": "a39492124ac45ac1299eeb544756869951ce1a286b9fabce3c2c1a08fe0d40e5",
+    "data/runes/blast.tres": "adcdf27dd7830993b6da5cb23239f35bed33fc82af3b805da7f5e6e8af361fb7",
+    "tests/simulate_runs.gd": "799e463152d5b876523cbf2615923e5c7f9f8733a6a55d0ae82a99b70151bf3d",
+    "tests/test_ui.gd": "b4b34fc5b2d0e308c72b8b0cce07b3fabe683c92660ed66720bba410e0aa7831",
+    "tests/test_rune_equip_preview.gd": "ac5480b73ca24a7c3dc446343ea605755272f4b8416635625cd88b75dc4b6cf2",
+    "tests/test_rune_equip_comparison.gd": "8cc686a7d45db30c3eabc821ba4dc99ea1a69f5795e1f84963c73d1a984e19b5",
+    "tests/test_enemy_hit_style.gd": "f074e1860f4fe84faaf051a69baca485c88b40c0ec1066e4b9e63f93fba03570",
+    "tools/preview_rune_equip.gd": "e3ef152801e5768a9dcd0b895890c9ab4ad46c12a0c6bd43db791382a3178f10",
+    "tools/preview_enemy_hit_style.gd": "dfa3502033a79d24a24f29bd28c13d0ae1189588d54559315d8f04f0019bf7cb",
+    "tools/test.sh": "bbae409e07e416e4e6acef776d09e546edba190d9f538ad5c88ae248e1c12fc7",
+    "tools/test.ps1": "3b1798ba4ab24350e8328ab21419b0c327ae803942fe85695a85e16bdef04343",
+    "README.md": "afae6c55b1414eb886b79b2681538e6b24ada090d54e30d4f4b0231f4f7575b4",
+    "docs/rune-workbench.md": "a158ec5c532cbcca990154c78ca8a078d18381d3b9a8fb5a1196f03861569bf9",
+    "docs/art-direction.md": "79e0322e8059403351b5d27c8e5d2c22365106328f96f63546850ef8b88634db",
+    "docs/verification.md": "d713b242269f169f3abeb75c6bb612692bb746523160d362a1e5f133bd50f10a",
+    "docs/optimization-log.md": "e51199d4a30f4cc1b11601177a81474d1ded3d941851ea744bcca95d5d57551b"
+  },
+  "evidence_sha256": {
+    "tests.log": "60e1a125e31d90b7be5d7f0ee3fee6b46f9e7f95734a18f406fc480aafe251c8",
+    "rune_equip_comparison-native.log": "2b1ac1a48a949ba1e3a7eb3b54239e8cd7290fb9a01bd9aea0192fda1b5d61c2",
+    "enemy_hit_style-native.log": "350e6db39d21d3e02e66940b6dbbe49626680d2cc611acd49de2688a4a5e7847",
+    "simulation.jsonl": "d24f0eaf400a29856e58cebfef1167604d00959d107ff38fbcc1cbbbc462d74b",
+    "simulation-comparison.json": "980b5957ec160b61faa73ec6a5c01a9495c5098e9741a70f016379991a10f28c",
+    "visual-comparison.json": "e5b6bbda7c26975247f30d0cd68a017ba0cbaffe50d9752fb4969e46c16b3398",
+    "performance.json": "a95fbacfb4fce6c3accdcce5463a0bbf34d6bcb4ef8f5999782cb664244259b0",
+    "benchmark.log": "1fd4486dbb292ac3bc21cbf7eece59db51ccc2003ee92b0dc1247f0aa39366ce",
+    "build.log": "ac634e5d8d0195d22924f7862bc5b5171a734c7df9b0725538667f156cccc898",
+    "export-smoke.log": "6c908db8473621d26499c39ce46f26341df140bf73742e7966cafe1f7ad65e73",
+    "rune_equip_comparison-initial.log": "be1922a8979ea605c951fc32303dabdc8d09e1fff35d9e32cfd39de3f6979cfe",
+    "rune-scroll-debug.log": "2400111e4d575589433f4a38ace991347cd8abc39e20e65cad74f093d93e757c"
+  },
+  "screenshots_sha256": {
+    "crescent-blast.png": "d7bd41f372d0dab1445638dfe8bf6756affd9cc4b5dac4caa71f0387d86dd58b",
+    "crescent-bounce.png": "5da182b0d5abf171a53e287abd4a099cbe46fcf12c3d93e915f408e3d7f7928f",
+    "full-swap.png": "346d845c632856cf6050fa37a57ceb511de969345eed7118e344cb12a21f5c19",
+    "volley.png": "a2cc1851c552f298a02fda5a8a87050bc2e6248abb136368abbe389f7f7b89ff",
+    "shop.png": "15705109c092a85fe80ee99757aa7493776fece6dd3fb393a31ea3f8d185f84b",
+    "export-smoke.png": "dedb8f2fb83403dee309df13a932084ac762f407a3010f0746b2cb736058f883",
+    "benchmark.png": "8310ef399625cb2055bb86efa4388fd98e12bc436bf57e3ea32a3dcdcc614cf8",
+    "hit-normal-before.png": "f1f8695e0b7dc541dc21ea0b9a084b7b397c97b6dad424a0c55ae42180595500",
+    "hit-normal-after.png": "d25f92eda06d08e71d9293f94ab139e01eb93540d03bbd5dcab65e152fda32c0",
+    "hit-chilled-before.png": "24ceced4a8bd19458a7c138d69990e2c634b84ad5a677ce957e6895815d19fde",
+    "hit-chilled-after.png": "04612cc5a061569b949e5921375d7d299347f392e3228223cd9993c66f7a6c16",
+    "hit-dense-before.png": "85b50503c50e2fb365fe97a8215268da9077ef67051fd05596f7c7c2247629bd",
+    "hit-dense-after.png": "eb4472740d4108f615f62b8b1d81afbeb71e9a1220f2c0e9f773c09c29759faf",
+    "hit-disabled-before.png": "5049be472a844cd2ed525a10648ff6ab5b9ad68d1202e706b9d78aaedcfe022e",
+    "hit-disabled-after.png": "fe68516e930bc36ecb788ca120f030353030713b4aea6d52d38a080b0c5b6943"
+  },
+  "limits": [
+    "Fixed screenshots and near-white thresholds do not prove human readability or hit feedback in dynamic play.",
+    "The rune target counts are per projectile upper bounds, not actual hit counts or DPS.",
+    "Legacy bot does not exercise the preview or buy four new relics; focused actual purchase/equip/collision tests cover those interfaces.",
+    "Single native Windows device and one 300-second pressure sample including one screenshot; not GPU timings.",
+    "macOS build was not rerun on Windows; Authenticode signing is not configured."
+  ],
+  "passed": true
+}

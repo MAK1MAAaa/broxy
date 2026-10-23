@@ -436,7 +436,7 @@ func fire_weapon(weapon_id: String, rune_id: String, position: Vector2, directio
 	shot.source = weapon_id
 	shot.attacker_id = ""
 	shot.rune = rune_id
-	shot.remaining = 2 if rune_id == "pierce" or rune_id == "bounce" else 0
+	shot.remaining = RuneRules.EXTRA_HITS if rune_id == "pierce" or rune_id == "bounce" else 0
 	shot.innate_remaining = definition.innate_pierce
 	shot.life = definition.range / maxf(1.0, definition.projectile_speed) + 1.2
 	shot.homing = definition.homing
@@ -534,7 +534,7 @@ func _update_shots(delta: float) -> void:
 				_release_shot(shot)
 				if positive_hit:
 					rune_activated.emit("blast", impact_position, incoming_direction, Vector2.ZERO)
-				_explode(impact_position, shot.damage * 0.55, shot.source, shot.hit_ids)
+				_explode(impact_position, shot.damage * RuneRules.BLAST_DAMAGE_FACTOR, shot.source, shot.hit_ids)
 			elif shot.rune == "pierce" and shot.remaining > 0:
 				shot.remaining -= 1
 				if positive_hit:
@@ -542,11 +542,11 @@ func _update_shots(delta: float) -> void:
 				impact = _first_collision(shot)
 				continue
 			elif shot.rune == "bounce" and shot.remaining > 0:
-				var target: Enemy = _nearest(impact_position, 230.0, shot.hit_ids)
+				var target: Enemy = _nearest(impact_position, RuneRules.BOUNCE_RANGE, shot.hit_ids)
 				if target != null:
 					shot.position = impact_position
 					shot.velocity = (target.position - impact_position).normalized() * shot.velocity.length()
-					shot.damage *= 0.75
+					shot.damage *= RuneRules.BOUNCE_DAMAGE_FACTOR
 					shot.remaining -= 1
 					shot.life = maxf(shot.life, 0.7)
 					add_effect(impact_position, Color("dcc5ff"), 12.0, 0.18, 1)
@@ -631,14 +631,14 @@ func apply_damage(enemy: Enemy, amount: float, source: String, secondary: bool =
 		_kill_enemy(enemy)
 
 func _explode(position: Vector2, amount: float, source: String, excluded: Dictionary) -> void:
-	add_effect(position, Color("df9cfa"), 68.0, 0.35, 0)
+	add_effect(position, Color("df9cfa"), RuneRules.BLAST_RADIUS, 0.35, 0)
 	for slot: int in _explosion_slots(position):
 		if complete:
 			return
 		var enemy: Enemy = enemies[slot]
 		if not enemy.active or excluded.has(enemy.uid):
 			continue
-		if enemy.position.distance_squared_to(position) < pow(68.0 + enemy.radius, 2):
+		if enemy.position.distance_squared_to(position) < pow(RuneRules.BLAST_RADIUS + enemy.radius, 2):
 			# Secondary damage deliberately never enters the rune dispatch path.
 			apply_damage(enemy, amount, source, true)
 
@@ -650,7 +650,7 @@ func _explosion_slots(position: Vector2) -> PackedInt32Array:
 		for index: int in enemies.size():
 			slots.append(index)
 		return slots
-	var reach: Vector2 = Vector2.ONE * (68.0 + _largest_enemy_radius)
+	var reach: Vector2 = Vector2.ONE * (RuneRules.BLAST_RADIUS + _largest_enemy_radius)
 	var start: Vector2i = Vector2i(((position - reach) / CELL).floor())
 	var end: Vector2i = Vector2i(((position + reach) / CELL).floor())
 	for x: int in range(start.x, end.x + 1):

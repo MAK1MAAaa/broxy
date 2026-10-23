@@ -43,7 +43,7 @@ func _initialize() -> void:
 	quit(1 if _require_win and not all_won else 0)
 
 func _content_version() -> String:
-	var sources: Array[String] = ["res://scripts/core/run_state.gd", "res://scripts/combat/combat_sim.gd"]
+	var sources: Array[String] = ["res://scripts/core/run_state.gd", "res://scripts/combat/combat_sim.gd", "res://scripts/data/rune_rules.gd"]
 	var definitions: Array[ContentDef] = GameCatalog.weapons()
 	definitions.append_array(GameCatalog.runes())
 	definitions.append_array(GameCatalog.relics())
