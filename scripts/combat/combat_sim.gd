@@ -51,6 +51,10 @@ class Shot:
 	var rune: String = ""
 	var remaining: int = 0
 	var innate_remaining: int = 0
+	var return_after: float = 0.0
+	var return_speed: float = 0.0
+	var returning: bool = false
+	var return_cancelled: bool = false
 	var hit_ids: Dictionary = {}
 	var homing: float = 0.0
 	var slow: float = 0.0
@@ -439,6 +443,11 @@ func fire_weapon(weapon_id: String, rune_id: String, position: Vector2, directio
 	shot.remaining = RuneRules.EXTRA_HITS if rune_id == "pierce" or rune_id == "bounce" else 0
 	shot.innate_remaining = definition.innate_pierce
 	shot.life = definition.range / maxf(1.0, definition.projectile_speed) + 1.2
+	if definition.return_delay > 0.0:
+		shot.return_after = definition.return_delay
+		shot.return_speed = definition.return_speed if definition.return_speed > 0.0 else definition.projectile_speed
+		if definition.return_lifetime > 0.0:
+			shot.life = definition.return_lifetime
 	shot.homing = definition.homing
 	shot.slow = definition.slow
 	shot.hostile = false
@@ -453,6 +462,10 @@ func _allocate_shot() -> Shot:
 	shot.hit_ids.clear()
 	shot.remaining = 0
 	shot.innate_remaining = 0
+	shot.return_after = 0.0
+	shot.return_speed = 0.0
+	shot.returning = false
+	shot.return_cancelled = false
 	shot.attacker_id = ""
 	shot_count += 1
 	return shot
@@ -483,10 +496,16 @@ func _update_shots(delta: float) -> void:
 		if not shot.active:
 			continue
 		shot.life -= delta
-		if shot.life <= 0.0 or not ARENA.grow(100.0).has_point(shot.position):
+		var can_return: bool = not shot.hostile and not shot.return_cancelled and (shot.returning or shot.return_after > 0.0)
+		if shot.life <= 0.0 or (not can_return and not ARENA.grow(100.0).has_point(shot.position)):
 			_release_shot(shot)
 			continue
-		if shot.homing > 0.0 and not shot.hostile:
+		if can_return and not shot.returning:
+			shot.return_after = maxf(0.0, shot.return_after - delta)
+			shot.returning = shot.return_after <= 0.0
+		if shot.returning:
+			shot.velocity = (player_position - shot.position).normalized() * shot.return_speed
+		elif shot.homing > 0.0 and not shot.hostile:
 			var target: Enemy = _nearest(shot.position, 420.0, shot.hit_ids)
 			if target != null:
 				var speed: float = shot.velocity.length()
@@ -503,6 +522,12 @@ func _update_shots(delta: float) -> void:
 					shot.velocity = heading.lerp(desired, weight).normalized() * speed
 		shot.previous = shot.position
 		shot.position += shot.velocity * delta
+		var pending_recovery: bool = false
+		if shot.returning:
+			var recovery_t: float = _swept_circle_entry_t(shot.previous, shot.position, player_position, shot.radius + 12.0)
+			if is_finite(recovery_t):
+				shot.position = shot.previous.lerp(shot.position, recovery_t)
+				pending_recovery = true
 		if shot.hostile:
 			if _segment_distance_squared(player_position, shot.previous, shot.position) < pow(shot.radius + 12.0, 2):
 				var hit_damage: float = shot.damage
@@ -544,11 +569,16 @@ func _update_shots(delta: float) -> void:
 			elif shot.rune == "bounce" and shot.remaining > 0:
 				var target: Enemy = _nearest(impact_position, RuneRules.BOUNCE_RANGE, shot.hit_ids)
 				if target != null:
+					if shot.return_after > 0.0 or shot.returning:
+						shot.return_cancelled = true
+						shot.returning = false
+						shot.return_after = 0.0
 					shot.position = impact_position
 					shot.velocity = (target.position - impact_position).normalized() * shot.velocity.length()
 					shot.damage *= RuneRules.BOUNCE_DAMAGE_FACTOR
 					shot.remaining -= 1
-					shot.life = maxf(shot.life, 0.7)
+					if shot.return_speed <= 0.0:
+						shot.life = maxf(shot.life, 0.7)
 					add_effect(impact_position, Color("dcc5ff"), 12.0, 0.18, 1)
 					if positive_hit:
 						rune_activated.emit("bounce", impact_position, incoming_direction, shot.velocity.normalized())
@@ -557,6 +587,8 @@ func _update_shots(delta: float) -> void:
 			else:
 				_release_shot(shot)
 			break
+		if pending_recovery and shot.active and shot.returning:
+			_release_shot(shot)
 
 func _first_collision(shot: Shot) -> Enemy:
 	var result: Enemy

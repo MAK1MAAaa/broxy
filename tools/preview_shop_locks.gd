@@ -59,7 +59,7 @@ func _preview() -> void:
 	var before: Array[Dictionary] = state.offers.duplicate(true)
 	var wallet: int = state.gold
 	var random_state: int = state.rng.state
-	passed = passed and state.locked_offer_count() == 2 and state.loadout.size() == 4 and state.rune_bag.size() == 4 and state.relic_counts.size() == 10
+	passed = passed and state.locked_offer_count() == 2 and state.loadout.size() == 4 and state.rune_bag.size() == 4 and state.relic_counts.size() == GameCatalog.relics().size()
 	if case_name in ["repriced", "bought"]:
 		state.next_wave()
 		state.generate_shop()

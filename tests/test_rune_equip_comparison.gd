@@ -71,7 +71,7 @@ func _open(ui: GameUI, slot: int) -> Button:
 
 func _test_crescent_blast(ui: GameUI) -> void:
 	var state: RunState = FIXTURE.make_state("crescent-blast")
-	_check(state != null and state.loadout.size() == 4 and state.rune_bag.size() == 4 and state.relic_counts.size() == 10, "Legal purchases create the full 720p rune preview fixture")
+	_check(state != null and state.loadout.size() == 4 and state.rune_bag.size() == 4 and state.relic_counts.size() == GameCatalog.relics().size(), "Legal purchases create the full 720p rune preview fixture with every catalog relic")
 	if state == null:
 		return
 	await _show_selected(ui, state)
@@ -81,7 +81,7 @@ func _test_crescent_blast(ui: GameUI) -> void:
 		_check(equip != null and preview != null and equip.get_parent() == preview.get_parent() and preview.get_parent().size.y <= 44.1, "Direct equip and preview share the original 44px weapon row: %d" % slot)
 	_check(_buttons_inside(ui._page), "All full-build shop buttons remain inside 1280x720 with rune preview actions")
 	var guide: Label = ui.find_child("RuneGuide", true, false)
-	_check(guide != null and guide.text.contains("月镰") and guide.text.contains("第2直接命中") and guide.text.contains("其余法器从首击"), "The general selected-rune guide states the moon-scythe exception")
+	_check(guide != null and guide.text.contains("本体贯穿先执行") and guide.text.contains("其后的直接命中"), "The selected-rune guide explains native penetration before rune dispatch without assuming a particular weapon")
 	var before: String = _signature(state)
 	var inventory: String = _inventory_signature(state)
 	var incoming: Dictionary = state.rune_bag[0].duplicate(true)

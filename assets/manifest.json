@@ -1,7 +1,8 @@
 {
   "schema_version": 1,
   "style": "Eclipse reliquary: engraved occult vector art",
-  "art_revision": "engraved-05",
+  "art_revision": "engraved-06",
+  "projectile_visual_revision": "arsenal-atlas-v5",
   "license": "CC0-1.0",
   "generator": "python3 tools/generate_assets.py",
   "external_sources": [],
@@ -529,6 +530,60 @@
       "status": "authored; engine visual QA pending"
     },
     {
+      "id": "icons_return_ring",
+      "path": "assets/icons/return_ring.svg",
+      "type": "vector",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "engraved occult return_ring icon; transparent; readable at 24–48px",
+      "source": "tools/art_icons.py",
+      "creator": "Project original procedural vector artwork",
+      "license": "CC0-1.0",
+      "status": "authored; engine visual QA pending"
+    },
+    {
+      "id": "icons_blood_pact",
+      "path": "assets/icons/blood_pact.svg",
+      "type": "vector",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "engraved occult blood_pact icon; transparent; readable at 24–48px",
+      "source": "tools/art_icons.py",
+      "creator": "Project original procedural vector artwork",
+      "license": "CC0-1.0",
+      "status": "authored; engine visual QA pending"
+    },
+    {
+      "id": "icons_grave_candle",
+      "path": "assets/icons/grave_candle.svg",
+      "type": "vector",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "engraved occult grave_candle icon; transparent; readable at 24–48px",
+      "source": "tools/art_icons.py",
+      "creator": "Project original procedural vector artwork",
+      "license": "CC0-1.0",
+      "status": "authored; engine visual QA pending"
+    },
+    {
       "id": "fx_glow",
       "path": "assets/fx/glow.svg",
       "type": "vector",
@@ -581,6 +636,79 @@
       "creator": "Project original procedural vector artwork",
       "license": "CC0-1.0",
       "status": "authored; engine visual QA pending"
+    },
+    {
+      "id": "fx_projectile_heads",
+      "path": "assets/fx/projectile_heads.svg",
+      "type": "vector",
+      "size": [
+        512,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "eight projectile-head frames; two pixels per world pixel; baked sixteen-sided white cores and authored sigil segments; return ring has no core",
+      "source": "tools/art_projectiles.py",
+      "creator": "Project original procedural vector artwork",
+      "license": "CC0-1.0",
+      "status": "authored; engine visual QA pending",
+      "atlas": {
+        "frame_size": [
+          64,
+          64
+        ],
+        "world_size": [
+          32,
+          32
+        ],
+        "columns": 8,
+        "rows": 1,
+        "sampling_scale": 2,
+        "frames": [
+          {
+            "source": "bone",
+            "frame": 0,
+            "base_radius": 4.0
+          },
+          {
+            "source": "frost",
+            "frame": 1,
+            "base_radius": 6.0
+          },
+          {
+            "source": "ember",
+            "frame": 2,
+            "base_radius": 8.0
+          },
+          {
+            "source": "scatter",
+            "frame": 3,
+            "base_radius": 4.0
+          },
+          {
+            "source": "crescent",
+            "frame": 4,
+            "base_radius": 8.0
+          },
+          {
+            "source": "storm",
+            "frame": 5,
+            "base_radius": 3.5
+          },
+          {
+            "source": "comet",
+            "frame": 6,
+            "base_radius": 11.0
+          },
+          {
+            "source": "return_ring",
+            "frame": 7,
+            "base_radius": 8.0
+          }
+        ]
+      }
     },
     {
       "id": "audio_shoot",

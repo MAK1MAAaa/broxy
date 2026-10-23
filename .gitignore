@@ -34,3 +34,8 @@ reports/shop-locks/*.jsonl
 reports/shop-locks/*.png
 reports/shop-locks/*.import
 reports/shop-locks/*-raw.json
+reports/return-ring/*.log
+reports/return-ring/*.jsonl
+reports/return-ring/*.png
+reports/return-ring/*.import
+reports/return-ring/*-raw.json

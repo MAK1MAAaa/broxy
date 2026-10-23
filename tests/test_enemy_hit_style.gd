@@ -179,8 +179,8 @@ func _test_dense_purity_and_budget() -> void:
 	_check(count == 300 and world.sim.primary_hits > 0 and world.sim.secondary_hits > 0, "The full production pressure scene actually exercises direct and secondary damage")
 	_check(_signature(world.sim) == before and _visual_budget(world) == budget, "Dense tint preparation changes neither RNG/state nor projectile, telegraph and impact allocations")
 	var stats: Dictionary = world._projectile_painter.get_stats()
-	_check(stats["friendly_count"] == 600 and stats["family_counts"].size() == 21
-		and stats["allocated_instances"] <= 4800, "The existing twenty-one projectile families retain the original instance budget")
+	_check(stats["friendly_count"] == 600 and stats["family_counts"].size() == GameCatalog.weapons().size() * GameCatalog.runes().size()
+		and stats["allocated_instances"] <= 4800, "All current projectile families retain the original instance budget")
 	_check(world._impact_painter.get_stats()["draw_commands"] <= 12, "Primary-hit marks retain their twelve-command budget")
 	_dispose(world)
 

@@ -170,8 +170,8 @@ func _test_full_shop_and_existing_flows(ui: GameUI) -> void:
 	var incoming: Dictionary = state.rune_bag[0].duplicate(true)
 	await _accept(ui, "lock:0")
 	await _accept(ui, "lock:1")
-	_check(state.loadout.size() == 4 and state.rune_bag.size() == 4 and state.relic_counts.size() == 10 and ui._selected_rune == 0, "Locking full-capacity weapon and rune stock preserves the selected reserve rune")
-	_check(_controls_inside(ui._page), "Full 720p stock, names and actions fit with two locks, four equipped weapons, four reserve runes and ten relic types")
+	_check(state.loadout.size() == 4 and state.rune_bag.size() == 4 and state.relic_counts.size() == GameCatalog.relics().size() and ui._selected_rune == 0, "Locking full-capacity weapon and rune stock preserves the selected reserve rune")
+	_check(_controls_inside(ui._page), "Full 720p stock, names and actions fit with two locks, four equipped weapons, four reserve runes and every catalog relic")
 	for index: int in 4:
 		var title: Control = ui.find_child("OfferLock%d" % index, true, false).get_parent()
 		_check(title.size.y <= 30.1, "The small title-row lock does not add card height: %d" % index)

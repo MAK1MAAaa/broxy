@@ -6,7 +6,7 @@ const LIFE: float = 0.12
 const MERGE_WINDOW: float = 0.05
 const STAGES: int = 3
 const KINDS: Dictionary = {"bone": 0, "frost": 1, "ember": 2, "scatter": 3,
-	"crescent": 0, "storm": 1, "comet": 3}
+	"crescent": 0, "storm": 1, "comet": 3, "return_ring": 0}
 const COLORS: Array[Color] = [Color("decfad"), Color("9ec5dc"), Color("dec08b"), Color("bca4cf")]
 const ALPHAS: Array[float] = [0.80, 0.52, 0.26]
 

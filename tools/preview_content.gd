@@ -116,16 +116,22 @@ func _build_catalog() -> void:
 	_page.add_child(margin)
 	var body := VBoxContainer.new()
 	body.add_theme_constant_override("separation", 10)
-	margin.add_child(body)
+	body.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var scroll := ScrollContainer.new()
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	scroll.follow_focus = true
+	margin.add_child(scroll)
+	scroll.add_child(body)
 	var heading := HBoxContainer.new()
 	body.add_child(heading)
-	var title: Label = _app.ui._label("法器图鉴 · 七道秘术" if _view == "arsenal" else "遗物图鉴 · 十种刻印", 28, GameUI.BONE)
+	var title: Label = _app.ui._label("法器图鉴 · %d种秘术" % GameCatalog.weapons().size() if _view == "arsenal" else "遗物图鉴 · %d种刻印" % GameCatalog.relics().size(), 28, GameUI.BONE)
 	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	heading.add_child(title)
 	heading.add_child(_app.ui._label("固定陈列 · 基础数值 · 不写档案", 14, GameUI.GOLD))
 	if _view == "arsenal":
 		_app.ui._section_heading(body, "新增法器 / 各有独立弹体与轮廓", GameUI.CYAN, 16)
 		var additions := HBoxContainer.new()
+		additions.custom_minimum_size.y = 340
 		additions.add_theme_constant_override("separation", 12)
 		additions.size_flags_vertical = Control.SIZE_EXPAND_FILL
 		body.add_child(additions)
@@ -141,12 +147,13 @@ func _build_catalog() -> void:
 	else:
 		_app.ui._section_heading(body, "新增遗物 / 两项属性可叠加，单种最多3层", GameUI.CYAN, 16)
 		var additions := HBoxContainer.new()
+		additions.custom_minimum_size.y = 280
 		additions.add_theme_constant_override("separation", 12)
 		additions.size_flags_vertical = Control.SIZE_EXPAND_FILL
 		body.add_child(additions)
 		for id: String in NEW_RELICS:
 			_catalog_card(additions, GameCatalog.relic(id), true)
-		_app.ui._section_heading(body, "基础遗物 / 六种单项强化", GameUI.GOLD, 16)
+		_app.ui._section_heading(body, "其他遗物 / 属性与取舍", GameUI.GOLD, 16)
 		var originals := GridContainer.new()
 		originals.columns = 3
 		originals.add_theme_constant_override("h_separation", 12)

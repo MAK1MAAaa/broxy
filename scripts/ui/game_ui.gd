@@ -744,7 +744,7 @@ func _offer_card(parent: Control, index: int) -> void:
 		"rune": ownership = "备用%d/%d" % [run.rune_bag.size(), RunState.RUNE_BAG_CAP]
 		"relic": ownership = "持有%d/%d层" % [int(run.relic_counts.get(definition.id, 0)), RunState.RELIC_CAP]
 	names.add_child(_label({"weapon": "法器", "rune": "符文", "relic": "遗物"}.get(kind, kind) + "  /  " + definition.subtitle.get_slice(" · ", 1) + " · " + ownership, 11, category))
-	var summary: String = "首目标仅本体贯穿，不触发符文。第二命中起触发符文；爆破须命中第二目标。" if definition.id == "crescent" else definition.description
+	var summary: String = _shop_description(definition)
 	var description := _wrap(summary, 14, MUTED)
 	description.name = "OfferDescription"
 	_enable_tooltip(description, definition.description)
@@ -1077,14 +1077,22 @@ func _preview_rune_equip(index: int, epoch: int, incoming_snapshot: Dictionary, 
 	_section_heading(content, "逐弹触发与理论上限", PURPLE, 17)
 	var trigger_hit: int = int(preview["trigger_hit"])
 	var trigger_text: String = "从第%d次直接命中触发符文。" % trigger_hit
-	if int(preview["innate_pierce"]) > 0:
-		trigger_text += "第1次直接命中仅执行本体贯穿，不触发符文。"
+	var innate: int = int(preview["innate_pierce"])
+	if innate > 0:
+		trigger_text += "第1次直接命中仅执行本体贯穿，不触发符文。" if innate == 1 else "前%d次直接命中仅执行本体贯穿，不触发符文。" % innate
 	var trigger := _wrap(trigger_text, 17, PURPLE)
 	trigger.name = "RuneEquipTrigger"
 	content.add_child(trigger)
 	var targets := _wrap("每枚弹体理论最多 %d 个直接目标；每次发射 %d 枚，各枚独立计算。" % [int(preview["max_direct_targets"]), int(preview["shots"])], 16, BONE)
 	targets.name = "RuneEquipTargets"
 	content.add_child(targets)
+	if bool(preview.get("returns_to_player", false)):
+		var flight := _wrap("预算未耗尽时，发射后 %.2f秒开始追踪当前玩家返航；基础返航速度 %.0f，发射起总寿命 %.1f秒。接触玩家回收。\n往返共用命中记录与预算，同一目标不重复直击；预算耗尽后消失。" % [float(preview["return_delay"]), float(preview["return_speed"]), float(preview["return_lifetime"])], 15, CYAN)
+		flight.name = "RuneEquipReturnFlight"
+		content.add_child(flight)
+		var cadence := _wrap("冷却独立计时，不等待回收；返航不额外生成新弹体，也不重置符文命中预算。", 15, MUTED)
+		cadence.name = "RuneEquipReturnCooldown"
+		content.add_child(cadence)
 	match str(preview["rune_id"]):
 		"pierce":
 			var extra: int = int(preview["max_direct_targets"]) - trigger_hit
@@ -1100,17 +1108,25 @@ func _preview_rune_equip(index: int, epoch: int, incoming_snapshot: Dictionary, 
 			var reach := _wrap("第%d次直接命中后，寻找 %.0f 范围内最近的未命中目标，最多再转向 %d 次。" % [trigger_hit, float(preview["bounce_range"]), scales.size() - trigger_hit], 16, CYAN)
 			reach.name = "RuneEquipBounceRange"
 			content.add_child(reach)
+			if bool(preview.get("return_cancelled_by_bounce", false)):
+				var takeover := _wrap("成功弹射后永久取消返航，保留转向当时的速度，随后只按弹射规则飞行；不会再追踪玩家回收。", 16, CORAL)
+				takeover.name = "RuneEquipBounceTakeover"
+				content.add_child(takeover)
 		"blast":
 			var blast := _wrap("在第%d次直接命中处引爆：半径 %.0f，溅射伤害为该枚本体伤害的 %s。" % [trigger_hit, float(preview["blast_radius"]), _rune_percent(float(preview["blast_multiplier"]))], 17, GOLD)
 			blast.name = "RuneEquipBlast"
 			content.add_child(blast)
 			if trigger_hit > 1:
-				var delayed := _wrap("只命中1个目标不会爆破；必须命中第2个直接目标才引爆。", 17, CORAL)
+				var delayed := _wrap("只命中1个目标不会爆破；必须命中第2个直接目标才引爆。" if trigger_hit == 2 else "未达到第%d次直接命中不会爆破；必须达到该次命中才引爆。" % trigger_hit, 17, CORAL)
 				delayed.name = "RuneEquipDelayedBlast"
 				content.add_child(delayed)
 			var exclusions := _wrap("该枚已经直接命中的目标（含引爆目标）不再承受它的溅射。溅射不会再次触发符文；范围内额外目标数量另计。", 16, MUTED)
 			exclusions.name = "RuneEquipBlastExclusions"
 			content.add_child(exclusions)
+			if bool(preview.get("return_consumed_on_blast", false)):
+				var consumed := _wrap("引爆会消耗这枚归航弹体，爆破后直接消失，不再返航。", 15, CORAL)
+				consumed.name = "RuneEquipBlastConsumesReturn"
+				content.add_child(consumed)
 	var independent := _wrap("同一枚弹体不会重复直击已命中过的目标。不同弹体分别记录与排重，可以各自命中同一敌人；多发的符文效果也按每枚独立触发。", 15, CYAN)
 	independent.name = "RuneEquipIndependent"
 	content.add_child(independent)
@@ -1559,18 +1575,49 @@ func _definition(kind: String, id: String) -> ContentDef:
 func _rune_guide() -> String:
 	if _selected_rune >= 0 and _selected_rune < run.rune_bag.size():
 		var definition: ContentDef = GameCatalog.rune(str(run.rune_bag[_selected_rune]["id"]))
-		return "已选%s：月镰先贯穿首目标，符文从第2直接命中生效；其余法器从首击生效。点「预览」看规则，或直接「装入」。" % definition.display_name
+		return "已选%s：本体贯穿先执行，符文在其后的直接命中触发。点各槽「预览」看命中次序，或直接「装入」。" % definition.display_name
 	return "购买法器与遗物；选择符文后可「预览」或直接「装入」，拆换免费。波末祭坛恢复全部生命。"
+
+
+func _shop_description(definition: ContentDef) -> String:
+	if not definition.shop_summary.is_empty():
+		return definition.shop_summary
+	if definition.kind == "weapon" and definition.innate_pierce > 0:
+		if definition.innate_pierce == 1:
+			return "首目标仅本体贯穿，不触发符文。第二命中起触发符文；爆破须命中第二目标。"
+		return "本体先贯穿额外%d个目标；符文从第%d次直接命中触发，爆破须达到该次命中。" % [definition.innate_pierce, definition.innate_pierce + 1]
+	return definition.description
 
 
 func _equipment_tooltip(item: Dictionary) -> String:
 	var weapon: ContentDef = GameCatalog.weapon(str(item["id"]))
 	var rune: Dictionary = item.get("rune", {})
 	var details: String = "%s：%s\n%s\n%s" % [weapon.display_name, weapon.description, _weapon_stats_text(weapon), _weapon_stats_note()]
+	if weapon.return_delay > 0.0:
+		details += "\n" + _return_flight_tooltip(weapon)
 	if rune.is_empty():
 		return details + "\n未装符文。"
 	var definition: ContentDef = GameCatalog.rune(str(rune["id"]))
-	return "%s\n%s：%s" % [details, definition.display_name, definition.description]
+	var effect: String = definition.description
+	if weapon.innate_pierce > 0:
+		var trigger: int = weapon.innate_pierce + 1
+		match definition.id:
+			"pierce":
+				effect = "第%d次直接命中起追加贯穿%d个目标，单枚理论最多%d个直接目标。" % [trigger, RuneRules.EXTRA_HITS, trigger + RuneRules.EXTRA_HITS]
+			"bounce":
+				effect = "第%d次直接命中后最多弹射%d次，后续每次伤害衰减%s。" % [trigger, RuneRules.EXTRA_HITS, _rune_percent(1.0 - RuneRules.BOUNCE_DAMAGE_FACTOR)]
+			"blast":
+				effect = "第%d次直接命中才爆破；未达到该次命中不会引爆。半径%.0f，溅射为该枚本体伤害%s，排除该枚已直击目标。" % [trigger, RuneRules.BLAST_RADIUS, _rune_percent(RuneRules.BLAST_DAMAGE_FACTOR)]
+	if weapon.return_delay > 0.0 and definition.id == "bounce":
+		effect += "成功弹射后永久取消返航，保留当时速度继续弹射，不再回收。"
+	elif weapon.return_delay > 0.0 and definition.id == "blast":
+		effect += "爆破后弹体消失，不再返航。"
+	return "%s\n%s：%s" % [details, definition.display_name, effect]
+
+
+static func _return_flight_tooltip(weapon: ContentDef) -> String:
+	var speed: float = weapon.return_speed if weapon.return_speed > 0.0 else weapon.projectile_speed
+	return "预算未耗尽时，发射后%.2f秒以基础速度%.0f追踪当前玩家返航，接触玩家回收；全航程同一目标不重复直击。冷却独立计时，不等待回收。" % [weapon.return_delay, speed]
 
 
 func _weapon_stats_text(definition: ContentDef) -> String:

@@ -2,7 +2,9 @@
 
 Godot 4.7.2 普通版、带类型标注的 GDScript 开发的 macOS / Windows 单人割草原型。围绕四个法器槽与可拆换行为符文，完成短波次战斗、经验强化、商店改装和最终 Boss。
 
-当前美术版本为 `engraved-05`：细化五类敌人的骨面、爪肢、板甲、法杖与浮冠祭袍，完善场景边缘的祭坛及烛台材质；保留主角灰紫布料与低对比战斗地板。新增三件法器和四件复合遗物的独立图标及弹体形状。美术合同与来源见 `docs/art-direction.md`，新增内容与验证见 `docs/content-expansion.md`。
+当前源码包含8种法器、12种遗物，美术版本为 `engraved-06`。新增返航法器归魂环，以及伤害换攻速的血契书、拾取范围换移速的引魂烛；三枚图标以断骨钩环、皮革契书和宽托魂烛区分。此前42项素材逐字节保持，五类敌人材质、主角灰紫布料与低对比战斗地板沿用。规则与验收见 [归魂环与取舍遗物](docs/return-ring.md)，美术合同与来源见 `docs/art-direction.md`；上一轮内容扩充记录保留在 `docs/content-expansion.md`。
+
+归魂环发射0.60秒后追随玩家当前位置返航，往返共享已命中目标，不会重复伤害同一敌人；本体可命中2个不同目标，成功弹射会永久取消返航。冷却独立推进，接回魂环不回复生命或魂屑。新增内容沿用商店购买、商品锁定、遗物购前对照和符文装入预览；本轮完整回归、原生画面、固定种子压力采样与Windows新包验证通过。八法器头部使用预生成图集与复用缓冲，保持危险提示优先。
 
 战斗现在显示实际伤害与承伤浮字，并提示受击方向。普通主命中新增四类短暂刻痕，持续0.12秒；贯穿显示淡绿双轨，弹射显示真实转向的冷蓝折角，爆破显示暖金放射纹，敌方预警始终位于最上层。刻痕采用32对象固定池与最多12批次绘制，次级溅射不再叠痕；暂停时关闭闪光会立即清除，重新开启不重播。弹体圆点、弹射环和拖尾采用批量绘制。结算新增最后受击来源和各法器实际伤害贡献。购买符文后会自动选中，并把键盘焦点移到法器的“装入”按钮，便于完成改装。
 
@@ -26,7 +28,7 @@ Godot 4.7.2 普通版、带类型标注的 GDScript 开发的 macOS / Windows �
 
 ## 直接游玩
 
-Windows x86_64 版本由 `feature/windows` 分支构建，入口为 `build/Embers-windows-x86_64/Embers.exe`，分发包为 `build/Embers-windows-x86_64.zip`。解压后保留同目录的 `Embers.pck` 与 `licenses/`，再启动游戏；当前包包含7种法器、10种遗物、`engraved-05` 静态美术、商店商品锁定、遗物购前对照、符文装入预览与改进后的尾迹及受击材质。Windows 使用微软雅黑显示中文。最初Windows适配验证见 `docs/windows.md`，内容扩充见 `docs/content-expansion.md`，最近验收见 `docs/shop-locks.md`，下文的Mac历史证据保留原样。
+Windows x86_64 版本由 `feature/windows` 分支构建，入口为 `build/Embers-windows-x86_64/Embers.exe`，分发包为 `build/Embers-windows-x86_64.zip`。解压后保留同目录的 `Embers.pck` 与 `licenses/`。本轮新包包含8法器、12遗物、`engraved-06`及图集弹体，已重新导出、校验ZIP并实际启动EXE。旧商店锁定版另存为 `build/Embers-windows-before-return-ring-2ec1585.zip`。Windows使用微软雅黑。最新验收见 [归魂环与取舍遗物](docs/return-ring.md)；macOS未在本轮重建，下文历史证据保持原样。
 
 macOS 内容扩充前的应用为 `build/Embers-impact.app`（压缩包`build/Embers-impact-mac-arm64.zip`），新增普通法器命中刻痕，包含此前的主角布料、竞技场石材、商店条件提示、HUD避让、强化预览、诊断档案隔离和幽焰追踪修复。旧`build/Embers.app`文件保留；若旧版正在运行，先结束再打开新版。选择骨针或幽焰开局。应用面向 Apple Silicon、macOS 13 及以上；已采用本地 ad-hoc 签名，尚未进行 Developer ID 公证。
 
@@ -44,12 +46,13 @@ macOS 内容扩充前的应用为 `build/Embers-impact.app`（压缩包`build/Em
 
 - 前七波各45秒，第八波为90秒 Boss 战。波末回收已掉落魂屑并在祭坛恢复全部生命，再完整结算已获得升级。
 - 魂屑同时增加金币和经验。每波最低收入为 `28 + 6 × (波次 - 1)`，击杀收入不足时补足；补足部分不产生经验。
-- 七种法器：骨针（快速单发）、霜矛（减速）、幽焰（追踪）、散魂（扇形三发）、月镰（本体贯穿）、雷灯（窄角双发）、星陨（慢速重击）。商店均可购买，可重复装备，同名不合成；开局仍选择骨针或幽焰。
+- 八种法器：骨针（快速单发）、霜矛（减速）、幽焰（追踪）、散魂（扇形三发）、月镰（本体贯穿）、雷灯（窄角双发）、星陨（慢速重击）、归魂环（本体贯穿与返航）。商店均可购买，可重复装备，同名不合成；开局仍选择骨针或幽焰。
 - 每件法器一个符文槽：贯穿额外命中2个目标；弹射额外跳转2次、每跳剩余75%伤害；爆破产生68像素半径、55%伤害的溅射。
-- 同一弹体不重复命中同一敌人；次级溅射不再次触发符文。七种法器兼容三类符文。月镰先本体穿过首目标，再从后续命中触发符文：贯穿/弹射最多命中4个不同目标；爆破在第二个直接命中处触发，未命中第二目标则不爆破。
+- 同一弹体不重复命中同一敌人；次级溅射不再次触发符文。八种法器兼容三类符文。月镰与归魂环先本体穿过首目标，再从第二个直接命中触发符文：贯穿/弹射最多命中4个不同目标；爆破在第二个直接命中处触发，未命中第二目标则不爆破。
+- 归魂环基础伤害16、标称间隔0.95秒、索敌范围230；速度360，发射0.60秒后以460速度追随当前玩家返航，总寿命2.40秒。往返共享命中记录；成功弹射取消返航，爆破或命中预算耗尽时消失。回收没有生命或魂屑奖励，也不重置发射冷却。上述为无加成基础值与标称间隔，不是DPS。
 - 商店先选择备用符文，再点击目标法器装配。换下的符文回到背包；备用最多4份，免费拆换。
 - 出售返还实际购买价的50%，向下取整。不能卖掉最后一件法器；符文背包满时，出售带符文法器或卸下符文会被完整拒绝。
-- 十种遗物各最多3层。新增月蚀吊坠（伤害/攻速）、巡礼靴（移速/拾取）、骨盾印（护甲/生命）与裂砂漏（攻速提升但伤害下降）。每次商店4件商品；首店保证法器，第二店保证符文。刷新价格随本店刷新次数增长，下波重置。
+- 十二种遗物各最多3层。复合遗物包括月蚀吊坠（伤害/攻速）、巡礼靴（移速/拾取）、骨盾印（护甲/生命）、裂砂漏（攻速提升但伤害下降）；新增血契书（每层伤害+30%、攻速-10%，基础价22）与引魂烛（每层拾取范围+38、移速-8，基础价18）。每次商店4件商品；首店保证法器，第二店保证符文。刷新价格随本店刷新次数增长，下波重置。
 - 最多锁定2件未售商品，锁定与解锁免费，不增加刷新次数。锁定商品在刷新与跨波时保留原槽，下一波重算售价；购买成功、遗物达到3层或重开试炼会清除对应锁定。首店法器和第二店符文的保底仍生效，已有锁定满足保底类别时计入，否则从未锁槽补足。
 - 本地仅保存设置和最佳成绩，没有永久属性成长、联网、中途续局或内购。
 
@@ -76,7 +79,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools/build_windows.ps1
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File tools/run.ps1 --script res://tests/test_enemy_telegraphs.gd
 powershell -NoProfile -ExecutionPolicy Bypass -File tools/run.ps1 --headless --script res://tests/simulate_runs.gd '--' --seed=2026 --count=10
-powershell -NoProfile -ExecutionPolicy Bypass -File tools/run.ps1 '--' --benchmark --benchmark-runes --seconds=300
+powershell -NoProfile -ExecutionPolicy Bypass -File tools/run.ps1 '--' --benchmark --benchmark-content --benchmark-seed=1792123517 --seconds=300
 ```
 
 PowerShell 中的用户参数分隔符需写为 `'--'`，防止被 PowerShell 吞掉。性能程序默认写入 `reports/performance.json`；保留已有 macOS 记录时，先备份该文件，完成后把 Windows 结果另存，再恢复原文件。诊断参数仍不读写个人档案。Windows 普通游戏档案位于 `%APPDATA%/Godot/app_userdata/秘术余烬/`。构建尚未配置 Authenticode 签名，首次运行可能显示 Windows 的发布者提示。
@@ -143,20 +146,20 @@ BROXY_APP_PATH="$PWD/build/Embers-impact.app" ./tools/build_macos.sh
 python3 -m unittest discover -s tests -p 'test_shop_analysis.py'
 ./tools/run.sh --headless --script res://tests/simulate_runs.gd -- --seed=2027 --require-win
 ./tools/run.sh -- --benchmark --benchmark-runes --seconds=300
-./tools/run.sh -- --benchmark --benchmark-content --seconds=300
+./tools/run.sh -- --benchmark --benchmark-content --benchmark-seed=1792123517 --seconds=300
 ```
 
-也可以用 `./tools/test.sh` 一次运行三十套Godot行为测试及Python测试。当前商店锁定版在Windows通过14181条Godot无界面断言与22项Python测试；ProfileModes的六种入口分进程执行。锁定规则3763条、锁定UI58条、Main跨波流程15条通过，另在原生窗口重跑锁定UI、跨波流程、遗物对照与符文预览；完整记录见 `docs/shop-locks.md` 与 `reports/shop-locks/validation.json`。此前符文预览、购前对照和内容扩充的记录分别保留在 `reports/rune-lab/validation.json`、`reports/altar/validation.json`、`reports/content/validation.json`。系统字体验证需要正常桌面字体访问权限。
+可用 `./tools/test.sh` 运行Godot行为与Python测试。本轮Windows通过16040条Godot无界面断言（35套及5个额外ProfileModes入口）与27项Python测试；原生另通过归魂环UI88、呈现34、内容呈现547、敌方预警134、容量204、旧弹体89条断言。归魂环行为专项109条，覆盖旧武器兼容、返航、回收和符文预算。证据见 `reports/return-ring/validation.json` 与 `docs/return-ring.md`。历史商店锁定、符文预览和购前对照结果仍分别保留。系统字体验证需要正常桌面字体访问权限。
 
-性能测试会打开明确标记的窗口，预热5秒后采样300秒，保持300敌人、至少600投射物与200掉落，并输出 `reports/performance.json`。`--benchmark-content`使用全部7件法器、3类符文的真实伤害弹体，标记为`content-feedback`；`--benchmark-runes`保留原4件法器的`rune-feedback`场景；省略二者为历史`baseline`。不同场景独立记录，不能直接推断性能差异来源。报告记录实际武器来源、默认设置、持久化状态与本次种子，内容场景另记录各法器实际伤害和末段弹体家族。测试时保持窗口可见、电脑未锁屏，避免其他图形负载；保留历史记录时先备份原性能JSON。
+性能测试会打开明确标记的窗口，预热5秒后采样300秒，保持300敌人、至少600投射物与200掉落，并输出 `reports/performance.json`。`--benchmark-content`使用内容目录中的法器与3类符文的真实伤害弹体，标记为`content-feedback`；`--benchmark-runes`保留原4件法器的`rune-feedback`场景；省略二者为历史`baseline`。可加 `--benchmark-seed=<正整数>` 复现生成序列；只在基准模式解析，省略时维持原随机种子，普通游戏不受影响。不同场景独立记录，不能直接推断性能差异来源。报告记录实际武器来源、默认设置、持久化状态与本次种子，内容场景另记录各法器实际伤害和末段弹体家族。测试时保持窗口可见、电脑未锁屏，避免其他图形负载；保留历史记录时先备份原性能JSON。
 
-最近一次完整压力采样为符文预览与受击材质版：Windows七法器300秒平均61.368 FPS、P99 28.011ms，末尾300敌人／600弹体／200掉落，见 `reports/rune-lab/performance.json`。本轮仅修改商店状态与界面，战斗源码、素材和数值保持，未重复300秒采样。此前61.204 FPS记录仍保留在 `reports/altar/performance.json`；各次种子不同，不把差额归因于单项视觉调整。
+最新Windows八法器300秒原生压力通过：35485帧，平均118.282 FPS、P99 16.217ms，末尾300敌人／600弹体／200掉落，默认设置、无个人档案。首次同种子1792123517为52.348 FPS、P99 30.805ms，失败记录保留；经容量复用、批量缓冲和头部图集优化后按同种子重测，未减少实体、伤害或反馈预算。结果见 `reports/return-ring/performance.json`，候选短测与局限见 `docs/return-ring.md`。此前七法器61.368 FPS及其他历史记录保持，不能跨场景直接归因。
 
 此前内容扩充版Windows七法器300秒原生采样通过：平均60.710 FPS、P99 28.418ms，末尾300敌人／600弹体／200掉落；结果见 `reports/content/performance.json`。首次54.60 FPS的失败采样、弹体几何缓存优化与同夹具CPU微测一并保留在 `docs/content-expansion.md`，各次原生采样种子不同，不把全部帧率差额归因于单项修改。
 
 内容扩充前的macOS源码`2a6c4b9`曾在Apple M5完成5分钟原生真实符文场景采样：27,895帧，平均92.979 FPS、P99帧间隔26.191毫秒，达到≥58 FPS / ≤33毫秒门槛，退出0。末尾300敌人/600弹体/200掉落；主/次命中473,662/1,223,944，刻痕池峰值32、容量32，结束时最近准备7个非空批次。峰值和命中累计含5秒预热，末段批次不是全程最大或GPU drawcall数。默认设置且不读写个人档案，四次CUA观察确认可见窗口和采样推进。结果见`reports/impact-performance-validation.json`；原实现验证`reports/impact-validation.json`保留当时锁屏未测的历史状态。该历史补测只记录性能，未更改源码/素材、重跑30局或重新打包，当时交付同一Embers-impact.app。旧e64bb18的90.847 FPS/P99 25.400毫秒原样另存`performance-before-impacts.json`与`benchmark-before-impacts.log`，跨种子与跨版本差额不能单独归因于刻痕。详见`docs/verification.md`。
 
-完整模拟复用正式 `RunState`、`CombatSim.step` 与商店价格，没有额外金币、无敌或专用 Boss 数值。当前核心版本`724650407895`在seed2026—2035、三类符文共30局中23胜7败；与前版`467908d843ec`相比，仅排除`balance_version`后，完整购物与战斗轨迹等全部输出逐字段一致，见 `reports/shop-locks/simulation-comparison.json`。策略及运行脚本字节保持，policy仍为`orbit-avoid-v1/shop-v1+1d336100ecaa`。旧机器人不使用锁定，也未购买四种新遗物；该批次只证明未锁定路径的样本兼容，不代表锁定策略或真人通关率，相关交易由专项断言验证。此前购买校验阶段的29胜1败及轨迹证明保留在 `docs/simulation.md`、`reports/purchase-simulation.json`；试玩流程见 `docs/playtest.md`，持续记录见 `docs/optimization-log.md`。
+完整模拟复用正式 `RunState`、`CombatSim.step` 和商店价格，没有额外金币、无敌或专用Boss数值。本轮核心 `133f6d931535`、seed2026—2035×三类符文策略共30局为26胜4败，归魂环购买与装配各7次。报价池变化改变购物和战斗轨迹，不能把相对前版23胜7败的差异归因于单件武器。policy仍为 `orbit-avoid-v1/shop-v1+1d336100ecaa`，策略及运行脚本字节保持；旧策略不购买新两件遗物或使用锁定，实际交易另由专项覆盖。实验碰撞预计算被舍弃，最终源码逐字节回到原30局同一核心，因此复用该批次并记录回滚审计；实验批30局也仅除核心指纹外全字段一致。见 `reports/return-ring/simulation.json`。历史结果、真人试玩流程与持续记录分别见 `docs/simulation.md`、`docs/playtest.md`、`docs/optimization-log.md`。
 
 模拟还会记录完整商店报价、余额、候选评分及停止购买/刷新原因。`tools/analyze_shop_runs.py`可生成观测分析，并用`--baseline`严格比较旧对局字段和购物trace。商店观测阶段的30局在新增观测前后旧字段完全一致，证据见`reports/shop-analysis.json`；该结果只证明所测样本不受观测影响，不表示此前的战斗修复没有改变轨迹。
 
@@ -168,11 +171,11 @@ python3 -m unittest discover -s tests -p 'test_shop_analysis.py'
 
 商店数值与排版可用 `./tools/run.sh --script res://tools/preview_shop.gd -- --view=base` 检查；也支持 `boosted`、`fullbag` 和 `transactions`，追加 `--hold` 留在交互窗口，或用 `--capture=path` 将截图另存。固定夹具通过正式购买接口布置库存，提供独立测试预算，不读写个人存档，不代表正式对局或难度验收。
 
-素材生成器显式写入 UTF-8/LF。当前42项资源（32张SVG、10段WAV）可确定性重建；`engraved-05` 前的35项 macOS/Windows字节一致验证保留在 `docs/windows.md`。
+素材生成器显式写入UTF-8/LF。当前46项资源（36张SVG、10段WAV，24枚库存图标）连续生成两遍的48个产物/元数据哈希一致，原42项资源逐字节保持；新增三枚图标与一张八帧512×64头部图集。`arsenal-atlas-v5`按家族在尾迹后绘制头部，白核可能更完整、更亮，抗锯齿与交叠不等同旧线段画法。原生静帧及透明中心检查见 `reports/return-ring/asset-qa.json`。
 
 ## 项目组织
 
-- `data/`：33个原生 Resource 内容定义，调整数值后无需改界面。
+- `data/`：36个原生 Resource 内容定义，调整数值后无需改界面。
 - `scripts/core/`：局内状态、经济、设置与声音。
 - `scripts/combat/`：固定步长模拟、池化实体、网格碰撞、绘制和自动走位策略。
 - `scripts/ui/`：菜单、HUD、升级、商店和暂停覆盖层。

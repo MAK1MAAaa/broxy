@@ -3,7 +3,7 @@ extends SceneTree
 
 const PROJECTILE_SCRIPT = preload("res://scripts/combat/projectile_painter.gd")
 const IMPACT_SCRIPT = preload("res://scripts/combat/impact_painter.gd")
-const NEW_IDS: PackedStringArray = ["crescent", "storm", "comet", "moon_charm", "pilgrim", "bulwark", "hourglass"]
+const NEW_IDS: PackedStringArray = ["crescent", "storm", "comet", "moon_charm", "pilgrim", "bulwark", "hourglass", "return_ring", "blood_pact", "grave_candle"]
 
 var _checks: int = 0
 var _failures: int = 0
@@ -16,7 +16,7 @@ func _initialize() -> void:
 func _run_tests() -> void:
 	root.size = Vector2i(1280, 720)
 	_test_projectile_signatures()
-	_test_cached_sigil_equivalence()
+	_test_atlas_frames_and_transforms()
 	_test_impact_aliases()
 	await _test_content_stress()
 	await _test_full_shop()
@@ -51,18 +51,17 @@ func _test_projectile_signatures() -> void:
 			_check(painter.trails.has(key), "The new weapon/rune family is prepared: " + key)
 			if not painter.trails.has(key):
 				continue
-			var points: PackedVector2Array = painter.trails[key].sigils
-			var per_shot: int = 32 if id == "crescent" else 12 if id == "storm" else 20
-			_check(points.size() == per_shot * int(painter.family_counts[key]), "Every projectile receives its own bounded crescent, lightning, or star geometry: " + key)
-			var finite: bool = true
-			for point: Vector2 in points:
-				finite = finite and point.is_finite()
-			_check(finite and points.size() % 2 == 0, "Sigil segments contain finite independent endpoint pairs: " + key)
+			_check(painter.heads.has(key), "The new source/rune family has a real head batch: " + key)
+			if not painter.heads.has(key):
+				continue
+			var head = painter.heads[key]
+			_check(head.source == id and head.multimesh.visible_instance_count == int(painter.family_counts[key]), "Every projectile receives its source-specific atlas head: " + key)
+			_check(head.frame == PROJECTILE_SCRIPT.HEAD_SOURCES.find(id) and head.cursor == head.multimesh.visible_instance_count, "The prepared family uses its correct texture frame and complete visible instance range: " + key)
 	var stats: Dictionary = painter.get_stats()
-	_check(stats["allocated_instances"] <= CombatSim.SHOT_LIMIT * 3, "New silhouettes do not add projectile GPU instances")
+	_check(stats["allocated_instances"] <= CombatSim.SHOT_LIMIT * 3 and stats["head_instances"] == stats["friendly_count"], "New silhouettes use real head instances within the original GPU budget")
 	var empty: Array[CombatSim.Shot] = []
 	painter.rebuild(empty)
-	_check(painter.trails.is_empty(), "Removing new projectiles also releases every sigil drawing family")
+	_check(painter.trails.is_empty() and painter.heads.is_empty(), "Removing new projectiles releases every trail and head drawing family")
 
 
 func _test_impact_aliases() -> void:
@@ -84,58 +83,79 @@ func _test_impact_aliases() -> void:
 	_check(painter.get_stats()["free_marks"] == 32 and painter.active_count() == 0, "Impact aliases reuse the original bounded pool")
 
 
-func _test_cached_sigil_equivalence() -> void:
-	var painter = PROJECTILE_SCRIPT.new()
-	var original_templates: String = JSON.stringify(painter._sigil_shapes)
-	for source: String in ["crescent", "storm", "comet"]:
+func _test_atlas_frames_and_transforms() -> void:
+	var expected_sources: PackedStringArray = ["bone", "frost", "ember", "scatter", "crescent", "storm", "comet", "return_ring"]
+	_check(PROJECTILE_SCRIPT.HEAD_SOURCES == expected_sources and PROJECTILE_SCRIPT.HEAD_FRAME_SIZE == 64 and is_equal_approx(PROJECTILE_SCRIPT.HEAD_WORLD_SIZE, 32.0), "Eight authored head frames have a stable source order and two texture pixels per world pixel")
+	var shots: Array[CombatSim.Shot] = []
+	var expected: Dictionary = {}
+	for source: String in expected_sources:
+		expected[source + ":"] = []
 		for angle: float in [0.0, 0.31, 0.9, 2.7, 5.9]:
-			for radius: float in [1.0, 11.0, 19.0]:
+			for scale: float in [0.5, 1.0, 1.75]:
 				var shot := CombatSim.Shot.new()
+				shot.active = true
 				shot.source = source
 				shot.position = Vector2(342.25, 390.75)
-				shot.radius = radius
-				var direction: Vector2 = Vector2.from_angle(angle)
-				var expected: PackedVector2Array = _original_sigil(shot, direction)
-				var actual := PackedVector2Array()
-				painter._append_sigil(actual, shot, direction)
-				var equivalent: bool = actual.size() == expected.size()
-				for index: int in mini(actual.size(), expected.size()):
-					equivalent = equivalent and actual[index].distance_squared_to(expected[index]) < 0.000001
-				_check(equivalent, "Cached native transforms preserve the authored endpoint order and position: %s %.2f %.0f" % [source, angle, radius])
-	_check(JSON.stringify(painter._sigil_shapes) == original_templates, "Per-projectile native transforms never mutate cached local silhouettes")
+				shot.radius = GameCatalog.weapon(source).projectile_radius * scale
+				shot.velocity = Vector2.from_angle(angle) * 17.0
+				shot.color = GameCatalog.weapon(source).color
+				shots.append(shot)
+				expected[source + ":"].append(Transform2D(angle, Vector2.ONE * scale, 0.0, shot.position))
+		var stationary := CombatSim.Shot.new()
+		stationary.active = true
+		stationary.source = source
+		stationary.radius = GameCatalog.weapon(source).projectile_radius
+		stationary.position = Vector2(120.5, 240.25)
+		stationary.velocity = Vector2.ZERO
+		shots.append(stationary)
+		expected[source + ":"].append(Transform2D(0.0, stationary.position))
+	var painter = PROJECTILE_SCRIPT.new()
+	painter.rebuild(shots)
+	_check(painter.atlas_texture != null and painter.atlas_texture.get_width() == 512 and painter.atlas_texture.get_height() == 64, "The real shared texture resolves all eight complete atlas cells")
+	for source: String in expected_sources:
+		var key: String = source + ":"
+		_check(painter.heads.has(key), "Atlas transform fixture retains source " + source)
+		if not painter.heads.has(key):
+			continue
+		var head = painter.heads[key]
+		var frame: int = expected_sources.find(source)
+		_check(head.frame == frame and head.source == source and is_equal_approx(head.base_radius, GameCatalog.weapon(source).projectile_radius), "Source frame and scaling baseline come from the matching definition: " + source)
+		_check(head.cursor == 16 and head.multimesh.visible_instance_count == 16, "All fifteen rotated/scaled heads plus a zero-speed head are genuinely visible: " + source)
+		var arrays: Array = head.multimesh.mesh.surface_get_arrays(0)
+		var vertices = arrays[Mesh.ARRAY_VERTEX]
+		var uvs: PackedVector2Array = arrays[Mesh.ARRAY_TEX_UV]
+		var correct_uvs: bool = vertices.size() >= 4 and vertices.size() == uvs.size()
+		var bounds := Rect2(Vector2.INF, Vector2.ZERO)
+		for index: int in vertices.size():
+			var point := Vector2(vertices[index].x, vertices[index].y)
+			var uv := Vector2((float(frame) + point.x / 32.0 + 0.5) / 8.0, point.y / 32.0 + 0.5)
+			correct_uvs = correct_uvs and point.is_finite() and absf(point.x) == 16.0 and absf(point.y) == 16.0 and uvs[index].is_equal_approx(uv)
+			bounds = Rect2(point, Vector2.ZERO) if index == 0 else bounds.expand(point)
+		_check(correct_uvs and bounds.is_equal_approx(Rect2(-16, -16, 32, 32)), "Quad vertices map only to their own complete UV cell without frame bleed: " + source)
+		for index: int in head.cursor:
+			var transform: Transform2D = _head_transform(head.buffer, index)
+			_check(transform.is_equal_approx(expected[key][index]), "Real head buffer preserves position, rotation and radius scale, including zero-speed RIGHT: %s/%d" % [source, index])
+			var offset: int = index * PROJECTILE_SCRIPT.INSTANCE_STRIDE
+			_check(Color(head.buffer[offset + 8], head.buffer[offset + 9], head.buffer[offset + 10], head.buffer[offset + 11]).is_equal_approx(Color.WHITE), "Baked source colors and white cores stay untinted: %s/%d" % [source, index])
+			if DisplayServer.get_name() != "headless":
+				_check(head.multimesh.get_instance_transform_2d(index).is_equal_approx(transform), "Native visible head transform matches the prepared buffer: %s/%d" % [source, index])
+	var before: String = _head_signature(painter)
+	for repeat: int in 3:
+		painter.rebuild(shots)
+	_check(_head_signature(painter) == before, "Repeated atlas preparation preserves mesh UVs and every head transform")
 
 
-static func _original_sigil(shot: CombatSim.Shot, direction: Vector2) -> PackedVector2Array:
-	# Frozen mathematical oracle from the initial authored version. This protects
-	# handedness, endpoint ordering and radius scaling during CPU preparation changes.
-	var points := PackedVector2Array()
-	var side: Vector2 = direction.orthogonal()
-	if shot.source == "crescent":
-		var center: Vector2 = shot.position - direction * 5.0
-		for index: int in 8:
-			var angle_a: float = -PI * 0.5 + float(index) * PI / 8.0
-			var angle_b: float = -PI * 0.5 + float(index + 1) * PI / 8.0
-			for depth: float in [12.0, 6.0]:
-				points.append(center + direction * cos(angle_a) * depth + side * sin(angle_a) * 10.0)
-				points.append(center + direction * cos(angle_b) * depth + side * sin(angle_b) * 10.0)
-	elif shot.source == "storm":
-		for sign_value: float in [-1.0, 1.0]:
-			var offsets: Array[Vector2] = [Vector2(-11, sign_value * 3), Vector2(-4, sign_value * 6),
-				Vector2(-6, sign_value), Vector2(5, 0)]
-			for index: int in 3:
-				points.append(shot.position + direction * offsets[index].x + side * offsets[index].y)
-				points.append(shot.position + direction * offsets[index + 1].x + side * offsets[index + 1].y)
-	elif shot.source == "comet":
-		var radius: float = shot.radius + 3.0
-		for index: int in 5:
-			var axis: Vector2 = direction.rotated(float(index) * TAU / 5.0)
-			var next_axis: Vector2 = direction.rotated((float(index) + 0.5) * TAU / 5.0)
-			var end_axis: Vector2 = direction.rotated(float(index + 1) * TAU / 5.0)
-			points.append(shot.position + axis * radius)
-			points.append(shot.position + next_axis * radius * 0.43)
-			points.append(shot.position + next_axis * radius * 0.43)
-			points.append(shot.position + end_axis * radius)
-	return points
+static func _head_transform(buffer: PackedFloat32Array, index: int) -> Transform2D:
+	var offset: int = index * PROJECTILE_SCRIPT.INSTANCE_STRIDE
+	return Transform2D(Vector2(buffer[offset], buffer[offset + 4]), Vector2(buffer[offset + 1], buffer[offset + 5]), Vector2(buffer[offset + 3], buffer[offset + 7]))
+
+
+static func _head_signature(painter) -> String:
+	var result: Dictionary = {}
+	for key: String in painter.heads:
+		var head = painter.heads[key]
+		result[key] = [head.frame, head.base_radius, head.buffer, head.multimesh.mesh.surface_get_arrays(0)]
+	return JSON.stringify(result)
 
 
 func _test_content_stress() -> void:
@@ -150,7 +170,7 @@ func _test_content_stress() -> void:
 	world.set_physics_process(false)
 	world.stress_mode = true
 	world.enable_rune_stress(true)
-	_check(world.content_stress_mode and world.stress_weapon_ids.size() == 7, "The explicit content pressure fixture includes all seven catalog weapons")
+	_check(world.content_stress_mode and world.stress_weapon_ids.size() == GameCatalog.weapons().size(), "The explicit content pressure fixture includes every catalog weapon")
 	var sources: Dictionary = {}
 	var runes: Dictionary = {}
 	var positive: int = 0
@@ -160,12 +180,12 @@ func _test_content_stress() -> void:
 			runes[shot.rune] = true
 			if shot.damage > 0.0:
 				positive += 1
-	_check(positive == 600 and sources.size() == 7 and runes.size() == 3, "The fixture contains six hundred positive-damage friendly shots across seven sources and three runes")
+	_check(positive == 600 and sources.size() == GameCatalog.weapons().size() and runes.size() == 3, "The fixture contains six hundred positive-damage friendly shots across all catalog sources and three runes")
 	var before: String = _signature(world.sim)
 	var painter = PROJECTILE_SCRIPT.new()
 	painter.rebuild(world.sim.shots)
 	var stats: Dictionary = painter.get_stats()
-	_check(stats["friendly_count"] == 600 and stats["family_counts"].size() == 21, "The projectile painter retains all twenty-one content pressure families")
+	_check(stats["friendly_count"] == 600 and stats["family_counts"].size() == GameCatalog.weapons().size() * GameCatalog.runes().size(), "The projectile painter retains all catalog weapon/rune pressure families")
 	_check(stats["allocated_instances"] <= 4800 and stats["total_visible_instances"] <= 4800, "The full content pressure fixture preserves the original 4800-instance budget")
 	_check(_signature(world.sim) == before, "Content pressure render preparation does not mutate RNG, shots, or simulation")
 	world.queue_free()
@@ -201,16 +221,16 @@ func _test_full_shop() -> void:
 	await _settle()
 	var scroll: ScrollContainer = ui.find_child("RelicInventoryScroll", true, false)
 	var grid: GridContainer = ui.find_child("RelicInventoryGrid", true, false)
-	_check(scroll != null and grid != null and grid.get_child_count() == 10, "Every owned relic has a named, counted inspection control")
+	_check(scroll != null and grid != null and grid.get_child_count() == GameCatalog.relics().size(), "Every owned relic has a named, counted inspection control")
 	if scroll != null and grid != null:
 		var scrollbar: VScrollBar = scroll.get_v_scroll_bar()
-		_check(scrollbar.max_value > scrollbar.page and scroll.follow_focus, "The ten-relic inventory scrolls and follows keyboard focus")
+		_check(scrollbar.max_value > scrollbar.page and scroll.follow_focus, "The full relic inventory scrolls and follows keyboard focus")
 		_check(root.get_visible_rect().encloses(scroll.get_global_rect()), "The relic inventory viewport remains fully inside 720p")
 		var last: Button = grid.get_child(grid.get_child_count() - 1)
 		last.grab_focus()
 		await _settle()
 		_check(scroll.get_global_rect().grow(1).encloses(last.get_global_rect()), "Keyboard focus scrolls the final relic into view")
-		_check(last.tooltip_text.contains(GameCatalog.relic("hourglass").description), "Relic details retain the complete formal tradeoff description")
+		_check(last.tooltip_text.contains(GameCatalog.relics().back().description), "Relic details retain the complete formal tradeoff description")
 		var before: Dictionary = state.summary()
 		var key := InputEventKey.new()
 		key.keycode = KEY_ENTER
@@ -224,7 +244,7 @@ func _test_full_shop() -> void:
 		root.push_input(key, false)
 		await _settle()
 		var details: Label = ui.find_child("RelicDetailsDescription", true, false)
-		_check(details != null and details.text.contains(GameCatalog.relic("hourglass").description), "Pressing Enter on an inspection control exposes its full description")
+		_check(details != null and details.text.contains(GameCatalog.relics().back().description), "Pressing Enter on an inspection control exposes its full description")
 		_check(details != null and root.get_visible_rect().encloses(details.get_global_rect()) and details.size.y >= details.get_minimum_size().y, "The full tradeoff text is actually readable inside its native dialog")
 		_check(state.summary() == before, "Inspecting an owned relic never mutates currency, stacks, or inventory")
 		_check(ui.handle_back(), "Escape closes relic details without pausing the shop")

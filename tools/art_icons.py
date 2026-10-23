@@ -4,6 +4,55 @@ from __future__ import annotations
 from generate_assets import circle, ellipse, line, path, star
 
 
+def _return_ring() -> str:
+    body = '<defs><linearGradient id="return_ring_bone" x1="0" y1="0" x2=".8" y2="1"><stop stop-color="#edf1e5"/><stop offset=".45" stop-color="#c6d5cf"/><stop offset="1" stop-color="#718692"/></linearGradient></defs>'
+    for angle in [0, 120, 240]:
+        body += f'<g transform="translate(32 32) rotate({angle})">'
+        body += path("M-18 -16 Q-4 -28 12 -22 L18 -14 10 -7 11 -13 Q1 -15 -10 -9 L-16 -11 -12 -15Z", "url(#return_ring_bone)", width=2)
+        body += path("M-12 -15 Q-1 -20 12 -18 L11 -13 Q1 -15 -10 -9 L-16 -11Z", "#81969b", "none", 0)
+        body += path("M-14 -17 Q-2 -24 10 -21 L14 -16", "none", "#f2f3e7", 1.3)
+        body += path("M-13 -14 L-8 -17 -5 -14 M11 -13 L14 -15", "none", "#5a727e", 1)
+        body += path("M-4 -23 L2 -23 3 -18 -3 -17Z", "url(#gold)", "#3f4147", 1)
+        body += line(-1, -22, 0, -19, "#f1dba6", .8)
+        body += '</g>'
+    return body
+
+
+def _blood_pact() -> str:
+    body = '<defs><linearGradient id="blood_pact_leather" x1="0" y1="0" x2=".8" y2="1"><stop stop-color="#795d6c"/><stop offset=".45" stop-color="#4c384e"/><stop offset="1" stop-color="#282a3c"/></linearGradient></defs>'
+    body += path("M17 10 L44 5 53 13 51 53 22 59 12 51 13 16Z", "#272432", width=2.1)
+    body += path("M43 10 L51 14 49 51 44 55Z", "url(#bone)", "#786b5c", 1.2)
+    body += path("M15 11 L43 7 48 13 45 53 20 58 12 50 13 17Z", "url(#blood_pact_leather)", width=1.8)
+    body += path("M15 12 L21 14 18 55 13 50 13 18Z", "#332e42", "#a28685", 1)
+    body += path("M23 18 L40 15 41 44 22 48Z", "none", "#aa916b", 1.1)
+    body += path("M24 23 L37 21 M24 27 L35 25 M23 31 L32 29", "none", "#b9a08c", 1, 'opacity=".65"')
+    body += path("M16 12 L24 11 23 16 16 18Z M39 9 L44 8 47 13 42 15Z M13 45 L19 47 18 54 13 50Z", "url(#gold)", "#3f3440", 1)
+    body += path("M28 45 L27 59 32 55 37 58 36 45Z", "#713e4b", "#281f2e", 1.1)
+    body += path("M25 35 L31 32 38 35 40 42 35 49 28 48 23 41Z", "url(#gold)", "#302731", 1.6)
+    body += path("M27 37 L31 35 36 37 37 42 33 46 28 44Z", "#b49668", "#ead09b", .8)
+    body += path("M31 37 L35 40 32 44 28 41Z", "#673c4a", "#47303f", .8)
+    body += line(46, 22, 49, 21, "#6c6057", .7)
+    body += line(46, 26, 49, 25, "#6c6057", .7)
+    return body
+
+
+def _grave_candle() -> str:
+    body = path("M28 53 H36 L41 59 H23Z", "url(#gold)", width=1.8)
+    body += ellipse(32, 46, 20, 4, "#514638", 'stroke="#b69b6b" stroke-width="1.3"')
+    body += path("M27 29 Q32 26 37 29 V49 Q32 52 27 49Z", "url(#bone)", "#5b5149", 1.4)
+    body += path("M34 30 L37 29 V48 L34 49Z", "#98aaa3", "none", 0)
+    body += path("M27 32 Q30 35 30 31 V39 Q33 42 33 35 V30", "none", "#f1e9ce", 1.2)
+    body += path("M13 46 Q32 53 51 46 L47 53 Q32 60 17 53Z", "url(#gold)", width=1.8)
+    body += path("M17 48 Q32 55 47 48 M26 54 H38", "none", "#e3c994", 1)
+    body += path("M22 50 L24 53 M40 53 L42 50", "none", "#6f5c46", 1)
+    body += ellipse(32, 29, 5, 1.7, "#e3dbc0")
+    body += line(32, 29, 32, 25, "#4d4543", 1)
+    body += path("M33 4 Q34 12 41 15 Q45 21 39 27 Q34 32 27 27 Q19 23 23 16 Q28 11 28 7 L29 17 Q34 13 33 4Z", "#365f70", width=1.7)
+    body += path("M32 11 Q31 19 36 18 Q41 22 36 26 Q28 31 25 23 Q25 19 29 17 L29 22 Q33 20 32 11Z", "#9dd2c9", "none", 0)
+    body += path("M32 17 L36 22 32 27 28 22Z", "#e5eee0", "#709c9d", .8)
+    return body
+
+
 def generate(save_svg) -> None:
     icons: dict[str, str] = {}
     # A needle rather than a club: the long ivory point is readable at HUD scale.
@@ -133,6 +182,10 @@ def generate(save_svg) -> None:
     icons["soul"] += path("M33 6 L46 24 31 42Z", "#70b5b2", "none", 0)
     icons["soul"] += path("M31 42 L43 45 31 59Z", "#bddfc8", "none", 0)
     icons["soul"] += path("M20 47 L31 42 43 45 M23 25 L31 19 37 26 32 36Z", "none", "#d7eee0", 1.1)
+
+    icons["return_ring"] = _return_ring()
+    icons["blood_pact"] = _blood_pact()
+    icons["grave_candle"] = _grave_candle()
 
     for name, body in icons.items():
         save_svg(f"icons/{name}.svg", 64, 64, body, f"engraved occult {name} icon; transparent; readable at 24–48px")

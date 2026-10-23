@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ContentDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/content_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "blood_pact"
+kind = "relic"
+display_name = "血契书"
+subtitle = "取舍遗物 · 最多叠加3层"
+description = "伤害 +30%，攻击速度 -10%"
+icon = "blood_pact"
+color = Color(0.82, 0.48, 0.59, 1)
+price = 22
+stat = "damage"
+amount = 0.30
+bonus_stat = "attack_speed"
+bonus_amount = -0.10

@@ -101,7 +101,7 @@ func _preview() -> void:
 	if density == "sparse":
 		passed = passed and world.sim.primary_hits > 0 and world.sim.secondary_hits > 0
 	else:
-		passed = passed and stats["friendly_count"] >= 600 and stats["family_counts"].size() == 21
+		passed = passed and stats["friendly_count"] >= 600 and stats["family_counts"].size() == GameCatalog.weapons().size() * GameCatalog.runes().size()
 	_overlay(variant, density, world.sim, stats)
 	world.queue_redraw()
 	await process_frame
@@ -117,7 +117,8 @@ func _preview() -> void:
 		"seed": SEED, "frames": FRAMES, "fixed_scene": true, "persistent_profile": false,
 		"manual_danger_fixture": true, "fixture_passed": passed, "capture_result": result,
 		"capture": destination, "state_hash": _state_hash(world.sim),
-		"endpoint_hash": _endpoint_hash(world.fixture_painter), "projectiles": stats,
+		"endpoint_hash": _endpoint_hash(world.fixture_painter),
+		"head_layout_hash": _head_layout_hash(world.fixture_painter), "projectiles": stats,
 		"primary_hits": world.sim.primary_hits, "secondary_hits": world.sim.secondary_hits}))
 	if not passed:
 		push_error("The fixed comparison scene did not retain its expected real combat or pressure population.")
@@ -237,5 +238,23 @@ func _endpoint_hash(painter: RefCounted) -> String:
 	var result: Dictionary = {}
 	for key: String in painter.get("trails"):
 		var trail = painter.get("trails")[key]
-		result[key] = [trail.points, trail.wings, trail.sigils]
+		result[key] = [trail.points, trail.wings]
+	return JSON.stringify(result).sha256_text()
+
+
+func _head_layout_hash(painter: RefCounted) -> String:
+	var has_heads: bool = false
+	for property: Dictionary in painter.get_property_list():
+		if property["name"] == "heads":
+			has_heads = true
+			break
+	if not has_heads:
+		return ""
+	var heads: Dictionary = painter.get("heads")
+	var result: Dictionary = {}
+	for key: String in heads:
+		var head = heads[key]
+		var visible: int = head.multimesh.visible_instance_count
+		result[key] = [head.source, head.frame, head.base_radius, visible,
+			head.buffer.slice(0, visible * CURRENT_PAINTER.INSTANCE_STRIDE)]
 	return JSON.stringify(result).sha256_text()

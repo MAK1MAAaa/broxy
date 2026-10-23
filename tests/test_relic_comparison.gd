@@ -64,7 +64,7 @@ func _open(ui: GameUI) -> Button:
 
 func _test_tradeoff_and_focus(ui: GameUI) -> void:
 	var state: RunState = FIXTURE.make_state("tradeoff")
-	_check(state != null and state.loadout.size() == 4 and state.relic_counts.size() == 10, "Formal purchases construct a full four-weapon, ten-relic build")
+	_check(state != null and state.loadout.size() == 4 and state.relic_counts.size() == GameCatalog.relics().size(), "Formal purchases construct a full four-weapon build with every catalog relic")
 	if state == null:
 		return
 	await _show(ui, state)

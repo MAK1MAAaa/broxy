@@ -417,6 +417,7 @@ func rune_equip_preview(bag_index: int, weapon_index: int) -> Dictionary:
 		for jump: int in RuneRules.EXTRA_HITS:
 			scale *= RuneRules.BOUNCE_DAMAGE_FACTOR
 			bounce_scales.append(scale)
+	var returns_to_player: bool = weapon.return_delay > 0.0
 	return {
 		"weapon_index": weapon_index, "weapon_id": weapon_id, "rune_id": rune_id,
 		"incoming_rune": incoming.duplicate(true), "returned_rune": previous.duplicate(true),
@@ -426,6 +427,13 @@ func rune_equip_preview(bag_index: int, weapon_index: int) -> Dictionary:
 		"blast_radius": RuneRules.BLAST_RADIUS if rune_id == "blast" else 0.0,
 		"blast_multiplier": RuneRules.BLAST_DAMAGE_FACTOR if rune_id == "blast" else 0.0,
 		"bounce_range": RuneRules.BOUNCE_RANGE if rune_id == "bounce" else 0.0,
+		"returns_to_player": returns_to_player, "return_delay": weapon.return_delay,
+		"return_speed": (weapon.return_speed if weapon.return_speed > 0.0 else weapon.projectile_speed) if returns_to_player else 0.0,
+		"return_lifetime": (weapon.return_lifetime if weapon.return_lifetime > 0.0 else weapon.range / maxf(1.0, weapon.projectile_speed) + 1.2) if returns_to_player else 0.0,
+		"return_tracks_player": returns_to_player, "shared_flight_hit_ids": true,
+		"return_cancelled_by_bounce": returns_to_player and rune_id == "bounce",
+		"return_consumed_on_blast": returns_to_player and rune_id == "blast",
+		"cooldown_waits_for_return": false,
 	}
 
 func equip_rune(bag_index: int, weapon_index: int) -> bool:

@@ -1,0 +1,278 @@
+{
+  "schema_version": 1,
+  "scope": "Controlled short native diagnostics and fixed visual comparisons; not the 300-second acceptance test",
+  "seed": 1792123517,
+  "warmup_seconds_per_case": 2,
+  "sample_seconds_per_case": 6,
+  "native_environment": {
+    "os": "Windows 11",
+    "cpu": "Intel Core i5-13600KF",
+    "gpu": "NVIDIA GeForce RTX 4070 SUPER",
+    "driver": "591.86",
+    "resolution": [
+      1280,
+      720
+    ],
+    "renderer": "Compatibility",
+    "vsync_retained": true
+  },
+  "capacity_only": {
+    "raw_local_path": "reports/return-ring/capacity-only-ab-raw.json",
+    "raw_sha256": "c355536971d1a1aa5ed5d1553b465f907feecbb893ba33b916e6d5f724917080",
+    "source_sha256": {
+      "res://.tools/projectile-before-capacity.gd": "8a20e1acc6c27f56cb337aa7d0a353d7565c38e94e38ce60141f9e8b2b72ef5c",
+      "res://scripts/combat/combat_sim.gd": "ea759d32ad33abeb3634f32233637f57d869c8ff7be923c2adbec189de18a0ab",
+      "res://scripts/combat/combat_world.gd": "5bbff1410a6f2288f00fe9415741696fb0591b7b074c2c3dc849236682ad1c00",
+      "res://scripts/combat/projectile_painter.gd": "19c95c37e8088423dc4b09faa174c1cdca0e35d7b137d7ca68860d4786768c5d",
+      "res://scripts/core/sound_bank.gd": "91a3e2f474ac504c321b36706d31112a9c9d551f1475e65e95b7fcdda3a3a01f"
+    },
+    "order": [
+      "before",
+      "after",
+      "after",
+      "before"
+    ],
+    "average_fps": [
+      53.589792109885,
+      53.8472174948945,
+      53.6035663351625,
+      53.1018646911219
+    ],
+    "preparation_ms_per_draw": [
+      2.24035555555556,
+      2.19137673130194,
+      2.17679501385042,
+      2.23779166666667
+    ],
+    "submission_ms_per_draw": [
+      0.658869444444444,
+      0.681914127423823,
+      0.685260387811634,
+      0.694091666666667
+    ],
+    "primitives_per_frame": [
+      154473.791925466,
+      154305.836419753,
+      154345.956521739,
+      154415.351097179
+    ],
+    "draw_calls_per_frame": [
+      600.754658385093,
+      599.438271604938,
+      599.729813664596,
+      600.548589341693
+    ],
+    "common_fixed_tick_prefix_count": 4,
+    "all_common_prefixes_equal": true
+  },
+  "bulk_and_capacity": {
+    "raw_local_path": "reports/return-ring/bulk-ab-raw.json",
+    "raw_sha256": "ae8e5dab3e45b924b22f2f647a4338c3044cecb4ee8d4f3bffe754783ac8efd0",
+    "source_sha256": {
+      "res://.tools/projectile-before-capacity.gd": "8a20e1acc6c27f56cb337aa7d0a353d7565c38e94e38ce60141f9e8b2b72ef5c",
+      "res://scripts/combat/combat_sim.gd": "525968b44d54b955a4686ef08a2f304687919acf113c029bf5dcad938f11c8ca",
+      "res://scripts/combat/combat_world.gd": "5bbff1410a6f2288f00fe9415741696fb0591b7b074c2c3dc849236682ad1c00",
+      "res://scripts/combat/projectile_painter.gd": "b40203b913fee238f2e40ee4635334c3ac99b93fab4947feeff0e25f81a27593",
+      "res://scripts/core/sound_bank.gd": "91a3e2f474ac504c321b36706d31112a9c9d551f1475e65e95b7fcdda3a3a01f"
+    },
+    "order": [
+      "before",
+      "after",
+      "after",
+      "before"
+    ],
+    "average_fps": [
+      53.9330421281978,
+      56.2250532516129,
+      55.6795464261044,
+      53.9723122038394
+    ],
+    "preparation_ms_per_draw": [
+      2.20824722222222,
+      2.1027,
+      2.09912983425414,
+      2.2331
+    ],
+    "submission_ms_per_draw": [
+      0.653355555555556,
+      0.662416666666667,
+      0.664610497237569,
+      0.666686111111111
+    ],
+    "primitives_per_frame": [
+      154437.472222222,
+      154457.174556213,
+      154490.868656716,
+      154408.407407407
+    ],
+    "draw_calls_per_frame": [
+      600.373456790123,
+      601.032544378698,
+      601.29552238806,
+      599.966049382716
+    ],
+    "common_fixed_tick_prefix_count": 4,
+    "all_common_prefixes_equal": true
+  },
+  "atlas_bulk_and_capacity": {
+    "raw_local_path": "reports/return-ring/capacity-ab-raw.json",
+    "raw_sha256": "8880217dd286c4ee3d698691af4e0c2669def1f98236dfe065e3c61d945a5d83",
+    "source_sha256": {
+      "res://.tools/projectile-before-capacity.gd": "8a20e1acc6c27f56cb337aa7d0a353d7565c38e94e38ce60141f9e8b2b72ef5c",
+      "res://assets/fx/projectile_heads.svg": "02d899c13240f34c2e27fba84483076fedfe040f16057a6fb1170e6537734c82",
+      "res://scripts/combat/combat_sim.gd": "ea759d32ad33abeb3634f32233637f57d869c8ff7be923c2adbec189de18a0ab",
+      "res://scripts/combat/combat_world.gd": "5bbff1410a6f2288f00fe9415741696fb0591b7b074c2c3dc849236682ad1c00",
+      "res://scripts/combat/projectile_painter.gd": "568d811fe349debd57a7700a0d9d8cf502adaf6f21c34518abb9e34af7ce9297",
+      "res://scripts/core/sound_bank.gd": "91a3e2f474ac504c321b36706d31112a9c9d551f1475e65e95b7fcdda3a3a01f",
+      "res://tools/art_projectiles.py": "ebe8435a5a5f928612f109a8ae041fd027badbc9536818741505fff1ff22501d"
+    },
+    "order": [
+      "before",
+      "after",
+      "after",
+      "before"
+    ],
+    "average_fps": [
+      54.0305726592335,
+      112.276924463911,
+      115.706037407845,
+      53.5527688527783
+    ],
+    "preparation_ms_per_draw": [
+      2.22391388888889,
+      1.93408310249307,
+      1.9193,
+      2.24575069252078
+    ],
+    "submission_ms_per_draw": [
+      0.675461111111111,
+      0.215747922437673,
+      0.208647222222222,
+      0.67106648199446
+    ],
+    "primitives_per_frame": [
+      154463.566153846,
+      68537.3748148148,
+      68562.4201438849,
+      154449.086956522
+    ],
+    "draw_calls_per_frame": [
+      600.443076923077,
+      639.195555555556,
+      639.342446043166,
+      601.928571428571
+    ],
+    "common_fixed_tick_prefix_count": 4,
+    "all_common_prefixes_equal": true
+  },
+  "final_revision": "arsenal-atlas-v5",
+  "native_fixtures": {
+    "sparse": {
+      "state_hash_equal": true,
+      "trail_and_wing_endpoints_equal": true,
+      "projectiles": {
+        "allocated_head_instances": 10,
+        "allocated_instances": 1613,
+        "body_instances": 1,
+        "bounce_instances": 3,
+        "core_instances": 10,
+        "family_counts": {
+          "bone:pierce": 1,
+          "comet:bounce": 2,
+          "crescent:blast": 1,
+          "ember:blast": 1,
+          "frost:bounce": 1,
+          "frost:pierce": 1,
+          "scatter:": 1,
+          "storm:pierce": 2
+        },
+        "friendly_count": 10,
+        "head_families": 8,
+        "head_instances": 10,
+        "total_visible_instances": 14,
+        "trail_families": 8
+      },
+      "primary_hits": 4,
+      "secondary_hits": 1,
+      "screenshots": {
+        "before": "44c33b6314a41a7a73a68ff3fcaea31bc9efcaa56b640bcc7501437f4e6d24c5",
+        "after": "58ed5bc76962a90d2b92d4d7f172cb1a750128f9e78d5cccfaf1e77164d19cf6"
+      }
+    },
+    "dense": {
+      "state_hash_equal": true,
+      "trail_and_wing_endpoints_equal": true,
+      "projectiles": {
+        "allocated_head_instances": 601,
+        "allocated_instances": 2385,
+        "body_instances": 68,
+        "bounce_instances": 184,
+        "core_instances": 601,
+        "family_counts": {
+          "bone:blast": 7,
+          "bone:bounce": 18,
+          "bone:pierce": 29,
+          "comet:blast": 12,
+          "comet:bounce": 26,
+          "comet:pierce": 32,
+          "crescent:blast": 27,
+          "crescent:bounce": 28,
+          "crescent:pierce": 43,
+          "ember:blast": 12,
+          "ember:bounce": 22,
+          "ember:pierce": 34,
+          "frost:blast": 9,
+          "frost:bounce": 19,
+          "frost:pierce": 45,
+          "return_ring:blast": 26,
+          "return_ring:bounce": 32,
+          "return_ring:pierce": 44,
+          "scatter:blast": 11,
+          "scatter:bounce": 21,
+          "scatter:pierce": 38,
+          "storm:blast": 9,
+          "storm:bounce": 18,
+          "storm:pierce": 39
+        },
+        "friendly_count": 601,
+        "head_families": 24,
+        "head_instances": 601,
+        "total_visible_instances": 853,
+        "trail_families": 24
+      },
+      "primary_hits": 3036,
+      "secondary_hits": 5018,
+      "screenshots": {
+        "before": "701fb35c7a3962feee62400f804da1cdfc51192e7bdd65686a7c0b70fc0be8ee",
+        "after": "291418a7b6f9e03656ebfa9e6815aabde73e1d1519e716cc0f526875e89752e3"
+      }
+    }
+  },
+  "rejected_cpu_candidate": {
+    "kept": false,
+    "reason": "A duplicate quadratic implementation increased maintenance cost for only a small isolated query microbenchmark gain.",
+    "micro_speedup": 1.01604086854334,
+    "old_us_per_query": 5.41974074074074,
+    "new_us_per_query": 5.33417592592593,
+    "selected_uids_equal": true,
+    "checksums_equal": true,
+    "rng_unchanged": true,
+    "thirty_run_equivalence": "reports/return-ring/simulation-query-candidate.json",
+    "final_combat_source_restored_sha256": "ea759d32ad33abeb3634f32233637f57d869c8ff7be923c2adbec189de18a0ab"
+  },
+  "visual_review": {
+    "root_and_independent_art_agent": true,
+    "blocking_findings": 0,
+    "changes": "Heads now follow their own family trails; white cores can be more complete and slightly brighter. SVG raster edges differ from runtime line antialiasing.",
+    "retained": "Authored colors/silhouettes, return-ring hollow center, body/trail/wing/ring cues and danger pass above friendly heads.",
+    "pixel_identical": false
+  },
+  "limits": [
+    "Standalone diagnostic omits Main/GameStore/HUD; the normal Main benchmark is recorded separately.",
+    "Wall-time cases advance different numbers of physics ticks. Only common fixed-tick prefixes are compared; total hit counts are not equivalent workloads.",
+    "Capacity and bulk diagnostics ran with the later-rejected CPU query candidate in both variants. The final atlas comparison uses the restored combat core in both variants.",
+    "Static sparse/dense fixtures add manual danger cues and do not measure natural attack frequency or human threat recognition.",
+    "Microbenchmark geometry is seeded diagnostic geometry with family counts from the failed report, not an exact captured pressure snapshot."
+  ],
+  "passed": true
+}

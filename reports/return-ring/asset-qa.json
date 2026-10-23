@@ -1,0 +1,163 @@
+{
+  "schema_version": 1,
+  "art_revision": "engraved-06",
+  "projectile_visual_revision": "arsenal-atlas-v5",
+  "assets": 46,
+  "svg": 36,
+  "wav": 10,
+  "icons": 24,
+  "old_resource_bytes_identical_to_base_commit": 42,
+  "two_generation_runs_identical": true,
+  "generation_outputs_including_metadata": 48,
+  "local_generation_report": ".tools/engraved-06-qa/atlas-validation.json",
+  "local_generation_report_sha256": "15e55e871ef598acc9c915f70e2f036e81dcee16cdfb00f59d653461ac588bdf",
+  "xml_dimensions_ids_references_passed": true,
+  "atlas": {
+    "frame_size": [
+      64,
+      64
+    ],
+    "world_size": [
+      32,
+      32
+    ],
+    "columns": 8,
+    "rows": 1,
+    "sampling_scale": 2,
+    "frames": [
+      {
+        "source": "bone",
+        "frame": 0,
+        "base_radius": 4.0
+      },
+      {
+        "source": "frost",
+        "frame": 1,
+        "base_radius": 6.0
+      },
+      {
+        "source": "ember",
+        "frame": 2,
+        "base_radius": 8.0
+      },
+      {
+        "source": "scatter",
+        "frame": 3,
+        "base_radius": 4.0
+      },
+      {
+        "source": "crescent",
+        "frame": 4,
+        "base_radius": 8.0
+      },
+      {
+        "source": "storm",
+        "frame": 5,
+        "base_radius": 3.5
+      },
+      {
+        "source": "comet",
+        "frame": 6,
+        "base_radius": 11.0
+      },
+      {
+        "source": "return_ring",
+        "frame": 7,
+        "base_radius": 8.0
+      }
+    ]
+  },
+  "new_asset_sha256": {
+    "assets/fx/projectile_heads.svg": "02d899c13240f34c2e27fba84483076fedfe040f16057a6fb1170e6537734c82",
+    "assets/icons/blood_pact.svg": "5158a0ddd94de9e0b8e4364bafa36742524e28d4a62260fae12080fb615bb0f6",
+    "assets/icons/grave_candle.svg": "af455604f9057c241b10691292f0d62d4aab6f16f4dac3deb4a35c08ec868030",
+    "assets/icons/return_ring.svg": "95504da2eb8b8076e654657a6ffeeeafc591022e8429d74d77426d9eff2dd925"
+  },
+  "imports": {
+    "icons_size": [
+      64,
+      64
+    ],
+    "atlas_size": [
+      512,
+      64
+    ],
+    "pivot": [
+      0.5,
+      0.5
+    ],
+    "lossless": true,
+    "mipmaps": false,
+    "same_texture_settings_family": true
+  },
+  "native_hollow_head_check": {
+    "scope": "Three-by-three center pixels of native ring heads, including all socket states and zero speed; not dynamic readability",
+    "background_rgba": [
+      13,
+      17,
+      27,
+      255
+    ],
+    "heads": [
+      {
+        "index": 0,
+        "center": [
+          90,
+          600
+        ],
+        "nine_center_pixels_equal_background": true
+      },
+      {
+        "index": 1,
+        "center": [
+          270,
+          600
+        ],
+        "nine_center_pixels_equal_background": true
+      },
+      {
+        "index": 2,
+        "center": [
+          450,
+          600
+        ],
+        "nine_center_pixels_equal_background": true
+      },
+      {
+        "index": 3,
+        "center": [
+          630,
+          600
+        ],
+        "nine_center_pixels_equal_background": true
+      },
+      {
+        "index": 6,
+        "center": [
+          1170,
+          600
+        ],
+        "nine_center_pixels_equal_background": true
+      }
+    ]
+  },
+  "native_visual_review": {
+    "cases": [
+      "art",
+      "outbound",
+      "returning",
+      "shop",
+      "rune",
+      "blood_pact",
+      "grave_candle",
+      "result"
+    ],
+    "root_and_independent_art_agent_reviewed": true,
+    "blocking_findings": 0
+  },
+  "limits": [
+    "The SVG contact sheet is not the runtime projectile.",
+    "Static image checks do not measure motion clarity, human decisions or dense-combat threat identification."
+  ],
+  "passed": true
+}

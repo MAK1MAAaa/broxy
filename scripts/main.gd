@@ -83,9 +83,12 @@ func _ready() -> void:
 			_screenshot_clock = maxf(0.5, argument.trim_prefix("--capture-delay=").to_float())
 
 func _start_run(starter: String) -> void:
+	_begin_run(starter)
+
+func _begin_run(starter: String, seed_value: int = 0) -> void:
 	get_tree().paused = false
 	paused = false
-	run.begin(int(Time.get_unix_time_from_system()) ^ Time.get_ticks_usec(), starter)
+	run.begin(seed_value if seed_value > 0 else int(Time.get_unix_time_from_system()) ^ Time.get_ticks_usec(), starter)
 	screen = Screen.COMBAT
 	ui.show_hud()
 	world.begin(run)
@@ -209,8 +212,31 @@ func _capture() -> void:
 	if "--smoke" in args or "--capture-only" in args:
 		_quit_game(0 if result == OK else 1)
 
+static func _benchmark_seed_from_args(arguments: PackedStringArray) -> int:
+	var seed_value: int = 0
+	for argument: String in arguments:
+		if argument == "--benchmark-seed":
+			return -1
+		if not argument.begins_with("--benchmark-seed="):
+			continue
+		var value: String = argument.trim_prefix("--benchmark-seed=")
+		if value != value.strip_edges() or not value.is_valid_int():
+			return -1
+		var digits: String = value.trim_prefix("+").lstrip("0")
+		if digits.is_empty() or digits.begins_with("-") or digits.length() > 19:
+			return -1
+		if digits.length() == 19 and digits > "9223372036854775807":
+			return -1
+		seed_value = digits.to_int()
+	return seed_value
+
 func _start_benchmark() -> void:
-	_start_run("bone")
+	var seed_value: int = _benchmark_seed_from_args(args)
+	if seed_value < 0:
+		push_error("--benchmark-seed requires a positive integer within the signed 64-bit range")
+		_quit_game(2)
+		return
+	_begin_run("bone", seed_value)
 	_benchmark = true
 	world.stress_mode = true
 	world.rune_stress_mode = false
@@ -229,7 +255,7 @@ func _start_benchmark() -> void:
 	if world.rune_stress_mode:
 		get_window().title = "秘术余烬 · 符文反馈压力测试（非普通关卡，不保存设置与成绩）"
 	if world.content_stress_mode:
-		get_window().title = "秘术余烬 · 七法器压力测试（非普通关卡，不保存设置与成绩）"
+		get_window().title = "秘术余烬 · 多法器压力测试（非普通关卡，不保存设置与成绩）"
 	ui.update_hud(world.hud_snapshot())
 	ui.notify("性能压力测试 · 不结算关卡 · 采样结束后自动关闭")
 	print("BENCHMARK_START 300 enemies / 600 projectiles / 200 drops, ", _benchmark_seconds, "s + 5s warmup")

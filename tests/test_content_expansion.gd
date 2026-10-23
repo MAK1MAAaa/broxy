@@ -67,7 +67,7 @@ func _activations(sim: CombatSim) -> Array[Dictionary]:
 	return records
 
 func _test_catalog_and_affordability() -> void:
-	_check(GameCatalog.weapons().size() == 7 and GameCatalog.relics().size() == 10, "Catalog exposes seven weapons and ten relics")
+	_check(GameCatalog.weapons().size() == 8 and GameCatalog.relics().size() == 12, "Catalog exposes seven weapons and ten relics")
 	var ids: Dictionary = {}
 	for group: Array in [GameCatalog.weapons(), GameCatalog.relics()]:
 		for definition: ContentDef in group:

@@ -85,7 +85,7 @@ func _preview() -> void:
 	var passed: bool = not world.sim.complete
 	if view == "dense":
 		passed = passed and world.sim.primary_hits > 0 and world.sim.secondary_hits > 0
-		passed = passed and stats["projectiles"]["friendly_count"] >= 600 and stats["projectiles"]["family_counts"].size() == 21
+		passed = passed and stats["projectiles"]["friendly_count"] >= 600 and stats["projectiles"]["family_counts"].size() == GameCatalog.weapons().size() * GameCatalog.runes().size()
 	else:
 		passed = passed and world.sim.primary_hits == 15 and world.sim.secondary_hits == 0
 		for index: int in targets.size():
@@ -200,7 +200,7 @@ func _overlay(variant: String, view: String, frames: int, sim: CombatSim) -> voi
 	_label(canvas, "固定静帧，非自然对局 · %d 次直接命中 / %d 次追加命中 · 关闭闪光不影响实际伤害。" % [sim.primary_hits, sim.secondary_hits], Vector2(48, 630), 16, GameUI.BONE)
 	var note: String = "五列为实际敌人尺寸；三行年龄来自分帧发射，未直接改计时、伤害或受击特效。"
 	if view == "dense":
-		note = "正式七法器压力推进；右下另加危险层夹具与真实敌弹对象，非自然Boss攻击。"
+		note = "正式多法器压力推进；右下另加危险层夹具与真实敌弹对象，非自然Boss攻击。"
 	elif view == "disabled":
 		note = "此页为关闭闪光后的真实寒霜命中；应保留冷色材质，三行均不出现整身受击增亮。"
 	_label(canvas, note, Vector2(48, 668), 14, GameUI.MUTED)

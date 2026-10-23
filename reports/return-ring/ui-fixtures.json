@@ -1,0 +1,511 @@
+{
+  "scope": "Native fixed scenes, not ordinary-run playtests",
+  "fixtures": {
+    "art": {
+      "batches": {
+        "allocated_head_instances": 7,
+        "allocated_instances": 1608,
+        "body_instances": 0,
+        "bounce_instances": 1,
+        "core_instances": 7,
+        "family_counts": {
+          "comet:": 1,
+          "crescent:": 1,
+          "return_ring:": 2,
+          "return_ring:blast": 1,
+          "return_ring:bounce": 1,
+          "return_ring:pierce": 1
+        },
+        "friendly_count": 7,
+        "head_families": 6,
+        "head_instances": 7,
+        "total_visible_instances": 8,
+        "trail_families": 6
+      },
+      "capture_result": 0,
+      "case": "art",
+      "fixture_passed": true,
+      "head_centers": [
+        "(90.0, 600.0)",
+        "(270.0, 600.0)",
+        "(450.0, 600.0)",
+        "(630.0, 600.0)",
+        "(810.0, 600.0)",
+        "(990.0, 600.0)",
+        "(1170.0, 600.0)"
+      ],
+      "persistent": false,
+      "viewport": [
+        1280,
+        720
+      ]
+    },
+    "outbound": {
+      "active": true,
+      "capture_result": 0,
+      "case": "outbound",
+      "fixture_passed": true,
+      "frames": 18,
+      "hit_ids": {
+        "1": true
+      },
+      "life": 2.1,
+      "persistent": false,
+      "player": "(640.0, 365.0)",
+      "position": "(748.0, 365.0)",
+      "primary_hits": 1,
+      "returning": false,
+      "rune": "pierce",
+      "viewport": [
+        1280,
+        720
+      ]
+    },
+    "returning": {
+      "active": true,
+      "capture_result": 0,
+      "case": "returning",
+      "fixture_passed": true,
+      "frames": 48,
+      "hit_ids": {
+        "1": true
+      },
+      "life": 1.6,
+      "persistent": false,
+      "player": "(640.0, 474.9997)",
+      "position": "(758.9422, 404.8982)",
+      "primary_hits": 1,
+      "returning": true,
+      "rune": "pierce",
+      "viewport": [
+        1280,
+        720
+      ]
+    },
+    "shop": {
+      "capture_result": 0,
+      "case": "shop",
+      "fixture_passed": true,
+      "overlay": "",
+      "persistent": false,
+      "summary": {
+        "damage_dealt_by_weapon": {},
+        "damage_taken": 0.0,
+        "elapsed": 0.0,
+        "gold": 120,
+        "health": 132.0,
+        "hits_taken": 0,
+        "kills": 0,
+        "last_hit": {},
+        "level": 7,
+        "loadout": [
+          {
+            "id": "bone",
+            "paid": 0,
+            "rune": {
+              "id": "pierce",
+              "paid": 18,
+              "uid": 1
+            }
+          },
+          {
+            "id": "return_ring",
+            "paid": 28,
+            "rune": {
+              "id": "blast",
+              "paid": 22,
+              "uid": 2
+            }
+          },
+          {
+            "id": "crescent",
+            "paid": 26,
+            "rune": {
+              "id": "bounce",
+              "paid": 20,
+              "uid": 3
+            }
+          },
+          {
+            "id": "storm",
+            "paid": 28,
+            "rune": {
+              "id": "pierce",
+              "paid": 18,
+              "uid": 4
+            }
+          }
+        ],
+        "max_health": 132.0,
+        "pending_upgrades": 0,
+        "relic_counts": {
+          "armor": 1,
+          "blood_pact": 1,
+          "bulwark": 1,
+          "damage": 1,
+          "grave_candle": 1,
+          "haste": 1,
+          "hourglass": 1,
+          "magnet": 1,
+          "moon_charm": 1,
+          "pilgrim": 1,
+          "speed": 1,
+          "vitality": 1
+        },
+        "rune_bag": [
+          {
+            "id": "bounce",
+            "paid": 20,
+            "uid": 5
+          },
+          {
+            "id": "pierce",
+            "paid": 18,
+            "uid": 6
+          },
+          {
+            "id": "blast",
+            "paid": 22,
+            "uid": 7
+          },
+          {
+            "id": "bounce",
+            "paid": 20,
+            "uid": 8
+          }
+        ],
+        "seed": 20261027,
+        "wave": 4,
+        "xp": 86
+      },
+      "viewport": [
+        1280,
+        720
+      ]
+    },
+    "rune": {
+      "capture_result": 0,
+      "case": "rune",
+      "fixture_passed": true,
+      "overlay": "rune_equip_comparison",
+      "persistent": false,
+      "summary": {
+        "damage_dealt_by_weapon": {},
+        "damage_taken": 0.0,
+        "elapsed": 0.0,
+        "gold": 120,
+        "health": 132.0,
+        "hits_taken": 0,
+        "kills": 0,
+        "last_hit": {},
+        "level": 7,
+        "loadout": [
+          {
+            "id": "bone",
+            "paid": 0,
+            "rune": {
+              "id": "pierce",
+              "paid": 18,
+              "uid": 1
+            }
+          },
+          {
+            "id": "return_ring",
+            "paid": 28,
+            "rune": {
+              "id": "blast",
+              "paid": 22,
+              "uid": 2
+            }
+          },
+          {
+            "id": "crescent",
+            "paid": 26,
+            "rune": {
+              "id": "bounce",
+              "paid": 20,
+              "uid": 3
+            }
+          },
+          {
+            "id": "storm",
+            "paid": 28,
+            "rune": {
+              "id": "pierce",
+              "paid": 18,
+              "uid": 4
+            }
+          }
+        ],
+        "max_health": 132.0,
+        "pending_upgrades": 0,
+        "relic_counts": {
+          "armor": 1,
+          "blood_pact": 1,
+          "bulwark": 1,
+          "damage": 1,
+          "grave_candle": 1,
+          "haste": 1,
+          "hourglass": 1,
+          "magnet": 1,
+          "moon_charm": 1,
+          "pilgrim": 1,
+          "speed": 1,
+          "vitality": 1
+        },
+        "rune_bag": [
+          {
+            "id": "bounce",
+            "paid": 20,
+            "uid": 5
+          },
+          {
+            "id": "pierce",
+            "paid": 18,
+            "uid": 6
+          },
+          {
+            "id": "blast",
+            "paid": 22,
+            "uid": 7
+          },
+          {
+            "id": "bounce",
+            "paid": 20,
+            "uid": 8
+          }
+        ],
+        "seed": 20261027,
+        "wave": 4,
+        "xp": 86
+      },
+      "viewport": [
+        1280,
+        720
+      ]
+    },
+    "blood_pact": {
+      "capture_result": 0,
+      "case": "blood_pact",
+      "fixture_passed": true,
+      "overlay": "relic_comparison",
+      "persistent": false,
+      "summary": {
+        "damage_dealt_by_weapon": {},
+        "damage_taken": 0.0,
+        "elapsed": 0.0,
+        "gold": 120,
+        "health": 132.0,
+        "hits_taken": 0,
+        "kills": 0,
+        "last_hit": {},
+        "level": 7,
+        "loadout": [
+          {
+            "id": "bone",
+            "paid": 0,
+            "rune": {
+              "id": "pierce",
+              "paid": 18,
+              "uid": 1
+            }
+          },
+          {
+            "id": "return_ring",
+            "paid": 28,
+            "rune": {
+              "id": "blast",
+              "paid": 22,
+              "uid": 2
+            }
+          },
+          {
+            "id": "crescent",
+            "paid": 26,
+            "rune": {
+              "id": "bounce",
+              "paid": 20,
+              "uid": 3
+            }
+          },
+          {
+            "id": "storm",
+            "paid": 28,
+            "rune": {
+              "id": "pierce",
+              "paid": 18,
+              "uid": 4
+            }
+          }
+        ],
+        "max_health": 132.0,
+        "pending_upgrades": 0,
+        "relic_counts": {
+          "armor": 1,
+          "blood_pact": 1,
+          "bulwark": 1,
+          "damage": 1,
+          "grave_candle": 1,
+          "haste": 1,
+          "hourglass": 1,
+          "magnet": 1,
+          "moon_charm": 1,
+          "pilgrim": 1,
+          "speed": 1,
+          "vitality": 1
+        },
+        "rune_bag": [
+          {
+            "id": "bounce",
+            "paid": 20,
+            "uid": 5
+          },
+          {
+            "id": "pierce",
+            "paid": 18,
+            "uid": 6
+          },
+          {
+            "id": "blast",
+            "paid": 22,
+            "uid": 7
+          },
+          {
+            "id": "bounce",
+            "paid": 20,
+            "uid": 8
+          }
+        ],
+        "seed": 20261027,
+        "wave": 4,
+        "xp": 86
+      },
+      "viewport": [
+        1280,
+        720
+      ]
+    },
+    "grave_candle": {
+      "capture_result": 0,
+      "case": "grave_candle",
+      "fixture_passed": true,
+      "overlay": "relic_comparison",
+      "persistent": false,
+      "summary": {
+        "damage_dealt_by_weapon": {},
+        "damage_taken": 0.0,
+        "elapsed": 0.0,
+        "gold": 120,
+        "health": 132.0,
+        "hits_taken": 0,
+        "kills": 0,
+        "last_hit": {},
+        "level": 7,
+        "loadout": [
+          {
+            "id": "bone",
+            "paid": 0,
+            "rune": {
+              "id": "pierce",
+              "paid": 18,
+              "uid": 1
+            }
+          },
+          {
+            "id": "return_ring",
+            "paid": 28,
+            "rune": {
+              "id": "blast",
+              "paid": 22,
+              "uid": 2
+            }
+          },
+          {
+            "id": "crescent",
+            "paid": 26,
+            "rune": {
+              "id": "bounce",
+              "paid": 20,
+              "uid": 3
+            }
+          },
+          {
+            "id": "storm",
+            "paid": 28,
+            "rune": {
+              "id": "pierce",
+              "paid": 18,
+              "uid": 4
+            }
+          }
+        ],
+        "max_health": 132.0,
+        "pending_upgrades": 0,
+        "relic_counts": {
+          "armor": 1,
+          "blood_pact": 1,
+          "bulwark": 1,
+          "damage": 1,
+          "grave_candle": 1,
+          "haste": 1,
+          "hourglass": 1,
+          "magnet": 1,
+          "moon_charm": 1,
+          "pilgrim": 1,
+          "speed": 1,
+          "vitality": 1
+        },
+        "rune_bag": [
+          {
+            "id": "bounce",
+            "paid": 20,
+            "uid": 5
+          },
+          {
+            "id": "pierce",
+            "paid": 18,
+            "uid": 6
+          },
+          {
+            "id": "blast",
+            "paid": 22,
+            "uid": 7
+          },
+          {
+            "id": "bounce",
+            "paid": 20,
+            "uid": 8
+          }
+        ],
+        "seed": 20261027,
+        "wave": 4,
+        "xp": 86
+      },
+      "viewport": [
+        1280,
+        720
+      ]
+    },
+    "result": {
+      "capture_result": 0,
+      "case": "result",
+      "damage_by_weapon": {
+        "bone": 14.0,
+        "comet": 54.0,
+        "crescent": 18.0,
+        "ember": 29.0,
+        "frost": 11.0,
+        "return_ring": 16.0,
+        "scatter": 8.0,
+        "storm": 9.0
+      },
+      "fixture_passed": true,
+      "persistent": false,
+      "viewport": [
+        1280,
+        720
+      ]
+    }
+  },
+  "passed": true
+}

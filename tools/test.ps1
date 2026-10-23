@@ -11,7 +11,8 @@ try {
         'simulation_shop', 'content_expansion', 'content_presentation',
         'relic_preview', 'relic_comparison', 'trail_readability',
         'rune_equip_preview', 'rune_equip_comparison', 'enemy_hit_style',
-        'shop_locks', 'shop_lock_ui', 'shop_lock_flow'
+        'shop_locks', 'shop_lock_ui', 'shop_lock_flow',
+        'return_ring', 'return_ring_ui', 'return_ring_presentation', 'projectile_capacity', 'benchmark_seed'
     )
     foreach ($suite in $suites) {
         & $runner --headless --script "res://tests/test_$suite.gd"
