@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ContentDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/content_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "bulwark"
+kind = "relic"
+display_name = "骨盾印"
+subtitle = "复合遗物 · 最多叠加3层"
+description = "护甲 +1，生命上限 +12，并回复12生命"
+icon = "bulwark"
+color = Color(0.84, 0.83, 0.68, 1)
+price = 24
+stat = "armor"
+amount = 1.0
+bonus_stat = "max_health"
+bonus_amount = 12.0

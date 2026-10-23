@@ -239,7 +239,7 @@ func _test_mixed_full_layout() -> void:
 	_assert_offer(ui, state, 1, "备用符文已满", "备用符文已满，请先装备或出售。")
 	_assert_offer(ui, state, 2, "遗物已满3层", "该遗物已达到3层上限。")
 	_assert_offer(ui, state, 3, "遗物已满3层", "该遗物已达到3层上限。")
-	_check(state.relic_counts.size() == 6 and state.rune_bag.size() == 4 and state.loadout.size() == 4, "Mixed cards are verified against a complete six-relic, four-weapon and four-reserve build")
+	_check(state.relic_counts.size() == 10 and state.rune_bag.size() == 4 and state.loadout.size() == 4, "Mixed cards are verified against a complete ten-relic, four-weapon and four-reserve build")
 	_check(_controls_fit(ui), "Every visible label and button, including long refusal labels, fits inside 1280 by 720 without minimum-size clipping")
 	await _dispose(ui)
 

@@ -1,0 +1,12 @@
+{
+	"after_rebuild_ms": 1.88655416666667,
+	"before_rebuild_ms": 2.4360875,
+	"fixture": "600 positive-damage friendly shots / 7 weapons / 3 runes / 21 families",
+	"geometry_equivalent": true,
+	"headless": true,
+	"metric_scope": "CPU preparation only; not native frame rate",
+	"rebuilds_per_variant": 240,
+	"seed": 20261023,
+	"sigil_endpoints": 5472,
+	"speedup": 1.29128945409731
+}

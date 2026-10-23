@@ -42,7 +42,7 @@ func _run_tests() -> void:
 			var texture: Texture2D = ui._icon_texture(definition)
 			_check(texture != null and texture.get_width() > 0 and texture.get_height() > 0, "Catalog icon resolves to a usable texture: " + definition.id)
 			icon_count += 1
-	_check(icon_count == 13, "All four weapon, three rune and six relic icons are validated")
+	_check(icon_count == 20, "All seven weapon, three rune and ten relic icons are validated")
 	ui.show_title({})
 	await _settle()
 	_check(ui.find_child("MenuArtwork", true, false) != null, "Title displays the supplied menu artwork")
@@ -230,18 +230,19 @@ func _run_tests() -> void:
 		await _accept_focus()
 		_check(int(state.loadout[0]["rune"].get("uid", 0)) == 24 and state.rune_bag.size() == 4, "Keyboard swapping with a full reserve equips the chosen rune and keeps all reserve slots")
 		_check(_next_wave_requests == 0, "Full-inventory keyboard equip does not request the next wave")
-	state.damage_dealt_by_weapon = {"bone": 320.0, "frost": 90.0, "ember": 240.0, "scatter": 15.0}
+	state.damage_dealt_by_weapon = {"bone": 320.0, "frost": 90.0, "ember": 240.0, "scatter": 15.0,
+		"crescent": 110.0, "storm": 56.0, "comet": 108.0}
 	state.damage_taken = 123.5
 	state.hits_taken = 7
 	state.last_hit = {"amount": 12.5, "source_id": "caster", "kind": "projectile", "wave": 8, "elapsed": 315.0}
 	ui.show_result(false, "被咒术师的弹幕击倒，最后承伤12.5。", {})
 	await _settle()
-	_check(_buttons_inside(ui) and _text_inside(ui), "A four-weapon result with received-damage statistics preserves all text and restart/menu actions")
+	_check(_buttons_inside(ui) and _text_inside(ui), "A seven-source result with received-damage statistics preserves all text and restart/menu actions")
 	_check(_has_label_containing(ui, "实际承伤  123.5") and _has_label_containing(ui, "受击  7 次"), "Results show actual accumulated damage received and hit count")
 	_check(_has_label(ui, "最后承伤：%s / 弹丸 · 生命损失 12.5 · 第8波" % GameCatalog.enemy("caster").display_name), "Results distinguish the most recent hit source, type and life loss from total received damage")
-	_check(_buttons_inside(ui) and _text_inside(ui), "The last-hit line fits beside four weapon contributions and the full final loadout")
+	_check(_buttons_inside(ui) and _text_inside(ui), "The last-hit line fits beside seven weapon contributions and the full final loadout")
 	_check(_has_label(ui, "被咒术师的弹幕击倒，最后承伤12.5。"), "Results present the recorded death reason without replacing its source")
-	_check(_has_label(ui, "实际总伤害  665.0"), "Results sum only the actual recorded life loss rather than inventing DPS")
+	_check(_has_label(ui, "实际总伤害  939.0"), "Results sum only the actual recorded life loss rather than inventing DPS")
 	for definition: ContentDef in GameCatalog.weapons():
 		var contribution: Node = ui.find_child("Damage_" + definition.id, true, false)
 		_check(contribution != null and _has_label(contribution, definition.display_name), "A recorded weapon has a visible contribution row: " + definition.id)

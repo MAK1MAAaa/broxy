@@ -30,9 +30,9 @@ func _buy(state: RunState, kind: String, id: String, price: int = 20) -> bool:
 	return state.buy_offer(0)
 
 func _test_catalog() -> void:
-	_check(GameCatalog.weapons().size() == 4, "Catalog has four weapons")
+	_check(GameCatalog.weapons().size() == 7, "Catalog has seven weapons")
 	_check(GameCatalog.runes().size() == 3, "Catalog has three runes")
-	_check(GameCatalog.relics().size() == 6, "Catalog has six relics")
+	_check(GameCatalog.relics().size() == 10, "Catalog has ten relics")
 	_check(GameCatalog.enemies().size() == 5, "Catalog has four enemies and one boss")
 	_check(GameCatalog.waves().size() == 8, "Catalog has eight waves")
 	var groups: Array = [GameCatalog.weapons(), GameCatalog.runes(), GameCatalog.relics(), GameCatalog.enemies(), GameCatalog.waves()]
@@ -55,7 +55,7 @@ func _test_catalog() -> void:
 	_check(GameCatalog.wave(0) == null and GameCatalog.wave(9) == null, "Out-of-range waves return null")
 	var copy: Array[ContentDef] = GameCatalog.weapons()
 	copy.clear()
-	_check(GameCatalog.weapons().size() == 4, "Catalog list callers cannot clear the catalog")
+	_check(GameCatalog.weapons().size() == 7, "Catalog list callers cannot clear the catalog")
 
 func _test_income_and_seed() -> void:
 	var state: RunState = _new_run()

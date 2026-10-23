@@ -20,6 +20,8 @@ var _last_kills: int = 0
 var autopilot: bool = false
 var stress_mode: bool = false
 var rune_stress_mode: bool = false
+var content_stress_mode: bool = false
+var stress_weapon_ids: PackedStringArray = PackedStringArray(["bone", "frost", "ember", "scatter"])
 var benchmark_time_left: float = 0.0
 
 const NUMBER_LIMIT: int = 48
@@ -528,7 +530,7 @@ func _maintain_stress() -> void:
 		if shot.active:
 			shot.position = Vector2(wrapf(shot.position.x, 85.0, 1195.0), wrapf(shot.position.y, 135.0, 620.0))
 	while sim.shot_count < 600:
-		var weapon: String = ["bone", "frost", "ember", "scatter"][sim.shot_count % 4] if rune_stress_mode else "bone"
+		var weapon: String = stress_weapon_ids[sim.shot_count % stress_weapon_ids.size()] if rune_stress_mode else "bone"
 		var rune_id: String = ["pierce", "bounce", "blast"][sim.shot_count % 3] if rune_stress_mode else "pierce"
 		var shot: CombatSim.Shot = sim.fire_weapon(weapon, rune_id, Vector2(sim.rng.randf_range(100, 1180), sim.rng.randf_range(160, 610)), Vector2.from_angle(sim.rng.randf() * TAU))
 		if not rune_stress_mode:
@@ -537,10 +539,16 @@ func _maintain_stress() -> void:
 	while sim.soul_count < 200:
 		sim._drop_soul(Vector2(sim.rng.randf_range(100, 1180), sim.rng.randf_range(160, 610)), 1)
 
-func enable_rune_stress() -> void:
+func enable_rune_stress(include_content: bool = false) -> void:
 	# Explicit QA variant: use real weapon damage and all rune families instead of
 	# the baseline's zero-damage filler. Keep the original benchmark reproducible.
 	rune_stress_mode = true
+	content_stress_mode = include_content
+	stress_weapon_ids = PackedStringArray(["bone", "frost", "ember", "scatter"])
+	if include_content:
+		stress_weapon_ids.clear()
+		for definition: ContentDef in GameCatalog.weapons():
+			stress_weapon_ids.append(definition.id)
 	for shot: CombatSim.Shot in sim.shots:
 		if shot.active:
 			sim._release_shot(shot)

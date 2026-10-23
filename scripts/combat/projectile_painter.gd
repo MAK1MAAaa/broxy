@@ -9,6 +9,7 @@ const RING_SIDES: int = 8
 class TrailBatch:
 	var points: PackedVector2Array = PackedVector2Array()
 	var wings: PackedVector2Array = PackedVector2Array()
+	var sigils: PackedVector2Array = PackedVector2Array()
 	var color: Color = Color.WHITE
 	var width: float = 3.0
 	var source: String = ""
@@ -27,12 +28,14 @@ var ember_count: int = 0
 var bounce_count: int = 0
 var family_counts: Dictionary = {}
 var _friendly: Array[CombatSim.Shot] = []
+var _sigil_shapes: Dictionary = {}
 
 func _init() -> void:
 	# Glow and colored body share one mesh instance; a white core and optional ring
 	# therefore keep even ember+bounce within three GPU instances per projectile.
 	bodies = _multimesh(_disc_mesh(true), LIMIT)
 	cores = _multimesh(_disc_mesh(false), LIMIT)
+	_sigil_shapes = _make_sigil_shapes()
 
 func rebuild(shots: Array[CombatSim.Shot]) -> void:
 	friendly_count = 0
@@ -44,6 +47,7 @@ func rebuild(shots: Array[CombatSim.Shot]) -> void:
 	for batch: TrailBatch in trails.values():
 		batch.points.clear()
 		batch.wings.clear()
+		batch.sigils.clear()
 	for shot: CombatSim.Shot in shots:
 		if not shot.active or shot.hostile:
 			continue
@@ -83,6 +87,10 @@ func rebuild(shots: Array[CombatSim.Shot]) -> void:
 		var trail_length: float = 25.0 if shot.source == "frost" else 18.0
 		if shot.source == "scatter":
 			trail_length = 9.0
+		elif shot.source == "storm":
+			trail_length = 13.0
+		elif shot.source == "comet":
+			trail_length = 29.0
 		var tail: Vector2 = shot.position - direction * trail_length
 		var color: Color = Color("dab779") if shot.source == "ember" else shot.color
 		if shot.rune == "blast":
@@ -95,8 +103,11 @@ func rebuild(shots: Array[CombatSim.Shot]) -> void:
 		trail.source = shot.source
 		trail.color = color
 		trail.width = shot.radius * 1.2
+		if shot.source == "crescent" or shot.source == "comet":
+			trail.width = shot.radius * 0.55
 		trail.points.append(tail - direction * 6.0 if shot.source == "ember" else tail)
 		trail.points.append(shot.position)
+		_append_sigil(trail.sigils, shot, direction)
 		if shot.rune == "pierce" or shot.source == "frost":
 			var wing: Vector2 = direction.orthogonal() * 3.0
 			trail.wings.append(tail + wing)
@@ -106,7 +117,8 @@ func rebuild(shots: Array[CombatSim.Shot]) -> void:
 		if shot.source == "ember":
 			_instance(bodies, ember_count, shot.position, shot.radius, color)
 			ember_count += 1
-		_instance(cores, core_index, shot.position, shot.radius * (0.4 if shot.source == "ember" else 0.55),
+		var core_scale: float = 0.4 if shot.source == "ember" else 0.18 if shot.source == "crescent" else 0.35 if shot.source == "comet" else 0.55
+		_instance(cores, core_index, shot.position, shot.radius * core_scale,
 			Color("f8efe2") if shot.source == "ember" else Color("f5efe0"))
 		core_index += 1
 		if shot.rune == "bounce":
@@ -136,6 +148,9 @@ func draw(canvas: CanvasItem) -> void:
 			canvas.draw_multiline(trail.points, trail.color, trail.width, true)
 		if not trail.wings.is_empty():
 			canvas.draw_multiline(trail.wings, Color(trail.color, 0.65), 1.0, true)
+		if not trail.sigils.is_empty():
+			var sigil_color: Color = Color("e7dba8") if trail.source == "storm" else Color("d5c1e8") if trail.source == "comet" else Color("d3e8de")
+			canvas.draw_multiline(trail.sigils, Color(sigil_color, 0.85), 1.3, true)
 
 func get_stats() -> Dictionary:
 	var allocated: int = bodies.instance_count + cores.instance_count
@@ -146,6 +161,46 @@ func get_stats() -> Dictionary:
 		"total_visible_instances": ember_count + friendly_count + bounce_count,
 		"allocated_instances": allocated, "family_counts": family_counts.duplicate(),
 		"trail_families": trails.size()}
+
+
+func _append_sigil(points: PackedVector2Array, shot: CombatSim.Shot, direction: Vector2) -> void:
+	if not _sigil_shapes.has(shot.source):
+		return
+	var scale: float = shot.radius + 3.0 if shot.source == "comet" else 1.0
+	# Transform the packed endpoint array in native code. The rotation basis uses
+	# the positive turn, while authored crescent/lightning offsets retain their
+	# original orthogonal convention inside the cached local geometry.
+	var transform := Transform2D(direction * scale, Vector2(-direction.y, direction.x) * scale, shot.position)
+	var shape: PackedVector2Array = _sigil_shapes[shot.source]
+	points.append_array(transform * shape)
+
+
+static func _make_sigil_shapes() -> Dictionary:
+	var crescent := PackedVector2Array()
+	var storm := PackedVector2Array()
+	var comet := PackedVector2Array()
+	var side: Vector2 = Vector2.RIGHT.orthogonal()
+	for index: int in 8:
+		var angle_a: float = -PI * 0.5 + float(index) * PI / 8.0
+		var angle_b: float = -PI * 0.5 + float(index + 1) * PI / 8.0
+		for depth: float in [12.0, 6.0]:
+			crescent.append(Vector2(-5, 0) + Vector2.RIGHT * cos(angle_a) * depth + side * sin(angle_a) * 10.0)
+			crescent.append(Vector2(-5, 0) + Vector2.RIGHT * cos(angle_b) * depth + side * sin(angle_b) * 10.0)
+	for sign_value: float in [-1.0, 1.0]:
+		var offsets: Array[Vector2] = [Vector2(-11, sign_value * 3), Vector2(-4, sign_value * 6),
+			Vector2(-6, sign_value), Vector2(5, 0)]
+		for index: int in 3:
+			storm.append(Vector2.RIGHT * offsets[index].x + side * offsets[index].y)
+			storm.append(Vector2.RIGHT * offsets[index + 1].x + side * offsets[index + 1].y)
+	for index: int in 5:
+		var axis: Vector2 = Vector2.RIGHT.rotated(float(index) * TAU / 5.0)
+		var next_axis: Vector2 = Vector2.RIGHT.rotated((float(index) + 0.5) * TAU / 5.0)
+		var end_axis: Vector2 = Vector2.RIGHT.rotated(float(index + 1) * TAU / 5.0)
+		comet.append(axis)
+		comet.append(next_axis * 0.43)
+		comet.append(next_axis * 0.43)
+		comet.append(end_axis)
+	return {"crescent": crescent, "storm": storm, "comet": comet}
 
 static func _instance(multimesh: MultiMesh, index: int, point: Vector2, radius: float, color: Color) -> void:
 	multimesh.set_instance_transform_2d(index, Transform2D(Vector2(radius, 0), Vector2(0, radius), point))

@@ -14,3 +14,8 @@ reports/windows/*.jsonl
 reports/windows/*.png
 reports/windows/*.import
 reports/windows/*-raw.json
+reports/content/*.log
+reports/content/*.jsonl
+reports/content/*.png
+reports/content/*.import
+reports/content/*-raw.json

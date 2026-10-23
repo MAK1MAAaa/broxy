@@ -216,8 +216,8 @@ func _start_benchmark() -> void:
 	world.rune_stress_mode = false
 	world.sim.populate_stress()
 	_peak_rune_flashes = 0
-	if "--benchmark-runes" in args:
-		world.enable_rune_stress()
+	if "--benchmark-runes" in args or "--benchmark-content" in args:
+		world.enable_rune_stress("--benchmark-content" in args)
 	_benchmark_start = Time.get_ticks_usec()
 	_last_frame_usec = _benchmark_start
 	_benchmark_warmup = _benchmark_start + 5000000
@@ -228,11 +228,13 @@ func _start_benchmark() -> void:
 	get_window().title = "秘术余烬 · 性能压力测试（非普通关卡，不保存设置与成绩）"
 	if world.rune_stress_mode:
 		get_window().title = "秘术余烬 · 符文反馈压力测试（非普通关卡，不保存设置与成绩）"
+	if world.content_stress_mode:
+		get_window().title = "秘术余烬 · 七法器压力测试（非普通关卡，不保存设置与成绩）"
 	ui.update_hud(world.hud_snapshot())
 	ui.notify("性能压力测试 · 不结算关卡 · 采样结束后自动关闭")
 	print("BENCHMARK_START 300 enemies / 600 projectiles / 200 drops, ", _benchmark_seconds, "s + 5s warmup")
 	if world.rune_stress_mode:
-		print("BENCHMARK_SCENARIO rune-feedback: positive weapon damage, all rune families")
+		print("BENCHMARK_SCENARIO ", "content-feedback" if world.content_stress_mode else "rune-feedback", ": positive weapon damage, all rune families; weapons=", world.stress_weapon_ids)
 
 func _record_benchmark() -> void:
 	var now: int = Time.get_ticks_usec()
@@ -251,6 +253,13 @@ func _record_benchmark() -> void:
 	var fps: float = 1000.0 * float(_frame_samples.size()) / maxf(1.0, total)
 	var result: Dictionary = {"duration_seconds": _benchmark_seconds, "samples": _frame_samples.size(), "average_fps": fps, "p99_frame_ms": p99, "enemies": world.sim.enemy_count, "projectiles": world.sim.shot_count, "pickups": world.sim.soul_count, "internal_resolution": "1280x720", "os": OS.get_name(), "renderer": "gl_compatibility", "passed": fps >= 58.0 and p99 <= 33.0}
 	result["scenario"] = "rune-feedback" if world.rune_stress_mode else "baseline"
+	if world.content_stress_mode:
+		result["scenario"] = "content-feedback"
+	result["weapon_ids"] = Array(world.stress_weapon_ids) if world.rune_stress_mode else ["bone"]
+	if world.content_stress_mode:
+		result["damage_by_weapon"] = run.damage_dealt_by_weapon.duplicate()
+		result["projectile_families_at_end"] = world._projectile_painter.get_stats()["family_counts"]
+		result["projectile_visual_revision"] = "arsenal-lines-v2"
 	result["settings"] = store.settings.duplicate()
 	result["persistent_profile"] = store.persistent
 	result["run_seed"] = run.summary()["seed"]

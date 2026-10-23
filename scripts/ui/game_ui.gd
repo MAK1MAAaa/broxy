@@ -407,6 +407,9 @@ func hide_pause() -> void:
 
 
 func handle_back() -> bool:
+	if _overlay_mode == "relic_details":
+		hide_pause()
+		return true
 	if _overlay_mode == "settings_pause":
 		show_pause()
 		return true
@@ -649,7 +652,7 @@ func _build_shop() -> void:
 	build.add_child(bag)
 	for index in range(4):
 		_bag_slot(bag, index)
-	build.add_child(_wrap(_relic_text(), 14, MUTED))
+	_build_relic_inventory(build)
 	var stats_card := _panel(shell)
 	var stats_margin := MarginContainer.new()
 	_margin(stats_margin, 14, 10)
@@ -689,14 +692,19 @@ func _offer_card(parent: Control, index: int) -> void:
 	names.add_theme_constant_override("separation", 2)
 	names.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	name_row.add_child(names)
-	names.add_child(_label(definition.display_name, 21, BONE))
+	var name_label := _label(definition.display_name, 21, BONE)
+	_enable_tooltip(name_label, definition.description)
+	names.add_child(name_label)
 	var ownership: String = ""
 	match kind:
 		"weapon": ownership = "法器%d/%d槽" % [run.loadout.size(), RunState.WEAPON_CAP]
 		"rune": ownership = "备用%d/%d" % [run.rune_bag.size(), RunState.RUNE_BAG_CAP]
 		"relic": ownership = "持有%d/%d层" % [int(run.relic_counts.get(definition.id, 0)), RunState.RELIC_CAP]
 	names.add_child(_label({"weapon": "法器", "rune": "符文", "relic": "遗物"}.get(kind, kind) + "  /  " + definition.subtitle.get_slice(" · ", 1) + " · " + ownership, 11, category))
-	var description := _wrap(definition.description, 14, MUTED)
+	var summary: String = "首目标仅本体贯穿，不触发符文。第二命中起触发符文；爆破须命中第二目标。" if definition.id == "crescent" else definition.description
+	var description := _wrap(summary, 14, MUTED)
+	description.name = "OfferDescription"
+	_enable_tooltip(description, definition.description)
 	description.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	body.add_child(description)
 	if kind == "weapon":
@@ -736,7 +744,7 @@ func _offer_card(parent: Control, index: int) -> void:
 
 func _weapon_row(parent: Control, index: int) -> void:
 	var row := HBoxContainer.new()
-	row.custom_minimum_size.y = 46
+	row.custom_minimum_size.y = 44
 	row.add_theme_constant_override("separation", 7)
 	parent.add_child(row)
 	if index >= run.loadout.size():
@@ -750,6 +758,7 @@ func _weapon_row(parent: Control, index: int) -> void:
 	_add_icon(row, definition, 31)
 	var names := VBoxContainer.new()
 	names.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	names.add_theme_constant_override("separation", 1)
 	row.add_child(names)
 	var weapon_name := _label(definition.display_name, 16, BONE)
 	_enable_tooltip(weapon_name, _equipment_tooltip(item))
@@ -793,6 +802,69 @@ func _bag_slot(parent: Control, index: int) -> void:
 	sell.add_theme_font_size_override("font_size", 12)
 	sell.tooltip_text = "出售获得 %d 魂屑。" % int(floorf(float(item.get("paid", 0)) * 0.5))
 	box.add_child(sell)
+
+
+func _build_relic_inventory(parent: Control) -> void:
+	var owned: Array[ContentDef] = []
+	for definition: ContentDef in GameCatalog.relics():
+		if int(run.relic_counts.get(definition.id, 0)) > 0:
+			owned.append(definition)
+	var title := _label("遗物  %d 类 · 每类最多3层" % owned.size(), 14, CYAN)
+	title.name = "RelicInventoryTitle"
+	parent.add_child(title)
+	var scroll := ScrollContainer.new()
+	scroll.name = "RelicInventoryScroll"
+	scroll.custom_minimum_size.y = 64
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+	scroll.follow_focus = true
+	parent.add_child(scroll)
+	if owned.is_empty():
+		scroll.add_child(_label("尚未获得遗物", 13, MUTED))
+		return
+	var grid := GridContainer.new()
+	grid.name = "RelicInventoryGrid"
+	grid.columns = 2
+	grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	grid.add_theme_constant_override("h_separation", 7)
+	grid.add_theme_constant_override("v_separation", 4)
+	scroll.add_child(grid)
+	for definition: ContentDef in owned:
+		var count: int = int(run.relic_counts[definition.id])
+		var details: String = "%s × %d\n每层：%s\n效果随层数叠加，已计入下方属性。" % [definition.display_name, count, definition.description]
+		var inspect := _shop_button("%s × %d" % [definition.display_name, count], _inspect_relic.bind(definition.id), "relic:" + definition.id, Vector2(0, 28))
+		inspect.name = "Relic_" + definition.id
+		inspect.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		inspect.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		inspect.add_theme_font_size_override("font_size", 12)
+		inspect.add_theme_stylebox_override("normal", _box(Color("191f2b"), Color(CYAN, 0.2)))
+		inspect.tooltip_text = details + "\n滚轮滚动清单；Tab 选择后回车查看详情。"
+		_set_button_icon(inspect, definition)
+		inspect.add_theme_constant_override("icon_max_width", 22)
+		grid.add_child(inspect)
+
+
+func _inspect_relic(id: String) -> void:
+	var definition: ContentDef = GameCatalog.relic(id)
+	if definition == null or run == null or int(run.relic_counts.get(id, 0)) <= 0:
+		return
+	_begin_overlay("relic_details")
+	var body := _modal(definition.display_name, Vector2(560, 330))
+	body.name = "RelicDetails"
+	var header := HBoxContainer.new()
+	header.add_theme_constant_override("separation", 16)
+	body.add_child(header)
+	_add_icon(header, definition, 56)
+	var details := _wrap("持有 %d / %d 层\n每层：%s" % [int(run.relic_counts[id]), RunState.RELIC_CAP, definition.description], 17, BONE)
+	details.name = "RelicDetailsDescription"
+	header.add_child(details)
+	body.add_child(_wrap("效果随层数叠加，已计入商店属性。\nEsc 或下方按钮返回清单。", 14, MUTED))
+	var close := _button("返回遗物清单", hide_pause, Vector2(0, 42))
+	close.name = "CloseRelicDetails"
+	_accent(close)
+	body.add_child(close)
+	_focus_later(close)
 
 
 func _build_upgrades() -> void:

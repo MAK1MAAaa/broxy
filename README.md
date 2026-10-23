@@ -2,7 +2,7 @@
 
 Godot 4.7.2 普通版、带类型标注的 GDScript 开发的 macOS / Windows 单人割草原型。围绕四个法器槽与可拆换行为符文，完成短波次战斗、经验强化、商店改装和最终 Boss。
 
-当前美术版本为 `engraved-04`：主角披风和衣摆使用更连贯的灰紫亮面与深色褶谷，在68px游戏尺寸下拉开布料层次；面具、金链与原轮廓保持。竞技场沿用上一轮低对比石材，角色和敌方预警优先；保留轻微呼吸、倾身和脚下符印。中文优先使用系统 Hiragino Sans GB，避免本机苹方字体映射造成简体缺字。美术合同与来源见 `docs/art-direction.md`。
+当前美术版本为 `engraved-05`：细化五类敌人的骨面、爪肢、板甲、法杖与浮冠祭袍，完善场景边缘的祭坛及烛台材质；保留主角灰紫布料与低对比战斗地板。新增三件法器和四件复合遗物的独立图标及弹体形状。美术合同与来源见 `docs/art-direction.md`，新增内容与验证见 `docs/content-expansion.md`。
 
 战斗现在显示实际伤害与承伤浮字，并提示受击方向。普通主命中新增四类短暂刻痕，持续0.12秒；贯穿显示淡绿双轨，弹射显示真实转向的冷蓝折角，爆破显示暖金放射纹，敌方预警始终位于最上层。刻痕采用32对象固定池与最多12批次绘制，次级溅射不再叠痕；暂停时关闭闪光会立即清除，重新开启不重播。弹体圆点、弹射环和拖尾采用批量绘制。结算新增最后受击来源和各法器实际伤害贡献。购买符文后会自动选中，并把键盘焦点移到法器的“装入”按钮，便于完成改装。
 
@@ -20,9 +20,9 @@ Godot 4.7.2 普通版、带类型标注的 GDScript 开发的 macOS / Windows �
 
 ## 直接游玩
 
-Windows x86_64 版本由 `feature/windows` 分支构建，入口为 `build/Embers-windows-x86_64/Embers.exe`，分发包为 `build/Embers-windows-x86_64.zip`。解压后保留同目录的 `Embers.pck` 与 `licenses/`，再启动游戏；包含已合入的 macOS 玩法、美术与命中反馈。Windows 使用微软雅黑显示中文。Windows 复现结果单独记录在 `docs/windows.md`，下文的 Mac 历史证据保持原样。
+Windows x86_64 版本由 `feature/windows` 分支构建，入口为 `build/Embers-windows-x86_64/Embers.exe`，分发包为 `build/Embers-windows-x86_64.zip`。解压后保留同目录的 `Embers.pck` 与 `licenses/`，再启动游戏；当前包包含7种法器、10种遗物与 `engraved-05` 美术。Windows 使用微软雅黑显示中文。最初Windows适配验证见 `docs/windows.md`，本轮内容验收见 `docs/content-expansion.md`，下文的Mac历史证据保留原样。
 
-本轮最新应用为 `build/Embers-impact.app`（压缩包`build/Embers-impact-mac-arm64.zip`），新增普通法器命中刻痕，包含此前的主角布料、竞技场石材、商店条件提示、HUD避让、强化预览、诊断档案隔离和幽焰追踪修复。旧`build/Embers.app`文件保留；若旧版正在运行，先结束再打开新版。选择骨针或幽焰开局。应用面向 Apple Silicon、macOS 13 及以上；已采用本地 ad-hoc 签名，尚未进行 Developer ID 公证。
+macOS 内容扩充前的应用为 `build/Embers-impact.app`（压缩包`build/Embers-impact-mac-arm64.zip`），新增普通法器命中刻痕，包含此前的主角布料、竞技场石材、商店条件提示、HUD避让、强化预览、诊断档案隔离和幽焰追踪修复。旧`build/Embers.app`文件保留；若旧版正在运行，先结束再打开新版。选择骨针或幽焰开局。应用面向 Apple Silicon、macOS 13 及以上；已采用本地 ad-hoc 签名，尚未进行 Developer ID 公证。
 
 | 操作 | 按键 |
 | --- | --- |
@@ -38,12 +38,12 @@ Windows x86_64 版本由 `feature/windows` 分支构建，入口为 `build/Ember
 
 - 前七波各45秒，第八波为90秒 Boss 战。波末回收已掉落魂屑并在祭坛恢复全部生命，再完整结算已获得升级。
 - 魂屑同时增加金币和经验。每波最低收入为 `28 + 6 × (波次 - 1)`，击杀收入不足时补足；补足部分不产生经验。
-- 四种法器：骨针（快速单发）、霜矛（减速）、幽焰（追踪）、散魂（扇形三发）。可重复装备，同名不合成。
+- 七种法器：骨针（快速单发）、霜矛（减速）、幽焰（追踪）、散魂（扇形三发）、月镰（本体贯穿）、雷灯（窄角双发）、星陨（慢速重击）。商店均可购买，可重复装备，同名不合成；开局仍选择骨针或幽焰。
 - 每件法器一个符文槽：贯穿额外命中2个目标；弹射额外跳转2次、每跳剩余75%伤害；爆破产生68像素半径、55%伤害的溅射。
-- 同一弹体不重复命中同一敌人；次级溅射不再次触发符文。四种法器兼容所有符文。
+- 同一弹体不重复命中同一敌人；次级溅射不再次触发符文。七种法器兼容三类符文。月镰先本体穿过首目标，再从后续命中触发符文：贯穿/弹射最多命中4个不同目标；爆破在第二个直接命中处触发，未命中第二目标则不爆破。
 - 商店先选择备用符文，再点击目标法器装配。换下的符文回到背包；备用最多4份，免费拆换。
 - 出售返还实际购买价的50%，向下取整。不能卖掉最后一件法器；符文背包满时，出售带符文法器或卸下符文会被完整拒绝。
-- 六种遗物各最多3层。每次商店4件商品；首店保证法器，第二店保证符文。刷新价格随本店刷新次数增长，下波重置。
+- 十种遗物各最多3层。新增月蚀吊坠（伤害/攻速）、巡礼靴（移速/拾取）、骨盾印（护甲/生命）与裂砂漏（攻速提升但伤害下降）。每次商店4件商品；首店保证法器，第二店保证符文。刷新价格随本店刷新次数增长，下波重置。
 - 本地仅保存设置和最佳成绩，没有永久属性成长、联网、中途续局或内购。
 
 ## 从源码运行
@@ -125,16 +125,23 @@ BROXY_APP_PATH="$PWD/build/Embers-impact.app" ./tools/build_macos.sh
 ./tools/run.sh --headless --script res://tests/test_projectile_painter.gd
 ./tools/run.sh --headless --script res://tests/test_enemy_telegraphs.gd
 ./tools/run.sh --headless --script res://tests/test_simulation_shop.gd
+./tools/run.sh --headless --script res://tests/test_content_expansion.gd
+./tools/run.sh --headless --script res://tests/test_content_presentation.gd
 python3 -m unittest discover -s tests -p 'test_shop_analysis.py'
 ./tools/run.sh --headless --script res://tests/simulate_runs.gd -- --seed=2027 --require-win
 ./tools/run.sh -- --benchmark --benchmark-runes --seconds=300
+./tools/run.sh -- --benchmark --benchmark-content --seconds=300
 ```
 
-也可以用 `./tools/test.sh` 一次运行十九套Godot行为测试和Python分析器测试。当前2574条Godot无界面断言及14项Python测试全部通过（ProfileModes的六种入口分进程执行）；历史原生预警套件另通过134条断言（含12项GPU读回），记录见 `reports/tests.log` 与 `reports/enemy-telegraphs-native.log`。系统字体测试需要正常 macOS 字体访问权限；文件沙箱可能阻止 SystemFont 枚举。请在常规终端运行。性能测试会打开明确标记的窗口并显示采样倒计时，保持300敌人、至少600投射物与200掉落，预热5秒后采样300秒，输出 `reports/performance.json`。`--benchmark-runes`使用四种法器与三类符文的真实伤害弹体，报告标记为`rune-feedback`；新增`impact_visual_revision`、刻痕池容量、峰值和最后准备批次数，便于核对刻痕负载。省略该参数为含零伤害维持弹体的历史`baseline`场景，两者分别记录。测试时保持该窗口可见、Mac未锁屏，避免同时运行其他图形负载。
+也可以用 `./tools/test.sh` 一次运行二十一套Godot行为测试及Python测试。当前内容扩充版在Windows通过3099条Godot无界面断言与22项Python测试；ProfileModes的六种入口分进程执行。原生预警另通过134条断言（含12项GPU读回），新内容原生绘制/UI通过153条断言，完整记录见 `docs/content-expansion.md` 与 `reports/content/validation.json`。系统字体验证需要正常桌面字体访问权限。
 
-当前源码`2a6c4b9`已在Apple M5完成5分钟原生真实符文场景采样：27,895帧，平均92.979 FPS、P99帧间隔26.191毫秒，达到≥58 FPS / ≤33毫秒门槛，退出0。末尾300敌人/600弹体/200掉落；主/次命中473,662/1,223,944，刻痕池峰值32、容量32，结束时最近准备7个非空批次。峰值和命中累计含5秒预热，末段批次不是全程最大或GPU drawcall数。默认设置且不读写个人档案，四次CUA观察确认可见窗口和采样推进。结果见`reports/impact-performance-validation.json`；原实现验证`reports/impact-validation.json`保留当时锁屏未测的历史状态。本轮只补测和记录，未更改源码/素材、重跑30局或重新打包；仍交付同一Embers-impact.app。旧e64bb18的90.847 FPS/P99 25.400毫秒原样另存`performance-before-impacts.json`与`benchmark-before-impacts.log`，跨种子与跨版本差额不能单独归因于刻痕。详见`docs/verification.md`。
+性能测试会打开明确标记的窗口，预热5秒后采样300秒，保持300敌人、至少600投射物与200掉落，并输出 `reports/performance.json`。`--benchmark-content`使用全部7件法器、3类符文的真实伤害弹体，标记为`content-feedback`；`--benchmark-runes`保留原4件法器的`rune-feedback`场景；省略二者为历史`baseline`。不同场景独立记录，不能直接推断性能差异来源。报告记录实际武器来源、默认设置、持久化状态与本次种子，内容场景另记录各法器实际伤害和末段弹体家族。测试时保持窗口可见、电脑未锁屏，避免其他图形负载；保留历史记录时先备份原性能JSON。
 
-完整模拟复用正式 `RunState`、`CombatSim.step` 与商店价格，没有额外金币、无敌或专用 Boss 数值。当前核心版本`fb2ccf1ca5f1`提取只读购买校验；同种子30局与幽焰修复阶段`143fbc0963af`相比，仅排除版本字段后，包括完整购物与战斗轨迹的全部字段一致，仍29胜1败。此前接触反冲修复曾改变24局、28胜变29胜；各阶段独立比较，不代表真人胜率。策略与证据见 `docs/simulation.md`、`reports/purchase-simulation.json`，试玩流程见 `docs/playtest.md`，持续工作记录见 `docs/optimization-log.md`。
+本轮Windows七法器300秒原生采样通过：平均60.710 FPS、P99 28.418ms，末尾300敌人／600弹体／200掉落；结果见 `reports/content/performance.json`。首次54.60 FPS的失败采样、弹体几何缓存优化与同夹具CPU微测一并保留在 `docs/content-expansion.md`，各次原生采样种子不同，不把全部帧率差额归因于单项修改。
+
+内容扩充前的macOS源码`2a6c4b9`曾在Apple M5完成5分钟原生真实符文场景采样：27,895帧，平均92.979 FPS、P99帧间隔26.191毫秒，达到≥58 FPS / ≤33毫秒门槛，退出0。末尾300敌人/600弹体/200掉落；主/次命中473,662/1,223,944，刻痕池峰值32、容量32，结束时最近准备7个非空批次。峰值和命中累计含5秒预热，末段批次不是全程最大或GPU drawcall数。默认设置且不读写个人档案，四次CUA观察确认可见窗口和采样推进。结果见`reports/impact-performance-validation.json`；原实现验证`reports/impact-validation.json`保留当时锁屏未测的历史状态。该历史补测只记录性能，未更改源码/素材、重跑30局或重新打包，当时交付同一Embers-impact.app。旧e64bb18的90.847 FPS/P99 25.400毫秒原样另存`performance-before-impacts.json`与`benchmark-before-impacts.log`，跨种子与跨版本差额不能单独归因于刻痕。详见`docs/verification.md`。
+
+完整模拟复用正式 `RunState`、`CombatSim.step` 与商店价格，没有额外金币、无敌或专用 Boss 数值。当前核心版本`7b6edecdab6b`在seed2026—2035、三类符文共30局中23胜7败，三件新法器均实际购买并装备符文。扩充随机池改变了轨迹；旧机器人未购买新遗物，其效果另由专项测试覆盖，结果不代表真人胜率或完整遗物搭配平衡，见 `reports/content/simulation.json`。此前`fb2ccf1ca5f1`购买校验阶段的29胜1败及轨迹等价证明仍保留在 `docs/simulation.md`、`reports/purchase-simulation.json`；试玩流程见 `docs/playtest.md`，持续工作记录见 `docs/optimization-log.md`。
 
 模拟还会记录完整商店报价、余额、候选评分及停止购买/刷新原因。`tools/analyze_shop_runs.py`可生成观测分析，并用`--baseline`严格比较旧对局字段和购物trace。商店观测阶段的30局在新增观测前后旧字段完全一致，证据见`reports/shop-analysis.json`；该结果只证明所测样本不受观测影响，不表示此前的战斗修复没有改变轨迹。
 
@@ -146,11 +153,11 @@ python3 -m unittest discover -s tests -p 'test_shop_analysis.py'
 
 商店数值与排版可用 `./tools/run.sh --script res://tools/preview_shop.gd -- --view=base` 检查；也支持 `boosted`、`fullbag` 和 `transactions`，追加 `--hold` 留在交互窗口，或用 `--capture=path` 将截图另存。固定夹具通过正式购买接口布置库存，提供独立测试预算，不读写个人存档，不代表正式对局或难度验收。
 
-素材生成器显式写入 UTF-8/LF；Windows 上两次重建的 35 项素材及清单/来源文件与已提交的 macOS 版本逐字节一致。
+素材生成器显式写入 UTF-8/LF。当前42项资源（32张SVG、10段WAV）可确定性重建；`engraved-05` 前的35项 macOS/Windows字节一致验证保留在 `docs/windows.md`。
 
 ## 项目组织
 
-- `data/`：26个原生 Resource 内容定义，调整数值后无需改界面。
+- `data/`：33个原生 Resource 内容定义，调整数值后无需改界面。
 - `scripts/core/`：局内状态、经济、设置与声音。
 - `scripts/combat/`：固定步长模拟、池化实体、网格碰撞、绘制和自动走位策略。
 - `scripts/ui/`：菜单、HUD、升级、商店和暂停覆盖层。
@@ -168,3 +175,5 @@ macOS 已完成的内容已合入 `main`；Windows 适配在 `feature/windows` �
 强化排版使用 `./tools/run.sh --script res://tools/preview_upgrades.gd -- --view=base` 检查，也支持 `boosted` 与 `sequence --hold`。base种子2、boosted种子7覆盖六类强化；固定预算通过正式购买获得遗物，102魂屑结算两次升级，不读写个人档案。当前回归、原生操作与构建指纹见 `reports/choices-validation.json`。
 
 通知避让使用 `./tools/run.sh --script res://tools/preview_notices.gd -- --view=edge` 检查，也支持 `boss`、`long`。固定场景把角色放在可达上边界，显示真实World/UI，不读写个人档案；它用于布局检查，未模拟实际通关。当前回归、前后原生截图与构建证据见 `reports/notices-validation.json`。
+
+军械与遗物陈列使用 `./tools/run.sh --script res://tools/preview_content.gd -- --view=arsenal --capture=res://reports/content/arsenal.png`；也支持 `relics`、`shop`、`combat`，商店加 `--inspect=hourglass` 可检查裂砂漏完整详情。Windows将入口换为 `tools/run.ps1`，用户参数分隔符写成 `'--'`。陈列通过正式内容、购买、发射及碰撞接口布置固定夹具，不写个人档案，不代表实际通关。

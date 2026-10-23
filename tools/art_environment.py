@@ -87,8 +87,14 @@ def candle(x: float, y: float, scale: float, prefix: str) -> str:
     b += ellipse(0, -21, 57, 82, f"url(#{prefix}_candlelight)")
     b += ellipse(1, 8, 15, 4, "#050d17", opacity=.8)
     b += p("M-12 7 L-10 3 -5 1 -3 -7 H3 L5 1 10 3 12 7Z", f"url(#{prefix}_brass)", "#101622", 1.4)
+    b += p("M-11 3 Q0 7 11 3 L9 7 H-9Z", "#5f513e", "#b19a6b", .7)
+    b += p("M-7 0 L-4 -3 H4 L7 0 3 2 H-3Z", "#c1a878", "#403b33", .7)
     b += p("M-4 -9 L-4 -37 Q-1 -40 4 -37 V-9Z", f"url(#{prefix}_wax)", "#4f453a", .8)
+    b += p("M1 -36 L4 -36 V-10 H1Z", "#94806a", opacity=.62)
+    b += p("M-4 -35 Q-2 -32 -1 -35 L-1 -25 Q-2 -22 -3 -25 L-3 -29 -4 -28Z", "#efe0bb", opacity=.75)
     b += p("M-4 -34 Q-2 -30 -1 -34 V-23 Q1 -20 1 -27 V-33 Q3 -29 4 -34", stroke="#e0cfab", sw=1.1)
+    b += p("M3 -25 Q6 -23 4 -19 L3 -18Z", "#b6a184", "#806b55", .5)
+    b += ellipse(-1, -9, 6, 1.6, "#bdab8b", opacity=.72)
     b += ellipse(0, -37, 4, 1.5, "#e4d2a5")
     b += p("M0 -56 Q-7 -44 -2 -40 Q4 -37 5 -43 Q5 -48 0 -56Z", f"url(#{prefix}_fire)")
     b += p("M0 -50 Q-3 -43 0 -41 Q3 -43 0 -50Z", "#fff2c9")
@@ -201,8 +207,16 @@ def arena_body() -> str:
     b += rect(515,648,250,17,"#3e4b55","#111d29",2,3)
     b += line(522,650,756,650,"#798077",1,.45)
     b += p("M550 664 V695 H730 V664 M566 665 V693 M714 665 V693",stroke="#172633",sw=2)
+    b += p("M573 668 H705 V690 H573Z", "#293741", "#64706e", .8, .6)
+    b += p("M579 672 H699 V686 H579Z", "#26343e", "#151f2a", 1)
+    b += p("M611 666 L619 672 H661 L669 666 666 684 640 696 614 684Z", "#4a3b51", "#121d29", 1.5)
+    b += p("M616 669 L621 675 H659 L664 669 662 682 640 691 618 682Z", "#59495f", "#9d8b70", .7)
+    b += p("M638 675 L642 675 643 681 648 683 640 688 632 683 637 681Z", "#a99470", "#332c38", .7)
+    b += p("M585 675 L590 678 585 681 581 678Z M692 675 L696 678 692 681 687 678Z", "#837457", opacity=.55)
     b += p("M618 647 L620 628 H660 L662 647Z", "#4b4351", "#111b27", 2)
     b += p("M621 633 L639 630 640 644 622 647Z M640 630 L658 633 657 647 640 644Z","#9d9379","#27303a",.8)
+    b += p("M624 636 L635 634 M624 639 L635 637 M645 634 L654 636 M645 638 L653 640",stroke="#d0bea0",sw=.6,opacity=.7)
+    b += p("M638 631 L640 630 642 631 V646 L638 648Z", "#5d5261", "#2b2936", .6)
     # Shadow vignette precedes the luminous candles so the framing stays readable.
     b += rect(0,0,1280,720,"url(#env_vignette)")
     for x,y,s in [(43,245,.82),(1237,245,.82),(43,559,.8),(1237,559,.8),(110,639,.83),(1170,639,.83),(552,648,.75),(729,648,.75)]:
@@ -296,10 +310,14 @@ def menu_body() -> str:
     b += '<g transform="translate(355 520) rotate(-13)">'
     b += p("M-76 -44 L-2 -37 75 -48 78 38 0 49 -78 35Z","#0a1320",stroke="#101723",sw=4)
     b += p("M-78 -49 L-3 -39 75 -50 77 31 0 43 -80 29Z","url(#men_cover)","#101725",3)
+    b += p("M-78 23 L-3 38 77 25 V31 L0 43 -80 29Z","#33283e","#998071",.7)
     b += p("M-70 -46 Q-33 -45 -2 -34 L0 35 Q-29 21 -71 23Z","url(#men_parchment)","#9b8e72",1)
     b += p("M3 -34 Q35 -49 68 -46 L70 23 Q32 21 3 35Z","url(#men_parchment)","#8b806b",1)
+    b += p("M-70 -45 Q-44 -46 -28 -42 L-32 -38 -57 -40 -67 -36Z M52 -44 L67 -45 68 -32 64 -35 62 -40Z", "#eee0b9", opacity=.5)
     b += p("M-64 -39 Q-31 -40 -8 -31 M-64 16 Q-30 16 -8 26 M10 -31 Q35 -40 62 -39 M10 26 Q34 16 64 16",stroke="#f0dfb5",sw=.7,opacity=.55)
     b += p("M-1 -34 Q-4 -3 1 35 M4 -34 Q8 0 4 35",stroke="#5e5a5b",sw=1.2,opacity=.8)
+    for y in [-23,-6,12,26]:
+        b += p(f"M-2 {y} Q1 {y+3} 5 {y-1}",stroke="#bba87f",sw=1.2,opacity=.78)
     b += p("M-74 -46 L-62 -44 -65 -34 -75 -35Z M63 -46 L74 -49 75 -35 66 -34Z M-77 16 L-65 16 -65 26 -77 28Z M66 17 L76 16 76 30 66 29Z","url(#men_brass)","#423e3c",.7)
     for y in [-23,-14,-5,4,13]:
         b += p(f"M-57 {y} Q-40 {y-2} -22 {y+3}",stroke="#756f63",sw=1,opacity=.55)
@@ -315,6 +333,9 @@ def menu_body() -> str:
     b += p("M0 130 L0 -82",stroke="#151b25",sw=11)
     b += p("M0 130 L0 -82",stroke="url(#men_brass)",sw=6)
     b += line(-1,126,-1,-78,"#d2b98d",.8,.65)
+    b += p("M-3 21 L3 20 V56 L-3 58Z", "#4f4052", "#131d29", .7)
+    for y in [25,32,39,46,53]:
+        b += line(-3,y+2,3,y,"#9b8391",.9,.6)
     b += p("M-4 -74 Q-30 -78 -19 -107 L0 -126 19 -107 Q30 -78 4 -74",stroke="#141c26",sw=7)
     b += p("M-4 -74 Q-30 -78 -19 -107 L0 -126 19 -107 Q30 -78 4 -74",stroke="url(#men_brass)",sw=3.5)
     b += p("M0 -117 L13 -100 0 -81 -13 -100Z","#7c6d98","#1c2537",1.7)
@@ -336,8 +357,8 @@ def menu_body() -> str:
 
 
 def generate(save_svg: SaveSVG) -> None:
-    save_svg("arena.svg", 1280, 720, arena_body(), "original worn blue-grey chapel arena; shallow stone facets, chipped seams and mineral wear; unobstructed low-contrast gameplay Rect2(66,140,1148,450); muted gold ritual rings; decorative edge architecture")
-    save_svg("menu_art.svg", 640, 720, menu_body(), "original eclipse orrery, illuminated floating folio, cracked columns and candlelight; quiet left 150px; no baked typography")
+    save_svg("arena.svg", 1280, 720, arena_body(), "original worn blue-grey chapel arena; unchanged low-contrast gameplay Rect2(66,140,1148,450); muted gold ritual rings; decorative edge altar vestment and aged wax-and-brass candles")
+    save_svg("menu_art.svg", 640, 720, menu_body(), "original eclipse orrery, illuminated stitched folio, leather-bound ritual staff, cracked columns and aged wax-and-brass candles; quiet left 150px; no baked typography")
 
 
 if __name__ == "__main__":

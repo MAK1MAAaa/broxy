@@ -8,7 +8,7 @@ try {
         'modal', 'choice_actions', 'upgrade_previews', 'shop_actions',
         'shop_details', 'shop_availability', 'profile_modes', 'flow',
         'feedback', 'impact_feedback', 'projectile_painter', 'enemy_telegraphs',
-        'simulation_shop'
+        'simulation_shop', 'content_expansion', 'content_presentation'
     )
     foreach ($suite in $suites) {
         & $runner --headless --script "res://tests/test_$suite.gd"

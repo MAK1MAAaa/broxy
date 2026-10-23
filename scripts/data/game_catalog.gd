@@ -6,6 +6,9 @@ const WEAPON_DEFS: Array[ContentDef] = [
 	preload("res://data/weapons/frost.tres"),
 	preload("res://data/weapons/ember.tres"),
 	preload("res://data/weapons/scatter.tres"),
+	preload("res://data/weapons/crescent.tres"),
+	preload("res://data/weapons/storm.tres"),
+	preload("res://data/weapons/comet.tres"),
 ]
 const RUNE_DEFS: Array[ContentDef] = [
 	preload("res://data/runes/pierce.tres"),
@@ -19,6 +22,10 @@ const RELIC_DEFS: Array[ContentDef] = [
 	preload("res://data/relics/vitality.tres"),
 	preload("res://data/relics/armor.tres"),
 	preload("res://data/relics/magnet.tres"),
+	preload("res://data/relics/moon_charm.tres"),
+	preload("res://data/relics/pilgrim.tres"),
+	preload("res://data/relics/bulwark.tres"),
+	preload("res://data/relics/hourglass.tres"),
 ]
 const ENEMY_DEFS: Array[ContentDef] = [
 	preload("res://data/enemies/chaser.tres"),

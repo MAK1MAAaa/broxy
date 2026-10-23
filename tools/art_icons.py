@@ -31,6 +31,28 @@ def generate(save_svg) -> None:
     icons["scatter"] += path("M26 34 L32 30 38 34 37 49 32 55 27 49Z", "url(#gold)", width=1.6)
     icons["scatter"] += circle(32, 38, 3, "#3c2e48", "#e2c792", 1) + star(32, 38, 2, "#f3dfba")
 
+    # Each new family has a separate silhouette, rather than a recolored old icon.
+    icons["crescent"] = path("M17 57 L37 18", "none", "#191d2a", 8)
+    icons["crescent"] += path("M17 57 L37 18", "none", "#b49b76", 4)
+    icons["crescent"] += path("M45 5 Q15 7 9 31 Q5 48 17 54 Q9 38 23 25 Q35 13 54 17 L48 11Z", "url(#steel)", "#101c29", 2)
+    icons["crescent"] += path("M44 7 Q17 13 13 34 Q13 26 25 20 Q36 13 50 15", "none", "#c9e7df", 2)
+    icons["crescent"] += path("M30 26 L41 31 M28 31 L39 36", "none", "#e0c58e", 2)
+    icons["crescent"] += circle(18, 54, 3, "#617b84", "#f0dfb4", 1) + star(48, 40, 5, "#b5dbd8")
+
+    icons["storm"] = path("M24 59 H40 L37 48 H27Z M27 43 H37 V50 H27Z", "url(#gold)", width=1.8)
+    icons["storm"] += path("M24 45 L13 28 17 10 25 17 22 28 31 39 M40 45 L51 28 47 10 39 17 42 28 33 39", "none", "#101d2b", 7)
+    icons["storm"] += path("M24 45 L13 28 17 10 25 17 22 28 31 39 M40 45 L51 28 47 10 39 17 42 28 33 39", "none", "#a1c9c3", 3.5)
+    icons["storm"] += path("M34 5 L25 23 33 22 27 40 40 18 32 19Z", "#f0df9f", "#29313b", 1.4)
+    icons["storm"] += path("M16 27 L8 22 M48 27 L56 22 M25 47 H39", "none", "#dec898", 1.5)
+    icons["storm"] += star(32, 45, 4, "#eef1d2")
+
+    icons["comet"] = path("M11 8 L29 20 38 17 46 27 39 41 25 42 18 33Z", "url(#violet)", width=1.8)
+    icons["comet"] += path("M7 19 L25 28 M19 7 L33 23", "none", "#b6a1cf", 2)
+    icons["comet"] += path("M40 20 L44 31 57 32 48 41 51 55 38 49 27 58 28 44 17 36 31 33Z", "url(#gold)", width=2)
+    icons["comet"] += path("M40 20 L38 39 57 32 M17 36 L38 39 27 58 M51 55 L38 39 28 44 M38 49 L38 39", "none", "#f1dba4", 1.2)
+    icons["comet"] += path("M31 33 L38 39 44 31", "#6d5b82", "#d3bbd7", 1)
+    icons["comet"] += star(38, 39, 4, "#fff0c4")
+
     icons["pierce"] = path("M8 54 L48 14", "none", "#c6a472", 5)
     icons["pierce"] += path("M41 9 L56 7 54 22 48 14Z", "url(#bone)", width=1.8)
     icons["pierce"] += path("M8 31 L16 24 29 37 22 45Z M25 15 L32 8 45 21 38 29Z", "#3f354f", "#aa91bc", 1.7)
@@ -79,6 +101,32 @@ def generate(save_svg) -> None:
     icons["magnet"] += circle(32, 36, 14, "#3b3650", "#d2ba88", 1)
     icons["magnet"] += path("M32 21 L39 35 32 50 25 35Z", "url(#violet)", "#171521", 1.6)
     icons["magnet"] += star(32, 35, 7, "#e5d3bb") + path("M8 30 L4 35 8 40 M56 30 L60 35 56 40", "none", "#9d88b6", 1.5)
+
+    icons["moon_charm"] = path("M12 5 Q13 25 28 31 M52 5 Q51 25 36 31", "none", "#a98b62", 3)
+    icons["moon_charm"] += path("M17 10 L20 15 M22 22 L27 26 M47 10 L44 15 M42 22 L37 26", "none", "#e4c891", 2)
+    icons["moon_charm"] += circle(32, 30, 5, "#283448", "#d9bf8b", 2)
+    icons["moon_charm"] += path("M39 33 Q17 29 16 44 Q15 60 34 60 Q44 59 49 51 Q31 56 28 45 Q26 36 39 33Z", "url(#bone)", width=1.8)
+    icons["moon_charm"] += path("M37 35 Q21 35 20 45 Q19 55 30 57", "none", "#f1e5c7", 1.1)
+    icons["moon_charm"] += star(42, 40, 5, "#ab94c8")
+
+    icons["pilgrim"] = path("M15 9 L31 11 29 32 37 43 35 53 H11 L7 46 14 35Z", "url(#robe)", width=2)
+    icons["pilgrim"] += path("M35 13 L49 15 47 35 58 45 55 57 H31 L28 48 35 38Z", "url(#robe)", width=2)
+    icons["pilgrim"] += path("M18 16 L28 18 M17 23 L27 25 M38 20 L46 22 M37 27 L45 29 M11 47 H32 M32 51 H55", "none", "#d4bc91", 1.8)
+    icons["pilgrim"] += path("M7 54 H26 M34 59 H53", "none", "#87775f", 2)
+    icons["pilgrim"] += circle(47, 9, 5, "#252938", "#b5c9bd", 1.3) + star(47, 9, 4, "#d8e0c1")
+
+    icons["bulwark"] = path("M11 11 L32 4 53 11 51 35 Q45 52 32 60 Q19 52 13 35Z", "#292735", "#9f937d", 2)
+    icons["bulwark"] += path("M19 16 L32 12 45 16 43 34 Q39 45 32 51 Q25 44 21 34Z", "#363b45", "#b8a581", 1)
+    icons["bulwark"] += path("M25 16 Q19 19 23 23 L23 40 Q19 44 25 47 Q30 45 28 41 V22 Q30 18 25 16Z M39 16 Q33 18 36 22 V41 Q33 45 39 47 Q45 44 41 40 V23 Q45 19 39 16Z", "url(#bone)", width=1.4)
+    icons["bulwark"] += path("M19 27 Q32 20 45 27 M19 34 Q32 28 45 34", "none", "#d1c4a3", 2)
+    icons["bulwark"] += circle(32, 37, 3, "#b6c9c0", "#29313a", 1)
+
+    icons["hourglass"] = path("M15 6 H49 L47 12 H17Z M15 52 H49 L51 59 H13Z", "url(#gold)", width=1.6)
+    icons["hourglass"] += path("M19 12 L22 25 30 31 24 39 20 52 H44 L42 39 35 31 43 23 45 12Z", "#303448", "#b7b7b1", 1.7)
+    icons["hourglass"] += path("M23 16 H41 L38 24 33 28 27 24Z M25 48 L32 37 39 48Z", "url(#gold)", "none", 0)
+    icons["hourglass"] += path("M40 12 L35 21 40 25 33 32 38 36 34 43 M17 13 L12 49 M47 13 L52 49", "none", "#d5bcdd", 2)
+    icons["hourglass"] += path("M47 26 L55 22 53 32Z M43 36 L50 39 47 45Z", "#a9bbc1", "#252331", 1.3)
+    icons["hourglass"] += path("M30 31 L33 34 M29 36 L30 38", "none", "#e8d09a", 1.5)
 
     icons["soul"] = path("M33 5 L46 24 43 45 31 59 20 47 17 27Z", "#3b7b82", "#142932", 2)
     icons["soul"] += path("M33 6 L31 42 17 27Z", "#a5d7c5", "none", 0)

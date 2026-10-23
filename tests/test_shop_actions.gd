@@ -99,7 +99,18 @@ func _current_buy(ui: GameUI, state: RunState) -> void:
 	_check(state.rng.state == rng_before, "A normal purchase does not draw random numbers")
 
 func _test_reroll_stale_buy() -> void:
-	var state: RunState = _state()
+	var state: RunState
+	for seed_value: int in range(1, 129):
+		var candidate: RunState = _state(seed_value)
+		candidate.generate_shop()
+		var before: Dictionary = candidate.offers[0].duplicate(true)
+		candidate.reroll_shop()
+		if before["id"] != candidate.offers[0]["id"] and before["price"] != candidate.offers[0]["price"]:
+			state = _state(seed_value)
+			break
+	_check(state != null, "The current catalog provides a real reroll with a changed item and price")
+	if state == null:
+		return
 	var ui: GameUI = await _new_ui(state)
 	var stale_buy: Button = _button(ui, "buy:0")
 	var previous_offer: Dictionary = state.offers[0].duplicate(true)
@@ -107,7 +118,7 @@ func _test_reroll_stale_buy() -> void:
 	var cost: int = state.reroll_cost()
 	_emit(_button(ui, "reroll"))
 	_check(state.gold == gold_before - cost and state.rerolls == 1, "The first current reroll charges exactly once")
-	_check(previous_offer["id"] == "ember" and state.offers[0]["id"] == "scatter" and previous_offer["price"] != state.offers[0]["price"], "Seed four exposes a changed item and changed price in the same slot")
+	_check(previous_offer["id"] != state.offers[0]["id"] and previous_offer["price"] != state.offers[0]["price"], "The seeded fixture changes both item and price in the same slot")
 	var after_reroll: Dictionary = _snapshot(state, ui)
 	_emit(stale_buy)
 	_check(_snapshot(state, ui) == after_reroll, "A still-live old buy card cannot purchase the refreshed item or price before rebuilding")

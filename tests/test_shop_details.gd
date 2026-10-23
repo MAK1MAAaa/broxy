@@ -174,7 +174,8 @@ func _purchase(state: RunState, kind: String, id: String) -> bool:
 
 func _weapon_offers() -> Array[Dictionary]:
 	var offers: Array[Dictionary] = []
-	for definition: ContentDef in GameCatalog.weapons():
+	for id: String in ["bone", "frost", "ember", "scatter"]:
+		var definition: ContentDef = GameCatalog.weapon(id)
 		offers.append({"kind": "weapon", "id": definition.id, "price": definition.price, "sold": false})
 	return offers
 

@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ContentDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/content_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "moon_charm"
+kind = "relic"
+display_name = "月蚀吊坠"
+subtitle = "复合遗物 · 最多叠加3层"
+description = "伤害 +8%，攻击速度 +6%"
+icon = "moon_charm"
+color = Color(0.69, 0.8, 0.94, 1)
+price = 24
+stat = "damage"
+amount = 0.08
+bonus_stat = "attack_speed"
+bonus_amount = 0.06

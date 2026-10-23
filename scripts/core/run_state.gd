@@ -84,8 +84,13 @@ func stat(key: String) -> float:
 	var value: float = float(BASE_STATS.get(key, 0.0)) + float(_upgrade_bonuses.get(key, 0.0))
 	for relic_id: String in relic_counts:
 		var definition: ContentDef = GameCatalog.relic(relic_id)
-		if definition != null and definition.stat == key:
-			value += definition.amount * int(relic_counts[relic_id])
+		if definition == null:
+			continue
+		var count: int = int(relic_counts[relic_id])
+		if definition.stat == key:
+			value += definition.amount * count
+		if definition.bonus_stat == key:
+			value += definition.bonus_amount * count
 	return value
 
 func collect_souls(value: int) -> void:

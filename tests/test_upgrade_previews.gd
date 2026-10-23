@@ -63,7 +63,7 @@ func _test() -> void:
 		covered[id] = true
 		ui.queue_free()
 		await _settle()
-	_check(_fixture_valid, "All six relics are purchased at formal shop prices up to their real three-stack caps")
+	_check(_fixture_valid, "All catalog relics are purchased at formal shop prices up to their real three-stack caps")
 	_check(covered.size() == STAT_NAMES.size(), "Naturally generated choices across seeds 1 through 60 allow actual selections of all six upgrade types")
 	await _test_repeated_stat()
 	print("UpgradePreviews: %d assertions, %d failures" % [_checks, _failures])

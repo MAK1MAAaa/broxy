@@ -50,6 +50,7 @@ class Shot:
 	var attacker_id: String = ""
 	var rune: String = ""
 	var remaining: int = 0
+	var innate_remaining: int = 0
 	var hit_ids: Dictionary = {}
 	var homing: float = 0.0
 	var slow: float = 0.0
@@ -436,6 +437,7 @@ func fire_weapon(weapon_id: String, rune_id: String, position: Vector2, directio
 	shot.attacker_id = ""
 	shot.rune = rune_id
 	shot.remaining = 2 if rune_id == "pierce" or rune_id == "bounce" else 0
+	shot.innate_remaining = definition.innate_pierce
 	shot.life = definition.range / maxf(1.0, definition.projectile_speed) + 1.2
 	shot.homing = definition.homing
 	shot.slow = definition.slow
@@ -449,6 +451,8 @@ func _allocate_shot() -> Shot:
 	var shot: Shot = shots[_shot_free.pop_back()]
 	shot.active = true
 	shot.hit_ids.clear()
+	shot.remaining = 0
+	shot.innate_remaining = 0
 	shot.attacker_id = ""
 	shot_count += 1
 	return shot
@@ -509,7 +513,8 @@ func _update_shots(delta: float) -> void:
 			continue
 		var impact: Enemy = _first_collision(shot)
 		var hit_count: int = 0
-		while impact != null and shot.active and hit_count < 3:
+		var hit_limit: int = 4 if shot.innate_remaining > 0 else 3
+		while impact != null and shot.active and hit_count < hit_limit:
 			hit_count += 1
 			shot.hit_ids[impact.uid] = true
 			var impact_position: Vector2 = impact.position
@@ -520,6 +525,11 @@ func _update_shots(delta: float) -> void:
 			if complete:
 				_release_shot(shot)
 				return
+			# Native penetration precedes the socketed rune and shares its hit exclusions.
+			if shot.innate_remaining > 0:
+				shot.innate_remaining -= 1
+				impact = _first_collision(shot)
+				continue
 			if shot.rune == "blast":
 				_release_shot(shot)
 				if positive_hit:
