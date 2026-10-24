@@ -261,19 +261,21 @@ func _test_relic_transactions() -> void:
 		state.begin(123, "return_ring")
 		state.gold = 1000
 		var definition: ContentDef = GameCatalog.relic(id)
-		for layer: int in range(1, 4):
+		var item_uids: Array[int] = []
+		for layer: int in range(1, 5):
 			state.offers = [{"kind": "relic", "id": id, "price": definition.price, "sold": false}]
 			var before: Dictionary = state.summary()
 			var preview: Dictionary = state.relic_purchase_preview(0)
 			_check(state.summary() == before and preview["has_projection"] and preview["can_buy"], "New tradeoff relic purchase previews remain pure and legal")
 			_check(state.buy_offer(0) and is_equal_approx(state.stat(definition.stat), float(RunState.BASE_STATS[definition.stat]) + layer * definition.amount) and is_equal_approx(state.stat(definition.bonus_stat), float(RunState.BASE_STATS[definition.bonus_stat]) + layer * definition.bonus_amount), "Both tradeoff attributes scale through real purchases: " + id)
+			item_uids.append(int(state.backpack_snapshot()["next_uid"]) - 1)
 			for change: Dictionary in preview["stat_changes"]:
 				_check(float(change["after"]) == state.stat(str(change["key"])), "The real tradeoff purchase exactly matches its stat projection")
 			_check(state.health == 100.0 and state.stat("attack_speed") > 0.0 and state.stat("move_speed") > 0.0, "Tradeoffs do not subtract health or produce invalid movement/attack divisors")
-		state.offers = [{"kind": "relic", "id": id, "price": definition.price, "sold": false}]
-		var capped: Dictionary = state.summary()
-		_check(not state.buy_offer(0) and state.summary() == capped and not state.relic_purchase_preview(0)["has_projection"], "A fourth layer is rejected atomically without a false forecast")
-		_check(state.gold == 1000 - definition.price * 3, "Only the three successful tradeoff purchases spend gold")
+		var stats_before: Array[float] = [state.stat(definition.stat), state.stat(definition.bonus_stat)]
+		_check(state.merge_items(item_uids[1], item_uids[0]) and state.merge_items(item_uids[3], item_uids[2]) and state.merge_items(item_uids[2], item_uids[0]), "Four tradeoff relic boxes explicitly merge through the second and third ranks")
+		_check(state.backpack_item(item_uids[0])["rank"] == 3 and state.relic_counts[id] == 4 and state.stat(definition.stat) == stats_before[0] and state.stat(definition.bonus_stat) == stats_before[1] and state.health == 100.0, "The third-rank tradeoff preserves all four contributions without another purchase or heal")
+		_check(state.gold == 1000 - definition.price * 4, "Only the four successful tradeoff purchases spend gold; manual merges are free")
 
 func _flight_signature(sim: CombatSim) -> String:
 	var data: Array = [sim.run.summary(), sim.rng.state, sim.run.rng.state, sim.primary_hits, sim.secondary_hits, sim._shot_free.duplicate()]

@@ -33,6 +33,8 @@ func _test_rejection_order() -> void:
 	_expect_rejection(state, -1, "无效的商品。", "Negative index is rejected before offer checks")
 	_expect_rejection(state, 1, "无效的商品。", "An index past the last offer is invalid")
 	_expect_rejection(state, 0, "这件商品已售出。", "Sold state precedes price, type and identity checks")
+	state.offers = [_offer("unknown", "missing", -1)]
+	_expect_rejection(state, 0, "无效的商品价格。", "Negative prices precede currency, type and identity checks")
 	state.offers = [_offer("unknown", "missing", 20)]
 	_expect_rejection(state, 0, "魂屑不足。", "Insufficient currency precedes unknown type and identity")
 	state.gold = 100
@@ -50,45 +52,46 @@ func _test_rejection_order() -> void:
 func _test_capacity_and_identity() -> void:
 	var state: RunState = _new_run()
 	state.gold = 1000
-	# Fill capacities through successful transactions; do not forge inventory sizes.
+	# All item kinds share real grid cells and one identity sequence.
 	for index: int in 3:
 		state.offers = [_offer("weapon", "bone")]
-		_check(state.buy_offer(0), "Duplicate legal weapons fill slots through public purchases")
+		_check(state.buy_offer(0), "Duplicate legal weapons occupy their real grid footprints")
 	for index: int in 4:
 		state.offers = [_offer("rune", "pierce")]
 		_check(state.buy_offer(0), "Legal rune purchases fill the reserve bag")
-	for index: int in 3:
+	for index: int in 8:
 		state.offers = [_offer("relic", "damage")]
-		_check(state.buy_offer(0), "Legal relic purchases fill its three-stack cap")
-	_check(state.loadout.size() == 4 and state.rune_bag.size() == 4 and int(state.relic_counts["damage"]) == 3,
-		"The fixture reaches four weapons, four reserve runes and three relic stacks")
-	var caps: Array[Array] = [
-		["weapon", "bone", "法器槽已满，请先出售一件法器。"],
-		["rune", "pierce", "备用符文已满，请先装备或出售。"],
-		["relic", "damage", "该遗物已达到3层上限。"],
+		_check(state.buy_offer(0), "Separate relic copies remain purchasable until their shared grid fills")
+	_check(state.backpack_snapshot()["used_cells"] == 24 and state.rune_bag.size() == 4 and int(state.relic_counts["damage"]) == 8,
+		"Weapon footprints, loose runes and eight relic copies fill the same 24 real cells")
+	var candidates: Array[Array] = [
+		["weapon", "bone"], ["rune", "pierce"], ["relic", "damage"],
 	]
-	for entry: Array in caps:
+	var next_uid: int = int(state.backpack_snapshot()["next_uid"])
+	for entry: Array in candidates:
 		state.offers = [_offer(str(entry[0]), str(entry[1]))]
-		_expect_rejection(state, 0, str(entry[2]), "Capacity rejection: " + str(entry[0]))
+		_expect_rejection(state, 0, "背包空间不足。", "Real shared-grid capacity rejection: " + str(entry[0]))
 	for entry: Array in [["weapon", "法器不存在。"], ["rune", "符文不存在。"], ["relic", "遗物不存在。"]]:
 		state.offers = [_offer(str(entry[0]), "missing")]
 		_expect_rejection(state, 0, str(entry[1]), "Unknown identity precedes capacity: " + str(entry[0]))
 	state.gold = 0
-	for entry: Array in caps:
+	for entry: Array in candidates:
 		state.offers = [_offer(str(entry[0]), str(entry[1]))]
 		_expect_rejection(state, 0, "魂屑不足。", "Insufficient money precedes capacity: " + str(entry[0]))
 
 	state.gold = 100
 	state.health = 50.0
+	_check(state.equip_rune(0, 0), "Equipping a loose rune legally frees one real cell")
 	state.offers = [_offer("relic", "vitality", 22)]
-	_expect_query(state, 0, "", "An unrelated relic remains legal despite other filled capacities")
+	_expect_query(state, 0, "", "A one-cell relic fits the cell released by a socketed rune")
 	_check(state.buy_offer(0) and state.gold == 78 and state.health == 70.0 and state.stat("max_health") == 120.0,
 		"A legal vitality transaction charges 22 and increases current and maximum health by 20")
-	_check(state.equip_rune(0, 0), "Equipping a reserve rune legally frees a bag slot")
+	_check(int(state.backpack_snapshot()["next_uid"]) == next_uid + 1, "Only the successful relic purchase consumes the next global item UID")
+	_check(state.equip_rune(0, 1), "Equipping another loose rune releases capacity for its replacement")
 	state.offers = [_offer("rune", "bounce", 18)]
-	_expect_query(state, 0, "", "An equipped rune does not consume reserve capacity")
-	_check(state.buy_offer(0) and state.rune_bag.size() == 4 and int(state.rune_bag[3]["uid"]) == 5,
-		"Rejected purchases and read queries consume no rune UID before the next real purchase")
+	_expect_query(state, 0, "", "A socketed rune does not consume a loose grid cell")
+	_check(state.buy_offer(0) and state.rune_bag.size() == 3 and int(state.rune_bag.back()["uid"]) == next_uid + 1,
+		"Rejected purchases and pure queries consume no global item UID before the next real rune purchase")
 
 
 func _test_success_boundaries() -> void:
@@ -106,7 +109,7 @@ func _test_success_boundaries() -> void:
 	free.offers = [_offer("rune", "blast", 0)]
 	_expect_query(free, 0, "", "A zero-price rune is affordable with a zero balance")
 	_expect_success_signal(free, "A zero-price purchase retains normal success feedback")
-	_check(free.gold == 0 and free.rune_bag.size() == 1 and free.rune_bag[0] == {"id": "blast", "paid": 0, "uid": 1}
+	_check(free.gold == 0 and free.rune_bag.size() == 1 and free.rune_bag[0] == {"id": "blast", "paid": 0, "uid": 2, "rank": 1}
 		and bool(free.offers[0]["sold"]), "A free rune is still a single owned, sold and UID-assigned item")
 	free.offers = [{"kind": "weapon", "id": "frost"}]
 	_expect_query(free, 0, "", "A missing optional price and sold flag retain the existing free-unsold defaults")
@@ -168,7 +171,7 @@ func _expect_success_signal(state: RunState, label: String) -> void:
 
 
 func _snapshot(state: RunState) -> Dictionary:
-	return {"summary": state.summary(), "offers": state.offers.duplicate(true), "last_error": state.last_error,
+	return {"summary": state.summary(), "backpack": state.backpack_snapshot(), "offers": state.offers.duplicate(true), "last_error": state.last_error,
 		"rng_state": state.rng.state, "rng_seed": state.rng.seed, "next_rune_uid": state.get("_next_rune_uid"),
 		"bonuses": state.get("_upgrade_bonuses").duplicate(true), "choices": state.get("_upgrade_options").duplicate(true),
 		"wave_income": state.get("_wave_income"), "wave_finished": state.get("_wave_finished"), "rerolls": state.rerolls}

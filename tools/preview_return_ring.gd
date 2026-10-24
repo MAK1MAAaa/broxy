@@ -52,6 +52,9 @@ func _preview() -> void:
 			_result()
 		_:
 			var state: RunState = FIXTURE.make_fixture()
+			if state == null:
+				_app._quit_game(1)
+				return
 			_app.run = state
 			_app.ui.bind(state)
 			_app.screen = 3
@@ -60,15 +63,15 @@ func _preview() -> void:
 			if case_name == "shop":
 				await _activate("lock:0")
 				await _activate("lock:1")
-				await _activate("rune:%d" % int(state.rune_bag[0]["uid"]))
+				await _activate("bag:%d" % int(state.rune_bag[0]["uid"]))
 			elif case_name == "rune":
-				await _activate("rune:%d" % int(state.rune_bag[0]["uid"]))
+				await _activate("bag:%d" % int(state.rune_bag[0]["uid"]))
 				await _activate("rune_preview:1")
 			else:
 				await _activate("compare:1" if case_name == "blood_pact" else "compare:2")
 			_record["summary"] = state.summary()
 			_record["overlay"] = _app.ui._overlay_mode
-			_record["fixture_passed"] = state.loadout.size() == 4 and state.rune_bag.size() == 4 and state.relic_counts.size() == 12
+			_record["fixture_passed"] = bool(_record["fixture_passed"]) and state.loadout.size() == 3 and state.rune_bag.size() == 3 and state.relic_counts.size() == GameCatalog.relics().size() and state.backpack_snapshot()["used_cells"] == 34
 	_note("归魂环固定陈列 · 正式规则与资源 · 非自然对局 · 不写档案")
 	await _settle()
 	if destination.is_empty():

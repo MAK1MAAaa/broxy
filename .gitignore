@@ -44,3 +44,8 @@ reports/midwave/*.jsonl
 reports/midwave/*.png
 reports/midwave/*.import
 reports/midwave/*-raw.json
+reports/backpack/*.log
+reports/backpack/*.jsonl
+reports/backpack/*.png
+reports/backpack/*.import
+reports/backpack/*-raw.json

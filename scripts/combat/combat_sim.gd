@@ -49,6 +49,8 @@ class Shot:
 	var source: String = ""
 	var attacker_id: String = ""
 	var rune: String = ""
+	var weapon_rank: int = 1
+	var rune_rank: int = 1
 	var remaining: int = 0
 	var innate_remaining: int = 0
 	var return_after: float = 0.0
@@ -144,6 +146,7 @@ func begin(state: RunState) -> void:
 	_wave = GameCatalog.wave(run.wave)
 	duration = _wave.duration
 	player_position = ARENA.get_center()
+	_cooldowns.clear()
 	for index: int in run.loadout.size():
 		_cooldowns.append(float(index) * 0.14)
 	if _wave.boss_wave:
@@ -409,6 +412,10 @@ func _nearest_linear(position: Vector2, distance: float, excluded: Dictionary) -
 	return result
 
 func _update_weapons(delta: float) -> void:
+	while _cooldowns.size() < run.loadout.size():
+		_cooldowns.append(0.0)
+	if _cooldowns.size() > run.loadout.size():
+		_cooldowns.resize(run.loadout.size())
 	for index: int in run.loadout.size():
 		_cooldowns[index] -= delta
 		if _cooldowns[index] > 0.0:
@@ -419,15 +426,16 @@ func _update_weapons(delta: float) -> void:
 		if target == null:
 			_cooldowns[index] = 0.08
 			continue
-		var rune: String = str((equipped.get("rune", {}) as Dictionary).get("id", ""))
+		var rune_entry: Dictionary = equipped.get("rune", {})
+		var rune: String = str(rune_entry.get("id", ""))
 		var angle: float = (target.position - player_position).angle()
 		for pellet: int in definition.shots:
 			var offset: float = (float(pellet) - float(definition.shots - 1) * 0.5) * definition.spread
-			fire_weapon(str(equipped["id"]), rune, player_position, Vector2.from_angle(angle + offset))
+			fire_weapon(str(equipped["id"]), rune, player_position, Vector2.from_angle(angle + offset), int(equipped.get("rank", 1)), int(rune_entry.get("rank", 1)))
 		_cooldowns[index] = definition.cooldown / run.stat("attack_speed")
 		shot_fired.emit()
 
-func fire_weapon(weapon_id: String, rune_id: String, position: Vector2, direction: Vector2) -> Shot:
+func fire_weapon(weapon_id: String, rune_id: String, position: Vector2, direction: Vector2, weapon_rank: int = 1, rune_rank: int = 1) -> Shot:
 	var shot: Shot = _allocate_shot()
 	if shot == null:
 		return null
@@ -436,11 +444,13 @@ func fire_weapon(weapon_id: String, rune_id: String, position: Vector2, directio
 	shot.previous = position
 	shot.velocity = direction.normalized() * definition.projectile_speed
 	shot.radius = definition.projectile_radius
-	shot.damage = definition.damage * run.stat("damage")
+	shot.weapon_rank = clampi(weapon_rank, 1, 3)
+	shot.rune_rank = clampi(rune_rank, 1, 3)
+	shot.damage = definition.damage * run.stat("damage") * BackpackInventory.rank_multiplier(shot.weapon_rank)
 	shot.source = weapon_id
 	shot.attacker_id = ""
 	shot.rune = rune_id
-	shot.remaining = RuneRules.EXTRA_HITS if rune_id == "pierce" or rune_id == "bounce" else 0
+	shot.remaining = RuneRules.extra_hits(shot.rune_rank) if rune_id == "pierce" or rune_id == "bounce" else 0
 	shot.innate_remaining = definition.innate_pierce
 	shot.life = definition.range / maxf(1.0, definition.projectile_speed) + 1.2
 	if definition.return_delay > 0.0:
@@ -462,6 +472,8 @@ func _allocate_shot() -> Shot:
 	shot.hit_ids.clear()
 	shot.remaining = 0
 	shot.innate_remaining = 0
+	shot.weapon_rank = 1
+	shot.rune_rank = 1
 	shot.return_after = 0.0
 	shot.return_speed = 0.0
 	shot.returning = false
@@ -538,7 +550,7 @@ func _update_shots(delta: float) -> void:
 			continue
 		var impact: Enemy = _first_collision(shot)
 		var hit_count: int = 0
-		var hit_limit: int = 4 if shot.innate_remaining > 0 else 3
+		var hit_limit: int = 1 + shot.innate_remaining + shot.remaining
 		while impact != null and shot.active and hit_count < hit_limit:
 			hit_count += 1
 			shot.hit_ids[impact.uid] = true
@@ -559,7 +571,7 @@ func _update_shots(delta: float) -> void:
 				_release_shot(shot)
 				if positive_hit:
 					rune_activated.emit("blast", impact_position, incoming_direction, Vector2.ZERO)
-				_explode(impact_position, shot.damage * RuneRules.BLAST_DAMAGE_FACTOR, shot.source, shot.hit_ids)
+					_explode(impact_position, shot.damage * RuneRules.blast_factor(shot.rune_rank), shot.source, shot.hit_ids, RuneRules.blast_radius(shot.rune_rank))
 			elif shot.rune == "pierce" and shot.remaining > 0:
 				shot.remaining -= 1
 				if positive_hit:
@@ -662,19 +674,19 @@ func apply_damage(enemy: Enemy, amount: float, source: String, secondary: bool =
 	if enemy.health <= 0.0:
 		_kill_enemy(enemy)
 
-func _explode(position: Vector2, amount: float, source: String, excluded: Dictionary) -> void:
-	add_effect(position, Color("df9cfa"), RuneRules.BLAST_RADIUS, 0.35, 0)
-	for slot: int in _explosion_slots(position):
+func _explode(position: Vector2, amount: float, source: String, excluded: Dictionary, radius: float = RuneRules.BLAST_RADIUS) -> void:
+	add_effect(position, Color("df9cfa"), radius, 0.35, 0)
+	for slot: int in _explosion_slots(position, radius):
 		if complete:
 			return
 		var enemy: Enemy = enemies[slot]
 		if not enemy.active or excluded.has(enemy.uid):
 			continue
-		if enemy.position.distance_squared_to(position) < pow(RuneRules.BLAST_RADIUS + enemy.radius, 2):
+		if enemy.position.distance_squared_to(position) < pow(radius + enemy.radius, 2):
 			# Secondary damage deliberately never enters the rune dispatch path.
 			apply_damage(enemy, amount, source, true)
 
-func _explosion_slots(position: Vector2) -> PackedInt32Array:
+func _explosion_slots(position: Vector2, radius: float = RuneRules.BLAST_RADIUS) -> PackedInt32Array:
 	var slots: PackedInt32Array = PackedInt32Array()
 	# Only this step's shot phase has stable positions/radii. Direct calls may follow
 	# external edits or an empty/stale grid, so retain their original full scan.
@@ -682,7 +694,7 @@ func _explosion_slots(position: Vector2) -> PackedInt32Array:
 		for index: int in enemies.size():
 			slots.append(index)
 		return slots
-	var reach: Vector2 = Vector2.ONE * (RuneRules.BLAST_RADIUS + _largest_enemy_radius)
+	var reach: Vector2 = Vector2.ONE * (radius + _largest_enemy_radius)
 	var start: Vector2i = Vector2i(((position - reach) / CELL).floor())
 	var end: Vector2i = Vector2i(((position + reach) / CELL).floor())
 	for x: int in range(start.x, end.x + 1):
@@ -828,6 +840,7 @@ func snapshot() -> Dictionary:
 		"health": run.health, "max_health": run.stat("max_health"), "wave": run.wave,
 		"time_left": maxf(0.0, duration - elapsed), "gold": run.gold, "level": run.level,
 		"xp": run.xp, "xp_needed": run.xp_to_next_level(), "kills": run.kills, "loadout": run.loadout,
+		"backpack": run.backpack_snapshot(),
 		"boss_health": boss.health if boss != null and boss.active else 0.0,
 		"boss_max_health": boss.max_health if boss != null else 0.0,
 	}

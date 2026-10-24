@@ -1,8 +1,6 @@
 extends SceneTree
 ## Real input checks the read-only shop comparison, modal lifecycle and projections.
 
-const FIXTURE = preload("res://tools/preview_relic_comparison.gd")
-
 class EscapeRouter:
 	extends Node
 	var ui: GameUI
@@ -30,7 +28,7 @@ func _run_tests() -> void:
 	ui.next_wave_requested.connect(func() -> void: _next_waves += 1)
 	await _test_tradeoff_and_focus(ui)
 	await _test_bulwark(ui)
-	await _test_capped_sold_and_poor(ui)
+	await _test_ranked_sold_and_poor(ui)
 	await _test_epoch_and_rebuild(ui)
 	ui.queue_free()
 	escape.queue_free()
@@ -52,6 +50,44 @@ func _show(ui: GameUI, state: RunState) -> void:
 	await _settle()
 
 
+func _make_state(case_name: String) -> RunState:
+	var state := RunState.new()
+	state.begin(20261024, "bone")
+	state.gold = 4000
+	_check(state.expand_backpack() and state.expand_backpack(), "The comparison fixture pays for a legal six-by-six backpack")
+	for id: String in ["frost", "ember", "scatter"]:
+		_purchase(state, "weapon", id)
+	for index: int in 3:
+		_purchase(state, "rune", ["blast", "pierce", "bounce"][index])
+		_check(state.equip_rune(0, index + 1), "The comparison fixture installs a formally purchased rune")
+	for definition: ContentDef in GameCatalog.relics():
+		var uid: int = _purchase(state, "relic", definition.id)
+		if case_name == "ranked" and definition.id == "hourglass":
+			var second: int = _purchase(state, "relic", definition.id)
+			var third: int = _purchase(state, "relic", definition.id)
+			var fourth: int = _purchase(state, "relic", definition.id)
+			_check(state.merge_items(second, uid) and state.merge_items(fourth, third) and state.merge_items(third, uid), "Explicit merges create the ranked relic without expanding its footprint")
+	_check(state.backpack_snapshot()["used_cells"] == 32, "Four real weapon boxes and all twelve relic kinds occupy thirty-two cells")
+	state.gold = 7 if case_name == "poor" else 120
+	state.wave = 4
+	if case_name == "bulwark":
+		state.take_damage(37.0, "chaser", "contact")
+	var target: String = "bulwark" if case_name == "bulwark" else "hourglass"
+	state.offers.clear()
+	for entry: Array in [["relic", target], ["weapon", "crescent"], ["relic", "moon_charm"], ["relic", "bulwark"]]:
+		var definition: ContentDef = BackpackInventory.definition(str(entry[0]), str(entry[1]))
+		state.offers.append({"kind": str(entry[0]), "id": definition.id, "price": definition.price, "sold": false})
+	return state
+
+
+func _purchase(state: RunState, kind: String, id: String) -> int:
+	var definition: ContentDef = BackpackInventory.definition(kind, id)
+	state.offers = [{"kind": kind, "id": id, "price": state.shop_price(definition), "sold": false}]
+	var purchased: bool = state.buy_offer(0)
+	_check(purchased, "The comparison fixture buys its physical inventory through RunState: " + id)
+	return int(state.backpack_snapshot()["next_uid"]) - 1 if purchased else -1
+
+
 func _open(ui: GameUI) -> Button:
 	var source: Button = ui._shop_focus_button("compare:0")
 	_check(source != null, "The relic offer exposes a focusable comparison action")
@@ -63,8 +99,8 @@ func _open(ui: GameUI) -> Button:
 
 
 func _test_tradeoff_and_focus(ui: GameUI) -> void:
-	var state: RunState = FIXTURE.make_state("tradeoff")
-	_check(state != null and state.loadout.size() == 4 and state.relic_counts.size() == GameCatalog.relics().size(), "Formal purchases construct a full four-weapon build with every catalog relic")
+	var state: RunState = _make_state("tradeoff")
+	_check(state.loadout.size() == 4 and state.relic_counts.size() == GameCatalog.relics().size(), "Formal purchases construct a legal four-weapon backpack with every catalog relic")
 	if state == null:
 		return
 	await _show(ui, state)
@@ -76,6 +112,10 @@ func _test_tradeoff_and_focus(ui: GameUI) -> void:
 	var source: Button = await _open(ui)
 	_check(ui._overlay_mode == "relic_comparison", "Real ui_accept opens the relic comparison")
 	_check(ui._page.focus_behavior_recursive == Control.FOCUS_BEHAVIOR_DISABLED and _overlay_owns_focus(ui), "The comparison isolates keyboard focus from underlying shop actions")
+	for press: int in 4:
+		_key(KEY_TAB)
+		await process_frame
+		_check(_overlay_owns_focus(ui), "Native Tab remains inside the relic comparison focus fence")
 	var loss: Label = ui.find_child("ComparisonStat_damage", true, false)
 	var gain: Label = ui.find_child("ComparisonStat_attack_speed", true, false)
 	_check(loss != null and loss.text.contains("减少") and loss.get_theme_color("font_color").is_equal_approx(GameUI.RED), "The damage tradeoff has explicit negative text and color")
@@ -91,8 +131,12 @@ func _test_tradeoff_and_focus(ui: GameUI) -> void:
 	buy.pressed.emit()
 	ui._shop_focus_button("reroll").pressed.emit()
 	ui._shop_focus_button("next_wave").pressed.emit()
+	var sale: Button = ui._shop_focus_button("bag_sell:%d" % int(state.loadout[0]["uid"]))
+	_check(sale != null, "The underlying backpack exposes its selected item's transaction action")
+	if sale != null:
+		sale.pressed.emit()
 	await _settle()
-	_check(_signature(state) == before and _next_waves == 0, "Underlying purchase, reroll and next-wave callbacks remain blocked while comparing")
+	_check(_signature(state) == before and _next_waves == 0, "Underlying purchase, backpack sale, reroll and next-wave callbacks remain blocked while comparing")
 	var scroll: ScrollContainer = ui.find_child("ComparisonScroll", true, false)
 	var close: Button = ui.find_child("CloseRelicComparison", true, false)
 	_check(scroll != null and close != null and root.get_visible_rect().encloses(scroll.get_global_rect()) and root.get_visible_rect().encloses(close.get_global_rect()), "A full build keeps the bounded table and return action inside 720p")
@@ -118,7 +162,7 @@ func _test_tradeoff_and_focus(ui: GameUI) -> void:
 
 
 func _test_bulwark(ui: GameUI) -> void:
-	var state: RunState = FIXTURE.make_state("bulwark")
+	var state: RunState = _make_state("bulwark")
 	await _show(ui, state)
 	var before: String = _signature(state)
 	var source: Button = ui._shop_focus_button("compare:0")
@@ -136,24 +180,26 @@ func _test_bulwark(ui: GameUI) -> void:
 	await _settle()
 
 
-func _test_capped_sold_and_poor(ui: GameUI) -> void:
-	var state: RunState = FIXTURE.make_state("capped")
+func _test_ranked_sold_and_poor(ui: GameUI) -> void:
+	var state: RunState = _make_state("ranked")
 	await _show(ui, state)
+	var ranked_before: String = _signature(state)
 	await _open(ui)
 	var layers: Label = ui.find_child("ComparisonLayers", true, false)
-	_check(layers != null and layers.text.contains("3 / 3") and not layers.text.contains("4 / 3"), "A capped relic never displays an impossible fourth layer")
-	_check(ui.find_child("ComparisonNoProjection", true, false) != null and ui.find_child("ComparisonStat_damage", true, false) == null and ui.find_child("ComparisonWeapon0Damage", true, false) == null, "Capped offers omit unavailable attribute and weapon projections")
+	_check(layers != null and layers.text.contains("属性权重") and layers.text.contains("4 → 5"), "A third-rank owned relic projects another independent box using its true stat weight")
+	_check(ui.find_child("ComparisonNoProjection", true, false) == null and ui.find_child("ComparisonStat_damage", true, false) != null and ui.find_child("ComparisonWeapon0Damage", true, false) != null and _signature(state) == ranked_before, "An available cell permits an honest read-only projection beyond the obsolete three-layer cap")
 	_key(KEY_ESCAPE)
 	await _settle()
-	state = FIXTURE.make_state("tradeoff")
+	state = _make_state("tradeoff")
 	_check(state.buy_offer(0), "The sold-offer fixture is produced by a formal purchase")
 	await _show(ui, state)
-	_check(ui._shop_focus_button("compare:0") != null, "A sold relic can still explain why another layer is unavailable")
+	_check(ui._shop_focus_button("compare:0") != null, "A sold relic can still explain why the same offer cannot be bought again")
 	await _open(ui)
-	_check(ui.find_child("ComparisonNoProjection", true, false) != null, "A sold offer does not project another purchase")
+	var sold: Label = ui.find_child("ComparisonNoProjection", true, false)
+	_check(sold != null and sold.text.contains("已售出") and ui.find_child("ComparisonStat_damage", true, false) == null, "A sold offer explains its status without projecting another purchase")
 	_key(KEY_ESCAPE)
 	await _settle()
-	state = FIXTURE.make_state("poor")
+	state = _make_state("poor")
 	await _show(ui, state)
 	var before: String = _signature(state)
 	await _open(ui)
@@ -167,7 +213,7 @@ func _test_capped_sold_and_poor(ui: GameUI) -> void:
 
 
 func _test_epoch_and_rebuild(ui: GameUI) -> void:
-	var state: RunState = FIXTURE.make_state("tradeoff")
+	var state: RunState = _make_state("tradeoff")
 	await _show(ui, state)
 	var old_source: Button = ui._shop_focus_button("compare:0")
 	ui._build_shop()
@@ -178,7 +224,7 @@ func _test_epoch_and_rebuild(ui: GameUI) -> void:
 	state.offers[0] = {"kind": "relic", "id": "moon_charm", "price": 24, "sold": false}
 	source.pressed.emit()
 	_check(ui._overlay_mode.is_empty(), "An offer snapshot rejects changed stock even before a rebuild")
-	state = FIXTURE.make_state("tradeoff")
+	state = _make_state("tradeoff")
 	await _show(ui, state)
 	await _open(ui)
 	var stale_close: Button = ui.find_child("CloseRelicComparison", true, false)

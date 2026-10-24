@@ -18,3 +18,4 @@ projectile_speed = 290.0
 projectile_radius = 8.0
 range = 560.0
 homing = 2.4
+inventory_size = Vector2i(2, 2)

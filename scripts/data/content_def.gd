@@ -10,6 +10,7 @@ extends Resource
 @export var color: Color = Color.WHITE
 @export var icon: String = ""
 @export var price: int = 0
+@export var inventory_size: Vector2i = Vector2i.ONE
 @export var damage: float = 0.0
 @export var cooldown: float = 1.0
 @export var projectile_speed: float = 360.0

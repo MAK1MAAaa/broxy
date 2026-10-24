@@ -3,8 +3,8 @@ extends RefCounted
 
 signal changed
 
-const WEAPON_CAP: int = 4
-const RUNE_BAG_CAP: int = 4
+const WEAPON_CAP: int = BackpackInventory.WIDTH * BackpackInventory.MAX_HEIGHT
+const RUNE_BAG_CAP: int = BackpackInventory.WIDTH * BackpackInventory.MAX_HEIGHT
 const RELIC_CAP: int = 3
 const SHOP_LOCK_CAP: int = 2
 const BASE_STATS: Dictionary = {
@@ -36,6 +36,7 @@ var damage_dealt_by_weapon: Dictionary = {}
 var damage_taken: float = 0.0
 var hits_taken: int = 0
 var last_hit: Dictionary = {}
+var backpack: BackpackInventory = BackpackInventory.new()
 var loadout: Array[Dictionary] = []
 var rune_bag: Array[Dictionary] = []
 var relic_counts: Dictionary = {}
@@ -79,15 +80,20 @@ func begin(seed_value: int, starter: String) -> void:
 	_upgrade_bonuses.clear()
 	_upgrade_options.clear()
 	_locked_offers.clear()
+	backpack.reset()
 	var starting_weapon: String = starter if GameCatalog.weapon(starter) != null else "bone"
-	loadout.append({"id": starting_weapon, "paid": 0, "rune": {}})
+	backpack.add("weapon", starting_weapon)
+	_sync_backpack_projection()
 	changed.emit()
 
 func stat(key: String) -> float:
 	return _stat_with_projected_relic(key)
 
-func _stat_with_projected_relic(key: String, additional: ContentDef = null) -> float:
-	var value: float = float(BASE_STATS.get(key, 0.0)) + float(_upgrade_bonuses.get(key, 0.0))
+func projected_upgrade_stat(key: String, amount: float) -> float:
+	return _stat_with_projected_relic(key, null, amount)
+
+func _stat_with_projected_relic(key: String, additional: ContentDef = null, upgrade_delta: float = 0.0) -> float:
+	var value: float = float(BASE_STATS.get(key, 0.0)) + float(_upgrade_bonuses.get(key, 0.0)) + upgrade_delta
 	for relic_id: String in relic_counts:
 		var definition: ContentDef = GameCatalog.relic(relic_id)
 		if definition == null:
@@ -104,7 +110,144 @@ func _stat_with_projected_relic(key: String, additional: ContentDef = null) -> f
 			value += additional.amount
 		if additional.bonus_stat == key:
 			value += additional.bonus_amount
+	return _clamp_stat(key, value)
+
+static func _clamp_stat(key: String, value: float) -> float:
+	match key:
+		"damage", "attack_speed": return maxf(0.25, value)
+		"move_speed": return maxf(60.0, value)
+		"max_health": return maxf(1.0, value)
+		"pickup_radius": return maxf(16.0, value)
+		"armor": return maxf(0.0, value)
 	return value
+
+func backpack_snapshot() -> Dictionary:
+	var result: Dictionary = backpack.snapshot()
+	var error: String = backpack_expansion_error()
+	result["can_expand"] = error.is_empty()
+	result["expansion_error"] = error
+	return result
+
+func backpack_item(uid: int) -> Dictionary:
+	return backpack.item(uid)
+
+func weapon_index_for_uid(uid: int) -> int:
+	for index: int in loadout.size():
+		if int(loadout[index].get("uid", -1)) == uid:
+			return index
+	return -1
+
+func rune_index_for_uid(uid: int) -> int:
+	for index: int in rune_bag.size():
+		if int(rune_bag[index].get("uid", -1)) == uid:
+			return index
+	return -1
+
+func move_item(uid: int, cell: Vector2i, rotated: bool) -> bool:
+	if not backpack.move(uid, cell, rotated):
+		return _fail(backpack.last_error)
+	_sync_backpack_projection()
+	last_error = ""
+	changed.emit()
+	return true
+
+func merge_preview(source_uid: int, target_uid: int) -> Dictionary:
+	var source: Dictionary = backpack.item(source_uid)
+	var target: Dictionary = backpack.item(target_uid)
+	var error: String = backpack.merge_error(source_uid, target_uid)
+	var result_rank: int = mini(BackpackInventory.MAX_RANK, int(target.get("rank", 1)) + 1)
+	var result: Dictionary = {"source_uid": source_uid, "target_uid": target_uid,
+		"source_rank": int(source.get("rank", 0)), "target_rank": int(target.get("rank", 0)),
+		"result_rank": result_rank, "rank_after": result_rank, "can_merge": error.is_empty(), "error": error,
+		"returned_rune": {}, "stat_changes": [], "damage_before": 0.0, "damage_after": 0.0}
+	if source.is_empty() or target.is_empty():
+		return result
+	var definition: ContentDef = BackpackInventory.definition(str(target["kind"]), str(target["id"]))
+	result["id"] = target["id"]
+	result["kind"] = target["kind"]
+	result["paid_after"] = int(source["paid"]) + int(target["paid"])
+	result["cells_freed"] = _item_area(source) if error.is_empty() else 0
+	if not (source.get("rune", {}) as Dictionary).is_empty() and not (target.get("rune", {}) as Dictionary).is_empty():
+		result["returned_rune"] = (source["rune"] as Dictionary).duplicate(true)
+		var returned_size: Vector2i = BackpackInventory.size_for("rune", str(source["rune"]["id"]))
+		result["cells_freed"] = maxi(0, int(result["cells_freed"]) - returned_size.x * returned_size.y) if error.is_empty() else 0
+	if definition.kind == "weapon":
+		result["damage_before"] = definition.damage * stat("damage") * BackpackInventory.rank_multiplier(int(target["rank"]))
+		result["damage_after"] = definition.damage * stat("damage") * BackpackInventory.rank_multiplier(result_rank)
+		result["combined_damage_before"] = float(result["damage_before"]) * 2.0
+		result["interval"] = definition.cooldown / stat("attack_speed")
+	elif definition.kind == "relic":
+		var changes: Array[Dictionary] = []
+		for key: String in [definition.stat, definition.bonus_stat]:
+			if key.is_empty():
+				continue
+			var amount: float = definition.amount if key == definition.stat else definition.bonus_amount
+			changes.append({"key": key, "before": amount * BackpackInventory.rank_multiplier(int(target["rank"])), "combined_before": amount * BackpackInventory.rank_multiplier(int(target["rank"])) * 2.0, "after": amount * BackpackInventory.rank_multiplier(result_rank)})
+		result["stat_changes"] = changes
+	elif definition.kind == "rune":
+		result["extra_hits_before"] = RuneRules.extra_hits(int(target["rank"]))
+		result["extra_hits_after"] = RuneRules.extra_hits(result_rank)
+		result["blast_radius_before"] = RuneRules.blast_radius(int(target["rank"]))
+		result["blast_radius_after"] = RuneRules.blast_radius(result_rank)
+		result["blast_multiplier_before"] = RuneRules.blast_factor(int(target["rank"]))
+		result["blast_multiplier_after"] = RuneRules.blast_factor(result_rank)
+	return result
+
+func merge_items(source_uid: int, target_uid: int) -> bool:
+	if not backpack.merge(source_uid, target_uid):
+		return _fail(backpack.last_error)
+	_sync_backpack_projection()
+	health = minf(health, stat("max_health"))
+	last_error = ""
+	changed.emit()
+	return true
+
+func sell_item(uid: int) -> bool:
+	var removed: Dictionary = backpack.remove(uid)
+	if removed.is_empty():
+		return _fail(backpack.last_error)
+	gold += int(floorf(float(removed["paid"]) * 0.5))
+	_sync_backpack_projection()
+	health = minf(health, stat("max_health"))
+	last_error = ""
+	changed.emit()
+	return true
+
+func backpack_expansion_error() -> String:
+	if backpack.height >= BackpackInventory.MAX_HEIGHT:
+		return "背包已扩容至上限。"
+	if gold < backpack.expansion_cost():
+		return "魂屑不足。"
+	return ""
+
+func expand_backpack() -> bool:
+	var error: String = backpack_expansion_error()
+	if not error.is_empty():
+		return _fail(error)
+	var cost: int = backpack.expansion_cost()
+	if not backpack.expand():
+		return _fail(backpack.last_error)
+	gold -= cost
+	last_error = ""
+	changed.emit()
+	return true
+
+func _sync_backpack_projection() -> void:
+	loadout.clear()
+	rune_bag.clear()
+	relic_counts.clear()
+	var entries: Array = backpack.snapshot()["items"]
+	entries.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return int(a["uid"]) < int(b["uid"]))
+	for entry: Dictionary in entries:
+		match str(entry["kind"]):
+			"weapon": loadout.append({"uid": entry["uid"], "id": entry["id"], "rank": entry["rank"], "paid": entry["paid"], "rune": (entry["rune"] as Dictionary).duplicate(true)})
+			"rune": rune_bag.append({"uid": entry["uid"], "id": entry["id"], "rank": entry["rank"], "paid": entry["paid"]})
+			"relic": relic_counts[entry["id"]] = int(relic_counts.get(entry["id"], 0)) + int(BackpackInventory.rank_multiplier(int(entry["rank"])))
+	_next_rune_uid = int(backpack.snapshot()["next_uid"])
+
+static func _item_area(entry: Dictionary) -> int:
+	var size: Vector2i = BackpackInventory.size_for(str(entry["kind"]), str(entry["id"]), bool(entry.get("rotated", false)))
+	return size.x * size.y
 
 func collect_souls(value: int) -> void:
 	if value <= 0:
@@ -205,8 +348,6 @@ func shop_lock_error(index: int) -> String:
 		return "已售商品无法锁定。"
 	if _offer_definition(offer) == null:
 		return "商品不存在，无法锁定。"
-	if str(offer.get("kind", "")) == "relic" and int(relic_counts.get(str(offer.get("id", "")), 0)) >= RELIC_CAP:
-		return "该遗物已达到3层上限。"
 	if not is_offer_locked(index) and locked_offer_count() >= SHOP_LOCK_CAP:
 		return "最多锁定2件商品，请先解锁一件。"
 	return ""
@@ -244,7 +385,7 @@ func _offer_definition(offer: Dictionary) -> ContentDef:
 func _valid_locked_offer(offer: Dictionary) -> bool:
 	if bool(offer.get("sold", false)) or _offer_definition(offer) == null:
 		return false
-	return str(offer.get("kind", "")) != "relic" or int(relic_counts.get(str(offer.get("id", "")), 0)) < RELIC_CAP
+	return true
 
 static func _same_offer(first: Dictionary, second: Dictionary) -> bool:
 	return str(first.get("kind", "")) == str(second.get("kind", "")) and str(first.get("id", "")) == str(second.get("id", "")) and int(first.get("price", 0)) == int(second.get("price", 0))
@@ -266,6 +407,8 @@ func purchase_error(index: int) -> String:
 	if bool(offer.get("sold", false)):
 		return "这件商品已售出。"
 	var price: int = int(offer.get("price", 0))
+	if price < 0:
+		return "无效的商品价格。"
 	if gold < price:
 		return "魂屑不足。"
 	var item_id: String = str(offer.get("id", ""))
@@ -273,20 +416,16 @@ func purchase_error(index: int) -> String:
 	if kind == "weapon":
 		if GameCatalog.weapon(item_id) == null:
 			return "法器不存在。"
-		if loadout.size() >= WEAPON_CAP:
-			return "法器槽已满，请先出售一件法器。"
 	elif kind == "rune":
 		if GameCatalog.rune(item_id) == null:
 			return "符文不存在。"
-		if rune_bag.size() >= RUNE_BAG_CAP:
-			return "备用符文已满，请先装备或出售。"
 	elif kind == "relic":
 		if GameCatalog.relic(item_id) == null:
 			return "遗物不存在。"
-		if int(relic_counts.get(item_id, 0)) >= RELIC_CAP:
-			return "该遗物已达到3层上限。"
 	else:
 		return "未知的商品类型。"
+	if not backpack.can_add(kind, item_id):
+		return "背包空间不足。"
 	return ""
 
 func relic_purchase_preview(index: int) -> Dictionary:
@@ -303,7 +442,7 @@ func relic_purchase_preview(index: int) -> Dictionary:
 	var can_buy: bool = error.is_empty()
 	var price: int = int(offer.get("price", 0))
 	var count: int = int(relic_counts.get(id, 0))
-	var has_projection: bool = not bool(offer.get("sold", false)) and count < RELIC_CAP
+	var has_projection: bool = not bool(offer.get("sold", false))
 	var stat_changes: Array[Dictionary] = []
 	var weapon_changes: Array[Dictionary] = []
 	var projected_health: float = health
@@ -326,9 +465,11 @@ func relic_purchase_preview(index: int) -> Dictionary:
 			var weapon: ContentDef = GameCatalog.weapon(weapon_id)
 			if weapon == null:
 				continue
+			var rank: int = int(loadout[slot].get("rank", 1))
+			var rank_scale: float = BackpackInventory.rank_multiplier(rank)
 			weapon_changes.append({
-				"slot": slot, "id": weapon_id, "shots": weapon.shots,
-				"damage_before": weapon.damage * damage_before, "damage_after": weapon.damage * damage_after,
+				"slot": slot, "id": weapon_id, "rank": rank, "shots": weapon.shots,
+				"damage_before": weapon.damage * rank_scale * damage_before, "damage_after": weapon.damage * rank_scale * damage_after,
 				"interval_before": weapon.cooldown / speed_before, "interval_after": weapon.cooldown / speed_after,
 			})
 	return {
@@ -350,15 +491,12 @@ func buy_offer(index: int) -> bool:
 	var price: int = int(offer.get("price", 0))
 	var item_id: String = str(offer.get("id", ""))
 	var kind: String = str(offer.get("kind", ""))
+	var previous_max: float = stat("max_health")
+	if backpack.add(kind, item_id, price).is_empty():
+		return _fail(backpack.last_error)
 	gold -= price
-	if kind == "weapon":
-		loadout.append({"id": item_id, "paid": price, "rune": {}})
-	elif kind == "rune":
-		rune_bag.append({"id": item_id, "paid": price, "uid": _next_rune_uid})
-		_next_rune_uid += 1
-	else:
-		var previous_max: float = stat("max_health")
-		relic_counts[item_id] = int(relic_counts.get(item_id, 0)) + 1
+	_sync_backpack_projection()
+	if kind == "relic":
 		health = _health_after_relic_purchase(health, previous_max, stat("max_health"))
 	offer["sold"] = true
 	_locked_offers.erase(index)
@@ -370,28 +508,12 @@ func buy_offer(index: int) -> bool:
 func sell_weapon(index: int) -> bool:
 	if index < 0 or index >= loadout.size():
 		return _fail("无效的法器。")
-	if loadout.size() <= 1:
-		return _fail("必须保留至少一件法器。")
-	var entry: Dictionary = loadout[index]
-	var equipped_rune: Dictionary = entry.get("rune", {})
-	if not equipped_rune.is_empty() and rune_bag.size() >= RUNE_BAG_CAP:
-		return _fail("备用符文已满，无法收回法器上的符文。")
-	if not equipped_rune.is_empty():
-		rune_bag.append(equipped_rune)
-	gold += int(floorf(float(entry.get("paid", 0)) * 0.5))
-	loadout.remove_at(index)
-	last_error = ""
-	changed.emit()
-	return true
+	return sell_item(int(loadout[index].get("uid", -1)))
 
 func sell_rune(index: int) -> bool:
 	if index < 0 or index >= rune_bag.size():
 		return _fail("无效的符文。")
-	gold += int(floorf(float(rune_bag[index].get("paid", 0)) * 0.5))
-	rune_bag.remove_at(index)
-	last_error = ""
-	changed.emit()
-	return true
+	return sell_item(int(rune_bag[index].get("uid", -1)))
 
 func rune_equip_preview(bag_index: int, weapon_index: int) -> Dictionary:
 	if bag_index < 0 or bag_index >= rune_bag.size() or weapon_index < 0 or weapon_index >= loadout.size():
@@ -400,6 +522,7 @@ func rune_equip_preview(bag_index: int, weapon_index: int) -> Dictionary:
 	var weapon: ContentDef = GameCatalog.weapon(weapon_id)
 	var incoming: Dictionary = rune_bag[bag_index]
 	var rune_id: String = str(incoming.get("id", ""))
+	var rune_rank: int = int(incoming.get("rank", 1))
 	var previous: Dictionary = loadout[weapon_index].get("rune", {})
 	if weapon == null or GameCatalog.rune(rune_id) == null:
 		return {}
@@ -409,23 +532,24 @@ func rune_equip_preview(bag_index: int, weapon_index: int) -> Dictionary:
 	var max_direct_targets: int = trigger_hit
 	var bounce_scales: Array[float] = []
 	if rune_id == "pierce" or rune_id == "bounce":
-		max_direct_targets += RuneRules.EXTRA_HITS
+		max_direct_targets += RuneRules.extra_hits(rune_rank)
 	if rune_id == "bounce":
 		for hit: int in trigger_hit:
 			bounce_scales.append(1.0)
 		var scale: float = 1.0
-		for jump: int in RuneRules.EXTRA_HITS:
+		for jump: int in RuneRules.extra_hits(rune_rank):
 			scale *= RuneRules.BOUNCE_DAMAGE_FACTOR
 			bounce_scales.append(scale)
 	var returns_to_player: bool = weapon.return_delay > 0.0
 	return {
 		"weapon_index": weapon_index, "weapon_id": weapon_id, "rune_id": rune_id,
+		"weapon_rank": int(loadout[weapon_index].get("rank", 1)), "rune_rank": rune_rank,
 		"incoming_rune": incoming.duplicate(true), "returned_rune": previous.duplicate(true),
 		"bag_before": rune_bag.size(), "bag_after": rune_bag.size() - 1 + (0 if previous.is_empty() else 1),
 		"shots": weapon.shots, "innate_pierce": weapon.innate_pierce, "trigger_hit": trigger_hit,
 		"max_direct_targets": max_direct_targets, "bounce_scales": bounce_scales,
-		"blast_radius": RuneRules.BLAST_RADIUS if rune_id == "blast" else 0.0,
-		"blast_multiplier": RuneRules.BLAST_DAMAGE_FACTOR if rune_id == "blast" else 0.0,
+		"blast_radius": RuneRules.blast_radius(rune_rank) if rune_id == "blast" else 0.0,
+		"blast_multiplier": RuneRules.blast_factor(rune_rank) if rune_id == "blast" else 0.0,
 		"bounce_range": RuneRules.BOUNCE_RANGE if rune_id == "bounce" else 0.0,
 		"returns_to_player": returns_to_player, "return_delay": weapon.return_delay,
 		"return_speed": (weapon.return_speed if weapon.return_speed > 0.0 else weapon.projectile_speed) if returns_to_player else 0.0,
@@ -441,12 +565,9 @@ func equip_rune(bag_index: int, weapon_index: int) -> bool:
 		return _fail("无效的符文。")
 	if weapon_index < 0 or weapon_index >= loadout.size():
 		return _fail("无效的法器。")
-	var previous_rune: Dictionary = loadout[weapon_index].get("rune", {})
-	var next_rune: Dictionary = rune_bag[bag_index]
-	rune_bag.remove_at(bag_index)
-	loadout[weapon_index]["rune"] = next_rune
-	if not previous_rune.is_empty():
-		rune_bag.append(previous_rune)
+	if not backpack.equip(int(rune_bag[bag_index].get("uid", -1)), int(loadout[weapon_index].get("uid", -1))):
+		return _fail(backpack.last_error)
+	_sync_backpack_projection()
 	last_error = ""
 	changed.emit()
 	return true
@@ -454,13 +575,9 @@ func equip_rune(bag_index: int, weapon_index: int) -> bool:
 func unequip_rune(weapon_index: int) -> bool:
 	if weapon_index < 0 or weapon_index >= loadout.size():
 		return _fail("无效的法器。")
-	var equipped_rune: Dictionary = loadout[weapon_index].get("rune", {})
-	if equipped_rune.is_empty():
-		return _fail("这件法器没有装备符文。")
-	if rune_bag.size() >= RUNE_BAG_CAP:
-		return _fail("备用符文已满。")
-	rune_bag.append(equipped_rune)
-	loadout[weapon_index]["rune"] = {}
+	if not backpack.unequip(int(loadout[weapon_index].get("uid", -1))):
+		return _fail(backpack.last_error)
+	_sync_backpack_projection()
 	last_error = ""
 	changed.emit()
 	return true
@@ -533,6 +650,7 @@ func summary() -> Dictionary:
 		"loadout": loadout.duplicate(true),
 		"rune_bag": rune_bag.duplicate(true),
 		"relic_counts": relic_counts.duplicate(true),
+		"backpack": backpack_snapshot(),
 	}
 
 func _random_offer_kind() -> String:
@@ -550,12 +668,7 @@ func _make_offer(kind: String) -> Dictionary:
 	elif kind == "rune":
 		pool = GameCatalog.runes()
 	else:
-		for definition: ContentDef in GameCatalog.relics():
-			if int(relic_counts.get(definition.id, 0)) < RELIC_CAP:
-				pool.append(definition)
-		if pool.is_empty():
-			kind = "weapon"
-			pool = GameCatalog.weapons()
+		pool = GameCatalog.relics()
 	var definition: ContentDef = pool[rng.randi_range(0, pool.size() - 1)]
 	var price: int = shop_price(definition)
 	return {"id": definition.id, "kind": kind, "price": price, "sold": false}

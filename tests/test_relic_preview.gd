@@ -10,6 +10,7 @@ func _initialize() -> void:
 	_test_projection_boundaries()
 	_test_health_projection()
 	_test_merged_attribute()
+	_test_preview_copies()
 	_test_invalid_offers()
 	print("RelicPreview: %d assertions, %d failures" % [_checks, _failures])
 	quit(0 if _failures == 0 else 1)
@@ -32,6 +33,7 @@ func _fixture(id: String, layers: int, upgraded: bool) -> RunState:
 	var state: RunState = RunState.new()
 	state.begin(20261023, "bone")
 	state.collect_souls(4000)
+	_check(state.expand_backpack() and state.expand_backpack(), "Composite relic fixtures pay for all six backpack rows before placing their build")
 	if upgraded:
 		for option: Dictionary in RunState.UPGRADE_POOL:
 			state._upgrade_options = [option.duplicate(true)]
@@ -55,7 +57,7 @@ func _snapshot(state: RunState) -> Dictionary:
 	for key: String in RunState.BASE_STATS:
 		stats[key] = state.stat(key)
 	return {
-		"summary": state.summary(), "stats": stats, "offers": state.offers.duplicate(true),
+		"summary": state.summary(), "backpack": state.backpack_snapshot(), "stats": stats, "offers": state.offers.duplicate(true),
 		"rng_state": state.rng.state, "rng_seed": state.rng.seed, "uid": state._next_rune_uid,
 		"bonuses": state._upgrade_bonuses.duplicate(true), "choices": state._upgrade_options.duplicate(true),
 		"wave_income": state._wave_income, "wave_finished": state._wave_finished,
@@ -83,7 +85,7 @@ func _stat_change(preview: Dictionary, key: String) -> Dictionary:
 
 func _test_catalog_projections() -> void:
 	for definition: ContentDef in GameCatalog.relics():
-		for layers: int in 3:
+		for layers: int in 4:
 			for upgraded: bool in [false, true]:
 				_compare_purchase(definition.id, layers, upgraded)
 
@@ -95,7 +97,7 @@ func _compare_purchase(id: String, layers: int, upgraded: bool) -> void:
 	var preview: Dictionary = _query(state)
 	var label: String = "%s/%d/upgraded=%s" % [id, layers, upgraded]
 	_check(preview["id"] == id and preview["can_buy"] and preview["error"] == state.purchase_error(0) and preview["has_projection"], "Affordable forecasts retain formal eligibility and content identity: " + label)
-	_check(int(preview["stack_before"]) == layers and int(preview["stack_after"]) == layers + 1 and int(preview["shortfall"]) == 0, "Forecast exposes the next permitted layer and zero shortfall: " + label)
+	_check(int(preview["stack_before"]) == layers and int(preview["stack_after"]) == layers + 1 and int(preview["shortfall"]) == 0, "Forecast exposes the next separately stored copy and zero shortfall: " + label)
 	_check(oracle.buy_offer(0), "Independent real purchase succeeds: " + label)
 	_check(int(preview["price"]) == int(state.offers[0]["price"]) and int(preview["gold_before"]) == state.gold and int(preview["gold_after"]) == oracle.gold, "Forecast wallet matches the actual transaction: " + label)
 	_check(float(preview["health_before"]) == state.health and float(preview["health_after"]) == oracle.health, "Forecast health exactly matches the production max-health transaction: " + label)
@@ -148,13 +150,25 @@ func _test_projection_boundaries() -> void:
 	_check(oracle.buy_offer(0) and float(_stat_change(preview, "damage")["after"]) == oracle.stat("damage") and float(_stat_change(preview, "attack_speed")["after"]) == oracle.stat("attack_speed"), "Poor-run hypothetical effects agree with the independently funded real transaction")
 	for sold: bool in [false, true]:
 		for empty_wallet: bool in [false, true]:
-			var state: RunState = _fixture("bulwark", 1 if sold else 3, false)
+			var state: RunState = _fixture("bulwark", 1, false)
+			if not sold:
+				var retained: Dictionary = state.offers[0].duplicate(true)
+				for count: int in range(36):
+					if not state.backpack.can_add("rune", "pierce"):
+						break
+					_check(_buy(state, "rune", "pierce"), "Formal one-cell purchases fill the shared backpack for blocked relic forecasts")
+				state.offers = [retained]
+				_check(state.backpack_snapshot()["used_cells"] == state.backpack_snapshot()["total_cells"], "The capacity boundary has no remaining real cell")
 			state.offers[0]["sold"] = sold
 			if empty_wallet:
 				state.gold = 0
 			preview = _query(state)
-			_check(not preview["can_buy"] and not preview["has_projection"] and preview["error"] == state.purchase_error(0), "Sold and capped forecasts retain the exact formal rejection order")
-			_check(preview["stack_after"] == preview["stack_before"] and preview["gold_after"] == state.gold and preview["health_after"] == state.health and (preview["stat_changes"] as Array).is_empty() and (preview["weapon_changes"] as Array).is_empty(), "Sold or capped relics never project another stack, healing, weapon changes or spending")
+			_check(not preview["can_buy"] and preview["has_projection"] == (not sold) and preview["error"] == state.purchase_error(0), "Sold state, funds and actual capacity retain the formal forecast rejection order")
+			_check(preview["gold_after"] == state.gold, "An unavailable relic forecast never advertises actual spending")
+			if sold:
+				_check(preview["stack_after"] == preview["stack_before"] and preview["health_after"] == state.health and (preview["stat_changes"] as Array).is_empty() and (preview["weapon_changes"] as Array).is_empty(), "A sold relic never projects another copy, healing or weapon changes")
+			else:
+				_check(preview["stack_after"] == int(preview["stack_before"]) + 1 and not (preview["stat_changes"] as Array).is_empty() and is_equal_approx(float(preview["health_after"]), state.health + 12.0), "A full-grid offer remains an explicitly hypothetical effect forecast without granting its healing")
 	var free: RunState = _fixture("moon_charm", 0, false)
 	free.gold = 0
 	free.offers = [{"kind": "relic", "id": "moon_charm"}]
@@ -186,6 +200,16 @@ func _test_merged_attribute() -> void:
 	var preview: Dictionary = _query(state)
 	_check((preview["stat_changes"] as Array).size() == 1 and is_equal_approx(float(_stat_change(preview, "damage")["delta"]), 0.14), "Coincident primary and bonus keys merge into one cumulative change")
 	definition.bonus_stat = original_key
+
+func _test_preview_copies() -> void:
+	var state: RunState = _fixture("moon_charm", 1, true)
+	var before: Dictionary = _snapshot(state)
+	var preview: Dictionary = _query(state)
+	var original: Dictionary = preview.duplicate(true)
+	preview["stat_changes"][0]["after"] = -999.0
+	preview["weapon_changes"][0]["damage_after"] = -999.0
+	(preview["stat_changes"] as Array).clear()
+	_check(_snapshot(state) == before and _query(state) == original, "Mutating nested forecast rows cannot change inventory, resource values or subsequent projections")
 
 func _test_invalid_offers() -> void:
 	var state: RunState = _fixture("moon_charm", 0, true)

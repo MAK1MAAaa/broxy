@@ -1,0 +1,40 @@
+{
+  "runs": 30,
+  "wins": 29,
+  "losses": 1,
+  "seeds": [
+    2026,
+    2035
+  ],
+  "runes": [
+    "pierce",
+    "bounce",
+    "blast"
+  ],
+  "core_versions": [
+    "prototype-0.1.0+4cafb6168fa3"
+  ],
+  "policy_versions": [
+    "orbit-avoid-v1/backpack-shop-v2/upgrade-timing-v2+7df97f24c500"
+  ],
+  "new_policy_not_legacy_equivalent": true,
+  "actions": {
+    "upgrade": 415,
+    "wave_income": 209,
+    "buy": 800,
+    "reroll": 348,
+    "expand_backpack": 60,
+    "merge": 229,
+    "equip": 157
+  },
+  "live_upgrades": 305,
+  "intermission_upgrades": 110,
+  "max_weapon_count": 6,
+  "max_backpack_height": 6,
+  "final_weapon_ranks": {
+    "2": 51,
+    "1": 102,
+    "3": 4
+  },
+  "raw_sha256": "f97b5f88ddd311b6269df556ed7bd70210b6261d12a726257f7953f5c2bb77ed"
+}

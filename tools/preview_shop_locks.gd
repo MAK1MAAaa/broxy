@@ -1,7 +1,7 @@
 extends SceneTree
 ## Native full-build reservation fixtures; never read or write personal profiles.
 
-const BUILD_FIXTURE = preload("res://tools/preview_rune_equip.gd")
+const BUILD_FIXTURE = preload("res://tests/test_shop_lock_ui.gd")
 const CASES: PackedStringArray = ["full", "repriced", "bought"]
 
 
@@ -30,7 +30,7 @@ func _preview() -> void:
 	app._screenshot_clock = -1.0
 	app.world.stop()
 	app.sound.set_volume(0.0)
-	var state: RunState = BUILD_FIXTURE.make_state("full-swap")
+	var state: RunState = BUILD_FIXTURE.make_fixture()
 	if state == null:
 		app._quit_game(1)
 		return
@@ -53,13 +53,13 @@ func _preview() -> void:
 	note.offset_bottom = 20
 	layer.add_child(note)
 	await _settle()
-	var passed: bool = await _activate(app.ui, "rune:%d" % int(state.rune_bag[0]["uid"]))
+	var passed: bool = await _activate(app.ui, "bag:%d" % int(state.rune_bag[0]["uid"]))
 	passed = await _activate(app.ui, "lock:0") and passed
 	passed = await _activate(app.ui, "lock:2") and passed
 	var before: Array[Dictionary] = state.offers.duplicate(true)
 	var wallet: int = state.gold
 	var random_state: int = state.rng.state
-	passed = passed and state.locked_offer_count() == 2 and state.loadout.size() == 4 and state.rune_bag.size() == 4 and state.relic_counts.size() == GameCatalog.relics().size()
+	passed = passed and state.locked_offer_count() == 2 and state.loadout.size() == 3 and state.rune_bag.size() == 3 and state.relic_counts.size() == GameCatalog.relics().size() and state.backpack_snapshot()["used_cells"] == 34
 	if case_name in ["repriced", "bought"]:
 		state.next_wave()
 		state.generate_shop()
@@ -71,8 +71,8 @@ func _preview() -> void:
 	if case_name == "bought":
 		var price: int = int(state.offers[2]["price"])
 		passed = await _activate(app.ui, "buy:2") and passed
-		passed = passed and state.offers[2]["sold"] and not state.is_offer_locked(2) and state.is_offer_locked(0) and state.gold == wallet - price and int(state.relic_counts["hourglass"]) == 2
-	var record: Dictionary = {"case": case_name, "fixture_passed": passed, "wave": state.wave, "gold": state.gold, "locked": state.locked_offer_count(), "offers": state.offers, "locked_slots": [], "persistent": app.store.persistent, "viewport": [root.size.x, root.size.y]}
+		passed = passed and state.offers[2]["sold"] and not state.is_offer_locked(2) and state.is_offer_locked(0) and state.gold == wallet - price and int(state.relic_counts["hourglass"]) == 2 and state.backpack_snapshot()["used_cells"] == 36
+	var record: Dictionary = {"case": case_name, "fixture_passed": passed, "wave": state.wave, "gold": state.gold, "locked": state.locked_offer_count(), "offers": state.offers, "locked_slots": [], "backpack": state.backpack_snapshot(), "persistent": app.store.persistent, "viewport": [root.size.x, root.size.y]}
 	for slot: int in state.offers.size():
 		if state.is_offer_locked(slot):
 			record["locked_slots"].append(slot)

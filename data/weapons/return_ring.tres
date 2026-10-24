@@ -22,3 +22,4 @@ innate_pierce = 1
 return_delay = 0.6
 return_speed = 460.0
 return_lifetime = 2.4
+inventory_size = Vector2i(2, 2)

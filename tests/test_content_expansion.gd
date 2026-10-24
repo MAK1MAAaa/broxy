@@ -53,7 +53,7 @@ func _advance(sim: CombatSim, frames: int = 90) -> void:
 		sim.step(STEP, Vector2.ZERO)
 
 func _buy(state: RunState, kind: String, id: String) -> bool:
-	var definition: ContentDef = GameCatalog.weapon(id) if kind == "weapon" else GameCatalog.relic(id)
+	var definition: ContentDef = BackpackInventory.definition(kind, id)
 	state.offers = [{"id": id, "kind": kind, "price": state.shop_price(definition), "sold": false}]
 	return state.buy_offer(0)
 
@@ -67,7 +67,7 @@ func _activations(sim: CombatSim) -> Array[Dictionary]:
 	return records
 
 func _test_catalog_and_affordability() -> void:
-	_check(GameCatalog.weapons().size() == 8 and GameCatalog.relics().size() == 12, "Catalog exposes seven weapons and ten relics")
+	_check(GameCatalog.weapons().size() == 8 and GameCatalog.relics().size() == 12, "Catalog exposes eight weapons and twelve relics")
 	var ids: Dictionary = {}
 	for group: Array in [GameCatalog.weapons(), GameCatalog.relics()]:
 		for definition: ContentDef in group:
@@ -80,9 +80,24 @@ func _test_catalog_and_affordability() -> void:
 		_check(_buy(state, "weapon", id) and state.gold == 28 - GameCatalog.weapon(id).price, "First-wave guaranteed income buys new weapon: " + id)
 		_check(not state.buy_offer(0), "Sold new weapon cannot be purchased twice: " + id)
 		state.gold = 1000
-		_check(_buy(state, "weapon", id) and _buy(state, "weapon", id), "New weapons fill the standard four slots: " + id)
+		while state.backpack.can_add("weapon", id):
+			var bought: bool = _buy(state, "weapon", id)
+			_check(bought, "New weapons fill actual grid space through formal purchases: " + id)
+			if not bought:
+				break
+		var packed: Dictionary = state.backpack_snapshot()
+		_check(packed["used_cells"] == state.loadout.size() * 6 and not state.backpack.can_add("weapon", id), "Actual six-cell footprints exhaust valid placements, including fragmented empty cells: " + id)
 		var before: Dictionary = state.summary()
-		_check(not _buy(state, "weapon", id) and state.summary() == before, "Weapon capacity remains four and rejects a fifth atomically: " + id)
+		_check(not _buy(state, "weapon", id) and state.summary() == before and state.last_error.contains("背包"), "A full grid rejects another weapon atomically: " + id)
+		var target_uid: int = int(state.loadout[0]["uid"])
+		var source_uid: int = int(state.loadout.back()["uid"])
+		_check(state.merge_items(source_uid, target_uid) and state.backpack_item(target_uid)["rank"] == 2, "Two explicitly selected copies merge in place: " + id)
+		_check(state.backpack_snapshot()["used_cells"] == int(packed["used_cells"]) - 6 and _buy(state, "weapon", id), "The merge frees physical cells for a new purchase: " + id)
+	var narrow: RunState = _run()
+	narrow.gold = 1000
+	for copy: int in 4:
+		_check(_buy(narrow, "weapon", "bone"), "Narrow weapons use their three real cells")
+	_check(narrow.loadout.size() == 5 and narrow.backpack_snapshot()["used_cells"] == 15, "Five weapons are legal when their boxes fit; no four-slot gate remains")
 	for seed_value: int in range(64):
 		var state: RunState = _run()
 		state.begin(seed_value, "bone")
@@ -102,7 +117,8 @@ func _test_weapon_rune_matrix() -> void:
 			var sim: CombatSim = _simulation(weapon.id)
 			var events: Array[Dictionary] = _activations(sim)
 			sim.player_position = Vector2(200, 300)
-			sim.run.loadout[0]["rune"] = {"id": rune.id, "paid": 0, "uid": 1}
+			sim.run.gold = 1000
+			_check(_buy(sim.run, "rune", rune.id) and sim.run.equip_rune(0, 0), "The physical rune enters the backpack and is formally equipped: " + weapon.id + "/" + rune.id)
 			for index: int in 4:
 				_target(sim, Vector2(340 + index * 55, 300))
 			sim._cooldowns[0] = 0.0
@@ -201,15 +217,20 @@ func _test_compound_relics() -> void:
 		var state: RunState = _run()
 		state.gold = 1000
 		state.health = 20.0
-		for layer: int in range(1, 4):
+		var item_uids: Array[int] = []
+		for layer: int in range(1, 5):
 			_check(_buy(state, "relic", id), "Compound relic purchases through the real transaction: " + id)
+			item_uids.append(int(state.backpack_snapshot()["next_uid"]) - 1)
 			_check(is_equal_approx(state.stat(definition.stat), float(RunState.BASE_STATS[definition.stat]) + definition.amount * layer) and is_equal_approx(state.stat(definition.bonus_stat), float(RunState.BASE_STATS[definition.bonus_stat]) + definition.bonus_amount * layer), "Both relic properties scale additively per layer: " + id)
 			_check(is_equal_approx(state.health, 20.0 + (12.0 * layer if id == "bulwark" else 0.0)), "Only purchased maximum-health growth restores health: " + id)
 			var sold_snapshot: Dictionary = state.summary()
 			_check(not state.buy_offer(0) and state.summary() == sold_snapshot, "Sold relic cannot duplicate either property or healing: " + id)
-		var before: Dictionary = state.summary()
-		_check(not _buy(state, "relic", id) and state.summary() == before and state.last_error.contains("3层"), "Fourth relic layer is rejected atomically: " + id)
-		_check(state.gold == 1000 - definition.price * 3, "Only successful relic purchases consume gold: " + id)
+		var health_before: float = state.health
+		var properties: Array[float] = [state.stat(definition.stat), state.stat(definition.bonus_stat)]
+		_check(state.merge_items(item_uids[1], item_uids[0]) and state.merge_items(item_uids[3], item_uids[2]) and state.merge_items(item_uids[2], item_uids[0]), "Four purchased relic boxes explicitly combine through both supported ranks: " + id)
+		_check(state.backpack_item(item_uids[0])["rank"] == 3 and state.relic_counts[id] == 4 and state.stat(definition.stat) == properties[0] and state.stat(definition.bonus_stat) == properties[1], "Rank three retains all four base contributions without an obsolete three-layer cap: " + id)
+		_check(state.health == health_before, "Merging maximum-health relics does not grant another heal: " + id)
+		_check(state.gold == 1000 - definition.price * 4, "Only the four successful purchases consume gold; explicit merges are free: " + id)
 	var poor: RunState = _run()
 	poor.health = 20.0
 	_check(not _buy(poor, "relic", "bulwark") and poor.health == 20.0 and poor.stat("max_health") == 100.0 and poor.relic_counts.is_empty(), "Insufficient funds grants neither bulwark properties nor healing")

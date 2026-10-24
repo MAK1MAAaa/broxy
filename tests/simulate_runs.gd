@@ -2,9 +2,9 @@ extends SceneTree
 ## Runs the shipped simulation and inventory rules without rendering or privileged rewards.
 
 const DELTA: float = 1.0 / 60.0
-const POLICY_VERSION: String = "orbit-avoid-v1/shop-v1/upgrade-timing-v2"
+const POLICY_VERSION: String = "orbit-avoid-v1/backpack-shop-v2/upgrade-timing-v2"
 const SHOP_OBSERVATION_SCHEMA_VERSION: String = "shop-observations-v1"
-const POLICY_CHANGE_NOTE: String = "Apply the existing upgrade priorities after each live combat tick; retain intermission fallback. Movement, shop priorities and resource values are unchanged."
+const POLICY_CHANGE_NOTE: String = "Space-aware backpack shopping with explicit same-rank merges, row expansion and higher-rank rune swaps. Movement and live-combat upgrade priorities are unchanged; this is a new shopping policy, not a legacy equivalence run."
 const RUNES: Array[String] = ["pierce", "bounce", "blast"]
 const MAX_REROLLS: int = 3
 
@@ -43,7 +43,7 @@ func _initialize() -> void:
 	quit(1 if _require_win and not all_won else 0)
 
 func _content_version() -> String:
-	var sources: Array[String] = ["res://scripts/core/run_state.gd", "res://scripts/combat/combat_sim.gd", "res://scripts/data/rune_rules.gd", "res://scripts/main.gd"]
+	var sources: Array[String] = ["res://scripts/core/run_state.gd", "res://scripts/core/backpack_inventory.gd", "res://scripts/combat/combat_sim.gd", "res://scripts/data/content_def.gd", "res://scripts/data/game_catalog.gd", "res://scripts/data/rune_rules.gd", "res://scripts/main.gd"]
 	var definitions: Array[ContentDef] = GameCatalog.weapons()
 	definitions.append_array(GameCatalog.runes())
 	definitions.append_array(GameCatalog.relics())
@@ -82,6 +82,7 @@ func _play_run(seed_value: int, rune_id: String) -> Dictionary:
 			"kills": state.kills - start_kills, "collected": state.gold - start_gold,
 			"health_before": snappedf(start_health, 0.001), "health_after": snappedf(state.health, 0.001),
 			"elapsed": snappedf(simulation.elapsed, 0.001),
+			"weapon_count": state.loadout.size(), "backpack_used_cells": state.backpack_snapshot()["used_cells"],
 		})
 		reason = simulation.end_reason if simulation.complete else "Simulation exceeded its frame budget"
 		if not simulation.complete or not simulation.victory:
@@ -108,6 +109,7 @@ func _play_run(seed_value: int, rune_id: String) -> Dictionary:
 		"equipped_target_runes": equipped_runes, "loadout": state.loadout.duplicate(true),
 		"relic_counts": state.relic_counts.duplicate(true), "wave_results": wave_results, "trace": trace,
 		"shop_observations": shop_observations,
+		"backpack": state.backpack_snapshot(),
 	}
 
 func _advance_combat_tick(simulation: CombatSim, state: RunState, trace: Array[Dictionary]) -> void:
@@ -138,7 +140,7 @@ func _choose_upgrades(state: RunState, trace: Array[Dictionary], context: String
 
 func _shop(state: RunState, rune_id: String, trace: Array[Dictionary], observations: Array[Dictionary] = []) -> void:
 	_observe_shop(state, rune_id, observations, "initial", "shop_generated")
-	_equip_owned_runes(state, rune_id, trace)
+	_manage_backpack(state, rune_id, trace)
 	while true:
 		while true:
 			var best_index: int = -1
@@ -154,6 +156,9 @@ func _shop(state: RunState, rune_id: String, trace: Array[Dictionary], observati
 					best_index = index
 			_observe_shop(state, rune_id, observations, "decision", "select_best_offer", evaluations, best_index)
 			if best_index < 0 or best_score < 0.0:
+				if _expand_for_offer(state, rune_id, trace):
+					_observe_shop(state, rune_id, observations, "expanded", "expand_for_eligible_offer")
+					continue
 				_observe_shop(state, rune_id, observations, "stop_buying", "no_eligible_offer", evaluations)
 				break
 			var offer: Dictionary = state.offers[best_index].duplicate(true)
@@ -162,7 +167,7 @@ func _shop(state: RunState, rune_id: String, trace: Array[Dictionary], observati
 				_observe_shop(state, rune_id, observations, "purchase_rejected", "runtime_purchase_rejected")
 				return
 			trace.append({"wave": state.wave, "action": "buy", "kind": offer["kind"], "id": offer["id"], "paid": offer["price"], "gold": state.gold})
-			_equip_owned_runes(state, rune_id, trace)
+			_manage_backpack(state, rune_id, trace)
 		if state.rerolls >= MAX_REROLLS:
 			_observe_shop(state, rune_id, observations, "stop_reroll", "reroll_limit")
 			break
@@ -182,9 +187,8 @@ func _offer_score(state: RunState, offer: Dictionary, rune_id: String) -> float:
 	var evaluation: Dictionary = _evaluate_offer(state, offer, rune_id)
 	return float(evaluation["score"]) if evaluation["score"] != null else -INF
 
-func _evaluate_offer(state: RunState, offer: Dictionary, rune_id: String) -> Dictionary:
-	# This is the single source for both selection and reporting. Preserve shop-v1's
-	# rejection order and its low-health vitality exception; observation never draws RNG.
+func _evaluate_offer(state: RunState, offer: Dictionary, rune_id: String, ignore_space: bool = false) -> Dictionary:
+	# Preference limits are policy choices; the game itself uses physical backpack space.
 	var evaluation: Dictionary = {
 		"id": str(offer["id"]), "kind": str(offer["kind"]), "price": int(offer["price"]),
 		"sold": bool(offer.get("sold", false)), "score": null, "reason": "unsupported_kind", "required_reserve": 0,
@@ -196,48 +200,69 @@ func _evaluate_offer(state: RunState, offer: Dictionary, rune_id: String) -> Dic
 		evaluation["reason"] = "unaffordable"
 		return evaluation
 	var id: String = str(offer["id"])
+	var kind: String = str(offer["kind"])
 	var price: int = int(offer["price"])
-	match str(offer["kind"]):
+	match kind:
 		"weapon":
-			if state.loadout.size() >= RunState.WEAPON_CAP:
-				evaluation["reason"] = "weapon_slots_full"
+			if _weapon_power(state) >= _desired_weapon_power(state):
+				evaluation["reason"] = "weapon_power_target_met"
 			else:
 				evaluation["score"] = 110.0 + _weapon_affinity(id, rune_id) - float(price) * 0.04
 		"rune":
 			if id != rune_id:
 				evaluation["reason"] = "target_rune_mismatch"
-			elif _empty_slots(state) <= state.rune_bag.size():
-				if state.rune_bag.size() >= RunState.RUNE_BAG_CAP:
-					evaluation["reason"] = "rune_bag_full"
-				elif _empty_slots(state) == 0:
-					evaluation["reason"] = "no_empty_rune_slot"
-				else:
-					evaluation["reason"] = "rune_slots_reserved_by_bag"
+			elif not _needs_rune(state, rune_id):
+				evaluation["reason"] = "rune_rank_target_met"
 			else:
-				evaluation["score"] = 100.0
+				evaluation["score"] = 100.0 if _empty_slots(state) > 0 else 87.0
 		"relic":
-			if int(state.relic_counts.get(id, 0)) >= RunState.RELIC_CAP:
-				evaluation["reason"] = "relic_stack_full"
+			if int(state.relic_counts.get(id, 0)) >= _relic_policy_limit(id):
+				evaluation["reason"] = "relic_policy_target_met"
 			elif id == "vitality" and state.health < state.stat("max_health") * 0.6:
 				evaluation["score"] = 150.0
-			elif state.loadout.size() < RunState.WEAPON_CAP:
-				evaluation["reason"] = "prioritize_weapon_slots"
 			else:
 				var rune_reserve: int = state.shop_price(GameCatalog.rune(rune_id)) if _empty_slots(state) > 0 else 0
 				evaluation["required_reserve"] = rune_reserve
 				if state.gold - price < rune_reserve:
 					evaluation["reason"] = "reserve_target_rune_budget"
-				elif id == "speed" and int(state.relic_counts.get(id, 0)) >= 1:
-					evaluation["reason"] = "speed_policy_cap"
 				else:
-					var priorities: Dictionary = {"damage": 80.0, "haste": 75.0, "vitality": 65.0, "armor": 60.0, "speed": 55.0}
+					var priorities: Dictionary = {"damage": 80.0, "haste": 75.0, "vitality": 65.0, "armor": 60.0, "speed": 55.0,
+						"magnet": 42.0, "moon_charm": 84.0, "pilgrim": 56.0, "bulwark": 70.0,
+						"hourglass": 66.0, "blood_pact": 68.0, "grave_candle": 45.0}
 					if priorities.has(id):
 						evaluation["score"] = float(priorities[id])
 					else:
 						evaluation["reason"] = "relic_not_prioritized"
 	if evaluation["score"] != null:
-		evaluation["reason"] = "eligible"
+		if not ignore_space and not state.backpack.can_add(kind, id):
+			evaluation["score"] = null
+			evaluation["reason"] = "backpack_full"
+		else:
+			evaluation["reason"] = "eligible"
 	return evaluation
+
+func _weapon_power(state: RunState) -> int:
+	var total: int = 0
+	for equipped: Dictionary in state.loadout:
+		total += int(BackpackInventory.rank_multiplier(int(equipped.get("rank", 1))))
+	return total
+
+func _desired_weapon_power(state: RunState) -> int:
+	return mini(12, 3 + state.wave)
+
+func _desired_rune_rank(state: RunState) -> int:
+	return mini(3, 1 + int((state.wave - 1) / 3))
+
+func _needs_rune(state: RunState, rune_id: String) -> bool:
+	for equipped: Dictionary in state.loadout:
+		var rune: Dictionary = equipped.get("rune", {})
+		if str(rune.get("id", "")) != rune_id or int(rune.get("rank", 1)) < _desired_rune_rank(state):
+			return true
+	return false
+
+func _relic_policy_limit(id: String) -> int:
+	return int({"speed": 2, "magnet": 2, "pilgrim": 2, "hourglass": 2,
+		"blood_pact": 2, "grave_candle": 1, "moon_charm": 4, "bulwark": 4}.get(id, 8))
 
 func _observe_shop(state: RunState, rune_id: String, observations: Array[Dictionary], phase: String, reason: String, evaluations: Array[Dictionary] = [], selected_index: int = -1, paid: int = -1) -> void:
 	var event_evaluations: Array[Dictionary] = evaluations.duplicate(true)
@@ -253,16 +278,20 @@ func _observe_shop(state: RunState, rune_id: String, observations: Array[Diction
 		"rerolls": state.rerolls, "reroll_cost": state.reroll_cost(), "reserve": _search_reserve(state, rune_id),
 		"loadout": state.loadout.duplicate(true), "rune_bag": state.rune_bag.duplicate(true),
 		"relic_counts": state.relic_counts.duplicate(true), "paid": paid if paid >= 0 else null,
+		"backpack": state.backpack_snapshot(),
 	})
 
 func _search_reserve(state: RunState, rune_id: String) -> int:
-	if state.loadout.size() < RunState.WEAPON_CAP:
+	if _weapon_power(state) < _desired_weapon_power(state) and state.backpack.can_add("weapon", "bone"):
 		return state.shop_price(GameCatalog.weapon("bone"))
-	if _empty_slots(state) > 0:
+	if _needs_rune(state, rune_id) and state.backpack.can_add("rune", rune_id):
 		return state.shop_price(GameCatalog.rune(rune_id))
 	for id: String in ["damage", "haste", "vitality", "armor"]:
-		if int(state.relic_counts.get(id, 0)) < RunState.RELIC_CAP:
+		if int(state.relic_counts.get(id, 0)) < _relic_policy_limit(id) and state.backpack.can_add("relic", id):
 			return state.shop_price(GameCatalog.relic(id))
+	var snapshot: Dictionary = state.backpack_snapshot()
+	if int(snapshot["height"]) < int(snapshot["max_height"]) and _weapon_power(state) < _desired_weapon_power(state):
+		return int(snapshot["expansion_cost"]) + state.shop_price(GameCatalog.weapon("bone"))
 	return -1
 
 func _empty_slots(state: RunState) -> int:
@@ -272,26 +301,96 @@ func _empty_slots(state: RunState) -> int:
 			count += 1
 	return count
 
-func _equip_owned_runes(state: RunState, rune_id: String, trace: Array[Dictionary]) -> void:
+func _equip_owned_runes(state: RunState, rune_id: String, trace: Array[Dictionary]) -> int:
 	var bag_index: int = 0
+	var equipped_count: int = 0
 	while bag_index < state.rune_bag.size():
 		if str(state.rune_bag[bag_index]["id"]) != rune_id:
 			bag_index += 1
 			continue
 		var chosen: int = -1
 		var best_affinity: float = -INF
+		var incoming_rank: int = int(state.rune_bag[bag_index].get("rank", 1))
 		for index: int in range(state.loadout.size()):
-			if not (state.loadout[index].get("rune", {}) as Dictionary).is_empty():
+			var current: Dictionary = state.loadout[index].get("rune", {})
+			if not current.is_empty() and (str(current.get("id", "")) != rune_id or int(current.get("rank", 1)) >= incoming_rank):
 				continue
-			var affinity: float = _weapon_affinity(str(state.loadout[index]["id"]), rune_id)
+			var affinity: float = _weapon_affinity(str(state.loadout[index]["id"]), rune_id) + (100.0 if current.is_empty() else 0.0)
 			if affinity > best_affinity:
 				chosen = index
 				best_affinity = affinity
 		if chosen < 0:
-			break
+			bag_index += 1
+			continue
 		if not state.equip_rune(bag_index, chosen):
 			break
-		trace.append({"wave": state.wave, "action": "equip", "rune": rune_id, "weapon": state.loadout[chosen]["id"], "slot": chosen})
+		equipped_count += 1
+		trace.append({"wave": state.wave, "action": "equip", "rune": rune_id, "rune_rank": incoming_rank, "weapon": state.loadout[chosen]["id"], "slot": chosen})
+	return equipped_count
+
+func _manage_backpack(state: RunState, rune_id: String, trace: Array[Dictionary]) -> void:
+	# Each merge consumes an item, and every swap strictly raises a socket's rank.
+	for cycle: int in 72:
+		var merged: int = _merge_owned_items(state, trace)
+		var equipped: int = _equip_owned_runes(state, rune_id, trace)
+		if merged == 0 and equipped == 0:
+			return
+
+func _merge_owned_items(state: RunState, trace: Array[Dictionary]) -> int:
+	var merged: int = 0
+	for attempt: int in 72:
+		var snapshot: Dictionary = state.backpack_snapshot()
+		var items: Array = snapshot["items"]
+		var source_uid: int = -1
+		var target_uid: int = -1
+		var target: Dictionary = {}
+		for first: int in items.size():
+			var candidate: Dictionary = items[first]
+			if int(candidate.get("rank", 1)) >= 3:
+				continue
+			for second: int in range(first + 1, items.size()):
+				var other: Dictionary = items[second]
+				if candidate["kind"] != other["kind"] or candidate["id"] != other["id"] or candidate["rank"] != other["rank"]:
+					continue
+				target_uid = int(candidate["uid"])
+				source_uid = int(other["uid"])
+				target = candidate
+				if str(candidate["kind"]) == "weapon" and int((other.get("rune", {}) as Dictionary).get("rank", 0)) > int((candidate.get("rune", {}) as Dictionary).get("rank", 0)):
+					target_uid = int(other["uid"])
+					source_uid = int(candidate["uid"])
+					target = other
+				if bool(state.merge_preview(source_uid, target_uid).get("can_merge", false)):
+					break
+				source_uid = -1
+				target_uid = -1
+			if source_uid >= 0:
+				break
+		if source_uid < 0 or not state.merge_items(source_uid, target_uid):
+			return merged
+		merged += 1
+		trace.append({"wave": state.wave, "action": "merge", "kind": target["kind"], "id": target["id"],
+			"source_uid": source_uid, "target_uid": target_uid,
+			"from_rank": target["rank"], "to_rank": state.backpack_item(target_uid)["rank"],
+			"used_cells_before": snapshot["used_cells"], "used_cells_after": state.backpack_snapshot()["used_cells"]})
+	return merged
+
+func _expand_for_offer(state: RunState, rune_id: String, trace: Array[Dictionary]) -> bool:
+	var snapshot: Dictionary = state.backpack_snapshot()
+	if int(snapshot["height"]) >= int(snapshot["max_height"]):
+		return false
+	var cost: int = int(snapshot["expansion_cost"])
+	for offer: Dictionary in state.offers:
+		var evaluation: Dictionary = _evaluate_offer(state, offer, rune_id, true)
+		if evaluation["score"] == null or state.gold < cost + int(offer["price"]):
+			continue
+		if state.backpack.can_add(str(offer["kind"]), str(offer["id"])):
+			continue
+		if not state.expand_backpack():
+			return false
+		trace.append({"wave": state.wave, "action": "expand_backpack", "paid": cost,
+			"height_before": snapshot["height"], "height_after": state.backpack_snapshot()["height"], "gold": state.gold})
+		return true
+	return false
 
 func _weapon_affinity(weapon_id: String, rune_id: String) -> float:
 	var preferences: Dictionary = {

@@ -63,7 +63,7 @@ func _test() -> void:
 		covered[id] = true
 		ui.queue_free()
 		await _settle()
-	_check(_fixture_valid, "All catalog relics are purchased at formal shop prices up to their real three-stack caps")
+	_check(_fixture_valid, "All catalog relics are purchased at formal prices and explicitly merged into legal third-rank backpack boxes")
 	_check(covered.size() == STAT_NAMES.size(), "Naturally generated choices across seeds 1 through 60 allow actual selections of all six upgrade types")
 	await _test_repeated_stat()
 	print("UpgradePreviews: %d assertions, %d failures" % [_checks, _failures])
@@ -139,12 +139,21 @@ func _state(seed_value: int, prior: Array[String] = []) -> RunState:
 	var state := RunState.new()
 	state.begin(seed_value, "bone")
 	# Currency is a controlled fixture; ownership is acquired only through real purchases.
-	state.gold = 1000
+	state.gold = 4000
+	_fixture_valid = state.expand_backpack() and state.expand_backpack() and _fixture_valid
 	for definition: ContentDef in GameCatalog.relics():
-		for stack: int in 3:
+		var item_uids: Array[int] = []
+		for copy: int in 4:
 			state.offers = [{"kind": "relic", "id": definition.id, "price": state.shop_price(definition), "sold": false}]
-			_fixture_valid = state.buy_offer(0) and _fixture_valid
-		_fixture_valid = int(state.relic_counts.get(definition.id, 0)) == RunState.RELIC_CAP and _fixture_valid
+			var purchased: bool = state.buy_offer(0)
+			_fixture_valid = purchased and _fixture_valid
+			if purchased:
+				item_uids.append(int(state.backpack_snapshot()["next_uid"]) - 1)
+		if item_uids.size() == 4:
+			_fixture_valid = state.merge_items(item_uids[1], item_uids[0]) and state.merge_items(item_uids[3], item_uids[2]) and state.merge_items(item_uids[2], item_uids[0]) and _fixture_valid
+			_fixture_valid = int(state.backpack_item(item_uids[0]).get("rank", 0)) == 3 and int(state.relic_counts.get(definition.id, 0)) == 4 and _fixture_valid
+	var backpack: Dictionary = state.backpack_snapshot()
+	_fixture_valid = int(backpack["used_cells"]) == 21 and int(backpack["total_cells"]) == 36 and _fixture_valid
 	state.collect_souls(102)
 	for id: String in prior:
 		state.upgrade_choices()

@@ -17,3 +17,4 @@ cooldown = 1.55
 projectile_speed = 220.0
 projectile_radius = 11.0
 range = 600.0
+inventory_size = Vector2i(3, 2)

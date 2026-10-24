@@ -19,3 +19,4 @@ projectile_radius = 3.5
 range = 570.0
 shots = 2
 spread = 0.055
+inventory_size = Vector2i(2, 3)

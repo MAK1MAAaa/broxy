@@ -1,6 +1,8 @@
 # 原型验收记录
 
-最新波内强化与玩家前景：16332条Godot、27项Python通过；新时序30局28胜2败，正常Main60秒117.789FPS/P99 17.757ms通过（本轮未重复300秒）。首波真实拾取升级、暂停竞态、前景差分及Windows新包见[本轮验收](midwave-upgrades.md)和[紧凑证据](../reports/midwave/validation.json)。真人试玩仍待开展，macOS未重建。
+当前背包版本：41套Godot加5个额外档案入口，23322条断言与27项Python测试通过；30局新策略29胜1败，229次合成／60次扩容。原生鼠标拖拽、旋转、武器／符文合成与自动落位确认；五分钟Main压力采样117.245FPS／P99 18.036ms通过。Windows新包、规则边界和证据见[背包验收](backpack.md)及[紧凑记录](../reports/backpack/validation.json)。macOS本轮未重建，真人试玩仍待开展。下述各轮记录保留当时的模型与范围。
+
+上一轮波内强化与玩家前景：16332条Godot、27项Python通过；新时序30局28胜2败，正常Main60秒117.789FPS/P99 17.757ms通过（该轮未重复300秒）。首波真实拾取升级、暂停竞态、前景差分及Windows新包见[当轮验收](midwave-upgrades.md)和[紧凑证据](../reports/midwave/validation.json)。真人试玩仍待开展，macOS当轮未重建。
 
 上一阶段归魂环与取舍遗物阶段：16040条Godot断言、27项Python通过；核心133的30局26胜4败，Windows八法器同种子300秒118.282FPS/P99 16.217ms通过。新增头部图集的交叠差异、首次失败与候选舍弃、模拟批次复用和Windows新包指纹见[归魂环验收](return-ring.md)及[紧凑证据](../reports/return-ring/validation.json)。macOS本轮未重建，真人试玩仍待开展。
 

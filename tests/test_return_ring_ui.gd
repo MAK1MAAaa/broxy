@@ -48,20 +48,23 @@ static func make_fixture(incoming: String = "bounce") -> RunState:
 	var state := RunState.new()
 	state.begin(20261027, "bone")
 	var purchases: Array[Dictionary] = []
-	for id: String in ["return_ring", "crescent", "storm"]:
+	for id: String in ["return_ring", "crescent"]:
 		purchases.append({"kind": "weapon", "definition": GameCatalog.weapon(id), "equip": -1})
-	for slot: int in 4:
+	for slot: int in 3:
 		var rune: String = "blast" if slot == 1 else "bounce" if slot == 2 else "pierce"
 		purchases.append({"kind": "rune", "definition": GameCatalog.rune(rune), "equip": slot})
-	for id: String in [incoming, "pierce", "blast", "bounce"]:
+	for id: String in [incoming, "pierce", "blast"]:
 		purchases.append({"kind": "rune", "definition": GameCatalog.rune(id), "equip": -1})
 	for definition: ContentDef in GameCatalog.relics():
 		purchases.append({"kind": "relic", "definition": definition, "equip": -1})
-	var budget: int = 120
+	var budget: int = 200
 	for purchase: Dictionary in purchases:
 		var definition: ContentDef = purchase["definition"]
 		budget += definition.price
 	state.collect_souls(budget)
+	if not state.expand_backpack() or not state.expand_backpack():
+		push_error("Return-ring UI fixture must pay for its six-row backpack")
+		return null
 	for purchase: Dictionary in purchases:
 		var definition: ContentDef = purchase["definition"]
 		state.offers = [{"kind": purchase["kind"], "id": definition.id, "price": definition.price, "sold": false}]
@@ -101,7 +104,7 @@ func _test_return_facts() -> void:
 func _test_shop_and_tooltips(ui: GameUI) -> void:
 	var state: RunState = make_fixture()
 	await _show(ui, state)
-	_check(state.relic_counts.size() == GameCatalog.relics().size() and _controls_fit(ui._page), "Four occupied weapon slots, four reserve runes and twelve relics fit the native shop")
+	_check(state.loadout.size() == 3 and state.rune_bag.size() == 3 and state.relic_counts.size() == GameCatalog.relics().size() and state.backpack_snapshot()["used_cells"] == 34 and _controls_fit(ui._page), "Three weapons, loose runes and every relic occupy a legal 34-cell backpack inside the native shop")
 	var offer: Control = ui.find_child("Offer1", true, false)
 	var description: Label = offer.find_child("OfferDescription", true, false)
 	var definition: ContentDef = GameCatalog.weapon("return_ring")
@@ -113,19 +116,21 @@ func _test_shop_and_tooltips(ui: GameUI) -> void:
 		_check(icon != null and icon.get_width() == 64 and icon.get_height() == 64, "New content resolves its original native-size icon: " + id)
 	var tooltip: String = ui._equipment_tooltip(state.loadout[1])
 	_check(tooltip.contains("当前玩家") and tooltip.contains("不等待回收") and tooltip.contains("第2次直接命中") and tooltip.contains("爆破后弹体消失"), "Equipped return-ring tooltips explain real return tracking, timing and blast consumption")
-	await _accept(ui, "rune:%d" % int(state.rune_bag[0]["uid"]))
+	await _accept(ui, "bag:%d" % int(state.rune_bag[0]["uid"]))
 	var guide: Label = ui.find_child("RuneGuide", true, false)
-	_check(guide != null and guide.text.contains("本体贯穿先执行") and not guide.text.contains("月镰"), "The shared guide covers native penetration without implying the moon scythe is the only delayed weapon")
+	_check(guide != null and guide.text.contains(GameCatalog.rune("bounce").display_name) and guide.text.contains("Ⅰ阶") and guide.text.contains("最多追加%d跳" % RuneRules.extra_hits(1)) and not guide.text.contains("月镰"), "The backpack guide describes the selected rune's actual tier while weapon-specific return rules remain in the preview")
 
 
 func _test_rune_preview(ui: GameUI, rune: String) -> void:
 	var state: RunState = make_fixture(rune)
 	await _show(ui, state)
-	await _accept(ui, "rune:%d" % int(state.rune_bag[0]["uid"]))
+	await _accept(ui, "bag:%d" % int(state.rune_bag[0]["uid"]))
 	var incoming: Dictionary = state.rune_bag[0].duplicate(true)
 	var before: String = _signature(state)
 	var source: Button = ui._shop_focus_button("rune_preview:1")
 	if rune == "blast":
+		source.grab_focus()
+		await _settle()
 		_click(source)
 		await _settle()
 	else:
@@ -162,8 +167,8 @@ func _test_rune_preview(ui: GameUI, rune: String) -> void:
 	_key(KEY_ESCAPE)
 	await _settle()
 	_check(ui._overlay_mode.is_empty() and root.gui_get_focus_owner() == source and ui._selected_rune == 0, "Escape restores the return-ring source and reserve selection: " + rune)
-	await _accept(ui, "equip:1")
-	_check(state.loadout[1]["rune"] == incoming and state.rune_bag.size() == 4 and ui._selected_rune == -1, "The return-ring rune still equips directly with its original UID and paid record: " + rune)
+	await _accept(ui, "bag_equip:%d" % int(state.loadout[1]["uid"]))
+	_check(state.loadout[1]["rune"] == incoming and state.rune_bag.size() == 3 and ui._selected_rune == -1 and state.backpack_snapshot()["used_cells"] == 34, "The return-ring rune swaps from the backpack with its original UID, paid record and occupied cells: " + rune)
 
 
 func _test_relic_tradeoffs(ui: GameUI) -> void:
@@ -223,6 +228,8 @@ func _accept(ui: GameUI, focus_id: String) -> Button:
 
 
 func _controls_fit(node: Node) -> bool:
+	if node is ScrollContainer:
+		return root.get_visible_rect().grow(1).encloses(node.get_global_rect())
 	if node is Control and node.is_visible_in_tree() and (node is Label or node is Button):
 		if not root.get_visible_rect().grow(1).encloses(node.get_global_rect()):
 			return false

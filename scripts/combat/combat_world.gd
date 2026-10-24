@@ -496,9 +496,10 @@ func _draw_player() -> void:
 	draw_set_transform(center, lean)
 	draw_texture_rect(textures["player"], Rect2(Vector2(-34, -50 + bob), Vector2(68, 68)), false, tint)
 	draw_set_transform(Vector2.ZERO)
-	for index: int in sim.run.loadout.size():
+	var orbit_count: int = mini(8, sim.run.loadout.size())
+	for index: int in orbit_count:
 		var equipped: Dictionary = sim.run.loadout[index]
-		var angle: float = -PI * 0.75 + float(index) * PI * 0.5 + sin(_visual_time * 0.6) * 0.12
+		var angle: float = -PI * 0.75 + float(index) * TAU / float(orbit_count) + sin(_visual_time * 0.6) * 0.12
 		var orbit: Vector2 = center + Vector2.from_angle(angle) * 39.0 + Vector2(0, sin(_visual_time * 2.0 + float(index)) * 3.0)
 		var definition: ContentDef = GameCatalog.weapon(str(equipped["id"]))
 		draw_circle(orbit, 14.0, Color(definition.color, 0.07))
@@ -507,6 +508,12 @@ func _draw_player() -> void:
 		if not rune.is_empty():
 			var rune_color: Color = GameCatalog.rune(str(rune["id"])).color
 			draw_arc(orbit, 15.0, _visual_time * 0.5, _visual_time * 0.5 + PI * 1.4, 12, Color(rune_color, 0.65), 1.0, true)
+	if sim.run.loadout.size() > orbit_count and _number_font != null:
+		var extra: String = "+%d" % (sim.run.loadout.size() - orbit_count)
+		var width: float = _number_font.get_string_size(extra, HORIZONTAL_ALIGNMENT_LEFT, -1, 12).x
+		var point: Vector2 = center + Vector2(-width * 0.5, 28.0)
+		draw_string_outline(_number_font, point, extra, HORIZONTAL_ALIGNMENT_LEFT, -1, 12, 3, Color("0d111b"))
+		draw_string(_number_font, point, extra, HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color("f0e5cc"))
 
 func _draw_effects() -> void:
 	for effect: CombatSim.Effect in sim.effects:

@@ -35,16 +35,21 @@ func _fixture(weapon: String, incoming: String, previous: String = "", full: boo
 	if not previous.is_empty():
 		_check(_buy(state, "rune", previous) and state.equip_rune(0, 0), "Fixture legally equips the original rune")
 	if full:
-		for filler: String in RUNES:
-			_check(_buy(state, "rune", filler), "Fixture legally fills reserve slots")
+		for index: int in range(36):
+			var snapshot: Dictionary = state.backpack_snapshot()
+			if int(snapshot["total_cells"]) - int(snapshot["used_cells"]) <= 1:
+				break
+			_check(_buy(state, "rune", RUNES[index % RUNES.size()]), "Fixture legally fills every reserve cell except the incoming rune's final cell")
 	_check(_buy(state, "rune", incoming), "Fixture legally acquires the selected rune")
+	if full:
+		_check(state.backpack_snapshot()["used_cells"] == state.backpack_snapshot()["total_cells"], "The full replacement matrix uses a genuinely full backpack")
 	state.upgrade_choices()
 	state.last_error = "保留原错误"
 	return state
 
 func _snapshot(state: RunState) -> Dictionary:
 	return {
-		"summary": state.summary(), "offers": state.offers.duplicate(true), "rng": state.rng.state,
+		"summary": state.summary(), "backpack": state.backpack_snapshot(), "offers": state.offers.duplicate(true), "rng": state.rng.state,
 		"rng_seed": state.rng.seed, "uid": state._next_rune_uid, "error": state.last_error,
 		"bonuses": state._upgrade_bonuses.duplicate(true), "choices": state._upgrade_options.duplicate(true),
 		"income": state._wave_income, "settled": state._wave_finished, "rerolls": state.rerolls,
@@ -93,6 +98,7 @@ func _test_inventory_matrix() -> void:
 					expected_bag.remove_at(selected)
 					if not previous.is_empty():
 						expected_bag.append(state.loadout[0]["rune"].duplicate(true))
+					expected_bag.sort_custom(func(first: Dictionary, second: Dictionary) -> bool: return int(first["uid"]) < int(second["uid"]))
 					_check(preview["bag_before"] == state.rune_bag.size() and preview["bag_after"] == expected_bag.size(), "Full-bag replacement stays full while an empty socket frees one reserve slot: " + label)
 					_check(preview["innate_pierce"] == weapon.innate_pierce and preview["trigger_hit"] == 1 + weapon.innate_pierce and preview["max_direct_targets"] == 1 + weapon.innate_pierce + (0 if incoming == "blast" else RuneRules.EXTRA_HITS), "Per-projectile trigger and theoretical target limit include native penetration: " + label)
 					var scales: Array[float] = []
@@ -103,7 +109,11 @@ func _test_inventory_matrix() -> void:
 							scales.append(pow(RuneRules.BOUNCE_DAMAGE_FACTOR, jump))
 					_check(preview["bounce_scales"] == scales and preview["bounce_range"] == (RuneRules.BOUNCE_RANGE if incoming == "bounce" else 0.0), "Only bounce exposes its actual decay sequence and search range: " + label)
 					_check(preview["blast_radius"] == (RuneRules.BLAST_RADIUS if incoming == "blast" else 0.0) and preview["blast_multiplier"] == (RuneRules.BLAST_DAMAGE_FACTOR if incoming == "blast" else 0.0), "Only blast exposes its actual splash extent and damage multiplier: " + label)
-					_check(oracle.equip_rune(selected, 0) and oracle.loadout[0]["rune"] == preview["incoming_rune"] and oracle.rune_bag == expected_bag and oracle.rune_bag.size() == int(preview["bag_after"]), "Forecast matches the independent real transaction including returned-rune order: " + label)
+					var incoming_cell: Dictionary = oracle.backpack_item(int(preview["incoming_rune"]["uid"]))
+					_check(oracle.equip_rune(selected, 0) and oracle.loadout[0]["rune"] == preview["incoming_rune"] and oracle.rune_bag == expected_bag and oracle.rune_bag.size() == int(preview["bag_after"]), "Forecast matches the independent real transaction including stable UID order: " + label)
+					if not previous.is_empty():
+						var restored: Dictionary = oracle.backpack_item(int(preview["returned_rune"]["uid"]))
+						_check(restored["x"] == incoming_cell["x"] and restored["y"] == incoming_cell["y"], "Replacement returns the previous rune to the exact cell vacated by its incoming UID: " + label)
 					_check(_uids(oracle) == _uids(state) and oracle.gold == state.gold and oracle._next_rune_uid == state._next_rune_uid and oracle.rng.state == state.rng.state, "Real replacement preserves both same-name rune identities, paid amounts, money and RNG: " + label)
 					var incoming_copy: Dictionary = preview["incoming_rune"]
 					var returned_copy: Dictionary = preview["returned_rune"]
@@ -115,7 +125,7 @@ func _test_inventory_matrix() -> void:
 
 func _test_invalid_queries() -> void:
 	var state: RunState = _fixture("crescent", "blast", "pierce", true)
-	for indices: Vector2i in [Vector2i(-1, 0), Vector2i(4, 0), Vector2i(0, -1), Vector2i(0, 1)]:
+	for indices: Vector2i in [Vector2i(-1, 0), Vector2i(state.rune_bag.size(), 0), Vector2i(0, -1), Vector2i(0, state.loadout.size())]:
 		_check(_query(state, indices.x, indices.y).is_empty(), "Invalid reserve or weapon indices return an empty pure forecast")
 	state.rune_bag[0]["id"] = "missing"
 	_check(_query(state, 0).is_empty(), "An unknown incoming definition has no forecast")
@@ -125,13 +135,16 @@ func _test_invalid_queries() -> void:
 	state.loadout[0]["id"] = "crescent"
 	state.loadout[0]["rune"]["id"] = "missing"
 	_check(_query(state, 0).is_empty(), "An unknown returned definition has no forecast")
-	state.rune_bag.clear()
-	_check(_query(state, 0).is_empty(), "An empty reserve has no selected rune")
+	var empty: RunState = RunState.new()
+	empty.begin(20261023, "crescent")
+	_check(_query(empty, 0).is_empty(), "An empty real backpack reserve has no selected rune")
 
 func _test_slot_identity() -> void:
 	var state: RunState = _fixture("bone", "bounce")
-	for id: String in ["crescent", "storm", "scatter"]:
-		_check(_buy(state, "weapon", id), "Fixture legally fills distinct destination slots")
+	_check(state.expand_backpack() and state.expand_backpack(), "Distinct destination fixtures purchase enough real space for their weapon footprints")
+	for id: String in ["crescent", "storm", "scatter", "frost"]:
+		_check(_buy(state, "weapon", id), "Fixture legally stores each distinct destination weapon")
+	_check(state.loadout.size() == 5, "Preview destinations include weapons beyond the former four-slot limit")
 	for index: int in state.loadout.size():
 		var preview: Dictionary = _query(state, 0, index)
 		_check(preview["weapon_index"] == index and preview["weapon_id"] == state.loadout[index]["id"], "Every slot is previewed without selecting a different weapon")

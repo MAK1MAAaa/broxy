@@ -63,7 +63,7 @@ func _preview() -> void:
 	await process_frame
 	await process_frame
 	if _view == "shop" and not _inspect.is_empty():
-		var inspect_button: Button = _app.ui.find_child("Relic_" + _inspect, true, false)
+		var inspect_button: Button = _owned_relic_button(_inspect)
 		if inspect_button == null:
 			push_error("Unknown owned relic to inspect: " + _inspect)
 			_app._quit_game(2)
@@ -145,7 +145,7 @@ func _build_catalog() -> void:
 			if definition.id not in NEW_WEAPONS:
 				_catalog_card(originals, definition, false)
 	else:
-		_app.ui._section_heading(body, "新增遗物 / 两项属性可叠加，单种最多3层", GameUI.CYAN, 16)
+		_app.ui._section_heading(body, "新增遗物 / 放入背包占格生效，同名同阶手动合成至Ⅲ阶", GameUI.CYAN, 16)
 		var additions := HBoxContainer.new()
 		additions.custom_minimum_size.y = 280
 		additions.add_theme_constant_override("separation", 12)
@@ -181,6 +181,7 @@ func _catalog_card(parent: Control, definition: ContentDef, featured: bool) -> v
 	header.add_child(names)
 	names.add_child(_app.ui._label(definition.display_name, (22 if definition.kind == "relic" else 24) if featured else 18, GameUI.BONE))
 	names.add_child(_app.ui._label("%d 魂屑" % definition.price, 14, GameUI.GOLD))
+	names.add_child(_app.ui._label("Ⅰ阶 · 占格 %d×%d" % [definition.inventory_size.x, definition.inventory_size.y], 12, GameUI.MUTED))
 	if featured:
 		body.add_child(_app.ui._wrap(definition.subtitle, 14, GameUI.CYAN))
 	if definition.kind == "weapon":
@@ -197,36 +198,67 @@ func _catalog_card(parent: Control, definition: ContentDef, featured: bool) -> v
 			body.add_child(_app.ui._wrap(role, 14, GameUI.PURPLE))
 
 
-func _purchase(kind: String, id: String) -> void:
-	var definition: ContentDef = GameCatalog.weapon(id) if kind == "weapon" else GameCatalog.rune(id) if kind == "rune" else GameCatalog.relic(id)
+func _purchase(kind: String, id: String) -> bool:
+	if _fixture_failed:
+		return false
+	var definition: ContentDef = BackpackInventory.definition(kind, id)
 	var state: RunState = _app.run
-	state.offers = [{"kind": kind, "id": id, "price": definition.price, "sold": false}]
+	state.offers = [{"kind": kind, "id": id, "price": state.shop_price(definition), "sold": false}]
 	if not state.buy_offer(0):
 		_fixture_failed = true
 		push_error("Content fixture purchase failed: " + state.last_error)
+		return false
+	return true
+
+
+func _owned_relic_button(id: String) -> Button:
+	for item: Dictionary in _app.run.backpack_snapshot()["items"]:
+		if item["kind"] == "relic" and item["id"] == id:
+			return _app.ui._shop_focus_button("bag:%d" % int(item["uid"]))
+	return null
 
 
 func _purchased_build(all_relics: bool) -> void:
 	_app.run.begin(20261023, "bone")
 	_app.run.wave = 4
 	_app.run.collect_souls(1800)
-	for id: String in NEW_WEAPONS:
-		_purchase("weapon", id)
+	if not _app.run.expand_backpack() or not _app.run.expand_backpack():
+		_fixture_failed = true
+		push_error("Content fixture expansion failed: " + _app.run.last_error)
+		return
+	var weapons: PackedStringArray = PackedStringArray(["frost", "ember", "scatter"]) if all_relics else NEW_WEAPONS
+	for id: String in weapons:
+		if not _purchase("weapon", id):
+			return
 	for pair: Array in [["blast", 1], ["pierce", 2], ["bounce", 3]]:
-		_purchase("rune", str(pair[0]))
+		if not _purchase("rune", str(pair[0])):
+			return
 		if not _app.run.equip_rune(0, int(pair[1])):
 			_fixture_failed = true
 			push_error("Content fixture equip failed: " + _app.run.last_error)
+			return
 	for definition: ContentDef in GameCatalog.relics():
 		if all_relics or definition.id in NEW_RELICS:
-			_purchase("relic", definition.id)
+			if not _purchase("relic", definition.id):
+				return
+	var expected_cells: int = 32 if all_relics else 29
+	if int(_app.run.backpack_snapshot()["used_cells"]) != expected_cells:
+		_fixture_failed = true
+		push_error("Content fixture does not match its declared physical backpack occupancy")
 	_app.run.pending_upgrades = 0
 
 
 func _build_shop() -> void:
 	_purchased_build(true)
+	if _fixture_failed:
+		return
 	for id: String in ["pierce", "bounce", "blast", "pierce"]:
-		_purchase("rune", id)
+		if not _purchase("rune", id):
+			return
+	if int(_app.run.backpack_snapshot()["used_cells"]) != 36:
+		_fixture_failed = true
+		push_error("Content shop fixture must fill exactly thirty-six cells")
+		return
 	_app.run.offers.clear()
 	for entry: Array in [["weapon", "crescent"], ["weapon", "storm"], ["relic", "moon_charm"], ["relic", "hourglass"]]:
 		var kind: String = str(entry[0])
@@ -235,11 +267,13 @@ func _build_shop() -> void:
 		_app.run.offers.append({"kind": kind, "id": id, "price": definition.price, "sold": false})
 	_app.screen = 3
 	_app.ui.show_shop()
-	_add_fixture_note("商店固定陈列 · 4法器 / 4备用符文 / 10类遗物 · 真实购买，不写档案")
+	_add_fixture_note("商店固定陈列 · 36格满背包 / %d法器 / %d松散符文 / %d类遗物 · 真实购买，不写档案" % [_app.run.loadout.size(), _app.run.rune_bag.size(), _app.run.relic_counts.size()])
 
 
 func _build_combat() -> void:
 	_purchased_build(false)
+	if _fixture_failed:
+		return
 	var world: CombatWorld = _app.world
 	world.begin(_app.run)
 	world.set_physics_process(false)

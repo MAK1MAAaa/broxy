@@ -20,6 +20,7 @@ const PURPLE := Color("bfa2e6")
 const CYAN := Color("89d8d2")
 const RED := Color("df888d")
 const CORAL := Color("ed9a86")
+const BACKPACK_GRID = preload("res://scripts/ui/backpack_grid.gd")
 
 ## Painted only on construction/resize. Decorative controls never intercept input.
 class RitualFrame:
@@ -84,6 +85,13 @@ var _upgrades_during_combat: bool = false
 var _overlay_mode := ""
 var _page_focus: Control
 var _page_focus_id := ""
+var _bag_selected_uid: int = -1
+var _bag_held_uid: int = -1
+var _bag_held_rotated: bool = false
+var _bag_cursor: Vector2i = Vector2i.ZERO
+var _bag_grid: Control
+var _bag_details: VBoxContainer
+var _bag_status: Label
 
 
 func _ready() -> void:
@@ -214,7 +222,7 @@ func show_title(best: Dictionary) -> void:
 	var info := _inside(info_card, 14)
 	info.add_theme_constant_override("separation", 7)
 	_section_heading(info, "试炼守则", GOLD, 16)
-	info.add_child(_wrap("WASD / 方向键  移动   ·   Esc  暂停\n自动攻击，收集魂屑；波末升级 → 商店 → 下一波\n符文可在商店免费拆换；波末祭坛恢复全部生命。", 14, BONE))
+	info.add_child(_wrap("WASD / 方向键 移动 · Esc 暂停\n拾取升级后暂停选择；波间整理格子背包。\n物品可旋转，同名同阶两件合成；背包武器全部自动攻击。", 14, BONE))
 	var footer := HBoxContainer.new()
 	footer.add_theme_constant_override("separation", 12)
 	shell.add_child(footer)
@@ -324,6 +332,7 @@ func show_hud() -> void:
 	_hud["slots"] = slots
 	var help := _label("WASD / 方向键  移动\nEsc  暂停", 15, MUTED)
 	help.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	_hud["bag_info"] = help
 	bottom_row.add_child(help)
 
 
@@ -363,6 +372,9 @@ func update_hud(snapshot: Dictionary) -> void:
 	_hud["boss_bar"].value = boss_health
 	var loadout: Array = snapshot.get("loadout", [])
 	var key := str(loadout)
+	if _hud.has("bag_info") and run != null:
+		var inventory: Dictionary = run.backpack_snapshot()
+		_hud["bag_info"].text = "法器 %d件 · 全部生效\n背包 %d / %d格\nWASD移动 · Esc暂停" % [loadout.size(), int(inventory["used_cells"]), int(inventory["total_cells"])]
 	if key != _hud_loadout_key:
 		_hud_loadout_key = key
 		_update_hud_slots(loadout)
@@ -406,6 +418,8 @@ func hide_pause() -> void:
 		_restore_page_focus()
 	_page_focus = null
 	_page_focus_id = ""
+	if is_instance_valid(_bag_grid) and _screen == "shop":
+		_bag_grid.interaction_enabled = true
 
 
 func handle_back() -> bool:
@@ -418,10 +432,15 @@ func handle_back() -> bool:
 	if _overlay_mode == "settings_title":
 		hide_pause()
 		return true
+	if _screen == "shop" and is_instance_valid(_bag_grid) and _bag_grid.cancel_placement():
+		return true
 	return false
 
 
 func _begin_overlay(mode: String) -> void:
+	if is_instance_valid(_bag_grid):
+		_bag_grid.cancel_placement()
+		_bag_grid.interaction_enabled = false
 	if _overlay_mode.is_empty():
 		var current: Control = get_viewport().gui_get_focus_owner()
 		_page_focus = current if current != null and _page.is_ancestor_of(current) else null
@@ -484,7 +503,15 @@ func show_result(victory: bool, reason: String, best: Dictionary) -> void:
 		body.add_child(last_hit)
 	_rule(body)
 	_section_heading(body, "最终构筑", PURPLE, 16)
-	body.add_child(_wrap(_loadout_text(), 15, BONE))
+	var build_scroll := ScrollContainer.new()
+	build_scroll.name = "ResultBuildScroll"
+	build_scroll.custom_minimum_size.y = 84
+	build_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	build_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	build_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+	build_scroll.focus_mode = Control.FOCUS_ALL
+	body.add_child(build_scroll)
+	build_scroll.add_child(_wrap(_loadout_text(), 15, BONE))
 	body.add_child(_wrap("最佳记录：" + _best_text(best), 13, MUTED))
 	var damage_card := _panel(columns)
 	damage_card.name = "DamageContribution"
@@ -604,6 +631,11 @@ func _build_shop() -> void:
 	if _overlay_mode in ["relic_comparison", "rune_equip_comparison"]:
 		hide_pause()
 	_shop_epoch += 1
+	if is_instance_valid(_bag_grid):
+		_bag_grid.interaction_enabled = false
+	_bag_grid = null
+	_bag_details = null
+	_bag_status = null
 	var focus_id := _requested_shop_focus
 	_requested_shop_focus = ""
 	if focus_id.is_empty():
@@ -628,11 +660,11 @@ func _build_shop() -> void:
 	guide.name = "RuneGuide"
 	shell.add_child(guide)
 	var columns := HBoxContainer.new()
-	columns.add_theme_constant_override("separation", 20)
+	columns.add_theme_constant_override("separation", 14)
 	columns.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	shell.add_child(columns)
 	var goods := VBoxContainer.new()
-	goods.custom_minimum_size.x = 670
+	goods.custom_minimum_size.x = 520
 	goods.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	columns.add_child(goods)
 	var stock_heading := HBoxContainer.new()
@@ -653,19 +685,7 @@ func _build_shop() -> void:
 	goods.add_child(grid)
 	for index in range(run.offers.size()):
 		_offer_card(grid, index)
-	var build_card := _panel(columns, Vector2(490, 0))
-	var build := _inside(build_card, 16)
-	build.add_theme_constant_override("separation", 7)
-	_section_heading(build, "法器  %d / 4" % run.loadout.size(), GOLD, 18)
-	for index in range(4):
-		_weapon_row(build, index)
-	_section_heading(build, "备用符文  %d / 4" % run.rune_bag.size(), PURPLE, 16)
-	var bag := HBoxContainer.new()
-	bag.add_theme_constant_override("separation", 5)
-	build.add_child(bag)
-	for index in range(4):
-		_bag_slot(bag, index)
-	_build_relic_inventory(build)
+	_build_backpack(columns)
 	var stats_card := _panel(shell)
 	var stats_margin := MarginContainer.new()
 	_margin(stats_margin, 14, 10)
@@ -678,7 +698,7 @@ func _build_shop() -> void:
 	reroll.add_theme_font_size_override("font_size", 16)
 	reroll.tooltip_text = "刷新仅替换未锁定商品；锁定商品跨波保留，价格随波次调整。"
 	footer.add_child(reroll)
-	var hint := _label("锁定跨波保留，价格随波次调整；拆换免费，出售不可撤回。", 14, MUTED)
+	var hint := _label("购买自动找空位；拖拽或拿起整理；R旋转，Esc取消。", 14, MUTED)
 	hint.name = "ShopLockGuide"
 	hint.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	footer.add_child(hint)
@@ -688,11 +708,303 @@ func _build_shop() -> void:
 	_restore_shop_focus.call_deferred(focus_id)
 
 
+func _build_backpack(parent: Control) -> void:
+	var snapshot: Dictionary = run.backpack_snapshot()
+	var items: Array = snapshot["items"]
+	if run.backpack_item(_bag_selected_uid).is_empty():
+		_bag_selected_uid = int(items[0]["uid"]) if not items.is_empty() else -1
+	if run.backpack_item(_bag_held_uid).is_empty():
+		_bag_held_uid = -1
+	_selected_rune = run.rune_index_for_uid(_bag_selected_uid)
+	var card := _panel(parent, Vector2(650, 0))
+	card.name = "BackpackPanel"
+	var body := _inside(card, 14)
+	body.add_theme_constant_override("separation", 6)
+	var heading := HBoxContainer.new()
+	body.add_child(heading)
+	var title := _label("秘术行囊", 20, GOLD)
+	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	heading.add_child(title)
+	var capacity := _label("占格 %d / %d · 法器 %d" % [int(snapshot["used_cells"]), int(snapshot["total_cells"]), run.loadout.size()], 14, CYAN)
+	capacity.name = "BackpackCapacity"
+	heading.add_child(capacity)
+	var columns := HBoxContainer.new()
+	columns.add_theme_constant_override("separation", 12)
+	columns.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	body.add_child(columns)
+	_bag_grid = BACKPACK_GRID.new()
+	_bag_grid.name = "BackpackGrid"
+	_bag_grid.configure(snapshot, _shop_epoch, _bag_selected_uid)
+	_bag_grid.item_selected.connect(_bp_select.bind(_shop_epoch))
+	_bag_grid.move_requested.connect(_bp_move.bind(_shop_epoch))
+	_bag_grid.merge_requested.connect(_bp_merge.bind(_shop_epoch))
+	_bag_grid.rune_requested.connect(_bp_equip.bind(_shop_epoch))
+	_bag_grid.holding_changed.connect(_bp_holding.bind(_shop_epoch))
+	_bag_grid.hint_changed.connect(_bp_hint.bind(_shop_epoch))
+	columns.add_child(_bag_grid)
+	var scroll := ScrollContainer.new()
+	scroll.name = "BackpackDetailsScroll"
+	scroll.custom_minimum_size.x = 244
+	scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+	scroll.follow_focus = true
+	columns.add_child(scroll)
+	_bag_details = VBoxContainer.new()
+	_bag_details.name = "BackpackDetails"
+	_bag_details.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_bag_details.add_theme_constant_override("separation", 6)
+	scroll.add_child(_bag_details)
+	_build_backpack_details()
+	_bag_status = _wrap("拖拽移动，R旋转；也可拿起后方向键/Enter放置，Esc取消。", 12, MUTED)
+	_bag_status.name = "BackpackHint"
+	_bag_status.custom_minimum_size.y = 32
+	body.add_child(_bag_status)
+	var expansion := HBoxContainer.new()
+	expansion.add_theme_constant_override("separation", 10)
+	body.add_child(expansion)
+	var cost: int = int(snapshot.get("expansion_cost", 0))
+	var expand_text: String = "背包已扩满" if int(snapshot["height"]) >= int(snapshot["max_height"]) else "扩容一排 · %d魂屑" % cost
+	var expand := _shop_button(expand_text, _bp_expand, "bag_expand", Vector2(180, 34))
+	expand.name = "ExpandBackpack"
+	expand.add_theme_font_size_override("font_size", 14)
+	expand.disabled = int(snapshot["height"]) >= int(snapshot["max_height"])
+	expand.tooltip_text = str(snapshot.get("expansion_error", "")) if not bool(snapshot.get("can_expand", true)) else "解锁下一排6个格子；不移动现有物品。"
+	expansion.add_child(expand)
+	expansion.add_child(_label("Ⅰ + Ⅰ → Ⅱ；Ⅱ + Ⅱ → Ⅲ", 12, GOLD))
+	if _bag_held_uid >= 0:
+		_bag_grid.begin_placement(_bag_held_uid, _bag_held_rotated, _bag_cursor)
+
+
+func _build_backpack_details() -> void:
+	if not is_instance_valid(_bag_details):
+		return
+	_clear(_bag_details)
+	var item: Dictionary = run.backpack_item(_bag_selected_uid)
+	if item.is_empty():
+		_bag_details.add_child(_wrap("选中一个盒装物品，查看效果并整理背包。\n所有放入的法器自动攻击，遗物直接生效。", 15, MUTED))
+		return
+	var uid: int = int(item["uid"])
+	var rank: int = int(item.get("rank", 1))
+	var definition: ContentDef = _definition(str(item["kind"]), str(item["id"]))
+	var heading := HBoxContainer.new()
+	_bag_details.add_child(heading)
+	_add_icon(heading, definition, 40)
+	var title := _wrap("%s · %s阶" % [definition.display_name, _rank_name(rank)], 18, BONE)
+	title.name = "BackpackItemTitle"
+	title.tooltip_text = _backpack_effect_text(item)
+	heading.add_child(title)
+	var dimensions: Vector2i = BACKPACK_GRID._item_size(item, bool(item.get("rotated", false)))
+	_bag_details.add_child(_label("占格 %d×%d · 编号 %d" % [dimensions.x, dimensions.y, uid], 12, MUTED))
+	if str(item["kind"]) == "weapon":
+		var stats := _wrap(_weapon_stats_text(definition, rank), 12, CYAN)
+		stats.name = "BackpackWeaponStats"
+		_bag_details.add_child(stats)
+	var partners: Array[Dictionary] = []
+	for other: Dictionary in run.backpack_snapshot()["items"]:
+		var preview: Dictionary = run.merge_preview(uid, int(other["uid"]))
+		if bool(preview.get("can_merge", false)):
+			partners.append({"item": other, "preview": preview})
+	if not partners.is_empty():
+		_section_heading(_bag_details, "同名同阶合成", GOLD, 14)
+		var sample: Dictionary = partners[0]["preview"]
+		var explanation: String = "两件合成一件，释放%d格；属性保持两件合计。" % int(sample.get("cells_freed", dimensions.x * dimensions.y))
+		if str(item["kind"]) == "weapon":
+			explanation = "单件伤害 %.1f → %.1f，释放%d格。" % [float(sample.get("damage_before", definition.damage)), float(sample.get("damage_after", definition.damage * 2.0)), int(sample.get("cells_freed", dimensions.x * dimensions.y))]
+		elif str(item["kind"]) == "rune":
+			explanation = _rune_rank_text(str(item["id"]), rank + 1)
+		var merge_preview := _wrap(explanation, 12, GOLD)
+		merge_preview.name = "BackpackMergePreview"
+		_bag_details.add_child(merge_preview)
+		_add_backpack_merge_target(uid, partners[0])
+	var actions := HBoxContainer.new()
+	actions.add_theme_constant_override("separation", 6)
+	_bag_details.add_child(actions)
+	var move := _shop_button("拿起 / 移动", _bp_pick_up.bind(uid), "bag_move:%d" % uid, Vector2(110, 32))
+	move.name = "MoveBackpackItem"
+	move.add_theme_font_size_override("font_size", 13)
+	actions.add_child(move)
+	var rotate := _shop_button("旋转 R", _bp_rotate.bind(uid), "bag_rotate:%d" % uid, Vector2(76, 32))
+	rotate.name = "RotateBackpackItem"
+	rotate.add_theme_font_size_override("font_size", 13)
+	actions.add_child(rotate)
+	var sale := _shop_button("出售 · %d魂屑" % int(floorf(float(item.get("paid", 0)) * 0.5)), _bp_sell.bind(uid), "bag_sell:%d" % uid, Vector2(0, 32))
+	sale.name = "SellBackpackItem"
+	sale.add_theme_font_size_override("font_size", 13)
+	sale.tooltip_text = "出售不可撤回；必须保留至少一件法器。法器上的符文退回背包空格。"
+	_bag_details.add_child(sale)
+	var rune: Dictionary = item.get("rune", {})
+	if str(item["kind"]) == "weapon" and not rune.is_empty():
+		var detach := _shop_button("拆下 %s · %s阶" % [GameCatalog.rune(str(rune["id"])).display_name, _rank_name(int(rune.get("rank", 1)))], _bp_unequip.bind(uid), "bag_unequip:%d" % uid, Vector2(0, 32))
+		detach.name = "UnequipBackpackRune"
+		detach.add_theme_font_size_override("font_size", 12)
+		detach.tooltip_text = "免费拆下；背包需要一个真实空格。"
+		_bag_details.add_child(detach)
+	if str(item["kind"]) == "rune":
+		_section_heading(_bag_details, "装入法器", PURPLE, 14)
+		for weapon: Dictionary in run.loadout:
+			var weapon_uid: int = int(weapon["uid"])
+			var row := HBoxContainer.new()
+			row.add_theme_constant_override("separation", 4)
+			_bag_details.add_child(row)
+			var equip := _shop_button("装入 %s %s" % [GameCatalog.weapon(str(weapon["id"])).display_name, _rank_name(int(weapon.get("rank", 1)))], _bp_equip.bind(uid, weapon_uid, _shop_epoch), "bag_equip:%d" % weapon_uid, Vector2(0, 30))
+			equip.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			equip.add_theme_font_size_override("font_size", 12)
+			row.add_child(equip)
+			var index: int = run.weapon_index_for_uid(weapon_uid)
+			var preview := _shop_button("预览", _preview_rune_equip.bind(index, _shop_epoch, run.rune_bag[_selected_rune].duplicate(true), weapon.duplicate(true)), "rune_preview:%d" % index, Vector2(48, 30))
+			preview.add_theme_font_size_override("font_size", 12)
+			row.add_child(preview)
+	if partners.size() > 1:
+		_section_heading(_bag_details, "其他合成目标", GOLD, 14)
+		for index: int in range(1, partners.size()):
+			_add_backpack_merge_target(uid, partners[index])
+	elif partners.is_empty():
+		_bag_details.add_child(_wrap("已达Ⅲ阶，无法继续合成。" if rank >= 3 else "再获得一件同名同阶物品即可手动合成。", 12, MUTED))
+	var description := _wrap(_backpack_effect_text(item), 13, CYAN)
+	description.name = "BackpackItemEffect"
+	_bag_details.add_child(description)
+
+
+func _add_backpack_merge_target(source: int, partner: Dictionary) -> void:
+	var other: Dictionary = partner["item"]
+	var preview: Dictionary = partner["preview"]
+	var merge := _shop_button("与 #%d 合成 → %s阶" % [int(other["uid"]), _rank_name(int(preview["rank_after"]))], _bp_merge.bind(source, int(other["uid"]), _shop_epoch), "bag_merge:%d" % int(other["uid"]), Vector2(0, 32))
+	merge.name = "MergeBackpackItem%d" % int(other["uid"])
+	merge.add_theme_font_size_override("font_size", 13)
+	var returned: Dictionary = preview.get("returned_rune", {})
+	merge.tooltip_text = "保留目标物品的位置和朝向；该操作不可撤回。" + ("另一份符文退回背包。" if not returned.is_empty() else "")
+	_bag_details.add_child(merge)
+
+
+func _bp_select(uid: int, epoch: int) -> void:
+	if not _bp_allowed(epoch) or run.backpack_item(uid).is_empty():
+		return
+	_bag_selected_uid = uid
+	_selected_rune = run.rune_index_for_uid(uid)
+	_build_backpack_details()
+	var guide: Label = _page.find_child("RuneGuide", true, false) as Label
+	if guide != null:
+		guide.text = _rune_guide()
+
+
+func _bp_allowed(epoch: int) -> bool:
+	return _screen == "shop" and not _refresh_queued and _overlay_mode.is_empty() and epoch == _shop_epoch and run != null and is_instance_valid(_bag_grid) and _bag_grid.is_inside_tree()
+
+
+func _bp_guard(uid: int, epoch: int) -> bool:
+	return _bp_allowed(epoch) and not run.backpack_item(uid).is_empty() and run.backpack_item(uid) == _bag_grid.snapshot_item(uid)
+
+
+func _bp_holding(uid: int, rotated: bool, cell: Vector2i, epoch: int) -> void:
+	if epoch == _shop_epoch and _screen == "shop":
+		_bag_held_uid = uid
+		_bag_held_rotated = rotated
+		_bag_cursor = cell
+
+
+func _bp_hint(text: String, epoch: int) -> void:
+	if epoch == _shop_epoch and is_instance_valid(_bag_status):
+		_bag_status.text = text
+
+
+func _bp_pick_up(uid: int) -> void:
+	if _bp_guard(uid, _shop_epoch) and uid == _bag_selected_uid:
+		_bag_grid.begin_placement(uid)
+
+
+func _bp_rotate(uid: int) -> void:
+	if not _bp_guard(uid, _shop_epoch) or uid != _bag_selected_uid:
+		return
+	if int(_bag_grid.held_uid) != uid:
+		_bag_grid.begin_placement(uid)
+	_bag_grid.rotate_held()
+
+
+func _bp_move(uid: int, cell: Vector2i, rotated: bool, epoch: int) -> void:
+	if not _bp_guard(uid, epoch):
+		return
+	_bp_complete(run.move_item(uid, cell, rotated), "物品已放置。")
+
+
+func _bp_merge(source: int, target: int, epoch: int) -> void:
+	if source != _bag_selected_uid or not _bp_guard(source, epoch) or not _bp_guard(target, epoch):
+		return
+	var success: bool = run.merge_items(source, target)
+	if success:
+		_bag_selected_uid = target
+	_bp_complete(success, "合成完成；目标物品升阶，位置保持。")
+
+
+func _bp_equip(source: int, target: int, epoch: int) -> void:
+	if source != _bag_selected_uid or not _bp_guard(source, epoch) or not _bp_guard(target, epoch):
+		return
+	_bp_complete(run.equip_rune(run.rune_index_for_uid(source), run.weapon_index_for_uid(target)), "符文已装入；原符文退回背包。")
+
+
+func _bp_unequip(uid: int) -> void:
+	if _bp_guard(uid, _shop_epoch) and uid == _bag_selected_uid:
+		_bp_complete(run.unequip_rune(run.weapon_index_for_uid(uid)), "符文已拆下，放入背包空格。")
+
+
+func _bp_sell(uid: int) -> void:
+	if _bp_guard(uid, _shop_epoch) and uid == _bag_selected_uid:
+		_bp_complete(run.sell_item(uid), "物品已出售。")
+
+
+func _bp_expand() -> void:
+	if not _bp_allowed(_shop_epoch):
+		return
+	_bp_complete(run.expand_backpack(), "背包已解锁一排格子。")
+
+
+func _bp_complete(success: bool, message: String) -> void:
+	if success and is_instance_valid(_bag_grid):
+		_bag_grid.cancel_placement()
+	_handle_action(success, "buy", message if success else "")
+
+
+func _backpack_effect_text(item: Dictionary) -> String:
+	var rank: int = int(item.get("rank", 1))
+	var definition: ContentDef = _definition(str(item["kind"]), str(item["id"]))
+	match str(item["kind"]):
+		"weapon":
+			var text: String = definition.description
+			var rune: Dictionary = item.get("rune", {})
+			if not rune.is_empty():
+				text += "\n" + _rune_rank_text(str(rune["id"]), int(rune.get("rank", 1)))
+			return text
+		"rune": return _rune_rank_text(definition.id, rank) + "\n拖到法器上装入，或选择下方目标。"
+		"relic":
+			var result: PackedStringArray = []
+			for pair: Array in [[definition.stat, definition.amount], [definition.bonus_stat, definition.bonus_amount]]:
+				if str(pair[0]).is_empty():
+					continue
+				var amount: float = float(pair[1]) * BackpackInventory.rank_multiplier(rank)
+				var names: Dictionary = {"damage": "伤害", "attack_speed": "攻速", "move_speed": "移速", "max_health": "生命上限", "armor": "护甲", "pickup_radius": "拾取范围"}
+				result.append("%s %+.0f%%" % [names.get(pair[0], pair[0]), amount * 100.0] if str(pair[0]) in ["damage", "attack_speed"] else "%s %+.0f" % [names.get(pair[0], pair[0]), amount])
+			return "本阶基础贡献：\n" + "\n".join(result) + "\n放入即生效；合成保留两件总属性。"
+	return definition.description
+
+
+static func _rank_name(rank: int) -> String:
+	return ["Ⅰ", "Ⅱ", "Ⅲ"][clampi(rank, 1, 3) - 1]
+
+
+static func _rune_rank_text(id: String, rank: int) -> String:
+	match id:
+		"pierce": return "贯穿额外命中%d个目标；同一弹体不重击同一目标。" % RuneRules.extra_hits(rank)
+		"bounce": return "最多追加%d跳；范围%.0f，每跳保留75%%伤害。" % [RuneRules.extra_hits(rank), RuneRules.BOUNCE_RANGE]
+		"blast": return "爆破半径%.0f，溅射为本体伤害%.0f%%；不递归触发。" % [RuneRules.blast_radius(rank), RuneRules.blast_factor(rank) * 100.0]
+	return ""
+
+
 func _offer_card(parent: Control, index: int) -> void:
 	var offer: Dictionary = run.offers[index]
 	var kind := str(offer.get("kind", "weapon"))
 	var definition = _definition(kind, str(offer.get("id", "")))
-	var card := _panel(parent, Vector2(320, 190))
+	var card := _panel(parent, Vector2(252, 180))
 	card.name = "Offer%d" % (index + 1)
 	var category: Color = {"weapon": GOLD, "rune": PURPLE, "relic": CYAN}.get(kind, GOLD)
 	var locked: bool = run.is_offer_locked(index)
@@ -702,11 +1014,11 @@ func _offer_card(parent: Control, index: int) -> void:
 	card.add_theme_stylebox_override("panel", border)
 	card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	card.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	var body := _inside(card, 14)
-	body.add_theme_constant_override("separation", 6)
+	var body := _inside(card, 12)
+	body.add_theme_constant_override("separation", 5)
 	var name_row := HBoxContainer.new()
 	body.add_child(name_row)
-	_add_icon(name_row, definition, 44)
+	_add_icon(name_row, definition, 34)
 	var names := VBoxContainer.new()
 	names.add_theme_constant_override("separation", 2)
 	names.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -714,8 +1026,10 @@ func _offer_card(parent: Control, index: int) -> void:
 	var title_row := HBoxContainer.new()
 	title_row.add_theme_constant_override("separation", 6)
 	names.add_child(title_row)
-	var name_label := _label(definition.display_name, 21, BONE)
+	var name_label := _label(definition.display_name, 18, BONE)
 	name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	name_label.clip_text = true
+	name_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	_enable_tooltip(name_label, definition.description)
 	title_row.add_child(name_label)
 	var lock_marker := _label("已锁" if locked else "", 11, GOLD)
@@ -740,20 +1054,18 @@ func _offer_card(parent: Control, index: int) -> void:
 		style.content_margin_bottom = 2
 		lock_button.add_theme_stylebox_override(state, style)
 	title_row.add_child(lock_button)
-	var ownership: String = ""
-	match kind:
-		"weapon": ownership = "法器%d/%d槽" % [run.loadout.size(), RunState.WEAPON_CAP]
-		"rune": ownership = "备用%d/%d" % [run.rune_bag.size(), RunState.RUNE_BAG_CAP]
-		"relic": ownership = "持有%d/%d层" % [int(run.relic_counts.get(definition.id, 0)), RunState.RELIC_CAP]
-	names.add_child(_label({"weapon": "法器", "rune": "符文", "relic": "遗物"}.get(kind, kind) + "  /  " + definition.subtitle.get_slice(" · ", 1) + " · " + ownership, 11, category))
+	var dimensions: Vector2i = definition.inventory_size
+	names.add_child(_label("Ⅰ阶 · %s · 占格%d×%d" % [{"weapon": "法器", "rune": "符文", "relic": "遗物"}.get(kind, kind), dimensions.x, dimensions.y], 11, category))
 	var summary: String = _shop_description(definition)
-	var description := _wrap(summary, 14, MUTED)
+	var description := _wrap(summary, 13, MUTED)
 	description.name = "OfferDescription"
+	description.max_lines_visible = 2
+	description.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	_enable_tooltip(description, definition.description)
 	description.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	body.add_child(description)
 	if kind == "weapon":
-		var stats := _wrap(_weapon_stats_text(definition), 14, GOLD)
+		var stats := _wrap(_weapon_stats_text(definition), 12, GOLD)
 		stats.name = "WeaponStats"
 		_enable_tooltip(stats, _weapon_stats_note())
 		body.add_child(stats)
@@ -764,22 +1076,18 @@ func _offer_card(parent: Control, index: int) -> void:
 	if blocked:
 		var reason: String = {
 			"魂屑不足。": "魂屑不足",
-			"法器槽已满，请先出售一件法器。": "法器槽已满",
-			"备用符文已满，请先装备或出售。": "备用符文已满",
-			"该遗物已达到3层上限。": "遗物已满3层",
+			"背包空间不足。": "背包无空位",
 		}.get(error, "暂不可购")
 		buy_text = "%s · %d魂屑" % [reason, price]
 	var buy := _shop_button(buy_text, _buy.bind(index), "buy:%d" % index, Vector2(0, 35))
-	buy.add_theme_font_size_override("font_size", 14 if kind == "relic" else 16)
+	buy.add_theme_font_size_override("font_size", 14)
 	buy.add_theme_color_override("font_color", MUTED if blocked else GOLD)
 	buy.add_theme_stylebox_override("normal", _box(Color("1a1d29") if blocked else Color("232231"), Color(MUTED, 0.3) if blocked else Color(category, 0.48)))
 	buy.tooltip_text = error
 	if error == "魂屑不足。":
 		buy.tooltip_text += "还差%d魂屑。" % (price - run.gold)
-	elif error == "备用符文已满，请先装备或出售。":
-		buy.tooltip_text += "\n把备用符文装入无符文法器，或出售备用符文；替换已有符文不会腾位。"
-	elif error == "法器槽已满，请先出售一件法器。":
-		buy.tooltip_text += "\n出售带符文的法器，需要1个备用符文空位。"
+	elif error == "背包空间不足。":
+		buy.tooltip_text += "\n移动、旋转、合成或扩容后再购买；不会自动合成。"
 	# Blocked unsold offers stay focusable so keyboard users can read the reason.
 	buy.disabled = sold
 	buy.focus_mode = Control.FOCUS_NONE if sold else Control.FOCUS_ALL
@@ -836,7 +1144,7 @@ func _compare_relic(index: int, epoch: int, expected_offer: Dictionary) -> void:
 	header.add_child(summary)
 	summary.add_child(_wrap(definition.description, 16, CYAN))
 	var projected: bool = bool(preview["has_projection"])
-	var layers: String = "层数  %d / %d → %d / %d（购后）" % [int(preview["stack_before"]), RunState.RELIC_CAP, int(preview["stack_after"]), RunState.RELIC_CAP] if projected else "层数  %d / %d（保持，不再叠加）" % [int(preview["stack_before"]), RunState.RELIC_CAP]
+	var layers: String = "属性权重  %d → %d（购后）" % [int(preview["stack_before"]), int(preview["stack_after"])] if projected else "属性权重  %d（保持）" % int(preview["stack_before"])
 	var layer_label := _label(layers, 14, BONE)
 	layer_label.name = "ComparisonLayers"
 	summary.add_child(layer_label)
@@ -846,7 +1154,7 @@ func _compare_relic(index: int, epoch: int, expected_offer: Dictionary) -> void:
 	summary.add_child(balance_label)
 	var status_text: String = "购前效果预览，尚未购买；关闭后可直接购买。"
 	if not bool(preview["can_buy"]):
-		status_text = "效果预览，尚缺 %d 魂屑；当前不会扣款或增加层数。" % int(preview["shortfall"]) if projected and int(preview["shortfall"]) > 0 else "无法再次购入：%s 不产生新增效果。" % str(preview["error"])
+		status_text = "效果预览，尚缺 %d 魂屑；当前不会扣款或放入物品。" % int(preview["shortfall"]) if projected and int(preview["shortfall"]) > 0 else "当前无法购入：%s" % str(preview["error"])
 	var status := _wrap(status_text, 14, CYAN if bool(preview["can_buy"]) else GOLD)
 	status.name = "ComparisonStatus"
 	body.add_child(status)
@@ -869,7 +1177,7 @@ func _compare_relic(index: int, epoch: int, expected_offer: Dictionary) -> void:
 		_build_relic_stat_comparison(content, preview)
 		_build_relic_weapon_comparison(content, preview)
 	else:
-		var unavailable := _wrap("已售出或达到层数上限；保留当前构筑，不展示额外一层的属性与法器变化。", 17, MUTED)
+		var unavailable := _wrap("商品已售出；保留当前构筑，不展示新增物品的变化。", 17, MUTED)
 		unavailable.name = "ComparisonNoProjection"
 		content.add_child(unavailable)
 	var note := _wrap("法器数值是每枚伤害与持续攻击时的标称间隔，未计符文追加命中；这些数值不是 DPS。\n滚轮滚动，或 Tab 选择表格区域后使用 PageUp / PageDown；Esc 返回商品。", 13, MUTED)
@@ -978,49 +1286,6 @@ func _comparison_scroll_input(event: InputEvent, scroll: ScrollContainer, epoch:
 	scroll.accept_event()
 
 
-func _weapon_row(parent: Control, index: int) -> void:
-	var row := HBoxContainer.new()
-	row.custom_minimum_size.y = 44
-	row.add_theme_constant_override("separation", 7)
-	parent.add_child(row)
-	if index >= run.loadout.size():
-		var empty := _label("%d  ·  空法器槽" % (index + 1), 16, MUTED)
-		empty.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		row.add_child(empty)
-		return
-	var item: Dictionary = run.loadout[index]
-	var definition = GameCatalog.weapon(str(item["id"]))
-	row.add_child(_label("%02d" % (index + 1), 12, GOLD))
-	_add_icon(row, definition, 31)
-	var names := VBoxContainer.new()
-	names.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	names.add_theme_constant_override("separation", 1)
-	row.add_child(names)
-	var weapon_name := _label(definition.display_name, 16, BONE)
-	_enable_tooltip(weapon_name, _equipment_tooltip(item))
-	names.add_child(weapon_name)
-	var rune: Dictionary = item.get("rune", {})
-	var rune_label := _label("无符文" if rune.is_empty() else GameCatalog.rune(str(rune["id"])).display_name, 13, MUTED if rune.is_empty() else PURPLE)
-	if not rune.is_empty():
-		_enable_tooltip(rune_label, _equipment_tooltip(item))
-	names.add_child(rune_label)
-	if _selected_rune >= 0:
-		var equip := _shop_button("装入", _equip.bind(index), "equip:%d" % index, Vector2(60, 33))
-		_accent(equip)
-		row.add_child(equip)
-		var incoming: Dictionary = run.rune_bag[_selected_rune]
-		var preview := _shop_button("预览", _preview_rune_equip.bind(index, _shop_epoch, incoming.duplicate(true), item.duplicate(true)), "rune_preview:%d" % index, Vector2(50, 33))
-		preview.name = "PreviewRuneSlot%d" % index
-		preview.add_theme_font_size_override("font_size", 13)
-		preview.tooltip_text = "查看本法器的逐弹触发、目标上限与符文返还；不会装入。"
-		row.add_child(preview)
-	elif not rune.is_empty():
-		row.add_child(_shop_button("卸符", _unequip.bind(index), "unequip:%d" % index, Vector2(60, 33)))
-	var sell := _shop_button("售", _sell_weapon.bind(index), "sell_weapon:%d" % index, Vector2(37, 33))
-	sell.tooltip_text = "出售获得 %d 魂屑；符文退回背包。至少保留一件法器。" % int(floorf(float(item.get("paid", 0)) * 0.5))
-	row.add_child(sell)
-
-
 func _preview_rune_equip(index: int, epoch: int, incoming_snapshot: Dictionary, weapon_snapshot: Dictionary) -> void:
 	if _screen != "shop" or _refresh_queued or not _overlay_mode.is_empty() or epoch != _shop_epoch:
 		return
@@ -1049,15 +1314,15 @@ func _preview_rune_equip(index: int, epoch: int, incoming_snapshot: Dictionary, 
 	summary.add_theme_constant_override("separation", 5)
 	summary.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	header.add_child(summary)
-	var current_name: String = "无符文" if returned.is_empty() else GameCatalog.rune(str(returned["id"])).display_name
-	var socket := _wrap("当前 %s → 所选 %s" % [current_name, incoming.display_name], 21, BONE)
+	var current_name: String = "无符文" if returned.is_empty() else "%s %s阶" % [GameCatalog.rune(str(returned["id"])).display_name, _rank_name(int(returned.get("rank", 1)))]
+	var socket := _wrap("当前 %s → 所选 %s %s阶" % [current_name, incoming.display_name, _rank_name(int(incoming_snapshot.get("rank", 1)))], 21, BONE)
 	socket.name = "RuneEquipSocket"
 	summary.add_child(socket)
-	var capacity := _label("备用栏占用  %d / %d → %d / %d" % [int(preview["bag_before"]), RunState.RUNE_BAG_CAP, int(preview["bag_after"]), RunState.RUNE_BAG_CAP], 15, CYAN)
+	var capacity := _label("松散符文  %d → %d件 · 装入后不额外占格" % [int(preview["bag_before"]), int(preview["bag_after"])], 15, CYAN)
 	capacity.name = "RuneEquipBag"
 	summary.add_child(capacity)
 	_add_icon(header, incoming, 64)
-	var return_text: String = "取出所选符文；原法器没有符文，备用栏释放1个位置。" if returned.is_empty() else "%s完整退回备用栏，保留原购买价值；取出所选符文后，备用栏占用不变。" % current_name
+	var return_text: String = "原法器没有符文，装入后释放所选符文的1格空间。" if returned.is_empty() else "%s退回所选符文腾出的格子，保留阶级与原购买价值。" % current_name
 	var returns := _wrap(return_text, 15, GOLD)
 	returns.name = "RuneEquipReturn"
 	body.add_child(returns)
@@ -1132,10 +1397,10 @@ func _preview_rune_equip(index: int, epoch: int, incoming_snapshot: Dictionary, 
 	var independent := _wrap("同一枚弹体不会重复直击已命中过的目标。不同弹体分别记录与排重，可以各自命中同一敌人；多发的符文效果也按每枚独立触发。", 15, CYAN)
 	independent.name = "RuneEquipIndependent"
 	content.add_child(independent)
-	var scope := _wrap("理论上限需要足够实际目标，并受射程、弹体存活时间和目标位置影响；不保证每次命中，不代表实战 DPS。\n此面板只预览，未装入符文；返回后可直接「装入」，拆换免费。\n滚轮滚动；Tab 选择内容区域后可用 PageUp / PageDown；Esc 返回原法器槽。", 14, MUTED)
+	var scope := _wrap("理论上限需要足够实际目标，并受射程、弹体存活时间和目标位置影响；不保证每次命中，不代表实战DPS。\n此面板只预览；返回背包后可装入，拆换免费。\n滚轮滚动；Tab选择内容区域后可用PageUp/PageDown；Esc返回背包。", 14, MUTED)
 	scope.name = "RuneEquipScope"
 	content.add_child(scope)
-	var close := _button("返回法器槽", _close_rune_equip_comparison.bind(epoch), Vector2(0, 42))
+	var close := _button("返回背包", _close_rune_equip_comparison.bind(epoch), Vector2(0, 42))
 	close.name = "CloseRuneEquipComparison"
 	_accent(close)
 	body.add_child(close)
@@ -1152,94 +1417,6 @@ static func _rune_percent(scale: float) -> String:
 func _close_rune_equip_comparison(epoch: int) -> void:
 	if _overlay_mode == "rune_equip_comparison" and epoch == _shop_epoch:
 		hide_pause()
-
-
-func _bag_slot(parent: Control, index: int) -> void:
-	var box := VBoxContainer.new()
-	box.add_theme_constant_override("separation", 4)
-	box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	parent.add_child(box)
-	if index >= run.rune_bag.size():
-		var empty := _button("空", func() -> void: pass, Vector2(0, 34))
-		empty.disabled = true
-		box.add_child(empty)
-		return
-	var item: Dictionary = run.rune_bag[index]
-	var definition = GameCatalog.rune(str(item["id"]))
-	var uid := int(item["uid"])
-	var select := _shop_button(definition.display_name, _select_rune.bind(index), "rune:%d" % uid, Vector2(0, 34))
-	select.toggle_mode = true
-	select.button_pressed = index == _selected_rune
-	select.add_theme_font_size_override("font_size", 13)
-	select.tooltip_text = definition.description
-	box.add_child(select)
-	var sell := _shop_button("出售", _sell_rune.bind(index), "sell_rune:%d" % uid, Vector2(0, 24))
-	sell.add_theme_font_size_override("font_size", 12)
-	sell.tooltip_text = "出售获得 %d 魂屑。" % int(floorf(float(item.get("paid", 0)) * 0.5))
-	box.add_child(sell)
-
-
-func _build_relic_inventory(parent: Control) -> void:
-	var owned: Array[ContentDef] = []
-	for definition: ContentDef in GameCatalog.relics():
-		if int(run.relic_counts.get(definition.id, 0)) > 0:
-			owned.append(definition)
-	var title := _label("遗物  %d 类 · 每类最多3层" % owned.size(), 14, CYAN)
-	title.name = "RelicInventoryTitle"
-	parent.add_child(title)
-	var scroll := ScrollContainer.new()
-	scroll.name = "RelicInventoryScroll"
-	scroll.custom_minimum_size.y = 64
-	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
-	scroll.follow_focus = true
-	parent.add_child(scroll)
-	if owned.is_empty():
-		scroll.add_child(_label("尚未获得遗物", 13, MUTED))
-		return
-	var grid := GridContainer.new()
-	grid.name = "RelicInventoryGrid"
-	grid.columns = 2
-	grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	grid.add_theme_constant_override("h_separation", 7)
-	grid.add_theme_constant_override("v_separation", 4)
-	scroll.add_child(grid)
-	for definition: ContentDef in owned:
-		var count: int = int(run.relic_counts[definition.id])
-		var details: String = "%s × %d\n每层：%s\n效果随层数叠加，已计入下方属性。" % [definition.display_name, count, definition.description]
-		var inspect := _shop_button("%s × %d" % [definition.display_name, count], _inspect_relic.bind(definition.id), "relic:" + definition.id, Vector2(0, 28))
-		inspect.name = "Relic_" + definition.id
-		inspect.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		inspect.alignment = HORIZONTAL_ALIGNMENT_LEFT
-		inspect.add_theme_font_size_override("font_size", 12)
-		inspect.add_theme_stylebox_override("normal", _box(Color("191f2b"), Color(CYAN, 0.2)))
-		inspect.tooltip_text = details + "\n滚轮滚动清单；Tab 选择后回车查看详情。"
-		_set_button_icon(inspect, definition)
-		inspect.add_theme_constant_override("icon_max_width", 22)
-		grid.add_child(inspect)
-
-
-func _inspect_relic(id: String) -> void:
-	var definition: ContentDef = GameCatalog.relic(id)
-	if definition == null or run == null or int(run.relic_counts.get(id, 0)) <= 0:
-		return
-	_begin_overlay("relic_details")
-	var body := _modal(definition.display_name, Vector2(560, 330))
-	body.name = "RelicDetails"
-	var header := HBoxContainer.new()
-	header.add_theme_constant_override("separation", 16)
-	body.add_child(header)
-	_add_icon(header, definition, 56)
-	var details := _wrap("持有 %d / %d 层\n每层：%s" % [int(run.relic_counts[id]), RunState.RELIC_CAP, definition.description], 17, BONE)
-	details.name = "RelicDetailsDescription"
-	header.add_child(details)
-	body.add_child(_wrap("效果随层数叠加，已计入商店属性。\nEsc 或下方按钮返回清单。", 14, MUTED))
-	var close := _button("返回遗物清单", hide_pause, Vector2(0, 42))
-	close.name = "CloseRelicDetails"
-	_accent(close)
-	body.add_child(close)
-	_focus_later(close)
 
 
 func _build_upgrades() -> void:
@@ -1294,7 +1471,7 @@ func _build_upgrades() -> void:
 		values.name = "UpgradePreview"
 		preview.add_child(values)
 		if str(choice.get("stat", "")) == "max_health":
-			var after_health: float = minf(run.stat("max_health") + float(choice.get("amount", 0.0)), run.health + float(choice.get("amount", 0.0)))
+			var after_health: float = minf(run.projected_upgrade_stat("max_health", float(choice.get("amount", 0.0))), run.health + float(choice.get("amount", 0.0)))
 			var health := _label("生命  %.0f → %.0f（回复 %.0f）" % [run.health, after_health, after_health - run.health], 16, CYAN)
 			health.name = "UpgradeHealthPreview"
 			preview.add_child(health)
@@ -1312,7 +1489,7 @@ func _upgrade_stat_preview(choice: Dictionary) -> String:
 		return ""
 	# RunState stacks upgrade and relic bonuses additively for all six current stats.
 	var before: float = run.stat(key)
-	var after: float = before + float(choice.get("amount", 0.0))
+	var after: float = run.projected_upgrade_stat(key, float(choice.get("amount", 0.0)))
 	if key == "damage" or key == "attack_speed":
 		return "%s  ×%.2f → ×%.2f" % [names[key], before, after]
 	return "%s  %.0f → %.0f" % [names[key], before, after]
@@ -1412,15 +1589,21 @@ func _quit() -> void:
 
 func _buy(index: int) -> void:
 	_requested_shop_focus = "buy:%d" % index
+	if is_instance_valid(_bag_grid):
+		_bag_grid.cancel_placement()
 	if index < 0 or index >= run.offers.size():
 		_handle_action(run.buy_offer(index), "buy")
 		return
 	var offer: Dictionary = run.offers[index]
 	var success := run.buy_offer(index)
+	if success:
+		var items: Array = run.backpack_snapshot()["items"]
+		_bag_selected_uid = int(items.back()["uid"])
+		_selected_rune = run.rune_index_for_uid(_bag_selected_uid)
+		_requested_shop_focus = "bag:%d" % _bag_selected_uid
 	if success and str(offer.get("kind", "")) == "rune":
-		_selected_rune = run.rune_bag.size() - 1
-		_requested_shop_focus = "equip:0"
-		_handle_action(true, "buy", "已获得%s。选择法器「装入」，免费改装。" % GameCatalog.rune(str(offer["id"])).display_name)
+		_requested_shop_focus = "bag_equip:%d" % int(run.loadout[0]["uid"])
+		_handle_action(true, "buy", "符文已放入空格；拖到法器上或选择「装入」，免费改装。")
 	else:
 		_handle_action(success, "buy")
 
@@ -1524,6 +1707,14 @@ func _refresh() -> void:
 
 func _set_screen(screen: String) -> void:
 	_screen = screen
+	_bag_held_uid = -1
+	_bag_selected_uid = -1
+	if is_instance_valid(_bag_grid):
+		_bag_grid.cancel_placement()
+		_bag_grid.interaction_enabled = false
+	_bag_grid = null
+	_bag_details = null
+	_bag_status = null
 	if screen != "upgrades":
 		_upgrades_during_combat = false
 	_requested_shop_focus = ""
@@ -1540,11 +1731,10 @@ func _set_screen(screen: String) -> void:
 func _update_hud_slots(loadout: Array) -> void:
 	var slots: HBoxContainer = _hud["slots"]
 	_clear(slots)
-	for index in range(4):
+	for index in range(mini(8, loadout.size())):
 		var card := PanelContainer.new()
 		card.name = "EquipmentSlot%d" % (index + 1)
-		card.custom_minimum_size.x = 210
-		card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		card.custom_minimum_size.x = 94
 		card.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		var style := _box(Color("1c1e2c"), Color(GOLD, 0.22))
 		style.content_margin_left = 8
@@ -1558,20 +1748,29 @@ func _update_hud_slots(loadout: Array) -> void:
 		box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		card.add_child(box)
 		box.add_child(_label("%02d" % (index + 1), 12, GOLD))
-		if index >= loadout.size():
-			box.add_child(_label("空法器槽", 14, MUTED))
-			continue
 		var item: Dictionary = loadout[index]
 		var definition: ContentDef = GameCatalog.weapon(str(item["id"]))
 		_enable_tooltip(card, _equipment_tooltip(item))
-		_add_icon(box, definition, 30)
+		_add_icon(box, definition, 26)
 		var names := VBoxContainer.new()
 		names.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		names.add_theme_constant_override("separation", 1)
+		names.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		box.add_child(names)
-		names.add_child(_label(definition.display_name, 14, BONE))
+		var title := _label(definition.display_name + " " + _rank_name(int(item.get("rank", 1))), 12, BONE)
+		title.clip_text = true
+		title.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		names.add_child(title)
 		var rune: Dictionary = item.get("rune", {})
-		names.add_child(_label("未装符文" if rune.is_empty() else GameCatalog.rune(str(rune["id"])).display_name, 12, MUTED if rune.is_empty() else PURPLE))
+		var socket := _label("无附魔" if rune.is_empty() else "%s %s" % [GameCatalog.rune(str(rune["id"])).display_name, _rank_name(int(rune.get("rank", 1)))], 10, MUTED if rune.is_empty() else PURPLE)
+		socket.clip_text = true
+		socket.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		names.add_child(socket)
+	if loadout.size() > 8:
+		var more := _label("另%d件\n同样攻击" % (loadout.size() - 8), 12, GOLD)
+		more.name = "AdditionalWeapons"
+		_enable_tooltip(more, _loadout_text())
+		slots.add_child(more)
 
 
 func _definition(kind: String, id: String) -> ContentDef:
@@ -1586,8 +1785,8 @@ func _definition(kind: String, id: String) -> ContentDef:
 func _rune_guide() -> String:
 	if _selected_rune >= 0 and _selected_rune < run.rune_bag.size():
 		var definition: ContentDef = GameCatalog.rune(str(run.rune_bag[_selected_rune]["id"]))
-		return "已选%s：本体贯穿先执行，符文在其后的直接命中触发。点各槽「预览」看命中次序，或直接「装入」。" % definition.display_name
-	return "购买法器与遗物；选择符文后可「预览」或直接「装入」，拆换免费。波末祭坛恢复全部生命。"
+		return "已选%s %s阶：%s" % [definition.display_name, _rank_name(int(run.rune_bag[_selected_rune].get("rank", 1))), _rune_rank_text(definition.id, int(run.rune_bag[_selected_rune].get("rank", 1)))]
+	return "购买自动放入空位，不自动合成；背包中的法器全部攻击，遗物直接生效。"
 
 
 func _shop_description(definition: ContentDef) -> String:
@@ -1603,27 +1802,21 @@ func _shop_description(definition: ContentDef) -> String:
 func _equipment_tooltip(item: Dictionary) -> String:
 	var weapon: ContentDef = GameCatalog.weapon(str(item["id"]))
 	var rune: Dictionary = item.get("rune", {})
-	var details: String = "%s：%s\n%s\n%s" % [weapon.display_name, weapon.description, _weapon_stats_text(weapon), _weapon_stats_note()]
+	var details: String = "%s %s阶：%s\n%s\n%s" % [weapon.display_name, _rank_name(int(item.get("rank", 1))), weapon.description, _weapon_stats_text(weapon, int(item.get("rank", 1))), _weapon_stats_note()]
 	if weapon.return_delay > 0.0:
 		details += "\n" + _return_flight_tooltip(weapon)
 	if rune.is_empty():
 		return details + "\n未装符文。"
 	var definition: ContentDef = GameCatalog.rune(str(rune["id"]))
-	var effect: String = definition.description
-	if weapon.innate_pierce > 0:
-		var trigger: int = weapon.innate_pierce + 1
-		match definition.id:
-			"pierce":
-				effect = "第%d次直接命中起追加贯穿%d个目标，单枚理论最多%d个直接目标。" % [trigger, RuneRules.EXTRA_HITS, trigger + RuneRules.EXTRA_HITS]
-			"bounce":
-				effect = "第%d次直接命中后最多弹射%d次，后续每次伤害衰减%s。" % [trigger, RuneRules.EXTRA_HITS, _rune_percent(1.0 - RuneRules.BOUNCE_DAMAGE_FACTOR)]
-			"blast":
-				effect = "第%d次直接命中才爆破；未达到该次命中不会引爆。半径%.0f，溅射为该枚本体伤害%s，排除该枚已直击目标。" % [trigger, RuneRules.BLAST_RADIUS, _rune_percent(RuneRules.BLAST_DAMAGE_FACTOR)]
+	var rune_rank: int = int(rune.get("rank", 1))
+	var effect: String = _rune_rank_text(definition.id, rune_rank)
+	var trigger: int = weapon.innate_pierce + 1
+	effect = "从第%d次直接命中触发。" % trigger + effect
 	if weapon.return_delay > 0.0 and definition.id == "bounce":
 		effect += "成功弹射后永久取消返航，保留当时速度继续弹射，不再回收。"
 	elif weapon.return_delay > 0.0 and definition.id == "blast":
 		effect += "爆破后弹体消失，不再返航。"
-	return "%s\n%s：%s" % [details, definition.display_name, effect]
+	return "%s\n%s %s阶：%s" % [details, definition.display_name, _rank_name(rune_rank), effect]
 
 
 static func _return_flight_tooltip(weapon: ContentDef) -> String:
@@ -1631,10 +1824,10 @@ static func _return_flight_tooltip(weapon: ContentDef) -> String:
 	return "预算未耗尽时，发射后%.2f秒以基础速度%.0f追踪当前玩家返航，接触玩家回收；全航程同一目标不重复直击。冷却独立计时，不等待回收。" % [weapon.return_delay, speed]
 
 
-func _weapon_stats_text(definition: ContentDef) -> String:
+func _weapon_stats_text(definition: ContentDef, rank: int = 1) -> String:
 	var damage_multiplier: float = run.stat("damage") if run != null else 1.0
 	var attack_speed: float = run.stat("attack_speed") if run != null else 1.0
-	return "每枚 %.1f伤害 · %d枚/次 · 间隔 %.2f秒" % [definition.damage * damage_multiplier, definition.shots, definition.cooldown / attack_speed]
+	return "每枚 %.1f伤害 · %d枚/次 · 间隔 %.2f秒" % [definition.damage * damage_multiplier * BackpackInventory.rank_multiplier(rank), definition.shots, definition.cooldown / attack_speed]
 
 
 func _weapon_stats_note() -> String:
@@ -1663,6 +1856,9 @@ func _perform_shop_action(action: Callable, epoch: int) -> void:
 
 func _restore_shop_focus(focus_id: String) -> void:
 	if _screen != "shop" or _overlay.get_child_count() > 0:
+		return
+	if is_instance_valid(_bag_grid) and _bag_held_uid >= 0 and int(_bag_grid.held_uid) == _bag_held_uid:
+		_bag_grid.grab_focus()
 		return
 	var target := _shop_focus_button(focus_id)
 	var operation := focus_id.get_slice(":", 0)
@@ -1719,12 +1915,12 @@ func _relic_text() -> String:
 func _loadout_text() -> String:
 	var parts: PackedStringArray = []
 	for item: Dictionary in run.loadout:
-		var text: String = GameCatalog.weapon(str(item["id"])).display_name
+		var text: String = GameCatalog.weapon(str(item["id"])).display_name + " " + _rank_name(int(item.get("rank", 1))) + "阶"
 		var rune: Dictionary = item.get("rune", {})
 		if not rune.is_empty():
-			text += "·" + GameCatalog.rune(str(rune["id"])).display_name
+			text += "·" + GameCatalog.rune(str(rune["id"])).display_name + _rank_name(int(rune.get("rank", 1)))
 		parts.append(text)
-	return " / ".join(parts)
+	return "\n".join(parts)
 
 
 func _best_text(best: Dictionary) -> String:

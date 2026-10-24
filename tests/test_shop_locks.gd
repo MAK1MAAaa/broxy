@@ -8,7 +8,7 @@ func _initialize() -> void:
 	_test_lock_contract()
 	_test_refresh_and_unlock()
 	_test_cross_wave_guarantees()
-	_test_transactions_and_relic_cap()
+	_test_transactions_and_backpack_capacity()
 	_test_begin_and_queries()
 	_test_zero_lock_reference()
 	print("ShopLocks: %d assertions, %d failures" % [_checks, _failures])
@@ -35,6 +35,17 @@ func _stock(state: RunState) -> void:
 		_offer("weapon", "crescent"), _offer("rune", "blast"),
 		_offer("relic", "hourglass"), _offer("relic", "pilgrim"),
 	]
+
+func _fill_backpack(state: RunState) -> void:
+	var retained: Dictionary = state.offers[3].duplicate(true)
+	for count: int in range(36):
+		if not state.backpack.can_add("rune", "pierce"):
+			break
+		state.offers[3] = _offer("rune", "pierce")
+		_check(state.buy_offer(3), "One-cell purchases fill real backpack space without changing reserved slots")
+	state.offers[3] = retained
+	var snapshot: Dictionary = state.backpack_snapshot()
+	_check(snapshot["used_cells"] == snapshot["total_cells"], "The lock fixture reaches a genuinely full backpack")
 
 func _snapshot(state: RunState) -> Dictionary:
 	return {
@@ -76,11 +87,8 @@ func _test_lock_contract() -> void:
 	_expect_rejected_lock(state, 2, "商品不存在，无法锁定。")
 	var temporary: RunState = _state()
 	_stock(temporary)
-	for index: int in 3:
-		temporary.loadout.append({"id": "bone", "paid": 18, "rune": {}})
-	for index: int in 4:
-		temporary.rune_bag.append({"id": "pierce", "paid": 18, "uid": index + 1})
-	_check(temporary.set_offer_locked(0, true) and temporary.set_offer_locked(1, true), "Temporarily full weapon slots or rune reserve do not prevent planning a later purchase")
+	_fill_backpack(temporary)
+	_check(temporary.set_offer_locked(0, true) and temporary.set_offer_locked(1, true), "A full backpack does not prevent reserving a future weapon or rune purchase")
 
 func _test_refresh_and_unlock() -> void:
 	var state: RunState = _state(37)
@@ -155,7 +163,7 @@ func _test_cross_wave_guarantees() -> void:
 	matched.generate_shop()
 	_check(matched.offers == expected and matched.rng.state == reference.rng.state, "A locked rune already satisfies the second-wave guarantee without adding another forced draw")
 
-func _test_transactions_and_relic_cap() -> void:
+func _test_transactions_and_backpack_capacity() -> void:
 	var state: RunState = _state()
 	state.offers = [_offer("weapon", "crescent"), _offer("weapon", "crescent"), _offer("rune", "pierce"), _offer("relic", "hourglass")]
 	_check(state.set_offer_locked(0, true) and state.set_offer_locked(1, true) and state.buy_offer(0), "A locked offer remains a normal purchasable item")
@@ -169,11 +177,20 @@ func _test_transactions_and_relic_cap() -> void:
 	var relic: RunState = _state()
 	for layer: int in 2:
 		relic.offers = [_offer("relic", "moon_charm")]
-		_check(relic.buy_offer(0), "Relic fixture reaches two layers legally")
+		_check(relic.buy_offer(0), "Relic fixture stores two separate copies through formal purchases")
 	relic.offers = [_offer("relic", "moon_charm"), _offer("relic", "moon_charm"), _offer("weapon", "comet"), _offer("rune", "blast")]
-	_check(relic.set_offer_locked(0, true) and relic.set_offer_locked(2, true) and relic.buy_offer(1), "Buying a different duplicate can complete the permanent relic cap")
-	_check(not relic.is_offer_locked(0) and relic.is_offer_locked(2) and relic.locked_offer_count() == 1, "A permanently capped relic releases its obsolete lock while unrelated reservations survive")
-	_expect_rejected_lock(relic, 0, "该遗物已达到3层上限。")
+	_check(relic.set_offer_locked(0, true) and relic.set_offer_locked(2, true) and relic.buy_offer(1), "A third relic copy remains an ordinary spatial purchase")
+	_check(relic.is_offer_locked(0) and relic.is_offer_locked(2) and relic.locked_offer_count() == 2, "Buying a third duplicate preserves the other relic reservation and unrelated weapon lock")
+	_fill_backpack(relic)
+	var full_before: Dictionary = _snapshot(relic)
+	_check(relic.shop_lock_error(0).is_empty() and relic.purchase_error(0) == "背包空间不足。" and _snapshot(relic) == full_before, "Full-grid purchase eligibility is read-only and does not make the reservation obsolete")
+	_check(not relic.buy_offer(0) and relic.last_error == "背包空间不足。", "A reserved relic still needs real space before purchase")
+	var full_after: Dictionary = _snapshot(relic)
+	full_after["error"] = full_before["error"]
+	_check(full_after == full_before and relic.is_offer_locked(0) and relic.is_offer_locked(2), "A full-grid refusal preserves both locks, money, layout, UIDs and RNG")
+	_check(relic.expand_backpack() and relic.is_offer_locked(0) and relic.is_offer_locked(2), "Buying another backpack row preserves existing reservations")
+	_check(relic.buy_offer(0) and int(relic.relic_counts["moon_charm"]) == 4, "Expanded real space permits a fourth separate copy of the reserved relic")
+	_check(not relic.is_offer_locked(0) and relic.is_offer_locked(2) and relic.locked_offer_count() == 1, "A successful purchase releases only its own lock after capacity becomes available")
 	var malformed: RunState = _state()
 	_stock(malformed)
 	_check(malformed.set_offer_locked(2, true), "Invalidation fixture starts with a legal reservation")
@@ -214,15 +231,16 @@ func _legacy_generate(state: RunState) -> void:
 func _test_zero_lock_reference() -> void:
 	for seed_value: int in [0, 1, 2, 37, 71, 2026, 2027, 2028, 2032, 2035]:
 		for number: int in range(1, 9):
-			for all_relics_capped: bool in [false, true]:
+			for owns_duplicates: bool in [false, true]:
 				var current: RunState = _state(seed_value)
 				var legacy: RunState = _state(seed_value)
 				current.wave = number
 				legacy.wave = number
-				if all_relics_capped:
-					for definition: ContentDef in GameCatalog.relics():
-						current.relic_counts[definition.id] = RunState.RELIC_CAP
-						legacy.relic_counts[definition.id] = RunState.RELIC_CAP
+				if owns_duplicates:
+					for copy: int in 3:
+						current.offers = [_offer("relic", "damage")]
+						legacy.offers = [_offer("relic", "damage")]
+						_check(current.buy_offer(0) and legacy.buy_offer(0), "Reference fixtures own duplicate relics through real spatial purchases")
 				for refresh: int in 4:
 					if refresh == 0:
 						current.generate_shop()
@@ -231,6 +249,6 @@ func _test_zero_lock_reference() -> void:
 						legacy.gold -= legacy.reroll_cost()
 						legacy.rerolls += 1
 					_legacy_generate(legacy)
-					_check(_snapshot(current) == _snapshot(legacy), "Zero-lock generation preserves complete stock, exact RNG, costs and state: %d/%d/%s/%d" % [seed_value, number, all_relics_capped, refresh])
+					_check(_snapshot(current) == _snapshot(legacy), "Zero-lock generation preserves complete stock, exact RNG, costs and state: %d/%d/%s/%d" % [seed_value, number, owns_duplicates, refresh])
 					for offer: Dictionary in current.offers:
 						_check(offer.size() == 4 and not offer.has("locked"), "Unlocked legacy offer dictionaries retain exactly their original four fields")

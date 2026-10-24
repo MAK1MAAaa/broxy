@@ -1,5 +1,5 @@
 extends SceneTree
-## Fixed shop fixtures; never instantiate Main or read/write player progression.
+## Fixed shop fixtures; fullbag occupies every real grid cell without reading player progression.
 
 func _initialize() -> void:
 	_preview.call_deferred()
@@ -29,6 +29,10 @@ func _preview() -> void:
 	state.begin(4, "bone")
 	# A fixture budget supplies inventory through the public transaction API.
 	state.gold = 1000
+	if view == "fullbag":
+		assert(state.expand_backpack() and state.expand_backpack(), "The full fixture pays for its two extra rows")
+		for id: String in ["frost", "ember", "scatter"]:
+			_purchase(state, "weapon", id)
 	if view in ["boosted", "fullbag"]:
 		for id: String in ["damage", "haste"]:
 			for layer: int in 3:
@@ -37,16 +41,17 @@ func _preview() -> void:
 		for id: String in ["speed", "vitality", "armor", "magnet"]:
 			for layer: int in 3:
 				_purchase(state, "relic", id)
-		for id: String in ["frost", "ember", "scatter"]:
-			_purchase(state, "weapon", id)
 		for index: int in 4:
 			_purchase(state, "rune", ["pierce", "bounce", "blast", "pierce"][index])
 			assert(state.equip_rune(0, index))
 		for id: String in ["pierce", "bounce", "blast", "pierce"]:
 			_purchase(state, "rune", id)
+		assert(state.backpack_snapshot()["used_cells"] == state.backpack_snapshot()["total_cells"], "The full fixture occupies all 36 cells")
 	state.offers.clear()
 	for definition: ContentDef in GameCatalog.weapons():
 		state.offers.append({"id": definition.id, "kind": "weapon", "price": state.shop_price(definition), "sold": false})
+		if state.offers.size() == 4:
+			break
 	if view == "transactions":
 		state.offers = [
 			{"id": "frost", "kind": "weapon", "price": 24, "sold": false},
@@ -59,9 +64,9 @@ func _preview() -> void:
 	ui.bind(state)
 	ui.show_shop()
 	if view == "fullbag":
-		ui._select_rune(1)
+		ui._bp_select(int(state.rune_bag[1]["uid"]), ui._shop_epoch)
 	var caption := Label.new()
-	caption.text = "固定商店验证 · 非实际对局 · " + view
+	caption.text = "固定商店验证 · 非实际对局 · " + ("fullbag（36 格已满）" if view == "fullbag" else view)
 	caption.position = Vector2(810, 5)
 	caption.add_theme_font_size_override("font_size", 12)
 	caption.add_theme_color_override("font_color", GameUI.MUTED)

@@ -197,13 +197,23 @@ func _test_full_shop() -> void:
 	var state := RunState.new()
 	state.begin(20261023, "bone")
 	state.collect_souls(4000)
-	for id: String in ["crescent", "storm", "comet"]:
-		_check(_purchase(state, "weapon", GameCatalog.weapon(id)), "The shop fixture legally buys new weapon " + id)
-	for id: String in ["pierce", "bounce", "blast", "pierce"]:
-		_check(_purchase(state, "rune", GameCatalog.rune(id)), "The shop fixture legally fills the reserve with " + id)
+	_check(state.expand_backpack() and state.expand_backpack(), "The fixed shop build pays for both rows of the real thirty-six-cell backpack")
+	for id: String in ["storm", "return_ring"]:
+		_check(_purchase(state, "weapon", GameCatalog.weapon(id)), "The shop fixture legally buys backpack weapon " + id)
+	for index: int in 3:
+		var id: String = ["pierce", "bounce", "blast"][index]
+		_check(_purchase(state, "rune", GameCatalog.rune(id)) and state.equip_rune(0, index), "The fixture formally sockets its purchased rune: " + id)
 	for definition: ContentDef in GameCatalog.relics():
-		for stack: int in RunState.RELIC_CAP:
-			_check(_purchase(state, "relic", definition), "The shop fixture legally buys relic stack %s/%d" % [definition.id, stack + 1])
+		_check(_purchase(state, "relic", definition), "All twelve original relic kinds can be represented by real occupied boxes: " + definition.id)
+	for id: String in ["bounce", "blast"]:
+		_check(_purchase(state, "rune", GameCatalog.rune(id)), "A loose rune occupies its own physical cell: " + id)
+	while state.backpack.can_add("relic", "armor"):
+		var bought: bool = _purchase(state, "relic", GameCatalog.relic("armor"))
+		_check(bought, "Small relic boxes fill the remaining legal cells")
+		if not bought:
+			break
+	var snapshot: Dictionary = state.backpack_snapshot()
+	_check(snapshot["height"] == 6 and snapshot["used_cells"] == 36 and snapshot["total_cells"] == 36, "The populated shop fixture is a legal full expanded grid rather than the obsolete unlimited stack inventory")
 	state.offers = [
 		{"kind": "weapon", "id": "crescent", "price": 26, "sold": false},
 		{"kind": "weapon", "id": "storm", "price": 28, "sold": false},
@@ -213,24 +223,30 @@ func _test_full_shop() -> void:
 	var ui := GameUI.new()
 	root.add_child(ui)
 	ui.bind(state)
-	for id: String in NEW_IDS:
-		var definition: ContentDef = GameCatalog.weapon(id) if GameCatalog.weapon(id) != null else GameCatalog.relic(id)
-		var texture: Texture2D = ui._icon_texture(definition)
-		_check(texture != null and texture.get_width() == 64 and texture.get_height() == 64, "The new icon resolves at its declared native size: " + id)
+	for group: Array in [GameCatalog.weapons(), GameCatalog.runes(), GameCatalog.relics()]:
+		for definition: ContentDef in group:
+			var texture: Texture2D = ui._icon_texture(definition)
+			_check(texture != null and texture.get_width() == 64 and texture.get_height() == 64, "Every original inventory icon still resolves at its declared native size: " + definition.id)
 	ui.show_shop()
 	await _settle()
-	var scroll: ScrollContainer = ui.find_child("RelicInventoryScroll", true, false)
-	var grid: GridContainer = ui.find_child("RelicInventoryGrid", true, false)
-	_check(scroll != null and grid != null and grid.get_child_count() == GameCatalog.relics().size(), "Every owned relic has a named, counted inspection control")
-	if scroll != null and grid != null:
-		var scrollbar: VScrollBar = scroll.get_v_scroll_bar()
-		_check(scrollbar.max_value > scrollbar.page and scroll.follow_focus, "The full relic inventory scrolls and follows keyboard focus")
-		_check(root.get_visible_rect().encloses(scroll.get_global_rect()), "The relic inventory viewport remains fully inside 720p")
-		var last: Button = grid.get_child(grid.get_child_count() - 1)
-		last.grab_focus()
+	var panel: Control = ui.find_child("BackpackPanel", true, false) as Control
+	var grid: Control = ui.find_child("BackpackGrid", true, false) as Control
+	var scroll: ScrollContainer = ui.find_child("BackpackDetailsScroll", true, false) as ScrollContainer
+	_check(panel != null and grid != null and scroll != null, "The inventory is presented as a backpack grid with an independently scrollable details viewport")
+	if panel != null and grid != null and scroll != null:
+		_check(root.get_visible_rect().grow(1).encloses(panel.get_global_rect()) and root.get_visible_rect().grow(1).encloses(grid.get_global_rect()) and root.get_visible_rect().grow(1).encloses(scroll.get_global_rect()), "The backpack panel, complete six-by-six board and details viewport fit in 720p")
+		_check(grid.size.x >= 300 and grid.size.y >= 300 and scroll.follow_focus, "All thirty-six cells remain visible while detail actions can follow keyboard focus")
+		var grave_uid: int = -1
+		for item: Dictionary in snapshot["items"]:
+			var box: Button = grid.find_child("BackpackItem%d" % int(item["uid"]), true, false) as Button
+			_check(box != null and grid.get_global_rect().grow(1).encloses(box.get_global_rect()), "Every stored box has its actual occupied shape inside the grid: " + str(item["uid"]))
+			if item["id"] == "grave_candle":
+				grave_uid = int(item["uid"])
+		var inspected: Button = grid.find_child("BackpackItem%d" % grave_uid, true, false) as Button
+		_check(inspected != null and inspected.tooltip_text.contains(GameCatalog.relic("grave_candle").description), "The owned relic box retains its full original tradeoff description in the tooltip")
+		if inspected != null:
+			inspected.grab_focus()
 		await _settle()
-		_check(scroll.get_global_rect().grow(1).encloses(last.get_global_rect()), "Keyboard focus scrolls the final relic into view")
-		_check(last.tooltip_text.contains(GameCatalog.relics().back().description), "Relic details retain the complete formal tradeoff description")
 		var before: Dictionary = state.summary()
 		var key := InputEventKey.new()
 		key.keycode = KEY_ENTER
@@ -243,20 +259,25 @@ func _test_full_shop() -> void:
 		key.physical_keycode = KEY_ENTER
 		root.push_input(key, false)
 		await _settle()
-		var details: Label = ui.find_child("RelicDetailsDescription", true, false)
-		_check(details != null and details.text.contains(GameCatalog.relics().back().description), "Pressing Enter on an inspection control exposes its full description")
-		_check(details != null and root.get_visible_rect().encloses(details.get_global_rect()) and details.size.y >= details.get_minimum_size().y, "The full tradeoff text is actually readable inside its native dialog")
-		_check(state.summary() == before, "Inspecting an owned relic never mutates currency, stacks, or inventory")
-		_check(ui.handle_back(), "Escape closes relic details without pausing the shop")
-		await _settle()
-		_check(root.gui_get_focus_owner() == last, "Closing relic details restores keyboard focus to the inspected inventory item")
+		var title: Label = ui.find_child("BackpackItemTitle", true, false) as Label
+		var details: Label = ui.find_child("BackpackItemEffect", true, false) as Label
+		_check(title != null and title.text.contains(GameCatalog.relic("grave_candle").display_name) and details != null and details.text.contains("拾取范围 +38") and details.text.contains("移速 -8"), "Keyboard inspection exposes the selected relic's positive and negative ranked effects")
+		_check(state.summary() == before and str(ui._screen) == "shop" and str(ui._overlay_mode).is_empty(), "Inline backpack inspection is read-only and stays in the shop")
+		var sale: Button = ui.find_child("SellBackpackItem", true, false) as Button
+		_check(sale != null, "The selected item's action remains keyboard reachable through its details viewport")
+		if sale != null:
+			sale.grab_focus()
+			await _settle()
+			_check(scroll.get_global_rect().grow(1).encloses(sale.get_global_rect()), "Following keyboard focus brings an item action into the visible details viewport")
 	var offer: Control = ui.find_child("Offer1", true, false)
 	var description: Label = offer.find_child("OfferDescription", true, false) if offer != null else null
-	_check(description != null and description.text.contains("首目标") and description.text.contains("第二目标") and description.tooltip_text == GameCatalog.weapon("crescent").description, "The compact moon-scythe card preserves the first-target and second-target rules, with the full explanation in its tooltip")
+	_check(description != null and description.text.contains("首目标") and description.text.contains("第二") and description.tooltip_text == GameCatalog.weapon("crescent").description, "The compact moon-scythe card preserves first-target and second-hit rules with its full formal tooltip")
 	_check(offer != null and root.get_visible_rect().encloses(offer.get_global_rect()), "The moon-scythe shop card fits inside the full native layout")
+	for index: int in range(1, 5):
+		_check(ui.find_child("Offer%d" % index, true, false) != null, "The backpack redesign retains each of the four formal shop quotes")
 	var next: Button = ui._shop_focus_button("next_wave")
-	_check(next != null and root.get_visible_rect().encloses(next.get_global_rect()), "The full ten-relic build leaves the next-wave action fully visible inside 720p")
-	_check(_buttons_inside(ui), "Every control in the fully populated shop remains inside the reference viewport")
+	_check(next != null and root.get_visible_rect().encloses(next.get_global_rect()), "The full thirty-six-cell backpack leaves the next-wave action visible in 720p")
+	_check(_chrome_inside(ui), "Visible shop chrome and scroll viewports fit the reference viewport without mistaking clipped content for overflow")
 	ui.queue_free()
 	await _settle()
 
@@ -266,11 +287,21 @@ func _purchase(state: RunState, kind: String, definition: ContentDef) -> bool:
 	return state.buy_offer(0)
 
 
-func _buttons_inside(node: Node) -> bool:
-	if node is Button and node.is_visible_in_tree() and not root.get_visible_rect().grow(1).encloses(node.get_global_rect()):
+func _chrome_inside(node: Node) -> bool:
+	if node is ScrollContainer and node.is_visible_in_tree() and not root.get_visible_rect().grow(1).encloses(node.get_global_rect()):
 		return false
+	if node is Button and node.is_visible_in_tree():
+		var ancestor: Node = node.get_parent()
+		var in_scroll: bool = false
+		while ancestor != null:
+			if ancestor is ScrollContainer:
+				in_scroll = true
+				break
+			ancestor = ancestor.get_parent()
+		if not in_scroll and not root.get_visible_rect().grow(1).encloses(node.get_global_rect()):
+			return false
 	for child: Node in node.get_children():
-		if not _buttons_inside(child):
+		if not _chrome_inside(child):
 			return false
 	return true
 

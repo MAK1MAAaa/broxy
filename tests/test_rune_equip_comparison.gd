@@ -1,8 +1,6 @@
 extends SceneTree
 ## Real input exercises per-weapon rune facts, read-only previews and swap identity.
 
-const FIXTURE = preload("res://tools/preview_rune_equip.gd")
-
 class EscapeRouter:
 	extends Node
 	var ui: GameUI
@@ -50,13 +48,49 @@ func _show_selected(ui: GameUI, state: RunState) -> void:
 	ui.bind(state)
 	ui.show_shop()
 	await _settle()
-	var source: Button = ui._shop_focus_button("rune:%d" % int(state.rune_bag[0]["uid"]))
+	var source: Button = ui._shop_focus_button("bag:%d" % int(state.rune_bag[0]["uid"]))
 	_check(source != null, "Formal purchases expose the incoming rune in the reserve")
 	if source != null:
 		source.grab_focus()
 		_key(KEY_ENTER)
 		await _settle()
 	_check(ui._selected_rune == 0, "Real ui_accept selects the incoming reserve rune")
+
+
+func _make_state(case_name: String) -> RunState:
+	var state := RunState.new()
+	state.begin(20261025, "bone")
+	state.gold = 4000
+	_check(state.expand_backpack() and state.expand_backpack(), "Rune preview fixtures purchase all thirty-six storage cells")
+	for id: String in ["crescent", "storm", "scatter"]:
+		_purchase(state, "weapon", id)
+	for slot: int in 4:
+		if slot == 1 and case_name == "crescent-blast":
+			continue
+		var id: String = "blast" if slot == 1 else "bounce" if slot == 3 else "pierce"
+		_purchase(state, "rune", id)
+		_check(state.equip_rune(0, slot), "The rune preview fixture formally equips its purchased socket rune")
+	var incoming: String = "blast" if case_name in ["crescent-blast", "volley"] else "bounce"
+	for id: String in [incoming, "pierce", "blast", "bounce"]:
+		_purchase(state, "rune", id)
+	for id: String in ["damage", "haste", "speed", "vitality", "armor", "magnet", "moon_charm", "pilgrim", "bulwark", "armor"]:
+		_purchase(state, "relic", id)
+	_check(state.backpack_snapshot()["used_cells"] == 36, "Four shaped weapon boxes, four loose runes and thirteen relic cells form a legal full grid")
+	state.gold = 120
+	state.wave = 4
+	state.offers.clear()
+	for entry: Array in [["weapon", "crescent"], ["rune", "blast"], ["relic", "hourglass"], ["relic", "moon_charm"]]:
+		var definition: ContentDef = BackpackInventory.definition(str(entry[0]), str(entry[1]))
+		state.offers.append({"kind": str(entry[0]), "id": definition.id, "price": definition.price, "sold": false})
+	return state
+
+
+func _purchase(state: RunState, kind: String, id: String) -> int:
+	var definition: ContentDef = BackpackInventory.definition(kind, id)
+	state.offers = [{"kind": kind, "id": id, "price": state.shop_price(definition), "sold": false}]
+	var purchased: bool = state.buy_offer(0)
+	_check(purchased, "The rune comparison fixture obtains its physical box through a real purchase: " + id)
+	return int(state.backpack_snapshot()["next_uid"]) - 1 if purchased else -1
 
 
 func _open(ui: GameUI, slot: int) -> Button:
@@ -70,18 +104,18 @@ func _open(ui: GameUI, slot: int) -> Button:
 
 
 func _test_crescent_blast(ui: GameUI) -> void:
-	var state: RunState = FIXTURE.make_state("crescent-blast")
-	_check(state != null and state.loadout.size() == 4 and state.rune_bag.size() == 4 and state.relic_counts.size() == GameCatalog.relics().size(), "Legal purchases create the full 720p rune preview fixture with every catalog relic")
+	var state: RunState = _make_state("crescent-blast")
+	_check(state.loadout.size() == 4 and state.rune_bag.size() == 4 and state.backpack_snapshot()["used_cells"] == state.backpack_snapshot()["total_cells"], "Legal purchases create a genuinely full grid for the 720p rune preview fixture")
 	if state == null:
 		return
 	await _show_selected(ui, state)
 	for slot: int in 4:
-		var equip: Button = ui._shop_focus_button("equip:%d" % slot)
+		var equip: Button = ui._shop_focus_button("bag_equip:%d" % int(state.loadout[slot]["uid"]))
 		var preview: Button = ui._shop_focus_button("rune_preview:%d" % slot)
-		_check(equip != null and preview != null and equip.get_parent() == preview.get_parent() and preview.get_parent().size.y <= 44.1, "Direct equip and preview share the original 44px weapon row: %d" % slot)
+		_check(equip != null and preview != null and equip.get_parent() == preview.get_parent() and preview.get_parent().size.y <= 44.1, "Direct equip and preview share a compact row inside backpack details: %d" % slot)
 	_check(_buttons_inside(ui._page), "All full-build shop buttons remain inside 1280x720 with rune preview actions")
 	var guide: Label = ui.find_child("RuneGuide", true, false)
-	_check(guide != null and guide.text.contains("本体贯穿先执行") and guide.text.contains("其后的直接命中"), "The selected-rune guide explains native penetration before rune dispatch without assuming a particular weapon")
+	_check(guide != null and guide.text.contains(GameCatalog.rune("blast").display_name) and guide.text.contains(ui._rune_rank_text("blast", 1)), "The selected loose rune guide reports its current-rank rules before choosing a weapon")
 	var before: String = _signature(state)
 	var inventory: String = _inventory_signature(state)
 	var incoming: Dictionary = state.rune_bag[0].duplicate(true)
@@ -96,9 +130,9 @@ func _test_crescent_blast(ui: GameUI) -> void:
 	_check(blast != null and blast.text.contains("半径 68") and blast.text.contains("55%"), "The blast radius and damage ratio use the production preview facts")
 	_check(exclusions != null and exclusions.text.contains("已经直接命中") and exclusions.text.contains("不再承受") and exclusions.text.contains("不会再次触发"), "Blast explains its prior-hit exclusions and nonrecursive secondary damage")
 	var capacity: Label = ui.find_child("RuneEquipBag", true, false)
-	_check(capacity != null and capacity.text.contains("4 / 4 → 3 / 4"), "An empty socket projects the actual four-to-three reserve occupancy")
+	_check(capacity != null and capacity.text.contains("4 → 3件") and capacity.text.contains("不额外占格"), "An empty socket projects the real four-to-three loose-rune count and freed cell")
 	_check(_signature(state) == before, "Reading all rune facts preserves state, RNG, stock, UIDs and purchase values")
-	ui._shop_focus_button("equip:1").pressed.emit()
+	ui._shop_focus_button("bag_equip:%d" % int(state.loadout[1]["uid"])).pressed.emit()
 	ui._shop_focus_button("next_wave").pressed.emit()
 	await _settle()
 	_check(_signature(state) == before and _next_waves == 0, "Underlying direct equip and next-wave callbacks are isolated by the preview")
@@ -135,16 +169,16 @@ func _test_crescent_blast(ui: GameUI) -> void:
 	_key(KEY_ESCAPE)
 	await _settle()
 	_check(ui._overlay_mode.is_empty() and root.gui_get_focus_owner() == source, "Escape also restores the original weapon preview focus")
-	var equip: Button = ui._shop_focus_button("equip:1")
+	var equip: Button = ui._shop_focus_button("bag_equip:%d" % int(state.loadout[1]["uid"]))
 	equip.grab_focus()
 	_key(KEY_ENTER)
 	await _settle()
-	_check(ui._overlay_mode.is_empty() and state.rune_bag.size() == 3 and ui._selected_rune == -1, "Direct equip completes immediately after closing preview without a confirmation")
+	_check(ui._overlay_mode.is_empty() and state.rune_bag.size() == 3 and ui._selected_rune == -1 and state.backpack_snapshot()["used_cells"] == 35, "Direct equip immediately frees its actual backpack cell after closing preview")
 	_check(state.loadout[1]["rune"] == incoming and _inventory_signature(state) == inventory, "Equipping an empty socket preserves every rune UID and original paid value")
 
 
 func _test_bounce_and_full_swap(ui: GameUI) -> void:
-	var state: RunState = FIXTURE.make_state("full-swap")
+	var state: RunState = _make_state("full-swap")
 	await _show_selected(ui, state)
 	var inventory: String = _inventory_signature(state)
 	var incoming: Dictionary = state.rune_bag[0].duplicate(true)
@@ -155,22 +189,26 @@ func _test_bounce_and_full_swap(ui: GameUI) -> void:
 	_check(sequence != null and sequence.text.contains("100% → 100% → 75% → 56.25%"), "Moon-scythe bounce preserves both full-damage native hits before its decay sequence")
 	var capacity: Label = ui.find_child("RuneEquipBag", true, false)
 	var returns: Label = ui.find_child("RuneEquipReturn", true, false)
-	_check(capacity != null and capacity.text.contains("4 / 4 → 4 / 4"), "Replacing a full reserve socket projects four-to-four occupancy")
-	_check(returns != null and returns.text.contains(GameCatalog.rune(str(returned["id"])).display_name) and returns.text.contains("完整退回"), "The preview identifies the exact previous rune that will return")
+	_check(capacity != null and capacity.text.contains("4 → 4件"), "Replacing a socket in the full grid projects four loose runes before and after")
+	_check(returns != null and returns.text.contains(GameCatalog.rune(str(returned["id"])).display_name) and returns.text.contains("腾出的格子") and returns.text.contains("保留阶级与原购买价值"), "The preview identifies the previous rune and preserves its rank and purchase value")
 	_check(_signature(state) == before, "A full-bag replacement preview remains pure")
 	_key(KEY_ESCAPE)
 	await _settle()
-	ui._shop_focus_button("equip:1").grab_focus()
+	ui._shop_focus_button("bag_equip:%d" % int(state.loadout[1]["uid"])).grab_focus()
 	_key(KEY_ENTER)
 	await _settle()
-	_check(state.loadout[1]["rune"] == incoming and state.rune_bag.has(returned) and state.rune_bag.size() == 4, "The immediate real swap consumes the previewed rune and returns the original")
+	_check(state.loadout[1]["rune"] == incoming and state.rune_bag.has(returned) and state.rune_bag.size() == 4 and state.backpack_snapshot()["used_cells"] == 36, "The immediate real swap conserves all thirty-six occupied cells and returns the original rune")
 	_check(_inventory_signature(state) == inventory, "The full-bag swap conserves all UID, id and paid tuples")
 
 
 func _test_volley(ui: GameUI) -> void:
-	var state: RunState = FIXTURE.make_state("volley")
+	var state: RunState = _make_state("volley")
 	await _show_selected(ui, state)
 	var source: Button = ui._shop_focus_button("rune_preview:2")
+	source.grab_focus()
+	await _settle()
+	var details: ScrollContainer = ui.find_child("BackpackDetailsScroll", true, false)
+	_check(details != null and details.get_global_rect().grow(1).encloses(source.get_global_rect()), "Keyboard focus brings the mouse preview source into the visible backpack details viewport")
 	_click(source)
 	await _settle()
 	_check(ui._overlay_mode == "rune_equip_comparison", "A mouse click opens the same weapon preview")
@@ -186,13 +224,13 @@ func _test_volley(ui: GameUI) -> void:
 	targets = ui.find_child("RuneEquipTargets", true, false)
 	_check(targets != null and targets.text.contains("每次发射 3 枚"), "Scatter reports three independent projectiles without promising a combined hit count")
 	var scope: Label = ui.find_child("RuneEquipScope", true, false)
-	_check(scope != null and scope.text.contains("足够实际目标") and scope.text.contains("不代表实战 DPS"), "Theoretical limits require actual targets and are not a DPS promise")
+	_check(scope != null and scope.text.contains("足够实际目标") and scope.text.contains("不代表实战DPS"), "Theoretical limits require actual targets and are not a DPS promise")
 	_key(KEY_ESCAPE)
 	await _settle()
 
 
 func _test_epoch_and_selection(ui: GameUI) -> void:
-	var state: RunState = FIXTURE.make_state("full-swap")
+	var state: RunState = _make_state("full-swap")
 	await _show_selected(ui, state)
 	var old_source: Button = ui._shop_focus_button("rune_preview:1")
 	var old_action: Callable = old_source.pressed.get_connections()[0]["callable"]
@@ -243,12 +281,23 @@ func _test_epoch_and_selection(ui: GameUI) -> void:
 
 
 func _buttons_inside(node: Node) -> bool:
-	if node is Button and node.is_visible_in_tree() and not root.get_visible_rect().grow(1).encloses(node.get_global_rect()):
+	if node is ScrollContainer and node.is_visible_in_tree() and not root.get_visible_rect().grow(1).encloses(node.get_global_rect()):
+		return false
+	if node is Button and node.is_visible_in_tree() and not _inside_scroll(node) and not root.get_visible_rect().grow(1).encloses(node.get_global_rect()):
 		return false
 	for child: Node in node.get_children():
 		if not _buttons_inside(child):
 			return false
 	return true
+
+
+func _inside_scroll(node: Node) -> bool:
+	var ancestor: Node = node.get_parent()
+	while ancestor != null:
+		if ancestor is ScrollContainer:
+			return true
+		ancestor = ancestor.get_parent()
+	return false
 
 
 func _overlay_owns_focus(ui: GameUI) -> bool:

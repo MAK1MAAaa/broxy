@@ -1,5 +1,6 @@
 extends SceneTree
 ## Fixed purchase fixtures for the native comparison dialog; never accesses a profile.
+## The legacy capped argument now means a physically full backpack, not a relic ownership limit.
 
 const CASES: PackedStringArray = ["tradeoff", "bulwark", "capped", "poor"]
 
@@ -14,19 +15,21 @@ static func make_state(case_name: String) -> RunState:
 	var state := RunState.new()
 	state.begin(20261024, "bone")
 	var purchases: Array[Dictionary] = []
-	for id: String in ["crescent", "storm", "comet"]:
+	for id: String in ["frost", "ember", "scatter"]:
 		purchases.append({"kind": "weapon", "definition": GameCatalog.weapon(id)})
 	for id: String in ["blast", "pierce", "bounce"]:
 		purchases.append({"kind": "rune", "definition": GameCatalog.rune(id)})
 	for definition: ContentDef in GameCatalog.relics():
-		var count: int = RunState.RELIC_CAP if case_name == "capped" and definition.id == "hourglass" else 1
-		for stack: int in count:
-			purchases.append({"kind": "relic", "definition": definition})
-	var budget: int = 7 if case_name == "poor" else 120
+		purchases.append({"kind": "relic", "definition": definition})
+	var fillers: int = 4 if case_name == "capped" else 0
+	var budget: int = (7 if case_name == "poor" else 120) + 80 + fillers * GameCatalog.rune("pierce").price
 	for purchase: Dictionary in purchases:
 		var definition: ContentDef = purchase["definition"]
 		budget += definition.price
 	state.collect_souls(budget)
+	if not state.expand_backpack() or not state.expand_backpack():
+		push_error("Comparison fixture expansion failed: " + state.last_error)
+		return null
 	var rune_slot: int = 1
 	for purchase: Dictionary in purchases:
 		var definition: ContentDef = purchase["definition"]
@@ -39,6 +42,17 @@ static func make_state(case_name: String) -> RunState:
 				push_error("Comparison fixture equip failed: " + state.last_error)
 				return null
 			rune_slot += 1
+	for filler: int in fillers:
+		var definition: ContentDef = GameCatalog.rune("pierce")
+		state.offers = [{"kind": "rune", "id": definition.id, "price": definition.price, "sold": false}]
+		if not state.buy_offer(0):
+			push_error("Comparison full-backpack fixture purchase failed: " + state.last_error)
+			return null
+	if case_name == "capped":
+		var snapshot: Dictionary = state.backpack_snapshot()
+		if snapshot["used_cells"] != snapshot["total_cells"]:
+			push_error("The capped comparison fixture must occupy every real backpack cell")
+			return null
 	state.wave = 4
 	state.pending_upgrades = 0
 	if case_name == "bulwark":
@@ -61,7 +75,7 @@ func _preview() -> void:
 		elif argument.begins_with("--capture="):
 			destination = argument.trim_prefix("--capture=")
 	if case_name not in CASES or (not destination.is_empty() and not destination.to_lower().ends_with(".png")):
-		push_error("Use --case=tradeoff|bulwark|capped|poor and optional --capture=<path.png>")
+		push_error("Use --case=tradeoff|bulwark|capped|poor and optional --capture=<path.png>; capped means a full backpack")
 		quit(2)
 		return
 	root.size = Vector2i(1280, 720)
@@ -81,11 +95,12 @@ func _preview() -> void:
 	app.ui.bind(state)
 	app.screen = 3
 	app.ui.show_shop()
-	root.title = "秘术余烬 · 遗物对照 / %s（固定场景，不写档案）" % case_name
+	var case_label: String = "capped：背包空间已满" if case_name == "capped" else case_name
+	root.title = "秘术余烬 · 遗物对照 / %s（固定场景，不写档案）" % case_label
 	var layer := CanvasLayer.new()
 	layer.layer = 12
 	app.add_child(layer)
-	var note: Label = app.ui._label("遗物对照固定陈列 · 正式购买构筑 · 真实 Enter 打开 · 不写档案", 12, GameUI.CYAN)
+	var note: Label = app.ui._label("遗物对照固定陈列 · 正式购买构筑 · " + case_label + " · 不写档案", 12, GameUI.CYAN)
 	note.theme = app.ui._make_theme()
 	note.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
 	note.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER

@@ -132,30 +132,32 @@ func _run_tests() -> void:
 	await _accept_focus()
 	_check(state.loadout.size() == 2 and state.gold == 979, "Buying through the UI mutates inventory and charges the displayed cost")
 	_check(not _sounds.is_empty() and _sounds.back() == "buy", "Successful purchases request the buy sound")
-	_check(_focus_id() == "buy:1", "After buying an offer the keyboard focus moves to the next available offer")
-	await _accept_focus()
+	var starter_uid: int = int(state.loadout[0]["uid"])
+	var frost_uid: int = int(state.loadout[1]["uid"])
+	_check(_focus_id() == "bag:%d" % frost_uid and not state.backpack_item(frost_uid).is_empty(), "Buying a weapon selects its real automatically placed backpack box")
+	await _accept_shop(ui, "buy:1")
 	_check(state.rune_bag.size() == 1, "Purchased runes appear in the reserve bag")
-	_check(_focus_id() == "equip:0", "Buying a rune selects it and focuses the first equip target")
-	_check(_has_label_containing(ui, GameCatalog.rune("pierce").description), "The selected rune effect stays visible with an equip instruction")
+	var rune_uid: int = int(state.rune_bag[0]["uid"])
+	_check(_focus_id() == "bag_equip:%d" % starter_uid, "Buying a loose rune selects its box and focuses the first real weapon target")
+	_check(_has_label_containing(ui, GameCatalog.rune("pierce").display_name) and _has_label_containing(ui, ui._rune_rank_text("pierce", 1)), "The selected rune's current-rank effect stays visible with its install instruction")
 	await _accept_focus()
 	_check(state.rune_bag.is_empty() and state.loadout[0]["rune"].get("id", "") == "pierce", "Selecting a reserve rune and a weapon equips it")
-	_check(_sounds.back() == "rune", "Rune equip requests the rune sound")
+	_check(_sounds.back() == "buy", "Installing a backpack rune requests transaction feedback")
 	var toast: Label = ui.get("_toast")
-	_check(toast.visible and toast.text.contains(GameCatalog.weapon("ember").display_name) and toast.text.contains(GameCatalog.rune("pierce").display_name), "Successful equip visibly confirms both target weapon and rune")
-	_check(_effect_tooltip(ui, GameCatalog.rune("pierce").description) != null, "Equipped shop runes retain a hoverable effect description")
-	_check(_focus_id() == "unequip:0", "After equip the keyboard focus remains on the changed equipment slot")
-	await _accept_focus()
+	_check(toast.visible and toast.text.contains("符文已装入"), "Successful backpack installation visibly confirms the transaction")
+	await _accept_shop(ui, "bag:%d" % starter_uid)
+	var selected_title: Label = ui.find_child("BackpackItemTitle", true, false) as Label
+	_check(selected_title != null and selected_title.tooltip_text.contains(ui._rune_rank_text("pierce", 1)), "The selected weapon retains its current-rank rune effect in its details tooltip")
+	await _accept_shop(ui, "bag_unequip:%d" % starter_uid)
 	_check(state.rune_bag.size() == 1 and state.loadout[0]["rune"].is_empty(), "Unequip returns the rune to the reserve bag")
-	_check(_sounds.back() == "rune", "Rune unequip requests the rune sound")
-	_check(_focus_id().begins_with("rune:"), "Unequip moves keyboard focus to the returned reserve rune")
-	await _accept_focus()
-	_check(_focus_id() == "equip:0", "Selecting a reserve rune with ui_accept focuses an equip target")
-	await _accept_focus()
+	_check(_sounds.back() == "buy" and int(state.rune_bag[0]["uid"]) == rune_uid, "Rune detachment requests feedback and preserves the returned box identity")
+	await _accept_shop(ui, "bag:%d" % rune_uid)
+	await _accept_shop(ui, "bag_equip:%d" % starter_uid)
 	_check(state.rune_bag.is_empty() and _next_wave_requests == 0, "The complete keyboard buy-select-equip path never accidentally starts the next wave")
 	ui.show_hud()
 	ui.update_hud({"health": state.health, "max_health": state.stat("max_health"), "wave": 1, "time_left": 45.0, "loadout": state.loadout})
 	await _settle()
-	var hud_tooltip: Control = _effect_tooltip(ui, GameCatalog.rune("pierce").description)
+	var hud_tooltip: Control = _effect_tooltip(ui, ui._rune_rank_text("pierce", 1))
 	_check(hud_tooltip != null and hud_tooltip.focus_mode == Control.FOCUS_NONE, "HUD equipment exposes rune effects without acquiring keyboard focus")
 	var probe := MovementKeyProbe.new()
 	root.add_child(probe)
@@ -169,19 +171,19 @@ func _run_tests() -> void:
 	probe.queue_free()
 	ui.show_shop()
 	await _settle()
-	_press(ui, "卸符")
-	await _settle()
-	_press(ui, "出售")
-	await _settle()
+	await _accept_shop(ui, "bag:%d" % starter_uid)
+	await _accept_shop(ui, "bag_unequip:%d" % starter_uid)
+	await _accept_shop(ui, "bag:%d" % rune_uid)
+	await _accept_shop(ui, "bag_sell:%d" % rune_uid)
 	_check(state.rune_bag.is_empty() and _sounds.back() == "buy", "Selling a rune requests the buy sound")
 	_check(_focus_id() != "next_wave", "Selling the last reserve rune restores a usable shopping control")
-	_press(ui, "售")
-	await _settle()
+	await _accept_shop(ui, "bag:%d" % frost_uid)
+	await _accept_shop(ui, "bag_sell:%d" % frost_uid)
 	_check(state.loadout.size() == 1 and _sounds.back() == "buy", "Selling a weapon updates the displayed build and requests feedback")
-	_check(_focus_id().begins_with("sell_weapon:"), "Selling a weapon keeps focus on a neighboring weapon action")
+	_check(_focus_id() != "next_wave", "Selling a weapon keeps a usable shopping control focused")
+	await _accept_shop(ui, "bag:%d" % starter_uid)
 	var before_failure: int = _sounds.size()
-	_press(ui, "售")
-	await _settle()
+	await _accept_shop(ui, "bag_sell:%d" % starter_uid)
 	_check(state.loadout.size() == 1 and _sounds.size() == before_failure, "Rejected sales preserve the last weapon and emit no success sound")
 	var refresh: Button = _find_button_prefix(ui, "刷新  ")
 	_check(refresh != null, "Shop displays a refresh button")
@@ -203,34 +205,39 @@ func _run_tests() -> void:
 	await _settle()
 	_check(state.pending_upgrades == 0 and _upgrade_completions == 1, "Completing all choices emits the transition exactly once")
 
-	state.loadout = [
-		{"id": "bone", "paid": 20, "rune": {"id": "pierce", "paid": 12, "uid": 20}},
-		{"id": "frost", "paid": 20, "rune": {"id": "bounce", "paid": 12, "uid": 21}},
-		{"id": "ember", "paid": 20, "rune": {"id": "blast", "paid": 12, "uid": 22}},
-		{"id": "scatter", "paid": 20, "rune": {}},
-	]
-	state.rune_bag = [
-		{"id": "pierce", "paid": 12, "uid": 23},
-		{"id": "bounce", "paid": 12, "uid": 24},
-		{"id": "blast", "paid": 12, "uid": 25},
-		{"id": "pierce", "paid": 12, "uid": 26},
-	]
-	state.relic_counts = {"damage": 3, "haste": 3, "speed": 3, "vitality": 3, "armor": 3, "magnet": 3}
+	state.begin(114, "bone")
+	state.gold = 2000
+	_check(state.expand_backpack() and state.expand_backpack(), "The populated shop purchases its full six-by-six storage capacity")
+	for id: String in ["frost", "ember", "scatter"]:
+		_purchase(state, "weapon", id)
+	for index: int in 3:
+		_purchase(state, "rune", ["pierce", "bounce", "blast"][index])
+		_check(state.equip_rune(0, index), "The populated shop formally installs each purchased rune")
+	var reserve_bounce_uid: int = -1
+	for id: String in ["pierce", "bounce", "blast", "pierce"]:
+		var uid: int = _purchase(state, "rune", id)
+		if id == "bounce":
+			reserve_bounce_uid = uid
+	for id: String in ["damage", "haste", "speed", "vitality", "armor", "magnet"]:
+		for copy: int in 3:
+			_purchase(state, "relic", id)
+	_check(state.backpack_snapshot()["used_cells"] == 36, "Four weapons, four loose runes and eighteen one-cell relics legally occupy the expanded grid")
+	state.generate_shop()
 	ui.show_shop()
 	await _settle()
 	_check(_buttons_inside(ui), "Fully populated shop fits in 1280 by 720")
 	_check(_text_inside(ui), "A full loadout, reserve bag and relic collection do not clip shop text")
 	_check(_decorations_ignore_input(ui), "Shop ornamentation cannot block inventory interactions")
-	var reached_reserve: bool = await _tab_to_focus("rune:24")
+	var reached_reserve: bool = await _tab_to_focus("bag:%d" % reserve_bounce_uid)
 	_check(reached_reserve, "Native keyboard traversal can reach a specific reserve rune in a full shop")
 	if reached_reserve:
 		await _accept_focus()
 		var guide: Label = ui.find_child("RuneGuide", true, false)
 		var preview: Button = ui._shop_focus_button("rune_preview:0")
-		_check(_focus_id() == "equip:0" and guide != null and guide.text.contains(GameCatalog.rune("bounce").display_name) and guide.text.contains("本体贯穿先执行") and preview != null, "Selecting a full-bag rune focuses direct equip and exposes the weapon-specific keyboard preview")
+		_check(_focus_id() == "bag:%d" % reserve_bounce_uid and guide != null and guide.text.contains(GameCatalog.rune("bounce").display_name) and preview != null, "Selecting a full-grid rune exposes its real weapon install actions and keyboard preview")
 		_check(_buttons_inside(ui) and _text_inside(ui), "The selected-rune guide fits a fully populated shop")
-		await _accept_focus()
-		_check(int(state.loadout[0]["rune"].get("uid", 0)) == 24 and state.rune_bag.size() == 4, "Keyboard swapping with a full reserve equips the chosen rune and keeps all reserve slots")
+		await _accept_shop(ui, "bag_equip:%d" % int(state.loadout[0]["uid"]))
+		_check(int(state.loadout[0]["rune"].get("uid", 0)) == reserve_bounce_uid and state.rune_bag.size() == 4 and state.backpack_snapshot()["used_cells"] == 36, "Keyboard swapping in a full grid equips the chosen rune and restores its predecessor into the freed cell")
 		_check(_next_wave_requests == 0, "Full-inventory keyboard equip does not request the next wave")
 	state.damage_dealt_by_weapon = {"bone": 320.0, "frost": 90.0, "ember": 240.0, "scatter": 15.0,
 		"crescent": 110.0, "storm": 56.0, "comet": 108.0, "return_ring": 32.0}
@@ -248,7 +255,7 @@ func _run_tests() -> void:
 	for definition: ContentDef in GameCatalog.weapons():
 		var contribution: Node = ui.find_child("Damage_" + definition.id, true, false)
 		_check(contribution != null and _has_label(contribution, definition.display_name), "A recorded weapon has a visible contribution row: " + definition.id)
-	state.loadout.remove_at(2)
+	_check(state.sell_item(int(state.loadout[2]["uid"])), "A real weapon sale supplies the historical-damage result fixture")
 	ui.show_result(false, "试炼结束", {})
 	await _settle()
 	_check(ui.find_child("Damage_ember", true, false) != null, "Damage from a previously sold weapon remains in the result breakdown")
@@ -381,6 +388,22 @@ func _accept_focus() -> void:
 	await _settle()
 
 
+func _accept_shop(ui: GameUI, focus_id: String) -> void:
+	var button: Button = ui._shop_focus_button(focus_id)
+	_check(button != null, "The current backpack control is keyboard actionable: " + focus_id)
+	if button != null:
+		button.grab_focus()
+		await _accept_focus()
+
+
+func _purchase(state: RunState, kind: String, id: String) -> int:
+	var definition: ContentDef = BackpackInventory.definition(kind, id)
+	state.offers = [{"kind": kind, "id": id, "price": state.shop_price(definition), "sold": false}]
+	var purchased: bool = state.buy_offer(0)
+	_check(purchased, "The populated shop acquires its physical inventory through a real purchase: " + id)
+	return int(state.backpack_snapshot()["next_uid"]) - 1 if purchased else -1
+
+
 func _tab_to_focus(focus_id: String) -> bool:
 	for step: int in range(48):
 		if _focus_id() == focus_id:
@@ -509,7 +532,10 @@ func _has_label(node: Node, text: String) -> bool:
 
 
 func _buttons_inside(node: Node) -> bool:
-	if node is Button and node.is_visible_in_tree():
+	if node is ScrollContainer and node.is_visible_in_tree() and not root.get_visible_rect().grow(1).encloses(node.get_global_rect()):
+		push_error("Scroll viewport exceeds viewport: %s" % node.name)
+		return false
+	if node is Button and node.is_visible_in_tree() and not _inside_scroll(node):
 		var rect: Rect2 = node.get_global_rect()
 		if rect.position.x < -1 or rect.position.y < -1 or rect.end.x > 1281 or rect.end.y > 721:
 			push_error("Button exceeds viewport: %s %s" % [node.text, rect])
@@ -523,13 +549,23 @@ func _buttons_inside(node: Node) -> bool:
 func _text_inside(node: Node) -> bool:
 	if node is Label and node.is_visible_in_tree():
 		var rect: Rect2 = node.get_global_rect()
-		if rect.position.x < -1 or rect.position.y < -1 or rect.end.x > 1281 or rect.end.y > 721 or node.size.y + 1.0 < node.get_minimum_size().y:
+		var outside_viewport: bool = not _inside_scroll(node) and (rect.position.x < -1 or rect.position.y < -1 or rect.end.x > 1281 or rect.end.y > 721)
+		if outside_viewport or node.size.y + 1.0 < node.get_minimum_size().y:
 			push_error("Text exceeds its readable area: %s %s minimum=%s" % [node.text, rect, node.get_minimum_size()])
 			return false
 	for child: Node in node.get_children():
 		if not _text_inside(child):
 			return false
 	return true
+
+
+func _inside_scroll(node: Node) -> bool:
+	var ancestor: Node = node.get_parent()
+	while ancestor != null:
+		if ancestor is ScrollContainer:
+			return true
+		ancestor = ancestor.get_parent()
+	return false
 
 
 func _decorations_ignore_input(node: Node) -> bool:

@@ -28,13 +28,16 @@ static func make_state(case_name: String) -> RunState:
 	var incoming: String = "blast" if case_name in ["crescent-blast", "volley"] else "bounce"
 	for id: String in [incoming, "pierce", "blast", "bounce"]:
 		purchases.append({"kind": "rune", "definition": GameCatalog.rune(id), "equip": -1})
-	for definition: ContentDef in GameCatalog.relics():
-		purchases.append({"kind": "relic", "definition": definition, "equip": -1})
-	var budget: int = 120
+	for id: String in ["damage", "haste", "speed", "vitality", "armor", "magnet", "moon_charm", "pilgrim", "bulwark", "armor"]:
+		purchases.append({"kind": "relic", "definition": GameCatalog.relic(id), "equip": -1})
+	var budget: int = 120 + 32 + 48
 	for purchase: Dictionary in purchases:
 		var definition: ContentDef = purchase["definition"]
 		budget += definition.price
 	state.collect_souls(budget)
+	if not state.expand_backpack() or not state.expand_backpack():
+		push_error("Rune fixture expansion failed: " + state.last_error)
+		return null
 	for purchase: Dictionary in purchases:
 		var definition: ContentDef = purchase["definition"]
 		state.offers = [{"kind": purchase["kind"], "id": definition.id, "price": definition.price, "sold": false}]
@@ -44,6 +47,9 @@ static func make_state(case_name: String) -> RunState:
 		if int(purchase["equip"]) >= 0 and not state.equip_rune(0, int(purchase["equip"])):
 			push_error("Rune fixture equip failed: " + state.last_error)
 			return null
+	if int(state.backpack_snapshot()["used_cells"]) != 36:
+		push_error("Rune fixture must occupy the real thirty-six-cell backpack")
+		return null
 	state.wave = 4
 	state.pending_upgrades = 0
 	state.offers.clear()
@@ -87,7 +93,7 @@ func _preview() -> void:
 	var layer := CanvasLayer.new()
 	layer.layer = 12
 	app.add_child(layer)
-	var note: Label = app.ui._label("符文装入固定陈列 · 正式购买/装配 · 真实 Enter 打开 · 不写档案", 12, GameUI.CYAN)
+	var note: Label = app.ui._label("符文装入固定陈列 · 36格真实满背包 · 正式购买/装配 · 不写档案", 12, GameUI.CYAN)
 	note.theme = app.ui._make_theme()
 	note.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
 	note.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -97,7 +103,7 @@ func _preview() -> void:
 	for frame: int in 4:
 		await process_frame
 	var original: String = JSON.stringify([state.summary(), state.offers, state.rng.state, state.last_error])
-	var bag_button: Button = app.ui._shop_focus_button("rune:%d" % int(state.rune_bag[0]["uid"]))
+	var bag_button: Button = app.ui._shop_focus_button("bag:%d" % int(state.rune_bag[0]["uid"]))
 	if bag_button == null:
 		push_error("Rune fixture has no incoming rune action")
 		app._quit_game(1)

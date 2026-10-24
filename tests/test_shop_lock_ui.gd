@@ -1,8 +1,6 @@
 extends SceneTree
 ## Real input verifies locked stock, stale-action protection and unchanged shop flows.
 
-const FULL_FIXTURE = preload("res://tools/preview_rune_equip.gd")
-
 class EscapeRouter:
 	extends Node
 	var ui: GameUI
@@ -150,10 +148,11 @@ func _test_refresh_cross_wave_and_purchase(ui: GameUI) -> void:
 	weapon_index = _locked_index(state, "weapon", "comet")
 	var new_price: int = state.shop_price(GameCatalog.weapon("comet"))
 	_check(weapon_index >= 0 and new_price > old_price and int(state.offers[weapon_index]["price"]) == new_price, "The retained weapon is repriced for its new wave rather than price-locked")
-	var guide: Label = ui.find_child("ShopLockGuide", true, false)
-	_check(guide != null and guide.text.contains("跨波保留") and guide.text.contains("价格随波次调整"), "The shop states the cross-wave retention and repricing rule")
 	if weapon_index < 0:
 		return
+	var guide: Label = ui.find_child("ShopLockGuide", true, false)
+	var lock_rule: String = ui._shop_focus_button("reroll").tooltip_text + ui._shop_focus_button("lock:%d" % weapon_index).tooltip_text
+	_check(guide != null and guide.text.contains("购买自动找空位") and lock_rule.contains("跨波保留") and lock_rule.contains("价格随波次调整"), "The backpack shop exposes automatic placement and the lock retention/repricing rule")
 	var gold_before: int = state.gold
 	await _accept(ui, "buy:%d" % weapon_index)
 	var purchased: Dictionary = state.loadout.back()
@@ -164,14 +163,16 @@ func _test_refresh_cross_wave_and_purchase(ui: GameUI) -> void:
 
 
 func _test_full_shop_and_existing_flows(ui: GameUI) -> void:
-	var state: RunState = FULL_FIXTURE.make_state("shop")
+	var state: RunState = make_fixture()
 	await _show(ui, state)
-	await _accept(ui, "rune:%d" % int(state.rune_bag[0]["uid"]))
+	await _accept(ui, "bag:%d" % int(state.rune_bag[0]["uid"]))
 	var incoming: Dictionary = state.rune_bag[0].duplicate(true)
+	var target_uid: int = int(state.loadout[1]["uid"])
+	var before_swap_cells: int = int(state.backpack_snapshot()["used_cells"])
 	await _accept(ui, "lock:0")
 	await _accept(ui, "lock:1")
-	_check(state.loadout.size() == 4 and state.rune_bag.size() == 4 and state.relic_counts.size() == GameCatalog.relics().size() and ui._selected_rune == 0, "Locking full-capacity weapon and rune stock preserves the selected reserve rune")
-	_check(_controls_inside(ui._page), "Full 720p stock, names and actions fit with two locks, four equipped weapons, four reserve runes and every catalog relic")
+	_check(state.loadout.size() == 3 and state.rune_bag.size() == 3 and state.relic_counts.size() == GameCatalog.relics().size() and ui._selected_rune == 0, "Stock locks preserve a loose rune selected from a legally purchased backpack build")
+	_check(before_swap_cells == 34 and _controls_inside(ui._page), "The six-row backpack, four offers, lock controls and bounded details remain inside 720p")
 	for index: int in 4:
 		var title: Control = ui.find_child("OfferLock%d" % index, true, false).get_parent()
 		_check(title.size.y <= 30.1, "The small title-row lock does not add card height: %d" % index)
@@ -190,8 +191,8 @@ func _test_full_shop_and_existing_flows(ui: GameUI) -> void:
 	_check(ui._overlay_mode == "rune_equip_comparison" and state.locked_offer_count() == locks and ui._selected_rune == 0, "Rune equip preview also blocks locks and keeps the selected rune")
 	_key(KEY_ESCAPE)
 	await _settle()
-	await _accept(ui, "equip:1")
-	_check(state.loadout[1]["rune"] == incoming and state.rune_bag.size() == 4 and ui._selected_rune == -1, "Direct rune equip still swaps immediately after using stock locks and previews")
+	await _accept(ui, "bag_equip:%d" % target_uid)
+	_check(state.loadout[1]["rune"] == incoming and state.rune_bag.size() == 3 and ui._selected_rune == -1 and state.backpack_snapshot()["used_cells"] == before_swap_cells, "Backpack rune equip swaps immediately, retaining its UID/value and actual occupied cells")
 	await _accept(ui, "compare:2")
 	state.set_offer_locked(0, false)
 	_check(ui._overlay_mode.is_empty(), "An official external lock change invalidates an already-open comparison")
@@ -200,7 +201,48 @@ func _test_full_shop_and_existing_flows(ui: GameUI) -> void:
 	var gold_before: int = state.gold
 	var price: int = int(state.offers[2]["price"])
 	await _accept(ui, "buy:2")
-	_check(ui._overlay_mode.is_empty() and int(state.relic_counts["hourglass"]) == count_before + 1 and state.gold == gold_before - price, "The independent lock control adds no confirmation to direct relic purchase")
+	_check(ui._overlay_mode.is_empty() and int(state.relic_counts["hourglass"]) == count_before + 1 and state.gold == gold_before - price and state.backpack_snapshot()["used_cells"] == 36, "Direct relic purchase uses the final two contiguous cells without adding a confirmation")
+	var full_signature: String = _economy_signature(state)
+	await _accept(ui, "buy:3")
+	_check(_economy_signature(state) == full_signature and ui._toast.visible and ui._toast.text.contains("背包空间不足"), "A full backpack refuses a still-focusable purchase with visible feedback and unchanged economic state")
+
+
+static func make_fixture() -> RunState:
+	var state := RunState.new()
+	state.begin(20261026, "bone")
+	state.collect_souls(1200)
+	if not state.expand_backpack() or not state.expand_backpack():
+		push_error("The lock UI fixture must pay for both backpack rows")
+		return null
+	for id: String in ["crescent", "scatter"]:
+		if not _fixture_purchase(state, "weapon", id):
+			return null
+	for slot: int in state.loadout.size():
+		if not _fixture_purchase(state, "rune", "blast" if slot == 1 else "pierce") or not state.equip_rune(0, slot):
+			push_error("The lock UI fixture must attach its purchased rune")
+			return null
+	for id: String in ["bounce", "pierce", "blast"]:
+		if not _fixture_purchase(state, "rune", id):
+			return null
+	for definition: ContentDef in GameCatalog.relics():
+		if not _fixture_purchase(state, "relic", definition.id):
+			return null
+	state.wave = 4
+	state.pending_upgrades = 0
+	state.offers.clear()
+	for entry: Array in [["weapon", "crescent"], ["rune", "blast"], ["relic", "hourglass"], ["relic", "moon_charm"]]:
+		var definition: ContentDef = BackpackInventory.definition(str(entry[0]), str(entry[1]))
+		state.offers.append({"kind": entry[0], "id": entry[1], "price": state.shop_price(definition), "sold": false})
+	return state
+
+
+static func _fixture_purchase(state: RunState, kind: String, id: String) -> bool:
+	var definition: ContentDef = BackpackInventory.definition(kind, id)
+	state.offers = [{"kind": kind, "id": id, "price": state.shop_price(definition), "sold": false}]
+	var success: bool = state.buy_offer(0)
+	if not success:
+		push_error("The lock UI fixture failed to purchase %s: %s" % [id, state.last_error])
+	return success
 
 
 func _test_unaffordable_and_sold(ui: GameUI) -> void:
@@ -229,10 +271,12 @@ static func _locked_index(state: RunState, kind: String, id: String) -> int:
 
 static func _economy_signature(state: RunState) -> String:
 	return JSON.stringify([state.gold, state.health, state.wave, state.rerolls, state.loadout, state.rune_bag,
-		state.relic_counts, state.offers, state.rng.state, state._next_rune_uid])
+		state.relic_counts, state.offers, state.rng.state, state._next_rune_uid, state.backpack_snapshot()])
 
 
 func _controls_inside(node: Node) -> bool:
+	if node is ScrollContainer:
+		return root.get_visible_rect().grow(1).encloses(node.get_global_rect())
 	if node is Control and node.is_visible_in_tree() and (node is Button or node is Label):
 		if not root.get_visible_rect().grow(1).encloses(node.get_global_rect()):
 			return false
