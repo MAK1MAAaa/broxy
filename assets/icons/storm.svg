@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+<defs>
+<linearGradient id="robe" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#49506e"/><stop offset=".42" stop-color="#293047"/><stop offset="1" stop-color="#121a2b"/></linearGradient>
+<linearGradient id="violet" x1="0" y1="0" x2=".8" y2="1"><stop stop-color="#b78bd8"/><stop offset=".5" stop-color="#79538d"/><stop offset="1" stop-color="#463651"/></linearGradient>
+<linearGradient id="bone" x1="0" y1="0" x2=".6" y2="1"><stop stop-color="#f1e6cb"/><stop offset=".55" stop-color="#c9ba98"/><stop offset="1" stop-color="#8b806a"/></linearGradient>
+<linearGradient id="steel" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#9ca5b7"/><stop offset=".4" stop-color="#576378"/><stop offset="1" stop-color="#263044"/></linearGradient>
+<linearGradient id="blood" x1="0" y1="0" x2=".5" y2="1"><stop stop-color="#be746e"/><stop offset=".55" stop-color="#783d48"/><stop offset="1" stop-color="#3d293b"/></linearGradient>
+<linearGradient id="ghost" x1="0" y1="0" x2=".5" y2="1"><stop stop-color="#b4e4d8"/><stop offset=".45" stop-color="#6eacae"/><stop offset="1" stop-color="#345866" stop-opacity=".35"/></linearGradient>
+<linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f6dea0"/><stop offset=".5" stop-color="#c49a5b"/><stop offset="1" stop-color="#7f5b3b"/></linearGradient>
+<linearGradient id="flame" x1="0" y1="0" x2=".4" y2="1"><stop stop-color="#f6d9a0"/><stop offset=".4" stop-color="#e89a65"/><stop offset="1" stop-color="#9d4d57"/></linearGradient>
+<radialGradient id="aura"><stop stop-color="#7b628c" stop-opacity=".23"/><stop offset="1" stop-color="#382b50" stop-opacity="0"/></radialGradient>
+</defs>
+<path d="M24 59 H40 L37 48 H27Z M27 43 H37 V50 H27Z" fill="url(#gold)" stroke="#080c16" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" /><path d="M24 45 L13 28 17 10 25 17 22 28 31 39 M40 45 L51 28 47 10 39 17 42 28 33 39" fill="none" stroke="#101d2b" stroke-width="7" stroke-linejoin="round" stroke-linecap="round" /><path d="M24 45 L13 28 17 10 25 17 22 28 31 39 M40 45 L51 28 47 10 39 17 42 28 33 39" fill="none" stroke="#a1c9c3" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round" /><path d="M34 5 L25 23 33 22 27 40 40 18 32 19Z" fill="#f0df9f" stroke="#29313b" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round" /><path d="M16 27 L8 22 M48 27 L56 22 M25 47 H39" fill="none" stroke="#dec898" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" /><polygon points="32.00,41.00 32.82,44.18 36.00,45.00 32.82,45.82 32.00,49.00 31.18,45.82 28.00,45.00 31.18,44.18" fill="#eef1d2"/>
+</svg>

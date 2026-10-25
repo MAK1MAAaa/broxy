@@ -43,6 +43,16 @@ func _run_tests() -> void:
 	while not first.complete and steps < 2701:
 		first.step(STEP, BotPolicy.movement(first))
 		steps += 1
+		if state.pending_upgrades > 0 and not first.complete:
+			await _settle()
+			while app.screen == MAIN_SCRIPT.Screen.UPGRADE:
+				var combat_choice: Button = _find_button(app.ui, "选择强化")
+				if combat_choice == null:
+					_check(false, "Live first-wave progression exposes an actionable upgrade")
+					break
+				combat_choice.pressed.emit()
+				await _settle()
+			_check(app.screen == MAIN_SCRIPT.Screen.COMBAT and world.sim == first and not paused, "A live first-wave upgrade returns to the same running simulation")
 	_check(first.complete and first.victory, "The fixed-seed first wave ends successfully after normal simulation")
 	_check(first.elapsed >= 45.0 and first.elapsed <= 45.0 + STEP + 0.001, "Ordinary wave completion happens at the 45-second boundary")
 	_check(not world.active, "The ended signal stops the combat world immediately")

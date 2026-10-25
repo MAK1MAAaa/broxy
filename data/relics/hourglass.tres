@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="ContentDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/content_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "hourglass"
+kind = "relic"
+display_name = "裂砂漏"
+subtitle = "取舍遗物 · 背包合成升阶"
+description = "攻击速度 +22%，伤害 -6%"
+icon = "hourglass"
+color = Color(0.86, 0.7, 0.91, 1)
+price = 24
+stat = "attack_speed"
+amount = 0.22
+bonus_stat = "damage"
+bonus_amount = -0.06
+inventory_size = Vector2i(2, 1)

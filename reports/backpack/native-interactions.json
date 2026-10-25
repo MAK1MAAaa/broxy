@@ -1,0 +1,225 @@
+{
+  "method": "computer-use skill, @oai/sky, native window mouse drag and keyboard R",
+  "fixed_fixture_not_natural_gameplay": true,
+  "persistent_profile": false,
+  "viewport": [
+    1280,
+    720
+  ],
+  "state_transitions": 6,
+  "verified": [
+    "drag from the third cell preserves grab offset and places UID 2 at (4,1)",
+    "pick up, press R, place horizontal UID 2 at (1,3)",
+    "drag weapon onto same-rank target preserves UID 1 and upgrades to rank 2",
+    "drag two pierce runes together produces rank 2 with target UID 6",
+    "drag ranked rune into ranked weapon preserves rune UID and frees its cell",
+    "purchase auto-places a separate rank-1 weapon at (1,0) and pays exactly 24"
+  ],
+  "first_capture_sha256": "ee4204980fdee02afaadb2af3b963c445f5b1859aed18bf7268b9effd6de8139",
+  "log_sha256": "da91ffab236b2a880fa4756ad247bb03a094c27c284373a3dfd46a764f2579a4",
+  "initial_state": {
+    "backpack": {
+      "can_expand": true,
+      "expansion_cost": 32,
+      "expansion_error": "",
+      "height": 4,
+      "items": [
+        {
+          "id": "bone",
+          "kind": "weapon",
+          "paid": 0,
+          "rank": 1,
+          "rotated": false,
+          "rune": {},
+          "uid": 1,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "id": "bone",
+          "kind": "weapon",
+          "paid": 24,
+          "rank": 1,
+          "rotated": false,
+          "rune": {},
+          "uid": 2,
+          "x": 1,
+          "y": 0
+        },
+        {
+          "id": "damage",
+          "kind": "relic",
+          "paid": 27,
+          "rank": 1,
+          "rotated": false,
+          "rune": {},
+          "uid": 3,
+          "x": 2,
+          "y": 0
+        },
+        {
+          "id": "damage",
+          "kind": "relic",
+          "paid": 27,
+          "rank": 1,
+          "rotated": false,
+          "rune": {},
+          "uid": 4,
+          "x": 3,
+          "y": 0
+        },
+        {
+          "id": "pierce",
+          "kind": "rune",
+          "paid": 24,
+          "rank": 1,
+          "rotated": false,
+          "rune": {},
+          "uid": 5,
+          "x": 4,
+          "y": 0
+        },
+        {
+          "id": "pierce",
+          "kind": "rune",
+          "paid": 24,
+          "rank": 1,
+          "rotated": false,
+          "rune": {},
+          "uid": 6,
+          "x": 5,
+          "y": 0
+        }
+      ],
+      "max_height": 6,
+      "next_uid": 7,
+      "total_cells": 24,
+      "used_cells": 10,
+      "width": 6
+    },
+    "gold": 1074,
+    "last_error": "",
+    "loadout": [
+      {
+        "id": "bone",
+        "paid": 0,
+        "rank": 1,
+        "rune": {},
+        "uid": 1
+      },
+      {
+        "id": "bone",
+        "paid": 24,
+        "rank": 1,
+        "rune": {},
+        "uid": 2
+      }
+    ],
+    "reason": "initial",
+    "rune_bag": [
+      {
+        "id": "pierce",
+        "paid": 24,
+        "rank": 1,
+        "uid": 5
+      },
+      {
+        "id": "pierce",
+        "paid": 24,
+        "rank": 1,
+        "uid": 6
+      }
+    ],
+    "ticks_ms": 676
+  },
+  "final_state": {
+    "backpack": {
+      "can_expand": true,
+      "expansion_cost": 32,
+      "expansion_error": "",
+      "height": 4,
+      "items": [
+        {
+          "id": "bone",
+          "kind": "weapon",
+          "paid": 24,
+          "rank": 2,
+          "rotated": false,
+          "rune": {
+            "id": "pierce",
+            "paid": 48,
+            "rank": 2,
+            "uid": 6
+          },
+          "uid": 1,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "id": "damage",
+          "kind": "relic",
+          "paid": 27,
+          "rank": 1,
+          "rotated": false,
+          "rune": {},
+          "uid": 3,
+          "x": 2,
+          "y": 0
+        },
+        {
+          "id": "damage",
+          "kind": "relic",
+          "paid": 27,
+          "rank": 1,
+          "rotated": false,
+          "rune": {},
+          "uid": 4,
+          "x": 3,
+          "y": 0
+        },
+        {
+          "id": "bone",
+          "kind": "weapon",
+          "paid": 24,
+          "rank": 1,
+          "rotated": false,
+          "rune": {},
+          "uid": 7,
+          "x": 1,
+          "y": 0
+        }
+      ],
+      "max_height": 6,
+      "next_uid": 8,
+      "total_cells": 24,
+      "used_cells": 8,
+      "width": 6
+    },
+    "gold": 1050,
+    "last_error": "",
+    "loadout": [
+      {
+        "id": "bone",
+        "paid": 24,
+        "rank": 2,
+        "rune": {
+          "id": "pierce",
+          "paid": 48,
+          "rank": 2,
+          "uid": 6
+        },
+        "uid": 1
+      },
+      {
+        "id": "bone",
+        "paid": 24,
+        "rank": 1,
+        "rune": {},
+        "uid": 7
+      }
+    ],
+    "reason": "changed",
+    "rune_bag": [],
+    "ticks_ms": 14416099
+  }
+}

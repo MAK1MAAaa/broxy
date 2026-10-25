@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "invocation": [
+    "D:\\Github\\broxy\\.tools\\godot\\Godot_v4.7.2-stable_win64_console.exe",
+    "--headless",
+    "--path",
+    "D:\\Github\\broxy",
+    "--script",
+    "res://tests/simulate_runs.gd",
+    "--",
+    "--seed=2026",
+    "--count=10"
+  ],
+  "exit_code": 0,
+  "runs": 30,
+  "wins": 23,
+  "losses": [
+    {
+      "seed": 2026,
+      "rune": "pierce",
+      "wave": 6,
+      "reason": "生命耗尽：被缚棺者的接触攻击击败。"
+    },
+    {
+      "seed": 2028,
+      "rune": "pierce",
+      "wave": 5,
+      "reason": "生命耗尽：被盲眼祭司的弹丸击败。"
+    },
+    {
+      "seed": 2029,
+      "rune": "pierce",
+      "wave": 7,
+      "reason": "生命耗尽：被盲眼祭司的弹丸击败。"
+    },
+    {
+      "seed": 2030,
+      "rune": "pierce",
+      "wave": 6,
+      "reason": "生命耗尽：被游魂的接触攻击击败。"
+    },
+    {
+      "seed": 2030,
+      "rune": "bounce",
+      "wave": 6,
+      "reason": "生命耗尽：被缚棺者的接触攻击击败。"
+    },
+    {
+      "seed": 2031,
+      "rune": "pierce",
+      "wave": 6,
+      "reason": "生命耗尽：被盲眼祭司的弹丸击败。"
+    },
+    {
+      "seed": 2031,
+      "rune": "bounce",
+      "wave": 6,
+      "reason": "生命耗尽：被缚棺者的接触攻击击败。"
+    }
+  ],
+  "balance_versions": [
+    "prototype-0.1.0+7b6edecdab6b"
+  ],
+  "policy_versions": [
+    "orbit-avoid-v1/shop-v1+7c19c01f20e4"
+  ],
+  "new_content_coverage": {
+    "crescent": {
+      "stock_snapshot_occurrences": 142,
+      "purchases": 23,
+      "rune_equips": 23
+    },
+    "storm": {
+      "stock_snapshot_occurrences": 155,
+      "purchases": 12,
+      "rune_equips": 12
+    },
+    "comet": {
+      "stock_snapshot_occurrences": 165,
+      "purchases": 5,
+      "rune_equips": 5
+    },
+    "moon_charm": {
+      "stock_snapshot_occurrences": 99,
+      "purchases": 0,
+      "rune_equips": 0
+    },
+    "pilgrim": {
+      "stock_snapshot_occurrences": 127,
+      "purchases": 0,
+      "rune_equips": 0
+    },
+    "bulwark": {
+      "stock_snapshot_occurrences": 120,
+      "purchases": 0,
+      "rune_equips": 0
+    },
+    "hourglass": {
+      "stock_snapshot_occurrences": 93,
+      "purchases": 0,
+      "rune_equips": 0
+    }
+  },
+  "wall_seconds": 209.812,
+  "limits": [
+    "Unchanged shop-v1 policy buys the three new weapons but intentionally does not prioritize the four new relics.",
+    "Compound relic purchases and effects are covered by the dedicated content assertions, not complete bot-run balance.",
+    "The expanded random shop pool changes gameplay trajectories; no equivalence to the previous 29-win batch is claimed.",
+    "The legacy observation-only policy change note in raw records describes an earlier refactor, not this content expansion."
+  ]
+}

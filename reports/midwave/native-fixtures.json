@@ -1,0 +1,186 @@
+{
+  "schema_version": 1,
+  "passed": true,
+  "scope": "Frozen legal sixth-wave render fixtures and an actual first-wave fixed policy pickup path; not human playtesting",
+  "foreground_revision": "foreground-player-v1",
+  "viewport": [
+    1280,
+    720
+  ],
+  "foreground": {
+    "blast": {
+      "state_and_feedback_equal": true,
+      "rng_equal": true,
+      "combat_changed_pixel_bounds": [
+        625,
+        353,
+        684,
+        408
+      ],
+      "changed_combat_pixels": 1687,
+      "primary_hits": 8,
+      "secondary_hits": 6,
+      "damage_flash": 0.0,
+      "invulnerability": 0.0,
+      "hostile_and_warning_probe_pixels_equal": null,
+      "image_sha256": {
+        "before": "bf4a162e2d154a8295d04358985b154ba2fad405371ad2cbd42b0b15b1781355",
+        "after": "252083bcd1aff0f24d28758030584854631b17ae85c9714359a716b8def19a39"
+      }
+    },
+    "hurt": {
+      "state_and_feedback_equal": true,
+      "rng_equal": true,
+      "combat_changed_pixel_bounds": [
+        610,
+        353,
+        684,
+        431
+      ],
+      "changed_combat_pixels": 1873,
+      "primary_hits": 8,
+      "secondary_hits": 7,
+      "damage_flash": 0.103333333333333,
+      "invulnerability": 0.583333333333333,
+      "hostile_and_warning_probe_pixels_equal": null,
+      "image_sha256": {
+        "before": "16294a49adeafa20d4cdc77c69052e3df05f0c5c5fb42ff66de04fd15102cf75",
+        "after": "2b08c6e35dc348732a761b3ceabd7a8a93ba7c274a33b8a0b742983e2597a433"
+      }
+    },
+    "flash_off": {
+      "state_and_feedback_equal": true,
+      "rng_equal": true,
+      "combat_changed_pixel_bounds": [
+        610,
+        353,
+        684,
+        431
+      ],
+      "changed_combat_pixels": 1931,
+      "primary_hits": 8,
+      "secondary_hits": 7,
+      "damage_flash": 0.103333333333333,
+      "invulnerability": 0.583333333333333,
+      "hostile_and_warning_probe_pixels_equal": null,
+      "image_sha256": {
+        "before": "ab0e0e380ad451e5c9e8328ac28533303a43e7207f57206fbc1338bf61bb9c08",
+        "after": "1d9ba194504e1d5eb036816b8b7184e8047e14d48625719c8da77de2ff308cb9"
+      }
+    },
+    "danger": {
+      "state_and_feedback_equal": true,
+      "rng_equal": true,
+      "combat_changed_pixel_bounds": [
+        625,
+        353,
+        681,
+        408
+      ],
+      "changed_combat_pixels": 1349,
+      "primary_hits": 8,
+      "secondary_hits": 6,
+      "damage_flash": 0.0,
+      "invulnerability": 0.0,
+      "hostile_and_warning_probe_pixels_equal": true,
+      "image_sha256": {
+        "before": "ef21f95ca3d665e35882d96f76caaa701c4694e0eb3b67d147da7a8f2a6b95f3",
+        "after": "a66a4d9255f4418cac50a8fa3d18c151efbc86baf264dba1640879931fca9725"
+      }
+    }
+  },
+  "upgrades": {
+    "choice": {
+      "capture_result": 0,
+      "case": "choice",
+      "chosen_card": "",
+      "elapsed": 36.2999999999992,
+      "extra_gold_or_xp": false,
+      "fixed_policy_path": true,
+      "fixture_passed": true,
+      "health": 92.0,
+      "health_at_choice": 92.0,
+      "level": 2,
+      "max_health": 100.0,
+      "max_health_at_choice": 100.0,
+      "paused_combat_elapsed": 36.2999999999992,
+      "pending": 1,
+      "persistent_profile": false,
+      "same_simulation": true,
+      "sandbox": false,
+      "seed": 2027,
+      "steps_to_first_upgrade": 2178,
+      "tree_paused": true,
+      "viewport": [
+        1280,
+        720
+      ],
+      "wave": 1
+    },
+    "resumed": {
+      "capture_result": 0,
+      "case": "resumed",
+      "chosen_card": "armor",
+      "elapsed": 36.3499999999992,
+      "extra_gold_or_xp": false,
+      "fixed_policy_path": true,
+      "fixture_passed": true,
+      "health": 92.0,
+      "health_at_choice": 92.0,
+      "level": 2,
+      "max_health": 100.0,
+      "max_health_at_choice": 100.0,
+      "paused_combat_elapsed": 36.2999999999992,
+      "pending": 0,
+      "persistent_profile": false,
+      "same_simulation": true,
+      "sandbox": false,
+      "seed": 2027,
+      "steps_to_first_upgrade": 2178,
+      "tree_paused": false,
+      "viewport": [
+        1280,
+        720
+      ],
+      "wave": 1
+    },
+    "vitality": {
+      "capture_result": 0,
+      "case": "vitality",
+      "chosen_card": "",
+      "elapsed": 37.4999999999992,
+      "extra_gold_or_xp": false,
+      "fixed_policy_path": true,
+      "fixture_passed": true,
+      "health": 100.0,
+      "health_at_choice": 100.0,
+      "level": 2,
+      "max_health": 100.0,
+      "max_health_at_choice": 100.0,
+      "paused_combat_elapsed": 37.4999999999992,
+      "pending": 1,
+      "persistent_profile": false,
+      "same_simulation": true,
+      "sandbox": false,
+      "seed": 2030,
+      "steps_to_first_upgrade": 2250,
+      "tree_paused": true,
+      "viewport": [
+        1280,
+        720
+      ],
+      "wave": 1
+    }
+  },
+  "review": {
+    "root_and_fresh_review_agent_viewed_all_eleven_images": true,
+    "blocking_findings": 0,
+    "improvement": "Modest removal of friendly strokes and outgoing numbers over the player. Incoming loss and danger remain above the player."
+  },
+  "limits": [
+    "Foreground fixtures use a test purchase budget, six selected ordinary wave-six tank enemies, manual firing and sixteen fixed steps; they are not natural wave progression.",
+    "Danger fixture adds a warning and real hostile projectile object at the face; it does not represent a natural boss attack.",
+    "The original minimum 0.25 invulnerability blink remains faint. Still images do not measure dynamic recognition or the whole direction-indicator lifetime.",
+    "Upgrade previews run a fixed bot path and exclude human decision time. They do not measure interruption fatigue or balance."
+  ]
+}

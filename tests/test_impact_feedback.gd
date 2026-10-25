@@ -419,8 +419,10 @@ func _test_draw_order() -> void:
 	if impact < 0:
 		impact = body.find("_impact_painter.")
 	_check(body.find("_draw_effects()") >= 0 and body.find("_draw_effects()") < impact and impact < body.find("_draw_rune_feedback()")
-		and body.find("_draw_rune_feedback()") < body.find("_draw_feedback()") and body.find("_draw_feedback()") < body.find("_draw_danger()"),
-		"World code submits impacts after effects and before rune marks, damage numbers and highest-priority danger")
+		and body.find("_draw_rune_feedback()") < body.find("_draw_outgoing_feedback()")
+		and body.find("_draw_outgoing_feedback()") < body.find("_draw_player()")
+		and body.find("_draw_player()") < body.find("_draw_feedback()") and body.find("_draw_feedback()") < body.find("_draw_danger()"),
+		"World submits impacts before runes/outgoing numbers, then player foreground, incoming feedback and highest-priority danger")
 
 
 func _marks_snapshot(painter: RefCounted) -> Dictionary:

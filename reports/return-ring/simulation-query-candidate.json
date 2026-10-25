@@ -1,0 +1,484 @@
+{
+  "schema_version": 1,
+  "exit_code": 0,
+  "runs": 30,
+  "wins": 26,
+  "baseline_runs": 30,
+  "baseline_wins": 23,
+  "core_versions": [
+    "prototype-0.1.0+98f772fa66e7"
+  ],
+  "baseline_core_versions": [
+    "prototype-0.1.0+724650407895"
+  ],
+  "policy_versions": [
+    "orbit-avoid-v1/shop-v1+1d336100ecaa"
+  ],
+  "policy_source_audit": {
+    "bot_bytes_unchanged": true,
+    "runner_bytes_unchanged": true
+  },
+  "baseline": "reports/shop-locks/simulation.jsonl",
+  "baseline_sha256": "7c7ae9042b107df5e1e848f0096388b9dc792da08923795bc62e65748e4db5b6",
+  "current_sha256": "d9bb200ad60b2dc2b9b9d5eb95722208c9329c910a036927334f4336f260f20b",
+  "purchases_by_id": {
+    "armor": 66,
+    "blast": 40,
+    "bone": 7,
+    "bounce": 40,
+    "comet": 6,
+    "crescent": 17,
+    "damage": 52,
+    "ember": 24,
+    "frost": 12,
+    "haste": 75,
+    "pierce": 40,
+    "return_ring": 7,
+    "scatter": 12,
+    "speed": 29,
+    "storm": 5,
+    "vitality": 84
+  },
+  "rune_equips_by_weapon": {
+    "bone": 37,
+    "comet": 6,
+    "crescent": 17,
+    "ember": 24,
+    "frost": 12,
+    "return_ring": 7,
+    "scatter": 12,
+    "storm": 5
+  },
+  "comparisons": [
+    {
+      "seed": 2026,
+      "rune": "pierce",
+      "before_won": false,
+      "won": true,
+      "wave": 8,
+      "all_fields_except_content_equal": false
+    },
+    {
+      "seed": 2026,
+      "rune": "bounce",
+      "before_won": true,
+      "won": true,
+      "wave": 8,
+      "all_fields_except_content_equal": false
+    },
+    {
+      "seed": 2026,
+      "rune": "blast",
+      "before_won": true,
+      "won": true,
+      "wave": 8,
+      "all_fields_except_content_equal": false
+    },
+    {
+      "seed": 2027,
+      "rune": "pierce",
+      "before_won": true,
+      "won": true,
+      "wave": 8,
+      "all_fields_except_content_equal": false
+    },
+    {
+      "seed": 2027,
+      "rune": "bounce",
+      "before_won": true,
+      "won": true,
+      "wave": 8,
+      "all_fields_except_content_equal": false
+    },
+    {
+      "seed": 2027,
+      "rune": "blast",
+      "before_won": true,
+      "won": true,
+      "wave": 8,
+      "all_fields_except_content_equal": false
+    },
+    {
+      "seed": 2028,
+      "rune": "pierce",
+      "before_won": false,
+      "won": true,
+      "wave": 8,
+      "all_fields_except_content_equal": false
+    },
+    {
+      "seed": 2028,
+      "rune": "bounce",
+      "before_won": true,
+      "won": true,
+      "wave": 8,
+      "all_fields_except_content_equal": false
+    },
+    {
+      "seed": 2028,
+      "rune": "blast",
+      "before_won": true,
+      "won": true,
+      "wave": 8,
+      "all_fields_except_content_equal": false
+    },
+    {
+      "seed": 2029,
+      "rune": "pierce",
+      "before_won": false,
+      "won": true,
+      "wave": 8,
+      "all_fields_except_content_equal": false
+    },
+    {
+      "seed": 2029,
+      "rune": "bounce",
+      "before_won": true,
+      "won": true,
+      "wave": 8,
+      "all_fields_except_content_equal": false
+    },
+    {
+      "seed": 2029,
+      "rune": "blast",
+      "before_won": true,
+      "won": true,
+      "wave": 8,
+      "all_fields_except_content_equal": false
+    },
+    {
+      "seed": 2030,
+      "rune": "pierce",
+      "before_won": false,
+      "won": false,
+      "wave": 6,
+      "all_fields_except_content_equal": false
+    },
+    {
+      "seed": 2030,
+      "rune": "bounce",
+      "before_won": false,
+      "won": true,
+      "wave": 8,
+      "all_fields_except_content_equal": false
+    },
+    {
+      "seed": 2030,
+      "rune": "blast",
+      "before_won": true,
+      "won": true,
+      "wave": 8,
+      "all_fields_except_content_equal": false
+    },
+    {
+      "seed": 2031,
+      "rune": "pierce",
+      "before_won": false,
+      "won": true,
+      "wave": 8,
+      "all_fields_except_content_equal": false
+    },
+    {
+      "seed": 2031,
+      "rune": "bounce",
+      "before_won": false,
+      "won": true,
+      "wave": 8,
+      "all_fields_except_content_equal": false
+    },
+    {
+      "seed": 2031,
+      "rune": "blast",
+      "before_won": true,
+      "won": true,
+      "wave": 8,
+      "all_fields_except_content_equal": false
+    },
+    {
+      "seed": 2032,
+      "rune": "pierce",
+      "before_won": true,
+      "won": true,
+      "wave": 8,
+      "all_fields_except_content_equal": false
+    },
+    {
+      "seed": 2032,
+      "rune": "bounce",
+      "before_won": true,
+      "won": true,
+      "wave": 8,
+      "all_fields_except_content_equal": false
+    },
+    {
+      "seed": 2032,
+      "rune": "blast",
+      "before_won": true,
+      "won": true,
+      "wave": 8,
+      "all_fields_except_content_equal": false
+    },
+    {
+      "seed": 2033,
+      "rune": "pierce",
+      "before_won": true,
+      "won": false,
+      "wave": 6,
+      "all_fields_except_content_equal": false
+    },
+    {
+      "seed": 2033,
+      "rune": "bounce",
+      "before_won": true,
+      "won": false,
+      "wave": 6,
+      "all_fields_except_content_equal": false
+    },
+    {
+      "seed": 2033,
+      "rune": "blast",
+      "before_won": true,
+      "won": true,
+      "wave": 8,
+      "all_fields_except_content_equal": false
+    },
+    {
+      "seed": 2034,
+      "rune": "pierce",
+      "before_won": true,
+      "won": true,
+      "wave": 8,
+      "all_fields_except_content_equal": false
+    },
+    {
+      "seed": 2034,
+      "rune": "bounce",
+      "before_won": true,
+      "won": false,
+      "wave": 6,
+      "all_fields_except_content_equal": false
+    },
+    {
+      "seed": 2034,
+      "rune": "blast",
+      "before_won": true,
+      "won": true,
+      "wave": 8,
+      "all_fields_except_content_equal": false
+    },
+    {
+      "seed": 2035,
+      "rune": "pierce",
+      "before_won": true,
+      "won": true,
+      "wave": 8,
+      "all_fields_except_content_equal": false
+    },
+    {
+      "seed": 2035,
+      "rune": "bounce",
+      "before_won": true,
+      "won": true,
+      "wave": 8,
+      "all_fields_except_content_equal": false
+    },
+    {
+      "seed": 2035,
+      "rune": "blast",
+      "before_won": true,
+      "won": true,
+      "wave": 8,
+      "all_fields_except_content_equal": false
+    }
+  ],
+  "optimization_equivalence": {
+    "baseline": "reports/return-ring/simulation-before-optimization.jsonl",
+    "baseline_sha256": "06cbd14a6787f388dbbf28fcd5d1179c6d5e74e2c3a49c2a3e44580df32f2f91",
+    "all_30_equal_except_core": true,
+    "comparisons": [
+      {
+        "seed": 2026,
+        "rune": "pierce",
+        "all_fields_except_core_equal": true
+      },
+      {
+        "seed": 2026,
+        "rune": "bounce",
+        "all_fields_except_core_equal": true
+      },
+      {
+        "seed": 2026,
+        "rune": "blast",
+        "all_fields_except_core_equal": true
+      },
+      {
+        "seed": 2027,
+        "rune": "pierce",
+        "all_fields_except_core_equal": true
+      },
+      {
+        "seed": 2027,
+        "rune": "bounce",
+        "all_fields_except_core_equal": true
+      },
+      {
+        "seed": 2027,
+        "rune": "blast",
+        "all_fields_except_core_equal": true
+      },
+      {
+        "seed": 2028,
+        "rune": "pierce",
+        "all_fields_except_core_equal": true
+      },
+      {
+        "seed": 2028,
+        "rune": "bounce",
+        "all_fields_except_core_equal": true
+      },
+      {
+        "seed": 2028,
+        "rune": "blast",
+        "all_fields_except_core_equal": true
+      },
+      {
+        "seed": 2029,
+        "rune": "pierce",
+        "all_fields_except_core_equal": true
+      },
+      {
+        "seed": 2029,
+        "rune": "bounce",
+        "all_fields_except_core_equal": true
+      },
+      {
+        "seed": 2029,
+        "rune": "blast",
+        "all_fields_except_core_equal": true
+      },
+      {
+        "seed": 2030,
+        "rune": "pierce",
+        "all_fields_except_core_equal": true
+      },
+      {
+        "seed": 2030,
+        "rune": "bounce",
+        "all_fields_except_core_equal": true
+      },
+      {
+        "seed": 2030,
+        "rune": "blast",
+        "all_fields_except_core_equal": true
+      },
+      {
+        "seed": 2031,
+        "rune": "pierce",
+        "all_fields_except_core_equal": true
+      },
+      {
+        "seed": 2031,
+        "rune": "bounce",
+        "all_fields_except_core_equal": true
+      },
+      {
+        "seed": 2031,
+        "rune": "blast",
+        "all_fields_except_core_equal": true
+      },
+      {
+        "seed": 2032,
+        "rune": "pierce",
+        "all_fields_except_core_equal": true
+      },
+      {
+        "seed": 2032,
+        "rune": "bounce",
+        "all_fields_except_core_equal": true
+      },
+      {
+        "seed": 2032,
+        "rune": "blast",
+        "all_fields_except_core_equal": true
+      },
+      {
+        "seed": 2033,
+        "rune": "pierce",
+        "all_fields_except_core_equal": true
+      },
+      {
+        "seed": 2033,
+        "rune": "bounce",
+        "all_fields_except_core_equal": true
+      },
+      {
+        "seed": 2033,
+        "rune": "blast",
+        "all_fields_except_core_equal": true
+      },
+      {
+        "seed": 2034,
+        "rune": "pierce",
+        "all_fields_except_core_equal": true
+      },
+      {
+        "seed": 2034,
+        "rune": "bounce",
+        "all_fields_except_core_equal": true
+      },
+      {
+        "seed": 2034,
+        "rune": "blast",
+        "all_fields_except_core_equal": true
+      },
+      {
+        "seed": 2035,
+        "rune": "pierce",
+        "all_fields_except_core_equal": true
+      },
+      {
+        "seed": 2035,
+        "rune": "bounce",
+        "all_fields_except_core_equal": true
+      },
+      {
+        "seed": 2035,
+        "rune": "blast",
+        "all_fields_except_core_equal": true
+      }
+    ]
+  },
+  "losses": [
+    {
+      "seed": 2030,
+      "rune": "pierce",
+      "wave": 6,
+      "reason": "生命耗尽：被裂颅犬的接触攻击击败。"
+    },
+    {
+      "seed": 2033,
+      "rune": "pierce",
+      "wave": 6,
+      "reason": "生命耗尽：被盲眼祭司的弹丸击败。"
+    },
+    {
+      "seed": 2033,
+      "rune": "bounce",
+      "wave": 6,
+      "reason": "生命耗尽：被缚棺者的接触攻击击败。"
+    },
+    {
+      "seed": 2034,
+      "rune": "bounce",
+      "wave": 6,
+      "reason": "生命耗尽：被缚棺者的接触攻击击败。"
+    }
+  ],
+  "wall_seconds": 212.687,
+  "passed": true,
+  "limits": [
+    "The expanded offer pool changes seeded shopping and combat paths; this is not an equivalence test.",
+    "Legacy policy does not buy the new two relics or reserve offers; focused transactions cover those behaviors.",
+    "Thirty deterministic policy runs do not measure human balance or isolate the causal effect of the new weapon."
+  ]
+}

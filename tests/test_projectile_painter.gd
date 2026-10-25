@@ -41,9 +41,17 @@ func _shot(source: String, rune_id: String, index: int = 0) -> CombatSim.Shot:
 	return shot
 
 func _allocated(painter) -> int:
-	var total: int = painter.bodies.instance_count + painter.cores.instance_count
+	var total: int = painter.bodies.instance_count
+	for head in painter.heads.values():
+		total += head.multimesh.instance_count
 	for ring in painter.rings.values():
 		total += ring.multimesh.instance_count
+	return total
+
+func _visible_heads(painter) -> int:
+	var total: int = 0
+	for head in painter.heads.values():
+		total += head.multimesh.visible_instance_count
 	return total
 
 func _test_mixed_600() -> void:
@@ -55,18 +63,19 @@ func _test_mixed_600() -> void:
 	var painter = PAINTER_SCRIPT.new()
 	painter.rebuild(shots)
 	var stats: Dictionary = painter.get_stats()
-	_check(stats["friendly_count"] == 600 and stats["core_instances"] == 600, "Every one of 600 friendly projectiles receives a core")
+	_check(stats["friendly_count"] == 600 and stats["core_instances"] == 600 and stats["head_instances"] == 600, "Every one of 600 friendly projectiles receives a real atlas head while preserving the legacy core count")
 	_check(stats["body_instances"] == 150, "Exactly the 150 ember projectiles receive colored body/glow instances")
 	_check(stats["bounce_instances"] == 200, "All 200 bounce projectiles retain their rings")
-	_check(stats["total_visible_instances"] == 950, "Mixed families use the expected body/core/ring instance total")
-	_check(painter.cores.visible_instance_count == 600 and painter.bodies.visible_instance_count == 150, "Visible MultiMesh counts match the full mixed population")
+	_check(stats["total_visible_instances"] == 950, "Mixed families use the expected body/head/ring instance total")
+	_check(_visible_heads(painter) == 600 and painter.bodies.visible_instance_count == 150, "Visible MultiMesh counts match the full mixed population")
 	_check(stats["allocated_instances"] == _allocated(painter) and _allocated(painter) <= CombatSim.SHOT_LIMIT * 3, "Actual GPU buffer capacities stay within the global instance budget")
-	_check(stats["family_counts"].size() == 12 and stats["trail_families"] == 12, "Four sources and three runes remain twelve distinct drawing families")
+	_check(stats["family_counts"].size() == 12 and stats["trail_families"] == 12 and stats["head_families"] == 12, "Four sources and three runes remain twelve distinct trail and head drawing families")
 	for source: String in SOURCES:
 		for rune_id: String in RUNES:
 			var key: String = source + ":" + rune_id
 			_check(stats["family_counts"].get(key, 0) == 50, "Mixed source/rune population is retained: " + key)
 			_check(painter.trails.has(key) and painter.trails[key].points.size() == 100, "Every projectile contributes one trail segment: " + key)
+			_check(painter.heads.has(key) and painter.heads[key].multimesh.visible_instance_count == 50, "Every legacy source/rune projectile retains a visible textured head: " + key)
 			var expected_wing_points: int = 200 if rune_id == "pierce" or source == "frost" else 0
 			_check(painter.trails[key].wings.size() == expected_wing_points, "Pierce and frost wing rules are retained: " + key)
 
@@ -78,7 +87,7 @@ func _test_worst_case_capacity() -> void:
 	painter.rebuild(shots)
 	var stats: Dictionary = painter.get_stats()
 	_check(stats["friendly_count"] == CombatSim.SHOT_LIMIT, "The full 1600-projectile simulation limit remains visible")
-	_check(stats["body_instances"] == CombatSim.SHOT_LIMIT and stats["core_instances"] == CombatSim.SHOT_LIMIT, "The heaviest family retains every colored body and white core")
+	_check(stats["body_instances"] == CombatSim.SHOT_LIMIT and stats["head_instances"] == CombatSim.SHOT_LIMIT and _visible_heads(painter) == CombatSim.SHOT_LIMIT, "The heaviest family retains every colored body and baked white core head")
 	_check(stats["bounce_instances"] == CombatSim.SHOT_LIMIT, "All 1600 worst-case bounce rings remain visible")
 	_check(stats["total_visible_instances"] == CombatSim.SHOT_LIMIT * 3, "Ember plus bounce uses exactly three instances per projectile")
 	_check(_allocated(painter) == CombatSim.SHOT_LIMIT * 3, "The worst case reaches but never exceeds the fixed GPU instance budget")
@@ -103,7 +112,7 @@ func _test_worst_case_capacity() -> void:
 	var narrowed: Array[CombatSim.Shot] = [_shot("frost", "bounce")]
 	painter.rebuild(narrowed)
 	_check(painter.rings.size() == 1 and painter.rings.has(9.0), "Changing ring radius releases obsolete ring families")
-	_check(_allocated(painter) == CombatSim.SHOT_LIMIT * 2 + 1, "Shrinking after the worst case releases obsolete ring capacity")
+	_check(_allocated(painter) == CombatSim.SHOT_LIMIT + 2 and painter.heads.size() == 1 and painter.heads.has("frost:bounce"), "Shrinking after the worst case releases obsolete head and ring capacity")
 
 func _test_filter_and_clear() -> void:
 	var inactive: CombatSim.Shot = _shot("ember", "bounce")
@@ -122,14 +131,14 @@ func _test_filter_and_clear() -> void:
 	painter.rebuild(shots)
 	stats = painter.get_stats()
 	_check(stats["friendly_count"] == 0 and stats["total_visible_instances"] == 0, "Deactivating the final friendly projectile clears every visible instance")
-	_check(painter.bodies.visible_instance_count == 0 and painter.cores.visible_instance_count == 0, "Empty frames hide both persistent MultiMeshes")
-	_check(painter.rings.is_empty() and painter.trails.is_empty() and stats["family_counts"].is_empty(), "Empty frames retain no old rings, trails or family counts")
+	_check(painter.bodies.visible_instance_count == 0 and _visible_heads(painter) == 0, "Empty frames hide body and head instances")
+	_check(painter.rings.is_empty() and painter.trails.is_empty() and painter.heads.is_empty() and stats["family_counts"].is_empty(), "Empty frames retain no old heads, rings, trails or family counts")
 	var replacement: Array[CombatSim.Shot] = [_shot("ember", "blast")]
 	painter.rebuild(replacement)
 	_check(painter.get_stats()["family_counts"] == {"ember:blast": 1} and painter.trails.size() == 1, "Rebuilding another family does not resurrect stale geometry")
 	var empty: Array[CombatSim.Shot] = []
 	painter.rebuild(empty)
-	_check(painter.get_stats()["allocated_instances"] == CombatSim.SHOT_LIMIT * 2 and painter.rings.is_empty(), "An empty rebuild releases variable ring buffers without growing persistent pools")
+	_check(painter.get_stats()["allocated_instances"] == CombatSim.SHOT_LIMIT and painter.rings.is_empty() and painter.heads.is_empty(), "An empty rebuild releases variable head and ring buffers without growing the persistent body pool")
 
 func _test_trails_and_color() -> void:
 	var shots: Array[CombatSim.Shot] = [_shot("ember", "pierce"), _shot("frost", ""), _shot("bone", ""), _shot("scatter", "blast")]

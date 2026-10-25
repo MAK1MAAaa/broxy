@@ -5,10 +5,15 @@ try {
     $runner = Join-Path $PSScriptRoot 'run.ps1'
     $suites = @(
         'rules', 'purchase_query', 'combat', 'homing', 'ui', 'notifications',
-        'modal', 'choice_actions', 'upgrade_previews', 'shop_actions',
-        'shop_details', 'shop_availability', 'profile_modes', 'flow',
+        'modal', 'choice_actions', 'upgrade_previews', 'profile_modes', 'flow',
         'feedback', 'impact_feedback', 'projectile_painter', 'enemy_telegraphs',
-        'simulation_shop'
+        'content_expansion', 'content_presentation', 'relic_preview', 'relic_comparison',
+        'trail_readability', 'rune_equip_preview', 'rune_equip_comparison', 'enemy_hit_style',
+        'shop_locks', 'shop_lock_ui', 'shop_lock_flow', 'return_ring', 'return_ring_ui', 'return_ring_presentation',
+        'projectile_capacity', 'benchmark_seed', 'player_foreground',
+        'combat_upgrades', 'combat_upgrade_ui', 'upgrade_timing',
+        'backpack_inventory', 'backpack_combat', 'backpack_queries',
+        'backpack_flow', 'backpack_ui', 'backpack_shop'
     )
     foreach ($suite in $suites) {
         & $runner --headless --script "res://tests/test_$suite.gd"

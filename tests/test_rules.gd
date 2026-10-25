@@ -30,9 +30,9 @@ func _buy(state: RunState, kind: String, id: String, price: int = 20) -> bool:
 	return state.buy_offer(0)
 
 func _test_catalog() -> void:
-	_check(GameCatalog.weapons().size() == 4, "Catalog has four weapons")
+	_check(GameCatalog.weapons().size() == 8, "Catalog has eight weapons")
 	_check(GameCatalog.runes().size() == 3, "Catalog has three runes")
-	_check(GameCatalog.relics().size() == 6, "Catalog has six relics")
+	_check(GameCatalog.relics().size() == 12, "Catalog has twelve relics")
 	_check(GameCatalog.enemies().size() == 5, "Catalog has four enemies and one boss")
 	_check(GameCatalog.waves().size() == 8, "Catalog has eight waves")
 	var groups: Array = [GameCatalog.weapons(), GameCatalog.runes(), GameCatalog.relics(), GameCatalog.enemies(), GameCatalog.waves()]
@@ -55,7 +55,7 @@ func _test_catalog() -> void:
 	_check(GameCatalog.wave(0) == null and GameCatalog.wave(9) == null, "Out-of-range waves return null")
 	var copy: Array[ContentDef] = GameCatalog.weapons()
 	copy.clear()
-	_check(GameCatalog.weapons().size() == 4, "Catalog list callers cannot clear the catalog")
+	_check(GameCatalog.weapons().size() == 8, "Catalog list callers cannot clear the catalog")
 
 func _test_income_and_seed() -> void:
 	var state: RunState = _new_run()
@@ -112,14 +112,23 @@ func _test_weapon_transactions() -> void:
 	_check(_buy(state, "weapon", "frost", 31), "A weapon can be bought")
 	var before_sale: int = state.gold
 	_check(state.sell_weapon(1) and state.gold == before_sale + 15, "Weapon sells for floor of half actual paid price")
+	_check(state.move_item(int(state.loadout[0]["uid"]), Vector2i.ZERO, true), "The remaining weapon can be rotated before further purchases")
 	_check(_buy(state, "weapon", "ember"), "Second weapon buys")
 	_check(_buy(state, "weapon", "scatter"), "Third weapon buys")
 	_check(_buy(state, "weapon", "bone"), "Fourth weapon buys")
-	var before_reject: int = state.gold
-	_check(not _buy(state, "weapon", "bone"), "Fifth weapon is rejected")
-	_check(state.gold == before_reject and state.loadout.size() == 4, "Full weapon purchase is atomic")
-	state.sell_weapon(3)
-	_check(_buy(state, "weapon", "frost"), "A freed weapon slot accepts a purchase")
+	_check(_buy(state, "weapon", "bone") and state.loadout.size() == 5, "A fifth weapon is accepted when its real footprint fits")
+	var filled: bool = true
+	while state.backpack.can_add("weapon", "bone"):
+		filled = _buy(state, "weapon", "bone") and filled
+	_check(filled and state.loadout.size() > 4, "Additional weapons are limited by contiguous cells rather than a slot counter")
+	state.offers = [{"id": "frost", "kind": "weapon", "price": 20, "sold": false}]
+	var before_reject: Dictionary = state.summary()
+	var before_reject_rng: int = state.rng.state
+	_check(not state.buy_offer(0) and state.purchase_error(0) == "背包空间不足。", "A weapon without a contiguous fitting rectangle is rejected")
+	_check(state.summary() == before_reject and state.rng.state == before_reject_rng and not state.offers[0]["sold"], "Rejected footprint purchase preserves wallet, UID, layout, RNG and quote")
+	_check(state.expand_backpack() and state.buy_offer(0), "Paid expansion creates real space for the previously rejected purchase")
+	var purchased: Dictionary = state.backpack_item(int(state.loadout.back()["uid"]))
+	_check(purchased["rotated"] and purchased["y"] == 4, "Automatic placement can rotate a long weapon into the newly unlocked row")
 	var after_purchase: int = state.gold
 	_check(not state.buy_offer(0) and state.gold == after_purchase, "A sold offer cannot be purchased twice")
 	_check(not state.buy_offer(-1) and not state.sell_weapon(99), "Invalid indices are rejected safely")
@@ -142,26 +151,29 @@ func _test_rune_inventory() -> void:
 	_check(_buy(state, "rune", "pierce", 21), "Rune buys into the reserve bag")
 	_check(state.equip_rune(0, 0), "Rune equips from bag")
 	_check(state.rune_bag.is_empty() and state.loadout[0]["rune"]["id"] == "pierce", "Equipped rune has a single owner")
-	for index: int in range(4):
-		_check(_buy(state, "rune", "bounce"), "Bag fills up to four runes")
-	var before_reject: int = state.gold
-	_check(not _buy(state, "rune", "blast"), "Fifth reserve rune is rejected")
-	_check(state.gold == before_reject and state.rune_bag.size() == 4, "Full reserve purchase is atomic")
+	var filled: bool = true
+	while state.backpack.can_add("rune", "bounce"):
+		filled = _buy(state, "rune", "bounce") and filled
+	_check(filled and state.rune_bag.size() > 4 and state.backpack_snapshot()["used_cells"] == state.backpack_snapshot()["total_cells"], "Small rune boxes fill the real grid beyond the old four-rune reserve")
+	state.offers = [{"id": "blast", "kind": "rune", "price": 20, "sold": false}]
+	var before_reject: Dictionary = state.summary()
+	_check(not state.buy_offer(0) and state.purchase_error(0) == "背包空间不足。", "A spare rune is rejected only when its real cell cannot fit")
+	_check(state.summary() == before_reject and not state.offers[0]["sold"], "Full-grid rune purchase is atomic")
 	var before_swap: Array[int] = _rune_uids(state)
 	var before_swap_gold: int = state.gold
 	_check(state.equip_rune(0, 0), "A full reserve can swap with an equipped rune")
 	_check(_rune_uids(state) == before_swap and state.gold == before_swap_gold, "Free rune swap preserves every uid and currency")
-	_check(state.rune_bag.size() == 4, "Swap preserves reserve capacity")
+	_check(state.backpack_snapshot()["used_cells"] == state.backpack_snapshot()["total_cells"], "Swap returns the old rune into the incoming rune's vacated cell")
 	var before_unequip: Dictionary = state.summary()
-	_check(not state.unequip_rune(0), "Unequipping into a full reserve is rejected")
+	_check(not state.unequip_rune(0), "Unequipping without an empty cell is rejected")
 	_check(state.summary() == before_unequip, "Failed unequip leaves inventory untouched")
-	_check(not state.sell_weapon(0), "Selling a rune-bearing weapon with a full reserve is rejected")
-	_check(state.summary() == before_unequip, "Failed weapon sale preserves weapon, rune, and currency")
+	var returned_uid: int = state.loadout[0]["rune"]["uid"]
+	var before_weapon_sale: int = state.gold
+	_check(state.sell_weapon(0) and state.gold == before_weapon_sale, "A full-grid weapon sale can use its released footprint to return the free starter's rune")
+	_check(state.loadout.size() == 1 and not state.backpack_item(returned_uid).is_empty() and _rune_uids(state) == before_swap, "Weapon sale returns exactly one attached rune without losing any UID")
 	var refund: int = int(floorf(float(state.rune_bag[0]["paid"]) * 0.5))
 	var before_rune_sale: int = state.gold
 	_check(state.sell_rune(0) and state.gold == before_rune_sale + refund, "Reserve rune refunds half actual price")
-	_check(state.sell_weapon(0), "Selling a rune-bearing weapon succeeds when reserve has room")
-	_check(state.loadout.size() == 1 and state.rune_bag.size() == 4, "Weapon sale returns its rune instead of destroying it")
 	var unique: Dictionary = {}
 	for uid: int in _rune_uids(state):
 		unique[uid] = true
@@ -171,10 +183,18 @@ func _test_relic_limits_and_damage() -> void:
 	var state: RunState = _new_run()
 	state.gold = 1000
 	for index: int in range(3):
-		_check(_buy(state, "relic", "damage"), "Relic stacks up to three")
+		_check(_buy(state, "relic", "damage"), "Separate damage relic boxes can be purchased")
 	_check(is_equal_approx(state.stat("damage"), 1.45), "Damage relics add to the base multiplier")
-	var before_cap: int = state.gold
-	_check(not _buy(state, "relic", "damage") and state.gold == before_cap, "Fourth relic stack is rejected without a charge")
+	_check(_buy(state, "relic", "damage") and is_equal_approx(state.stat("damage"), 1.60), "A fourth matching relic is allowed while another box fits")
+	var capacity: RunState = _new_run()
+	capacity.gold = 1000
+	var filled: bool = true
+	while capacity.backpack.can_add("relic", "damage"):
+		filled = _buy(capacity, "relic", "damage") and filled
+	_check(filled and capacity.relic_counts["damage"] > 3, "Matching relics can occupy every remaining cell without a layer cap")
+	capacity.offers = [{"id": "damage", "kind": "relic", "price": 20, "sold": false}]
+	var before_cap: Dictionary = capacity.summary()
+	_check(not capacity.buy_offer(0) and capacity.summary() == before_cap, "A relic is refused atomically when no cell remains")
 	state.health = 50.0
 	_check(_buy(state, "relic", "vitality"), "Vitality relic can be purchased")
 	_check(state.stat("max_health") == 120.0 and state.health == 70.0, "Vitality increases maximum and current health together")

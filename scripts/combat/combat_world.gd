@@ -20,6 +20,8 @@ var _last_kills: int = 0
 var autopilot: bool = false
 var stress_mode: bool = false
 var rune_stress_mode: bool = false
+var content_stress_mode: bool = false
+var stress_weapon_ids: PackedStringArray = PackedStringArray(["bone", "frost", "ember", "scatter"])
 var benchmark_time_left: float = 0.0
 
 const NUMBER_LIMIT: int = 48
@@ -27,6 +29,11 @@ const RUNE_FLASH_LIMIT: int = 32
 const RUNE_FLASH_LIFE: float = 0.24
 const RUNE_KINDS: Dictionary = {"pierce": 0, "bounce": 1, "blast": 2}
 const RUNE_COLORS: Array[Color] = [Color("b8d6b2"), Color("9ec5dc"), Color("dfbc87")]
+const ENEMY_HIT_VISUAL_REVISION: String = "tempered-hit-v1"
+const ENEMY_HIT_PULSE_SECONDS: float = 0.06
+const ENEMY_HIT_TIMER_CUTOFF: float = 0.04
+const ENEMY_HIT_PEAK_GAIN: float = 0.22
+const PLAYER_FOREGROUND_VISUAL_REVISION: String = "foreground-player-v1"
 
 class RuneFlash:
 	var kind: int = 0
@@ -310,10 +317,12 @@ func _draw() -> void:
 	_draw_souls()
 	_draw_enemies()
 	_draw_friendly_shots()
-	_draw_player()
+	_draw_player_ground()
 	_draw_effects()
 	_draw_impact_feedback()
 	_draw_rune_feedback()
+	_draw_outgoing_feedback()
+	_draw_player()
 	_draw_feedback()
 	# Hostile projectiles and telegraphs stay above all friendly spell effects.
 	_draw_danger()
@@ -382,13 +391,27 @@ func _rune_diamond(batch: RuneLineBatch, center: Vector2, radius: float) -> void
 	_rune_segment(batch, bottom, left)
 	_rune_segment(batch, left, top)
 
+func _draw_outgoing_feedback() -> void:
+	_draw_numbers(false)
+
+func _draw_numbers(player_hit: bool) -> void:
+	for number: FloatingNumber in _numbers:
+		if number.player_hit == player_hit:
+			_draw_number(number)
+
+func _draw_number(number: FloatingNumber) -> void:
+	if _number_font == null:
+		return
+	var alpha: float = minf(1.0, number.life / 0.24)
+	var point: Vector2 = number.position - Vector2(number.text_width * 0.5, 0)
+	draw_string_outline(_number_font, point, number.text, HORIZONTAL_ALIGNMENT_LEFT, -1, number.font_size, 3, Color(0.025, 0.035, 0.06, alpha * 0.9))
+	draw_string(_number_font, point, number.text, HORIZONTAL_ALIGNMENT_LEFT, -1, number.font_size, Color(number.color, alpha))
+
 func _draw_feedback() -> void:
-	if _number_font != null:
-		for number: FloatingNumber in _numbers:
-			var alpha: float = minf(1.0, number.life / 0.24)
-			var point: Vector2 = number.position - Vector2(number.text_width * 0.5, 0)
-			draw_string_outline(_number_font, point, number.text, HORIZONTAL_ALIGNMENT_LEFT, -1, number.font_size, 3, Color(0.025, 0.035, 0.06, alpha * 0.9))
-			draw_string(_number_font, point, number.text, HORIZONTAL_ALIGNMENT_LEFT, -1, number.font_size, Color(number.color, alpha))
+	_draw_numbers(true)
+	_draw_player_damage_direction()
+
+func _draw_player_damage_direction() -> void:
 	if _damage_flash > 0.0 and bool(settings.get("flash", true)):
 		var alpha: float = _damage_flash / 0.22
 		var center: Vector2 = sim.player_position + Vector2(0, -8)
@@ -432,38 +455,51 @@ func _draw_enemies() -> void:
 			var bob: float = stride * (1.0 if id == "tank" else 2.0)
 			var breathing: float = sin(enemy.age * 2.0 + float(enemy.uid)) * 0.015
 			var width: float = size * (1.0 + breathing)
-			var tint: Color = Color.WHITE
-			if enemy.slow_timer > 0.0:
-				tint = Color("b4e9ed")
-			if enemy.hurt_timer > 0.0 and bool(settings.get("flash", true)):
-				tint = Color(1.7, 1.5, 1.5, 1.0)
+			var tint: Color = _enemy_tint(enemy)
 			draw_texture_rect(texture, Rect2(enemy.position + Vector2(-width * 0.5, -size * 0.66 + bob), Vector2(width, size)), false, tint)
 			if id == "tank" and enemy.health < enemy.max_health:
 				var origin: Vector2 = enemy.position + Vector2(-17, -size * 0.55)
 				draw_line(origin, origin + Vector2(34, 0), Color("242533"), 3.0)
 				draw_line(origin, origin + Vector2(34.0 * enemy.health / enemy.max_health, 0), Color("a9a7a3"), 2.0)
 
+func _enemy_tint(enemy: CombatSim.Enemy) -> Color:
+	var base: Color = Color("b4e9ed") if enemy.slow_timer > 0.0 else Color.WHITE
+	if not bool(settings.get("flash", true)) or not is_finite(enemy.hurt_timer) or enemy.hurt_timer <= ENEMY_HIT_TIMER_CUTOFF:
+		return base
+	# The simulation retains its 100ms receipt; only the first 60ms brighten the art.
+	var progress: float = clampf((enemy.hurt_timer - ENEMY_HIT_TIMER_CUTOFF) / ENEMY_HIT_PULSE_SECONDS, 0.0, 1.0)
+	var gain: float = 1.0 + ENEMY_HIT_PEAK_GAIN * progress * progress
+	return Color(base.r * gain, base.g * gain, base.b * gain, 1.0)
+
 func _draw_friendly_shots() -> void:
 	_projectile_painter.rebuild(sim.shots)
 	_projectile_painter.draw(self)
 
-func _draw_player() -> void:
+func _draw_player_ground() -> void:
 	var center: Vector2 = sim.player_position
-	var bob: float = sin(_visual_time * 9.0) * minf(2.0, sim.player_velocity.length() * 0.012)
 	draw_texture_rect(glow_texture, Rect2(center - Vector2(44, 34), Vector2(88, 70)), false, Color(0.89, 0.78, 1.0, 0.35))
 	draw_set_transform(center + Vector2(0, 9), 0.0, Vector2(1.0, 0.48))
 	draw_texture_rect(seal_texture, Rect2(-Vector2.ONE * 32.0, Vector2.ONE * 64.0), false, Color(1.0, 0.95, 0.85, 0.55 + sin(_visual_time * 1.6) * 0.08))
 	draw_set_transform(Vector2.ZERO)
+
+func _player_tint() -> Color:
 	var tint: Color = Color.WHITE
 	if sim.invulnerability > 0.0 and bool(settings.get("flash", true)):
 		tint.a = 0.55 + sin(_visual_time * 35.0) * 0.30
+	return tint
+
+func _draw_player() -> void:
+	var center: Vector2 = sim.player_position
+	var bob: float = sin(_visual_time * 9.0) * minf(2.0, sim.player_velocity.length() * 0.012)
+	var tint: Color = _player_tint()
 	var lean: float = clampf(sim.player_velocity.x * 0.0002, -0.045, 0.045)
 	draw_set_transform(center, lean)
 	draw_texture_rect(textures["player"], Rect2(Vector2(-34, -50 + bob), Vector2(68, 68)), false, tint)
 	draw_set_transform(Vector2.ZERO)
-	for index: int in sim.run.loadout.size():
+	var orbit_count: int = mini(8, sim.run.loadout.size())
+	for index: int in orbit_count:
 		var equipped: Dictionary = sim.run.loadout[index]
-		var angle: float = -PI * 0.75 + float(index) * PI * 0.5 + sin(_visual_time * 0.6) * 0.12
+		var angle: float = -PI * 0.75 + float(index) * TAU / float(orbit_count) + sin(_visual_time * 0.6) * 0.12
 		var orbit: Vector2 = center + Vector2.from_angle(angle) * 39.0 + Vector2(0, sin(_visual_time * 2.0 + float(index)) * 3.0)
 		var definition: ContentDef = GameCatalog.weapon(str(equipped["id"]))
 		draw_circle(orbit, 14.0, Color(definition.color, 0.07))
@@ -472,6 +508,12 @@ func _draw_player() -> void:
 		if not rune.is_empty():
 			var rune_color: Color = GameCatalog.rune(str(rune["id"])).color
 			draw_arc(orbit, 15.0, _visual_time * 0.5, _visual_time * 0.5 + PI * 1.4, 12, Color(rune_color, 0.65), 1.0, true)
+	if sim.run.loadout.size() > orbit_count and _number_font != null:
+		var extra: String = "+%d" % (sim.run.loadout.size() - orbit_count)
+		var width: float = _number_font.get_string_size(extra, HORIZONTAL_ALIGNMENT_LEFT, -1, 12).x
+		var point: Vector2 = center + Vector2(-width * 0.5, 28.0)
+		draw_string_outline(_number_font, point, extra, HORIZONTAL_ALIGNMENT_LEFT, -1, 12, 3, Color("0d111b"))
+		draw_string(_number_font, point, extra, HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color("f0e5cc"))
 
 func _draw_effects() -> void:
 	for effect: CombatSim.Effect in sim.effects:
@@ -528,7 +570,7 @@ func _maintain_stress() -> void:
 		if shot.active:
 			shot.position = Vector2(wrapf(shot.position.x, 85.0, 1195.0), wrapf(shot.position.y, 135.0, 620.0))
 	while sim.shot_count < 600:
-		var weapon: String = ["bone", "frost", "ember", "scatter"][sim.shot_count % 4] if rune_stress_mode else "bone"
+		var weapon: String = stress_weapon_ids[sim.shot_count % stress_weapon_ids.size()] if rune_stress_mode else "bone"
 		var rune_id: String = ["pierce", "bounce", "blast"][sim.shot_count % 3] if rune_stress_mode else "pierce"
 		var shot: CombatSim.Shot = sim.fire_weapon(weapon, rune_id, Vector2(sim.rng.randf_range(100, 1180), sim.rng.randf_range(160, 610)), Vector2.from_angle(sim.rng.randf() * TAU))
 		if not rune_stress_mode:
@@ -537,10 +579,16 @@ func _maintain_stress() -> void:
 	while sim.soul_count < 200:
 		sim._drop_soul(Vector2(sim.rng.randf_range(100, 1180), sim.rng.randf_range(160, 610)), 1)
 
-func enable_rune_stress() -> void:
+func enable_rune_stress(include_content: bool = false) -> void:
 	# Explicit QA variant: use real weapon damage and all rune families instead of
 	# the baseline's zero-damage filler. Keep the original benchmark reproducible.
 	rune_stress_mode = true
+	content_stress_mode = include_content
+	stress_weapon_ids = PackedStringArray(["bone", "frost", "ember", "scatter"])
+	if include_content:
+		stress_weapon_ids.clear()
+		for definition: ContentDef in GameCatalog.weapons():
+			stress_weapon_ids.append(definition.id)
 	for shot: CombatSim.Shot in sim.shots:
 		if shot.active:
 			sim._release_shot(shot)

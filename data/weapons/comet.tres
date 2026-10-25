@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="ContentDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/content_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "comet"
+kind = "weapon"
+display_name = "星陨"
+subtitle = "重击法器 · 陨星坠击"
+description = "凝聚缓慢飞行的大型陨星，单次造成54点重击。搭配爆破可将重击转为范围伤害。"
+icon = "comet"
+color = Color(0.84, 0.71, 0.43, 1)
+price = 28
+damage = 54.0
+cooldown = 1.55
+projectile_speed = 220.0
+projectile_radius = 11.0
+range = 600.0
+inventory_size = Vector2i(3, 2)

@@ -1,0 +1,135 @@
+{
+  "schema_version": 1,
+  "scope": "Native fixed full-build shop fixtures, not normal-run balance tests",
+  "fixtures": {
+    "full": {
+      "capture_result": 0,
+      "case": "full",
+      "fixture_passed": true,
+      "gold": 120,
+      "locked": 2,
+      "locked_slots": [
+        0,
+        2
+      ],
+      "offers": [
+        {
+          "id": "crescent",
+          "kind": "weapon",
+          "price": 35,
+          "sold": false
+        },
+        {
+          "id": "blast",
+          "kind": "rune",
+          "price": 30,
+          "sold": false
+        },
+        {
+          "id": "hourglass",
+          "kind": "relic",
+          "price": 33,
+          "sold": false
+        },
+        {
+          "id": "moon_charm",
+          "kind": "relic",
+          "price": 33,
+          "sold": false
+        }
+      ],
+      "persistent": false,
+      "viewport": [
+        1280,
+        720
+      ],
+      "wave": 4
+    },
+    "repriced": {
+      "capture_result": 0,
+      "case": "repriced",
+      "fixture_passed": true,
+      "gold": 120,
+      "locked": 2,
+      "locked_slots": [
+        0,
+        2
+      ],
+      "offers": [
+        {
+          "id": "crescent",
+          "kind": "weapon",
+          "price": 38,
+          "sold": false
+        },
+        {
+          "id": "hourglass",
+          "kind": "relic",
+          "price": 36,
+          "sold": false
+        },
+        {
+          "id": "hourglass",
+          "kind": "relic",
+          "price": 36,
+          "sold": false
+        },
+        {
+          "id": "speed",
+          "kind": "relic",
+          "price": 24,
+          "sold": false
+        }
+      ],
+      "persistent": false,
+      "viewport": [
+        1280,
+        720
+      ],
+      "wave": 5
+    },
+    "bought": {
+      "capture_result": 0,
+      "case": "bought",
+      "fixture_passed": true,
+      "gold": 84,
+      "locked": 1,
+      "locked_slots": [
+        0
+      ],
+      "offers": [
+        {
+          "id": "crescent",
+          "kind": "weapon",
+          "price": 38,
+          "sold": false
+        },
+        {
+          "id": "hourglass",
+          "kind": "relic",
+          "price": 36,
+          "sold": false
+        },
+        {
+          "id": "hourglass",
+          "kind": "relic",
+          "price": 36,
+          "sold": true
+        },
+        {
+          "id": "speed",
+          "kind": "relic",
+          "price": 24,
+          "sold": false
+        }
+      ],
+      "persistent": false,
+      "viewport": [
+        1280,
+        720
+      ],
+      "wave": 5
+    }
+  },
+  "passed": true
+}

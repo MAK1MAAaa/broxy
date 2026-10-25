@@ -1,0 +1,385 @@
+{
+  "schema_version": 1,
+  "date_local": "2026-10-23",
+  "created_at_utc": "2026-10-23T08:57:11.293437+00:00",
+  "source_base_commit": "3055d2603cd7d6c65eeafc7f5e4caa0fe7a1d14d",
+  "source_state": "Verified working tree before the local content-expansion commit",
+  "engine": "4.7.2.stable.official.ed1daf0bf",
+  "art_revision": "engraved-05",
+  "device": {
+    "os": "Windows 11 Pro for Workstations 10.0.26200 x86_64",
+    "cpu": "Intel i5-13600KF",
+    "gpu": "NVIDIA RTX 4070 SUPER",
+    "driver": "591.86"
+  },
+  "catalog": {
+    "weapons": 7,
+    "runes": 3,
+    "relics": 10,
+    "enemies": 5,
+    "waves": 8
+  },
+  "tests": {
+    "godot_headless_assertions": 3099,
+    "python_tests": 22,
+    "dedicated_gameplay_assertions": 304,
+    "dedicated_presentation_assertions": 153,
+    "native_telegraph_assertions": 134,
+    "native_telegraph_readbacks": 12,
+    "all_passed": true
+  },
+  "simulation": {
+    "runs": 30,
+    "wins": 23,
+    "losses": 7,
+    "balance_version": "prototype-0.1.0+7b6edecdab6b",
+    "policy_version": "orbit-avoid-v1/shop-v1+7c19c01f20e4",
+    "coverage": {
+      "crescent": {
+        "stock_snapshot_occurrences": 142,
+        "purchases": 23,
+        "rune_equips": 23
+      },
+      "storm": {
+        "stock_snapshot_occurrences": 155,
+        "purchases": 12,
+        "rune_equips": 12
+      },
+      "comet": {
+        "stock_snapshot_occurrences": 165,
+        "purchases": 5,
+        "rune_equips": 5
+      },
+      "moon_charm": {
+        "stock_snapshot_occurrences": 99,
+        "purchases": 0,
+        "rune_equips": 0
+      },
+      "pilgrim": {
+        "stock_snapshot_occurrences": 127,
+        "purchases": 0,
+        "rune_equips": 0
+      },
+      "bulwark": {
+        "stock_snapshot_occurrences": 120,
+        "purchases": 0,
+        "rune_equips": 0
+      },
+      "hourglass": {
+        "stock_snapshot_occurrences": 93,
+        "purchases": 0,
+        "rune_equips": 0
+      }
+    },
+    "new_relics_not_purchased_by_legacy_bot": true
+  },
+  "performance": {
+    "average_fps": 60.7097461967963,
+    "damage_by_weapon": {
+      "bone": 570302.249999996,
+      "comet": 2541078.67500005,
+      "crescent": 7298030.25007755,
+      "ember": 2855786.96250166,
+      "frost": 2886722.02498794,
+      "scatter": 475755.900000007,
+      "storm": 1367456.28749335
+    },
+    "duration_seconds": 300.0,
+    "enemies": 300,
+    "impact_draw_commands_at_end": 10,
+    "impact_visual_capacity": 32,
+    "impact_visual_peak": 32,
+    "impact_visual_revision": "primary-impact-v1",
+    "internal_resolution": "1280x720",
+    "os": "Windows",
+    "p99_frame_ms": 28.418,
+    "passed": true,
+    "persistent_profile": false,
+    "pickups": 200,
+    "primary_hits": 315498,
+    "projectile_families_at_end": {
+      "bone:bounce": 54,
+      "bone:pierce": 3,
+      "comet:blast": 2,
+      "comet:pierce": 113,
+      "crescent:blast": 82,
+      "crescent:bounce": 32,
+      "ember:blast": 4,
+      "ember:pierce": 99,
+      "frost:blast": 76,
+      "frost:bounce": 3,
+      "scatter:bounce": 86,
+      "scatter:pierce": 24,
+      "storm:blast": 21,
+      "storm:bounce": 1
+    },
+    "projectile_visual_revision": "arsenal-lines-v2",
+    "projectiles": 600,
+    "renderer": "gl_compatibility",
+    "run_seed": 1792112013,
+    "rune_visual_peak": 32,
+    "samples": 18214,
+    "scenario": "content-feedback",
+    "secondary_hits": 1415953,
+    "settings": {
+      "flash": true,
+      "shake": true,
+      "volume": 0.65
+    },
+    "weapon_ids": [
+      "bone",
+      "frost",
+      "ember",
+      "scatter",
+      "crescent",
+      "storm",
+      "comet"
+    ]
+  },
+  "performance_history": {
+    "first_300_second_sample": {
+      "average_fps": 54.59967060543,
+      "damage_by_weapon": {
+        "bone": 574989.974999995,
+        "comet": 2595291.30000006,
+        "crescent": 7275624.5250769,
+        "ember": 2853453.91250153,
+        "frost": 2858742.69998874,
+        "scatter": 481720.60000001,
+        "storm": 1340834.3999936
+      },
+      "duration_seconds": 300.0,
+      "enemies": 300,
+      "impact_draw_commands_at_end": 11,
+      "impact_visual_capacity": 32,
+      "impact_visual_peak": 32,
+      "impact_visual_revision": "primary-impact-v1",
+      "internal_resolution": "1280x720",
+      "os": "Windows",
+      "p99_frame_ms": 30.66,
+      "passed": false,
+      "persistent_profile": false,
+      "pickups": 200,
+      "primary_hits": 317018,
+      "projectile_families_at_end": {
+        "bone:bounce": 55,
+        "bone:pierce": 5,
+        "comet:blast": 2,
+        "comet:pierce": 116,
+        "crescent:blast": 97,
+        "crescent:bounce": 30,
+        "crescent:pierce": 1,
+        "ember:blast": 10,
+        "ember:bounce": 1,
+        "ember:pierce": 83,
+        "frost:blast": 64,
+        "frost:bounce": 7,
+        "frost:pierce": 1,
+        "scatter:bounce": 80,
+        "scatter:pierce": 24,
+        "storm:blast": 23,
+        "storm:bounce": 1
+      },
+      "projectile_visual_revision": "arsenal-lines-v2",
+      "projectiles": 600,
+      "renderer": "gl_compatibility",
+      "run_seed": 1792096907,
+      "rune_visual_peak": 32,
+      "samples": 16381,
+      "scenario": "content-feedback",
+      "secondary_hits": 1404546,
+      "settings": {
+        "flash": true,
+        "shake": true,
+        "volume": 0.65
+      },
+      "weapon_ids": [
+        "bone",
+        "frost",
+        "ember",
+        "scatter",
+        "crescent",
+        "storm",
+        "comet"
+      ]
+    },
+    "same_fixture_cpu_preparation": {
+      "after_rebuild_ms": 1.88655416666667,
+      "before_rebuild_ms": 2.4360875,
+      "fixture": "600 positive-damage friendly shots / 7 weapons / 3 runes / 21 families",
+      "geometry_equivalent": true,
+      "headless": true,
+      "metric_scope": "CPU preparation only; not native frame rate",
+      "rebuilds_per_variant": 240,
+      "seed": 20261023,
+      "sigil_endpoints": 5472,
+      "speedup": 1.29128945409731
+    },
+    "optimized_20_second_sample": {
+      "average_fps": 65.7327188682094,
+      "damage_by_weapon": {
+        "bone": 124885.949999994,
+        "comet": 596448.90000003,
+        "crescent": 503413.875000355,
+        "ember": 462676.150000129,
+        "frost": 223690.499999878,
+        "scatter": 89923.300000004,
+        "storm": 152881.200000001
+      },
+      "duration_seconds": 20.0,
+      "enemies": 300,
+      "impact_draw_commands_at_end": 7,
+      "impact_visual_capacity": 32,
+      "impact_visual_peak": 32,
+      "impact_visual_revision": "primary-impact-v1",
+      "internal_resolution": "1280x720",
+      "os": "Windows",
+      "p99_frame_ms": 18.347,
+      "passed": true,
+      "persistent_profile": false,
+      "pickups": 200,
+      "primary_hits": 52231,
+      "projectile_families_at_end": {
+        "bone:bounce": 57,
+        "bone:pierce": 9,
+        "comet:blast": 8,
+        "comet:pierce": 99,
+        "crescent:blast": 63,
+        "crescent:bounce": 48,
+        "crescent:pierce": 3,
+        "ember:blast": 15,
+        "ember:bounce": 1,
+        "ember:pierce": 80,
+        "frost:blast": 56,
+        "frost:bounce": 18,
+        "scatter:blast": 2,
+        "scatter:bounce": 62,
+        "scatter:pierce": 43,
+        "storm:blast": 32,
+        "storm:bounce": 4
+      },
+      "projectile_visual_revision": "arsenal-lines-v2",
+      "projectiles": 600,
+      "renderer": "gl_compatibility",
+      "run_seed": 1792103667,
+      "rune_visual_peak": 32,
+      "samples": 1315,
+      "scenario": "content-feedback",
+      "secondary_hits": 118288,
+      "settings": {
+        "flash": true,
+        "shake": true,
+        "volume": 0.65
+      },
+      "weapon_ids": [
+        "bone",
+        "frost",
+        "ember",
+        "scatter",
+        "crescent",
+        "storm",
+        "comet"
+      ]
+    },
+    "native_samples_use_different_seeds": true,
+    "fps_delta_not_attributed_solely_to_geometry_cache": true
+  },
+  "performance_context": {
+    "warmup_seconds": 5,
+    "sample_seconds": 300,
+    "vsync": "retained",
+    "engine_max_fps": 0,
+    "concurrent_godot_tests_or_builds": false,
+    "native_window_title_observed": true,
+    "viewport_capture_seconds": 120,
+    "log_matches_json": true,
+    "historical_macos_and_windows_performance_preserved": true
+  },
+  "assets": {
+    "total": 42,
+    "svg": 32,
+    "wav": 10,
+    "changed": 7,
+    "new": 7,
+    "unchanged": 28,
+    "player_unchanged": true,
+    "two_runs_identical": true
+  },
+  "distribution": {
+    "zip_crc_passed": true,
+    "exe_x86_64_valid": true,
+    "smoke_exit_code": 0,
+    "baseline_zip_preserved": true,
+    "sha256": {
+      "build/Embers-windows-x86_64/Embers.exe": "d34d36f3be1a6c49c56525ae86469b92e4f417ddf0b43cf00dd80c385c4b0562",
+      "build/Embers-windows-x86_64/Embers.pck": "aa3b176d3f29f00c28f85bad66327533bc83b869f2f9392d96e15d2e3790bc9e",
+      "build/Embers-windows-x86_64.zip": "b934a8ee23f7e5fa4fbb4e538c90dcb4fac9ac64d91431a5ef0c172d27e78664"
+    }
+  },
+  "source_sha256": {
+    "scripts/data/content_def.gd": "30aa0f38439ce4e4d82fdb2092955dc4a0d85d907e2292b8cc485c5d9d445bb3",
+    "scripts/data/game_catalog.gd": "62919f27a46b13c0ef96ff1593ec0a7e86da2415885ddd959704c1af79ec75fa",
+    "scripts/core/run_state.gd": "08103243f874f90fade04dc96e9ed23fda76a065b3cd2ee5282b831ec61bd307",
+    "scripts/combat/combat_sim.gd": "29af7053f0013a802470ab2f1eefc5de3f15ef801de10b74af43a05e2f2f4800",
+    "scripts/combat/combat_world.gd": "b6e467b179ef14cb0ef7f4c676a37e2944df6d06be6b61297091652b4a2a8b08",
+    "scripts/combat/impact_painter.gd": "560d444a891a85b4a54b045ac332f136037b1a5a5540e0c379c3488554f669fa",
+    "scripts/combat/projectile_painter.gd": "5466526a792650cd73c708f30fba19f84c387a293dd41da0c90a5aafb5b801c3",
+    "scripts/ui/game_ui.gd": "e62fa606fca4ccb3464252ab90b19bbdfbce682320a331954d5875d5aa08e5fc",
+    "scripts/main.gd": "bc97ace2eaf9e0a62a61645fe815d21992a05a7534dbcd701145206f2239e349",
+    "tools/art_sprites.py": "ed2a8d8597a4acfb23fbde538eb43697b82c3d4ebdfcf82462b770efb4cc5782",
+    "tools/art_environment.py": "5bf71c2cce28f00d354217cb1d02a4b0acf5c4378dd34fab109a3776eed7d1b6",
+    "tools/art_icons.py": "f98c30af9035317e9367d6ed0422323d1ab75db40f5a56499df13b46541fa066",
+    "tools/generate_assets.py": "24fc1e95f1eee4ba55d542b6e8d70b64ad01de763b873770ae92cd57600147b3",
+    "tools/preview_content.gd": "75dfe7e747748e151ef3f2948cec08a14180d7829bbb38d2db9a34f9643b2dc8",
+    "tests/test_content_expansion.gd": "41fb628a226635a2f7c633a94ec4f65dd4ec80dd1aa2412db8d0daf7b5bcab50",
+    "tests/test_content_presentation.gd": "468399eb55eb3223db86eb3ffc487d2952ab81a5cb2acac5ca8580c8ceb64abf",
+    "tools/test.sh": "0fd7e26eb88d3f20cb5a0e13858d87c6ed08e461f0d81f934059e4bef2f201a4",
+    "tools/test.ps1": "98ff7589e531a0ffb6f166e2252ea45618ac7c2f19ada20417983621145a29bc",
+    "project.godot": "243b092054cff0748423392064c7b243a195bc5a0513430b96b904f5b8ee405d",
+    "export_presets.cfg": "ca6024c033ec24a8ea84f8a108d43f7de3f9c7e43387685f78dd5374ef97517f",
+    "data/weapons/crescent.tres": "92b423b9376213730d41ff2dc2748ad3609dfc37d1c0024e77583c791080fcba",
+    "data/weapons/storm.tres": "6a0caf919eb67fd01d937a6a84a59e28cacefde1e62eec3be9d09a6b6bfbdc6a",
+    "data/weapons/comet.tres": "ab3231314af38cadf24bcaee4c639d073158806ac5b89d61aa3f3dcbac769558",
+    "data/relics/moon_charm.tres": "407b4389566992f4a97123a38c0c15664aae13a6187b54039f87f2c425a3d8ae",
+    "data/relics/pilgrim.tres": "635951bd70b85a49311e4d03812bd3e5606921eab1c5ee97e851377aebbce0f7",
+    "data/relics/bulwark.tres": "9e6fae18855a5b1c7a8d92c998f269d29437e587224e17f62481352106d61a8b",
+    "data/relics/hourglass.tres": "c6067d9ce2507866cfe1a401645ed8af80824a24d4ee4e5eaac8e7f3a68069be"
+  },
+  "evidence_sha256": {
+    "tests.log": "1ac5114a5d28cd15ee26849ce6946ec42611be87b9726632ec1584c3c890abae",
+    "simulation.json": "75713690d562132a834e20ffa30198d41651785052c49bd7427cb338570ec82e",
+    "simulation.jsonl": "29ba7fdb5c8b6e39722aa9b93a80e5b2d555d17c1f7b3bfe6c97ba12cdd58831",
+    "assets.json": "33b32fa90ac2c731094a43e401aaf958c2c4883d72f6c031a14cfebc2854f500",
+    "performance.json": "8a28d99a9c7098db7293d93fe9aae653d8be3f7dc48c2b08676eb4f56e0b910c",
+    "benchmark.log": "7b8daba9c4478390100502f0c2bef9f59e42dfd7a0d243a65f2602880e28dfbd",
+    "build.log": "0edc803e74666a06af43654d80947a17b2aa95705fa611fd4aa225a10aacc460",
+    "export-smoke.log": "814553a7f42cc788eaae1e8f3c2c0d733165c0d688336f64619685addaa61e86",
+    "test_enemy_telegraphs-native.log": "7fc4353ac36749acbbb184c1f7bec68c2dcbfb3eb1d58faed3fe3bb3845604fc",
+    "test_content_presentation-native.log": "6c2ee98b09042ca20a9c3c8fe459b5dec2f84160a31fb70a6d3b14b2121819b8",
+    "performance-before-geometry-optimization.json": "2967762eb82cc0c64e12abab924480106e1f679bcce081c0bdef05f46651571e",
+    "geometry-microbenchmark.json": "88403002ebe6297f3ead2fd240ee898c086c47bc5eeac6ea913a50cd5dd05be3",
+    "geometry-microbenchmark.log": "befb9ea6dcf7b80fd987e98d4f0ef39fbc0a738c4b3cccc988de4e7b5424ffec",
+    "performance-short.json": "773fbe08bd7fdc80d93e1b6a9e54cefddd67ee1e56678d043be9338df115197f",
+    "benchmark-short.log": "e4fd0a936cafd3301a611673d4022a0ea8a7d6b90aabb94a103037fcbe12e721"
+  },
+  "screenshots_sha256": {
+    "art-before.png": "2b60d07175c5be3235c71ffbb5fab42f59f9765f32053552d11ea06a3ce501bb",
+    "art-after.png": "b11604d2efe9bbfc0ae77d36b5fab4aa1b31134c78d20b551ff4f6c002267d29",
+    "threats.png": "cfa5025ce1477ae840d8913fd23e307534a308768a1375a04f83f7d70cb3579f",
+    "arsenal.png": "991665d4a3ac8deb294f180e310aa3af03c695944134802330368e3287d7ee26",
+    "relics.png": "9c4cc9c67cedd5f20c3d919d5f44b3c4cfd3e6325a9160ae831ca0e62e155386",
+    "shop.png": "9fc059bc700117669721965d89c7c6feaa29e31ab6b6ed75d81202c77bcd3ddb",
+    "shop-details.png": "160b7b898eea30b663e94c5b34419f6f154bd1cc1b2151f9c21cd6786200c740",
+    "combat.png": "776492cd307431dd3ea5b770f8ac3c882a8ca2a6b86a56150b53f9c497e74379",
+    "export-smoke.png": "fa2d0f009dd4efd8e7e72fd2b2fb968627952789ac5c71516eabeeb82e90c232",
+    "benchmark.png": "2ab04d0f02cfec4d6b05ea75cfe8ca589a6902215533cb4ec2ddb768a0fe88d1"
+  },
+  "limits": [
+    "The unchanged legacy bot does not buy the four new relics; full-run relic-build balance and human playtests remain unverified.",
+    "The expanded shop pool changes trajectories and outcomes; no equivalence to the previous 29-win batch is claimed.",
+    "One Windows 11 device and one native 300-second content-feedback sample; process frame intervals include one viewport screenshot, not GPU timings.",
+    "Seven-weapon content-feedback and four-weapon rune-feedback are different workloads.",
+    "macOS build was not rerun on Windows; Authenticode signing is not configured."
+  ],
+  "passed": true
+}

@@ -5,13 +5,15 @@ const CAPACITY: int = 32
 const LIFE: float = 0.12
 const MERGE_WINDOW: float = 0.05
 const STAGES: int = 3
-const KINDS: Dictionary = {"bone": 0, "frost": 1, "ember": 2, "scatter": 3}
+const KINDS: Dictionary = {"bone": 0, "frost": 1, "ember": 2, "scatter": 3,
+	"crescent": 0, "storm": 1, "comet": 3, "return_ring": 0}
 const COLORS: Array[Color] = [Color("decfad"), Color("9ec5dc"), Color("dec08b"), Color("bca4cf")]
 const ALPHAS: Array[float] = [0.80, 0.52, 0.26]
 
 class ImpactMark:
 	var origin: Vector2 = Vector2.ZERO
 	var kind: int = 0
+	var source: String = ""
 	var target_uid: int = -1
 	var age: float = 0.0
 	var life: float = 0.0
@@ -58,13 +60,14 @@ func add_hit(point: Vector2, source: String, target_uid: int) -> void:
 		for mark: ImpactMark in _marks:
 			# Age is measured directly so a hit at exactly 0.05s starts a new mark;
 			# an ignored hit never restarts the existing mark's lifetime.
-			if mark.kind == kind and mark.target_uid == target_uid and mark.age < MERGE_WINDOW:
+			if mark.source == source and mark.target_uid == target_uid and mark.age < MERGE_WINDOW:
 				return
 	if _free.is_empty():
 		return
 	var mark: ImpactMark = _free.pop_back()
 	mark.origin = point
 	mark.kind = kind
+	mark.source = source
 	mark.target_uid = target_uid
 	mark.age = 0.0
 	mark.life = LIFE
@@ -133,6 +136,7 @@ func get_stats() -> Dictionary:
 static func _reset_mark(mark: ImpactMark) -> void:
 	mark.origin = Vector2.ZERO
 	mark.kind = 0
+	mark.source = ""
 	mark.target_uid = -1
 	mark.age = 0.0
 	mark.life = 0.0

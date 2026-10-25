@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="ContentDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/content_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "grave_candle"
+kind = "relic"
+display_name = "引魂烛"
+subtitle = "取舍遗物 · 背包合成升阶"
+description = "拾取范围 +38，移动速度 -8"
+icon = "grave_candle"
+color = Color(0.75, 0.82, 0.61, 1)
+price = 18
+stat = "pickup_radius"
+amount = 38.0
+bonus_stat = "move_speed"
+bonus_amount = -8.0
+inventory_size = Vector2i(2, 1)

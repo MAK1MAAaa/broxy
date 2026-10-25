@@ -52,18 +52,18 @@ class ExplosionProbeSim extends CombatSim:
 				result = enemy
 		return result
 
-	func _explode(position: Vector2, amount: float, source: String, excluded: Dictionary) -> void:
+	func _explode(position: Vector2, amount: float, source: String, excluded: Dictionary, blast_radius: float = 68.0) -> void:
 		if not use_linear:
-			super._explode(position, amount, source, excluded)
+			super._explode(position, amount, source, excluded, blast_radius)
 			return
 		# Freeze the pre-optimization full-pool ordering as an independent oracle.
-		add_effect(position, Color("df9cfa"), 68.0, 0.35, 0)
+		add_effect(position, Color("df9cfa"), blast_radius, 0.35, 0)
 		for enemy: Enemy in enemies:
 			if complete:
 				return
 			if not enemy.active or excluded.has(enemy.uid):
 				continue
-			if enemy.position.distance_squared_to(position) < pow(68.0 + enemy.radius, 2):
+			if enemy.position.distance_squared_to(position) < pow(blast_radius + enemy.radius, 2):
 				apply_damage(enemy, amount, source, true)
 
 var _checks: int = 0

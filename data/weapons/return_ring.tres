@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="ContentDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/content_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "return_ring"
+kind = "weapon"
+display_name = "归魂环"
+subtitle = "返航法器 · 位移回收"
+description = "掷出可额外贯穿1个目标的魂环；未耗尽时0.60秒后以460速度追随当前玩家返航，同一弹体全航程不重复命中同一敌人。成功弹射改为追击邻敌，不再返航；爆破在第二个直接命中处触发，爆破或命中次数耗尽即消失。接触玩家或2.40秒寿命结束时回收，不回复生命或魂屑；发射冷却独立于回收。"
+shop_summary = "0.60秒后追随玩家返航；全航程不重击同敌。符文从第二命中触发；成功弹射取消返航。"
+icon = "return_ring"
+color = Color(0.59, 0.84, 0.76, 1)
+price = 28
+damage = 16.0
+cooldown = 0.95
+projectile_speed = 360.0
+projectile_radius = 8.0
+range = 230.0
+innate_pierce = 1
+return_delay = 0.6
+return_speed = 460.0
+return_lifetime = 2.4
+inventory_size = Vector2i(2, 2)

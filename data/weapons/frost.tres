@@ -19,3 +19,4 @@ projectile_radius = 6.0
 range = 540.0
 slow = 0.25
 duration = 1.5
+inventory_size = Vector2i(1, 3)
