@@ -261,7 +261,8 @@ func _test_live_stats() -> void:
 	_check(is_equal_approx(sim._cooldowns[0], 0.5 / 1.28), "Production firing uses both compound attack-speed properties")
 	for shot: CombatSim.Shot in sim.shots:
 		if shot.active:
-			_check(is_equal_approx(shot.damage, 9.0 * 1.02), "Production projectile damage includes moon charm and hourglass tradeoff")
+			var local_bonus: float = float(sim.run.loadout[0].get("resonance_bonus", 0.0))
+			_check(is_equal_approx(shot.damage, 9.0 * 1.02 * (1.0 + local_bonus)) and is_equal_approx(shot.resonance_bonus, local_bonus), "Production damage preserves moon charm and hourglass global tradeoffs while adding the actual local resonance")
 	_buy(sim.run, "relic", "pilgrim")
 	var before: Vector2 = sim.player_position
 	sim.step(STEP, Vector2.RIGHT)

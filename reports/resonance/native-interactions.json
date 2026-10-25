@@ -1,0 +1,37 @@
+{
+  "method": "computer-use skill with @oai/sky, native mouse rotate action + Enter placement and physical relic drag",
+  "fixed_fixture": true,
+  "persistent_profile": false,
+  "viewport": [
+    1280,
+    720
+  ],
+  "verified_bonus_sequence": [
+    0.09,
+    0.06,
+    0.03
+  ],
+  "displayed_damage_sequence": [
+    16.6,
+    16.2,
+    15.7
+  ],
+  "wallet_unchanged": 2195,
+  "source_uid_sequence": [
+    [
+      4,
+      5,
+      6
+    ],
+    [
+      4,
+      5
+    ],
+    [
+      5
+    ]
+  ],
+  "global_stats_unchanged": true,
+  "log_sha256": "31a495d7082a43d7bd62ff19a63837f52f2b3e75c6bac07971fc98457384c7d7",
+  "first_capture_sha256": "f5d14d9c81641fb89ed15521376b3cc7b3a821f5868dd8c360473a4c35de8c3e"
+}
