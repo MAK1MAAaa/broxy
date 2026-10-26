@@ -92,6 +92,9 @@ var _bag_cursor: Vector2i = Vector2i.ZERO
 var _bag_grid: Control
 var _bag_details: VBoxContainer
 var _bag_status: Label
+var _unlocked_starters: Array[String] = ["bone", "ember"]
+var _rogue_epoch: int = 0
+var _rogue_notice: String = ""
 
 
 func _ready() -> void:
@@ -142,6 +145,15 @@ func set_settings(values: Dictionary) -> void:
 			_settings[key] = values[key]
 
 
+func set_progress(starters: Array[String]) -> void:
+	_unlocked_starters = ["bone", "ember"]
+	for id: String in ["frost", "scatter"]:
+		if starters.has(id):
+			_unlocked_starters.append(id)
+	if not _unlocked_starters.has(_starter):
+		_starter = "bone"
+
+
 func show_title(best: Dictionary) -> void:
 	_best = best.duplicate()
 	_set_screen("title")
@@ -174,7 +186,7 @@ func show_title(best: Dictionary) -> void:
 	var starters := HBoxContainer.new()
 	starters.add_theme_constant_override("separation", 12)
 	start_body.add_child(starters)
-	for id: String in ["bone", "ember"]:
+	for id: String in ["bone", "ember", "frost", "scatter"]:
 		var definition: ContentDef = GameCatalog.weapon(id)
 		var option := VBoxContainer.new()
 		option.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -184,15 +196,17 @@ func show_title(best: Dictionary) -> void:
 		card.name = "Starter_" + id
 		card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		card.toggle_mode = true
+		card.disabled = not _unlocked_starters.has(id)
+		card.focus_mode = Control.FOCUS_NONE if card.disabled else Control.FOCUS_ALL
 		card.button_pressed = _starter == id
-		card.tooltip_text = definition.description
-		card.add_theme_font_size_override("font_size", 20)
+		card.tooltip_text = definition.description if _unlocked_starters.has(id) else _starter_unlock_text(id)
+		card.add_theme_font_size_override("font_size", 17)
 		card.add_theme_color_override("font_pressed_color", BONE)
 		card.add_theme_stylebox_override("normal", _box(Color("1d2230"), Color(GOLD, 0.3)))
 		card.add_theme_stylebox_override("pressed", _box(Color("302b3b"), GOLD))
 		_set_button_icon(card, definition)
 		option.add_child(card)
-		var role := _label(definition.subtitle.get_slice(" · ", 1), 12, GOLD if _starter == id else MUTED)
+		var role := _label(definition.subtitle.get_slice(" · ", 1) if _unlocked_starters.has(id) else _starter_unlock_text(id), 11, GOLD if _starter == id else MUTED)
 		role.name = "StarterRole_" + id
 		role.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		option.add_child(role)
@@ -423,7 +437,7 @@ func hide_pause() -> void:
 
 
 func handle_back() -> bool:
-	if _overlay_mode in ["relic_details", "relic_comparison", "rune_equip_comparison"]:
+	if _overlay_mode in ["relic_details", "relic_comparison", "rune_equip_comparison", "rogue_choices"]:
 		hide_pause()
 		return true
 	if _overlay_mode == "settings_pause":
@@ -628,7 +642,7 @@ func notify(message: String) -> void:
 
 
 func _build_shop() -> void:
-	if _overlay_mode in ["relic_comparison", "rune_equip_comparison"]:
+	if _overlay_mode in ["relic_comparison", "rune_equip_comparison", "rogue_choices"]:
 		hide_pause()
 	_shop_epoch += 1
 	if is_instance_valid(_bag_grid):
@@ -655,6 +669,15 @@ func _build_shop() -> void:
 	var title := _label("祭坛商店", 31, BONE)
 	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	heading.add_child(title)
+	var rogue_state: Dictionary = run.rogue_choices()
+	var rogue_text: String = "秘术抉择 · 核心待选" if str(rogue_state.get("core_id", "")).is_empty() else "秘术抉择 · 当前构筑"
+	if bool(rogue_state.get("reward_pending", false)):
+		rogue_text = "秘术抉择 · 符文待领"
+	var ritual := _shop_button(rogue_text, _show_rogue_choices, "rogue", Vector2(240, 38))
+	ritual.name = "OpenRogueChoices"
+	ritual.add_theme_font_size_override("font_size", 15)
+	ritual.tooltip_text = "选择本局流派、可跳过的追猎契约与下一波敌群；可稍后决定。"
+	heading.add_child(ritual)
 	heading.add_child(_label("波次 %d 完成   /   魂屑 %d" % [run.wave, run.gold], 22, GOLD))
 	var guide := _wrap(_rune_guide(), 15, PURPLE if _selected_rune >= 0 else MUTED)
 	guide.name = "RuneGuide"
@@ -706,6 +729,174 @@ func _build_shop() -> void:
 	_accent(next)
 	footer.add_child(next)
 	_restore_shop_focus.call_deferred(focus_id)
+
+
+func _show_rogue_choices(keep_notice: bool = false) -> void:
+	if _screen != "shop" or _refresh_queued or not _overlay_mode.is_empty() or run == null:
+		return
+	if not keep_notice:
+		_rogue_notice = ""
+	var source: Button = _shop_focus_button("rogue")
+	if source != null:
+		source.grab_focus()
+	_begin_overlay("rogue_choices")
+	_rogue_epoch += 1
+	var epoch: int = _rogue_epoch
+	var choices: Dictionary = run.rogue_choices()
+	var body := _modal("秘术抉择", Vector2(1030, 650))
+	body.name = "RogueChoices"
+	body.add_theme_constant_override("separation", 8)
+	var note := _wrap(_rogue_notice if not _rogue_notice.is_empty() else "核心每局选一个；契约可跳过；路线只改变下一波。可随时返回商店整理。", 14, CYAN if not _rogue_notice.is_empty() else MUTED)
+	note.name = "RogueNotice"
+	body.add_child(note)
+	var scroll := ScrollContainer.new()
+	scroll.name = "RogueChoicesScroll"
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+	scroll.focus_mode = Control.FOCUS_ALL
+	scroll.follow_focus = true
+	scroll.gui_input.connect(_rogue_scroll_input.bind(scroll, epoch))
+	body.add_child(scroll)
+	var content := VBoxContainer.new()
+	content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	content.add_theme_constant_override("separation", 12)
+	scroll.add_child(content)
+	_section_heading(content, "I · 本局核心", GOLD, 18)
+	var current: String = str(choices.get("core_id", ""))
+	if current.is_empty():
+		var cards := HBoxContainer.new()
+		cards.add_theme_constant_override("separation", 14)
+		content.add_child(cards)
+		for option: Dictionary in choices.get("core_options", []):
+			var card := _panel(cards)
+			card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			var inside := _inside(card, 12)
+			inside.add_child(_label(str(option["name"]), 20, BONE))
+			inside.add_child(_wrap(str(option["description"]), 14, MUTED))
+			var choose := _button("选择 · " + str(option["name"]), _rogue_action.bind("core", str(option["id"]), epoch), Vector2(0, 36))
+			choose.name = "RogueCore_" + str(option["id"])
+			choose.disabled = not bool(choices.get("can_choose_core", false))
+			inside.add_child(choose)
+		if not bool(choices.get("can_choose_core", false)):
+			content.add_child(_wrap("完成首波后即可选择；免费法器需要真实空位，可先返回整理。", 13, GOLD))
+	else:
+		for option: Dictionary in choices.get("core_options", []):
+			if str(option["id"]) == current:
+				content.add_child(_wrap("已选 · %s\n%s" % [option["name"], option["description"]], 14, CYAN))
+	_section_heading(content, "II · 追猎契约", CORAL, 18)
+	if bool(choices.get("altar_available", false)):
+		content.add_child(_wrap("第3波追加一名追猎者：冲锋敌人，生命为普通个体的%.1f倍、移速为%.2f倍。击败后于波间任选一枚Ⅰ阶符文；只撑过计时不算完成。也可放弃契约。" % [RogueRules.HUNTER_HEALTH_FACTOR, RogueRules.HUNTER_SPEED_FACTOR], 14, MUTED))
+		var actions := HBoxContainer.new()
+		content.add_child(actions)
+		var accept := _button("接受追猎 · 自选符文", _rogue_action.bind("altar", "accept", epoch), Vector2(0, 36))
+		accept.name = "RogueAltarAccept"
+		accept.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		actions.add_child(accept)
+		var decline := _button("跳过契约", _rogue_action.bind("altar", "decline", epoch), Vector2(0, 36))
+		decline.name = "RogueAltarDecline"
+		decline.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		actions.add_child(decline)
+	else:
+		var altar_text: String = "第2波完成后开放一次；接受前可查看风险，也可跳过。"
+		if str(choices.get("altar_choice", "")) == "declined":
+			altar_text = "本局已跳过追猎契约。"
+		elif str(choices.get("altar_choice", "")) == "accepted":
+			if bool(choices.get("hunter_defeated", false)):
+				altar_text = "已击败追猎者。" if bool(choices.get("reward_pending", false)) else "已击败追猎者，符文奖励已领取。"
+			else:
+				altar_text = "第3波已结束，追猎契约未完成。" if run.wave >= int(choices.get("altar_wave", 3)) else "已接受：第3波击败追猎者后，波间领取符文。"
+		elif run.wave > 2:
+			altar_text = "本局已错过追猎祭坛；下一局第2波结束后可选择。"
+		content.add_child(_wrap(altar_text, 14, MUTED))
+	if bool(choices.get("reward_pending", false)):
+		content.add_child(_wrap("契约奖励待领：任选一枚Ⅰ阶符文。空间不足时奖励保留，可返回整理后领取。", 14, CYAN))
+		var rewards := HBoxContainer.new()
+		content.add_child(rewards)
+		for rune: ContentDef in GameCatalog.runes():
+			var claim := _button("领取 · " + rune.display_name, _rogue_action.bind("reward", rune.id, epoch), Vector2(0, 36))
+			claim.name = "RogueReward_" + rune.id
+			claim.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			claim.disabled = not bool(choices.get("can_claim_reward", false))
+			rewards.add_child(claim)
+	_section_heading(content, "III · 下一波路线", PURPLE, 18)
+	if bool(choices.get("can_choose_route", false)):
+		var routes := HBoxContainer.new()
+		routes.add_theme_constant_override("separation", 12)
+		content.add_child(routes)
+		for option: Dictionary in choices.get("route_options", []):
+			var card := _panel(routes)
+			card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			var inside := _inside(card, 10)
+			inside.add_child(_wrap(str(option["description"]), 13, MUTED))
+			var selected: bool = str(option["id"]) == str(choices.get("route", "balanced"))
+			var select := _button(("已选 · " if selected else "选择 · ") + str(option["name"]), _rogue_action.bind("route", str(option["id"]), epoch), Vector2(0, 36))
+			select.name = "RogueRoute_" + str(option["id"])
+			select.add_theme_font_size_override("font_size", 14)
+			if selected:
+				_accent(select)
+			inside.add_child(select)
+	else:
+		content.add_child(_wrap("首领战使用固定敌群；普通波结束后可选择下一波路线。", 14, MUTED))
+	content.add_child(_wrap("引魂烛联动：放在法器正下方且边缘相接，使该法器优先攻击射程内生命比例最低的敌人。可在背包详情查看连接对象。", 13, MUTED))
+	var close := _button("返回商店 · Esc", _close_rogue_choices.bind(epoch), Vector2(0, 40))
+	close.name = "CloseRogueChoices"
+	_accent(close)
+	body.add_child(close)
+	_focus_later(_first_page_button(content) if _first_page_button(content) != null else close)
+
+
+func _rogue_action(kind: String, id: String, epoch: int) -> void:
+	if _screen != "shop" or _overlay_mode != "rogue_choices" or _refresh_queued or epoch != _rogue_epoch:
+		return
+	_rogue_epoch += 1
+	var reopen_token: int = _rogue_epoch
+	var state: RunState = run
+	hide_pause()
+	var success: bool = false
+	match kind:
+		"core": success = run.choose_core(id)
+		"altar": success = run.choose_altar(id == "accept")
+		"route": success = run.choose_route(id)
+		"reward": success = run.claim_altar_rune(id)
+	_rogue_notice = _rogue_success_text(kind, id) if success else run.last_error
+	feedback.emit("buy" if success else "hurt")
+	_queue_refresh()
+	_reopen_rogue_choices.call_deferred(state, reopen_token)
+
+
+func _rogue_success_text(kind: String, id: String) -> String:
+	match kind:
+		"core": return "已选择%s，所需法器已补齐。可返回背包装符与整理。" % str(RogueRules.core(id).get("name", ""))
+		"altar": return "已接受追猎：第3波击败追猎者后，波间任选符文。" if id == "accept" else "已跳过本局追猎契约。"
+		"route":
+			var option: Dictionary = RogueRules.route(id)
+			return "下一波路线：%s。%s" % [option.get("name", ""), option.get("description", "")]
+		"reward": return "%s已放入背包；本次契约奖励已领取。" % GameCatalog.rune(id).display_name
+	return "抉择已生效。"
+
+
+func _reopen_rogue_choices(state: RunState, token: int) -> void:
+	if run == state and _rogue_epoch == token and _screen == "shop" and _overlay_mode.is_empty() and not _refresh_queued:
+		_show_rogue_choices(true)
+
+
+func _close_rogue_choices(epoch: int) -> void:
+	if _screen == "shop" and _overlay_mode == "rogue_choices" and epoch == _rogue_epoch:
+		hide_pause()
+
+
+func _rogue_scroll_input(event: InputEvent, scroll: ScrollContainer, epoch: int) -> void:
+	if _overlay_mode != "rogue_choices" or epoch != _rogue_epoch or not event is InputEventKey or not event.pressed:
+		return
+	var page: int = maxi(1, int(scroll.size.y * 0.8))
+	match event.keycode:
+		KEY_PAGEDOWN: scroll.scroll_vertical += page
+		KEY_PAGEUP: scroll.scroll_vertical -= page
+		KEY_HOME: scroll.scroll_vertical = 0
+		KEY_END: scroll.scroll_vertical = int(scroll.get_v_scroll_bar().max_value)
+		_: return
+	scroll.accept_event()
 
 
 func _build_backpack(parent: Control) -> void:
@@ -989,6 +1180,8 @@ func _backpack_effect_text(item: Dictionary) -> String:
 			var rune: Dictionary = item.get("rune", {})
 			if not rune.is_empty():
 				text += "\n" + _rune_rank_text(str(rune["id"]), int(rune.get("rank", 1)))
+			if run.linked_weapon_uids().has(int(item["uid"])):
+				text += "\n引魂烛联动：优先攻击射程内生命比例最低的敌人。"
 			return text
 		"rune": return _rune_rank_text(definition.id, rank) + "\n拖到法器上装入，或选择下方目标。"
 		"relic":
@@ -999,7 +1192,10 @@ func _backpack_effect_text(item: Dictionary) -> String:
 				var amount: float = float(pair[1]) * BackpackInventory.rank_multiplier(rank)
 				var names: Dictionary = {"damage": "伤害", "attack_speed": "攻速", "move_speed": "移速", "max_health": "生命上限", "armor": "护甲", "pickup_radius": "拾取范围"}
 				result.append("%s %+.0f%%" % [names.get(pair[0], pair[0]), amount * 100.0] if str(pair[0]) in ["damage", "attack_speed"] else "%s %+.0f" % [names.get(pair[0], pair[0]), amount])
-			return "本阶基础贡献：\n" + "\n".join(result) + "\n放入即生效；合成保留两件总属性。"
+			var text: String = "本阶基础贡献：\n" + "\n".join(result) + "\n放入即生效；合成保留两件总属性。"
+			if definition.id == "grave_candle":
+				text += "\n正上方边缘相接的法器优先攻击残血目标；不叠加。\n当前连接：" + _candle_link_names(item)
+			return text
 	return definition.description
 
 
@@ -1566,8 +1762,25 @@ func _change_toggle(value: bool, key: String) -> void:
 	setting_changed.emit(key, value)
 
 
+static func _starter_unlock_text(id: String) -> String:
+	return "完成第3波解锁" if id == "frost" else "击败追猎者解锁"
+
+
+func _candle_link_names(candle: Dictionary) -> String:
+	var names: PackedStringArray = []
+	var candle_size: Vector2i = BACKPACK_GRID._item_size(candle, bool(candle.get("rotated", false)))
+	var candle_rect := Rect2i(Vector2i(int(candle["x"]), int(candle["y"])), candle_size)
+	for weapon: Dictionary in run.loadout:
+		var item: Dictionary = run.backpack_item(int(weapon["uid"]))
+		var item_size: Vector2i = BACKPACK_GRID._item_size(item, bool(item.get("rotated", false)))
+		var rect := Rect2i(Vector2i(int(item["x"]), int(item["y"])), item_size)
+		if rect.end.y == candle_rect.position.y and rect.position.x < candle_rect.end.x and rect.end.x > candle_rect.position.x:
+			names.append("%s #%d" % [GameCatalog.weapon(str(item["id"])).display_name, int(item["uid"])])
+	return "、".join(names) if not names.is_empty() else "无；请把烛台放在法器正下方。"
+
+
 func _select_starter(id: String) -> void:
-	if _screen != "title" or not _overlay_mode.is_empty() or id not in ["bone", "ember"]:
+	if _screen != "title" or not _overlay_mode.is_empty() or not _unlocked_starters.has(id):
 		return
 	_starter = id
 	_refresh_title.call_deferred()
@@ -1578,7 +1791,7 @@ func _refresh_title() -> void:
 		return
 	# Update in place so a queued selection never rebuilds away a settings modal
 	# or its source control and keyboard focus.
-	for id: String in ["bone", "ember"]:
+	for id: String in ["bone", "ember", "frost", "scatter"]:
 		var button := _page.find_child("Starter_" + id, true, false) as Button
 		var role := _page.find_child("StarterRole_" + id, true, false) as Label
 		if button != null:
@@ -1592,6 +1805,8 @@ func _refresh_title() -> void:
 
 func _start() -> void:
 	if _screen not in ["title", "result"] or not _overlay_mode.is_empty():
+		return
+	if not _unlocked_starters.has(_starter):
 		return
 	start_requested.emit(_starter)
 
@@ -1709,7 +1924,7 @@ func _handle_action(success: bool, sound: String = "", message: String = "") -> 
 
 
 func _on_state_changed() -> void:
-	if _overlay_mode in ["relic_comparison", "rune_equip_comparison"]:
+	if _overlay_mode in ["relic_comparison", "rune_equip_comparison", "rogue_choices"]:
 		hide_pause()
 	if _screen == "shop" or _screen == "upgrades":
 		_queue_refresh()
@@ -1731,6 +1946,8 @@ func _refresh() -> void:
 
 
 func _set_screen(screen: String) -> void:
+	_rogue_epoch += 1
+	_rogue_notice = ""
 	_screen = screen
 	_bag_held_uid = -1
 	_bag_selected_uid = -1

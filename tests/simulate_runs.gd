@@ -2,9 +2,9 @@ extends SceneTree
 ## Runs the shipped simulation and inventory rules without rendering or privileged rewards.
 
 const DELTA: float = 1.0 / 60.0
-const POLICY_VERSION: String = "orbit-avoid-v1/backpack-shop-v2/upgrade-timing-v2"
+const POLICY_VERSION: String = "orbit-avoid-v1/backpack-shop-v2/upgrade-timing-v2/rogue-choices-v1"
 const SHOP_OBSERVATION_SCHEMA_VERSION: String = "shop-observations-v1"
-const POLICY_CHANGE_NOTE: String = "Backpack-shop-v2 purchase, merge and upgrade preferences are retained. Relic adjacency now affects real weapon damage; this runner does not rearrange items to optimize resonance. Not a trajectory-equivalence run against the previous balance."
+const POLICY_CHANGE_NOTE: String = "Explicit core/route/altar choices use shipped transactions before normal space-aware shopping. Relic adjacency affects real damage; this policy does not optimize placement. Movement and upgrade priorities unchanged; not a legacy trajectory-equivalence run."
 const RUNES: Array[String] = ["pierce", "bounce", "blast"]
 const MAX_REROLLS: int = 3
 
@@ -14,6 +14,9 @@ var _rune: String = "all"
 var _require_win: bool = false
 var _balance_version: String = ""
 var _policy_version: String = ""
+var _core: String = "none"
+var _route: String = "balanced"
+var _altar: String = "skip"
 
 func _initialize() -> void:
 	for argument: String in OS.get_cmdline_user_args():
@@ -25,13 +28,23 @@ func _initialize() -> void:
 			_rune = argument.trim_prefix("--rune=")
 		elif argument == "--require-win":
 			_require_win = true
+		elif argument.begins_with("--core="):
+			_core = argument.trim_prefix("--core=")
+		elif argument.begins_with("--route="):
+			_route = argument.trim_prefix("--route=")
+		elif argument.begins_with("--altar="):
+			_altar = argument.trim_prefix("--altar=")
+	if _core not in ["none", "frostfire", "bone_chorus"] or RogueRules.route(_route).is_empty() or _altar not in ["accept", "skip"]:
+		push_error("Use --core=none|frostfire|bone_chorus --route=balanced|swarm|bulwark --altar=accept|skip")
+		quit(2)
+		return
 	if _rune != "all" and not RUNES.has(_rune):
 		push_error("--rune must be all, pierce, bounce, or blast")
 		quit(2)
 		return
 	_balance_version = _content_version()
 	var policy_source: String = FileAccess.get_file_as_string("res://scripts/combat/bot_policy.gd") + FileAccess.get_file_as_string("res://tests/simulate_runs.gd")
-	_policy_version = POLICY_VERSION + "+" + policy_source.sha256_text().left(12)
+	_policy_version = POLICY_VERSION + "/%s/%s/%s+" % [_core, _route, _altar] + policy_source.sha256_text().left(12)
 	var all_won: bool = true
 	for offset: int in range(_count):
 		for rune_id: String in RUNES:
@@ -43,7 +56,7 @@ func _initialize() -> void:
 	quit(1 if _require_win and not all_won else 0)
 
 func _content_version() -> String:
-	var sources: Array[String] = ["res://scripts/core/run_state.gd", "res://scripts/core/backpack_inventory.gd", "res://scripts/core/backpack_resonance.gd", "res://scripts/combat/combat_sim.gd", "res://scripts/data/content_def.gd", "res://scripts/data/game_catalog.gd", "res://scripts/data/rune_rules.gd", "res://scripts/main.gd"]
+	var sources: Array[String] = ["res://scripts/core/run_state.gd", "res://scripts/core/backpack_inventory.gd", "res://scripts/core/backpack_resonance.gd", "res://scripts/combat/combat_sim.gd", "res://scripts/data/content_def.gd", "res://scripts/data/game_catalog.gd", "res://scripts/data/rune_rules.gd", "res://scripts/data/rogue_rules.gd", "res://scripts/main.gd"]
 	var definitions: Array[ContentDef] = GameCatalog.weapons()
 	definitions.append_array(GameCatalog.runes())
 	definitions.append_array(GameCatalog.relics())
@@ -83,6 +96,7 @@ func _play_run(seed_value: int, rune_id: String) -> Dictionary:
 			"health_before": snappedf(start_health, 0.001), "health_after": snappedf(state.health, 0.001),
 			"elapsed": snappedf(simulation.elapsed, 0.001),
 			"weapon_count": state.loadout.size(), "backpack_used_cells": state.backpack_snapshot()["used_cells"],
+			"core_activations": simulation.core_activations.duplicate(true),
 			"resonant_weapon_count": state.loadout.filter(func(item: Dictionary) -> bool: return float(item.get("resonance_bonus", 0.0)) > 0.0).size(),
 		})
 		reason = simulation.end_reason if simulation.complete else "Simulation exceeded its frame budget"
@@ -96,7 +110,9 @@ func _play_run(seed_value: int, rune_id: String) -> Dictionary:
 		trace.append({"wave": state.wave, "action": "wave_income", "top_up": state.gold - before_minimum, "gold": state.gold})
 		_choose_upgrades(state, trace)
 		state.generate_shop()
+		_choose_rogue_options(state, rune_id, trace)
 		_shop(state, rune_id, trace, shop_observations)
+		_claim_rogue_reward(state, rune_id, trace)
 		state.next_wave()
 	var equipped_runes: int = 0
 	for weapon: Dictionary in state.loadout:
@@ -111,7 +127,27 @@ func _play_run(seed_value: int, rune_id: String) -> Dictionary:
 		"relic_counts": state.relic_counts.duplicate(true), "wave_results": wave_results, "trace": trace,
 		"shop_observations": shop_observations,
 		"backpack": state.backpack_snapshot(),
+		"rogue": state.rogue_choices(), "requested_core": _core, "requested_route": _route, "requested_altar": _altar,
 	}
+
+func _choose_rogue_options(state: RunState, rune_id: String, trace: Array[Dictionary]) -> void:
+	var choices: Dictionary = state.rogue_choices()
+	if bool(choices["can_choose_core"]) and _core != "none":
+		var success: bool = state.choose_core(_core)
+		trace.append({"wave": state.wave, "action": "choose_core", "id": _core, "success": success, "error": state.last_error})
+	if bool(choices["altar_available"]):
+		var success: bool = state.choose_altar(_altar == "accept")
+		trace.append({"wave": state.wave, "action": "choose_altar", "choice": _altar, "success": success, "error": state.last_error})
+	if bool(choices["can_choose_route"]):
+		var success: bool = state.choose_route(_route)
+		trace.append({"wave": state.wave, "action": "choose_route", "id": _route, "success": success, "error": state.last_error})
+	_claim_rogue_reward(state, rune_id, trace)
+
+func _claim_rogue_reward(state: RunState, rune_id: String, trace: Array[Dictionary]) -> void:
+	if not state.rune_reward_pending:
+		return
+	var success: bool = state.claim_altar_rune(rune_id)
+	trace.append({"wave": state.wave, "action": "claim_altar_rune", "id": rune_id, "success": success, "error": state.last_error})
 
 func _advance_combat_tick(simulation: CombatSim, state: RunState, trace: Array[Dictionary]) -> void:
 	if simulation.complete:

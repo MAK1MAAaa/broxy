@@ -1,10 +1,18 @@
 # 原型验收记录
 
-本次PR #4同步main（2026-10-26）：将 `047d9c1` 合入 `codex/backpack-resonance`，手动合并README三处与本文顶部一处冲突，同时保留Windows共鸣和Mac适配证据。共鸣生产代码、内容与素材保持 `632cd06`，main中的滚动测试适配完整保留。Mac完整45套加5个额外档案入口共24694条Godot断言、27项Python测试通过；原生遗物对照226条与共鸣UI32条通过。本次没有重新打包、重跑模拟或图形压力，不将历史包／FPS作为新结果。见[同步验证](../reports/pr4-main-sync-validation.json)。
+当前整合验收（2026-10-26）：将main `8a13f5c`（PR #4共鸣）整合到Mac `393083d`（秘术抉择），保留两侧机制／材质和engraved-07资源。共鸣仅在发射时乘一次，齐鸣55%与寒焰50%沿用实际弹体伤害；完整53套加5个档案入口共25418条Godot断言、27项Python通过，新增组合状态76／战斗147／UI32条，原生组合UI32条通过。两核心各15局完成，192波含共鸣法器；固定画面四组已复核。白骨八法器60秒原生平均95.754 FPS／P99 26.109ms通过（未重复300秒，直接呈现夹具默认共鸣0，计数含5秒预热）。新Embers-integrated-macos.app/ZIP通过arm64、严格签名、Info.plist、无档案启动、导出包正式事务探测及原生商店截图／ZIP检查；旧包保留。用户授权新建PR检查后合并并同步main／macOS，验证详情见[整合记录](../reports/macos-main-integration-validation.json)。
+
+此前393083d的Mac交付（2026-10-26）：`rogue-choices-v1`接入两种局内核心、追猎契约／符文自选、路线、引魂烛联动与四种起始法器的挑战解锁。完整46套加5额外档案入口共23797条Godot断言、27项Python通过；原生RogueUI63条与ChoiceActions44条通过。锁定卡进入Tab链的真实回归已修复，旧断言保持。七组UI和三组实际触发的固定战斗陈列已查看；真实Main加速边界→UI选择→猎手击杀→领奖→终局解锁35条通过。最终两核心各15局全胜，两路线各6局全胜；无核心新旧各15局均14胜，不能据此推断真人难度或轨迹等价。霜火八法器300秒原生压力平均105.504 FPS／P99 22.067ms通过，实际触发2151次（含5秒预热）。新Embers-rogue-macos.app/ZIP通过arm64、严格ad-hoc签名、Info.plist、无档案启动、实际商店截图、导出规则接口探测与ZIP检查。Windows和真人试玩未执行，边界、版本、指纹见[肉鸽记录](../reports/rogue-choices-validation.json)。
+
+上一轮Mac交付（2026-10-26）：`backpack-targets-v1`为拿起物品增加合成／装符候选、逐格图标落点与具名结果提示；越界轮廓裁剪在背包内。完整42套加5额外入口共23414条Godot断言、27项Python通过，新增86条与既有背包UI90条另在原生Mac通过。四组同库存原生前后陈列已查看，状态／余额／RNG保持。新Embers-targets-macos.app及arm64 ZIP通过严格签名、Info.plist、无档案启动、发布包商店截图与ZIP完整性；隔离编辑器读取导出PCK确认新接口与合成投影。仅固定夹具与引擎输入验证，没有新增真人、5分钟性能、30局或Windows结论；证据见[背包目标记录](../reports/backpack-targets-validation.json)。
+
+前一轮美术与Mac交付（2026-10-26）：`engraved-07`仅细化Boss古金5处RGB属性，其他45项素材及游戏运行时／规则／策略保持047d9c1；160px源alpha、面具内部与双掌像素不变，141px原生前后／预警／寒霜陈列已查看。完整23328条Godot与27项Python通过，48生成产物与元数据重跑一致。Embers-regalia-macos.app及arm64 ZIP通过严格签名、Info.plist、无档案启动、原生三秒冒烟和ZIP检查；导出PCK中Boss纹理与导入纹理一致。详见[Boss材质与打包记录](../reports/boss-art-validation.json)。该轮没有新Mac性能、真人辨识或通关结论。
+
+前一版Mac测试适配与交付（2026-10-26）：基于main `b20a714`，修正遗物对照滚动测试对字体高度的依赖。41套Godot加5个额外档案入口共23328条断言、27项Python测试通过，原生对照套件226条通过；原生产界面、规则和素材保持。新`Embers-backpack-macos.app`与arm64 ZIP通过严格ad-hoc签名、Info.plist、无档案启动、实际发布包原生背包商店截图及ZIP完整性检查。旧应用保留，详见[Mac测试与打包记录](../reports/macos-backpack-validation.json)。本次未重测300秒图形性能、Windows或30局模拟；下面的Windows性能和更早Mac记录各自保留原范围。
+
+此前PR #4同步main（2026-10-26）：将 `047d9c1` 合入 `codex/backpack-resonance`，手动合并README三处与本文顶部一处冲突，同时保留Windows共鸣和Mac适配证据。共鸣生产代码、内容与素材保持 `632cd06`，main中的滚动测试适配完整保留。Mac完整45套加5个额外档案入口共24694条Godot断言、27项Python测试通过；原生遗物对照226条与共鸣UI32条通过。本次没有重新打包、重跑模拟或图形压力，不将历史包／FPS作为新结果。见[同步验证](../reports/pr4-main-sync-validation.json)。
 
 此前Windows共鸣版本（`632cd06`）：45套Godot加5档案入口，24688条断言与27项Python测试通过；新伤害规则下30局自动模拟30胜0败，186波含共鸣法器。实际旋转／移走遗物确认9%→6%→3%，四种720p画面与独立审查通过。Windows包及本轮60秒呈现压力回归见[共鸣验收](resonance.md)和[紧凑记录](../reports/resonance/validation.json)；未重复300秒，macOS未重建，真人试玩未开展。
-
-Mac背包交付记录（2026-10-26，`29b1dcb`）：基于main `b20a714`，修正遗物对照滚动测试对字体高度的依赖。41套Godot加5个额外档案入口共23328条断言、27项Python测试通过，原生对照套件226条通过；该适配轮次的原生产界面、规则和素材保持；所列Mac包尚未包含本PR的邻接共鸣。新`Embers-backpack-macos.app`与arm64 ZIP通过严格ad-hoc签名、Info.plist、无档案启动、实际发布包原生背包商店截图及ZIP完整性检查。旧应用保留，详见[Mac测试与打包记录](../reports/macos-backpack-validation.json)。本次未重测300秒图形性能、Windows或30局模拟；下面的Windows性能和更早Mac记录各自保留原范围。
 
 测试修复包含自然布局按实际范围检查、明确产生溢出的临时夹具、真实PageDown/PageUp/Home/End及布局/状态/RNG恢复。原220条中1项在Mac失败，修改后226条全部通过；仅吞掉PageDown的独立临时副本仍在真正溢出断言失败，未用跳过滚动来通过测试。
 

@@ -44,6 +44,13 @@ var offers: Array[Dictionary] = []
 var rerolls: int = 0
 var last_error: String = ""
 var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+var core_id: String = ""
+var altar_choice: String = ""
+var altar_wave: int = -1
+var hunter_defeated: bool = false
+var rune_reward_pending: bool = false
+var next_route: String = "balanced"
+var active_route: String = "balanced"
 
 var _run_seed: int = 0
 var _next_rune_uid: int = 1
@@ -75,6 +82,13 @@ func begin(seed_value: int, starter: String) -> void:
 	offers.clear()
 	rerolls = 0
 	last_error = ""
+	core_id = ""
+	altar_choice = ""
+	altar_wave = -1
+	hunter_defeated = false
+	rune_reward_pending = false
+	next_route = "balanced"
+	active_route = "balanced"
 	_next_rune_uid = 1
 	_wave_income = 0
 	_wave_finished = false
@@ -89,6 +103,98 @@ func begin(seed_value: int, starter: String) -> void:
 
 func stat(key: String) -> float:
 	return _stat_with_projected_relic(key)
+
+func choose_core(id: String) -> bool:
+	if not _wave_finished or wave < 1 or wave >= GameCatalog.WAVE_DEFS.size() or not core_id.is_empty():
+		return _fail("请在波间选择一个尚未选定的核心。")
+	var definition: Dictionary = RogueRules.core(id)
+	if definition.is_empty():
+		return _fail("未知的秘术核心。")
+	# Build on a detached inventory so a multi-weapon grant either commits in full
+	# or preserves every original item, UID and layout when capacity is insufficient.
+	var before: Dictionary = backpack.snapshot()
+	var work := BackpackInventory.new()
+	work.height = int(before["height"])
+	work._items.assign((before["items"] as Array).duplicate(true))
+	work._next_uid = int(before["next_uid"])
+	for weapon_id: String in definition["weapons"]:
+		var owned: bool = false
+		for weapon: Dictionary in loadout:
+			owned = owned or str(weapon["id"]) == weapon_id
+		if (not owned or bool(definition.get("always_grant", false))) and work.add("weapon", weapon_id, 0).is_empty():
+			return _fail("背包放不下核心赠送的法器；请先整理，再选择核心。")
+	backpack = work
+	core_id = id
+	_sync_backpack_projection()
+	last_error = ""
+	changed.emit()
+	return true
+
+func choose_altar(accept: bool) -> bool:
+	if not _wave_finished or wave != 2 or not altar_choice.is_empty():
+		return _fail("追猎契约仅在第2波后的祭坛选择一次。")
+	altar_choice = "accepted" if accept else "declined"
+	altar_wave = 3 if accept else -1
+	last_error = ""
+	changed.emit()
+	return true
+
+func choose_route(id: String) -> bool:
+	if not _wave_finished or wave < 1 or wave >= GameCatalog.WAVE_DEFS.size() - 1:
+		return _fail("仅能在普通波之间选择下一波路线；首领战沿用原途。")
+	if RogueRules.route(id).is_empty():
+		return _fail("未知的试炼路线。")
+	if next_route == id:
+		return true
+	next_route = id
+	last_error = ""
+	changed.emit()
+	return true
+
+func record_hunter_defeat() -> void:
+	if _wave_finished or altar_choice != "accepted" or wave != altar_wave or hunter_defeated:
+		return
+	hunter_defeated = true
+	rune_reward_pending = true
+
+func claim_altar_rune(id: String) -> bool:
+	if not _wave_finished or not rune_reward_pending:
+		return _fail("请在完成追猎契约后，于波间领取符文。")
+	if GameCatalog.rune(id) == null:
+		return _fail("请选择有效的奖励符文。")
+	if backpack.add("rune", id, 0).is_empty():
+		return _fail("背包空间不足；奖励会保留，请整理后领取。")
+	rune_reward_pending = false
+	_sync_backpack_projection()
+	last_error = ""
+	changed.emit()
+	return true
+
+func linked_weapon_uids() -> Array[int]:
+	var result: Array[int] = []
+	var entries: Array = backpack.snapshot()["items"]
+	for candle: Dictionary in entries:
+		if str(candle["kind"]) != "relic" or str(candle["id"]) != "grave_candle":
+			continue
+		var candle_size: Vector2i = BackpackInventory.size_for("relic", "grave_candle", bool(candle["rotated"]))
+		for weapon: Dictionary in entries:
+			if str(weapon["kind"]) != "weapon" or result.has(int(weapon["uid"])):
+				continue
+			var weapon_size: Vector2i = BackpackInventory.size_for("weapon", str(weapon["id"]), bool(weapon["rotated"]))
+			if int(weapon["y"]) + weapon_size.y == int(candle["y"]) and int(weapon["x"]) < int(candle["x"]) + candle_size.x and int(candle["x"]) < int(weapon["x"]) + weapon_size.x:
+				result.append(int(weapon["uid"]))
+	result.sort()
+	return result
+
+func rogue_choices() -> Dictionary:
+	return {"core_id": core_id, "core_options": RogueRules.cores(),
+		"can_choose_core": _wave_finished and wave >= 1 and wave < GameCatalog.WAVE_DEFS.size() and core_id.is_empty(),
+		"altar_available": _wave_finished and wave == 2 and altar_choice.is_empty(),
+		"altar_choice": altar_choice, "altar_wave": altar_wave, "hunter_defeated": hunter_defeated,
+		"reward_pending": rune_reward_pending, "can_claim_reward": _wave_finished and rune_reward_pending,
+		"can_choose_route": _wave_finished and wave >= 1 and wave < GameCatalog.WAVE_DEFS.size() - 1,
+		"route": next_route, "active_route": active_route, "route_options": RogueRules.routes(),
+		"linked_weapons": linked_weapon_uids()}
 
 func projected_upgrade_stat(key: String, amount: float) -> float:
 	return _stat_with_projected_relic(key, null, amount)
@@ -127,6 +233,7 @@ func backpack_snapshot() -> Dictionary:
 	var error: String = backpack_expansion_error()
 	result["can_expand"] = error.is_empty()
 	result["expansion_error"] = error
+	result["linked_weapons"] = linked_weapon_uids()
 	result["resonance"] = _resonance.duplicate(true)
 	return result
 
@@ -315,6 +422,7 @@ func finish_wave() -> void:
 	# Guarantee a usable budget without double-paying successful collection.
 	var minimum_income: int = 28 + (wave - 1) * 6
 	gold += maxi(0, minimum_income - _wave_income)
+	gold += int(RogueRules.route(active_route).get("reward", 0))
 	# The altar restores health between waves; only won waves reach this settlement.
 	health = stat("max_health")
 	last_error = ""
@@ -322,6 +430,8 @@ func finish_wave() -> void:
 
 func next_wave() -> void:
 	wave += 1
+	active_route = next_route if wave < GameCatalog.WAVE_DEFS.size() else "balanced"
+	next_route = "balanced"
 	rerolls = 0
 	offers.clear()
 	_wave_income = 0
@@ -722,6 +832,7 @@ func summary() -> Dictionary:
 		"rune_bag": rune_bag.duplicate(true),
 		"relic_counts": relic_counts.duplicate(true),
 		"backpack": backpack_snapshot(),
+		"rogue": rogue_choices(),
 	}
 
 func _random_offer_kind() -> String:

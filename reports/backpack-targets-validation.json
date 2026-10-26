@@ -1,0 +1,481 @@
+{
+  "schema_version": 1,
+  "date_local": "2026-10-26",
+  "created_at_utc": "2026-10-26T07:51:46.821851+00:00",
+  "baseline_commit": "eee475a5fcbefd2c2a55a79076b46638a182c7d9",
+  "runtime_ui_revision": "backpack-targets-v1",
+  "art_revision_unchanged": "engraved-07",
+  "projectile_visual_revision_unchanged": "arsenal-atlas-v5",
+  "scope": "Shop inventory decision feedback: merge/socket candidate corner badges, action-specific destination fill, dimmed held source, per-cell move ghost with existing icon, clipped invalid footprint, named rank/swap hints. Inventory rules, transactions and combat unchanged.",
+  "source": {
+    "scripts/ui/backpack_grid.gd": "6c0e3b8bde223222e63b711d7ddb3b2f696603ece2d2024e0cadcba71d5e1a46",
+    "tests/test_backpack_targets.gd": "833fc8ea4233a42d91a5c57e72024b56b4e42dd91e0f94e487193831946daf13",
+    "tests/test_backpack_targets.gd.uid": "4e5dfef75ae646008a59c3df38552e74fd5337eeefd4ca348db1bdd5ff4524a7",
+    "tools/preview_backpack_targets.gd": "4e1080788af11e071a24a9930090e94e2f1c0fd73b8053aa5d256a4624d968b6",
+    "tools/preview_backpack_targets.gd.uid": "24fce4d1c43b6bbbdba57510b55334545388a21259388da89a04232e12eb5873",
+    "tools/test.sh": "3e37207c6c216686cf88cb7b77f2b61aeb4669ffb48f08521abc01aceac2385b",
+    "tools/test.ps1": "5829e3e05c101405ba791420ed703ea822f0960df19e93544a7e8f6ec982a03f"
+  },
+  "unchanged": {
+    "all_46_manifest_assets_byte_equal_to_baseline": true,
+    "assets_manifest": {
+      "path": "assets/manifest.json",
+      "bytes": 22511,
+      "sha256": "37f283fb235b90a8374700304be6f9ad9fd9048b67cd954d19057f92f2fdfbe6"
+    },
+    "combat_core_data_resources_main_gameui_and_strategy_byte_unchanged": true,
+    "comparison": "git diff HEAD over assets/resources/scripts/combat/scripts/core/scripts/data/scripts/main.gd/scripts/ui/game_ui.gd; manifest members individually compared to git show HEAD:path",
+    "previous_core_version": "prototype-0.1.0+4cafb6168fa3",
+    "previous_policy_version": "orbit-avoid-v1/backpack-shop-v2/upgrade-timing-v2+7df97f24c500"
+  },
+  "automated": {
+    "command": "BROXY_PYTHON=<bundled Python3.12.14> ./tools/test.sh",
+    "exit_code": 0,
+    "godot_suites": 42,
+    "additional_profile_processes": 5,
+    "total_processes": 47,
+    "godot_assertions": 23414,
+    "godot_failures": 0,
+    "python_tests": 27,
+    "python_failures": 0,
+    "full_log": {
+      "path": "reports/targets-full-tests-raw.log",
+      "bytes": 7606,
+      "sha256": "88178cfa51397c5a445dca2c272c62b163258de6245319b0b0474931ddf05e0f"
+    },
+    "focused": [
+      {
+        "mode": "headless",
+        "suite": "BackpackTargets",
+        "assertions": 86,
+        "failures": 0,
+        "exit_code": 0,
+        "log": {
+          "path": "reports/targets-focused-headless-raw.log",
+          "bytes": 116,
+          "sha256": "e3309d777be02421ac01b77544552f96784f03e4aacd0f68fbb03e11f802e8bf"
+        }
+      },
+      {
+        "mode": "native macOS Compatibility",
+        "suite": "BackpackTargets",
+        "assertions": 86,
+        "failures": 0,
+        "exit_code": 0,
+        "log": {
+          "path": "reports/targets-focused-native-raw.log",
+          "bytes": 193,
+          "sha256": "b5dcae65db2b5859f3ee4c6e133e1c3a39a97591cbfb25469e17392a73c21d60"
+        }
+      },
+      {
+        "mode": "native macOS Compatibility",
+        "suite": "BackpackUI",
+        "assertions": 90,
+        "failures": 0,
+        "exit_code": 0,
+        "log": {
+          "path": "reports/targets-backpack-ui-native-raw.log",
+          "bytes": 188,
+          "sha256": "7fd6a4674573bba789b1f8ec5b68d820a5797c8f2f84f2ff75a1c7e8605fd0ff"
+        }
+      }
+    ],
+    "new_coverage": "Real purchases/merges create ranks1-3; exact source/self/kind/name/rank/max-rank filtering; rune rank across weapon ranks, occupied sockets; snapshot/candidate deep isolation and read-only RNG/currency/UID/signals/focus; injected engine R/arrows/Enter/Esc move, edge merge, rune swap, invalid placement and source restoration; preview ignores pointer/focus.",
+    "windows_entry_updated_but_not_executed": true
+  },
+  "native_fixtures": {
+    "baseline_project": "git archive eee475a5fcbefd2c2a55a79076b46638a182c7d9 -> /private/tmp/broxy-targets-before-eee475a; same frozen preview script copied into isolated project",
+    "budget": 1200,
+    "seed": 20261026,
+    "profile_persistence": false,
+    "construction": "Formal expand/buy/equip transactions; held source and cursor explicitly controlled, no placement transaction committed by capture tool. Not ordinary run income or OS drag input.",
+    "cases": [
+      {
+        "case": "merge",
+        "viewport": [
+          1280,
+          720
+        ],
+        "fixture_passed_both": true,
+        "state_and_rng_equal": true,
+        "inventory_sha256": "d2b7be018907ec5758c819ce48eae6774e649a43673f9037a648110ac5564c63",
+        "state_sha256": "1eba747c987cb078ea20707f15a015232cfbb4bc1d1797563899502f3aaad8e5",
+        "held_uid": 2,
+        "cursor": [
+          0,
+          0
+        ],
+        "before_api_available": false,
+        "after_candidates": [
+          {
+            "kind": "merge",
+            "result_rank": 2,
+            "uid": 1
+          },
+          {
+            "kind": "merge",
+            "result_rank": 2,
+            "uid": 3
+          }
+        ],
+        "after_projection": {
+          "error": "松手或Enter合成骨针：1阶 + 1阶 → 2阶。旧金↑合成候选2件。",
+          "kind": "merge",
+          "result_rank": 2,
+          "target": 1,
+          "valid": true
+        },
+        "captures": {
+          "before": {
+            "path": "reports/targets-merge-before.png",
+            "bytes": 189438,
+            "sha256": "c55f3b576ef0a6225d69ddf69d2421bb04f43ed198bce2475eab3f18937d3a83"
+          },
+          "after": {
+            "path": "reports/targets-merge-after.png",
+            "bytes": 194245,
+            "sha256": "36bb90f33f4747149902a2cdae8579a0e3bba54b9e114408259b9bb045eb3d48"
+          }
+        },
+        "logs": {
+          "before": {
+            "path": "reports/targets-merge-before-raw.log",
+            "bytes": 5738,
+            "sha256": "ff1df511daf37bd6d3cf41f8172071f163fb83486e098917889ac1c28ec201ca"
+          },
+          "after": {
+            "path": "reports/targets-merge-after-raw.log",
+            "bytes": 5835,
+            "sha256": "c19f97466361561890d204e444f2962c81f6decdda175f03b96da2ae45c41401"
+          }
+        }
+      },
+      {
+        "case": "rune",
+        "viewport": [
+          1280,
+          720
+        ],
+        "fixture_passed_both": true,
+        "state_and_rng_equal": true,
+        "inventory_sha256": "d2b7be018907ec5758c819ce48eae6774e649a43673f9037a648110ac5564c63",
+        "state_sha256": "1eba747c987cb078ea20707f15a015232cfbb4bc1d1797563899502f3aaad8e5",
+        "held_uid": 9,
+        "cursor": [
+          3,
+          0
+        ],
+        "before_api_available": false,
+        "after_candidates": [
+          {
+            "kind": "rune",
+            "replacing": false,
+            "result_rank": 1,
+            "uid": 1
+          },
+          {
+            "kind": "rune",
+            "replacing": false,
+            "result_rank": 1,
+            "uid": 2
+          },
+          {
+            "kind": "rune",
+            "replacing": false,
+            "result_rank": 1,
+            "uid": 3
+          },
+          {
+            "kind": "rune",
+            "replacing": true,
+            "result_rank": 1,
+            "uid": 4
+          },
+          {
+            "kind": "rune",
+            "replacing": false,
+            "result_rank": 1,
+            "uid": 5
+          },
+          {
+            "kind": "merge",
+            "result_rank": 2,
+            "uid": 10
+          }
+        ],
+        "after_projection": {
+          "error": "松手或Enter换符：弹射符文 · 1阶 → 霜矛；贯穿符文退回腾出的格子。旧金↑合成候选1件；灰紫◇装符候选5件。",
+          "kind": "rune",
+          "replacing": true,
+          "result_rank": 1,
+          "target": 4,
+          "valid": true
+        },
+        "captures": {
+          "before": {
+            "path": "reports/targets-rune-before.png",
+            "bytes": 187564,
+            "sha256": "acc33368f7c0585c76669b6c633a5c5c99b50e251f9322973e86626e01e918af"
+          },
+          "after": {
+            "path": "reports/targets-rune-after.png",
+            "bytes": 196316,
+            "sha256": "ca0e556bf1391e2f4764a2619a8e53f84a776f3cb252aca15d6bc63f25bcf1a8"
+          }
+        },
+        "logs": {
+          "before": {
+            "path": "reports/targets-rune-before-raw.log",
+            "bytes": 5751,
+            "sha256": "d40c429356cd72454557e572d2203bee5b718ff4fcdad986e415e11df3106906"
+          },
+          "after": {
+            "path": "reports/targets-rune-after-raw.log",
+            "bytes": 6167,
+            "sha256": "f22f9c036b9a1d649dff4faaf0e2dd2fe8a5fc74b1ced2b53b7603657f0ee342"
+          }
+        }
+      },
+      {
+        "case": "move",
+        "viewport": [
+          1280,
+          720
+        ],
+        "fixture_passed_both": true,
+        "state_and_rng_equal": true,
+        "inventory_sha256": "d2b7be018907ec5758c819ce48eae6774e649a43673f9037a648110ac5564c63",
+        "state_sha256": "1eba747c987cb078ea20707f15a015232cfbb4bc1d1797563899502f3aaad8e5",
+        "held_uid": 2,
+        "cursor": [
+          4,
+          3
+        ],
+        "before_api_available": false,
+        "after_candidates": [
+          {
+            "kind": "merge",
+            "result_rank": 2,
+            "uid": 1
+          },
+          {
+            "kind": "merge",
+            "result_rank": 2,
+            "uid": 3
+          }
+        ],
+        "after_projection": {
+          "error": "点击或Enter放置骨针；R旋转，Esc取消。旧金↑合成候选2件。",
+          "kind": "move",
+          "valid": true
+        },
+        "captures": {
+          "before": {
+            "path": "reports/targets-move-before.png",
+            "bytes": 188032,
+            "sha256": "40d6e7b431efca7c0a427b0c1eba5b5e2c3bb82f622053c016a29563b8b2d349"
+          },
+          "after": {
+            "path": "reports/targets-move-after.png",
+            "bytes": 194164,
+            "sha256": "36d756323bb00ec1eee72fc5dad5b0aaa92708a7abe0337c432ee1554bf590fc"
+          }
+        },
+        "logs": {
+          "before": {
+            "path": "reports/targets-move-before-raw.log",
+            "bytes": 5723,
+            "sha256": "fa9f22d8de794165797f40b39eee189897723eebd6c0ef22dd21ebf3244adb05"
+          },
+          "after": {
+            "path": "reports/targets-move-after-raw.log",
+            "bytes": 5804,
+            "sha256": "612a10fc18b47150086674796d4d8e4ec688e541f9c33b0d7e5e2f9158f6295c"
+          }
+        }
+      },
+      {
+        "case": "blocked",
+        "viewport": [
+          1280,
+          720
+        ],
+        "fixture_passed_both": true,
+        "state_and_rng_equal": true,
+        "inventory_sha256": "d2b7be018907ec5758c819ce48eae6774e649a43673f9037a648110ac5564c63",
+        "state_sha256": "1eba747c987cb078ea20707f15a015232cfbb4bc1d1797563899502f3aaad8e5",
+        "held_uid": 5,
+        "cursor": [
+          5,
+          5
+        ],
+        "before_api_available": false,
+        "after_candidates": [],
+        "after_projection": {
+          "error": "幽焰超出已解锁背包，R可旋转。暂无合成或装符候选。",
+          "valid": false
+        },
+        "captures": {
+          "before": {
+            "path": "reports/targets-blocked-before.png",
+            "bytes": 183346,
+            "sha256": "d65bc60a5b8d95c392d8cd3b7b5480746c2227571cbea4ee46ae9e0a65ed0acc"
+          },
+          "after": {
+            "path": "reports/targets-blocked-after.png",
+            "bytes": 186802,
+            "sha256": "24cc5a372f6462567d9083e85261caca9f98df56e945c3f5fcc95714bb92547f"
+          }
+        },
+        "logs": {
+          "before": {
+            "path": "reports/targets-blocked-before-raw.log",
+            "bytes": 5708,
+            "sha256": "19b10aed0f6bf3b3e52517964f488851774db34f9e0ea1f8edec650eafd5d2af"
+          },
+          "after": {
+            "path": "reports/targets-blocked-after-raw.log",
+            "bytes": 5710,
+            "sha256": "0afe20a118c0eac934bdd233e3c659d7e5016c2d3139df1fd2a9e434bfbc80b4"
+          }
+        }
+      }
+    ],
+    "visual_review": "Root viewed all8before/after images, independent agent viewed all4after. Current goal is recognizable merge/socket targets and action result, not a measured human shopping-time improvement.",
+    "minor_visual_limits": [
+      "1x1 rune badge slightly overlaps top of icon; symbol body and rank remain visible.",
+      "Rune swap hint is complete in2lines; second line contains only5件。",
+      "Only1280x720 fixed fixtures inspected this round; viewport/aspect policy unchanged."
+    ]
+  },
+  "package": {
+    "app_path": "build/Embers-targets-macos.app",
+    "zip": {
+      "path": "build/Embers-targets-macos-arm64.zip",
+      "bytes": 29576206,
+      "sha256": "7b73fcadfeb7a7a62b9c2d8fa30e6f9f81a37f3cb093350040a6951759b7c2e3"
+    },
+    "executable": {
+      "path": "build/Embers-targets-macos.app/Contents/MacOS/秘术余烬",
+      "bytes": 82421616,
+      "sha256": "63ffacd58c827ccecf2545ccd139150fa3df0f8350563edcffdc034b81732d7f"
+    },
+    "pck": {
+      "path": "build/Embers-targets-macos.app/Contents/Resources/秘术余烬.pck",
+      "bytes": 975292,
+      "sha256": "dcf5c7cde42d6c5304d96e4dbd024c27db239a5ca6dcc96db2ce1757999b0f38"
+    },
+    "plist": {
+      "path": "build/Embers-targets-macos.app/Contents/Info.plist",
+      "bytes": 1742,
+      "sha256": "b809b8ae0b41a5f3626e6183575e8d71ac705aa940e661ca8505101aa4da8640"
+    },
+    "architecture": "arm64",
+    "minimum_os": {
+      "arm64": "13.0"
+    },
+    "strict_adhoc_signature_passed": true,
+    "developer_id_notarized": false,
+    "license_notices": [
+      {
+        "path": "build/Embers-targets-macos.app/Contents/Resources/licenses/Godot-LICENSE.txt",
+        "bytes": 1149,
+        "sha256": "b0435e3b3e4e55238f05f4b306f30524a1b2e20147810d436eaa554fa6855c80"
+      },
+      {
+        "path": "build/Embers-targets-macos.app/Contents/Resources/licenses/Godot-COPYRIGHT.txt",
+        "bytes": 100108,
+        "sha256": "cb1980c88089573bcacd7221d777c689bb8bbd778799f24c27fca0fe5f774d6d"
+      },
+      {
+        "path": "build/Embers-targets-macos.app/Contents/Resources/licenses/README.md",
+        "bytes": 1178,
+        "sha256": "c17e0b7a7a807cf114370d17f61564ab61a601c80e208161a2d9cb0b111ea1d0"
+      }
+    ],
+    "build_log": {
+      "path": "reports/targets-build-raw.log",
+      "bytes": 26441,
+      "sha256": "760acd8bcc47714f5e1afc39e0df1e479a205b27435eefc58d0976a03a2dfdb5"
+    },
+    "signature_log": {
+      "path": "reports/targets-signature-raw.log",
+      "bytes": 945,
+      "sha256": "f6f96f0ef09a832578b545d82d44f0bc7ca6242e78cdba42a5bd5179f1c82b0b"
+    },
+    "zip_test_log": {
+      "path": "reports/targets-zip-raw.log",
+      "bytes": 3094,
+      "sha256": "c05e76324b0a64dcf27c81779c12ecb6a734b38ded402dae39d5b138e6dc46dc"
+    },
+    "headless_boot": {
+      "arguments": "--headless --quit-after 3 -- --capture-only",
+      "exit_code": 0,
+      "log": {
+        "path": "reports/targets-app-headless-raw.log",
+        "bytes": 73,
+        "sha256": "6d1c065383a27c36804949b6ffa4b09714470b112e5dacc0bd5aeb7b9c147c4e"
+      }
+    },
+    "native_shop_boot": {
+      "arguments": "-- --shop-preview --capture-only --capture=<absolute PNG>",
+      "exit_code": 0,
+      "capture_result": 0,
+      "reviewed": true,
+      "log": {
+        "path": "reports/targets-app-native-raw.log",
+        "bytes": 234,
+        "sha256": "e1b7e39072c280e78b16f3c1127eddf13773298dc9801cd9d741cd48b2ea7b0c"
+      },
+      "image": {
+        "path": "reports/targets-app-shop.png",
+        "bytes": 164067,
+        "sha256": "f03d22508778dc572020807b5fbab999d2318d78e968f0a2ad08368d7a3f3c7b"
+      }
+    },
+    "exported_code_probe": {
+      "via": "Isolated editor --main-pack actual exported PCK --headless --script external temporary builtin-only script; app executable not used with external --script. Synthetic snapshot interface/projection probe only; not packaged OS interaction test.",
+      "result": {
+        "api_available": true,
+        "passed": true,
+        "projection": {
+          "error": "松手或Enter合成骨针：1阶 + 1阶 → 2阶。旧金↑合成候选1件。",
+          "kind": "merge",
+          "result_rank": 2,
+          "target": 1,
+          "valid": true
+        },
+        "synthetic_snapshot_only": true,
+        "targets": [
+          {
+            "kind": "merge",
+            "result_rank": 2,
+            "uid": 1
+          }
+        ]
+      },
+      "exit_code": 0,
+      "log": {
+        "path": "reports/targets-pack-probe-raw.log",
+        "bytes": 374,
+        "sha256": "cee484f34231ad1a32e689ea769413bc87dc3ffe7ebf0660714bebd298fba57d"
+      },
+      "script": {
+        "path": "/private/tmp/broxy-targets-pck-probe/probe.gd",
+        "bytes": 1167,
+        "sha256": "3ed8ee556257625b631735a2c0c9e0f681122e8c5a41f8a4fb80620a60b298d5"
+      },
+      "initial_fixture_issue": "First probe invoked begin_placement during SceneTree._initialize before inside-tree focus; diagnostic grab_focus error. Probe deferred to scene-ready turn, rerun exit0 without engine errors. Production source was unchanged."
+    },
+    "old_packages_preserved": true
+  },
+  "not_run": [
+    "New5minute graphical performance sample",
+    "New30run headless balance batch (combat/rules/policy unchanged)",
+    "Windows executable or PowerShell entry execution",
+    "Natural OS mouse drag/keyboard or other window ratios this round",
+    "Human5person usability playtest or real-run completion"
+  ],
+  "delivery": "Local commit only; no push or PR requested for this iteration. Build/cache/raw reports stay ignored."
+}

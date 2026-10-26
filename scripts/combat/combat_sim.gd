@@ -9,6 +9,7 @@ signal player_hurt
 signal damage_dealt(position: Vector2, amount: float, source: String, secondary: bool, target_uid: int)
 signal player_damaged(amount: float, source_id: String, kind: String, origin: Vector2)
 signal rune_activated(rune_id: String, origin: Vector2, incoming_direction: Vector2, outgoing_direction: Vector2)
+signal core_activated(core_id: String, origin: Vector2)
 signal ended(victory: bool, reason: String)
 
 const ARENA: Rect2 = Rect2(66, 140, 1148, 450)
@@ -36,6 +37,7 @@ class Enemy:
 	var charge_direction: Vector2 = Vector2.ZERO
 	var mode: int = 0
 	var radius: float = 16.0
+	var hunter: bool = false
 
 class Shot:
 	var active: bool = false
@@ -62,6 +64,7 @@ class Shot:
 	var homing: float = 0.0
 	var slow: float = 0.0
 	var hostile: bool = false
+	var low_health_priority: bool = false
 	var color: Color = Color.WHITE
 
 class Soul:
@@ -123,6 +126,11 @@ var _spawn_timer: float = 0.0
 var _wave: ContentDef
 var _boss_cycle: int = 0
 var sandbox: bool = false
+var core_activations: Dictionary = {"frostfire": 0, "bone_chorus": 0}
+var _chorus_counts: Dictionary = {}
+var _linked_weapons: Dictionary = {}
+var _route: Dictionary = {}
+var hunter: Enemy
 
 func _init() -> void:
 	for index: int in ENEMY_LIMIT:
@@ -146,6 +154,13 @@ func begin(state: RunState) -> void:
 	rng.seed = int(run.rng.randi())
 	_wave = GameCatalog.wave(run.wave)
 	duration = _wave.duration
+	_chorus_counts.clear()
+	_linked_weapons.clear()
+	for uid: int in run.linked_weapon_uids():
+		_linked_weapons[uid] = true
+	_route = RogueRules.route(run.active_route) if not _wave.boss_wave and run.active_route != "balanced" else {}
+	core_activations = {"frostfire": 0, "bone_chorus": 0}
+	hunter = null
 	player_position = ARENA.get_center()
 	_cooldowns.clear()
 	for index: int in run.loadout.size():
@@ -153,6 +168,12 @@ func begin(state: RunState) -> void:
 	if _wave.boss_wave:
 		boss = spawn_enemy("boss", Vector2(640, 208))
 		boss.action_timer = 2.5
+	elif run.altar_choice == "accepted" and run.wave == run.altar_wave and not run.hunter_defeated:
+		hunter = spawn_enemy("rusher")
+		if hunter != null:
+			hunter.hunter = true
+			hunter.max_health *= RogueRules.HUNTER_HEALTH_FACTOR
+			hunter.health = hunter.max_health
 	_spawn_timer = 0.6
 
 func step(delta: float, movement: Vector2) -> void:
@@ -191,7 +212,7 @@ func step(delta: float, movement: Vector2) -> void:
 		_spawn_timer -= delta
 		if _spawn_timer <= 0.0:
 			_spawn_wave_group()
-			_spawn_timer += _wave.spawn_interval
+			_spawn_timer += _wave.spawn_interval * float(_route.get("interval_factor", 1.0))
 		if elapsed >= duration:
 			if _wave.boss_wave:
 				_finish(false, "仪式已经完成。请在 90 秒内击败无面祭司。")
@@ -220,6 +241,7 @@ func spawn_enemy(id: String, position: Vector2 = Vector2.INF) -> Enemy:
 	enemy.slow_timer = 0.0
 	enemy.slow_factor = 1.0
 	enemy.hurt_timer = 0.0
+	enemy.hunter = false
 	enemy_count += 1
 	return enemy
 
@@ -239,14 +261,17 @@ func _spawn_wave_group() -> void:
 	var count: int = 2 + int(run.wave / 2)
 	if _wave.boss_wave:
 		count = 2 if boss != null and boss.health > boss.max_health * 0.5 else 3
+	elif not _route.is_empty():
+		count = maxi(1, ceili(float(count) * float(_route["count_factor"])))
+	var weights: Dictionary = _wave.spawn_weights if _route.is_empty() else _route["weights"]
 	for index: int in count:
 		if enemy_count >= _wave.cap:
 			break
 		var roll: float = rng.randf()
 		var total: float = 0.0
 		var selected: String = "chaser"
-		for id: String in _wave.spawn_weights:
-			total += float(_wave.spawn_weights[id])
+		for id: String in weights:
+			total += float(weights[id])
 			if roll <= total:
 				selected = id
 				break
@@ -298,6 +323,8 @@ func _update_enemies(delta: float) -> void:
 				enemy.action_timer = enemy.definition.cooldown
 				enemy.mode = 0
 		if id != "boss":
+			if enemy.hunter:
+				speed *= RogueRules.HUNTER_SPEED_FACTOR
 			if enemy.slow_timer > 0.0:
 				speed *= enemy.slow_factor
 			# A small deterministic orbit separates packs without an O(n²) rigid-body solver.
@@ -423,18 +450,63 @@ func _update_weapons(delta: float) -> void:
 			continue
 		var equipped: Dictionary = run.loadout[index]
 		var definition: ContentDef = GameCatalog.weapon(str(equipped["id"]))
-		var target: Enemy = _nearest(player_position, definition.range)
+		var uid: int = int(equipped.get("uid", -index - 1))
+		var target: Enemy = _weapon_target(player_position, definition.range, str(equipped["id"]) == "ember" and run.core_id == "frostfire", _linked_weapons.has(uid))
 		if target == null:
 			_cooldowns[index] = 0.08
 			continue
 		var rune_entry: Dictionary = equipped.get("rune", {})
 		var rune: String = str(rune_entry.get("id", ""))
 		var angle: float = (target.position - player_position).angle()
+		var fired: bool = false
 		for pellet: int in definition.shots:
 			var offset: float = (float(pellet) - float(definition.shots - 1) * 0.5) * definition.spread
-			fire_weapon(str(equipped["id"]), rune, player_position, Vector2.from_angle(angle + offset), int(equipped.get("rank", 1)), int(rune_entry.get("rank", 1)), float(equipped.get("resonance_bonus", 0.0)))
+			var shot: Shot = fire_weapon(str(equipped["id"]), rune, player_position, Vector2.from_angle(angle + offset), int(equipped.get("rank", 1)), int(rune_entry.get("rank", 1)), float(equipped.get("resonance_bonus", 0.0)))
+			if shot != null:
+				shot.low_health_priority = _linked_weapons.has(uid)
+			fired = fired or shot != null
+		if fired and run.core_id == "bone_chorus" and definition.id == "bone":
+			_fire_chorus(uid, equipped, rune_entry, angle)
 		_cooldowns[index] = definition.cooldown / run.stat("attack_speed")
 		shot_fired.emit()
+
+func _fire_chorus(uid: int, equipped: Dictionary, rune_entry: Dictionary, angle: float) -> void:
+	_chorus_counts[uid] = int(_chorus_counts.get(uid, 0)) + 1
+	if int(_chorus_counts[uid]) % RogueRules.CHORUS_INTERVAL != 0:
+		return
+	var emitted: bool = false
+	for side: float in [-1.0, 1.0]:
+		var extra: Shot = fire_weapon("bone", str(rune_entry.get("id", "")), player_position,
+			Vector2.from_angle(angle + side * RogueRules.CHORUS_ANGLE), int(equipped.get("rank", 1)), int(rune_entry.get("rank", 1)), float(equipped.get("resonance_bonus", 0.0)))
+		if extra != null:
+			extra.damage *= RogueRules.CHORUS_FACTOR
+			extra.low_health_priority = _linked_weapons.has(uid)
+			emitted = true
+	if emitted:
+		core_activations["bone_chorus"] = int(core_activations["bone_chorus"]) + 1
+		core_activated.emit("bone_chorus", player_position)
+		add_effect(player_position, Color("e6d8b4"), 24.0, 0.18, 1)
+
+func _weapon_target(point: Vector2, distance: float, slowed_first: bool, low_health_first: bool, excluded: Dictionary = {}) -> Enemy:
+	if not slowed_first and not low_health_first:
+		return _nearest(point, distance, excluded)
+	var result: Enemy
+	var best_ratio: float = INF
+	var best_distance: float = distance * distance
+	for enemy: Enemy in enemies:
+		if not enemy.active or excluded.has(enemy.uid) or (slowed_first and enemy.slow_timer <= 0.0):
+			continue
+		var squared: float = enemy.position.distance_squared_to(point)
+		if squared >= distance * distance:
+			continue
+		var ratio: float = enemy.health / maxf(0.001, enemy.max_health) if low_health_first else 0.0
+		if result == null or ratio < best_ratio or (ratio == best_ratio and squared < best_distance):
+			result = enemy
+			best_ratio = ratio
+			best_distance = squared
+	if result == null and slowed_first:
+		return _weapon_target(point, distance, false, low_health_first, excluded)
+	return result
 
 func fire_weapon(weapon_id: String, rune_id: String, position: Vector2, direction: Vector2, weapon_rank: int = 1, rune_rank: int = 1, resonance_bonus: float = 0.0) -> Shot:
 	var shot: Shot = _allocate_shot()
@@ -482,6 +554,7 @@ func _allocate_shot() -> Shot:
 	shot.returning = false
 	shot.return_cancelled = false
 	shot.attacker_id = ""
+	shot.low_health_priority = false
 	shot_count += 1
 	return shot
 
@@ -521,7 +594,7 @@ func _update_shots(delta: float) -> void:
 		if shot.returning:
 			shot.velocity = (player_position - shot.position).normalized() * shot.return_speed
 		elif shot.homing > 0.0 and not shot.hostile:
-			var target: Enemy = _nearest(shot.position, 420.0, shot.hit_ids)
+			var target: Enemy = _weapon_target(shot.position, 420.0, shot.source == "ember" and run.core_id == "frostfire", shot.low_health_priority, shot.hit_ids)
 			if target != null:
 				var speed: float = shot.velocity.length()
 				var desired: Vector2 = (target.position - shot.position).normalized()
@@ -560,11 +633,19 @@ func _update_shots(delta: float) -> void:
 			var impact_position: Vector2 = impact.position
 			var health_before: float = impact.health
 			var incoming_direction: Vector2 = shot.velocity.normalized()
+			var frostfire: bool = run.core_id == "frostfire" and shot.source == "ember" and impact.slow_timer > 0.0
 			apply_damage(impact, shot.damage, shot.source, false, shot.slow)
 			var positive_hit: bool = impact.health < health_before
 			if complete:
 				_release_shot(shot)
 				return
+			if frostfire and positive_hit:
+				impact.slow_timer = 0.0
+				impact.slow_factor = 1.0
+				_frostfire_burst(impact_position, shot.damage, shot.source, shot.hit_ids)
+				if complete:
+					_release_shot(shot)
+					return
 			# Native penetration precedes the socketed rune and shares its hit exclusions.
 			if shot.innate_remaining > 0:
 				shot.innate_remaining -= 1
@@ -604,6 +685,17 @@ func _update_shots(delta: float) -> void:
 			break
 		if pending_recovery and shot.active and shot.returning:
 			_release_shot(shot)
+
+func _frostfire_burst(point: Vector2, damage: float, source: String, excluded: Dictionary) -> void:
+	core_activations["frostfire"] = int(core_activations["frostfire"]) + 1
+	core_activated.emit("frostfire", point)
+	add_effect(point, Color("9de1e6"), RogueRules.FROSTFIRE_RADIUS, 0.32, 3)
+	for slot: int in _explosion_slots(point, RogueRules.FROSTFIRE_RADIUS):
+		if complete:
+			return
+		var enemy: Enemy = enemies[slot]
+		if enemy.active and not excluded.has(enemy.uid) and enemy.position.distance_squared_to(point) < pow(RogueRules.FROSTFIRE_RADIUS + enemy.radius, 2):
+			apply_damage(enemy, damage * RogueRules.FROSTFIRE_FACTOR, source, true)
 
 func _first_collision(shot: Shot) -> Enemy:
 	var result: Enemy
@@ -717,6 +809,8 @@ func _kill_enemy(enemy: Enemy) -> void:
 	enemy_count -= 1
 	_enemy_free.append(enemy.slot)
 	run.kills += 1
+	if enemy.hunter:
+		run.record_hunter_defeat()
 	var value: int = 3 if enemy.definition.id == "tank" else 1
 	_drop_soul(enemy.position, value)
 	add_effect(enemy.position, enemy.definition.color, enemy.radius + 6.0, 0.25, 2)

@@ -1,0 +1,439 @@
+{
+  "schema_version": 1,
+  "created_at_utc": "2026-10-26T10:09:45.611972+00:00",
+  "scope": "Integrate main PR4 adjacency resonance with all macOS art/placement/roguelite changes, then submit a new PR and merge/sync after checks. Preserve both feature sets without changing their balance values.",
+  "previous_macos_head": "393083d9fbabd3ac6c0ceab356815c0da6e5d03e",
+  "incoming_main": "8a13f5caa753dce00ec2a297e6ac0e0380e7f9d1",
+  "merge_base": "047d9c1f6c2aba20723eafd5d76f09e1311ec72b",
+  "resolution": {
+    "state": "Snapshot includes both linked_weapons and resonance copies; all rogue transactions and resonance projections survive.",
+    "combat": "Auto main and chorus side pass the actual UID resonance_bonus to unifiedfire_weapon; local factor multiplied once, side55% and frostfire50% use actual shotdamage. Defaultdirect API bonus0 preserved.",
+    "ui": "Both resonance contacts/materials/16px socket badges and candidate/clip/held/source/candle markers retained. Candle arrow moved toy24 to avoid socket badge.",
+    "runner": "Model fingerprint includes RogueRules and BackpackResonance; record both core events and resonant weapons; keep shipped shop transactions and same movement/upgrade policy.",
+    "entry": "Union all old suites plus3integration suites in both sh/PowerShell."
+  },
+  "source": {
+    "scripts/core/run_state.gd": {
+      "path": "scripts/core/run_state.gd",
+      "bytes": 35219,
+      "sha256": "5ab18b79c1346175b4b9cc7f612685ad38c5952a9607e57febf7bc29997fe329"
+    },
+    "scripts/core/backpack_inventory.gd": {
+      "path": "scripts/core/backpack_inventory.gd",
+      "bytes": 9485,
+      "sha256": "d233d65f34514ed29b97c1a5b7bd40e49c98271306c029058ecbd5759ef9b384"
+    },
+    "scripts/core/backpack_resonance.gd": {
+      "path": "scripts/core/backpack_resonance.gd",
+      "bytes": 2507,
+      "sha256": "29d937b97ba2a076acc4439d6fd42b7d785f6353af0bd12da249ae44a5c4b17f"
+    },
+    "scripts/core/game_store.gd": {
+      "path": "scripts/core/game_store.gd",
+      "bytes": 2548,
+      "sha256": "f0530ed723621f5de85bff26d5b4972cde6eed768a6e8410179d90fcc0e929e0"
+    },
+    "scripts/combat/combat_sim.gd": {
+      "path": "scripts/combat/combat_sim.gd",
+      "bytes": 36661,
+      "sha256": "4b12efcd22545b44fa361df0309687ca45f8a1cc25493ff5f0c0279f94f175ec"
+    },
+    "scripts/combat/combat_world.gd": {
+      "path": "scripts/combat/combat_world.gd",
+      "bytes": 27652,
+      "sha256": "1700099d1088a5c9da8a254769dbea5b6a60ee4a1b572792e27e2e5440ba3113"
+    },
+    "scripts/ui/game_ui.gd": {
+      "path": "scripts/ui/game_ui.gd",
+      "bytes": 111327,
+      "sha256": "e73a93296f551d50384367cd541299f1999a083c2b9db0dc1468de79a040ce42"
+    },
+    "scripts/ui/backpack_grid.gd": {
+      "path": "scripts/ui/backpack_grid.gd",
+      "bytes": 26377,
+      "sha256": "ec32e7a5008d75bd684d5ec4f8e05ee4f293a8adf80f23b8c31dd6197722369b"
+    },
+    "scripts/main.gd": {
+      "path": "scripts/main.gd",
+      "bytes": 16217,
+      "sha256": "e98e81eb037c36f1e3b0bcdb3e6ba512068342b44669ed4a35cdb4d40cd3d2f4"
+    },
+    "scripts/data/rogue_rules.gd": {
+      "path": "scripts/data/rogue_rules.gd",
+      "bytes": 2310,
+      "sha256": "42d48acedb56d88a3d59cf74e416288b9a63b489ba66bab8b41298156df706ea"
+    },
+    "tests/simulate_runs.gd": {
+      "path": "tests/simulate_runs.gd",
+      "bytes": 21643,
+      "sha256": "73586ded31818cce6dfd78371ad56e83051c01bc45a9b30efdf1a144321a0218"
+    },
+    "tests/test_rogue_resonance_state.gd": {
+      "path": "tests/test_rogue_resonance_state.gd",
+      "bytes": 11502,
+      "sha256": "338feb6e260149933429be263f05b575fd44a2ea6c862fe8900ce57626797786"
+    },
+    "tests/test_rogue_resonance_combat.gd": {
+      "path": "tests/test_rogue_resonance_combat.gd",
+      "bytes": 12234,
+      "sha256": "3897f67b784af6c6aaf9d6f26770f2f185d827566bfa3cf58b4fb4d3d1a63718"
+    },
+    "tests/test_rogue_resonance_ui.gd": {
+      "path": "tests/test_rogue_resonance_ui.gd",
+      "bytes": 8127,
+      "sha256": "e95eb6ac6f6667dcf43a46599c472ca3314eabc2e91d4aa196fff7725d8fe000"
+    },
+    "tools/test.sh": {
+      "path": "tools/test.sh",
+      "bytes": 1568,
+      "sha256": "6a3aa77948f81351666057a68d68700134407f447dd9300202e40bc75d2b44b1"
+    },
+    "tools/test.ps1": {
+      "path": "tools/test.ps1",
+      "bytes": 3220,
+      "sha256": "89d1251db5cee00ca52c4cc8efc4b14255017e38c994780a13ea52af748d90f9"
+    }
+  },
+  "assets": {
+    "all46_byte_equal_to393083d": true,
+    "revision": "engraved-07",
+    "projectile_visual_revision": "arsenal-atlas-v5"
+  },
+  "tests": {
+    "command": "BROXY_PYTHON=<bundled Python3.12.14> ./tools/test.sh",
+    "godot_suites": 53,
+    "extra_profile_processes": 5,
+    "processes": 58,
+    "assertions": 25418,
+    "failures": 0,
+    "python_tests": 27,
+    "python_failures": 0,
+    "exit_code": 0,
+    "log": {
+      "path": "reports/integration-full-tests-raw.log",
+      "bytes": 9867,
+      "sha256": "a5df5faad92356f6d657b45aacbc0ffbb9fa070539dcb0d8ebe00def06d6ce79"
+    },
+    "new_combined_suites": {
+      "RogueResonanceState": 76,
+      "RogueResonanceCombat": 147,
+      "RogueResonanceUI": 32
+    },
+    "native_combined_ui": {
+      "assertions": 32,
+      "failures": 0,
+      "exit_code": 0,
+      "log": {
+        "path": "reports/integration-rogue-resonance-ui-native-raw.log",
+        "bytes": 194,
+        "sha256": "a767d7bc3b76d63cb9dd3478b8d6737525cb36f87215ed8efb86315d030df934"
+      }
+    },
+    "coverage": "Formal purchases/placement/ranks, gifts with realUID/cache, candle movement recalculating both mechanisms, query purity, all3runes with rank2weapon/rune, real main/side/splash/bounce hits, no recursive secondary effects, poolreset, badges/input/focus/clip/transaction guards."
+  },
+  "simulation": {
+    "question": "Can both cores and3rune policies finish the real8waves after resonance integration, with actual core events and resonant inventory weapons?",
+    "results": {
+      "frostfire": {
+        "runs": 15,
+        "wins": 15,
+        "seeds": [
+          2026,
+          2027,
+          2028,
+          2029,
+          2030
+        ],
+        "runes": [
+          "pierce",
+          "bounce",
+          "blast"
+        ],
+        "balance_version": [
+          "prototype-0.1.0+39bcdf262fe4"
+        ],
+        "policy_version": [
+          "orbit-avoid-v1/backpack-shop-v2/upgrade-timing-v2/rogue-choices-v1/frostfire/balanced/accept+20b0a97ed714"
+        ],
+        "actual_core_events": 1385,
+        "waves_with_resonant_weapons": 100,
+        "hunter_kills": 15,
+        "log": {
+          "path": "reports/integration-runs-frostfire-raw.log",
+          "bytes": 5115729,
+          "sha256": "5a6343b43f1a74dc98071fc3bc72a7d57deb80f002814abc30a3165f2a270881"
+        }
+      },
+      "bone_chorus": {
+        "runs": 15,
+        "wins": 15,
+        "seeds": [
+          2026,
+          2027,
+          2028,
+          2029,
+          2030
+        ],
+        "runes": [
+          "pierce",
+          "bounce",
+          "blast"
+        ],
+        "balance_version": [
+          "prototype-0.1.0+39bcdf262fe4"
+        ],
+        "policy_version": [
+          "orbit-avoid-v1/backpack-shop-v2/upgrade-timing-v2/rogue-choices-v1/bone_chorus/balanced/accept+20b0a97ed714"
+        ],
+        "actual_core_events": 5866,
+        "waves_with_resonant_weapons": 92,
+        "hunter_kills": 15,
+        "log": {
+          "path": "reports/integration-runs-bone_chorus-raw.log",
+          "bytes": 5516843,
+          "sha256": "ec76102453aad9ba1dd932103a07b9585b4956f1113f14e0d4f3b2ab2173d2da"
+        }
+      }
+    },
+    "limits": "30fixed-seed heuristic runs, not human difficulty or proof of equal balance. No invulnerability or privileged currency; core kits and contract rewards use production transactions. Policy does not rearrange items to optimize adjacency. This new combat model changes trajectories, not a legacy equivalence claim."
+  },
+  "native": {
+    "fixtures": [
+      {
+        "case": "resonance-linked",
+        "passed": true,
+        "capture_result": 0,
+        "exit_code": 0,
+        "image": {
+          "path": "reports/integration-resonance-linked.png",
+          "bytes": 213908,
+          "sha256": "cb37a28c7b99579083fb8d5fc75ec3a4824af1e7a2f9be00b82c2b736a7cea01"
+        },
+        "log": {
+          "path": "reports/integration-resonance-linked-raw.log",
+          "bytes": 3656,
+          "sha256": "c7be4ee8dfb804199dde30e9cea95b34f9792f4ad908a45701cd307e84092a87"
+        }
+      },
+      {
+        "case": "resonance-full",
+        "passed": true,
+        "capture_result": 0,
+        "exit_code": 0,
+        "image": {
+          "path": "reports/integration-resonance-full.png",
+          "bytes": 222889,
+          "sha256": "3b3f3b0b2bb4c1992d5bcdb4d0b31bd26a161e6c268f0f45503dc9844ed126c5"
+        },
+        "log": {
+          "path": "reports/integration-resonance-full-raw.log",
+          "bytes": 7674,
+          "sha256": "d8c0a0a9fe0027e6cd5296d7169da9eba7b7117870404e30fac1e468d3606dc6"
+        }
+      },
+      {
+        "case": "rogue-lamp",
+        "passed": true,
+        "capture_result": 0,
+        "exit_code": 0,
+        "image": {
+          "path": "reports/integration-rogue-lamp.png",
+          "bytes": 215552,
+          "sha256": "55c58993b12624b05d66fef7421242456b3c9d22375508b3228d4ecd943dbd60"
+        },
+        "log": {
+          "path": "reports/integration-rogue-lamp-raw.log",
+          "bytes": 3818,
+          "sha256": "0cc08ef9d73e8dc470af11d17d3de60ea3265da44044b2b41af2ef8ef924dbfa"
+        }
+      },
+      {
+        "case": "rogue-core",
+        "passed": true,
+        "capture_result": 0,
+        "exit_code": 0,
+        "image": {
+          "path": "reports/integration-rogue-core.png",
+          "bytes": 168226,
+          "sha256": "d3037c89a9a657a1a2eaad52813329b6ff77eb250b2d35c95c0a044e584b290f"
+        },
+        "log": {
+          "path": "reports/integration-rogue-core-raw.log",
+          "bytes": 2952,
+          "sha256": "376fd698abe34e078dc4422f79f56687bfce95a8f0b8b9ff93d2a3375e6d8b12"
+        }
+      }
+    ],
+    "review": "Root and UI agent inspected all4fixed1280x720scenes: actual6x6,16px badges, contact seams, candle arrows, core modal. Fixed budgets and controlled placement are not natural player runs or OS input. Native test uses Godot InputEvents."
+  },
+  "performance": {
+    "result": {
+      "average_fps": 95.7535228997567,
+      "core_activations": {
+        "bone_chorus": 46,
+        "frostfire": 0
+      },
+      "core_id": "bone_chorus",
+      "damage_by_weapon": {
+        "bone": 151549.824999989,
+        "comet": 1512725.62499921,
+        "crescent": 1267922.24999965,
+        "ember": 383242.612499996,
+        "frost": 429336.737499503,
+        "return_ring": 1532534.40000433,
+        "scatter": 136998.59999998,
+        "storm": 158101.537499998
+      },
+      "duration_seconds": 60.0,
+      "enemies": 300,
+      "enemy_hit_visual_revision": "tempered-hit-v1",
+      "impact_draw_commands_at_end": 8,
+      "impact_visual_capacity": 32,
+      "impact_visual_peak": 32,
+      "impact_visual_revision": "primary-impact-v1",
+      "internal_resolution": "1280x720",
+      "os": "macOS",
+      "p99_frame_ms": 26.109,
+      "passed": true,
+      "persistent_profile": false,
+      "pickups": 200,
+      "primary_hits": 98556,
+      "projectile_families_at_end": {
+        "bone:bounce": 20,
+        "comet:blast": 10,
+        "comet:bounce": 147,
+        "crescent:blast": 96,
+        "crescent:pierce": 3,
+        "ember:pierce": 52,
+        "frost:blast": 32,
+        "return_ring:blast": 52,
+        "return_ring:pierce": 11,
+        "scatter:blast": 2,
+        "scatter:bounce": 81,
+        "storm:bounce": 4,
+        "storm:pierce": 90
+      },
+      "projectile_visual_revision": "arsenal-atlas-v5",
+      "projectiles": 600,
+      "renderer": "gl_compatibility",
+      "run_seed": 20261026,
+      "rune_visual_peak": 32,
+      "samples": 5746,
+      "scenario": "content-feedback",
+      "secondary_hits": 367289,
+      "settings": {
+        "flash": true,
+        "shake": true,
+        "volume": 0.65
+      },
+      "weapon_ids": [
+        "bone",
+        "frost",
+        "ember",
+        "scatter",
+        "crescent",
+        "storm",
+        "comet",
+        "return_ring"
+      ]
+    },
+    "file": {
+      "path": "reports/performance-rogue-bone_chorus.json",
+      "bytes": 1549,
+      "sha256": "a1ec0a212b624e7ff90aa450513c5931242f54af5678bf51abe2e2b82bb88503"
+    },
+    "log": {
+      "path": "reports/integration-bone-benchmark-raw.log",
+      "bytes": 1739,
+      "sha256": "e51e563cf5c9d6d8c7e2a4399afdc69275bcf2207b3deb682c0de7e461ce37b2"
+    },
+    "command": "./tools/run.sh -- --benchmark --benchmark-content --benchmark-core=bone_chorus --benchmark-seed=20261026 --seconds=60",
+    "scope": "AppleM5 Compatibility1280x720,5s warmup+60s sample. All8weapon/3rune positive-damage stress with actual chorus. End300/600/200. Direct stress launchers default resonance0; actual combined resonance damage separately exercised by147combat assertions and30normal runs. Counters include warmup, frame stats exclude it. No simultaneous tests/simulations/builds. Not a new300s sample or all high-rank builds. Historicalfrostfire300s report retained."
+  },
+  "package": {
+    "app_path": "build/Embers-integrated-macos.app",
+    "zip": {
+      "path": "build/Embers-integrated-macos-arm64.zip",
+      "bytes": 29621934,
+      "sha256": "da2591307ee5ed3994d197950b32e0a71866663e13236cef9b11c0f69dd1f3dd"
+    },
+    "executable": {
+      "path": "build/Embers-integrated-macos.app/Contents/MacOS/秘术余烬",
+      "bytes": 82421616,
+      "sha256": "5ce9d67a8b8ecc61ff266307377a7de01a7de560f5cab654e51e40a58817b6a7"
+    },
+    "pck": {
+      "path": "build/Embers-integrated-macos.app/Contents/Resources/秘术余烬.pck",
+      "bytes": 1022408,
+      "sha256": "81c1b3ffca04d375b75c4168751e198466c0c87744c0cd3650a68af8233659e5"
+    },
+    "plist": {
+      "path": "build/Embers-integrated-macos.app/Contents/Info.plist",
+      "bytes": 1742,
+      "sha256": "b809b8ae0b41a5f3626e6183575e8d71ac705aa940e661ca8505101aa4da8640"
+    },
+    "architecture": "arm64",
+    "minimum_os": {
+      "arm64": "13.0"
+    },
+    "strict_adhoc_signature_passed": true,
+    "developer_id_notarized": false,
+    "old_apps_preserved": true,
+    "build_log": {
+      "path": "reports/integration-build-raw.log",
+      "bytes": 26873,
+      "sha256": "94ff717b2e38ee5b044c77ffd5f4153da58f10db48430837562ce83a8945cb8d"
+    },
+    "boot_log": {
+      "path": "reports/integration-app-headless-raw.log",
+      "bytes": 73,
+      "sha256": "6d1c065383a27c36804949b6ffa4b09714470b112e5dacc0bd5aeb7b9c147c4e"
+    },
+    "native_log": {
+      "path": "reports/integration-app-native-raw.log",
+      "bytes": 238,
+      "sha256": "8d6530d847421bbe4361b2a16253c0fa969f352b3b5780549c49993d366699c0"
+    },
+    "native_image": {
+      "path": "reports/integration-app-shop.png",
+      "bytes": 191062,
+      "sha256": "5b719a4fa1cece239049f7a8d4b25e3265b059d169eb191978077b62a99beb04"
+    },
+    "zip_log": {
+      "path": "reports/integration-zip-raw.log",
+      "bytes": 3217,
+      "sha256": "bd230207b5294e2754661cae4b5a2191b099fd426d28e4c72f519217dabf7423"
+    },
+    "actual_exported_rule_probe": {
+      "result": {
+        "actual_damage": 14.42,
+        "controlled_snapshot_only": true,
+        "core_two_bones": true,
+        "formal_purchase_and_place": true,
+        "hunter_spawned": true,
+        "linked_count": 2,
+        "passed": true,
+        "persistent_profile": false,
+        "resonance_bonus": 0.03
+      },
+      "log": {
+        "path": "reports/integration-pack-probe-raw.log",
+        "bytes": 309,
+        "sha256": "80ec84467d74165b5ebb8936387a639360bc954cabd618bee94a0a9c5204b1ee"
+      },
+      "script": {
+        "path": "/private/tmp/broxy-integrated-pck-probe/probe.gd",
+        "bytes": 1797,
+        "sha256": "427f924010225fa5fd00ea38a2f1bbe6cf249ac08ae15fcc9b8ab53ed31bfde9"
+      },
+      "scope": "Isolated editor loadsactualPCK and executesformal core/buy/place/route/altar transactions. Confirms2bones,2candlelinks,3%resonance,14.42damage andhunterspawn. Not OS/human interaction."
+    }
+  },
+  "independent_review": "Separate state/combat/UI agents found no blocker after explicit checks; this is code review, not a GitHub author self-approval.",
+  "not_run": [
+    "Windows build/executable or PowerShell execution",
+    "New300second performance sample",
+    "Human playtest or natural OS-input complete run"
+  ],
+  "delivery": "User authorized new PR, check-and-merge, then synchronize main and feature/macos; use normal merge/fast-forward and pushes, no history overwrite. Raw/build/cache ignored."
+}

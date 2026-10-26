@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "style": "Eclipse reliquary: engraved occult vector art",
-  "art_revision": "engraved-06",
+  "art_revision": "engraved-07",
   "projectile_visual_revision": "arsenal-atlas-v5",
   "license": "CC0-1.0",
   "generator": "python3 tools/generate_assets.py",
@@ -109,7 +109,7 @@
         0.5,
         0.5
       ],
-      "role": "detached gold crown, ivory faceless idol, long embroidered vestments and floating hands; center anchor",
+      "role": "detached aged-gold crown with broad lit planes and dark recesses, ivory faceless idol, long embroidered vestments and floating hands; center anchor",
       "source": "tools/art_sprites.py",
       "creator": "Project original procedural vector artwork",
       "license": "CC0-1.0",

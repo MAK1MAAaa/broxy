@@ -18,3 +18,7 @@
 - Windows导出、ZIP CRC／包内文件指纹和实际EXE无存档冒烟验证通过。旧包另存 `build/Embers-windows-before-resonance-133c5aa.zip`；macOS未重建，手柄独占操作和真人难度试玩未开展。
 
 紧凑测试、模拟、原生操作和构建指纹保存在 `reports/resonance/validation.json`。既有素材与历史报告逐字节保留；新原始日志、PNG、JSONL、引擎及构建包均保留本地并被Git忽略。
+
+## 与另一构筑系统的整合
+
+当前版本同时支持秘术核心、烛引目标优先与遗物共鸣。自动主弹在发射时按该法器UID加入共鸣一次；白骨侧弹继承同一加成后再乘55%，寒焰按实际弹体伤害乘50%，次级效果不递归触发。移动／旋转／合成与赠品提交均按真实背包重新投影。组合验证、30局和本次Mac交付见 `reports/macos-main-integration-validation.json`；本文此前的包、性能与断言数字保留各历史阶段范围。

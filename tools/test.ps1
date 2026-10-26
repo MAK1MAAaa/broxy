@@ -13,8 +13,10 @@ try {
         'projectile_capacity', 'benchmark_seed', 'player_foreground',
         'combat_upgrades', 'combat_upgrade_ui', 'upgrade_timing',
         'backpack_inventory', 'backpack_combat', 'backpack_queries',
-        'backpack_flow', 'backpack_ui', 'backpack_shop',
-        'resonance_rules', 'resonance_combat', 'resonance_grid', 'resonance_ui'
+        'backpack_flow', 'backpack_ui', 'backpack_targets', 'backpack_shop',
+        'rogue_state', 'rogue_combat', 'rogue_ui', 'rogue_progress',
+        'resonance_rules', 'resonance_combat', 'resonance_grid', 'resonance_ui',
+        'rogue_resonance_state', 'rogue_resonance_combat', 'rogue_resonance_ui'
     )
     foreach ($suite in $suites) {
         & $runner --headless --script "res://tests/test_$suite.gd"

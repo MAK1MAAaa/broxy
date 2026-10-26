@@ -15,6 +15,7 @@ const BONE := Color("f0e5cc")
 const GOLD := Color("c4a76f")
 const CYAN := Color("89d8d2")
 const RED := Color("df888d")
+const PURPLE := Color("bfa2e6")
 
 class ItemButton extends Button:
 	var owner_grid: Control
@@ -38,13 +39,19 @@ class ItemArtwork extends Control:
 		owner_grid.draw_item_material(self, item)
 
 var session_epoch: int = 0
-var interaction_enabled: bool = true
+var interaction_enabled: bool = true:
+	set(value):
+		interaction_enabled = value
+		_refresh_selection()
+		if is_instance_valid(_preview):
+			_preview.queue_redraw()
 var selected_uid: int = -1
 var held_uid: int = -1
 var held_rotated: bool = false
 var cursor: Vector2i = Vector2i.ZERO
 var _snapshot: Dictionary = {}
 var _items: Dictionary = {}
+var _icons: Dictionary = {}
 var _preview: PreviewLayer
 var _grab_offset: Vector2i = Vector2i.ZERO
 var _native_dragging: bool = false
@@ -57,6 +64,7 @@ func configure(snapshot: Dictionary, epoch: int, selected: int = -1) -> void:
 	session_epoch = epoch
 	selected_uid = selected
 	_items.clear()
+	_icons.clear()
 	for item: Dictionary in _snapshot.get("items", []):
 		_items[int(item["uid"])] = item
 	custom_minimum_size = Vector2(float(_snapshot.get("width", 6)) * CELL, float(_snapshot.get("max_height", 6)) * CELL)
@@ -68,9 +76,11 @@ func configure(snapshot: Dictionary, epoch: int, selected: int = -1) -> void:
 	for item: Dictionary in _snapshot.get("items", []):
 		_make_item(item)
 	_preview = PreviewLayer.new()
+	_preview.name = "PlacementPreview"
 	_preview.owner_grid = self
 	_preview.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_preview.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_preview.clip_contents = true
+	_preview.size = custom_minimum_size
 	add_child(_preview)
 	_refresh_resonance()
 	queue_redraw()
@@ -104,6 +114,7 @@ func cancel_placement() -> bool:
 	held_uid = -1
 	_grab_offset = Vector2i.ZERO
 	_native_dragging = false
+	_refresh_selection()
 	holding_changed.emit(-1, false, Vector2i.ZERO)
 	hint_changed.emit("已取消整理，物品仍在原位。")
 	_refresh_resonance()
@@ -124,26 +135,48 @@ func rotate_held() -> void:
 	held_rotated = not held_rotated
 	_refresh_preview()
 
+func placement_targets() -> Array[Dictionary]:
+	var targets: Array[Dictionary] = []
+	if not interaction_enabled or held_uid < 0 or not _items.has(held_uid):
+		return targets
+	var source: Dictionary = _items[held_uid]
+	for other: Dictionary in _snapshot.get("items", []):
+		var uid: int = int(other["uid"])
+		if uid == held_uid:
+			continue
+		if str(source["kind"]) == "rune" and str(other["kind"]) == "weapon":
+			targets.append({"uid": uid, "kind": "rune", "result_rank": int(source.get("rank", 1)), "replacing": not (other.get("rune", {}) as Dictionary).is_empty()})
+		elif source["kind"] == other["kind"] and source["id"] == other["id"] and int(source.get("rank", 1)) == int(other.get("rank", 1)) and int(source.get("rank", 1)) < 3:
+			targets.append({"uid": uid, "kind": "merge", "result_rank": int(other.get("rank", 1)) + 1})
+	return targets
+
 func placement_at(cell: Vector2i) -> Dictionary:
 	if held_uid < 0 or not _items.has(held_uid):
 		return {"valid": false, "error": "请先拿起物品。"}
 	var item: Dictionary = _items[held_uid]
+	var item_name: String = _definition(item).display_name
+	var targets: Array[Dictionary] = placement_targets()
+	var candidate_hint: String = _candidate_hint(targets)
 	var target_cell: Vector2i = _drop_target_cell if _native_dragging else cell
-	for other: Dictionary in _snapshot.get("items", []):
-		if int(other["uid"]) == held_uid:
-			continue
+	for candidate: Dictionary in targets:
+		var other: Dictionary = _items[int(candidate["uid"])]
 		var target_area := Rect2i(Vector2i(int(other["x"]), int(other["y"])), _item_size(other, bool(other.get("rotated", false))))
 		if not target_area.has_point(target_cell):
 			continue
-		if str(item["kind"]) == "rune" and str(other["kind"]) == "weapon":
-			return {"valid": true, "kind": "rune", "target": int(other["uid"]), "error": "松手或Enter装入符文，原符文退回腾出的格子。"}
-		if item["kind"] == other["kind"] and item["id"] == other["id"] and int(item.get("rank", 1)) == int(other.get("rank", 1)) and int(item.get("rank", 1)) < 3:
-			return {"valid": true, "kind": "merge", "target": int(other["uid"]), "error": "松手或Enter合成：%s阶 + %s阶 → %s阶。" % [item.get("rank", 1), other.get("rank", 1), int(item.get("rank", 1)) + 1]}
+		var target_name: String = _definition(other).display_name
+		if str(candidate["kind"]) == "rune":
+			var replacing: bool = bool(candidate["replacing"])
+			var hint: String = "松手或Enter装入：%s · %d阶 → %s。" % [item_name, int(candidate["result_rank"]), target_name]
+			if replacing:
+				var old_rune: Dictionary = other["rune"]
+				hint = "松手或Enter换符：%s · %d阶 → %s；%s退回腾出的格子。" % [item_name, int(candidate["result_rank"]), target_name, GameCatalog.rune(str(old_rune["id"])).display_name]
+			return {"valid": true, "kind": "rune", "target": int(other["uid"]), "result_rank": int(candidate["result_rank"]), "replacing": replacing, "error": hint + candidate_hint}
+		return {"valid": true, "kind": "merge", "target": int(other["uid"]), "result_rank": int(candidate["result_rank"]), "error": "松手或Enter合成%s：%d阶 + %d阶 → %d阶。%s" % [target_name, int(item.get("rank", 1)), int(other.get("rank", 1)), int(candidate["result_rank"]), candidate_hint]}
 	var dimensions: Vector2i = _item_size(item, held_rotated)
 	var area := Rect2i(cell, dimensions)
 	var bounds := Rect2i(Vector2i.ZERO, Vector2i(int(_snapshot.get("width", 6)), int(_snapshot.get("height", 4))))
 	if not bounds.encloses(area):
-		return {"valid": false, "error": "超出已解锁背包，R可旋转。"}
+		return {"valid": false, "error": "%s超出已解锁背包，R可旋转。%s" % [item_name, candidate_hint]}
 	var overlaps: Array[Dictionary] = []
 	for other: Dictionary in _snapshot.get("items", []):
 		if int(other["uid"]) == held_uid:
@@ -152,8 +185,8 @@ func placement_at(cell: Vector2i) -> Dictionary:
 		if area.intersects(other_area):
 			overlaps.append(other)
 	if overlaps.is_empty():
-		return {"valid": true, "kind": "move", "error": "点击或Enter放置；R旋转，Esc取消。"}
-	return {"valid": false, "error": "格子已被占用；同名同阶物品才可合成。"}
+		return {"valid": true, "kind": "move", "error": "点击或Enter放置%s；R旋转，Esc取消。%s" % [item_name, candidate_hint]}
+	return {"valid": false, "error": "格子已被占用；%s需移至空格，或与同名同阶物品合成。%s" % [item_name, candidate_hint]}
 
 func commit_placement() -> void:
 	if held_uid < 0 or not interaction_enabled:
@@ -280,6 +313,7 @@ func _make_item(item: Dictionary) -> void:
 	var icon := TextureRect.new()
 	icon.name = "ItemIcon"
 	icon.texture = load("res://assets/icons/%s.svg" % definition.icon)
+	_icons[uid] = icon.texture
 	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -321,6 +355,16 @@ func _make_item(item: Dictionary) -> void:
 		socket.set_meta("rune_id", str(rune["id"]))
 		socket.set_meta("rune_rank", int(rune.get("rank", 1)))
 		button.add_child(socket)
+	if uid in _snapshot.get("linked_weapons", []):
+		var link := Label.new()
+		link.name = "CandleLink"
+		link.text = "↑"
+		link.position = Vector2(button.size.x - 14, 24)
+		link.add_theme_font_size_override("font_size", 12)
+		link.add_theme_color_override("font_color", Color("b7c892"))
+		link.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		button.add_child(link)
+		button.tooltip_text += "\n烛引生效：正下方引魂烛使其优先攻击生命比例最低的敌人。"
 
 func _style_item(button: Button, item: Dictionary) -> void:
 	var definition: ContentDef = _definition(item)
@@ -340,6 +384,7 @@ func _refresh_selection() -> void:
 	for child: Node in get_children():
 		if child is ItemButton:
 			_style_item(child, _items[child.uid])
+			child.modulate = Color(0.7, 0.72, 0.77) if interaction_enabled and child.uid == held_uid else Color.WHITE
 	_refresh_resonance()
 
 func _refresh_preview() -> void:
@@ -375,18 +420,77 @@ func draw_preview(canvas: Control) -> void:
 		canvas.draw_line(first, last, Color(GOLD, 0.9), 2.0, true)
 		canvas.draw_circle(first, 2.1, CYAN)
 		canvas.draw_circle(last, 2.1, CYAN)
-	if held_uid < 0 or not _items.has(held_uid):
+	if not interaction_enabled or held_uid < 0 or not _items.has(held_uid):
 		return
+	var bounds := Rect2(Vector2.ZERO, Vector2(int(_snapshot.get("width", 6)), int(_snapshot.get("max_height", 6))) * CELL)
+	for target: Dictionary in placement_targets():
+		_draw_target(canvas, target, bounds)
 	var placement: Dictionary = placement_at(cursor)
 	var tint: Color = CYAN if bool(placement.get("valid", false)) else RED
 	if placement.get("kind", "") == "merge":
 		tint = GOLD
+	elif placement.get("kind", "") == "rune":
+		tint = PURPLE
 	var rect := Rect2(Vector2(cursor) * CELL + Vector2.ONE * 2.0, Vector2(_item_size(_items[held_uid], held_rotated)) * CELL - Vector2.ONE * 4.0)
 	if placement.get("kind", "") in ["merge", "rune"] and _items.has(int(placement.get("target", -1))):
 		var target: Dictionary = _items[int(placement["target"])]
-		rect = Rect2(Vector2(int(target["x"]), int(target["y"])) * CELL + Vector2.ONE * 2.0, Vector2(_item_size(target, bool(target.get("rotated", false)))) * CELL - Vector2.ONE * 4.0)
-	canvas.draw_rect(rect, Color(tint, 0.22))
-	canvas.draw_rect(rect, tint, false, 2.0)
+		rect = _item_rect(target)
+	var clipped: Rect2 = rect.intersection(bounds.grow(-1.0))
+	if not clipped.has_area():
+		return
+	canvas.draw_rect(clipped, Color(tint, 0.18))
+	if str(placement.get("kind", "")) not in ["merge", "rune"]:
+		_draw_held_cells(canvas, tint, bounds)
+		var texture: Texture2D = _icons.get(held_uid) as Texture2D
+		var extent: float = minf(42.0, minf(rect.size.x, rect.size.y) - 12.0)
+		var icon_rect := Rect2(rect.get_center() - Vector2.ONE * extent * 0.5, Vector2.ONE * extent)
+		# Keep the icon's original shape when a native grab crosses the grid edge.
+		if texture != null and bounds.encloses(icon_rect):
+			canvas.draw_texture_rect(texture, icon_rect, false, Color(tint, 0.85))
+	canvas.draw_rect(clipped, tint, false, 2.0)
+
+func _draw_held_cells(canvas: Control, tint: Color, bounds: Rect2) -> void:
+	var dimensions: Vector2i = _item_size(_items[held_uid], held_rotated)
+	for y: int in dimensions.y:
+		for x: int in dimensions.x:
+			var rect := Rect2(Vector2(cursor + Vector2i(x, y)) * CELL + Vector2.ONE * 5.0, Vector2.ONE * (CELL - 10.0))
+			var clipped: Rect2 = rect.intersection(bounds.grow(-1.0))
+			if clipped.has_area():
+				canvas.draw_rect(clipped, Color(tint, 0.55), false, 1.0)
+
+func _draw_target(canvas: Control, target: Dictionary, bounds: Rect2) -> void:
+	var rect: Rect2 = _item_rect(_items[int(target["uid"])]).grow(-2.0)
+	if not bounds.encloses(rect):
+		return
+	var tint: Color = GOLD if str(target["kind"]) == "merge" else PURPLE
+	var corners := PackedVector2Array([rect.position, Vector2(rect.end.x, rect.position.y), rect.end, Vector2(rect.position.x, rect.end.y)])
+	var directions := [Vector2(1, 1), Vector2(-1, 1), Vector2(-1, -1), Vector2(1, -1)]
+	for index: int in 4:
+		canvas.draw_line(corners[index], corners[index] + Vector2(directions[index].x * 7.0, 0), tint, 2.0)
+		canvas.draw_line(corners[index], corners[index] + Vector2(0, directions[index].y * 7.0), tint, 2.0)
+	var center := Vector2(rect.get_center().x, rect.position.y + 8.0)
+	canvas.draw_rect(Rect2(center - Vector2(7, 6), Vector2(14, 13)), Color(INK, 0.9))
+	if str(target["kind"]) == "merge":
+		canvas.draw_polyline(PackedVector2Array([center + Vector2(-4, 1), center + Vector2(0, -3), center + Vector2(4, 1)]), tint, 2.0)
+		canvas.draw_line(center + Vector2(0, -2), center + Vector2(0, 5), tint, 2.0)
+	else:
+		canvas.draw_polyline(PackedVector2Array([center + Vector2(0, -4), center + Vector2(4, 0), center + Vector2(0, 4), center + Vector2(-4, 0), center + Vector2(0, -4)]), tint, 2.0)
+
+static func _item_rect(item: Dictionary) -> Rect2:
+	return Rect2(Vector2(int(item["x"]), int(item["y"])) * CELL + Vector2.ONE * 2.0, Vector2(_item_size(item, bool(item.get("rotated", false)))) * CELL - Vector2.ONE * 4.0)
+
+static func _candidate_hint(targets: Array[Dictionary]) -> String:
+	var merges: int = 0
+	var runes: int = 0
+	for target: Dictionary in targets:
+		merges += 1 if str(target["kind"]) == "merge" else 0
+		runes += 1 if str(target["kind"]) == "rune" else 0
+	var hints: PackedStringArray = []
+	if merges > 0:
+		hints.append("旧金↑合成候选%d件" % merges)
+	if runes > 0:
+		hints.append("灰紫◇装符候选%d件" % runes)
+	return "；".join(hints) + "。" if not hints.is_empty() else "暂无合成或装符候选。"
 
 func resonance_contacts() -> Array[Dictionary]:
 	return _resonance_contacts.duplicate(true)

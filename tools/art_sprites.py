@@ -180,7 +180,7 @@ def _caster() -> str:
 
 def _boss() -> str:
     body = '<defs>' + _gradient("sp-boss-vestment", "#75657a", "#3d374f", "#171c2d")
-    body += _gradient("sp-boss-crown", "#ddc492", "#a78b64", "#66503f") + '</defs>'
+    body += _gradient("sp-boss-crown", "#e8cf9f", "#aa8050", "#49372c") + '</defs>'
     body += _ellipse(80, 146, 51, 8, "#03060e", 'opacity=".66"')
     body += '<ellipse cx="80" cy="47" rx="48" ry="35" fill="none" stroke="#958365" stroke-width="1.3" opacity=".35"/>'
     # Architectural pleats and detached hands give the boss its own silhouette.
@@ -201,15 +201,15 @@ def _boss() -> str:
     body += _path("M68 48 L77 43 73 58 70 67 67 60Z", "#efe3c7", width=0)
     body += _etch("M80 47 L78 59 82 65 79 76 M86 53 L88 57", "#8d7c6d", 1.0)
     body += _path("M39 68 L56 71 69 82 80 88 92 82 105 71 122 68 115 86 99 91 81 103 61 92 45 86Z", "url(#sp-boss-crown)", width=2.1)
-    body += _path("M46 73 L59 77 69 87 81 94 95 87 106 77 115 73 111 82 96 87 81 99 65 87 50 82Z", "#69503f", width=0)
+    body += _path("M46 73 L59 77 69 87 81 94 95 87 106 77 115 73 111 82 96 87 81 99 65 87 50 82Z", "#4d382d", width=0)
     body += _etch("M46 71 L59 75 71 85 81 91 94 84 106 75 116 71", "#e4cda0", 1.3)
     body += _etch("M55 82 L61 83 M102 83 L108 80 M67 88 L70 91 M93 90 L97 87", "#c6a879", 1.0)
     body += _path("M77 100 L85 100 90 126 81 138 71 126Z", "url(#sp-boss-crown)", width=1.8)
     body += _path("M80 106 L84 114 81 129 77 121Z", "#493646", "#d8b98a", 1.0)
     body += _etch("M76 122 L80 125 86 119 M79 104 L84 104", "#e1c79b", 1.0)
-    # A real gap below the solid crown survives the boss's 95px display size.
+    # Keep a real gap between the solid crown and the hood at runtime scale.
     body += _path("M43 25 L38 9 52 15 55 4 69 13 80 2 91 13 106 4 109 16 122 9 117 26 103 31 80 28 58 31Z", "url(#sp-boss-crown)", width=2.8)
-    body += _path("M44 16 L55 23 59 13 69 22 80 11 91 22 103 13 106 23 117 17 113 24 102 27 80 24 59 27 47 23Z", "#756047", width=0)
+    body += _path("M44 16 L55 23 59 13 69 22 80 11 91 22 103 13 106 23 117 17 113 24 102 27 80 24 59 27 47 23Z", "#5d4431", width=0)
     body += _etch("M43 12 L48 22 58 25 M57 7 L61 21 M80 6 L80 21 M104 7 L101 22 M118 13 L113 23 104 26", "#ead2a0", 1.3)
     body += _path("M76 19 L80 13 85 19 81 26Z", "#7c657d", "#e1c895", 1.0)
     body += _etch("M52 28 Q80 21 108 28", "#d1b17e", 1.2)
@@ -231,7 +231,7 @@ def generate(save_svg: SaveSvg) -> None:
         ("rusher", 64, _rusher, "low plum-hide beast, angular bone face and paired jointed ivory claws; center anchor"),
         ("tank", 80, _tank, "shield-shaped iron guardian, overlapping steel plates and worn brass rivets; center anchor"),
         ("caster", 72, _caster, "plum cultist vestments, aged gold yoke and oversized carved skull staff; center anchor"),
-        ("boss", 160, _boss, "detached gold crown, ivory faceless idol, long embroidered vestments and floating hands; center anchor"),
+        ("boss", 160, _boss, "detached aged-gold crown with broad lit planes and dark recesses, ivory faceless idol, long embroidered vestments and floating hands; center anchor"),
     ]:
         save_svg(f"sprites/{name}.svg", size, size, author(), role)
 

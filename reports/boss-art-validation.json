@@ -1,0 +1,374 @@
+{
+  "schema_version": 1,
+  "date_local": "2026-10-26",
+  "created_at_utc": "2026-10-26T06:07:21.329916+00:00",
+  "baseline_commit": "047d9c1f6c2aba20723eafd5d76f09e1311ec72b",
+  "art_revision": "engraved-07",
+  "projectile_visual_revision_unchanged": "arsenal-atlas-v5",
+  "scope": "Boss aged-gold material only: 3 gradient RGB stops and 2 inset fills. No geometry, opacity, draw-order, font, gameplay or simulation changes.",
+  "assets": {
+    "count": 46,
+    "svgs": 36,
+    "wavs": 10,
+    "changed_asset": "assets/sprites/boss.svg",
+    "unchanged_other_assets_and_manifest_entries": 45,
+    "xml_paint_changes": [
+      {
+        "element": 43,
+        "attribute": "stop-color",
+        "before": "#ddc492",
+        "after": "#e8cf9f"
+      },
+      {
+        "element": 44,
+        "attribute": "stop-color",
+        "before": "#a78b64",
+        "after": "#aa8050"
+      },
+      {
+        "element": 45,
+        "attribute": "stop-color",
+        "before": "#66503f",
+        "after": "#49372c"
+      },
+      {
+        "element": 65,
+        "attribute": "fill",
+        "before": "#69503f",
+        "after": "#4d382d"
+      },
+      {
+        "element": 72,
+        "attribute": "fill",
+        "before": "#756047",
+        "after": "#5d4431"
+      }
+    ],
+    "geometry_and_order_unchanged": true,
+    "protected_source_elements": {
+      "mask_shape": true,
+      "mask_shadow": true,
+      "mask_highlight": true,
+      "mask_etching": true,
+      "left_palm": true,
+      "right_palm": true,
+      "palm_shading": true,
+      "palm_etching": true,
+      "wrist_glints": true
+    },
+    "size": [
+      160,
+      160
+    ],
+    "current_runtime_draw_size_px": 141,
+    "runtime_radius": 42,
+    "pivot": [
+      0.5,
+      0.5
+    ],
+    "two_generations_equal_file_count": 48,
+    "generation_python": "3.12.14 bundled runtime",
+    "generation_note": "System Python3.9.6 rejected the existing Path.write_text(newline=...) API before any asset write; unchanged generator API rerun successfully on installed3.12.14. Generation needs Python>=3.10."
+  },
+  "independent_raster": {
+    "expected_size": [
+      160,
+      160
+    ],
+    "alpha_diff_pixels": 0,
+    "visible_rgb_diff_pixels": 2727,
+    "rgba_diff_bbox": [
+      40,
+      4,
+      81,
+      133
+    ],
+    "alpha_nonzero_bbox": {
+      "baseline": [
+        3,
+        0,
+        154,
+        154
+      ],
+      "current": [
+        3,
+        0,
+        154,
+        154
+      ]
+    },
+    "protected_regions": {
+      "left_palm_and_wrist": {
+        "rect": [
+          3,
+          85,
+          32,
+          37
+        ],
+        "rgba_diff_pixels": 0
+      },
+      "mask_interior": {
+        "rect": [
+          71,
+          48,
+          18,
+          17
+        ],
+        "rgba_diff_pixels": 0
+      },
+      "right_palm_and_wrist": {
+        "rect": [
+          126,
+          85,
+          32,
+          37
+        ],
+        "rgba_diff_pixels": 0
+      }
+    },
+    "limits": [
+      "Independent 160x160 Image.load_svg_from_string raster check; not the imported texture or 141px runtime boss.",
+      "Zero alpha difference checks the raster silhouette, not equality of every SVG geometric source element.",
+      "The mask test is the named interior rectangle only; protected hand rectangles include their wrist decorations.",
+      "Does not establish animated readability, combat occlusion, performance or human recognition."
+    ]
+  },
+  "independent_qa": {
+    "raster_exit_code": 0,
+    "structure_exit_code": 0,
+    "raster_report_path": "/private/tmp/broxy-boss-material-raster.json",
+    "raster_report_sha256": "13fc924ec22fe45b0cacd9af029bc31c8774e8f3181b5edfe445c2686682b373",
+    "structure_report_path": "/private/tmp/broxy-boss-material-structure.json",
+    "structure_report_sha256": "298072c04486dca830d80848087951f82ab7d6985ccf0d0a1255530a931f1130",
+    "raster_script_sha256": "6a1026eeacd627f2eac921d174fdf3d98a6959f22d2c6686e19486e408b5ac3f",
+    "structure_script_sha256": "4d088ec4aa72e7ffe484c1d16439bc6f6ee378231a20fc5ddda933f2ac681e2a"
+  },
+  "native_images": [
+    {
+      "view": "art-before",
+      "path": "reports/art-boss-before.png",
+      "sha256": "22286bec6c28ed062932e1d73733507fd1d60d0a7e46f9dedb4149f750047d1e",
+      "reviewed": true,
+      "exit_code": 0
+    },
+    {
+      "view": "art-after",
+      "path": "reports/art-boss-after.png",
+      "sha256": "3e3dd6d21b8908de290ede32388de2e0ccd1ab771badfbb583edd40ff94a2801",
+      "reviewed": true,
+      "exit_code": 0
+    },
+    {
+      "view": "-threats-before",
+      "path": "reports/art-boss-threats-before.png",
+      "sha256": "6757df2f79c0f0e00cfdac9a2e7ae7f6743de46e58e6edd36685e758b1418169",
+      "reviewed": true,
+      "exit_code": 0
+    },
+    {
+      "view": "-threats-after",
+      "path": "reports/art-boss-threats-after.png",
+      "sha256": "92d802ff6aaf8e45032dfd3291f3034c668f2f65f9cd215d2b4c1de19f456af5",
+      "reviewed": true,
+      "exit_code": 0
+    },
+    {
+      "view": "-chilled-before",
+      "path": "reports/art-boss-chilled-before.png",
+      "sha256": "e3bc1c958bb1a3978c2c1f8c13dc8798c8f741663f13c6086750a3efaf02a6eb",
+      "reviewed": true,
+      "exit_code": 0
+    },
+    {
+      "view": "-chilled-after",
+      "path": "reports/art-boss-chilled-after.png",
+      "sha256": "a99933d303838e7a4abe13259deef7e1f71a2ece6579199141c2f0b6badb7852",
+      "reviewed": true,
+      "exit_code": 0
+    }
+  ],
+  "native_pixel_differences": {
+    "art": {
+      "changed_pixels": 2372,
+      "bbox_xyxy": [
+        924,
+        222,
+        997,
+        340
+      ],
+      "size": [
+        1280,
+        720
+      ]
+    },
+    "-threats": {
+      "changed_pixels": 2347,
+      "bbox_xyxy": [
+        607,
+        140,
+        680,
+        258
+      ],
+      "size": [
+        1280,
+        720
+      ]
+    },
+    "-chilled": {
+      "changed_pixels": 6953,
+      "bbox_xyxy": [
+        1064,
+        144,
+        1136,
+        563
+      ],
+      "size": [
+        1280,
+        720
+      ]
+    }
+  },
+  "visual_review": {
+    "verdict": "Recesses below the crown and shoulder yoke separate more clearly from broad gold planes. The ivory face remains the main boss focal point. No obvious wood/plastic shift in the reviewed stills; coral telegraphs remain prominent. Improvement is restrained.",
+    "independent_review": true,
+    "limits": "Frozen 1280x720 stills, not continuous motion, human recognition or preference. preview_art retains a legacy four-entry loadout with the starting backpack, so its inventory counts are inconsistent and are not valid-build evidence. Threats uses42 fixed steps and manually sets elapsed81s for HUD; chilled uses8 fixed steps with real hits."
+  },
+  "chilled_fixture_equivalence": {
+    "all_fields_equal_except_capture_path": true,
+    "primary_hits": 15,
+    "secondary_hits": 0,
+    "state_hash": "e799917edcdcd441c4d54f49b0cdb8ba5be515b3a2ac059cc546d9b60fc0b2d1",
+    "endpoint_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "timers_and_budgets_equal": true
+  },
+  "full_tests": {
+    "command": "BROXY_PYTHON=<bundled Python3.12> ./tools/test.sh",
+    "exit_code": 0,
+    "suites": 41,
+    "godot_processes": 46,
+    "godot_assertions": 23328,
+    "godot_failures": 0,
+    "python_tests": 27,
+    "headless_limits": "12 EnemyTelegraphs GPU readbacks skipped; no new native suite claim from those skipped checks."
+  },
+  "unchanged_runtime_tests_and_data": {
+    "file_count": 171,
+    "aggregate_sha256": "b1c5876ec429b304be32482d161e73d78581e05328e6ef2428291b6053b84426",
+    "algorithm": "Tracked scripts/data/scenes/tests plus project/export/run/build/test configs; sorted UTF8 path + NUL + file SHA256 hex + newline",
+    "compared_byte_for_byte_to_baseline": true,
+    "tracked_roots": [
+      "scripts/",
+      "data/",
+      "scenes/",
+      "tests/"
+    ],
+    "extra_paths": [
+      "project.godot",
+      "export_presets.cfg",
+      "tools/run.sh",
+      "tools/build_macos.sh",
+      "tools/test.sh"
+    ]
+  },
+  "distribution": {
+    "app": "build/Embers-regalia-macos.app",
+    "zip": "build/Embers-regalia-macos-arm64.zip",
+    "architecture": "arm64",
+    "minimum_macos": "13.0",
+    "strict_ad_hoc_signature": true,
+    "info_plist_valid": true,
+    "build_exit_code": 0,
+    "headless_main_boot_exit_code": 0,
+    "headless_main_args": [
+      "--headless",
+      "--quit-after",
+      "3",
+      "--",
+      "--capture-only"
+    ],
+    "native_main_smoke_exit_code": 0,
+    "native_main_smoke_args": [
+      "--",
+      "--smoke",
+      "--capture-only",
+      "--capture=<absolute reports/art-boss-app-smoke.png>",
+      "--capture-delay=3"
+    ],
+    "smoke_image": {
+      "path": "reports/art-boss-app-smoke.png",
+      "sha256": "c85d831192fe6ab80ebaba29a8255198a9975a73249aa98cf51910d923830335",
+      "reviewed": true,
+      "limits": "Three-second first-wave startup, no Boss encounter or complete run."
+    },
+    "zip_integrity_exit_code": 0,
+    "old_apps_preserved": true,
+    "artifact_sha256": {
+      "build/Embers-regalia-macos.app/Contents/MacOS/秘术余烬": "d6f2db3bb425835a7ef9ac141fa67c6c1f503011d2fda1ae1fb70c3a63825661",
+      "build/Embers-regalia-macos.app/Contents/Resources/秘术余烬.pck": "f846d2eff0168b3934cf389cc0cc226a0a432a57127c7e13f68d25ab4382aadc",
+      "build/Embers-regalia-macos-arm64.zip": "c6622bf3929e95ccd325dd3a94ec18fd9c117d95fed8dbe9e157a691f8bceca4"
+    }
+  },
+  "exported_boss_texture": {
+    "inspection": "Official editor launched from empty /private/tmp root with --main-pack pointing to exported PCK and an external built-in-only SceneTree script; no project source fallback or Main/GameStore instantiation.",
+    "editor_pck_exit_code": 0,
+    "current_import_exit_code": 0,
+    "imported_equals_exported": true,
+    "pixels": {
+      "format": 5,
+      "height": 160,
+      "pixel_sha256": "e196dd7e52e56c7d00f9c0bf64ea953517d9533640c37b304286a5c7c3b928df",
+      "profile_instantiated": false,
+      "width": 160
+    },
+    "inspection_script_sha256": "a6a2f8c8c6bdf857ff438482010ea4fdb7d25a2bc7a790d3e1c6611267502dcb",
+    "earlier_direct_release_script_attempt": {
+      "exit_code": 143,
+      "outcome": "No output; only this owned inspection process was terminated. No result accepted and cause not confirmed. Replaced by isolated editor/PCK inspection. Normal release Main boot and native smoke separately pass."
+    }
+  },
+  "source_sha256": {
+    "tools/art_sprites.py": "effc1e63b845c0a675fe39ad3cf68b33529461777db822515c7c2b8589965088",
+    "tools/generate_assets.py": "a741281cbbe56a969a9d04888d5c302e010636427152e13b681c5d8d2524376e",
+    "assets/sprites/boss.svg": "a7e7b94460facfbd5f76a0611ea4ca2b6586dc9dd5be0ab45e596ee2a557ccc9",
+    "assets/manifest.json": "37f283fb235b90a8374700304be6f9ad9fd9048b67cd954d19057f92f2fdfbe6",
+    "assets/PROVENANCE.md": "4e6525db0f150a5f548d8b4331a494d588946cddc8e560561fa6e3dbf40077e3",
+    "scripts/combat/combat_world.gd": "4aacdf6f8385fc8ebc2ca52ecde43a50337b7a6906d9a0c45e1a1534f9b0659f",
+    "scripts/ui/game_ui.gd": "2f3374e10416060f3532998da3cf29355147f3c9761991fd64ffe44a870c02b2",
+    "project.godot": "243b092054cff0748423392064c7b243a195bc5a0513430b96b904f5b8ee405d",
+    "export_presets.cfg": "ca6024c033ec24a8ea84f8a108d43f7de3f9c7e43387685f78dd5374ef97517f",
+    "tools/build_macos.sh": "84ffc3343fec5e6fb624ffb7fc166a41406d5f0f0575c8e13aeeaf80beb473d2",
+    "tools/preview_art.gd": "7e5a60cc80189d90dcbe9072d758ffec4bbe18dbbd8dd41da7cce54b323cfd50",
+    "tools/preview_threats.gd": "f94ee388c70f2c718d75585a3d1e5ed2e53bbf078573c00d019a3bbb544b5eff",
+    "tools/preview_enemy_hit_style.gd": "e1c4621eff6bf4230f52a3d3dd454d23bb560677ef9f3d0d31acb5e21656d4f4",
+    "README.md": "c3fe74ccfcd2de1e0749f2dd4226d7584498329e152d2a90a4cb6c819b02a154",
+    "docs/art-direction.md": "b3da77f606bb1abc38a3a8d85062cace7470c397e282133a20ac764d70cbfb05",
+    "docs/verification.md": "88edd611ec4aa001d0590760b8cb9ad15ba8fc3816a60f193fd7136991a30be8",
+    "docs/optimization-log.md": "1eafc7caaf250c45551bf838a3f60a2c45928f923c38eba0e6d0055003165a31"
+  },
+  "evidence_sha256": {
+    "reports/art-boss-before-raw.log": "3ebd0553c18776c5c4394285b20306e8ab01144b134848f12680f713ba2ae498",
+    "reports/art-boss-after-raw.log": "466615ae64716fb1b6e13d56e124dbcf7729c20b1d95a30fec64db132a22967a",
+    "reports/art-boss-threats-before-raw.log": "8dd9097d7e0f13b3c3110d5fc414e1df748d3ce743159613411182fc407dc1f6",
+    "reports/art-boss-threats-after-raw.log": "8dd9097d7e0f13b3c3110d5fc414e1df748d3ce743159613411182fc407dc1f6",
+    "reports/art-boss-chilled-before-raw.log": "cf3ab3f3650255483b8df54661110c94c22c3f20700c28fb118dde792c44865c",
+    "reports/art-boss-chilled-after-raw.log": "bc2ee1445c843406107d9b96ba5739cdd766c94f7d1307c36d5e05291ebd8976",
+    "reports/art-boss-generate-raw.log": "f6a18d89b90f5dd0abe08fdfb6a29c8f53634a96cb3c105afc8a6643a69e2616",
+    "reports/art-boss-generate-python39-raw.log": "9c4972234c70e7993470436266e8ceee6b063ada8fe56a32c7256cc00202f941",
+    "reports/art-boss-import-raw.log": "d1e3370f23a0787caf2de1e041870fa1789268400c15fa7bb51d2cdfbbcf779d",
+    "reports/art-boss-tests-raw.log": "359eea2c86fc20990ad52aa69d3e25545113b8e8ca413826b29ca94c5aa4fc51",
+    "reports/art-boss-build-raw.log": "86a1bb0fc7347b2887744fff4340860be3066cc5e2bb322ecf3fd8853dce2485",
+    "reports/art-boss-app-boot-raw.log": "6d1c065383a27c36804949b6ffa4b09714470b112e5dacc0bd5aeb7b9c147c4e",
+    "reports/art-boss-app-smoke-raw.log": "edfb729394462dd4714a428403f77f9c3e02dc441489253bcc69db0c7418cfa2",
+    "reports/art-boss-imported-texture-raw.log": "6779b8db79982dd757ad3af6067b43e901ce3da4834ea72851c077afe04b7836",
+    "reports/art-boss-exported-texture-raw.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "reports/art-boss-pck-texture-raw.log": "6779b8db79982dd757ad3af6067b43e901ce3da4834ea72851c077afe04b7836",
+    "reports/art-boss-archive-raw.log": "d4a0230d1cd23ed678b2a7269ec3a00c86ec9608f056e6b7f229ea4a6f27f9b9"
+  },
+  "not_run": [
+    "30-run simulation: runtime, data and policy unchanged",
+    "300-second native graphical performance",
+    "Windows execution or rebuild",
+    "Native OS gameplay, continuous full run or five-person playtest"
+  ],
+  "performance_limits": "No current FPS claim; old four-weapon Mac and Windows eight-weapon reports retain their historical scope."
+}

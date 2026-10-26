@@ -4,11 +4,13 @@ Godot 4.7.2 普通版、带类型标注的 GDScript 开发的 macOS / Windows �
 
 武器、遗物和松散符文现在装入盒状背包。购买自动找空位，玩家手动移动、旋转和合成；两件同名同阶物品升一阶，最高三阶。初始6×4格，可付32、48魂屑扩到6×6；背包中的所有法器自动攻击，遗物直接生效。操作与数值见[秘术背包](docs/backpack.md)，专项预览使用 `res://tools/preview_backpack.gd`。
 
-新增遗物邻接共鸣：法器与遗物共边时，每件Ⅰ／Ⅱ／Ⅲ阶遗物为该法器额外提供3%／6%／12%伤害，总共鸣上限18%；对角接触不计，同一遗物多格接边只计一次。购买、合成、旋转和出售后按真实布局重算，详情显示来源与实际伤害。盒子增加皮革底、金属角扣、阶级刻痕和对应符文徽章，共鸣接缝仅强调当前选中或合法摆放的关系。完整规则与验收见[遗物共鸣](docs/resonance.md)。
+当前源码包含8种法器、12种遗物和 `rogue-choices-v1` 秘术抉择。第1波后可选霜火共鸣或白骨齐鸣核心；第2波后可自愿挑战追猎者，击杀后在波间自选符文。普通波可选择原途、密集魂潮或重甲巡礼；引魂烛与正上方相接法器联动，改变目标优先级。完成第3波解锁霜矛起手，击杀追猎者解锁散魂起手，没有永久属性加成。完整规则与边界见[秘术抉择](docs/rogue-choices.md)。
 
-当前源码包含8种法器、12种遗物，美术版本为 `engraved-06`。新增返航法器归魂环，以及伤害换攻速的血契书、拾取范围换移速的引魂烛；三枚图标以断骨钩环、皮革契书和宽托魂烛区分。此前42项素材逐字节保持，五类敌人材质、主角灰紫布料与低对比战斗地板沿用。规则与验收见 [归魂环与取舍遗物](docs/return-ring.md)，美术合同与来源见 `docs/art-direction.md`；上一轮内容扩充记录保留在 `docs/content-expansion.md`。
+46项 `engraved-07` 素材与 `arsenal-atlas-v5` 图集保持。背包沿用 `backpack-targets-v1` 合成／装符候选和逐格预览，新增淡绿↑烛引标记；追猎者有冠、圈和生命条，寒焰以蓝金双环显示，敌方危险提示继续置顶。操作与美术约定见[秘术背包](docs/backpack.md)及 `docs/art-direction.md`。
 
-归魂环发射0.60秒后追随玩家当前位置返航，往返共享已命中目标，不会重复伤害同一敌人；本体可命中2个不同目标，成功弹射会永久取消返航。冷却独立推进，接回魂环不回复生命或魂屑。新增内容沿用商店购买、商品锁定、遗物购前对照和符文装入预览；归魂环阶段的完整回归、原生画面、固定种子压力采样与Windows新包验证通过。八法器头部使用预生成图集与复用缓冲，保持危险提示优先。
+归魂环发射0.60秒后追随玩家当前位置返航，往返共享已命中目标，不会重复伤害同一敌人；本体可命中2个不同目标，成功弹射会永久取消返航。冷却独立推进，接回魂环不回复生命或魂屑。新增内容沿用商店购买、商品锁定、遗物购前对照和符文装入预览；归魂环阶段的Windows完整回归、原生画面、固定种子压力采样与新包验证记录保留。八法器头部使用预生成图集与复用缓冲，保持危险提示优先。
+
+同时支持遗物邻接共鸣：法器与遗物共边时，每件Ⅰ／Ⅱ／Ⅲ阶遗物为该法器额外提供3%／6%／12%伤害，总共鸣上限18%；对角接触不计，同一遗物多格接边只计一次。购买、合成、旋转和出售后按真实布局重算，详情显示来源与实际伤害。盒子增加皮革底、金属角扣、阶级刻痕和对应符文徽章，共鸣接缝仅强调当前选中或合法摆放的关系。完整规则与验收见[遗物共鸣](docs/resonance.md)。
 
 当前经验升级会暂停战斗，选完三选一后继续原位置、弹体、冷却与剩余时间；多级连续选择，Esc与设置仍可用，死亡和波末优先结算。生命强化显示实际生命补充。提前拾取可提前取得强化，让拾取范围与移速的取舍影响当前波次。角色与环绕法器现在显示在友方特效和输出数字上方，承伤提示与敌方危险信息继续置顶。规则、边界和验收见 [波内强化与玩家前景](docs/midwave-upgrades.md)。
 
@@ -34,9 +36,9 @@ Godot 4.7.2 普通版、带类型标注的 GDScript 开发的 macOS / Windows �
 
 ## 直接游玩
 
-Windows x86_64入口为 `build/Embers-windows-x86_64/Embers.exe`，分发包为 `build/Embers-windows-x86_64.zip`。解压后保留同目录的 `Embers.pck` 与 `licenses/`。当前包包含遗物邻接共鸣、盒装材质、占格背包、手动三阶合成、8法器、12遗物、`engraved-06`、波内强化和玩家前景分层。上一轮包另存 `build/Embers-windows-before-resonance-133c5aa.zip`。Windows使用微软雅黑；本PR未重建macOS包，最近一次Mac背包交付另见下文。
+Windows x86_64入口为 `build/Embers-windows-x86_64/Embers.exe`，分发包为 `build/Embers-windows-x86_64.zip`。解压后保留同目录的 `Embers.pck` 与 `licenses/`。当前包包含遗物邻接共鸣、盒装材质、占格背包、手动三阶合成、8法器、12遗物、`engraved-06`、波内强化和玩家前景分层。上一轮包另存 `build/Embers-windows-before-resonance-133c5aa.zip`。Windows使用微软雅黑；该Windows交付的历史验收保留，当前Mac交付另见下文。
 
-本分支记录的macOS背包应用为 `build/Embers-backpack-macos.app`，分发包为 `build/Embers-backpack-macos-arm64.zip`。该包对应共鸣改动前的格子背包、手动三阶合成、8法器、12遗物、归魂环、波内强化和玩家前景分层，尚未包含本PR的遗物邻接共鸣。已在Apple Silicon Mac完成完整回归、原生遗物对照检查及实际发布包的背包商店截图，构建和ZIP检查通过。面向Apple Silicon、macOS 13及以上，采用本地ad-hoc签名，尚未进行Developer ID公证。旧`Embers-impact.app`等应用保留，若旧版正在运行，先结束再打开新版；该Mac交付记录见 `reports/macos-backpack-validation.json`。
+最新macOS应用为 `build/Embers-integrated-macos.app`，分发包为 `build/Embers-integrated-macos-arm64.zip`。已整合main的遗物邻接共鸣／盒装材质与Mac分支的两核心、追猎契约、路线、烛引联动、横向解锁和engraved-07素材。完整回归、30局自动对局、原生界面、实际发布包规则探测与商店截图、严格签名和ZIP检查通过。Apple Silicon、macOS 13及以上，本地ad-hoc签名，未Developer ID公证；旧包保留。验收与边界见 `reports/macos-main-integration-validation.json`。
 
 | 操作 | 按键 |
 | --- | --- |
@@ -55,7 +57,7 @@ Windows x86_64入口为 `build/Embers-windows-x86_64/Embers.exe`，分发包为 
 
 - 前七波各45秒，第八波为90秒Boss战。波内达到经验门槛时暂停并选择强化，选完继续同一波；计时、弹体和冷却均冻结。波末回收剩余魂屑并在祭坛恢复生命，未处理的强化由波末兜底；死亡和最终胜利直接结算。
 - 魂屑同时增加金币和经验。每波最低收入为 `28 + 6 × (波次 - 1)`，击杀收入不足时补足；补足部分不产生经验。
-- 八种法器：骨针（快速单发）、霜矛（减速）、幽焰（追踪）、散魂（扇形三发）、月镰（本体贯穿）、雷灯（窄角双发）、星陨（慢速重击）、归魂环（本体贯穿与返航）。商店均可购买，可重复存放；开局仍选择骨针或幽焰。
+- 八种法器：骨针（快速单发）、霜矛（减速）、幽焰（追踪）、散魂（扇形三发）、月镰（本体贯穿）、雷灯（窄角双发）、星陨（慢速重击）、归魂环（本体贯穿与返航）。商店均可购买，可重复存放；初始开放骨针和幽焰，完成挑战后可选择霜矛或散魂起手。
 - 同类同名同阶两件可手动合成，最高三阶。法器伤害和遗物属性权重为1、2、4倍；合成不改变形状、射数或冷却，主要释放空间。两把带符文法器合成会保留目标符文，源符文退回背包；目标为空则继承源符文。
 - 每个共边遗物按阶级提供3%／6%／12%局部伤害，每把法器最多18%；角接、松散符文与法器之间不产生共鸣。最终伤害为基础×法器阶级×全局倍率×（1+共鸣），共鸣不改变冷却。合成保留原全局属性，局部伤害按目标位置重新计算。
 - 每件法器一个符文槽。一／二／三阶贯穿或弹射分别额外命中2／3／4个目标，弹射每跳剩余75%伤害；爆破半径68／78／88像素、溅射倍率55%／65%／75%。
@@ -65,7 +67,7 @@ Windows x86_64入口为 `build/Embers-windows-x86_64/Embers.exe`，分发包为 
 - 出售返还累计实际买入价的50%，向下取整。不能卖掉最后一件法器，出售带符文武器需能安置退回符文。失败交易完整回滚。
 - 十二种遗物按占格和阶级累加。复合遗物包括月蚀吊坠（伤害/攻速）、巡礼靴（移速/拾取）、骨盾印（护甲/生命）、裂砂漏（攻速提升但伤害下降）、血契书（一阶伤害+30%、攻速-10%，基础价22）与引魂烛（一阶拾取范围+38、移速-8，基础价18）。购买生命遗物按上限增量补血；合成与出售不免费补血。
 - 每次商店4件商品；首店保证法器，第二店保证符文。刷新价格随本店刷新次数增长，下波重置。最多锁定2件未售商品，锁定与解锁免费，不增加刷新次数；刷新及跨波保留原报价位置，下一波重新定价。购买成功或重开试炼清除对应锁定，背包满不会自动解锁。
-- 本地仅保存设置和最佳成绩，没有永久属性成长、联网、中途续局或内购。
+- 本地保存设置、最佳成绩和已解锁起始法器，没有永久属性成长、联网、中途续局或内购。
 
 ## 从源码运行
 
@@ -104,7 +106,7 @@ PowerShell 中的用户参数分隔符需写为 `'--'`，防止被 PowerShell �
 ./tools/run.sh
 ```
 
-全新环境可使用 Python 3 标准库和系统 curl 下载工具：
+全新环境可使用 Python 3 标准库和系统 curl 下载工具；素材生成脚本需要 Python 3.10 及以上：
 
 ```sh
 python3 tools/fetch_godot.py
@@ -117,14 +119,23 @@ python3 tools/fetch_macos_template.py
 ```sh
 ./tools/build_macos.sh
 # 另存应用，避免替换正在运行的旧版：
-BROXY_APP_PATH="$PWD/build/Embers-backpack-macos.app" ./tools/build_macos.sh
+BROXY_APP_PATH="$PWD/build/Embers-integrated-macos.app" ./tools/build_macos.sh
 ```
 
 构建从官方 Universal 模板提取 arm64，生成 `build/Embers.app` 并执行 ad-hoc 签名验证。引擎许可在应用的 `Contents/Resources/licenses/` 中直接可读。对外发布前应使用自己的 Developer ID 配置签名与公证。
 
 ## 验证
 
-直接CLI入口`--smoke`、`--autoplay`、`--shop-preview`、`--benchmark`、`--capture-only`会在读取档案前关闭持久化；本进程的设置和成绩只留在内存，窗口标注“不保存设置与成绩”。普通启动保持原有保存行为。独立预览脚本仍各自关闭持久化。当前Embers-backpack-macos.app已包含该修复；性能报告另记录实际设置、持久化状态与本次种子。
+本轮整合验证：53套Godot加5个额外档案入口，25418条断言与27项Python通过；新增状态／战斗／UI组合76／147／32条，原生组合UI32条通过。两核心各15局全部完成，192个波次实际包含共鸣法器。白骨八法器预热5秒、采样60秒平均95.754 FPS／P99 26.109ms通过；直接压力弹体默认共鸣0，真实共鸣组合另由行为专项与正常对局验证，未重复300秒。结果见 `reports/macos-main-integration-validation.json` 和 `reports/performance-rogue-bone_chorus.json`。
+
+此前393083d版霜火核心八法器原生压力采样：5秒预热＋300秒，31652帧，平均105.504 FPS、P99 22.067毫秒，结束时300敌人／600弹体／200掉落，核心实际触发2151次，事件与命中／伤害计数包含5秒预热。使用默认设置、固定种子20261026且关闭档案读写；只覆盖该压力场景，不代表所有高阶背包构筑。结果独立保存在 `reports/performance-rogue-frostfire.json`，历史 `performance.json` 保留。
+
+```sh
+./tools/run.sh -- --benchmark --benchmark-content --benchmark-core=frostfire --benchmark-seed=20261026 --seconds=300
+./tools/run.sh --headless --script res://tests/simulate_runs.gd -- --seed=2026 --count=5 --rune=all --core=bone_chorus --route=balanced --altar=accept
+```
+
+直接CLI入口`--smoke`、`--autoplay`、`--shop-preview`、`--benchmark`、`--capture-only`会在读取档案前关闭持久化；本进程的设置和成绩只留在内存，窗口标注“不保存设置与成绩”。普通启动保持原有保存行为。独立预览脚本仍各自关闭持久化。当前Embers-integrated-macos.app已包含该修复；性能报告另记录实际设置、持久化状态与本次种子。
 
 ```sh
 ./tools/test.sh
@@ -139,13 +150,7 @@ BROXY_APP_PATH="$PWD/build/Embers-backpack-macos.app" ./tools/build_macos.sh
 ./tools/run.sh -- --benchmark --benchmark-content --benchmark-seed=1792123517 --seconds=300
 ```
 
-可用 `./tools/test.sh` 或 `tools/test.ps1` 运行Godot与Python测试。
-
-本次PR #4同步main的Mac合并验证：45套Godot加5个额外档案入口，24694条断言与27项Python测试通过；原生遗物对照226条、共鸣UI32条通过。共鸣生产代码与素材保持 `632cd06`，保留main的滚动测试修复；没有重新打包、重跑模拟或图形压力。证据见 `reports/pr4-main-sync-validation.json`。
-
-此前Windows共鸣版本（`632cd06`）完成45套Godot加5个额外档案入口，24688条断言与27项Python测试通过。共鸣专项覆盖独立几何oracle、交易预览、实际武器／符文伤害、对象池、材质输入透传及原生尺寸；实际旋转／拖拽已确认9%→6%→3%变化，证据见 `reports/resonance/validation.json`。
-
-此前Mac背包适配（`29b1dcb`）完成41套Godot加5个额外档案入口，23328条断言与27项Python测试通过；遗物对照按实际溢出判断自然布局，再用临时长内容验证真实键盘滚动，原生226条检查通过。本次合入main保留该测试修复，历史Mac包和测试指纹见 `reports/macos-backpack-validation.json`。两轮统计各自保留，不相加作为本次结果。旧套件替代关系见[测试迁移](docs/backpack-test-migration.md)。
+可用 `./tools/test.sh` 或 `tools/test.ps1` 运行Godot与Python测试。此前秘术抉择阶段Mac完整46套Godot加5个额外档案入口，23797条断言与27项Python测试通过；肉鸽状态149条、战斗122条、UI63条、真实Main／存档衔接35条。锁定起始卡跳过Tab，原ChoiceActions44条与新RogueUI63条另在原生Mac通过。两平台入口均已接入，本轮只在Mac执行。证据见 `reports/rogue-choices-validation.json`；旧套件替代关系见[测试迁移](docs/backpack-test-migration.md)，历史验收保持各轮范围。
 
 上一轮Windows波内强化通过16332条Godot断言与27项Python测试，证据保留在 `reports/midwave/validation.json`；原生首波升级/恢复与前景对照见 `reports/midwave/native-fixtures.json`。此前归魂环、商店与符文历史验收同样保留；系统字体验证需要桌面字体访问权限。
 
@@ -153,23 +158,27 @@ BROXY_APP_PATH="$PWD/build/Embers-backpack-macos.app" ./tools/build_macos.sh
 
 此前Windows背包阶段完成预热5秒加300秒原生采样：平均117.245FPS、P99 18.036ms，末尾300敌人／600弹体／200掉落，默认设置且不读写个人档案，见 `reports/backpack/performance.json`。
 
-Windows共鸣版本另跑60秒内容场景：平均116.694FPS、P99 18.183ms，见 `reports/resonance/performance-60s.json`，没有重复300秒。该呈现压力夹具直接发射八类目录法器与一阶符文，默认局部倍率为0；共鸣伤害另由实际库存与自动发射专项验证，不将FPS泛化到所有满阶构筑。本次同步main未重测图形性能，不将Windows数值作为Mac包帧率。各轮时长、源码和轨迹不同，不把差额解释为优化收益；更早记录仍保留在 `reports/midwave/`、`reports/return-ring/`。
+Windows共鸣版本另跑60秒内容场景：平均116.694FPS、P99 18.183ms，见 `reports/resonance/performance-60s.json`，没有重复300秒。该呈现压力夹具直接发射八类目录法器与一阶符文，默认局部倍率为0；共鸣伤害另由实际库存与自动发射专项验证，不将FPS泛化到所有满阶构筑。PR #4同步main时未重测图形性能，不将Windows数值作为Mac包帧率。各轮时长、源码和轨迹不同，不把差额解释为优化收益；更早记录仍保留在 `reports/midwave/`、`reports/return-ring/`。
 
 此前内容扩充版Windows七法器300秒原生采样通过：平均60.710 FPS、P99 28.418ms，末尾300敌人／600弹体／200掉落；结果见 `reports/content/performance.json`。首次54.60 FPS的失败采样、弹体几何缓存优化与同夹具CPU微测一并保留在 `docs/content-expansion.md`，各次原生采样种子不同，不把全部帧率差额归因于单项修改。
 
 内容扩充前的macOS源码`2a6c4b9`曾在Apple M5完成5分钟原生真实符文场景采样：27,895帧，平均92.979 FPS、P99帧间隔26.191毫秒，达到≥58 FPS / ≤33毫秒门槛，退出0。末尾300敌人/600弹体/200掉落；主/次命中473,662/1,223,944，刻痕池峰值32、容量32，结束时最近准备7个非空批次。峰值和命中累计含5秒预热，末段批次不是全程最大或GPU drawcall数。默认设置且不读写个人档案，四次CUA观察确认可见窗口和采样推进。结果见`reports/impact-performance-validation.json`；原实现验证`reports/impact-validation.json`保留当时锁屏未测的历史状态。该历史补测只记录性能，未更改源码/素材、重跑30局或重新打包，当时交付同一Embers-impact.app。旧e64bb18的90.847 FPS/P99 25.400毫秒原样另存`performance-before-impacts.json`与`benchmark-before-impacts.log`，跨种子与跨版本差额不能单独归因于刻痕。详见`docs/verification.md`。
 
-完整模拟复用正式 `RunState` 与 `CombatSim.step`，没有额外金币、无敌或专用Boss数值。当前核心 `prototype-0.1.0+19514fc02a89`、seed2026—2035×三类符文共30局为30胜0败，记录208次合成、60次扩容、308次战斗内强化；186个波次含共鸣法器。策略 `orbit-avoid-v1/backpack-shop-v2/upgrade-timing-v2+5567b9f92e50` 保留购物／升级偏好，不额外整理以优化共鸣。新伤害改变后续轨迹，不与旧版声明等价，也不据此推断真人难度。见 `reports/resonance/simulation.json`；先前29胜1败原样保留，真人试玩仍需按 `docs/playtest.md` 记录。
+完整模拟复用正式 `RunState` 与 `CombatSim.step`，没有额外金币、无敌或专用Boss数值。此前背包阶段核心 `prototype-0.1.0+4cafb6168fa3`、seed2026—2035×三类符文共30局为29胜1败，记录229次显式合成、60次扩容、305次战斗内强化和110次波末兜底。策略为 `orbit-avoid-v1/backpack-shop-v2/upgrade-timing-v2+7df97f24c500`，会按空间购买、合成与更换高阶符文；它是新购物策略，不与旧模型声明轨迹等价，也不据此推断真人难度。见 `reports/backpack/simulation.json`；真人试玩、整理耗时和构筑理解仍待按 `docs/playtest.md` 记录。
+
+此前Windows共鸣阶段的完整模拟复用正式 `RunState` 与 `CombatSim.step`，没有额外金币、无敌或专用Boss数值。当时核心 `prototype-0.1.0+19514fc02a89`、seed2026—2035×三类符文共30局为30胜0败，记录208次合成、60次扩容、308次战斗内强化；186个波次含共鸣法器。策略 `orbit-avoid-v1/backpack-shop-v2/upgrade-timing-v2+5567b9f92e50` 保留购物／升级偏好，不额外整理以优化共鸣。新伤害改变后续轨迹，不与旧版声明等价，也不据此推断真人难度。见 `reports/resonance/simulation.json`；先前29胜1败原样保留，真人试玩仍需按 `docs/playtest.md` 记录。
 
 模拟还会记录完整商店报价、余额、候选评分及停止购买/刷新原因。`tools/analyze_shop_runs.py`可生成观测分析，并用`--baseline`严格比较旧对局字段和购物trace。商店观测阶段的30局在新增观测前后旧字段完全一致，证据见`reports/shop-analysis.json`；该结果只证明所测样本不受观测影响，不表示此前的战斗修复没有改变轨迹。
 
-美术可用 `python3 tools/generate_assets.py` 确定性重建。运行 `./tools/run.sh --script res://tools/preview_art.gd` 会创建不读写个人存档的固定陈列场景，保存 `reports/art-showcase.png` 后退出；它用于检查角色、法器与预警层级，不代表实际关卡或通关表现。普通战斗、菜单及商店截图分别为 `reports/art-after.png`、`reports/art-menu.png`、`reports/art-shop.png`。
+美术可用Python 3.10及以上执行 `python3 tools/generate_assets.py` 确定性重建。运行 `./tools/run.sh --script res://tools/preview_art.gd` 会创建不读写个人存档的固定陈列场景，保存 `reports/art-showcase.png` 后退出；它用于检查角色、法器与预警层级，不代表实际关卡或通关表现。普通战斗、菜单及商店截图分别为 `reports/art-after.png`、`reports/art-menu.png`、`reports/art-shop.png`。
 
 反馈与结算布局使用 `./tools/run.sh --script res://tools/preview_feedback.gd -- --view=combat` 检查，也可选择 `shop` 或 `result`。输出为 `reports/feedback-<view>.png`。这些画面明确标注为固定验证场景，不读写个人存档，也不代表实际通关。
 
 预警/HUD可用 `./tools/run.sh --script res://tools/preview_threats.gd` 与追加 `-- --view=boss` 检查；分别保存 `reports/threat-showcase.png` 和 `reports/boss-deadline.png`。这是42个正式固定步推进后冻结的无存档陈列，Boss剩余9秒为排版夹具，不是实际打了81秒。
 
 背包排版可用 `./tools/run.sh --script res://tools/preview_backpack.gd -- --case=filled` 检查；支持 `empty`、`merge`、`full`，追加 `--hold` 留在交互窗口，或用 `--capture=path.png` 另存截图。旧 `preview_shop.gd --view=base|boosted|fullbag|transactions` 入口也已适配真实格子。固定夹具通过正式交易布置库存，提供独立测试预算，不读写个人存档，不代表自然对局或难度验收。
+
+素材生成器显式写入UTF-8/LF。此前Boss金饰阶段的46项资源（36张SVG、10段WAV，24枚库存图标）连续生成两遍的48个产物/元数据哈希一致，仅Boss金色发生变化，其他45项资源逐字节保持。engraved-06阶段新增三枚图标与一张八帧512×64头部图集，该阶段原42项资源保持；`arsenal-atlas-v5`按家族在尾迹后绘制头部，白核可能更完整、更亮，抗锯齿与交叠不等同旧线段画法。原生静帧及透明中心检查见 `reports/return-ring/asset-qa.json`。
 
 共鸣与新材质预览使用 `./tools/run.sh --script res://tools/preview_resonance.gd -- --case=linked`，支持 `unlinked`、`rotated`、`full` 以及 `--hold`、`--capture=path.png`；四夹具分别显示9%、0%、6%、18%共鸣。Windows可用 `tools/run.ps1 --script res://tools/preview_resonance.gd '--' --case=linked --hold`。它只创建界面和局内状态，不加载个人档案。
 
