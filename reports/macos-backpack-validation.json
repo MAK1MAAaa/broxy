@@ -1,0 +1,180 @@
+{
+  "schema_version": 1,
+  "date_local": "2026-10-26",
+  "created_at_utc": "2026-10-26T05:39:30.236802+00:00",
+  "source_base_commit": "b20a71404779e0d0437c1145e246bdbbf13c10dc",
+  "platform": "macOS Apple Silicon",
+  "engine": "Godot 4.7.2.stable.official.ed1daf0bf",
+  "scope": "Portable relic comparison scrolling test and current main macOS release packaging; production code, content, art and fonts unchanged.",
+  "regression": {
+    "before": {
+      "assertions": 220,
+      "failures": 1,
+      "exit_code": 1,
+      "source_sha256": "0ecd1b52fb0898d795769deb8b468676b080d7193c1f5e585b189c9dad2ee703",
+      "log": "reports/macos-backpack-before-raw.log",
+      "font": "Hiragino Sans GB W3",
+      "content_height_px": 362,
+      "viewport_height_px": 376,
+      "scrollable_range_px": 0,
+      "cause": "The natural four-weapon table fits; expecting positive scrolling depended on another font layout."
+    },
+    "after": {
+      "assertions": 226,
+      "failures": 0,
+      "headless_exit_code": 0,
+      "native_exit_code": 0,
+      "source_sha256": "0ba96a38fb4263783a461d9c6cd4542c27681aa36bb9533f3a854ca83bef7fc0",
+      "logs": [
+        "reports/macos-backpack-scroll-after-raw.log",
+        "reports/macos-backpack-scroll-native-raw.log"
+      ],
+      "coverage": [
+        "Natural content respects actual scroll range",
+        "Temporary content minimum creates real overflow with focused table",
+        "Real PageDown and PageUp",
+        "Home and End, and clamping at both boundaries",
+        "Restore original minimum, content size, scroll range, position and state/RNG",
+        "Existing 720p bounds, modal focus, close/Esc and purchase checks retained"
+      ]
+    },
+    "negative_control": {
+      "method": "Temporary test copy instantiates a GameUI subclass that accepts PageDown without scrolling; other keys use the production handler. No repository edits.",
+      "assertions": 226,
+      "failures": 1,
+      "exit_code": 1,
+      "sole_failure": "Real PageDown moves the table when its content overflows",
+      "log": "reports/macos-backpack-scroll-negative-raw.log",
+      "temporary_copy_sha256": "d5af18aadc19eb5f32977ebeb40c9c1141c5dff66e26eae4a67ff14a4d3fbf7c"
+    }
+  },
+  "full_tests": {
+    "command": "./tools/test.sh",
+    "exit_code": 0,
+    "suite_count": 41,
+    "godot_process_count": 46,
+    "godot_assertions": 23328,
+    "godot_failures": 0,
+    "python_tests": 27,
+    "python_passed": true,
+    "relic_comparison_assertions": 226,
+    "log": "reports/macos-backpack-tests-raw.log",
+    "headless_limits": "EnemyTelegraphs explicitly skips 12 GPU readbacks; native graphical test in this iteration is the relic comparison suite, not every suite."
+  },
+  "production_unchanged_vs_main": {
+    "file_count": 171,
+    "paths_from": "Tracked scripts/, data/, assets/, scenes/, plus the listed extra paths",
+    "extra_paths": [
+      "project.godot",
+      "export_presets.cfg",
+      "tools/build_macos.sh",
+      "tools/run.sh",
+      "tests/simulate_runs.gd"
+    ],
+    "aggregate_algorithm": "SHA256 of concatenated sorted UTF-8 path + NUL + file SHA256 hex + newline",
+    "aggregate_sha256": "76519e4065102179be26c555d19762c29007db9571af6aef96f00c1d5c7a8ecf",
+    "asset_count": 46,
+    "art_revision": "engraved-06",
+    "runtime_equivalent_to_base": true
+  },
+  "distribution": {
+    "app": "build/Embers-backpack-macos.app",
+    "zip": "build/Embers-backpack-macos-arm64.zip",
+    "architecture": "arm64",
+    "minimum_macos": "13.0",
+    "build_command": "BROXY_APP_PATH=\"$PWD/build/Embers-backpack-macos.app\" ./tools/build_macos.sh",
+    "build_exit_code": 0,
+    "strict_ad_hoc_signature": true,
+    "info_plist_valid": true,
+    "licenses_match_sources": true,
+    "headless_boot_args": [
+      "--headless",
+      "--quit-after",
+      "3",
+      "--",
+      "--capture-only"
+    ],
+    "headless_boot_exit_code": 0,
+    "native_boot_args": [
+      "--",
+      "--shop-preview",
+      "--capture-only",
+      "--capture=/Users/makima/Desktop/code/game/broxy/reports/macos-backpack-shop.png"
+    ],
+    "native_boot_exit_code": 0,
+    "native_capture": {
+      "image": "reports/macos-backpack-shop.png",
+      "sha256": "4437f5146f4eb103b41b890254fab80c46ea74082890ae91dcc4341e5c3ca08c",
+      "resolution": [
+        1280,
+        720
+      ],
+      "reviewed": true,
+      "result": 0,
+      "limits": "Actual exported app in an isolated shop preview, not a natural completed wave, OS keyboard playtest or performance sample."
+    },
+    "zip_integrity_exit_code": 0,
+    "old_apps_preserved": true,
+    "artifact_sha256": {
+      "build/Embers-backpack-macos.app/Contents/MacOS/秘术余烬": "08e1067e51699a03dcea3365e871b112eb4cf849f1a7bcc0c3e1e5befc162665",
+      "build/Embers-backpack-macos.app/Contents/Resources/秘术余烬.pck": "e69d77b6e0a5b51a8cf9adb1419af51e990fb11b0c94b2a6593993252e00cf73",
+      "build/Embers-backpack-macos-arm64.zip": "d4bcbcf0ded7c2f06d70a5c0f2496ec54d37ab25fcb8118b9e313bd3297d68c1"
+    },
+    "combat_smoke": {
+      "args": [
+        "--",
+        "--smoke",
+        "--capture-only",
+        "--capture=/Users/makima/Desktop/code/game/broxy/reports/macos-backpack-combat.png",
+        "--capture-delay=3"
+      ],
+      "exit_code": 0,
+      "image": "reports/macos-backpack-combat.png",
+      "image_sha256": "7c7c3a19cfee2ccfece71855751ab952d8ac399768430af5e4d3d4159a46d420",
+      "resolution": [
+        1280,
+        720
+      ],
+      "reviewed": true,
+      "result": 0,
+      "limits": "Three-second native startup smoke from the exported app; not a complete wave, continuous playthrough, OS-input test or performance measurement."
+    }
+  },
+  "source_sha256": {
+    "tests/test_relic_comparison.gd": "0ba96a38fb4263783a461d9c6cd4542c27681aa36bb9533f3a854ca83bef7fc0",
+    "scripts/ui/game_ui.gd": "2f3374e10416060f3532998da3cf29355147f3c9761991fd64ffe44a870c02b2",
+    "scripts/core/backpack_inventory.gd": "d86c62781583d803fd3ca0ccd41f632df8cbf61bd80f6845321eaa01c35c8136",
+    "scripts/core/run_state.gd": "548a9d3a94096d2f7d4534a372cb1f0e8ff0ffc4e548c61cee7a4d444213d64d",
+    "scripts/main.gd": "40b953cb9d715fd6111515a5489a2156cf1a9c5f149dfebbc62589f2989f1a40",
+    "tools/test.sh": "d97db1b79b97bfd246ef6fbb77218c4a1b04902fd3d79ea14d3b4d87021cdd1a",
+    "tools/build_macos.sh": "84ffc3343fec5e6fb624ffb7fc166a41406d5f0f0575c8e13aeeaf80beb473d2",
+    "tools/run.sh": "2267c436665b6daab2d2415c0dacdf728dbd4ecd0e9f0790dad0efeba8c9ec6c",
+    "project.godot": "243b092054cff0748423392064c7b243a195bc5a0513430b96b904f5b8ee405d",
+    "export_presets.cfg": "ca6024c033ec24a8ea84f8a108d43f7de3f9c7e43387685f78dd5374ef97517f",
+    "assets/manifest.json": "87913319a634f8574bf9241bd349abd7eda695f6ea8ff7da59dd4236bc245ca8",
+    "README.md": "85602991c2ff0bddf823d076d4b1bf03c5e56861487078e22f89b8bf9073eb99",
+    "docs/verification.md": "c22b87fed64b73f3243fa4c46f6b52a3583c7022d41ca4cf573c19283c0d5dda",
+    "docs/optimization-log.md": "66bb6b918032dc25c52e67b125039f4f03730a85beab4e5fe04a701fc59839cf"
+  },
+  "evidence_sha256": {
+    "reports/macos-backpack-before-raw.log": "53c8b2c6e72724618fe179808c78f0d7f9d9ceea07aa92722c35dbc7028fbddd",
+    "reports/macos-backpack-before-remainder-raw.log": "fccdd2c6e6b2edd54437fb2195be0bb59e6b9b97334762ce7360ddd4a8c64b26",
+    "reports/macos-backpack-scroll-diagnostic-raw.log": "5ee0601721a62a383d1b6a9c07d9b1dadaa18b30e4068005c9b1feff1a35c8bf",
+    "reports/macos-backpack-scroll-after-raw.log": "07145c6f722a28ef140608f7447e3a1d2fe6896935997bb8f033f6b5f6cbda86",
+    "reports/macos-backpack-scroll-negative-raw.log": "0732644d206a3b128e215976c33c805aa28059baac43b704ecaff0f7c2873c28",
+    "reports/macos-backpack-scroll-native-raw.log": "ba25455835b6986e5e21500446202d479575ad9eb34e8cbe50c408287fb0c837",
+    "reports/macos-backpack-tests-raw.log": "a3a497dfcf0a1a85225aa6e82d821160abaea5aa180418712ae8265cac232063",
+    "reports/macos-backpack-build-raw.log": "3107388649b69e7d4d3f6565103153bf48a94967d034b64f73940e1851df9fcd",
+    "reports/macos-backpack-boot-raw.log": "6d1c065383a27c36804949b6ffa4b09714470b112e5dacc0bd5aeb7b9c147c4e",
+    "reports/macos-backpack-shop-raw.log": "6fa28a9c1394b209ac0e6b3767bb439a4b17b2702bca7d56debb158c4f33ccba",
+    "reports/macos-backpack-archive-raw.log": "ec22918f3e2e0393ea3ae178f9e7c813f9b80c3604c1f422a82d524bcb1b051a",
+    "reports/macos-backpack-combat-raw.log": "4daf1f616f36a84435988a3f81ddad290b1081235a0a38078574aa787949adf0"
+  },
+  "not_run": [
+    "Windows execution after portable test adaptation",
+    "30-run simulation; gameplay and runner unchanged",
+    "Current Mac 300-second graphical performance benchmark",
+    "Native OS keyboard gameplay, continuous full run or five-person human playtest"
+  ],
+  "performance_limits": "No new Mac FPS claim; 117.245 FPS / P99 18.036 ms in reports/backpack/performance.json is the historical Windows sample. Older four-weapon Mac measurements also do not validate this exported backpack build."
+}

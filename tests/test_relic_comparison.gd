@@ -142,10 +142,7 @@ func _test_tradeoff_and_focus(ui: GameUI) -> void:
 	_check(scroll != null and close != null and root.get_visible_rect().encloses(scroll.get_global_rect()) and root.get_visible_rect().encloses(close.get_global_rect()), "A full build keeps the bounded table and return action inside 720p")
 	if scroll != null:
 		_check(scroll.get_child(0).get_combined_minimum_size().x <= scroll.size.x + 1.0, "The comparison tables fit without horizontal clipping")
-		scroll.grab_focus()
-		_key(KEY_PAGEDOWN)
-		await _settle()
-		_check(scroll.scroll_vertical > 0, "Keyboard PageDown scrolls the long full-build table")
+		await _test_table_scrolling(scroll, state)
 	if close != null:
 		close.grab_focus()
 		_key(KEY_ENTER)
@@ -159,6 +156,58 @@ func _test_tradeoff_and_focus(ui: GameUI) -> void:
 	_key(KEY_ENTER)
 	await _settle()
 	_check(ui._overlay_mode.is_empty() and int(state.relic_counts["hourglass"]) == 2 and state.gold == 96 and bool(state.offers[0]["sold"]), "Direct purchase still completes immediately without a comparison or confirmation step")
+
+
+func _test_table_scrolling(scroll: ScrollContainer, state: RunState) -> void:
+	var content: Control = scroll.get_child(0)
+	var bar: VScrollBar = scroll.get_v_scroll_bar()
+	var original_minimum: Vector2 = content.custom_minimum_size
+	var original_content_size: Vector2 = content.size
+	var original_scroll: int = scroll.scroll_vertical
+	var natural_range: float = maxf(0.0, bar.max_value - bar.page)
+	var state_before: String = _signature(state)
+	scroll.scroll_vertical = 0
+	scroll.grab_focus()
+	_key(KEY_PAGEDOWN)
+	await _settle()
+	_check(scroll.scroll_vertical > 0 if natural_range > 0.0 else scroll.scroll_vertical == 0,
+		"Natural table PageDown respects its actual overflow instead of assuming a font-dependent height")
+
+	# Fonts can make the real four-weapon table fit. Force overflow only inside
+	# this keyboard fixture, without changing production layout or its content.
+	content.custom_minimum_size.y = maxf(original_minimum.y, scroll.size.y) * 2.0
+	await _settle()
+	scroll.scroll_vertical = 0
+	scroll.grab_focus()
+	_check(bar.max_value - bar.page > 0.0 and bar.visible and root.gui_get_focus_owner() == scroll,
+		"The keyboard fixture has a real scrollable range and focuses the actual comparison table")
+	_key(KEY_PAGEDOWN)
+	await _settle()
+	_check(scroll.scroll_vertical > 0, "Real PageDown moves the table when its content overflows")
+	_key(KEY_PAGEUP)
+	await _settle()
+	_check(scroll.scroll_vertical == 0, "Real PageUp reverses the first page scroll to the top")
+	_key(KEY_END)
+	var end_position: int = scroll.scroll_vertical
+	_key(KEY_PAGEDOWN)
+	await _settle()
+	_check(is_equal_approx(bar.value, bar.max_value - bar.page) and scroll.scroll_vertical == end_position,
+		"End reaches the lower boundary and another PageDown cannot scroll past it")
+	_key(KEY_HOME)
+	var home_position: int = scroll.scroll_vertical
+	_key(KEY_PAGEUP)
+	await _settle()
+	_check(home_position == 0 and scroll.scroll_vertical == 0,
+		"Home returns to the top and another PageUp cannot scroll above it")
+
+	content.custom_minimum_size = original_minimum
+	await _settle()
+	scroll.scroll_vertical = original_scroll
+	await _settle()
+	_check(content.custom_minimum_size == original_minimum and content.size.is_equal_approx(original_content_size)
+		and scroll.scroll_vertical == original_scroll and is_equal_approx(maxf(0.0, bar.max_value - bar.page), natural_range)
+		and _signature(state) == state_before,
+		"Restoring the fixture preserves the natural layout, scroll position, run state and RNG")
 
 
 func _test_bulwark(ui: GameUI) -> void:

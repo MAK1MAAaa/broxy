@@ -1,6 +1,10 @@
 # 原型验收记录
 
-当前背包版本：41套Godot加5个额外档案入口，23322条断言与27项Python测试通过；30局新策略29胜1败，229次合成／60次扩容。原生鼠标拖拽、旋转、武器／符文合成与自动落位确认；五分钟Main压力采样117.245FPS／P99 18.036ms通过。Windows新包、规则边界和证据见[背包验收](backpack.md)及[紧凑记录](../reports/backpack/validation.json)。macOS本轮未重建，真人试玩仍待开展。下述各轮记录保留当时的模型与范围。
+当前macOS交付（2026-10-26）：基于main `b20a714`，修正遗物对照滚动测试对字体高度的依赖。41套Godot加5个额外档案入口共23328条断言、27项Python测试通过，原生对照套件226条通过；原生产界面、规则和素材保持。新`Embers-backpack-macos.app`与arm64 ZIP通过严格ad-hoc签名、Info.plist、无档案启动、实际发布包原生背包商店截图及ZIP完整性检查。旧应用保留，详见[Mac测试与打包记录](../reports/macos-backpack-validation.json)。本次未重测300秒图形性能、Windows或30局模拟；下面的Windows性能和更早Mac记录各自保留原范围。
+
+测试修复包含自然布局按实际范围检查、明确产生溢出的临时夹具、真实PageDown/PageUp/Home/End及布局/状态/RNG恢复。原220条中1项在Mac失败，修改后226条全部通过；仅吞掉PageDown的独立临时副本仍在真正溢出断言失败，未用跳过滚动来通过测试。
+
+此前Windows背包版本：41套Godot加5个额外档案入口，23322条断言与27项Python测试通过；30局新策略29胜1败，229次合成／60次扩容。原生鼠标拖拽、旋转、武器／符文合成与自动落位确认；五分钟Main压力采样117.245FPS／P99 18.036ms通过。Windows新包、规则边界和证据见[背包验收](backpack.md)及[紧凑记录](../reports/backpack/validation.json)。该Windows轮次未重建macOS包，最新Mac交付见上文；真人试玩仍待开展。下述各轮记录保留当时的模型与范围。
 
 上一轮波内强化与玩家前景：16332条Godot、27项Python通过；新时序30局28胜2败，正常Main60秒117.789FPS/P99 17.757ms通过（该轮未重复300秒）。首波真实拾取升级、暂停竞态、前景差分及Windows新包见[当轮验收](midwave-upgrades.md)和[紧凑证据](../reports/midwave/validation.json)。真人试玩仍待开展，macOS当轮未重建。
 
