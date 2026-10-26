@@ -32,9 +32,9 @@ Godot 4.7.2 普通版、带类型标注的 GDScript 开发的 macOS / Windows �
 
 ## 直接游玩
 
-Windows x86_64版本由 `feature/windows` 构建，入口为 `build/Embers-windows-x86_64/Embers.exe`，分发包为 `build/Embers-windows-x86_64.zip`。解压后保留同目录的 `Embers.pck` 与 `licenses/`。当前包包含占格背包、手动三阶合成、8法器、12遗物、`engraved-06`、波内强化和玩家前景分层。上一轮包另存 `build/Embers-windows-before-backpack-a865a01.zip`。Windows使用微软雅黑；macOS本轮未重建，历史证据保留。
+Windows x86_64版本由 `feature/windows` 构建，入口为 `build/Embers-windows-x86_64/Embers.exe`，分发包为 `build/Embers-windows-x86_64.zip`。解压后保留同目录的 `Embers.pck` 与 `licenses/`。当前包包含占格背包、手动三阶合成、8法器、12遗物、`engraved-06`、波内强化和玩家前景分层。上一轮包另存 `build/Embers-windows-before-backpack-a865a01.zip`。Windows使用微软雅黑；下方单独记录最新macOS交付。
 
-macOS 内容扩充前的应用为 `build/Embers-impact.app`（压缩包`build/Embers-impact-mac-arm64.zip`），新增普通法器命中刻痕，包含此前的主角布料、竞技场石材、商店条件提示、HUD避让、强化预览、诊断档案隔离和幽焰追踪修复。旧`build/Embers.app`文件保留；若旧版正在运行，先结束再打开新版。选择骨针或幽焰开局。应用面向 Apple Silicon、macOS 13 及以上；已采用本地 ad-hoc 签名，尚未进行 Developer ID 公证。
+最新macOS应用为 `build/Embers-backpack-macos.app`，分发包为 `build/Embers-backpack-macos-arm64.zip`。包含最新main的格子背包、手动三阶合成、8法器、12遗物、归魂环、波内强化和玩家前景分层。已在Apple Silicon Mac完成完整回归、原生遗物对照检查及实际发布包的背包商店截图，构建和ZIP检查通过。面向Apple Silicon、macOS 13及以上，采用本地ad-hoc签名，尚未进行Developer ID公证。旧`Embers-impact.app`等应用保留，若旧版正在运行，先结束再打开新版；本轮记录见 `reports/macos-backpack-validation.json`。
 
 | 操作 | 按键 |
 | --- | --- |
@@ -114,14 +114,14 @@ python3 tools/fetch_macos_template.py
 ```sh
 ./tools/build_macos.sh
 # 另存应用，避免替换正在运行的旧版：
-BROXY_APP_PATH="$PWD/build/Embers-impact.app" ./tools/build_macos.sh
+BROXY_APP_PATH="$PWD/build/Embers-backpack-macos.app" ./tools/build_macos.sh
 ```
 
 构建从官方 Universal 模板提取 arm64，生成 `build/Embers.app` 并执行 ad-hoc 签名验证。引擎许可在应用的 `Contents/Resources/licenses/` 中直接可读。对外发布前应使用自己的 Developer ID 配置签名与公证。
 
 ## 验证
 
-直接CLI入口`--smoke`、`--autoplay`、`--shop-preview`、`--benchmark`、`--capture-only`会在读取档案前关闭持久化；本进程的设置和成绩只留在内存，窗口标注“不保存设置与成绩”。普通启动保持原有保存行为。独立预览脚本仍各自关闭持久化。当前Embers-impact.app已包含该修复；性能报告另记录实际设置、持久化状态与本次种子。
+直接CLI入口`--smoke`、`--autoplay`、`--shop-preview`、`--benchmark`、`--capture-only`会在读取档案前关闭持久化；本进程的设置和成绩只留在内存，窗口标注“不保存设置与成绩”。普通启动保持原有保存行为。独立预览脚本仍各自关闭持久化。当前Embers-backpack-macos.app已包含该修复；性能报告另记录实际设置、持久化状态与本次种子。
 
 ```sh
 ./tools/test.sh
@@ -136,13 +136,13 @@ BROXY_APP_PATH="$PWD/build/Embers-impact.app" ./tools/build_macos.sh
 ./tools/run.sh -- --benchmark --benchmark-content --benchmark-seed=1792123517 --seconds=300
 ```
 
-可用 `./tools/test.sh` 或 `tools/test.ps1` 运行Godot与Python测试。本轮41套Godot加5个额外档案入口，23322条断言与27项Python测试通过；背包专项与迁移后的查询、商店、弹层、战斗和Main流程统一纳入入口。旧固定栏位套件的替代关系见[测试迁移](docs/backpack-test-migration.md)，完整证据见 `reports/backpack/validation.json`。
+可用 `./tools/test.sh` 或 `tools/test.ps1` 运行Godot与Python测试。当前Mac验证为41套Godot加5个额外档案入口，23328条断言与27项Python测试通过；遗物对照测试改为按实际溢出判断自然布局，再用临时长内容验证真实键盘滚动，原生226条检查通过。背包专项与迁移后的查询、商店、弹层、战斗和Main流程统一纳入入口。旧固定栏位套件的替代关系见[测试迁移](docs/backpack-test-migration.md)，当前Mac测试与包指纹见 `reports/macos-backpack-validation.json`，此前Windows背包验收见 `reports/backpack/validation.json`。
 
 上一轮Windows波内强化通过16332条Godot断言与27项Python测试，证据保留在 `reports/midwave/validation.json`；原生首波升级/恢复与前景对照见 `reports/midwave/native-fixtures.json`。此前归魂环、商店与符文历史验收同样保留；系统字体验证需要桌面字体访问权限。
 
 性能测试会打开明确标记的窗口，预热5秒后采样300秒，保持300敌人、至少600投射物与200掉落，并输出 `reports/performance.json`。`--benchmark-content`使用内容目录中的法器与3类符文的真实伤害弹体，标记为`content-feedback`；`--benchmark-runes`保留原4件法器的`rune-feedback`场景；省略二者为历史`baseline`。可加 `--benchmark-seed=<正整数>` 复现生成序列；只在基准模式解析，省略时维持原随机种子，普通游戏不受影响。不同场景独立记录，不能直接推断性能差异来源。报告记录实际武器来源、默认设置、持久化状态与本次种子，内容场景另记录各法器实际伤害和末段弹体家族。测试时保持窗口可见、电脑未锁屏，避免其他图形负载；保留历史记录时先备份原性能JSON。
 
-本轮Main内容场景重新完成预热5秒加300秒原生采样：平均117.245FPS、P99 18.036ms，末尾300敌人/600弹体/200掉落，默认设置且不读写个人档案，见 `reports/backpack/performance.json`。它使用八类目录法器与一阶符文的压力弹体；合法12法器和高阶符文另有规则检查，不将此FPS当作所有满阶构筑测量。上一轮60秒与更早完整300秒分别保留在 `reports/midwave/`、`reports/return-ring/`，不同源码与轨迹的差额不作优化收益对照。
+此前Windows背包阶段Main内容场景完成预热5秒加300秒原生采样：平均117.245FPS、P99 18.036ms，末尾300敌人/600弹体/200掉落，默认设置且不读写个人档案，见 `reports/backpack/performance.json`。它使用八类目录法器与一阶符文的压力弹体；合法12法器和高阶符文另有规则检查，不将此FPS当作所有满阶构筑测量。本次Mac测试适配与打包未重测图形性能，不将该Windows数值作为当前Mac包的帧率。上一轮60秒与更早完整300秒分别保留在 `reports/midwave/`、`reports/return-ring/`，不同源码与轨迹的差额不作优化收益对照。
 
 此前内容扩充版Windows七法器300秒原生采样通过：平均60.710 FPS、P99 28.418ms，末尾300敌人／600弹体／200掉落；结果见 `reports/content/performance.json`。首次54.60 FPS的失败采样、弹体几何缓存优化与同夹具CPU微测一并保留在 `docs/content-expansion.md`，各次原生采样种子不同，不把全部帧率差额归因于单项修改。
 
