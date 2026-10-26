@@ -128,7 +128,9 @@ BROXY_APP_PATH="$PWD/build/Embers-terrain-macos.app" ./tools/build_macos.sh
 
 ## 验证
 
-本轮整合验证：53套Godot加5个额外档案入口，25418条断言与27项Python通过；新增状态／战斗／UI组合76／147／32条，原生组合UI32条通过。两核心各15局全部完成，192个波次实际包含共鸣法器。白骨八法器预热5秒、采样60秒平均95.754 FPS／P99 26.109ms通过；直接压力弹体默认共鸣0，真实共鸣组合另由行为专项与正常对局验证，未重复300秒。结果见 `reports/macos-main-integration-validation.json` 和 `reports/performance-rogue-bone_chorus.json`。
+当前地图版460ccea已通过25913条Godot断言、32项Python与18局自动构筑。解锁后补做沉沼／白骨八法器原生压力：5秒预热＋300秒，平均88.428 FPS、P99帧间隔18.597毫秒，末尾300敌人／600弹体／200掉落，达到门槛。五次CUA观察确认窗口可见，源码／素材／已交付Mac包指纹保持；初次锁屏143历史保留。仅覆盖这一压力场景，没有重跑全套、18局或打包。范围见 `reports/terrain-performance-validation.json`。
+
+上一轮整合验证：53套Godot加5个额外档案入口，25418条断言与27项Python通过；新增状态／战斗／UI组合76／147／32条，原生组合UI32条通过。两核心各15局全部完成，192个波次实际包含共鸣法器。白骨八法器预热5秒、采样60秒平均95.754 FPS／P99 26.109ms通过；直接压力弹体默认共鸣0，真实共鸣组合另由行为专项与正常对局验证，未重复300秒。结果见 `reports/macos-main-integration-validation.json` 和 `reports/performance-rogue-bone_chorus.json`。
 
 此前393083d版霜火核心八法器原生压力采样：5秒预热＋300秒，31652帧，平均105.504 FPS、P99 22.067毫秒，结束时300敌人／600弹体／200掉落，核心实际触发2151次，事件与命中／伤害计数包含5秒预热。使用默认设置、固定种子20261026且关闭档案读写；只覆盖该压力场景，不代表所有高阶背包构筑。结果独立保存在 `reports/performance-rogue-frostfire.json`，历史 `performance.json` 保留。
 

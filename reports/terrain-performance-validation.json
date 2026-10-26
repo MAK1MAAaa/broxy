@@ -1,0 +1,196 @@
+{
+  "schema_version": 1,
+  "created_at_utc": "2026-10-26T16:28:14.567519+00:00",
+  "code_commit": "460cceac987dbadcb70ac55b703abc6ac7d952fe",
+  "purpose": "Complete the previously lock-blocked 300-second native terrain benchmark on the exact delivered460ccea game.",
+  "command": "./tools/run.sh -- --benchmark --benchmark-content --arena=mire --benchmark-core=bone_chorus --benchmark-seed=20261026 --seconds=300 --capture=/Users/makima/Desktop/code/game/broxy/reports/terrain-pressure.png",
+  "warmup_seconds": 5,
+  "sample_seconds": 300,
+  "process_exit_code": 0,
+  "result": {
+    "arena_id": "mire",
+    "average_fps": 88.4278001111204,
+    "core_activations": {
+      "bone_chorus": 218,
+      "frostfire": 0
+    },
+    "core_id": "bone_chorus",
+    "damage_by_weapon": {
+      "bone": 280234.499999998,
+      "comet": 4595557.27500486,
+      "crescent": 6577809.52505683,
+      "ember": 1085615.36249999,
+      "frost": 1658202.97500762,
+      "return_ring": 8210936.79988876,
+      "scatter": 348920.399999998,
+      "storm": 535168.012499999
+    },
+    "duration_seconds": 300.0,
+    "enemies": 300,
+    "enemy_hit_visual_revision": "tempered-hit-v1",
+    "impact_draw_commands_at_end": 11,
+    "impact_visual_capacity": 32,
+    "impact_visual_peak": 32,
+    "impact_visual_revision": "primary-impact-v1",
+    "internal_resolution": "1280x720",
+    "os": "macOS",
+    "p99_frame_ms": 18.597,
+    "passed": true,
+    "persistent_profile": false,
+    "pickups": 200,
+    "primary_hits": 318680,
+    "projectile_families_at_end": {
+      "bone:bounce": 25,
+      "comet:blast": 16,
+      "comet:bounce": 151,
+      "crescent:blast": 98,
+      "crescent:pierce": 3,
+      "ember:pierce": 35,
+      "frost:blast": 52,
+      "return_ring:blast": 52,
+      "return_ring:pierce": 6,
+      "scatter:blast": 1,
+      "scatter:bounce": 73,
+      "storm:bounce": 1,
+      "storm:pierce": 87
+    },
+    "projectile_visual_revision": "arsenal-atlas-v5",
+    "projectiles": 600,
+    "renderer": "gl_compatibility",
+    "run_seed": 20261026,
+    "rune_visual_peak": 32,
+    "samples": 26530,
+    "scenario": "content-feedback",
+    "secondary_hits": 1789256,
+    "settings": {
+      "flash": true,
+      "shake": true,
+      "volume": 0.65
+    },
+    "weapon_ids": [
+      "bone",
+      "frost",
+      "ember",
+      "scatter",
+      "crescent",
+      "storm",
+      "comet",
+      "return_ring"
+    ]
+  },
+  "result_file": {
+    "path": "reports/performance-arena-mire-bone_chorus.json",
+    "bytes": 1576,
+    "sha256": "75184affa411a574ac183cb1f93e03355f5c2042442eb14a10ff38016af2effb"
+  },
+  "raw_log": {
+    "path": "reports/terrain-benchmark-raw.log",
+    "bytes": 1848,
+    "sha256": "a46023db82c8d73e908a03b8cd7679ed88e771306fd478369bf0980297759159"
+  },
+  "native_observations": {
+    "source": "CUA native app screenshot review by root",
+    "app_path": "/Users/makima/Desktop/code/game/broxy/.tools/godot/Godot.app",
+    "window_title": "秘术余烬 · 多法器压力测试（非普通关卡，不保存设置与成绩） (DEBUG)",
+    "initial_action": "Raise via the native window secondary action before initial screenshot",
+    "during_sample": [
+      {
+        "remaining_on_hud": "04:51",
+        "enemies": 300,
+        "projectiles": 600,
+        "locked": false,
+        "map": "mire",
+        "window_visible": true
+      },
+      {
+        "remaining_on_hud": "03:55",
+        "enemies": 300,
+        "projectiles": 600,
+        "locked": false,
+        "map": "mire",
+        "window_visible": true
+      },
+      {
+        "remaining_on_hud": "02:37",
+        "enemies": 300,
+        "projectiles": 600,
+        "locked": false,
+        "map": "mire",
+        "window_visible": true
+      },
+      {
+        "remaining_on_hud": "01:52",
+        "enemies": 300,
+        "projectiles": 600,
+        "locked": false,
+        "map": "mire",
+        "window_visible": true
+      },
+      {
+        "remaining_on_hud": "00:35",
+        "enemies": 300,
+        "projectiles": 600,
+        "locked": false,
+        "map": "mire",
+        "window_visible": true
+      }
+    ],
+    "process_exit_code": 0,
+    "after_completion": {
+      "godot_running_in_native_inventory": false,
+      "source": "cua.listApps() after process exited0"
+    }
+  },
+  "native_capture": {
+    "path": "reports/terrain-pressure.png",
+    "bytes": 1235778,
+    "sha256": "cc2e45d1f36f943ef6c7b6c5c3ddc07ec8999484a14b5b723f0c467f4a69aac8"
+  },
+  "initial_attempt": {
+    "status": "not_completed",
+    "reason": "Mac locked; CUA could not inspect the native window. Sampling stopped with SIGTERM/143; not counted as passed.",
+    "interruption_log": {
+      "path": "reports/terrain-benchmark-locked-raw.log",
+      "bytes": 483,
+      "sha256": "d40f50d0acbe69494c1ce981891ace50737da84802c754b6eaa5a454ddbae7e4"
+    }
+  },
+  "unchanged": {
+    "source_fingerprints_verified": 19,
+    "source_reference": "reports/terrain-validation.json:source",
+    "map_fingerprints_verified": 3,
+    "runtime_assets_and_config_git_clean": true,
+    "package": {
+      "zip": {
+        "path": "build/Embers-terrain-macos-arm64.zip",
+        "bytes": 30207640,
+        "sha256": "bab7447762d69ba9d8643f0dbeecf14d230532079f02811fca59626b9f80dfb2"
+      },
+      "binary": {
+        "path": "build/Embers-terrain-macos.app/Contents/MacOS/秘术余烬",
+        "bytes": 82421616,
+        "sha256": "fee03273362ee2feb9335b481cb852c79210f841d79dcae1b0338e8de3606e48"
+      },
+      "pck": {
+        "path": "build/Embers-terrain-macos.app/Contents/Resources/秘术余烬.pck",
+        "bytes": 1611752,
+        "sha256": "b5def74cd06cb6b3c3d5d58c95c37b33b695f68a571f175e99f60851edd40b31"
+      },
+      "plist": {
+        "path": "build/Embers-terrain-macos.app/Contents/Info.plist",
+        "bytes": 1742,
+        "sha256": "b809b8ae0b41a5f3626e6183575e8d71ac705aa940e661ca8505101aa4da8640"
+      }
+    },
+    "rebuilt": false
+  },
+  "scope": "Native Godot4.7.2 Compatibility1280x720 on AppleM5; mire map, bone_chorus, eight weapon families and three rune families with positive damage. No tests, simulations or builds ran in parallel; other pre-existing desktop applications remained. This is not a clean-machine or isolated GPU measurement.",
+  "limits": [
+    "Only this map/core/pressure fixture; does not establish performance for every map, high-rank inventory, enemy mix or other Mac.",
+    "Pressure restores health, keeps target counts and wraps entity positions; not a natural encounter or human playtest.",
+    "Direct pressure projectiles use default resonance0; the separate prior behavioral/normal-run tests cover resonance.",
+    "Frame statistics exclude5s warmup; core/hit/damage and effect peak counters include warmup.",
+    "P99 is process-frame interval, not GPU duration. End counts are not a per-frame occupancy trace.",
+    "This follow-up did not rerun the full25913-assertion/32-Python suite,18normal runs, Windows or packaging because gameplay/assets/package are unchanged."
+  ]
+}

@@ -516,12 +516,93 @@
     "limits": "Fixed native rendered fixtures; controlled placement/budgets and danger zones, no personal profile IO. 960x540 window uses1280x720 internal render. Root/independent art/UI agents inspected screenshots. OS visibility/interaction unavailable during lock; no human usability claim."
   },
   "performance": {
-    "status": "not_completed",
-    "reason": "Mac locked; CUA could not inspect the native window. Sampling stopped with SIGTERM/143; not counted as passed.",
-    "interruption_log": {
-      "path": "reports/terrain-benchmark-locked-raw.log",
-      "bytes": 483,
-      "sha256": "d40f50d0acbe69494c1ce981891ace50737da84802c754b6eaa5a454ddbae7e4"
+    "status": "passed",
+    "completed_at_utc": "2026-10-26T16:28:14.567519+00:00",
+    "code_commit": "460cceac987dbadcb70ac55b703abc6ac7d952fe",
+    "initial_attempt": {
+      "status": "not_completed",
+      "reason": "Mac locked; CUA could not inspect the native window. Sampling stopped with SIGTERM/143; not counted as passed.",
+      "interruption_log": {
+        "path": "reports/terrain-benchmark-locked-raw.log",
+        "bytes": 483,
+        "sha256": "d40f50d0acbe69494c1ce981891ace50737da84802c754b6eaa5a454ddbae7e4"
+      }
+    },
+    "result": {
+      "arena_id": "mire",
+      "average_fps": 88.4278001111204,
+      "core_activations": {
+        "bone_chorus": 218,
+        "frostfire": 0
+      },
+      "core_id": "bone_chorus",
+      "damage_by_weapon": {
+        "bone": 280234.499999998,
+        "comet": 4595557.27500486,
+        "crescent": 6577809.52505683,
+        "ember": 1085615.36249999,
+        "frost": 1658202.97500762,
+        "return_ring": 8210936.79988876,
+        "scatter": 348920.399999998,
+        "storm": 535168.012499999
+      },
+      "duration_seconds": 300.0,
+      "enemies": 300,
+      "enemy_hit_visual_revision": "tempered-hit-v1",
+      "impact_draw_commands_at_end": 11,
+      "impact_visual_capacity": 32,
+      "impact_visual_peak": 32,
+      "impact_visual_revision": "primary-impact-v1",
+      "internal_resolution": "1280x720",
+      "os": "macOS",
+      "p99_frame_ms": 18.597,
+      "passed": true,
+      "persistent_profile": false,
+      "pickups": 200,
+      "primary_hits": 318680,
+      "projectile_families_at_end": {
+        "bone:bounce": 25,
+        "comet:blast": 16,
+        "comet:bounce": 151,
+        "crescent:blast": 98,
+        "crescent:pierce": 3,
+        "ember:pierce": 35,
+        "frost:blast": 52,
+        "return_ring:blast": 52,
+        "return_ring:pierce": 6,
+        "scatter:blast": 1,
+        "scatter:bounce": 73,
+        "storm:bounce": 1,
+        "storm:pierce": 87
+      },
+      "projectile_visual_revision": "arsenal-atlas-v5",
+      "projectiles": 600,
+      "renderer": "gl_compatibility",
+      "run_seed": 20261026,
+      "rune_visual_peak": 32,
+      "samples": 26530,
+      "scenario": "content-feedback",
+      "secondary_hits": 1789256,
+      "settings": {
+        "flash": true,
+        "shake": true,
+        "volume": 0.65
+      },
+      "weapon_ids": [
+        "bone",
+        "frost",
+        "ember",
+        "scatter",
+        "crescent",
+        "storm",
+        "comet",
+        "return_ring"
+      ]
+    },
+    "validation_report": {
+      "path": "reports/terrain-performance-validation.json",
+      "bytes": 6978,
+      "sha256": "26a8e1614075ceafa8e75e3ca7bf676921710b9a306298620e7d8f1deeecff95"
     }
   },
   "package": {
