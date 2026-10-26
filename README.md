@@ -4,9 +4,9 @@ Godot 4.7.2 普通版、带类型标注的 GDScript 开发的 macOS / Windows �
 
 武器、遗物和松散符文现在装入盒状背包。购买自动找空位，玩家手动移动、旋转和合成；两件同名同阶物品升一阶，最高三阶。初始6×4格，可付32、48魂屑扩到6×6；背包中的所有法器自动攻击，遗物直接生效。操作与数值见[秘术背包](docs/backpack.md)，专项预览使用 `res://tools/preview_backpack.gd`。
 
-当前源码包含8种法器、12种遗物，美术版本为 `engraved-06`。新增返航法器归魂环，以及伤害换攻速的血契书、拾取范围换移速的引魂烛；三枚图标以断骨钩环、皮革契书和宽托魂烛区分。此前42项素材逐字节保持，五类敌人材质、主角灰紫布料与低对比战斗地板沿用。规则与验收见 [归魂环与取舍遗物](docs/return-ring.md)，美术合同与来源见 `docs/art-direction.md`；上一轮内容扩充记录保留在 `docs/content-expansion.md`。
+当前源码包含8种法器、12种遗物，美术版本为 `engraved-07`。本轮细化Boss金冠、肩领和胸饰的古金明暗层次，保持轮廓、面具、手掌和其他45项素材。归魂环、血契书与引魂烛沿用engraved-06的独立图标与弹体表现；主角灰紫布料、普通敌人材质和低对比地板保持。规则与验收见 [归魂环与取舍遗物](docs/return-ring.md)，本轮美术合同与来源见 `docs/art-direction.md`；更早内容扩充记录保留在 `docs/content-expansion.md`。
 
-归魂环发射0.60秒后追随玩家当前位置返航，往返共享已命中目标，不会重复伤害同一敌人；本体可命中2个不同目标，成功弹射会永久取消返航。冷却独立推进，接回魂环不回复生命或魂屑。新增内容沿用商店购买、商品锁定、遗物购前对照和符文装入预览；本轮完整回归、原生画面、固定种子压力采样与Windows新包验证通过。八法器头部使用预生成图集与复用缓冲，保持危险提示优先。
+归魂环发射0.60秒后追随玩家当前位置返航，往返共享已命中目标，不会重复伤害同一敌人；本体可命中2个不同目标，成功弹射会永久取消返航。冷却独立推进，接回魂环不回复生命或魂屑。新增内容沿用商店购买、商品锁定、遗物购前对照和符文装入预览；归魂环阶段的Windows完整回归、原生画面、固定种子压力采样与新包验证记录保留。八法器头部使用预生成图集与复用缓冲，保持危险提示优先。
 
 当前经验升级会暂停战斗，选完三选一后继续原位置、弹体、冷却与剩余时间；多级连续选择，Esc与设置仍可用，死亡和波末优先结算。生命强化显示实际生命补充。提前拾取可提前取得强化，让拾取范围与移速的取舍影响当前波次。角色与环绕法器现在显示在友方特效和输出数字上方，承伤提示与敌方危险信息继续置顶。规则、边界和验收见 [波内强化与玩家前景](docs/midwave-upgrades.md)。
 
@@ -34,7 +34,7 @@ Godot 4.7.2 普通版、带类型标注的 GDScript 开发的 macOS / Windows �
 
 Windows x86_64版本由 `feature/windows` 构建，入口为 `build/Embers-windows-x86_64/Embers.exe`，分发包为 `build/Embers-windows-x86_64.zip`。解压后保留同目录的 `Embers.pck` 与 `licenses/`。当前包包含占格背包、手动三阶合成、8法器、12遗物、`engraved-06`、波内强化和玩家前景分层。上一轮包另存 `build/Embers-windows-before-backpack-a865a01.zip`。Windows使用微软雅黑；下方单独记录最新macOS交付。
 
-最新macOS应用为 `build/Embers-backpack-macos.app`，分发包为 `build/Embers-backpack-macos-arm64.zip`。包含最新main的格子背包、手动三阶合成、8法器、12遗物、归魂环、波内强化和玩家前景分层。已在Apple Silicon Mac完成完整回归、原生遗物对照检查及实际发布包的背包商店截图，构建和ZIP检查通过。面向Apple Silicon、macOS 13及以上，采用本地ad-hoc签名，尚未进行Developer ID公证。旧`Embers-impact.app`等应用保留，若旧版正在运行，先结束再打开新版；本轮记录见 `reports/macos-backpack-validation.json`。
+最新macOS应用为 `build/Embers-regalia-macos.app`，分发包为 `build/Embers-regalia-macos-arm64.zip`。包含最新main的格子背包、手动三阶合成、8法器、12遗物、归魂环、波内强化、玩家前景分层与engraved-07 Boss金饰。已在Apple Silicon Mac完成本轮完整回归、Boss原生材质静帧及实际发布包三秒战斗冒烟，构建、签名和ZIP检查通过。面向Apple Silicon、macOS 13及以上，采用本地ad-hoc签名，尚未进行Developer ID公证。旧`Embers-impact.app`等应用保留，若旧版正在运行，先结束再打开新版；本轮美术与包指纹见 `reports/boss-art-validation.json`；上一版背包包和测试适配记录见 `reports/macos-backpack-validation.json`，旧应用均保留。
 
 | 操作 | 按键 |
 | --- | --- |
@@ -101,7 +101,7 @@ PowerShell 中的用户参数分隔符需写为 `'--'`，防止被 PowerShell �
 ./tools/run.sh
 ```
 
-全新环境可使用 Python 3 标准库和系统 curl 下载工具：
+全新环境可使用 Python 3 标准库和系统 curl 下载工具；素材生成脚本需要 Python 3.10 及以上：
 
 ```sh
 python3 tools/fetch_godot.py
@@ -114,14 +114,14 @@ python3 tools/fetch_macos_template.py
 ```sh
 ./tools/build_macos.sh
 # 另存应用，避免替换正在运行的旧版：
-BROXY_APP_PATH="$PWD/build/Embers-backpack-macos.app" ./tools/build_macos.sh
+BROXY_APP_PATH="$PWD/build/Embers-regalia-macos.app" ./tools/build_macos.sh
 ```
 
 构建从官方 Universal 模板提取 arm64，生成 `build/Embers.app` 并执行 ad-hoc 签名验证。引擎许可在应用的 `Contents/Resources/licenses/` 中直接可读。对外发布前应使用自己的 Developer ID 配置签名与公证。
 
 ## 验证
 
-直接CLI入口`--smoke`、`--autoplay`、`--shop-preview`、`--benchmark`、`--capture-only`会在读取档案前关闭持久化；本进程的设置和成绩只留在内存，窗口标注“不保存设置与成绩”。普通启动保持原有保存行为。独立预览脚本仍各自关闭持久化。当前Embers-backpack-macos.app已包含该修复；性能报告另记录实际设置、持久化状态与本次种子。
+直接CLI入口`--smoke`、`--autoplay`、`--shop-preview`、`--benchmark`、`--capture-only`会在读取档案前关闭持久化；本进程的设置和成绩只留在内存，窗口标注“不保存设置与成绩”。普通启动保持原有保存行为。独立预览脚本仍各自关闭持久化。当前Embers-regalia-macos.app已包含该修复；性能报告另记录实际设置、持久化状态与本次种子。
 
 ```sh
 ./tools/test.sh
@@ -152,7 +152,7 @@ BROXY_APP_PATH="$PWD/build/Embers-backpack-macos.app" ./tools/build_macos.sh
 
 模拟还会记录完整商店报价、余额、候选评分及停止购买/刷新原因。`tools/analyze_shop_runs.py`可生成观测分析，并用`--baseline`严格比较旧对局字段和购物trace。商店观测阶段的30局在新增观测前后旧字段完全一致，证据见`reports/shop-analysis.json`；该结果只证明所测样本不受观测影响，不表示此前的战斗修复没有改变轨迹。
 
-美术可用 `python3 tools/generate_assets.py` 确定性重建。运行 `./tools/run.sh --script res://tools/preview_art.gd` 会创建不读写个人存档的固定陈列场景，保存 `reports/art-showcase.png` 后退出；它用于检查角色、法器与预警层级，不代表实际关卡或通关表现。普通战斗、菜单及商店截图分别为 `reports/art-after.png`、`reports/art-menu.png`、`reports/art-shop.png`。
+美术可用Python 3.10及以上执行 `python3 tools/generate_assets.py` 确定性重建。运行 `./tools/run.sh --script res://tools/preview_art.gd` 会创建不读写个人存档的固定陈列场景，保存 `reports/art-showcase.png` 后退出；它用于检查角色、法器与预警层级，不代表实际关卡或通关表现。普通战斗、菜单及商店截图分别为 `reports/art-after.png`、`reports/art-menu.png`、`reports/art-shop.png`。
 
 反馈与结算布局使用 `./tools/run.sh --script res://tools/preview_feedback.gd -- --view=combat` 检查，也可选择 `shop` 或 `result`。输出为 `reports/feedback-<view>.png`。这些画面明确标注为固定验证场景，不读写个人存档，也不代表实际通关。
 
@@ -160,7 +160,7 @@ BROXY_APP_PATH="$PWD/build/Embers-backpack-macos.app" ./tools/build_macos.sh
 
 背包排版可用 `./tools/run.sh --script res://tools/preview_backpack.gd -- --case=filled` 检查；支持 `empty`、`merge`、`full`，追加 `--hold` 留在交互窗口，或用 `--capture=path.png` 另存截图。旧 `preview_shop.gd --view=base|boosted|fullbag|transactions` 入口也已适配真实格子。固定夹具通过正式交易布置库存，提供独立测试预算，不读写个人存档，不代表自然对局或难度验收。
 
-素材生成器显式写入UTF-8/LF。当前46项资源（36张SVG、10段WAV，24枚库存图标）连续生成两遍的48个产物/元数据哈希一致，原42项资源逐字节保持；新增三枚图标与一张八帧512×64头部图集。`arsenal-atlas-v5`按家族在尾迹后绘制头部，白核可能更完整、更亮，抗锯齿与交叠不等同旧线段画法。原生静帧及透明中心检查见 `reports/return-ring/asset-qa.json`。
+素材生成器显式写入UTF-8/LF。本轮46项资源（36张SVG、10段WAV，24枚库存图标）连续生成两遍的48个产物/元数据哈希一致，仅Boss金色发生变化，其他45项资源逐字节保持。engraved-06阶段新增三枚图标与一张八帧512×64头部图集，该阶段原42项资源保持；`arsenal-atlas-v5`按家族在尾迹后绘制头部，白核可能更完整、更亮，抗锯齿与交叠不等同旧线段画法。原生静帧及透明中心检查见 `reports/return-ring/asset-qa.json`。
 
 ## 项目组织
 

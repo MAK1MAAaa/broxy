@@ -1,6 +1,8 @@
 # 原型验收记录
 
-当前macOS交付（2026-10-26）：基于main `b20a714`，修正遗物对照滚动测试对字体高度的依赖。41套Godot加5个额外档案入口共23328条断言、27项Python测试通过，原生对照套件226条通过；原生产界面、规则和素材保持。新`Embers-backpack-macos.app`与arm64 ZIP通过严格ad-hoc签名、Info.plist、无档案启动、实际发布包原生背包商店截图及ZIP完整性检查。旧应用保留，详见[Mac测试与打包记录](../reports/macos-backpack-validation.json)。本次未重测300秒图形性能、Windows或30局模拟；下面的Windows性能和更早Mac记录各自保留原范围。
+当前美术与Mac交付（2026-10-26）：`engraved-07`仅细化Boss古金5处RGB属性，其他45项素材及游戏运行时／规则／策略保持047d9c1；160px源alpha、面具内部与双掌像素不变，141px原生前后／预警／寒霜陈列已查看。完整23328条Godot与27项Python通过，48生成产物与元数据重跑一致。新Embers-regalia-macos.app及arm64 ZIP通过严格签名、Info.plist、无档案启动、原生三秒冒烟和ZIP检查；导出PCK中Boss纹理与导入纹理一致。详见[Boss材质与打包记录](../reports/boss-art-validation.json)。本轮没有新Mac性能、真人辨识或通关结论。
+
+前一版Mac测试适配与交付（2026-10-26）：基于main `b20a714`，修正遗物对照滚动测试对字体高度的依赖。41套Godot加5个额外档案入口共23328条断言、27项Python测试通过，原生对照套件226条通过；原生产界面、规则和素材保持。新`Embers-backpack-macos.app`与arm64 ZIP通过严格ad-hoc签名、Info.plist、无档案启动、实际发布包原生背包商店截图及ZIP完整性检查。旧应用保留，详见[Mac测试与打包记录](../reports/macos-backpack-validation.json)。本次未重测300秒图形性能、Windows或30局模拟；下面的Windows性能和更早Mac记录各自保留原范围。
 
 测试修复包含自然布局按实际范围检查、明确产生溢出的临时夹具、真实PageDown/PageUp/Home/End及布局/状态/RNG恢复。原220条中1项在Mac失败，修改后226条全部通过；仅吞掉PageDown的独立临时副本仍在真正溢出断言失败，未用跳过滚动来通过测试。
 
