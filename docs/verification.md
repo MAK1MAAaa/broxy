@@ -1,8 +1,14 @@
 # 原型验收记录
 
-当前共鸣版本：45套Godot加5档案入口，24688条断言与27项Python测试通过；新伤害规则下30局自动模拟30胜0败，186波含共鸣法器。实际旋转／移走遗物确认9%→6%→3%，四种720p画面与独立审查通过。Windows包及本轮60秒呈现压力回归见[共鸣验收](resonance.md)和[紧凑记录](../reports/resonance/validation.json)；未重复300秒，macOS未重建，真人试玩未开展。
+本次PR #4同步main（2026-10-26）：将 `047d9c1` 合入 `codex/backpack-resonance`，手动合并README三处与本文顶部一处冲突，同时保留Windows共鸣和Mac适配证据。共鸣生产代码、内容与素材保持 `632cd06`，main中的滚动测试适配完整保留。Mac完整45套加5个额外档案入口共24694条Godot断言、27项Python测试通过；原生遗物对照226条与共鸣UI32条通过。本次没有重新打包、重跑模拟或图形压力，不将历史包／FPS作为新结果。见[同步验证](../reports/pr4-main-sync-validation.json)。
 
-背包初版：41套Godot加5个额外档案入口，23322条断言与27项Python测试通过；30局新策略29胜1败，229次合成／60次扩容。原生鼠标拖拽、旋转、武器／符文合成与自动落位确认；五分钟Main压力采样117.245FPS／P99 18.036ms通过。规则和证据见[背包验收](backpack.md)及[紧凑记录](../reports/backpack/validation.json)。下述各轮记录保留当时的模型与范围。
+此前Windows共鸣版本（`632cd06`）：45套Godot加5档案入口，24688条断言与27项Python测试通过；新伤害规则下30局自动模拟30胜0败，186波含共鸣法器。实际旋转／移走遗物确认9%→6%→3%，四种720p画面与独立审查通过。Windows包及本轮60秒呈现压力回归见[共鸣验收](resonance.md)和[紧凑记录](../reports/resonance/validation.json)；未重复300秒，macOS未重建，真人试玩未开展。
+
+Mac背包交付记录（2026-10-26，`29b1dcb`）：基于main `b20a714`，修正遗物对照滚动测试对字体高度的依赖。41套Godot加5个额外档案入口共23328条断言、27项Python测试通过，原生对照套件226条通过；该适配轮次的原生产界面、规则和素材保持；所列Mac包尚未包含本PR的邻接共鸣。新`Embers-backpack-macos.app`与arm64 ZIP通过严格ad-hoc签名、Info.plist、无档案启动、实际发布包原生背包商店截图及ZIP完整性检查。旧应用保留，详见[Mac测试与打包记录](../reports/macos-backpack-validation.json)。本次未重测300秒图形性能、Windows或30局模拟；下面的Windows性能和更早Mac记录各自保留原范围。
+
+测试修复包含自然布局按实际范围检查、明确产生溢出的临时夹具、真实PageDown/PageUp/Home/End及布局/状态/RNG恢复。原220条中1项在Mac失败，修改后226条全部通过；仅吞掉PageDown的独立临时副本仍在真正溢出断言失败，未用跳过滚动来通过测试。
+
+此前Windows背包版本：41套Godot加5个额外档案入口，23322条断言与27项Python测试通过；30局新策略29胜1败，229次合成／60次扩容。原生鼠标拖拽、旋转、武器／符文合成与自动落位确认；五分钟Main压力采样117.245FPS／P99 18.036ms通过。Windows新包、规则边界和证据见[背包验收](backpack.md)及[紧凑记录](../reports/backpack/validation.json)。该Windows轮次未重建macOS包，最新Mac交付见上文；真人试玩仍待开展。下述各轮记录保留当时的模型与范围。
 
 上一轮波内强化与玩家前景：16332条Godot、27项Python通过；新时序30局28胜2败，正常Main60秒117.789FPS/P99 17.757ms通过（该轮未重复300秒）。首波真实拾取升级、暂停竞态、前景差分及Windows新包见[当轮验收](midwave-upgrades.md)和[紧凑证据](../reports/midwave/validation.json)。真人试玩仍待开展，macOS当轮未重建。
 

@@ -8,7 +8,7 @@ Godot 4.7.2 普通版、带类型标注的 GDScript 开发的 macOS / Windows �
 
 当前源码包含8种法器、12种遗物，美术版本为 `engraved-06`。新增返航法器归魂环，以及伤害换攻速的血契书、拾取范围换移速的引魂烛；三枚图标以断骨钩环、皮革契书和宽托魂烛区分。此前42项素材逐字节保持，五类敌人材质、主角灰紫布料与低对比战斗地板沿用。规则与验收见 [归魂环与取舍遗物](docs/return-ring.md)，美术合同与来源见 `docs/art-direction.md`；上一轮内容扩充记录保留在 `docs/content-expansion.md`。
 
-归魂环发射0.60秒后追随玩家当前位置返航，往返共享已命中目标，不会重复伤害同一敌人；本体可命中2个不同目标，成功弹射会永久取消返航。冷却独立推进，接回魂环不回复生命或魂屑。新增内容沿用商店购买、商品锁定、遗物购前对照和符文装入预览；本轮完整回归、原生画面、固定种子压力采样与Windows新包验证通过。八法器头部使用预生成图集与复用缓冲，保持危险提示优先。
+归魂环发射0.60秒后追随玩家当前位置返航，往返共享已命中目标，不会重复伤害同一敌人；本体可命中2个不同目标，成功弹射会永久取消返航。冷却独立推进，接回魂环不回复生命或魂屑。新增内容沿用商店购买、商品锁定、遗物购前对照和符文装入预览；归魂环阶段的完整回归、原生画面、固定种子压力采样与Windows新包验证通过。八法器头部使用预生成图集与复用缓冲，保持危险提示优先。
 
 当前经验升级会暂停战斗，选完三选一后继续原位置、弹体、冷却与剩余时间；多级连续选择，Esc与设置仍可用，死亡和波末优先结算。生命强化显示实际生命补充。提前拾取可提前取得强化，让拾取范围与移速的取舍影响当前波次。角色与环绕法器现在显示在友方特效和输出数字上方，承伤提示与敌方危险信息继续置顶。规则、边界和验收见 [波内强化与玩家前景](docs/midwave-upgrades.md)。
 
@@ -34,9 +34,9 @@ Godot 4.7.2 普通版、带类型标注的 GDScript 开发的 macOS / Windows �
 
 ## 直接游玩
 
-Windows x86_64入口为 `build/Embers-windows-x86_64/Embers.exe`，分发包为 `build/Embers-windows-x86_64.zip`。解压后保留同目录的 `Embers.pck` 与 `licenses/`。当前包包含遗物邻接共鸣、盒装材质、占格背包、手动三阶合成、8法器、12遗物、`engraved-06`、波内强化和玩家前景分层。上一轮包另存 `build/Embers-windows-before-resonance-133c5aa.zip`。Windows使用微软雅黑；macOS本轮未重建，历史证据保留。
+Windows x86_64入口为 `build/Embers-windows-x86_64/Embers.exe`，分发包为 `build/Embers-windows-x86_64.zip`。解压后保留同目录的 `Embers.pck` 与 `licenses/`。当前包包含遗物邻接共鸣、盒装材质、占格背包、手动三阶合成、8法器、12遗物、`engraved-06`、波内强化和玩家前景分层。上一轮包另存 `build/Embers-windows-before-resonance-133c5aa.zip`。Windows使用微软雅黑；本PR未重建macOS包，最近一次Mac背包交付另见下文。
 
-macOS 内容扩充前的应用为 `build/Embers-impact.app`（压缩包`build/Embers-impact-mac-arm64.zip`），新增普通法器命中刻痕，包含此前的主角布料、竞技场石材、商店条件提示、HUD避让、强化预览、诊断档案隔离和幽焰追踪修复。旧`build/Embers.app`文件保留；若旧版正在运行，先结束再打开新版。选择骨针或幽焰开局。应用面向 Apple Silicon、macOS 13 及以上；已采用本地 ad-hoc 签名，尚未进行 Developer ID 公证。
+本分支记录的macOS背包应用为 `build/Embers-backpack-macos.app`，分发包为 `build/Embers-backpack-macos-arm64.zip`。该包对应共鸣改动前的格子背包、手动三阶合成、8法器、12遗物、归魂环、波内强化和玩家前景分层，尚未包含本PR的遗物邻接共鸣。已在Apple Silicon Mac完成完整回归、原生遗物对照检查及实际发布包的背包商店截图，构建和ZIP检查通过。面向Apple Silicon、macOS 13及以上，采用本地ad-hoc签名，尚未进行Developer ID公证。旧`Embers-impact.app`等应用保留，若旧版正在运行，先结束再打开新版；该Mac交付记录见 `reports/macos-backpack-validation.json`。
 
 | 操作 | 按键 |
 | --- | --- |
@@ -117,14 +117,14 @@ python3 tools/fetch_macos_template.py
 ```sh
 ./tools/build_macos.sh
 # 另存应用，避免替换正在运行的旧版：
-BROXY_APP_PATH="$PWD/build/Embers-impact.app" ./tools/build_macos.sh
+BROXY_APP_PATH="$PWD/build/Embers-backpack-macos.app" ./tools/build_macos.sh
 ```
 
 构建从官方 Universal 模板提取 arm64，生成 `build/Embers.app` 并执行 ad-hoc 签名验证。引擎许可在应用的 `Contents/Resources/licenses/` 中直接可读。对外发布前应使用自己的 Developer ID 配置签名与公证。
 
 ## 验证
 
-直接CLI入口`--smoke`、`--autoplay`、`--shop-preview`、`--benchmark`、`--capture-only`会在读取档案前关闭持久化；本进程的设置和成绩只留在内存，窗口标注“不保存设置与成绩”。普通启动保持原有保存行为。独立预览脚本仍各自关闭持久化。当前Embers-impact.app已包含该修复；性能报告另记录实际设置、持久化状态与本次种子。
+直接CLI入口`--smoke`、`--autoplay`、`--shop-preview`、`--benchmark`、`--capture-only`会在读取档案前关闭持久化；本进程的设置和成绩只留在内存，窗口标注“不保存设置与成绩”。普通启动保持原有保存行为。独立预览脚本仍各自关闭持久化。当前Embers-backpack-macos.app已包含该修复；性能报告另记录实际设置、持久化状态与本次种子。
 
 ```sh
 ./tools/test.sh
@@ -139,13 +139,21 @@ BROXY_APP_PATH="$PWD/build/Embers-impact.app" ./tools/build_macos.sh
 ./tools/run.sh -- --benchmark --benchmark-content --benchmark-seed=1792123517 --seconds=300
 ```
 
-可用 `./tools/test.sh` 或 `tools/test.ps1` 运行Godot与Python测试。本轮45套Godot加5个额外档案入口，24688条断言与27项Python测试通过。共鸣专项覆盖独立几何oracle、交易预览、实际武器／符文伤害、对象池、材质输入透传及原生尺寸；实际旋转／拖拽已确认9%→6%→3%变化，证据见 `reports/resonance/validation.json`。旧固定栏位套件的替代关系见[测试迁移](docs/backpack-test-migration.md)，背包初版23322条断言记录保留在 `reports/backpack/`。
+可用 `./tools/test.sh` 或 `tools/test.ps1` 运行Godot与Python测试。
+
+本次PR #4同步main的Mac合并验证：45套Godot加5个额外档案入口，24694条断言与27项Python测试通过；原生遗物对照226条、共鸣UI32条通过。共鸣生产代码与素材保持 `632cd06`，保留main的滚动测试修复；没有重新打包、重跑模拟或图形压力。证据见 `reports/pr4-main-sync-validation.json`。
+
+此前Windows共鸣版本（`632cd06`）完成45套Godot加5个额外档案入口，24688条断言与27项Python测试通过。共鸣专项覆盖独立几何oracle、交易预览、实际武器／符文伤害、对象池、材质输入透传及原生尺寸；实际旋转／拖拽已确认9%→6%→3%变化，证据见 `reports/resonance/validation.json`。
+
+此前Mac背包适配（`29b1dcb`）完成41套Godot加5个额外档案入口，23328条断言与27项Python测试通过；遗物对照按实际溢出判断自然布局，再用临时长内容验证真实键盘滚动，原生226条检查通过。本次合入main保留该测试修复，历史Mac包和测试指纹见 `reports/macos-backpack-validation.json`。两轮统计各自保留，不相加作为本次结果。旧套件替代关系见[测试迁移](docs/backpack-test-migration.md)。
 
 上一轮Windows波内强化通过16332条Godot断言与27项Python测试，证据保留在 `reports/midwave/validation.json`；原生首波升级/恢复与前景对照见 `reports/midwave/native-fixtures.json`。此前归魂环、商店与符文历史验收同样保留；系统字体验证需要桌面字体访问权限。
 
 性能测试会打开明确标记的窗口，预热5秒后采样300秒，保持300敌人、至少600投射物与200掉落，并输出 `reports/performance.json`。`--benchmark-content`使用内容目录中的法器与3类符文的真实伤害弹体，标记为`content-feedback`；`--benchmark-runes`保留原4件法器的`rune-feedback`场景；省略二者为历史`baseline`。可加 `--benchmark-seed=<正整数>` 复现生成序列；只在基准模式解析，省略时维持原随机种子，普通游戏不受影响。不同场景独立记录，不能直接推断性能差异来源。报告记录实际武器来源、默认设置、持久化状态与本次种子，内容场景另记录各法器实际伤害和末段弹体家族。测试时保持窗口可见、电脑未锁屏，避免其他图形负载；保留历史记录时先备份原性能JSON。
 
-背包初版曾完成预热5秒加300秒原生采样：平均117.245FPS、P99 18.036ms，末尾300敌人/600弹体/200掉落，见 `reports/backpack/performance.json`。本轮共鸣改动另跑60秒内容场景，结果见 `reports/resonance/performance-60s.json`；没有重复300秒。压力夹具直接发射八类目录法器与一阶符文、默认局部倍率为0，适用于战斗呈现回归；共鸣伤害另由实际库存与自动发射专项验证，不将FPS泛化到所有满阶构筑。各轮时长、源码与轨迹不同，不将差额当作优化收益。
+此前Windows背包阶段完成预热5秒加300秒原生采样：平均117.245FPS、P99 18.036ms，末尾300敌人／600弹体／200掉落，默认设置且不读写个人档案，见 `reports/backpack/performance.json`。
+
+Windows共鸣版本另跑60秒内容场景：平均116.694FPS、P99 18.183ms，见 `reports/resonance/performance-60s.json`，没有重复300秒。该呈现压力夹具直接发射八类目录法器与一阶符文，默认局部倍率为0；共鸣伤害另由实际库存与自动发射专项验证，不将FPS泛化到所有满阶构筑。本次同步main未重测图形性能，不将Windows数值作为Mac包帧率。各轮时长、源码和轨迹不同，不把差额解释为优化收益；更早记录仍保留在 `reports/midwave/`、`reports/return-ring/`。
 
 此前内容扩充版Windows七法器300秒原生采样通过：平均60.710 FPS、P99 28.418ms，末尾300敌人／600弹体／200掉落；结果见 `reports/content/performance.json`。首次54.60 FPS的失败采样、弹体几何缓存优化与同夹具CPU微测一并保留在 `docs/content-expansion.md`，各次原生采样种子不同，不把全部帧率差额归因于单项修改。
 
