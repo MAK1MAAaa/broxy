@@ -49,7 +49,7 @@ func _run_tests() -> void:
 	_check(_buttons_inside(ui), "Title buttons fit in 1280 by 720")
 	_check(_text_inside(ui), "Title text remains inside the reference viewport without vertical clipping")
 	var illustration_space: Control = ui.find_child("IllustrationBreathingSpace", true, false)
-	_check(illustration_space != null and illustration_space.size.x >= 400 and illustration_space.size.y >= 300, "Title reserves a substantial unobstructed area for its illustration")
+	_check(illustration_space != null and illustration_space.size.x >= 400 and illustration_space.size.y >= 260, "Title reserves an unobstructed illustration area above the two-row map selector")
 	_check(_decorations_ignore_input(ui), "Title ornamentation never intercepts input or runs per-frame processing")
 	_press(ui, GameCatalog.weapon("ember").display_name)
 	await _settle()

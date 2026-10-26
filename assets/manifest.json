@@ -3,6 +3,7 @@
   "style": "Eclipse reliquary: engraved occult vector art",
   "art_revision": "engraved-07",
   "projectile_visual_revision": "arsenal-atlas-v5",
+  "terrain_revision": "biomes-01",
   "license": "CC0-1.0",
   "generator": "python3 tools/generate_assets.py",
   "external_sources": [],
@@ -829,6 +830,60 @@
       "creator": "Project original deterministic synthesis",
       "license": "CC0-1.0",
       "status": "authored; in-game mix QA pending"
+    },
+    {
+      "id": "maps_mire",
+      "path": "assets/maps/mire.svg",
+      "type": "vector",
+      "size": [
+        1280,
+        720
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "green-black wetland, flush mossy causeway, reeds and snapped perimeter trees; exact mud ellipses shared with data/arenas.json; fixed unobstructed combat Rect2(66,140,1148,450), quiet center spawn, no baked typography",
+      "source": "tools/art_arenas.py",
+      "creator": "Project original procedural vector artwork",
+      "license": "CC0-1.0",
+      "status": "authored; engine visual QA pending"
+    },
+    {
+      "id": "maps_glacier",
+      "path": "assets/maps/glacier.svg",
+      "type": "vector",
+      "size": [
+        1280,
+        720
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "blue-grey fractured ice floor, inset broken ring and perimeter ice spires; exact frost-sand ellipses shared with data/arenas.json; fixed unobstructed combat Rect2(66,140,1148,450), quiet center spawn, no baked typography",
+      "source": "tools/art_arenas.py",
+      "creator": "Project original procedural vector artwork",
+      "license": "CC0-1.0",
+      "status": "authored; engine visual QA pending"
+    },
+    {
+      "id": "maps_ashland",
+      "path": "assets/maps/ashland.svg",
+      "type": "vector",
+      "size": [
+        1280,
+        720
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "brown charcoal basalt plates, dormant fissures and perimeter outcrops; exact loose-ash ellipses shared with data/arenas.json; fixed unobstructed combat Rect2(66,140,1148,450), quiet center spawn, no baked typography",
+      "source": "tools/art_arenas.py",
+      "creator": "Project original procedural vector artwork",
+      "license": "CC0-1.0",
+      "status": "authored; engine visual QA pending"
     }
   ]
 }

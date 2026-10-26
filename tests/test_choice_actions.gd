@@ -180,9 +180,13 @@ func _test_starter_refresh_preserves_settings() -> void:
 		return
 	ember.grab_focus()
 	_key(KEY_ENTER)
-	_key(KEY_TAB)
-	_key(KEY_TAB)
 	var source: Button = _find_button(ui._page, "设置")
+	# Traverse the actual current title controls without yielding: map cards may
+	# sit between starter and settings, while the starter refresh is still queued.
+	for step: int in 16:
+		if source != null and root.gui_get_focus_owner() == source:
+			break
+		_key(KEY_TAB)
 	_check(source != null and root.gui_get_focus_owner() == source, "Real Tab navigation reaches settings before the queued starter refresh")
 	_key(KEY_ENTER)
 	_check(ui._overlay_mode == "settings_title", "Real Return opens settings before the queued title refresh executes")

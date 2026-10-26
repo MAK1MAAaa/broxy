@@ -2,11 +2,13 @@
 
 Godot 4.7.2 普通版、带类型标注的 GDScript 开发的 macOS / Windows 单人割草原型。围绕占格背包、可升阶法器与行为符文，完成短波次战斗、经验强化、商店整理和最终 Boss。
 
+主菜单新增四地图选择：秘仪祭坛、沉沼遗庭、苍霜圣庭、余烬荒原。三张新图具有不同地貌和减速区域，同时影响玩家与敌人，离开恢复；本局八波沿用所选地图。界面移除重复小字，关键数值与风险保留，低频操作改为按钮提示。规则与验证见[地图与地形](docs/maps.md)。
+
 武器、遗物和松散符文现在装入盒状背包。购买自动找空位，玩家手动移动、旋转和合成；两件同名同阶物品升一阶，最高三阶。初始6×4格，可付32、48魂屑扩到6×6；背包中的所有法器自动攻击，遗物直接生效。操作与数值见[秘术背包](docs/backpack.md)，专项预览使用 `res://tools/preview_backpack.gd`。
 
 当前源码包含8种法器、12种遗物和 `rogue-choices-v1` 秘术抉择。第1波后可选霜火共鸣或白骨齐鸣核心；第2波后可自愿挑战追猎者，击杀后在波间自选符文。普通波可选择原途、密集魂潮或重甲巡礼；引魂烛与正上方相接法器联动，改变目标优先级。完成第3波解锁霜矛起手，击杀追猎者解锁散魂起手，没有永久属性加成。完整规则与边界见[秘术抉择](docs/rogue-choices.md)。
 
-46项 `engraved-07` 素材与 `arsenal-atlas-v5` 图集保持。背包沿用 `backpack-targets-v1` 合成／装符候选和逐格预览，新增淡绿↑烛引标记；追猎者有冠、圈和生命条，寒焰以蓝金双环显示，敌方危险提示继续置顶。操作与美术约定见[秘术背包](docs/backpack.md)及 `docs/art-direction.md`。
+原46项 `engraved-07` 素材与 `arsenal-atlas-v5` 图集保持，新增3张 `biomes-01` 地图背景，共49项资源。背包沿用 `backpack-targets-v1` 合成／装符候选和逐格预览，新增淡绿↑烛引标记；追猎者有冠、圈和生命条，寒焰以蓝金双环显示，敌方危险提示继续置顶。操作与美术约定见[秘术背包](docs/backpack.md)及 `docs/art-direction.md`。
 
 归魂环发射0.60秒后追随玩家当前位置返航，往返共享已命中目标，不会重复伤害同一敌人；本体可命中2个不同目标，成功弹射会永久取消返航。冷却独立推进，接回魂环不回复生命或魂屑。新增内容沿用商店购买、商品锁定、遗物购前对照和符文装入预览；归魂环阶段的Windows完整回归、原生画面、固定种子压力采样与新包验证记录保留。八法器头部使用预生成图集与复用缓冲，保持危险提示优先。
 
@@ -38,7 +40,7 @@ Godot 4.7.2 普通版、带类型标注的 GDScript 开发的 macOS / Windows �
 
 Windows x86_64入口为 `build/Embers-windows-x86_64/Embers.exe`，分发包为 `build/Embers-windows-x86_64.zip`。解压后保留同目录的 `Embers.pck` 与 `licenses/`。当前包包含遗物邻接共鸣、盒装材质、占格背包、手动三阶合成、8法器、12遗物、`engraved-06`、波内强化和玩家前景分层。上一轮包另存 `build/Embers-windows-before-resonance-133c5aa.zip`。Windows使用微软雅黑；该Windows交付的历史验收保留，当前Mac交付另见下文。
 
-最新macOS应用为 `build/Embers-integrated-macos.app`，分发包为 `build/Embers-integrated-macos-arm64.zip`。已整合main的遗物邻接共鸣／盒装材质与Mac分支的两核心、追猎契约、路线、烛引联动、横向解锁和engraved-07素材。完整回归、30局自动对局、原生界面、实际发布包规则探测与商店截图、严格签名和ZIP检查通过。Apple Silicon、macOS 13及以上，本地ad-hoc签名，未Developer ID公证；旧包保留。验收与边界见 `reports/macos-main-integration-validation.json`。
+最新macOS应用为 `build/Embers-terrain-macos.app`，分发包为 `build/Embers-terrain-macos-arm64.zip`，包含四地图选择、实际地形与精简界面，以及此前完整背包／共鸣／秘术抉择内容。适用于Apple Silicon、macOS 13及以上，使用本地ad-hoc签名。验证与限制见 `reports/terrain-validation.json`；旧整合包与历史验收保留。
 
 | 操作 | 按键 |
 | --- | --- |
@@ -119,7 +121,7 @@ python3 tools/fetch_macos_template.py
 ```sh
 ./tools/build_macos.sh
 # 另存应用，避免替换正在运行的旧版：
-BROXY_APP_PATH="$PWD/build/Embers-integrated-macos.app" ./tools/build_macos.sh
+BROXY_APP_PATH="$PWD/build/Embers-terrain-macos.app" ./tools/build_macos.sh
 ```
 
 构建从官方 Universal 模板提取 arm64，生成 `build/Embers.app` 并执行 ad-hoc 签名验证。引擎许可在应用的 `Contents/Resources/licenses/` 中直接可读。对外发布前应使用自己的 Developer ID 配置签名与公证。
@@ -135,7 +137,7 @@ BROXY_APP_PATH="$PWD/build/Embers-integrated-macos.app" ./tools/build_macos.sh
 ./tools/run.sh --headless --script res://tests/simulate_runs.gd -- --seed=2026 --count=5 --rune=all --core=bone_chorus --route=balanced --altar=accept
 ```
 
-直接CLI入口`--smoke`、`--autoplay`、`--shop-preview`、`--benchmark`、`--capture-only`会在读取档案前关闭持久化；本进程的设置和成绩只留在内存，窗口标注“不保存设置与成绩”。普通启动保持原有保存行为。独立预览脚本仍各自关闭持久化。当前Embers-integrated-macos.app已包含该修复；性能报告另记录实际设置、持久化状态与本次种子。
+直接CLI入口`--smoke`、`--autoplay`、`--shop-preview`、`--benchmark`、`--capture-only`会在读取档案前关闭持久化；本进程的设置和成绩只留在内存，窗口标注“不保存设置与成绩”。普通启动保持原有保存行为。独立预览脚本仍各自关闭持久化。当前Embers-terrain-macos.app已包含该修复；性能报告另记录实际设置、持久化状态与本次种子。
 
 ```sh
 ./tools/test.sh
@@ -182,7 +184,7 @@ Windows共鸣版本另跑60秒内容场景：平均116.694FPS、P99 18.183ms，�
 
 共鸣与新材质预览使用 `./tools/run.sh --script res://tools/preview_resonance.gd -- --case=linked`，支持 `unlinked`、`rotated`、`full` 以及 `--hold`、`--capture=path.png`；四夹具分别显示9%、0%、6%、18%共鸣。Windows可用 `tools/run.ps1 --script res://tools/preview_resonance.gd '--' --case=linked --hold`。它只创建界面和局内状态，不加载个人档案。
 
-素材生成器显式写入UTF-8/LF。当前46项资源（36张SVG、10段WAV，24枚库存图标）连续生成两遍的48个产物/元数据哈希一致，原42项资源逐字节保持；新增三枚图标与一张八帧512×64头部图集。`arsenal-atlas-v5`按家族在尾迹后绘制头部，白核可能更完整、更亮，抗锯齿与交叠不等同旧线段画法。原生静帧及透明中心检查见 `reports/return-ring/asset-qa.json`。
+素材生成器显式写入UTF-8/LF。归魂环阶段46项资源（36张SVG、10段WAV，24枚库存图标）连续生成两遍的48个产物/元数据哈希一致，原42项资源逐字节保持；新增三枚图标与一张八帧512×64头部图集。`arsenal-atlas-v5`按家族在尾迹后绘制头部，白核可能更完整、更亮，抗锯齿与交叠不等同旧线段画法。原生静帧及透明中心检查见 `reports/return-ring/asset-qa.json`。
 
 ## 项目组织
 

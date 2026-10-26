@@ -16,7 +16,8 @@ try {
         'backpack_flow', 'backpack_ui', 'backpack_targets', 'backpack_shop',
         'rogue_state', 'rogue_combat', 'rogue_ui', 'rogue_progress',
         'resonance_rules', 'resonance_combat', 'resonance_grid', 'resonance_ui',
-        'rogue_resonance_state', 'rogue_resonance_combat', 'rogue_resonance_ui'
+        'rogue_resonance_state', 'rogue_resonance_combat', 'rogue_resonance_ui',
+        'arena_rules', 'arena_flow', 'concise_ui'
     )
     foreach ($suite in $suites) {
         & $runner --headless --script "res://tests/test_$suite.gd"

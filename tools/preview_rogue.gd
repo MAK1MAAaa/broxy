@@ -9,6 +9,7 @@ var _hold: bool = false
 var _transactions: Array[Dictionary] = []
 var _setup_ok: bool = true
 var _hunter_fixture: bool = false
+var _window_size := Vector2i(1280, 720)
 
 func _initialize() -> void:
 	_preview.call_deferred()
@@ -21,6 +22,12 @@ func _preview() -> void:
 			_capture = argument.trim_prefix("--capture=")
 		elif argument == "--hold":
 			_hold = true
+		elif argument.begins_with("--size="):
+			var requested: String = argument.trim_prefix("--size=")
+			if requested not in ["1280x720", "960x540"]:
+				_invalid()
+				return
+			_window_size = Vector2i(960, 540) if requested == "960x540" else Vector2i(1280, 720)
 		else:
 			_invalid()
 			return
@@ -32,7 +39,7 @@ func _preview() -> void:
 	if not _capture.to_lower().ends_with(".png"):
 		_invalid()
 		return
-	root.size = Vector2i(1280, 720)
+	root.size = _window_size
 	root.title = "秘术余烬 · 秘术抉择固定验证 / %s（不保存档案）" % _case
 	_state = RunState.new()
 	_state.begin(20261026, "bone")
@@ -126,5 +133,5 @@ func _signature() -> String:
 	return JSON.stringify({"summary": _state.summary(), "rng": str(_state.rng.state), "offers": _state.offers})
 
 func _invalid() -> void:
-	push_error("Usage: native --script res://tools/preview_rogue.gd -- --case=core|altar|reward|route|lamp|title|unlocked [--capture=<png>] [--hold]")
+	push_error("Usage: native --script res://tools/preview_rogue.gd -- --case=core|altar|reward|route|lamp|title|unlocked [--size=1280x720|960x540] [--capture=<png>] [--hold]")
 	quit(2)

@@ -99,7 +99,7 @@ func _test_starters() -> void:
 	_ui.show_title({})
 	await _settle()
 	var breathing: Control = _ui.find_child("IllustrationBreathingSpace", true, false)
-	_check(breathing.size.x >= 400 and breathing.size.y >= 300, "Four compact starter cards preserve the title illustration breathing area")
+	_check(breathing.size.x >= 400 and breathing.size.y >= 260, "Four compact starter cards preserve the illustration above the two-row map selector")
 
 func _test_core_route_and_modal() -> void:
 	var state: RunState = _state(1)

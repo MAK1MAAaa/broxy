@@ -25,6 +25,7 @@ const UPGRADE_POOL: Array[Dictionary] = [
 ]
 
 var wave: int = 1
+var arena_id: String = "reliquary"
 var gold: int = 0
 var xp: int = 0
 var level: int = 1
@@ -61,10 +62,11 @@ var _upgrade_options: Array[Dictionary] = []
 var _locked_offers: Dictionary = {}
 var _resonance: Dictionary = {}
 
-func begin(seed_value: int, starter: String) -> void:
+func begin(seed_value: int, starter: String, selected_arena: String = "reliquary") -> void:
 	_run_seed = seed_value
 	rng.seed = seed_value
 	wave = 1
+	arena_id = ArenaCatalog.normalize_id(selected_arena)
 	gold = 0
 	xp = 0
 	level = 1
@@ -815,6 +817,7 @@ func choose_upgrade(id: String) -> bool:
 func summary() -> Dictionary:
 	return {
 		"seed": _run_seed,
+		"arena_id": arena_id,
 		"wave": wave,
 		"gold": gold,
 		"xp": xp,

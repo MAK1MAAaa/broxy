@@ -10,6 +10,9 @@ var sound: SoundBank
 var settings: Dictionary = {"shake": true, "flash": true}
 var textures: Dictionary = {}
 var arena_texture: Texture2D
+var _arena_id: String = "reliquary"
+var _arena_name: String = "秘仪祭坛"
+var _arena_color: Color = Color(0.78, 0.67, 0.50)
 var soul_texture: Texture2D
 var glow_texture: Texture2D
 var seal_texture: Texture2D
@@ -96,7 +99,7 @@ func _init() -> void:
 
 func _ready() -> void:
 	_number_font = ThemeDB.fallback_font
-	arena_texture = load("res://assets/arena.svg")
+	arena_texture = load(str(ArenaCatalog.definition(_arena_id)["texture"])) as Texture2D
 	soul_texture = load("res://assets/icons/soul.svg")
 	glow_texture = load("res://assets/fx/glow.svg")
 	seal_texture = load("res://assets/fx/seal.svg")
@@ -114,6 +117,14 @@ func apply_visual_settings(value: Dictionary) -> void:
 	queue_redraw()
 
 func begin(state: RunState) -> void:
+	var arena: Dictionary = ArenaCatalog.definition(state.arena_id)
+	_arena_id = str(arena["id"])
+	_arena_name = str(arena["name"])
+	# Keep off-tree simulation fixtures free of render resources; _ready handles
+	# a world begun before it is attached, using the same selected arena.
+	if is_node_ready():
+		arena_texture = load(str(arena["texture"])) as Texture2D
+	_arena_color = Color(str(arena["preview_color"])) if _arena_id != "reliquary" else Color(0.78, 0.67, 0.50)
 	sim = CombatSim.new()
 	sim.begin(state)
 	sim.ended.connect(_on_ended)
@@ -301,6 +312,10 @@ func _on_ended(victory: bool, reason: String) -> void:
 
 func hud_snapshot() -> Dictionary:
 	var value: Dictionary = sim.snapshot()
+	value["arena_id"] = _arena_id
+	value["arena_name"] = _arena_name
+	value["terrain_name"] = ArenaCatalog.terrain_name(_arena_id, sim.player_position)
+	value["terrain_multiplier"] = ArenaCatalog.movement_multiplier(_arena_id, sim.player_position)
 	value["rogue"] = {"core_id": sim.run.core_id, "active_route": sim.run.active_route,
 		"hunter_alive": sim.hunter != null and sim.hunter.active and sim.hunter.hunter,
 		"hunter_defeated": sim.run.hunter_defeated}
@@ -433,7 +448,7 @@ func _draw_atmosphere() -> void:
 			90.0 + fposmod(float(index) * 127.3 + sin(_visual_time * 0.12 + phase) * 19.0, 1100.0),
 			150.0 + fposmod(float(index) * 73.7 - _visual_time * (2.0 + float(index % 3)), 420.0))
 		var alpha: float = 0.07 + (sin(_visual_time * 0.7 + phase) + 1.0) * 0.035
-		draw_circle(point, 1.0 if index % 3 else 1.5, Color(0.78, 0.67, 0.50, alpha))
+		draw_circle(point, 1.0 if index % 3 else 1.5, Color(_arena_color, alpha))
 	if sim.boss != null and sim.boss.active:
 		var pulse: float = 0.32 + sin(_visual_time * 1.5) * 0.05
 		draw_texture_rect(glow_texture, Rect2(sim.boss.position - Vector2(110, 100), Vector2(220, 180)), false, Color(0.73, 0.59, 0.85, pulse))

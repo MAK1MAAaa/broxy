@@ -1,0 +1,634 @@
+{
+  "schema_version": 1,
+  "created_at_utc": "2026-10-26T16:15:10.441544+00:00",
+  "base_commit": "17a174b3d12766f93053e479c00699f7ac900ad2",
+  "scope": "Remove redundant persistent UI copy; add four selectable maps and shared authored terrain affecting both sides. Local macOS build and commit; no remote push.",
+  "source": [
+    {
+      "path": "scripts/core/arena_catalog.gd",
+      "bytes": 2098,
+      "sha256": "54058a8ac50c1c6c96853500e8ce547f0c63d4a1ab81b09325dee2f632c33f87"
+    },
+    {
+      "path": "data/arenas.json",
+      "bytes": 1584,
+      "sha256": "a1e947cf2883df57754da12cb0afafff29b01aec32c823fbe0ca9031d006449f"
+    },
+    {
+      "path": "scripts/core/run_state.gd",
+      "bytes": 35370,
+      "sha256": "de9bcecd7bb2cebc4077b947ce67b317b3366d7430521033809fe04411ebd83d"
+    },
+    {
+      "path": "scripts/combat/combat_sim.gd",
+      "bytes": 36893,
+      "sha256": "3f7de10fd9e64540e33dca25bea965bf08fbbf521d624efd108b4324faa66f88"
+    },
+    {
+      "path": "scripts/combat/combat_world.gd",
+      "bytes": 28525,
+      "sha256": "099e2e367967771ab5c93a77f4fdde118d5c972f7710b0d2e4c22e6d0d0217a3"
+    },
+    {
+      "path": "scripts/main.gd",
+      "bytes": 17007,
+      "sha256": "f7e58ce52ef1b4d0a3451efae66aca7c2d96d0270f0602644ae100e994e5ead2"
+    },
+    {
+      "path": "scripts/ui/game_ui.gd",
+      "bytes": 114336,
+      "sha256": "820a701a2f183c34a256e06603264b934dd431a77a24d8144046096d368b7c2c"
+    },
+    {
+      "path": "tools/art_arenas.py",
+      "bytes": 14302,
+      "sha256": "0564bae5987b99d3bfd9d7b7523dc8e1141b0d680b2047f56c8ed45990a54a93"
+    },
+    {
+      "path": "tools/generate_assets.py",
+      "bytes": 10970,
+      "sha256": "c77b78847f3e6b0e8d77a857469b1b08d6481e2879de8576f9a234fd216ed903"
+    },
+    {
+      "path": "tools/preview_arenas.gd",
+      "bytes": 3329,
+      "sha256": "4108ba6f8acf27873f282648c0b0804750c2be1a2d0ea6399766fa5c9ac06564"
+    },
+    {
+      "path": "tools/preview_rogue.gd",
+      "bytes": 5907,
+      "sha256": "09e9ad5107ba7b10695b9cf03069b79bc95025159629ba87d97fd960dffdb14b"
+    },
+    {
+      "path": "tests/test_arena_rules.gd",
+      "bytes": 10478,
+      "sha256": "a5b915996a92ed8ce2e66dfdd4c33962dea04f620448aae9736fa4dc9052da71"
+    },
+    {
+      "path": "tests/test_arena_flow.gd",
+      "bytes": 5837,
+      "sha256": "8451c19463e2ef27d77acedc3c6018b6f3437a1110948dd69beaef5665ed07d4"
+    },
+    {
+      "path": "tests/test_concise_ui.gd",
+      "bytes": 10872,
+      "sha256": "7f14855adff0054beb6bd7f2bc66f309c09bed4e76c6af7243db190b5d384bec"
+    },
+    {
+      "path": "tests/test_arena_assets.py",
+      "bytes": 4691,
+      "sha256": "fd840d82e1dfd123821c177b36801053f45fa79c0f8f645d147a5f703ac6331d"
+    },
+    {
+      "path": "tests/simulate_runs.gd",
+      "bytes": 22015,
+      "sha256": "5eb66641e75baabec50d304028228fba9ad6542fdb2b4a87f8c848942c8ac31d"
+    },
+    {
+      "path": "export_presets.cfg",
+      "bytes": 1660,
+      "sha256": "44a0ab01837057017ae751c75bcfe4548cadbc1f184cbf19f61806abaecc4f31"
+    },
+    {
+      "path": "tools/test.sh",
+      "bytes": 1602,
+      "sha256": "065b90ddadf8b484a95828a2207e0df4810eed0b77a86165715bab395292d888"
+    },
+    {
+      "path": "tools/test.ps1",
+      "bytes": 3271,
+      "sha256": "7e6fc594c1a075039eb2a2cd82c86b49a5480364ada02ba7789d530f34f5a502"
+    }
+  ],
+  "maps": [
+    {
+      "id": "reliquary",
+      "name": "秘仪祭坛",
+      "subtitle": "古石回廊 · 平坦地面",
+      "texture": "res://assets/arena.svg",
+      "preview_color": "8c819c",
+      "terrain_name": "石板",
+      "move_multiplier": 1.0,
+      "zones": []
+    },
+    {
+      "id": "mire",
+      "name": "沉沼遗庭",
+      "subtitle": "苔石与泥潭 · 泥潭移速 −28%",
+      "texture": "res://assets/maps/mire.svg",
+      "preview_color": "83a894",
+      "terrain_name": "泥潭",
+      "move_multiplier": 0.72,
+      "zones": [
+        {
+          "center": [
+            310,
+            275
+          ],
+          "radius": [
+            150,
+            68
+          ]
+        },
+        {
+          "center": [
+            970,
+            440
+          ],
+          "radius": [
+            155,
+            78
+          ]
+        },
+        {
+          "center": [
+            500,
+            505
+          ],
+          "radius": [
+            125,
+            55
+          ]
+        }
+      ]
+    },
+    {
+      "id": "glacier",
+      "name": "苍霜圣庭",
+      "subtitle": "霜裂石台 · 霜砂移速 −16%",
+      "texture": "res://assets/maps/glacier.svg",
+      "preview_color": "8ab4c7",
+      "terrain_name": "霜砂",
+      "move_multiplier": 0.84,
+      "zones": [
+        {
+          "center": [
+            340,
+            455
+          ],
+          "radius": [
+            170,
+            78
+          ]
+        },
+        {
+          "center": [
+            760,
+            220
+          ],
+          "radius": [
+            170,
+            52
+          ]
+        },
+        {
+          "center": [
+            1030,
+            400
+          ],
+          "radius": [
+            115,
+            72
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ashland",
+      "name": "余烬荒原",
+      "subtitle": "玄武岩与松灰 · 松灰移速 −12%",
+      "texture": "res://assets/maps/ashland.svg",
+      "preview_color": "ba9172",
+      "terrain_name": "松灰",
+      "move_multiplier": 0.88,
+      "zones": [
+        {
+          "center": [
+            245,
+            230
+          ],
+          "radius": [
+            110,
+            50
+          ]
+        },
+        {
+          "center": [
+            490,
+            480
+          ],
+          "radius": [
+            140,
+            64
+          ]
+        },
+        {
+          "center": [
+            900,
+            285
+          ],
+          "radius": [
+            150,
+            75
+          ]
+        },
+        {
+          "center": [
+            1090,
+            515
+          ],
+          "radius": [
+            95,
+            45
+          ]
+        }
+      ]
+    }
+  ],
+  "tests": {
+    "suite_count": 56,
+    "extra_profile_processes": 5,
+    "assertions": 25913,
+    "failures": 0,
+    "python_tests": 32,
+    "python_failures": 0,
+    "engine_errors": 0,
+    "exit_code": 0,
+    "entry_parity": true,
+    "new_suites": {
+      "ArenaRules": 168,
+      "ArenaFlow": 70,
+      "ConciseUI": 257
+    },
+    "log": {
+      "path": "reports/terrain-full-tests-raw.log",
+      "bytes": 10281,
+      "sha256": "9cd88121a0253ba9de26cd47308c5602b5a8ffe7c9762464f5211582022f88ee"
+    },
+    "native_hud": {
+      "assertions": 257,
+      "failures": 0,
+      "exit_code": 0,
+      "log": {
+        "path": "reports/terrain-hud-native-raw.log",
+        "bytes": 188,
+        "sha256": "99040f6622be54a5dc34087a326c1545a6bba4d1983e72d05fe1214980efae95"
+      },
+      "scope": "Production Main/world/HUD repeated updates; four maps x 1/8/10 weapons x safe/inside/leave phases. Text metrics, panel bounds and equipment separation checked at original font size."
+    }
+  },
+  "simulation": {
+    "runs": 18,
+    "wins": 18,
+    "results": [
+      {
+        "arena_id": "mire",
+        "core_id": "frostfire",
+        "seed": 2026,
+        "runs": 3,
+        "wins": 3,
+        "runes": [
+          "pierce",
+          "bounce",
+          "blast"
+        ],
+        "core_events": 237,
+        "log": {
+          "path": "reports/terrain-runs-mire-frostfire-raw.log",
+          "bytes": 1002126,
+          "sha256": "7a6b352cff8389ac2fe2b8f0e9254a10e0d5359bfecee90a7d10448d6ef90183"
+        }
+      },
+      {
+        "arena_id": "mire",
+        "core_id": "bone_chorus",
+        "seed": 2026,
+        "runs": 3,
+        "wins": 3,
+        "runes": [
+          "pierce",
+          "bounce",
+          "blast"
+        ],
+        "core_events": 985,
+        "log": {
+          "path": "reports/terrain-runs-mire-bone_chorus-raw.log",
+          "bytes": 910598,
+          "sha256": "59bb29166e1444ca0f6b52b3d4cfe0197440acd9211bb1f4c100afbd5b89d71d"
+        }
+      },
+      {
+        "arena_id": "glacier",
+        "core_id": "frostfire",
+        "seed": 2026,
+        "runs": 3,
+        "wins": 3,
+        "runes": [
+          "pierce",
+          "bounce",
+          "blast"
+        ],
+        "core_events": 246,
+        "log": {
+          "path": "reports/terrain-runs-glacier-frostfire-raw.log",
+          "bytes": 1002153,
+          "sha256": "4144a9955943a779c8824aa2616b444082f81199a3a2458049e67d279cec5364"
+        }
+      },
+      {
+        "arena_id": "glacier",
+        "core_id": "bone_chorus",
+        "seed": 2026,
+        "runs": 3,
+        "wins": 3,
+        "runes": [
+          "pierce",
+          "bounce",
+          "blast"
+        ],
+        "core_events": 985,
+        "log": {
+          "path": "reports/terrain-runs-glacier-bone_chorus-raw.log",
+          "bytes": 956993,
+          "sha256": "cde40659d3be009bc068c4f3f39e2831b65f8b28c3e2ffd17af5884906c05717"
+        }
+      },
+      {
+        "arena_id": "ashland",
+        "core_id": "frostfire",
+        "seed": 2026,
+        "runs": 3,
+        "wins": 3,
+        "runes": [
+          "pierce",
+          "bounce",
+          "blast"
+        ],
+        "core_events": 257,
+        "log": {
+          "path": "reports/terrain-runs-ashland-frostfire-raw.log",
+          "bytes": 1002157,
+          "sha256": "caba88bb7fd31f4d07f5d11bb342feb4f35fd807657b5a078ab2a856939c63d1"
+        }
+      },
+      {
+        "arena_id": "ashland",
+        "core_id": "bone_chorus",
+        "seed": 2026,
+        "runs": 3,
+        "wins": 3,
+        "runes": [
+          "pierce",
+          "bounce",
+          "blast"
+        ],
+        "core_events": 981,
+        "log": {
+          "path": "reports/terrain-runs-ashland-bone_chorus-raw.log",
+          "bytes": 910617,
+          "sha256": "2ea6a063b1efcb02bf06122f42843105f70d52437e44fd0db47a8ea963ad91a5"
+        }
+      }
+    ],
+    "limits": "One seed, two cores, three rune policies per new map; production transactions and timing, no privileged currency/invulnerability. Heuristic bot does not plan around terrain; not human balance evidence."
+  },
+  "default_map_comparison": {
+    "paired_cases": 9,
+    "checkpoints": 5400,
+    "mismatches": 0,
+    "scope": "Original17a174b CombatSim vs current; same current RunState both sides, ignore added arena_id only; three seeds x three core settings, 600 fixed ticks each. Full active entities, cooldowns, summary and RNG equal."
+  },
+  "art": {
+    "revision": "biomes-01",
+    "resources": 49,
+    "legacy_46_byte_identical": true,
+    "repeat_generated_outputs": 51,
+    "repeat_identical": true,
+    "maps": [
+      {
+        "id": "mire",
+        "bytes": 93477,
+        "sha256": "d738ba73b9f6161e56ef9a46097cc183e9738d92a711ce2586e11d32941d7efe"
+      },
+      {
+        "id": "glacier",
+        "bytes": 73775,
+        "sha256": "e6f07c2a8894e8475cd42072e581d21ac019c7ea1b2e67819005ed74c12fff7a"
+      },
+      {
+        "id": "ashland",
+        "bytes": 102037,
+        "sha256": "aa477943b32731a8127128131b0749043e24a8f76d4235c10c1834f07e78a8fb"
+      }
+    ]
+  },
+  "native": {
+    "map_fixtures": [
+      {
+        "arena_id": "reliquary",
+        "passed": true,
+        "image": {
+          "path": "reports/arena-reliquary.png",
+          "bytes": 364568,
+          "sha256": "a53906847d729b56fd30e6cbf9f2814a7b502d939584d660d73be1e769e4e9e3"
+        },
+        "log": {
+          "path": "reports/arena-reliquary-raw.log",
+          "bytes": 1170,
+          "sha256": "9d7416b798a70698425da180f33fc13b07fe90d90e3a14ca613a21e2da24d57f"
+        }
+      },
+      {
+        "arena_id": "mire",
+        "passed": true,
+        "image": {
+          "path": "reports/arena-mire.png",
+          "bytes": 275820,
+          "sha256": "83d3121563335b35e944dbc246100f2b0dac95ae3c3a90000466f69a25b9bab4"
+        },
+        "log": {
+          "path": "reports/arena-mire-raw.log",
+          "bytes": 1162,
+          "sha256": "f50de16ea97a81dafc8bc90843ddf2806c7a49491c13a0ff35f64ecfb708ec40"
+        }
+      },
+      {
+        "arena_id": "glacier",
+        "passed": true,
+        "image": {
+          "path": "reports/arena-glacier.png",
+          "bytes": 323686,
+          "sha256": "e1eeed70d1f2d215eed2fcf1205105c28a22665675ecbc7373b7605a1c1a9081"
+        },
+        "log": {
+          "path": "reports/arena-glacier-raw.log",
+          "bytes": 1171,
+          "sha256": "faee02276da0c86e2ec07ad6dda8f45b4a1d7ec956fbead4800899c869117503"
+        }
+      },
+      {
+        "arena_id": "ashland",
+        "passed": true,
+        "image": {
+          "path": "reports/arena-ashland.png",
+          "bytes": 396890,
+          "sha256": "51f76295194e1fd0d6207284b8d6a00d5ea25503fd9120d22af8a7ec31b26215"
+        },
+        "log": {
+          "path": "reports/arena-ashland-raw.log",
+          "bytes": 1171,
+          "sha256": "1e9df714f82d27756ffa883050aaf4249c6b12898b02b9e9c468cf3aa3f729cb"
+        }
+      }
+    ],
+    "ui_images": [
+      {
+        "path": "reports/terrain-title-ui.png",
+        "bytes": 304493,
+        "sha256": "14501e62f68a36688c6a6924795eaa07a2edd25bb2029f836a87c37cf15c65eb"
+      },
+      {
+        "path": "reports/terrain-title-ui-960.png",
+        "bytes": 304493,
+        "sha256": "14501e62f68a36688c6a6924795eaa07a2edd25bb2029f836a87c37cf15c65eb"
+      },
+      {
+        "path": "reports/terrain-lamp-ui.png",
+        "bytes": 184397,
+        "sha256": "495b963d7639db7c4eecbbf7373462d9b88672e62cc5463d5a5166285ae09de1"
+      },
+      {
+        "path": "reports/terrain-lamp-ui-960.png",
+        "bytes": 184397,
+        "sha256": "495b963d7639db7c4eecbbf7373462d9b88672e62cc5463d5a5166285ae09de1"
+      },
+      {
+        "path": "reports/terrain-core-ui.png",
+        "bytes": 137553,
+        "sha256": "77e3f02ba2be68720c1a78c0ed6a8a3c40b438c69a8f0d3ec8ddb7f6218051e3"
+      },
+      {
+        "path": "reports/terrain-core-ui-960.png",
+        "bytes": 137553,
+        "sha256": "77e3f02ba2be68720c1a78c0ed6a8a3c40b438c69a8f0d3ec8ddb7f6218051e3"
+      }
+    ],
+    "limits": "Fixed native rendered fixtures; controlled placement/budgets and danger zones, no personal profile IO. 960x540 window uses1280x720 internal render. Root/independent art/UI agents inspected screenshots. OS visibility/interaction unavailable during lock; no human usability claim."
+  },
+  "performance": {
+    "status": "not_completed",
+    "reason": "Mac locked; CUA could not inspect the native window. Sampling stopped with SIGTERM/143; not counted as passed.",
+    "interruption_log": {
+      "path": "reports/terrain-benchmark-locked-raw.log",
+      "bytes": 483,
+      "sha256": "d40f50d0acbe69494c1ce981891ace50737da84802c754b6eaa5a454ddbae7e4"
+    }
+  },
+  "package": {
+    "app_path": "build/Embers-terrain-macos.app",
+    "architecture": "arm64",
+    "minimum_os": {
+      "arm64": "13.0"
+    },
+    "strict_adhoc_signature_passed": true,
+    "developer_id_notarized": false,
+    "zip": {
+      "path": "build/Embers-terrain-macos-arm64.zip",
+      "bytes": 30207640,
+      "sha256": "bab7447762d69ba9d8643f0dbeecf14d230532079f02811fca59626b9f80dfb2"
+    },
+    "binary": {
+      "path": "build/Embers-terrain-macos.app/Contents/MacOS/秘术余烬",
+      "bytes": 82421616,
+      "sha256": "fee03273362ee2feb9335b481cb852c79210f841d79dcae1b0338e8de3606e48"
+    },
+    "pck": {
+      "path": "build/Embers-terrain-macos.app/Contents/Resources/秘术余烬.pck",
+      "bytes": 1611752,
+      "sha256": "b5def74cd06cb6b3c3d5d58c95c37b33b695f68a571f175e99f60851edd40b31"
+    },
+    "plist": {
+      "path": "build/Embers-terrain-macos.app/Contents/Info.plist",
+      "bytes": 1742,
+      "sha256": "b809b8ae0b41a5f3626e6183575e8d71ac705aa940e661ca8505101aa4da8640"
+    },
+    "build_log": {
+      "path": "reports/terrain-build-raw.log",
+      "bytes": 28141,
+      "sha256": "0b060d500741e0b5397ade787e42593f81a75f6f8d088abd31b64b77b41db0a4"
+    },
+    "zip_log": {
+      "path": "reports/terrain-zip-raw.log",
+      "bytes": 3094,
+      "sha256": "ec0e7f60f70087070bbcccc048827b0c87abc0b6780ac1cb83a71b7de3216d91"
+    },
+    "exported_config_texture_rule_probe": {
+      "actual_exported_config": true,
+      "controlled_state_probe": true,
+      "maps": [
+        {
+          "arena_id": "reliquary",
+          "cross_wave": true,
+          "distance": 2.20001220703125,
+          "expected": 2.2,
+          "movement": true,
+          "texture": true
+        },
+        {
+          "arena_id": "mire",
+          "cross_wave": true,
+          "distance": 1.58401489257812,
+          "expected": 1.584,
+          "movement": true,
+          "texture": true
+        },
+        {
+          "arena_id": "glacier",
+          "cross_wave": true,
+          "distance": 1.84799194335938,
+          "expected": 1.848,
+          "movement": true,
+          "texture": true
+        },
+        {
+          "arena_id": "ashland",
+          "cross_wave": true,
+          "distance": 1.93600463867188,
+          "expected": 1.936,
+          "movement": true,
+          "texture": true
+        }
+      ],
+      "passed": true,
+      "persistent_profile": false
+    },
+    "probe_log": {
+      "path": "reports/terrain-pack-probe-raw.log",
+      "bytes": 669,
+      "sha256": "338fdf0a0c761fc51e54f8fa9e3f24f734e0feb612ae05ee373d97c93aecf7eb"
+    },
+    "actual_app_images": [
+      {
+        "path": "reports/terrain-app-mire.png",
+        "bytes": 251144,
+        "sha256": "8456451c6dd5384a070376da74b750cc163147d8d2471cd28610d23d7042bcf3"
+      },
+      {
+        "path": "reports/terrain-app-glacier.png",
+        "bytes": 298017,
+        "sha256": "705af5f107d00fae33bc92f7926bc9df6c4116d6cf43d82cbc2a0f1103e3d320"
+      },
+      {
+        "path": "reports/terrain-app-ashland.png",
+        "bytes": 377146,
+        "sha256": "c5b6f1f1036e6452714151478e5d7d933c8a4187e94c5b1b0bb3d6ecfd3c14f3"
+      }
+    ]
+  },
+  "independent_review": "UI/state/art agents reviewed integrated source and final terrain/danger images; no blocker remained. Root checked actual exported-package screenshots and rule probe.",
+  "not_run": [
+    "Windows executable/PowerShell execution",
+    "Human playtest",
+    "Natural OS-input full run"
+  ]
+}

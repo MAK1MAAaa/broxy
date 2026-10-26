@@ -72,6 +72,7 @@ var _toast: Label
 var _toast_timer: Timer
 var _screen := "title"
 var _starter := "bone"
+var _arena_id := "reliquary"
 var _selected_rune := -1
 var _refresh_queued := false
 var _settings := {"volume": 0.65, "shake": true, "flash": true}
@@ -169,14 +170,12 @@ func show_title(best: Dictionary) -> void:
 	left.custom_minimum_size.x = 530
 	left.add_theme_constant_override("separation", 8)
 	columns.add_child(left)
-	left.add_child(_label("THE LAST ALTAR   /   生存 · 构筑 · 秘术", 13, GOLD))
 	var title := _label("EMBERS", 68, BONE)
 	var title_font := SystemFont.new()
 	title_font.font_names = PackedStringArray(["Baskerville", "Georgia", "Times New Roman"])
 	title.add_theme_font_override("font", title_font)
 	left.add_child(title)
 	left.add_child(_label("秘 术 余 烬", 27, PURPLE))
-	left.add_child(_wrap("守住最后的祭坛。把每一道秘术，改造成你的答案。", 16, MUTED))
 	_rule(left)
 	var start_card := _panel(left)
 	start_card.name = "StarterAltar"
@@ -230,28 +229,109 @@ func show_title(best: Dictionary) -> void:
 	space.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	space.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	right.add_child(space)
-	var info_card := _panel(right)
-	info_card.name = "TrialRules"
-	info_card.add_theme_stylebox_override("panel", _box(Color(0.05, 0.07, 0.11, 0.78), Color(GOLD, 0.25)))
-	var info := _inside(info_card, 14)
-	info.add_theme_constant_override("separation", 7)
-	_section_heading(info, "试炼守则", GOLD, 16)
-	info.add_child(_wrap("WASD / 方向键 移动 · Esc 暂停\n拾取升级后暂停选择；波间整理格子背包。\n物品可旋转，同名同阶两件合成；背包武器全部自动攻击。", 14, BONE))
+	_build_arena_selection(right)
 	var footer := HBoxContainer.new()
 	footer.add_theme_constant_override("separation", 12)
 	shell.add_child(footer)
 	footer.add_child(_button("设置", _show_settings.bind(false), Vector2(120, 40)))
 	footer.add_child(_button("退出游戏", _quit, Vector2(140, 40)))
-	var note := _label("I — VIII   /   最后的余烬，由你守护", 13, GOLD)
+	var note := _label("WASD / 方向键移动 · 自动攻击 · Esc暂停", 14, MUTED)
+	note.name = "TitleControls"
 	note.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	note.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	footer.add_child(note)
+
+
+func selected_arena() -> String:
+	return _arena_id
+
+
+func set_selected_arena(id: String) -> void:
+	if not _overlay_mode.is_empty():
+		return
+	_arena_id = ArenaCatalog.normalize_id(id)
+	if _screen == "title" and _page != null:
+		_refresh_arena_selection()
+
+
+func _build_arena_selection(parent: Control) -> void:
+	var card := _panel(parent)
+	card.name = "ArenaSelection"
+	card.add_theme_stylebox_override("panel", _box(Color(0.05, 0.07, 0.11, 0.9), Color(GOLD, 0.25)))
+	var body := _inside(card, 12)
+	body.add_theme_constant_override("separation", 8)
+	_section_heading(body, "选择地图", GOLD, 18)
+	var grid := GridContainer.new()
+	grid.columns = 2
+	grid.add_theme_constant_override("h_separation", 10)
+	grid.add_theme_constant_override("v_separation", 10)
+	body.add_child(grid)
+	for id: String in ArenaCatalog.IDS:
+		var definition: Dictionary = ArenaCatalog.definition(id)
+		var option := _button("", _select_arena.bind(id), Vector2(0, 122))
+		option.name = "Arena_" + id
+		option.toggle_mode = true
+		option.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		option.clip_contents = true
+		option.tooltip_text = "%s\n%s" % [str(definition["subtitle"]), "你和敌人进入地形均减速，离开即恢复；可自由穿过，弹体速度不变。" if float(definition["move_multiplier"]) < 1.0 else "开阔石地，移动速度不变。"]
+		option.add_theme_stylebox_override("normal", _box(Color("171f2a"), Color(GOLD, 0.22)))
+		option.add_theme_stylebox_override("pressed", _box(Color("292c39"), GOLD))
+		grid.add_child(option)
+		var inset := MarginContainer.new()
+		inset.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		_margin(inset, 9, 8)
+		inset.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		option.add_child(inset)
+		var content := VBoxContainer.new()
+		content.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		content.add_theme_constant_override("separation", 4)
+		inset.add_child(content)
+		var image := TextureRect.new()
+		image.name = "ArenaPreview_" + id
+		image.custom_minimum_size.y = 58
+		image.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		image.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		image.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+		image.texture = load(str(definition["texture"])) as Texture2D
+		image.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		content.add_child(image)
+		var name_label := _label(str(definition["name"]), 16, BONE)
+		name_label.name = "ArenaName_" + id
+		content.add_child(name_label)
+		var effect := _label(_arena_effect_text(definition), 13, MUTED)
+		effect.name = "ArenaEffect_" + id
+		content.add_child(effect)
+	_refresh_arena_selection()
+
+
+func _arena_effect_text(definition: Dictionary) -> String:
+	var multiplier: float = float(definition["move_multiplier"])
+	return "%s · 移速 −%d%%" % [str(definition["terrain_name"]), roundi((1.0 - multiplier) * 100.0)] if multiplier < 1.0 else "开阔石地 · 无减速"
+
+
+func _select_arena(id: String) -> void:
+	if _screen != "title" or not _overlay_mode.is_empty() or not ArenaCatalog.IDS.has(id):
+		return
+	_arena_id = id
+	_refresh_arena_selection()
+
+
+func _refresh_arena_selection() -> void:
+	for id: String in ArenaCatalog.IDS:
+		var option := _page.find_child("Arena_" + id, true, false) as Button
+		if option != null:
+			option.set_pressed_no_signal(_arena_id == id)
+		var name_label := _page.find_child("ArenaName_" + id, true, false) as Label
+		if name_label != null:
+			name_label.text = ("已选 · " if _arena_id == id else "") + str(ArenaCatalog.definition(id)["name"])
+			name_label.add_theme_color_override("font_color", GOLD if _arena_id == id else BONE)
 
 
 func show_hud() -> void:
 	_set_screen("hud")
 	_hud.clear()
 	_hud_loadout_key = ""
+	_hud["arena_name"] = str(ArenaCatalog.definition(run.arena_id if run != null else _arena_id)["name"])
 	var top := PanelContainer.new()
 	top.name = "RitualStatus"
 	top.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
@@ -344,10 +424,19 @@ func show_hud() -> void:
 	slots.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	bottom_row.add_child(slots)
 	_hud["slots"] = slots
-	var help := _label("WASD / 方向键  移动\nEsc  暂停", 15, MUTED)
+	# Reserve a stable HUD column before its first live text update, rather than
+	# letting map/terrain labels change the equipment row's available width.
+	var map_info := Control.new()
+	map_info.name = "HUDMapInfo"
+	map_info.custom_minimum_size.x = 240
+	map_info.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	bottom_row.add_child(map_info)
+	var help := _label("", 15, MUTED)
+	help.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	help.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	help.clip_text = true
 	_hud["bag_info"] = help
-	bottom_row.add_child(help)
+	map_info.add_child(help)
 
 
 func update_hud(snapshot: Dictionary) -> void:
@@ -387,8 +476,11 @@ func update_hud(snapshot: Dictionary) -> void:
 	var loadout: Array = snapshot.get("loadout", [])
 	var key := str(loadout)
 	if _hud.has("bag_info") and run != null:
-		var inventory: Dictionary = run.backpack_snapshot()
-		_hud["bag_info"].text = "法器 %d件 · 全部生效\n背包 %d / %d格\nWASD移动 · Esc暂停" % [loadout.size(), int(inventory["used_cells"]), int(inventory["total_cells"])]
+		var arena_name: String = str(snapshot.get("arena_name", _hud["arena_name"]))
+		var terrain_name: String = str(snapshot.get("terrain_name", ""))
+		var terrain_multiplier: float = float(snapshot.get("terrain_multiplier", 1.0))
+		var terrain_text: String = " · %s −%d%%" % [terrain_name, roundi((1.0 - terrain_multiplier) * 100.0)] if not terrain_name.is_empty() and terrain_multiplier < 1.0 else ""
+		_hud["bag_info"].text = "%s%s\n法器 %d件 · Esc暂停" % [arena_name, terrain_text, loadout.size()]
 	if key != _hud_loadout_key:
 		_hud_loadout_key = key
 		_update_hud_slots(loadout)
@@ -410,8 +502,7 @@ func show_upgrades(during_combat: bool = false) -> void:
 func show_pause() -> void:
 	var returning_from_settings: bool = _overlay_mode == "settings_pause"
 	_begin_overlay("pause")
-	var body := _modal("试炼暂停", Vector2(500, 470))
-	body.add_child(_label("余烬尚未熄灭。", 17, MUTED))
+	var body := _modal("试炼暂停", Vector2(500, 430))
 	_spacer(body, 12)
 	var resume := _button("继续试炼", _resume, Vector2(0, 48))
 	_accent(resume)
@@ -533,7 +624,7 @@ func show_result(victory: bool, reason: String, best: Dictionary) -> void:
 	var damage_body := _inside(damage_card, 22)
 	damage_body.add_theme_constant_override("separation", 12)
 	_section_heading(damage_body, "法器伤害贡献", GOLD, 18)
-	damage_body.add_child(_wrap("本局实际造成的生命损失，包含已出售法器。", 13, MUTED))
+	_enable_tooltip(damage_card, "累计实际伤害，包含已出售法器。")
 	var contributions := _damage_contributions()
 	var total := 0.0
 	for contribution: Dictionary in contributions:
@@ -681,6 +772,7 @@ func _build_shop() -> void:
 	heading.add_child(_label("波次 %d 完成   /   魂屑 %d" % [run.wave, run.gold], 22, GOLD))
 	var guide := _wrap(_rune_guide(), 15, PURPLE if _selected_rune >= 0 else MUTED)
 	guide.name = "RuneGuide"
+	guide.visible = _selected_rune >= 0
 	shell.add_child(guide)
 	var columns := HBoxContainer.new()
 	columns.add_theme_constant_override("separation", 14)
@@ -721,7 +813,7 @@ func _build_shop() -> void:
 	reroll.add_theme_font_size_override("font_size", 16)
 	reroll.tooltip_text = "刷新仅替换未锁定商品；锁定商品跨波保留，价格随波次调整。"
 	footer.add_child(reroll)
-	var hint := _label("购买自动找空位；拖拽或拿起整理；R旋转，Esc取消。", 14, MUTED)
+	var hint := _label("购买自动找空位 · 法器全部生效", 14, MUTED)
 	hint.name = "ShopLockGuide"
 	hint.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	footer.add_child(hint)
@@ -746,7 +838,7 @@ func _show_rogue_choices(keep_notice: bool = false) -> void:
 	var body := _modal("秘术抉择", Vector2(1030, 650))
 	body.name = "RogueChoices"
 	body.add_theme_constant_override("separation", 8)
-	var note := _wrap(_rogue_notice if not _rogue_notice.is_empty() else "核心每局选一个；契约可跳过；路线只改变下一波。可随时返回商店整理。", 14, CYAN if not _rogue_notice.is_empty() else MUTED)
+	var note := _wrap(_rogue_notice if not _rogue_notice.is_empty() else "核心每局限选一个 · 路线仅影响下一波", 14, CYAN if not _rogue_notice.is_empty() else MUTED)
 	note.name = "RogueNotice"
 	body.add_child(note)
 	var scroll := ScrollContainer.new()
@@ -773,7 +865,7 @@ func _show_rogue_choices(keep_notice: bool = false) -> void:
 			card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			var inside := _inside(card, 12)
 			inside.add_child(_label(str(option["name"]), 20, BONE))
-			inside.add_child(_wrap(str(option["description"]), 14, MUTED))
+			inside.add_child(_wrap(_core_description(option), 14, MUTED))
 			var choose := _button("选择 · " + str(option["name"]), _rogue_action.bind("core", str(option["id"]), epoch), Vector2(0, 36))
 			choose.name = "RogueCore_" + str(option["id"])
 			choose.disabled = not bool(choices.get("can_choose_core", false))
@@ -783,10 +875,10 @@ func _show_rogue_choices(keep_notice: bool = false) -> void:
 	else:
 		for option: Dictionary in choices.get("core_options", []):
 			if str(option["id"]) == current:
-				content.add_child(_wrap("已选 · %s\n%s" % [option["name"], option["description"]], 14, CYAN))
+				content.add_child(_wrap("已选 · %s\n%s" % [option["name"], _core_description(option)], 14, CYAN))
 	_section_heading(content, "II · 追猎契约", CORAL, 18)
 	if bool(choices.get("altar_available", false)):
-		content.add_child(_wrap("第3波追加一名追猎者：冲锋敌人，生命为普通个体的%.1f倍、移速为%.2f倍。击败后于波间任选一枚Ⅰ阶符文；只撑过计时不算完成。也可放弃契约。" % [RogueRules.HUNTER_HEALTH_FACTOR, RogueRules.HUNTER_SPEED_FACTOR], 14, MUTED))
+		content.add_child(_wrap("第3波追加冲锋追猎者（生命×%.1f、移速×%.2f）。击败后自选Ⅰ阶符文；仅存活到波末不算完成。" % [RogueRules.HUNTER_HEALTH_FACTOR, RogueRules.HUNTER_SPEED_FACTOR], 14, MUTED))
 		var actions := HBoxContainer.new()
 		content.add_child(actions)
 		var accept := _button("接受追猎 · 自选符文", _rogue_action.bind("altar", "accept", epoch), Vector2(0, 36))
@@ -798,7 +890,7 @@ func _show_rogue_choices(keep_notice: bool = false) -> void:
 		decline.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		actions.add_child(decline)
 	else:
-		var altar_text: String = "第2波完成后开放一次；接受前可查看风险，也可跳过。"
+		var altar_text: String = "第2波结束后开放 · 可跳过"
 		if str(choices.get("altar_choice", "")) == "declined":
 			altar_text = "本局已跳过追猎契约。"
 		elif str(choices.get("altar_choice", "")) == "accepted":
@@ -838,12 +930,15 @@ func _show_rogue_choices(keep_notice: bool = false) -> void:
 			inside.add_child(select)
 	else:
 		content.add_child(_wrap("首领战使用固定敌群；普通波结束后可选择下一波路线。", 14, MUTED))
-	content.add_child(_wrap("引魂烛联动：放在法器正下方且边缘相接，使该法器优先攻击射程内生命比例最低的敌人。可在背包详情查看连接对象。", 13, MUTED))
 	var close := _button("返回商店 · Esc", _close_rogue_choices.bind(epoch), Vector2(0, 40))
 	close.name = "CloseRogueChoices"
 	_accent(close)
 	body.add_child(close)
 	_focus_later(_first_page_button(content) if _first_page_button(content) != null else close)
+
+
+func _core_description(option: Dictionary) -> String:
+	return str(option["description"]).replace("；每局只选一个核心。", "。")
 
 
 func _rogue_action(kind: String, id: String, epoch: int) -> void:
@@ -948,7 +1043,7 @@ func _build_backpack(parent: Control) -> void:
 	_bag_details.add_theme_constant_override("separation", 6)
 	scroll.add_child(_bag_details)
 	_build_backpack_details()
-	_bag_status = _wrap("拖拽移动，R旋转；也可拿起后方向键/Enter放置，Esc取消。", 12, MUTED)
+	_bag_status = _wrap("拖拽整理 · R旋转 · Esc取消", 13, MUTED)
 	_bag_status.name = "BackpackHint"
 	_bag_status.custom_minimum_size.y = 32
 	body.add_child(_bag_status)
@@ -963,7 +1058,6 @@ func _build_backpack(parent: Control) -> void:
 	expand.disabled = int(snapshot["height"]) >= int(snapshot["max_height"])
 	expand.tooltip_text = str(snapshot.get("expansion_error", "")) if not bool(snapshot.get("can_expand", true)) else "解锁下一排6个格子；不移动现有物品。"
 	expansion.add_child(expand)
-	expansion.add_child(_label("Ⅰ + Ⅰ → Ⅱ；Ⅱ + Ⅱ → Ⅲ", 12, GOLD))
 	if _bag_held_uid >= 0:
 		_bag_grid.begin_placement(_bag_held_uid, _bag_held_rotated, _bag_cursor)
 
@@ -974,7 +1068,7 @@ func _build_backpack_details() -> void:
 	_clear(_bag_details)
 	var item: Dictionary = run.backpack_item(_bag_selected_uid)
 	if item.is_empty():
-		_bag_details.add_child(_wrap("选中一个盒装物品，查看效果并整理背包。\n所有放入的法器自动攻击，遗物直接生效。", 15, MUTED))
+		_bag_details.add_child(_wrap("选择物品查看效果", 15, MUTED))
 		return
 	var uid: int = int(item["uid"])
 	var rank: int = int(item.get("rank", 1))
@@ -987,7 +1081,9 @@ func _build_backpack_details() -> void:
 	title.tooltip_text = _backpack_effect_text(item)
 	heading.add_child(title)
 	var dimensions: Vector2i = BACKPACK_GRID._item_size(item, bool(item.get("rotated", false)))
-	_bag_details.add_child(_label("占格 %d×%d · 编号 %d" % [dimensions.x, dimensions.y, uid], 12, MUTED))
+	var footprint := _label("占格 %d×%d" % [dimensions.x, dimensions.y], 13, MUTED)
+	footprint.name = "BackpackFootprint"
+	_bag_details.add_child(footprint)
 	if str(item["kind"]) == "weapon":
 		var stats := _wrap(_weapon_stats_text(definition, rank, _item_resonance_bonus(item)), 12, CYAN)
 		stats.name = "BackpackWeaponStats"
@@ -1022,6 +1118,7 @@ func _build_backpack_details() -> void:
 	var move := _shop_button("拿起 / 移动", _bp_pick_up.bind(uid), "bag_move:%d" % uid, Vector2(110, 32))
 	move.name = "MoveBackpackItem"
 	move.add_theme_font_size_override("font_size", 13)
+	move.tooltip_text = "拿起后用方向键移动、Enter放置、R旋转、Esc取消；也可直接拖拽。"
 	actions.add_child(move)
 	var rotate := _shop_button("旋转 R", _bp_rotate.bind(uid), "bag_rotate:%d" % uid, Vector2(76, 32))
 	rotate.name = "RotateBackpackItem"
@@ -1062,8 +1159,6 @@ func _build_backpack_details() -> void:
 		_section_heading(_bag_details, "其他合成目标", GOLD, 14)
 		for index: int in range(1, partners.size()):
 			_add_backpack_merge_target(uid, partners[index])
-	elif partners.is_empty():
-		_bag_details.add_child(_wrap("已达Ⅲ阶，无法继续合成。" if rank >= 3 else "再获得一件同名同阶物品即可手动合成。", 12, MUTED))
 	var description := _wrap(_backpack_effect_text(item), 13, CYAN)
 	description.name = "BackpackItemEffect"
 	_bag_details.add_child(description)
@@ -1093,6 +1188,7 @@ func _bp_select(uid: int, epoch: int) -> void:
 	var guide: Label = _page.find_child("RuneGuide", true, false) as Label
 	if guide != null:
 		guide.text = _rune_guide()
+		guide.visible = _selected_rune >= 0
 
 
 func _bp_allowed(epoch: int) -> bool:
@@ -1192,7 +1288,7 @@ func _backpack_effect_text(item: Dictionary) -> String:
 				var amount: float = float(pair[1]) * BackpackInventory.rank_multiplier(rank)
 				var names: Dictionary = {"damage": "伤害", "attack_speed": "攻速", "move_speed": "移速", "max_health": "生命上限", "armor": "护甲", "pickup_radius": "拾取范围"}
 				result.append("%s %+.0f%%" % [names.get(pair[0], pair[0]), amount * 100.0] if str(pair[0]) in ["damage", "attack_speed"] else "%s %+.0f" % [names.get(pair[0], pair[0]), amount])
-			var text: String = "本阶基础贡献：\n" + "\n".join(result) + "\n放入即生效；合成保留两件总属性。"
+			var text: String = "\n".join(result)
 			if definition.id == "grave_candle":
 				text += "\n正上方边缘相接的法器优先攻击残血目标；不叠加。\n当前连接：" + _candle_link_names(item)
 			return text
@@ -1745,7 +1841,6 @@ func _show_settings(from_pause: bool) -> void:
 	flash.button_pressed = bool(_settings["flash"])
 	flash.toggled.connect(_change_toggle.bind("flash"))
 	body.add_child(flash)
-	body.add_child(_label("设置会立即生效。", 14, MUTED))
 	_spacer(body, 8)
 	var back := _button("返回", show_pause if from_pause else hide_pause, Vector2(0, 46))
 	body.add_child(back)
@@ -2028,7 +2123,7 @@ func _rune_guide() -> String:
 	if _selected_rune >= 0 and _selected_rune < run.rune_bag.size():
 		var definition: ContentDef = GameCatalog.rune(str(run.rune_bag[_selected_rune]["id"]))
 		return "已选%s %s阶：%s" % [definition.display_name, _rank_name(int(run.rune_bag[_selected_rune].get("rank", 1))), _rune_rank_text(definition.id, int(run.rune_bag[_selected_rune].get("rank", 1)))]
-	return "购买自动放入空位，不自动合成；背包中的法器全部攻击，遗物直接生效。"
+	return ""
 
 
 func _shop_description(definition: ContentDef) -> String:
