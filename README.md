@@ -4,7 +4,7 @@ Godot 4.7.2 普通版、带类型标注的 GDScript 开发的 macOS / Windows �
 
 武器、遗物和松散符文现在装入盒状背包。购买自动找空位，玩家手动移动、旋转和合成；两件同名同阶物品升一阶，最高三阶。初始6×4格，可付32、48魂屑扩到6×6；背包中的所有法器自动攻击，遗物直接生效。操作与数值见[秘术背包](docs/backpack.md)，专项预览使用 `res://tools/preview_backpack.gd`。
 
-当前源码包含8种法器、12种遗物，美术版本为 `engraved-07`。本轮细化Boss金冠、肩领和胸饰的古金明暗层次，保持轮廓、面具、手掌和其他45项素材。归魂环、血契书与引魂烛沿用engraved-06的独立图标与弹体表现；主角灰紫布料、普通敌人材质和低对比地板保持。规则与验收见 [归魂环与取舍遗物](docs/return-ring.md)，本轮美术合同与来源见 `docs/art-direction.md`；更早内容扩充记录保留在 `docs/content-expansion.md`。
+当前源码包含8种法器、12种遗物，美术资源版本为 `engraved-07`，背包交互表现为 `backpack-targets-v1`。拿起物品时，旧金↑标出同名同阶合成候选，灰紫◇标出可装符的法器；冷青逐格轮廓和图标显示移动落点，红色显示非法落点并裁剪在背包内。提示显示合成后的阶级、装入或换符及旧符文去向。Boss沿用上一轮古金金饰，46项素材与战斗数值保持。操作与验收见[秘术背包](docs/backpack.md)，美术约定见 `docs/art-direction.md`。
 
 归魂环发射0.60秒后追随玩家当前位置返航，往返共享已命中目标，不会重复伤害同一敌人；本体可命中2个不同目标，成功弹射会永久取消返航。冷却独立推进，接回魂环不回复生命或魂屑。新增内容沿用商店购买、商品锁定、遗物购前对照和符文装入预览；归魂环阶段的Windows完整回归、原生画面、固定种子压力采样与新包验证记录保留。八法器头部使用预生成图集与复用缓冲，保持危险提示优先。
 
@@ -34,7 +34,7 @@ Godot 4.7.2 普通版、带类型标注的 GDScript 开发的 macOS / Windows �
 
 Windows x86_64版本由 `feature/windows` 构建，入口为 `build/Embers-windows-x86_64/Embers.exe`，分发包为 `build/Embers-windows-x86_64.zip`。解压后保留同目录的 `Embers.pck` 与 `licenses/`。当前包包含占格背包、手动三阶合成、8法器、12遗物、`engraved-06`、波内强化和玩家前景分层。上一轮包另存 `build/Embers-windows-before-backpack-a865a01.zip`。Windows使用微软雅黑；下方单独记录最新macOS交付。
 
-最新macOS应用为 `build/Embers-regalia-macos.app`，分发包为 `build/Embers-regalia-macos-arm64.zip`。包含最新main的格子背包、手动三阶合成、8法器、12遗物、归魂环、波内强化、玩家前景分层与engraved-07 Boss金饰。已在Apple Silicon Mac完成本轮完整回归、Boss原生材质静帧及实际发布包三秒战斗冒烟，构建、签名和ZIP检查通过。面向Apple Silicon、macOS 13及以上，采用本地ad-hoc签名，尚未进行Developer ID公证。旧`Embers-impact.app`等应用保留，若旧版正在运行，先结束再打开新版；本轮美术与包指纹见 `reports/boss-art-validation.json`；上一版背包包和测试适配记录见 `reports/macos-backpack-validation.json`，旧应用均保留。
+最新macOS应用为 `build/Embers-targets-macos.app`，分发包为 `build/Embers-targets-macos-arm64.zip`。包含格子背包、三阶合成、8法器、12遗物、波内强化、engraved-07素材和本轮背包候选／落点反馈。已完成完整回归、四组原生前后陈列、发布包无档案启动与原生商店截图、导出PCK接口检查及签名／ZIP校验。面向Apple Silicon、macOS 13及以上，采用本地ad-hoc签名，尚未进行Developer ID公证。旧`Embers-regalia-macos.app`等应用保留。证据与包指纹见 `reports/backpack-targets-validation.json`；本轮未重测5分钟性能或真人试玩。
 
 | 操作 | 按键 |
 | --- | --- |
@@ -114,14 +114,14 @@ python3 tools/fetch_macos_template.py
 ```sh
 ./tools/build_macos.sh
 # 另存应用，避免替换正在运行的旧版：
-BROXY_APP_PATH="$PWD/build/Embers-regalia-macos.app" ./tools/build_macos.sh
+BROXY_APP_PATH="$PWD/build/Embers-targets-macos.app" ./tools/build_macos.sh
 ```
 
 构建从官方 Universal 模板提取 arm64，生成 `build/Embers.app` 并执行 ad-hoc 签名验证。引擎许可在应用的 `Contents/Resources/licenses/` 中直接可读。对外发布前应使用自己的 Developer ID 配置签名与公证。
 
 ## 验证
 
-直接CLI入口`--smoke`、`--autoplay`、`--shop-preview`、`--benchmark`、`--capture-only`会在读取档案前关闭持久化；本进程的设置和成绩只留在内存，窗口标注“不保存设置与成绩”。普通启动保持原有保存行为。独立预览脚本仍各自关闭持久化。当前Embers-regalia-macos.app已包含该修复；性能报告另记录实际设置、持久化状态与本次种子。
+直接CLI入口`--smoke`、`--autoplay`、`--shop-preview`、`--benchmark`、`--capture-only`会在读取档案前关闭持久化；本进程的设置和成绩只留在内存，窗口标注“不保存设置与成绩”。普通启动保持原有保存行为。独立预览脚本仍各自关闭持久化。当前Embers-targets-macos.app已包含该修复；性能报告另记录实际设置、持久化状态与本次种子。
 
 ```sh
 ./tools/test.sh
@@ -136,7 +136,7 @@ BROXY_APP_PATH="$PWD/build/Embers-regalia-macos.app" ./tools/build_macos.sh
 ./tools/run.sh -- --benchmark --benchmark-content --benchmark-seed=1792123517 --seconds=300
 ```
 
-可用 `./tools/test.sh` 或 `tools/test.ps1` 运行Godot与Python测试。当前Mac验证为41套Godot加5个额外档案入口，23328条断言与27项Python测试通过；遗物对照测试改为按实际溢出判断自然布局，再用临时长内容验证真实键盘滚动，原生226条检查通过。背包专项与迁移后的查询、商店、弹层、战斗和Main流程统一纳入入口。旧固定栏位套件的替代关系见[测试迁移](docs/backpack-test-migration.md)，当前Mac测试与包指纹见 `reports/macos-backpack-validation.json`，此前Windows背包验收见 `reports/backpack/validation.json`。
+可用 `./tools/test.sh` 或 `tools/test.ps1` 运行Godot与Python测试。当前Mac验证为42套Godot加5个额外档案入口，23414条断言与27项Python测试通过；新增背包候选86条覆盖阶级／种类匹配、查询只读、键盘旋转／移动／合成／换符及取消，原生重跑86条及既有背包UI90条通过。两平台入口均已接入新测试，本轮只在Mac执行。证据见 `reports/backpack-targets-validation.json`；旧套件替代关系见[测试迁移](docs/backpack-test-migration.md)，此前Mac适配与Windows背包验收记录保留。
 
 上一轮Windows波内强化通过16332条Godot断言与27项Python测试，证据保留在 `reports/midwave/validation.json`；原生首波升级/恢复与前景对照见 `reports/midwave/native-fixtures.json`。此前归魂环、商店与符文历史验收同样保留；系统字体验证需要桌面字体访问权限。
 
