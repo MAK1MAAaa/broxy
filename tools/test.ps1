@@ -13,7 +13,8 @@ try {
         'projectile_capacity', 'benchmark_seed', 'player_foreground',
         'combat_upgrades', 'combat_upgrade_ui', 'upgrade_timing',
         'backpack_inventory', 'backpack_combat', 'backpack_queries',
-        'backpack_flow', 'backpack_ui', 'backpack_targets', 'backpack_shop'
+        'backpack_flow', 'backpack_ui', 'backpack_targets', 'backpack_shop',
+        'rogue_state', 'rogue_combat', 'rogue_ui', 'rogue_progress'
     )
     foreach ($suite in $suites) {
         & $runner --headless --script "res://tests/test_$suite.gd"

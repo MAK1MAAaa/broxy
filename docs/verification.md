@@ -1,6 +1,8 @@
 # 原型验收记录
 
-当前Mac交付（2026-10-26）：`backpack-targets-v1`为拿起物品增加合成／装符候选、逐格图标落点与具名结果提示；越界轮廓裁剪在背包内。完整42套加5额外入口共23414条Godot断言、27项Python通过，新增86条与既有背包UI90条另在原生Mac通过。四组同库存原生前后陈列已查看，状态／余额／RNG保持。新Embers-targets-macos.app及arm64 ZIP通过严格签名、Info.plist、无档案启动、发布包商店截图与ZIP完整性；隔离编辑器读取导出PCK确认新接口与合成投影。仅固定夹具与引擎输入验证，没有新增真人、5分钟性能、30局或Windows结论；证据见[背包目标记录](../reports/backpack-targets-validation.json)。
+当前Mac交付（2026-10-26）：`rogue-choices-v1`接入两种局内核心、追猎契约／符文自选、路线、引魂烛联动与四种起始法器的挑战解锁。完整46套加5额外档案入口共23797条Godot断言、27项Python通过；原生RogueUI63条与ChoiceActions44条通过。锁定卡进入Tab链的真实回归已修复，旧断言保持。七组UI和三组实际触发的固定战斗陈列已查看；真实Main加速边界→UI选择→猎手击杀→领奖→终局解锁35条通过。最终两核心各15局全胜，两路线各6局全胜；无核心新旧各15局均14胜，不能据此推断真人难度或轨迹等价。霜火八法器300秒原生压力平均105.504 FPS／P99 22.067ms通过，实际触发2151次（含5秒预热）。新Embers-rogue-macos.app/ZIP通过arm64、严格ad-hoc签名、Info.plist、无档案启动、实际商店截图、导出规则接口探测与ZIP检查。Windows和真人试玩未执行，边界、版本、指纹见[肉鸽记录](../reports/rogue-choices-validation.json)。
+
+上一轮Mac交付（2026-10-26）：`backpack-targets-v1`为拿起物品增加合成／装符候选、逐格图标落点与具名结果提示；越界轮廓裁剪在背包内。完整42套加5额外入口共23414条Godot断言、27项Python通过，新增86条与既有背包UI90条另在原生Mac通过。四组同库存原生前后陈列已查看，状态／余额／RNG保持。新Embers-targets-macos.app及arm64 ZIP通过严格签名、Info.plist、无档案启动、发布包商店截图与ZIP完整性；隔离编辑器读取导出PCK确认新接口与合成投影。仅固定夹具与引擎输入验证，没有新增真人、5分钟性能、30局或Windows结论；证据见[背包目标记录](../reports/backpack-targets-validation.json)。
 
 前一轮美术与Mac交付（2026-10-26）：`engraved-07`仅细化Boss古金5处RGB属性，其他45项素材及游戏运行时／规则／策略保持047d9c1；160px源alpha、面具内部与双掌像素不变，141px原生前后／预警／寒霜陈列已查看。完整23328条Godot与27项Python通过，48生成产物与元数据重跑一致。Embers-regalia-macos.app及arm64 ZIP通过严格签名、Info.plist、无档案启动、原生三秒冒烟和ZIP检查；导出PCK中Boss纹理与导入纹理一致。详见[Boss材质与打包记录](../reports/boss-art-validation.json)。该轮没有新Mac性能、真人辨识或通关结论。
 

@@ -4,7 +4,9 @@ Godot 4.7.2 普通版、带类型标注的 GDScript 开发的 macOS / Windows �
 
 武器、遗物和松散符文现在装入盒状背包。购买自动找空位，玩家手动移动、旋转和合成；两件同名同阶物品升一阶，最高三阶。初始6×4格，可付32、48魂屑扩到6×6；背包中的所有法器自动攻击，遗物直接生效。操作与数值见[秘术背包](docs/backpack.md)，专项预览使用 `res://tools/preview_backpack.gd`。
 
-当前源码包含8种法器、12种遗物，美术资源版本为 `engraved-07`，背包交互表现为 `backpack-targets-v1`。拿起物品时，旧金↑标出同名同阶合成候选，灰紫◇标出可装符的法器；冷青逐格轮廓和图标显示移动落点，红色显示非法落点并裁剪在背包内。提示显示合成后的阶级、装入或换符及旧符文去向。Boss沿用上一轮古金金饰，46项素材与战斗数值保持。操作与验收见[秘术背包](docs/backpack.md)，美术约定见 `docs/art-direction.md`。
+当前源码包含8种法器、12种遗物和 `rogue-choices-v1` 秘术抉择。第1波后可选霜火共鸣或白骨齐鸣核心；第2波后可自愿挑战追猎者，击杀后在波间自选符文。普通波可选择原途、密集魂潮或重甲巡礼；引魂烛与正上方相接法器联动，改变目标优先级。完成第3波解锁霜矛起手，击杀追猎者解锁散魂起手，没有永久属性加成。完整规则与边界见[秘术抉择](docs/rogue-choices.md)。
+
+46项 `engraved-07` 素材与 `arsenal-atlas-v5` 图集保持。背包沿用 `backpack-targets-v1` 合成／装符候选和逐格预览，新增淡绿↑烛引标记；追猎者有冠、圈和生命条，寒焰以蓝金双环显示，敌方危险提示继续置顶。操作与美术约定见[秘术背包](docs/backpack.md)及 `docs/art-direction.md`。
 
 归魂环发射0.60秒后追随玩家当前位置返航，往返共享已命中目标，不会重复伤害同一敌人；本体可命中2个不同目标，成功弹射会永久取消返航。冷却独立推进，接回魂环不回复生命或魂屑。新增内容沿用商店购买、商品锁定、遗物购前对照和符文装入预览；归魂环阶段的Windows完整回归、原生画面、固定种子压力采样与新包验证记录保留。八法器头部使用预生成图集与复用缓冲，保持危险提示优先。
 
@@ -34,7 +36,7 @@ Godot 4.7.2 普通版、带类型标注的 GDScript 开发的 macOS / Windows �
 
 Windows x86_64版本由 `feature/windows` 构建，入口为 `build/Embers-windows-x86_64/Embers.exe`，分发包为 `build/Embers-windows-x86_64.zip`。解压后保留同目录的 `Embers.pck` 与 `licenses/`。当前包包含占格背包、手动三阶合成、8法器、12遗物、`engraved-06`、波内强化和玩家前景分层。上一轮包另存 `build/Embers-windows-before-backpack-a865a01.zip`。Windows使用微软雅黑；下方单独记录最新macOS交付。
 
-最新macOS应用为 `build/Embers-targets-macos.app`，分发包为 `build/Embers-targets-macos-arm64.zip`。包含格子背包、三阶合成、8法器、12遗物、波内强化、engraved-07素材和本轮背包候选／落点反馈。已完成完整回归、四组原生前后陈列、发布包无档案启动与原生商店截图、导出PCK接口检查及签名／ZIP校验。面向Apple Silicon、macOS 13及以上，采用本地ad-hoc签名，尚未进行Developer ID公证。旧`Embers-regalia-macos.app`等应用保留。证据与包指纹见 `reports/backpack-targets-validation.json`；本轮未重测5分钟性能或真人试玩。
+最新macOS应用为 `build/Embers-rogue-macos.app`，分发包为 `build/Embers-rogue-macos-arm64.zip`。包含两种核心、追猎契约、路线选择、引魂烛联动与横向起始法器解锁。完整回归、原生界面／战斗陈列、发布包无档案启动、实际商店截图、导出PCK规则探测、严格签名及ZIP校验均通过。Apple Silicon、macOS 13及以上，本地ad-hoc签名，未Developer ID公证。旧应用保留，证据见 `reports/rogue-choices-validation.json`。首轮平衡为固定种子机器人结果，尚未真人试玩。
 
 | 操作 | 按键 |
 | --- | --- |
@@ -53,7 +55,7 @@ Windows x86_64版本由 `feature/windows` 构建，入口为 `build/Embers-windo
 
 - 前七波各45秒，第八波为90秒Boss战。波内达到经验门槛时暂停并选择强化，选完继续同一波；计时、弹体和冷却均冻结。波末回收剩余魂屑并在祭坛恢复生命，未处理的强化由波末兜底；死亡和最终胜利直接结算。
 - 魂屑同时增加金币和经验。每波最低收入为 `28 + 6 × (波次 - 1)`，击杀收入不足时补足；补足部分不产生经验。
-- 八种法器：骨针（快速单发）、霜矛（减速）、幽焰（追踪）、散魂（扇形三发）、月镰（本体贯穿）、雷灯（窄角双发）、星陨（慢速重击）、归魂环（本体贯穿与返航）。商店均可购买，可重复存放；开局仍选择骨针或幽焰。
+- 八种法器：骨针（快速单发）、霜矛（减速）、幽焰（追踪）、散魂（扇形三发）、月镰（本体贯穿）、雷灯（窄角双发）、星陨（慢速重击）、归魂环（本体贯穿与返航）。商店均可购买，可重复存放；初始开放骨针和幽焰，完成挑战后可选择霜矛或散魂起手。
 - 同类同名同阶两件可手动合成，最高三阶。法器伤害和遗物属性权重为1、2、4倍；合成不改变形状、射数或冷却，主要释放空间。两把带符文法器合成会保留目标符文，源符文退回背包；目标为空则继承源符文。
 - 每件法器一个符文槽。一／二／三阶贯穿或弹射分别额外命中2／3／4个目标，弹射每跳剩余75%伤害；爆破半径68／78／88像素、溅射倍率55%／65%／75%。
 - 同一弹体不重复命中同一敌人；次级溅射不再次触发符文。八种法器兼容三类符文。月镰与归魂环先本体穿过首目标，再从第二个直接命中触发符文：一阶贯穿/弹射最多命中4个不同目标，升阶后对应5／6个；爆破在第二个直接命中处触发，未命中第二目标则不爆破。
@@ -62,7 +64,7 @@ Windows x86_64版本由 `feature/windows` 构建，入口为 `build/Embers-windo
 - 出售返还累计实际买入价的50%，向下取整。不能卖掉最后一件法器，出售带符文武器需能安置退回符文。失败交易完整回滚。
 - 十二种遗物按占格和阶级累加。复合遗物包括月蚀吊坠（伤害/攻速）、巡礼靴（移速/拾取）、骨盾印（护甲/生命）、裂砂漏（攻速提升但伤害下降）、血契书（一阶伤害+30%、攻速-10%，基础价22）与引魂烛（一阶拾取范围+38、移速-8，基础价18）。购买生命遗物按上限增量补血；合成与出售不免费补血。
 - 每次商店4件商品；首店保证法器，第二店保证符文。刷新价格随本店刷新次数增长，下波重置。最多锁定2件未售商品，锁定与解锁免费，不增加刷新次数；刷新及跨波保留原报价位置，下一波重新定价。购买成功或重开试炼清除对应锁定，背包满不会自动解锁。
-- 本地仅保存设置和最佳成绩，没有永久属性成长、联网、中途续局或内购。
+- 本地保存设置、最佳成绩和已解锁起始法器，没有永久属性成长、联网、中途续局或内购。
 
 ## 从源码运行
 
@@ -114,14 +116,21 @@ python3 tools/fetch_macos_template.py
 ```sh
 ./tools/build_macos.sh
 # 另存应用，避免替换正在运行的旧版：
-BROXY_APP_PATH="$PWD/build/Embers-targets-macos.app" ./tools/build_macos.sh
+BROXY_APP_PATH="$PWD/build/Embers-rogue-macos.app" ./tools/build_macos.sh
 ```
 
 构建从官方 Universal 模板提取 arm64，生成 `build/Embers.app` 并执行 ad-hoc 签名验证。引擎许可在应用的 `Contents/Resources/licenses/` 中直接可读。对外发布前应使用自己的 Developer ID 配置签名与公证。
 
 ## 验证
 
-直接CLI入口`--smoke`、`--autoplay`、`--shop-preview`、`--benchmark`、`--capture-only`会在读取档案前关闭持久化；本进程的设置和成绩只留在内存，窗口标注“不保存设置与成绩”。普通启动保持原有保存行为。独立预览脚本仍各自关闭持久化。当前Embers-targets-macos.app已包含该修复；性能报告另记录实际设置、持久化状态与本次种子。
+本轮霜火核心八法器原生压力采样：5秒预热＋300秒，31652帧，平均105.504 FPS、P99 22.067毫秒，结束时300敌人／600弹体／200掉落，核心实际触发2151次，事件与命中／伤害计数包含5秒预热。使用默认设置、固定种子20261026且关闭档案读写；只覆盖该压力场景，不代表所有高阶背包构筑。结果独立保存在 `reports/performance-rogue-frostfire.json`，历史 `performance.json` 保留。
+
+```sh
+./tools/run.sh -- --benchmark --benchmark-content --benchmark-core=frostfire --benchmark-seed=20261026 --seconds=300
+./tools/run.sh --headless --script res://tests/simulate_runs.gd -- --seed=2026 --count=5 --rune=all --core=bone_chorus --route=balanced --altar=accept
+```
+
+直接CLI入口`--smoke`、`--autoplay`、`--shop-preview`、`--benchmark`、`--capture-only`会在读取档案前关闭持久化；本进程的设置和成绩只留在内存，窗口标注“不保存设置与成绩”。普通启动保持原有保存行为。独立预览脚本仍各自关闭持久化。当前Embers-rogue-macos.app已包含该修复；性能报告另记录实际设置、持久化状态与本次种子。
 
 ```sh
 ./tools/test.sh
@@ -136,19 +145,19 @@ BROXY_APP_PATH="$PWD/build/Embers-targets-macos.app" ./tools/build_macos.sh
 ./tools/run.sh -- --benchmark --benchmark-content --benchmark-seed=1792123517 --seconds=300
 ```
 
-可用 `./tools/test.sh` 或 `tools/test.ps1` 运行Godot与Python测试。当前Mac验证为42套Godot加5个额外档案入口，23414条断言与27项Python测试通过；新增背包候选86条覆盖阶级／种类匹配、查询只读、键盘旋转／移动／合成／换符及取消，原生重跑86条及既有背包UI90条通过。两平台入口均已接入新测试，本轮只在Mac执行。证据见 `reports/backpack-targets-validation.json`；旧套件替代关系见[测试迁移](docs/backpack-test-migration.md)，此前Mac适配与Windows背包验收记录保留。
+可用 `./tools/test.sh` 或 `tools/test.ps1` 运行Godot与Python测试。当前Mac完整46套Godot加5个额外档案入口，23797条断言与27项Python测试通过；肉鸽状态149条、战斗122条、UI63条、真实Main／存档衔接35条。锁定起始卡跳过Tab，原ChoiceActions44条与新RogueUI63条另在原生Mac通过。两平台入口均已接入，本轮只在Mac执行。证据见 `reports/rogue-choices-validation.json`；旧套件替代关系见[测试迁移](docs/backpack-test-migration.md)，历史验收保持各轮范围。
 
 上一轮Windows波内强化通过16332条Godot断言与27项Python测试，证据保留在 `reports/midwave/validation.json`；原生首波升级/恢复与前景对照见 `reports/midwave/native-fixtures.json`。此前归魂环、商店与符文历史验收同样保留；系统字体验证需要桌面字体访问权限。
 
 性能测试会打开明确标记的窗口，预热5秒后采样300秒，保持300敌人、至少600投射物与200掉落，并输出 `reports/performance.json`。`--benchmark-content`使用内容目录中的法器与3类符文的真实伤害弹体，标记为`content-feedback`；`--benchmark-runes`保留原4件法器的`rune-feedback`场景；省略二者为历史`baseline`。可加 `--benchmark-seed=<正整数>` 复现生成序列；只在基准模式解析，省略时维持原随机种子，普通游戏不受影响。不同场景独立记录，不能直接推断性能差异来源。报告记录实际武器来源、默认设置、持久化状态与本次种子，内容场景另记录各法器实际伤害和末段弹体家族。测试时保持窗口可见、电脑未锁屏，避免其他图形负载；保留历史记录时先备份原性能JSON。
 
-此前Windows背包阶段Main内容场景完成预热5秒加300秒原生采样：平均117.245FPS、P99 18.036ms，末尾300敌人/600弹体/200掉落，默认设置且不读写个人档案，见 `reports/backpack/performance.json`。它使用八类目录法器与一阶符文的压力弹体；合法12法器和高阶符文另有规则检查，不将此FPS当作所有满阶构筑测量。本次Mac测试适配与打包未重测图形性能，不将该Windows数值作为当前Mac包的帧率。上一轮60秒与更早完整300秒分别保留在 `reports/midwave/`、`reports/return-ring/`，不同源码与轨迹的差额不作优化收益对照。
+此前Windows背包阶段Main内容场景完成预热5秒加300秒原生采样：平均117.245FPS、P99 18.036ms，末尾300敌人/600弹体/200掉落，默认设置且不读写个人档案，见 `reports/backpack/performance.json`。它使用八类目录法器与一阶符文的压力弹体；合法12法器和高阶符文另有规则检查，不将此FPS当作所有满阶构筑测量。此前Mac测试适配与打包阶段未重测图形性能，不将该Windows数值作为当前Mac包的帧率。上一轮60秒与更早完整300秒分别保留在 `reports/midwave/`、`reports/return-ring/`，不同源码与轨迹的差额不作优化收益对照。
 
 此前内容扩充版Windows七法器300秒原生采样通过：平均60.710 FPS、P99 28.418ms，末尾300敌人／600弹体／200掉落；结果见 `reports/content/performance.json`。首次54.60 FPS的失败采样、弹体几何缓存优化与同夹具CPU微测一并保留在 `docs/content-expansion.md`，各次原生采样种子不同，不把全部帧率差额归因于单项修改。
 
 内容扩充前的macOS源码`2a6c4b9`曾在Apple M5完成5分钟原生真实符文场景采样：27,895帧，平均92.979 FPS、P99帧间隔26.191毫秒，达到≥58 FPS / ≤33毫秒门槛，退出0。末尾300敌人/600弹体/200掉落；主/次命中473,662/1,223,944，刻痕池峰值32、容量32，结束时最近准备7个非空批次。峰值和命中累计含5秒预热，末段批次不是全程最大或GPU drawcall数。默认设置且不读写个人档案，四次CUA观察确认可见窗口和采样推进。结果见`reports/impact-performance-validation.json`；原实现验证`reports/impact-validation.json`保留当时锁屏未测的历史状态。该历史补测只记录性能，未更改源码/素材、重跑30局或重新打包，当时交付同一Embers-impact.app。旧e64bb18的90.847 FPS/P99 25.400毫秒原样另存`performance-before-impacts.json`与`benchmark-before-impacts.log`，跨种子与跨版本差额不能单独归因于刻痕。详见`docs/verification.md`。
 
-完整模拟复用正式 `RunState` 与 `CombatSim.step`，没有额外金币、无敌或专用Boss数值。当前核心 `prototype-0.1.0+4cafb6168fa3`、seed2026—2035×三类符文共30局为29胜1败，记录229次显式合成、60次扩容、305次战斗内强化和110次波末兜底。策略为 `orbit-avoid-v1/backpack-shop-v2/upgrade-timing-v2+7df97f24c500`，会按空间购买、合成与更换高阶符文；它是新购物策略，不与旧模型声明轨迹等价，也不据此推断真人难度。见 `reports/backpack/simulation.json`；真人试玩、整理耗时和构筑理解仍待按 `docs/playtest.md` 记录。
+完整模拟复用正式 `RunState` 与 `CombatSim.step`，没有额外金币、无敌或专用Boss数值。此前背包阶段核心 `prototype-0.1.0+4cafb6168fa3`、seed2026—2035×三类符文共30局为29胜1败，记录229次显式合成、60次扩容、305次战斗内强化和110次波末兜底。策略为 `orbit-avoid-v1/backpack-shop-v2/upgrade-timing-v2+7df97f24c500`，会按空间购买、合成与更换高阶符文；它是新购物策略，不与旧模型声明轨迹等价，也不据此推断真人难度。见 `reports/backpack/simulation.json`；真人试玩、整理耗时和构筑理解仍待按 `docs/playtest.md` 记录。
 
 模拟还会记录完整商店报价、余额、候选评分及停止购买/刷新原因。`tools/analyze_shop_runs.py`可生成观测分析，并用`--baseline`严格比较旧对局字段和购物trace。商店观测阶段的30局在新增观测前后旧字段完全一致，证据见`reports/shop-analysis.json`；该结果只证明所测样本不受观测影响，不表示此前的战斗修复没有改变轨迹。
 

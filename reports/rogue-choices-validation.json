@@ -1,0 +1,1318 @@
+{
+  "schema_version": 1,
+  "date_local": "2026-10-26",
+  "created_at_utc": "2026-10-26T08:32:18.225433+00:00",
+  "baseline_commit": "2b19d8073635808193b7407367cb847f803babf1",
+  "feature_revision": "rogue-choices-v1",
+  "scope": "Two mutually-exclusive run cores, optional wave2 hunter contract and once-only chosen rune reward, existing grave-candle adjacency priority, three per-next-wave route choices, persistent horizontal starter unlocks. No new currency or permanent stat bonuses.",
+  "first_pass_balance": {
+    "bone_core": "Always grants1paid0bone even if owned; independent UID every3attacks adds2side shots at55% damage, socket/rank inherited.",
+    "frost_core": "Fills missing frost+ember. Slowed-target priority, consume slow on direct ember hit; radius48/50% secondary splash excludes prior direct hits, no recursive core/rune.",
+    "kit_adjustment": "Initial bone-owned kit received no item while frostfire filled2weapons; fixed by always_grant bone, not raising side-shot damage. Nominal all-hit bone-start generation83.19/s vs frostfire78.70/s (excluding frostfire splash); not actual DPS or final balancing.",
+    "routes": {
+      "swarm": "ceil(baseCount*1.2), chaser80/rusher20, interval unchanged, win+4currency only",
+      "bulwark": "ceil(baseCount*0.5), tank75/caster25, interval*1.15, win+6currency only",
+      "boss": "unchanged composition and timer; choices reset tobalanced"
+    },
+    "hunter": "One extra rusher inwave3 after wave2 acceptance; health1.8x/speed1.15x; kill required, reward remains pending until capacity is available in a won-wave shop."
+  },
+  "source": {
+    "scripts/data/rogue_rules.gd": {
+      "path": "scripts/data/rogue_rules.gd",
+      "bytes": 2310,
+      "sha256": "42d48acedb56d88a3d59cf74e416288b9a63b489ba66bab8b41298156df706ea"
+    },
+    "scripts/core/run_state.gd": {
+      "path": "scripts/core/run_state.gd",
+      "bytes": 30558,
+      "sha256": "aa20966342f23641327a0f6909a9b392123bcd23a91aa09562ba2fc9a4054e81"
+    },
+    "scripts/core/game_store.gd": {
+      "path": "scripts/core/game_store.gd",
+      "bytes": 2548,
+      "sha256": "f0530ed723621f5de85bff26d5b4972cde6eed768a6e8410179d90fcc0e929e0"
+    },
+    "scripts/main.gd": {
+      "path": "scripts/main.gd",
+      "bytes": 16217,
+      "sha256": "e98e81eb037c36f1e3b0bcdb3e6ba512068342b44669ed4a35cdb4d40cd3d2f4"
+    },
+    "scripts/combat/combat_sim.gd": {
+      "path": "scripts/combat/combat_sim.gd",
+      "bytes": 36327,
+      "sha256": "c575b230486d51d7155ed5ab23050e20227eb40b5b34f2130549133dbda1f8a3"
+    },
+    "scripts/combat/combat_world.gd": {
+      "path": "scripts/combat/combat_world.gd",
+      "bytes": 27652,
+      "sha256": "1700099d1088a5c9da8a254769dbea5b6a60ee4a1b572792e27e2e5440ba3113"
+    },
+    "scripts/ui/game_ui.gd": {
+      "path": "scripts/ui/game_ui.gd",
+      "bytes": 106823,
+      "sha256": "4d6b0b6bb1f96c61003296dc2b9e701573b56e910ab7edd7f4cd3ce4aae6e8a4"
+    },
+    "scripts/ui/backpack_grid.gd": {
+      "path": "scripts/ui/backpack_grid.gd",
+      "bytes": 20796,
+      "sha256": "733e2152c268d3b2dd657fb9cae665a2c8894bfa13b85682b61e419fe5777faf"
+    },
+    "data/relics/grave_candle.tres": {
+      "path": "data/relics/grave_candle.tres",
+      "bytes": 637,
+      "sha256": "18509fdec8e9ae5bd11db3af139d8dcfd2f81b9f5db9037a037b35b4886e6072"
+    },
+    "tests/test_rogue_state.gd": {
+      "path": "tests/test_rogue_state.gd",
+      "bytes": 14936,
+      "sha256": "559fdaea3287e4f23d8834f0fd34ee58bf50984317c7619566ffc66b1aa95320"
+    },
+    "tests/test_rogue_combat.gd": {
+      "path": "tests/test_rogue_combat.gd",
+      "bytes": 17302,
+      "sha256": "210576a5e3ba39f76e955b9356ea3fb994faf17384f83a70cf74f66e7e3c6558"
+    },
+    "tests/test_rogue_ui.gd": {
+      "path": "tests/test_rogue_ui.gd",
+      "bytes": 12056,
+      "sha256": "3cad54187fa2db91c94454871a20497067a42250903c85cb7a708a035bd561ba"
+    },
+    "tests/test_rogue_progress.gd": {
+      "path": "tests/test_rogue_progress.gd",
+      "bytes": 7378,
+      "sha256": "059ea2d80d14858f4734374206e569461f6b6ed4dc5d64e6b8c118d46917e5af"
+    },
+    "tests/test_benchmark_seed.gd": {
+      "path": "tests/test_benchmark_seed.gd",
+      "bytes": 6135,
+      "sha256": "f1b5fb2987c79b82e360a3334be0245b46724454d67c0ae540bf9f8404b275ed"
+    },
+    "tests/simulate_runs.gd": {
+      "path": "tests/simulate_runs.gd",
+      "bytes": 21454,
+      "sha256": "9e775da1342b255cb86a179dc17c0ca1184be23cbd67a9205c3b92e535038ba8"
+    },
+    "tools/preview_rogue.gd": {
+      "path": "tools/preview_rogue.gd",
+      "bytes": 5587,
+      "sha256": "58f3de847a59f628a0cc31062104d53242cae076780725dd2494653ab8abf56a"
+    },
+    "tools/preview_rogue_combat.gd": {
+      "path": "tools/preview_rogue_combat.gd",
+      "bytes": 10525,
+      "sha256": "9e6a2be962180edb54b46448802e187f1d6f2cfb7c52685c830668d1aa16846c"
+    },
+    "tools/test.sh": {
+      "path": "tools/test.sh",
+      "bytes": 1443,
+      "sha256": "4be11e29941803e1cb85b87cfd166e5b549f8c1bdc265993068f5bafdffc7df1"
+    },
+    "tools/test.ps1": {
+      "path": "tools/test.ps1",
+      "bytes": 3058,
+      "sha256": "f5fd26e142a83cb01880af21f83ca2e32169041719b17e1034e3da08bdb412e8"
+    }
+  },
+  "art": {
+    "existing46assets_byte_unchanged": true,
+    "art_revision": "engraved-07",
+    "projectile_revision": "arsenal-atlas-v5",
+    "new_runtime_drawing": "Frostfire kind3 double ring and six strokes, hunter crown/coral ring/HPbar, candle-linked arrow, choice modal and locked starter cards. Danger layer remains last."
+  },
+  "tests": {
+    "exit_code": 0,
+    "godot_suites": 46,
+    "extra_profile_processes": 5,
+    "processes": 51,
+    "assertions": 23797,
+    "failures": 0,
+    "python_tests": 27,
+    "python_failures": 0,
+    "command": "BROXY_PYTHON=<bundled Python3.12.14> ./tools/test.sh",
+    "log": {
+      "path": "reports/rogue-full-tests-raw.log",
+      "bytes": 9049,
+      "sha256": "4dab781fd43067dd982d1373495ec587dc62021fa3c1959f5671f66df65bb43d"
+    },
+    "new_suites": {
+      "RogueState": 149,
+      "RogueCombat": 122,
+      "RogueUI": 63,
+      "RogueProgress": 35
+    },
+    "benchmark_seed_assertions": 58,
+    "recovered_regressions": [
+      "Initial full suite ChoiceActions44/6 exposed locked starter cards retainingFOCUS_ALL. Set locked cardsFOCUS_NONE; old44assertions unchanged and pass. New focus invariant added toRogueUI.",
+      "First Main integration fixture assigned untyped Array through dynamicNode toArray[String]; changed fixture toassign(), no production change. Final35Main/profile assertions pass with no script error."
+    ],
+    "main_flow": "Accelerated actual simulation timer boundary -> actual UI core button -> nextwave -> actual altar/route buttons -> real hunter kill -> actual rune claim -> failure settlement -> earned starter unlocks. Not ordinary-wave survival proof.",
+    "windows_entry_updated_only": true
+  },
+  "simulation": {
+    "question": "Can each core and both alternate routes complete the normal8wave shared simulation under the same existing movement/shopping/upgrade heuristic, produce real core events and settle earned rewards without invalid state or lost rewards?",
+    "seeds": "2026..2030 x pierce/bounce/blast for balanced15each; alternate route smoke seed2026 x both cores x3runes. No privileged rewards, no invulnerability; kits are production rewards.",
+    "old_snapshot": "git archive2b19d80 to/private/tmp/broxy-rogue-before-2b19d80; same original15seeds before source edits.",
+    "old_baseline": {
+      "runs": 15,
+      "wins": 14,
+      "losses": [
+        {
+          "seed": 2026,
+          "rune": "pierce",
+          "wave": 7,
+          "reason": "生命耗尽：被盲眼祭司的弹丸击败。"
+        }
+      ],
+      "hunter_kills": 0,
+      "core_events": {
+        "frostfire": 0,
+        "bone_chorus": 0
+      },
+      "versions": [
+        "prototype-0.1.0+4cafb6168fa3"
+      ],
+      "policies": [
+        "orbit-avoid-v1/backpack-shop-v2/upgrade-timing-v2+7df97f24c500"
+      ],
+      "rejected_rogue_actions": 0,
+      "log": {
+        "path": "reports/rogue-before-runs-raw.log",
+        "bytes": 3723242,
+        "sha256": "3fd96594da2b90dc1433f1d35fc3d31ced124f2fd47340d8524a9507e88f7298"
+      }
+    },
+    "current_no_core": {
+      "runs": 15,
+      "wins": 14,
+      "losses": [
+        {
+          "seed": 2026,
+          "rune": "pierce",
+          "wave": 7,
+          "reason": "生命耗尽：被盲眼祭司的弹丸击败。"
+        }
+      ],
+      "hunter_kills": 0,
+      "core_events": {
+        "frostfire": 0,
+        "bone_chorus": 0
+      },
+      "versions": [
+        "prototype-0.1.0+9d956bcfd215"
+      ],
+      "policies": [
+        "orbit-avoid-v1/backpack-shop-v2/upgrade-timing-v2/rogue-choices-v1/none/balanced/skip+98dc084e5b6f"
+      ],
+      "rejected_rogue_actions": 0,
+      "log": {
+        "path": "reports/rogue-runs-none-raw.log",
+        "bytes": 3790216,
+        "sha256": "0768517e4c549ebc342d0fe32af1776a195264b08c3b7d6f40215a24e0f9d570"
+      }
+    },
+    "core_balanced": {
+      "frostfire": {
+        "runs": 15,
+        "wins": 15,
+        "losses": [],
+        "hunter_kills": 15,
+        "core_events": {
+          "frostfire": 1453,
+          "bone_chorus": 0
+        },
+        "versions": [
+          "prototype-0.1.0+9d956bcfd215"
+        ],
+        "policies": [
+          "orbit-avoid-v1/backpack-shop-v2/upgrade-timing-v2/rogue-choices-v1/frostfire/balanced/accept+98dc084e5b6f"
+        ],
+        "rejected_rogue_actions": 0,
+        "log": {
+          "path": "reports/rogue-runs-frostfire-raw.log",
+          "bytes": 4434890,
+          "sha256": "44cf5b5fe768fe3de90d67f18159b7608905d7bc7ee9b7fe50d968fa825a225f"
+        }
+      },
+      "bone_chorus": {
+        "runs": 15,
+        "wins": 15,
+        "losses": [],
+        "hunter_kills": 15,
+        "core_events": {
+          "frostfire": 0,
+          "bone_chorus": 5847
+        },
+        "versions": [
+          "prototype-0.1.0+9d956bcfd215"
+        ],
+        "policies": [
+          "orbit-avoid-v1/backpack-shop-v2/upgrade-timing-v2/rogue-choices-v1/bone_chorus/balanced/accept+98dc084e5b6f"
+        ],
+        "rejected_rogue_actions": 0,
+        "log": {
+          "path": "reports/rogue-runs-bone_chorus-raw.log",
+          "bytes": 4718415,
+          "sha256": "16bb02d558820f895dfdc2970fcdd4abb9503667080d602728945863bec54fd0"
+        }
+      }
+    },
+    "route_smoke": {
+      "swarm": {
+        "runs": 6,
+        "wins": 6,
+        "losses": [],
+        "hunter_kills": 6,
+        "core_events": {
+          "frostfire": 143,
+          "bone_chorus": 1109
+        },
+        "versions": [
+          "prototype-0.1.0+9d956bcfd215"
+        ],
+        "policies": [
+          "orbit-avoid-v1/backpack-shop-v2/upgrade-timing-v2/rogue-choices-v1/bone_chorus/swarm/accept+98dc084e5b6f",
+          "orbit-avoid-v1/backpack-shop-v2/upgrade-timing-v2/rogue-choices-v1/frostfire/swarm/accept+98dc084e5b6f"
+        ],
+        "rejected_rogue_actions": 1,
+        "log": {
+          "path": "reports/rogue-route-swarm-raw.log",
+          "bytes": 1644710,
+          "sha256": "4e6659681bcb919013f034fe76bfae27de34a263c40dd7d0f5887e633ed25a54"
+        }
+      },
+      "bulwark": {
+        "runs": 6,
+        "wins": 6,
+        "losses": [],
+        "hunter_kills": 6,
+        "core_events": {
+          "frostfire": 513,
+          "bone_chorus": 891
+        },
+        "versions": [
+          "prototype-0.1.0+9d956bcfd215"
+        ],
+        "policies": [
+          "orbit-avoid-v1/backpack-shop-v2/upgrade-timing-v2/rogue-choices-v1/bone_chorus/bulwark/accept+98dc084e5b6f",
+          "orbit-avoid-v1/backpack-shop-v2/upgrade-timing-v2/rogue-choices-v1/frostfire/bulwark/accept+98dc084e5b6f"
+        ],
+        "rejected_rogue_actions": 0,
+        "log": {
+          "path": "reports/rogue-route-bulwark-raw.log",
+          "bytes": 1686912,
+          "sha256": "ebb609271bd6916dcd08e91ede424d5d0c2477cb174a64a9034aa35e5011b8ef"
+        }
+      }
+    },
+    "reproducibility": {
+      "frostfire": {
+        "seed": 2026,
+        "rune": "pierce",
+        "whole_record_equal": true,
+        "repeat_log": {
+          "path": "reports/rogue-repeat-frostfire-raw.log",
+          "bytes": 260263,
+          "sha256": "db361d91dadca6eb7c2a235e3fcf1615666c88fad98684b225cf582253b85025"
+        }
+      },
+      "bone_chorus": {
+        "seed": 2026,
+        "rune": "pierce",
+        "whole_record_equal": true,
+        "repeat_log": {
+          "path": "reports/rogue-repeat-bone_chorus-raw.log",
+          "bytes": 270119,
+          "sha256": "82797b72510a9dda826c0e6a0b521020aa3b2ac08f7b03744f078fb4059dfae2"
+        }
+      }
+    },
+    "limits": "Bots do not optimize candle placement or core-specific shopping, and fixed15sample wins saturate at100% for both cores. This establishes runnable builds, not equal power, human win rate or final difficulty. Old/current no-core equal win count does not establish trace identity. Swarm2026/pierce has1normal full-backpack rune-claim rejection atwave3; the pending reward remains available and is claimed later. This is capacity enforcement, not a crash or duplicate award."
+  },
+  "native_ui": {
+    "fixtures": [
+      {
+        "case": "core",
+        "exit_code": 0,
+        "result": {
+          "capture": "res://reports/rogue-core.png",
+          "capture_result": 0,
+          "case": "core",
+          "controlled_hunter_kill": false,
+          "controlled_wave_settlement": true,
+          "fixed_fixture": true,
+          "fixture_passed": true,
+          "formal_transactions": true,
+          "hold": false,
+          "persistent_profile": false,
+          "state": {
+            "active_route": "balanced",
+            "altar_available": false,
+            "altar_choice": "",
+            "altar_wave": -1,
+            "can_choose_core": true,
+            "can_choose_route": true,
+            "can_claim_reward": false,
+            "core_id": "",
+            "hunter_defeated": false,
+            "linked_weapons": [],
+            "reward_pending": false,
+            "route": "balanced"
+          },
+          "state_sha256_after": "2b2790ee23fd621cec04de552b77e425a1f467690987288250020e1b5c0e7496",
+          "state_sha256_before": "2b2790ee23fd621cec04de552b77e425a1f467690987288250020e1b5c0e7496",
+          "test_budget": 600,
+          "transactions": [
+            {
+              "operation": "finish_wave",
+              "wave": 1
+            }
+          ],
+          "viewport": [
+            1280,
+            720
+          ]
+        },
+        "image": {
+          "path": "reports/rogue-core.png",
+          "bytes": 167868,
+          "sha256": "d8f964ed7309c89c5793a25bcfa02f3a056c288ce9db57b756dbda7f56368a7f"
+        },
+        "log": {
+          "path": "reports/rogue-core-raw.log",
+          "bytes": 2787,
+          "sha256": "2b90a84f0182ae45c8247aa67802f90cc6ce66e95083a8f6044b7d98c0599783"
+        }
+      },
+      {
+        "case": "altar",
+        "exit_code": 0,
+        "result": {
+          "capture": "res://reports/rogue-altar.png",
+          "capture_result": 0,
+          "case": "altar",
+          "controlled_hunter_kill": false,
+          "controlled_wave_settlement": true,
+          "fixed_fixture": true,
+          "fixture_passed": true,
+          "formal_transactions": true,
+          "hold": false,
+          "persistent_profile": false,
+          "state": {
+            "active_route": "balanced",
+            "altar_available": true,
+            "altar_choice": "",
+            "altar_wave": -1,
+            "can_choose_core": false,
+            "can_choose_route": true,
+            "can_claim_reward": false,
+            "core_id": "frostfire",
+            "hunter_defeated": false,
+            "linked_weapons": [],
+            "reward_pending": false,
+            "route": "balanced"
+          },
+          "state_sha256_after": "6fdcd83866f128211e25d40d88cb1da8b77a2b1620c4d95ed7ea127a31758984",
+          "state_sha256_before": "6fdcd83866f128211e25d40d88cb1da8b77a2b1620c4d95ed7ea127a31758984",
+          "test_budget": 600,
+          "transactions": [
+            {
+              "operation": "finish_wave",
+              "wave": 1
+            },
+            {
+              "id": "frostfire",
+              "operation": "choose_core",
+              "success": true
+            },
+            {
+              "operation": "finish_wave",
+              "wave": 2
+            }
+          ],
+          "viewport": [
+            1280,
+            720
+          ]
+        },
+        "image": {
+          "path": "reports/rogue-altar.png",
+          "bytes": 160461,
+          "sha256": "bec648d3fb002f898ccb83dc036f41797a1b16f36d5eca18cc5363114d143cbd"
+        },
+        "log": {
+          "path": "reports/rogue-altar-raw.log",
+          "bytes": 3188,
+          "sha256": "b59de920c2cf0e80b38527a947c4ce37e363336095865b25740d3e32a2fbf75f"
+        }
+      },
+      {
+        "case": "reward",
+        "exit_code": 0,
+        "result": {
+          "capture": "res://reports/rogue-reward.png",
+          "capture_result": 0,
+          "case": "reward",
+          "controlled_hunter_kill": true,
+          "controlled_wave_settlement": true,
+          "fixed_fixture": true,
+          "fixture_passed": true,
+          "formal_transactions": true,
+          "hold": false,
+          "persistent_profile": false,
+          "state": {
+            "active_route": "balanced",
+            "altar_available": false,
+            "altar_choice": "accepted",
+            "altar_wave": 3,
+            "can_choose_core": false,
+            "can_choose_route": true,
+            "can_claim_reward": true,
+            "core_id": "frostfire",
+            "hunter_defeated": true,
+            "linked_weapons": [],
+            "reward_pending": true,
+            "route": "balanced"
+          },
+          "state_sha256_after": "e6ae4253caf6e2c02d94a726f53f6ea86daef9522cfecb5e93175ffc6b796ef8",
+          "state_sha256_before": "e6ae4253caf6e2c02d94a726f53f6ea86daef9522cfecb5e93175ffc6b796ef8",
+          "test_budget": 600,
+          "transactions": [
+            {
+              "operation": "finish_wave",
+              "wave": 1
+            },
+            {
+              "id": "frostfire",
+              "operation": "choose_core",
+              "success": true
+            },
+            {
+              "operation": "finish_wave",
+              "wave": 2
+            },
+            {
+              "accepted": true,
+              "operation": "choose_altar",
+              "success": true
+            },
+            {
+              "operation": "controlled_hunter_kill",
+              "success": true
+            }
+          ],
+          "viewport": [
+            1280,
+            720
+          ]
+        },
+        "image": {
+          "path": "reports/rogue-reward.png",
+          "bytes": 155000,
+          "sha256": "4266a940ca2e81291fda6032d044d2ee3903462611d849bd99824b5331d92606"
+        },
+        "log": {
+          "path": "reports/rogue-reward-raw.log",
+          "bytes": 3321,
+          "sha256": "7296f7289f4babf6b8a9ab7650ca992ddfb5c96f76ecff4acba4758457e345b9"
+        }
+      },
+      {
+        "case": "route",
+        "exit_code": 0,
+        "result": {
+          "capture": "res://reports/rogue-route.png",
+          "capture_result": 0,
+          "case": "route",
+          "controlled_hunter_kill": false,
+          "controlled_wave_settlement": true,
+          "fixed_fixture": true,
+          "fixture_passed": true,
+          "formal_transactions": true,
+          "hold": false,
+          "persistent_profile": false,
+          "state": {
+            "active_route": "balanced",
+            "altar_available": false,
+            "altar_choice": "",
+            "altar_wave": -1,
+            "can_choose_core": false,
+            "can_choose_route": true,
+            "can_claim_reward": false,
+            "core_id": "frostfire",
+            "hunter_defeated": false,
+            "linked_weapons": [],
+            "reward_pending": false,
+            "route": "bulwark"
+          },
+          "state_sha256_after": "d687d9a774112397a64acdd7116c0dce64a01f34ba4ac490e46e42c650757085",
+          "state_sha256_before": "d687d9a774112397a64acdd7116c0dce64a01f34ba4ac490e46e42c650757085",
+          "test_budget": 600,
+          "transactions": [
+            {
+              "operation": "finish_wave",
+              "wave": 1
+            },
+            {
+              "id": "frostfire",
+              "operation": "choose_core",
+              "success": true
+            },
+            {
+              "operation": "finish_wave",
+              "wave": 2
+            },
+            {
+              "id": "bulwark",
+              "operation": "choose_route",
+              "success": true
+            }
+          ],
+          "viewport": [
+            1280,
+            720
+          ]
+        },
+        "image": {
+          "path": "reports/rogue-route.png",
+          "bytes": 143145,
+          "sha256": "0cf63f1fecd918fde00b54857706d3a7bf63dd1672d5dbd59de74da1a7a83c50"
+        },
+        "log": {
+          "path": "reports/rogue-route-raw.log",
+          "bytes": 3247,
+          "sha256": "f24d53e34d3e3166a68dd966d51114e7fff829079df9684a6da389c8e5d0bc34"
+        }
+      },
+      {
+        "case": "lamp",
+        "exit_code": 0,
+        "result": {
+          "capture": "res://reports/rogue-lamp.png",
+          "capture_result": 0,
+          "case": "lamp",
+          "controlled_hunter_kill": false,
+          "controlled_wave_settlement": true,
+          "fixed_fixture": true,
+          "fixture_passed": true,
+          "formal_transactions": true,
+          "hold": false,
+          "persistent_profile": false,
+          "state": {
+            "active_route": "balanced",
+            "altar_available": false,
+            "altar_choice": "",
+            "altar_wave": -1,
+            "can_choose_core": false,
+            "can_choose_route": true,
+            "can_claim_reward": false,
+            "core_id": "frostfire",
+            "hunter_defeated": false,
+            "linked_weapons": [
+              1,
+              2
+            ],
+            "reward_pending": false,
+            "route": "bulwark"
+          },
+          "state_sha256_after": "2bbe3511822fd70f14c0846887b9c8b629da29dde6ba7085474ebdc569b4d9fc",
+          "state_sha256_before": "2bbe3511822fd70f14c0846887b9c8b629da29dde6ba7085474ebdc569b4d9fc",
+          "test_budget": 600,
+          "transactions": [
+            {
+              "operation": "finish_wave",
+              "wave": 1
+            },
+            {
+              "id": "frostfire",
+              "operation": "choose_core",
+              "success": true
+            },
+            {
+              "operation": "finish_wave",
+              "wave": 2
+            },
+            {
+              "id": "bulwark",
+              "operation": "choose_route",
+              "success": true
+            },
+            {
+              "operation": "buy_and_place_candle",
+              "success": true,
+              "uid": 4
+            }
+          ],
+          "viewport": [
+            1280,
+            720
+          ]
+        },
+        "image": {
+          "path": "reports/rogue-lamp.png",
+          "bytes": 200954,
+          "sha256": "22463eee9f1ab9963a1d286c4a880df17667007c7df3342e0e56ff8debb86b95"
+        },
+        "log": {
+          "path": "reports/rogue-lamp-raw.log",
+          "bytes": 3429,
+          "sha256": "d17ef1d3eb0c37aeed93b0b2ca54b1934d15adce80a49ae3b854a6939934683f"
+        }
+      },
+      {
+        "case": "title",
+        "exit_code": 0,
+        "result": {
+          "capture": "res://reports/rogue-title.png",
+          "capture_result": 0,
+          "case": "title",
+          "controlled_hunter_kill": false,
+          "controlled_wave_settlement": true,
+          "fixed_fixture": true,
+          "fixture_passed": true,
+          "formal_transactions": true,
+          "hold": false,
+          "persistent_profile": false,
+          "state": {
+            "active_route": "balanced",
+            "altar_available": false,
+            "altar_choice": "",
+            "altar_wave": -1,
+            "can_choose_core": true,
+            "can_choose_route": true,
+            "can_claim_reward": false,
+            "core_id": "",
+            "hunter_defeated": false,
+            "linked_weapons": [],
+            "reward_pending": false,
+            "route": "balanced"
+          },
+          "state_sha256_after": "2b2790ee23fd621cec04de552b77e425a1f467690987288250020e1b5c0e7496",
+          "state_sha256_before": "2b2790ee23fd621cec04de552b77e425a1f467690987288250020e1b5c0e7496",
+          "test_budget": 600,
+          "transactions": [
+            {
+              "operation": "finish_wave",
+              "wave": 1
+            }
+          ],
+          "viewport": [
+            1280,
+            720
+          ]
+        },
+        "image": {
+          "path": "reports/rogue-title.png",
+          "bytes": 326323,
+          "sha256": "5eb0b8184652d5db666fac5fda631d0977e75949d5fdaf06c39d77b91f26db41"
+        },
+        "log": {
+          "path": "reports/rogue-title-raw.log",
+          "bytes": 2789,
+          "sha256": "a55dda82713d3eba878ef427c5c8484c216b6812d3f044ce52bef3cc7d7e0dfd"
+        }
+      },
+      {
+        "case": "unlocked",
+        "exit_code": 0,
+        "result": {
+          "capture": "res://reports/rogue-unlocked.png",
+          "capture_result": 0,
+          "case": "unlocked",
+          "controlled_hunter_kill": false,
+          "controlled_wave_settlement": true,
+          "fixed_fixture": true,
+          "fixture_passed": true,
+          "formal_transactions": true,
+          "hold": false,
+          "persistent_profile": false,
+          "state": {
+            "active_route": "balanced",
+            "altar_available": false,
+            "altar_choice": "",
+            "altar_wave": -1,
+            "can_choose_core": true,
+            "can_choose_route": true,
+            "can_claim_reward": false,
+            "core_id": "",
+            "hunter_defeated": false,
+            "linked_weapons": [],
+            "reward_pending": false,
+            "route": "balanced"
+          },
+          "state_sha256_after": "2b2790ee23fd621cec04de552b77e425a1f467690987288250020e1b5c0e7496",
+          "state_sha256_before": "2b2790ee23fd621cec04de552b77e425a1f467690987288250020e1b5c0e7496",
+          "test_budget": 600,
+          "transactions": [
+            {
+              "operation": "finish_wave",
+              "wave": 1
+            }
+          ],
+          "viewport": [
+            1280,
+            720
+          ]
+        },
+        "image": {
+          "path": "reports/rogue-unlocked.png",
+          "bytes": 326150,
+          "sha256": "bddc544f5a16024e04ab2913180815c2744f6b66ccf5f7c7bd9db2834bc875d4"
+        },
+        "log": {
+          "path": "reports/rogue-unlocked-raw.log",
+          "bytes": 2795,
+          "sha256": "2bf9d4229c77635c3d4262ba9683e64acb23aa081a95260b084ab97ef662baa2"
+        }
+      }
+    ],
+    "engine_input": "RogueUI63/0 and ChoiceActions44/0native tests inject Godot InputEvents, not OS keyboard/mouse.",
+    "logs": [
+      {
+        "path": "reports/rogue-ui-native-raw.log",
+        "bytes": 185,
+        "sha256": "93d130fe1bb141444b9e50c71ab94459449449d6c1fea3eb862e3faafad8a42f"
+      },
+      {
+        "path": "reports/rogue-fix-choice-actions-native-raw.log",
+        "bytes": 191,
+        "sha256": "e892c833e3e214c88ac7a49b3c19392b80aac0a3f9838e022ff428edf6eded76"
+      }
+    ],
+    "review": "Root and independent agents reviewed all7UI scenes at1280x720. Locked/unlocked4cardtitle retains artwork, modal contents scroll andBack remains fixed. No other ratios or human playtest."
+  },
+  "native_combat": {
+    "fixtures": [
+      {
+        "case": "frostfire",
+        "exit_code": 0,
+        "result": {
+          "capture": "/Users/makima/Desktop/code/game/broxy/reports/rogue-combat-frostfire.png",
+          "capture_result": 0,
+          "case": "frostfire",
+          "controls": "High-health stationary chasers, controlled player/enemy positions and manual launch origins; frost slow and all core effects from real fire/step. Chorus preserves real cooldowns; hunter initial action clock controlled then real AI windup. Physics/render age frozen at capture.",
+          "core_activations": {
+            "bone_chorus": 0,
+            "frostfire": 1
+          },
+          "fixed_fixture": true,
+          "fixed_steps": 9,
+          "fixture_passed": true,
+          "hud_rogue": {
+            "active_route": "balanced",
+            "core_id": "frostfire",
+            "hunter_alive": false,
+            "hunter_defeated": false
+          },
+          "natural_run": false,
+          "persistent_profile": false,
+          "primary_hits": 2,
+          "profile_access": false,
+          "secondary_hits": 2,
+          "seed": 20261027,
+          "simulation_rng_state": "4683117840757803950",
+          "source_hits": {
+            "ember:primary": 1,
+            "ember:secondary": 2,
+            "frost:primary": 1
+          },
+          "state": {
+            "active_route": "balanced",
+            "altar_available": false,
+            "altar_choice": "",
+            "altar_wave": -1,
+            "can_choose_core": false,
+            "can_choose_route": false,
+            "can_claim_reward": false,
+            "core_id": "frostfire",
+            "hunter_defeated": false,
+            "linked_weapons": [],
+            "reward_pending": false,
+            "route": "balanced"
+          },
+          "targets": [
+            {
+              "health": 9960.0,
+              "hunter": false,
+              "max_health": 10000.0,
+              "mode": 0,
+              "position": [
+                650.0,
+                345.0
+              ],
+              "slow_timer": 0.0,
+              "source_id": "chaser",
+              "uid": 1
+            },
+            {
+              "health": 9985.5,
+              "hunter": false,
+              "max_health": 10000.0,
+              "mode": 0,
+              "position": [
+                687.0,
+                375.0
+              ],
+              "slow_timer": 0.0,
+              "source_id": "chaser",
+              "uid": 2
+            },
+            {
+              "health": 9985.5,
+              "hunter": false,
+              "max_health": 10000.0,
+              "mode": 0,
+              "position": [
+                642.0,
+                395.0
+              ],
+              "slow_timer": 0.0,
+              "source_id": "chaser",
+              "uid": 3
+            }
+          ],
+          "transactions": [
+            {
+              "operation": "finish_wave",
+              "wave": 1
+            },
+            {
+              "id": "frostfire",
+              "operation": "choose_core",
+              "success": true
+            },
+            {
+              "operation": "next_wave",
+              "wave": 2
+            }
+          ],
+          "viewport": [
+            1280,
+            720
+          ]
+        },
+        "image": {
+          "path": "reports/rogue-combat-frostfire.png",
+          "bytes": 391953,
+          "sha256": "486f3ef419c47f4aea434bac6ddc44867518d146bfe4ef00c2e938a9f88579ff"
+        },
+        "log": {
+          "path": "reports/rogue-combat-frostfire-raw.log",
+          "bytes": 4073,
+          "sha256": "0c14213598a7e6ca0d455d3b49d6d8dcf6a1789da5f67ad35880954d22727cf4"
+        }
+      },
+      {
+        "case": "bone_chorus",
+        "exit_code": 0,
+        "result": {
+          "capture": "/Users/makima/Desktop/code/game/broxy/reports/rogue-combat-bone_chorus.png",
+          "capture_result": 0,
+          "case": "bone_chorus",
+          "controls": "High-health stationary chasers, controlled player/enemy positions and manual launch origins; frost slow and all core effects from real fire/step. Chorus preserves real cooldowns; hunter initial action clock controlled then real AI windup. Physics/render age frozen at capture.",
+          "core_activations": {
+            "bone_chorus": 2,
+            "frostfire": 0
+          },
+          "fixed_fixture": true,
+          "fixed_steps": 68,
+          "fixture_passed": true,
+          "hud_rogue": {
+            "active_route": "balanced",
+            "core_id": "bone_chorus",
+            "hunter_alive": false,
+            "hunter_defeated": false
+          },
+          "natural_run": false,
+          "persistent_profile": false,
+          "primary_hits": 2,
+          "profile_access": false,
+          "secondary_hits": 0,
+          "seed": 20261027,
+          "simulation_rng_state": "4683117840757803950",
+          "source_hits": {
+            "bone:primary": 2
+          },
+          "state": {
+            "active_route": "balanced",
+            "altar_available": false,
+            "altar_choice": "",
+            "altar_wave": -1,
+            "can_choose_core": false,
+            "can_choose_route": false,
+            "can_claim_reward": false,
+            "core_id": "bone_chorus",
+            "hunter_defeated": false,
+            "linked_weapons": [],
+            "reward_pending": false,
+            "route": "balanced"
+          },
+          "targets": [
+            {
+              "health": 9972.0,
+              "hunter": false,
+              "max_health": 10000.0,
+              "mode": 0,
+              "position": [
+                790.0,
+                380.0
+              ],
+              "slow_timer": 0.0,
+              "source_id": "chaser",
+              "uid": 1
+            },
+            {
+              "health": 10000.0,
+              "hunter": false,
+              "max_health": 10000.0,
+              "mode": 0,
+              "position": [
+                870.0,
+                295.0
+              ],
+              "slow_timer": 0.0,
+              "source_id": "chaser",
+              "uid": 2
+            },
+            {
+              "health": 10000.0,
+              "hunter": false,
+              "max_health": 10000.0,
+              "mode": 0,
+              "position": [
+                870.0,
+                465.0
+              ],
+              "slow_timer": 0.0,
+              "source_id": "chaser",
+              "uid": 3
+            }
+          ],
+          "transactions": [
+            {
+              "operation": "finish_wave",
+              "wave": 1
+            },
+            {
+              "id": "bone_chorus",
+              "operation": "choose_core",
+              "success": true
+            },
+            {
+              "operation": "next_wave",
+              "wave": 2
+            }
+          ],
+          "viewport": [
+            1280,
+            720
+          ]
+        },
+        "image": {
+          "path": "reports/rogue-combat-bone_chorus.png",
+          "bytes": 387904,
+          "sha256": "8db58755d1335b474b992dd258dda443876ca363e7ec974606086974861f96df"
+        },
+        "log": {
+          "path": "reports/rogue-combat-bone_chorus-raw.log",
+          "bytes": 3896,
+          "sha256": "8f438f008d914803a6b5ff902e3ee174c3f213110e4ed75fff228616eb019973"
+        }
+      },
+      {
+        "case": "hunter",
+        "exit_code": 0,
+        "result": {
+          "capture": "/Users/makima/Desktop/code/game/broxy/reports/rogue-combat-hunter.png",
+          "capture_result": 0,
+          "case": "hunter",
+          "controls": "High-health stationary chasers, controlled player/enemy positions and manual launch origins; frost slow and all core effects from real fire/step. Chorus preserves real cooldowns; hunter initial action clock controlled then real AI windup. Physics/render age frozen at capture.",
+          "core_activations": {
+            "bone_chorus": 0,
+            "frostfire": 0
+          },
+          "fixed_fixture": true,
+          "fixed_steps": 5,
+          "fixture_passed": true,
+          "hud_rogue": {
+            "active_route": "balanced",
+            "core_id": "",
+            "hunter_alive": true,
+            "hunter_defeated": false
+          },
+          "natural_run": false,
+          "persistent_profile": false,
+          "primary_hits": 1,
+          "profile_access": false,
+          "secondary_hits": 0,
+          "seed": 20261027,
+          "simulation_rng_state": "-6410842832063880651",
+          "source_hits": {
+            "bone:primary": 1
+          },
+          "state": {
+            "active_route": "balanced",
+            "altar_available": false,
+            "altar_choice": "accepted",
+            "altar_wave": 3,
+            "can_choose_core": false,
+            "can_choose_route": false,
+            "can_claim_reward": false,
+            "core_id": "",
+            "hunter_defeated": false,
+            "linked_weapons": [],
+            "reward_pending": false,
+            "route": "balanced"
+          },
+          "targets": [
+            {
+              "health": 29.416,
+              "hunter": true,
+              "max_health": 43.416,
+              "mode": 1,
+              "position": [
+                697.839965820312,
+                330.526672363281
+              ],
+              "slow_timer": 0.0,
+              "source_id": "rusher",
+              "uid": 1
+            },
+            {
+              "health": 24.12,
+              "hunter": false,
+              "max_health": 24.12,
+              "mode": 0,
+              "position": [
+                890.0,
+                435.0
+              ],
+              "slow_timer": 0.0,
+              "source_id": "rusher",
+              "uid": 2
+            }
+          ],
+          "transactions": [
+            {
+              "operation": "finish_wave",
+              "wave": 1
+            },
+            {
+              "operation": "next_wave",
+              "wave": 2
+            },
+            {
+              "operation": "finish_wave",
+              "wave": 2
+            },
+            {
+              "accepted": true,
+              "operation": "choose_altar"
+            },
+            {
+              "operation": "next_wave",
+              "wave": 3
+            }
+          ],
+          "viewport": [
+            1280,
+            720
+          ]
+        },
+        "image": {
+          "path": "reports/rogue-combat-hunter.png",
+          "bytes": 380786,
+          "sha256": "d256c00f773072683ff964e9199c4f50c509f254850394ca1884ffee57e86906"
+        },
+        "log": {
+          "path": "reports/rogue-combat-hunter-raw.log",
+          "bytes": 3648,
+          "sha256": "404fa2121011ebbb531dbe9cb2028b4e1fce093ad903f577da9a90e46add5912"
+        }
+      }
+    ],
+    "review": "Actual source weapons and fixed-step collisions create core effects. High-health targets, positions and fire origins are controlled; hunter AI windup uses real step. Root and agent reviewed all3images; not natural completion or difficulty evidence."
+  },
+  "performance": {
+    "result": {
+      "average_fps": 105.503626755502,
+      "core_activations": {
+        "bone_chorus": 0,
+        "frostfire": 2151
+      },
+      "core_id": "frostfire",
+      "damage_by_weapon": {
+        "bone": 113082.899999996,
+        "comet": 2658459.1499998,
+        "crescent": 5280671.92501229,
+        "ember": 900995.562500002,
+        "frost": 637956.550000164,
+        "return_ring": 10094253.600018,
+        "scatter": 168258.700000004,
+        "storm": 393108.637500001
+      },
+      "duration_seconds": 300.0,
+      "enemies": 300,
+      "enemy_hit_visual_revision": "tempered-hit-v1",
+      "impact_draw_commands_at_end": 8,
+      "impact_visual_capacity": 32,
+      "impact_visual_peak": 32,
+      "impact_visual_revision": "primary-impact-v1",
+      "internal_resolution": "1280x720",
+      "os": "macOS",
+      "p99_frame_ms": 22.067,
+      "passed": true,
+      "persistent_profile": false,
+      "pickups": 200,
+      "primary_hits": 205698,
+      "projectile_families_at_end": {
+        "bone:bounce": 9,
+        "bone:pierce": 1,
+        "comet:bounce": 286,
+        "crescent:blast": 80,
+        "crescent:bounce": 1,
+        "ember:pierce": 7,
+        "frost:blast": 10,
+        "return_ring:blast": 58,
+        "scatter:bounce": 43,
+        "storm:pierce": 105
+      },
+      "projectile_visual_revision": "arsenal-atlas-v5",
+      "projectiles": 600,
+      "renderer": "gl_compatibility",
+      "run_seed": 20261026,
+      "rune_visual_peak": 32,
+      "samples": 31652,
+      "scenario": "content-feedback",
+      "secondary_hits": 1726869,
+      "settings": {
+        "flash": true,
+        "shake": true,
+        "volume": 0.65
+      },
+      "weapon_ids": [
+        "bone",
+        "frost",
+        "ember",
+        "scatter",
+        "crescent",
+        "storm",
+        "comet",
+        "return_ring"
+      ]
+    },
+    "result_file": {
+      "path": "reports/performance-rogue-frostfire.json",
+      "bytes": 1479,
+      "sha256": "b70834a4c1a4d4e72e27921d5a27af26c89a45c938a872b999c625ab79da3969"
+    },
+    "log": {
+      "path": "reports/rogue-benchmark-frostfire-raw.log",
+      "bytes": 1682,
+      "sha256": "903fb0c7645d29ad028f476393402fa471c26e6cfec803a1273cbb5e5c2caa8b"
+    },
+    "command": "./tools/run.sh -- --benchmark --benchmark-content --benchmark-core=frostfire --benchmark-seed=20261026 --seconds=300",
+    "scope": "AppleSilicon native Compatibility1280x720,5s warmup+300s sample, existing all8weapon stress with real first-rank rune damage and frostfire behavior. Sources frozen; no concurrent tests/simulations/builds during sampling. Does not cover every legal high-rank backpack, bone-core worst case or OS/human input. Historicalperformance.json unchanged. Frame statistics exclude5s warmup; core/hit/damage counters accumulate from begin and include warmup."
+  },
+  "package": {
+    "app_path": "build/Embers-rogue-macos.app",
+    "zip": {
+      "path": "build/Embers-rogue-macos-arm64.zip",
+      "bytes": 29596189,
+      "sha256": "f7ee89a14bd32ba436bf53bb80f2220c639f729669b60e8b8aff8b85b8fd4766"
+    },
+    "executable": {
+      "path": "build/Embers-rogue-macos.app/Contents/MacOS/秘术余烬",
+      "bytes": 82421616,
+      "sha256": "e4ff1acdc1c25b8154856d538851ac4a6e5319afc92460d6575d6301d69cd87a"
+    },
+    "pck": {
+      "path": "build/Embers-rogue-macos.app/Contents/Resources/秘术余烬.pck",
+      "bytes": 996124,
+      "sha256": "201d874ee21738051937bb798b57ae0882359b4ab63ae6bd3ac3519d153f2f1e"
+    },
+    "plist": {
+      "path": "build/Embers-rogue-macos.app/Contents/Info.plist",
+      "bytes": 1742,
+      "sha256": "b809b8ae0b41a5f3626e6183575e8d71ac705aa940e661ca8505101aa4da8640"
+    },
+    "architecture": "arm64",
+    "minimum_os": {
+      "arm64": "13.0"
+    },
+    "strict_adhoc_signature_passed": true,
+    "developer_id_notarized": false,
+    "build_log": {
+      "path": "reports/rogue-build-raw.log",
+      "bytes": 26636,
+      "sha256": "c944eac30060055e92d8a89bf9de2301e06e3e48657acd8cda2bac378945accb"
+    },
+    "zip_log": {
+      "path": "reports/rogue-zip-raw.log",
+      "bytes": 3012,
+      "sha256": "0c7a4a40f535b02e303d86188b96e35039530f6438dd2c4affd6bce952018666"
+    },
+    "boot_log": {
+      "path": "reports/rogue-app-headless-raw.log",
+      "bytes": 73,
+      "sha256": "6d1c065383a27c36804949b6ffa4b09714470b112e5dacc0bd5aeb7b9c147c4e"
+    },
+    "native_log": {
+      "path": "reports/rogue-app-native-raw.log",
+      "bytes": 232,
+      "sha256": "604f8f265640791c03018166ab2ed9a405d467e746f9823a734c68ee67889cad"
+    },
+    "native_shop_image": {
+      "path": "reports/rogue-app-shop.png",
+      "bytes": 172380,
+      "sha256": "ce2c80e8acdd70b4eafeb238d1b8304624d77024c120e92ae0133480f4f9d400"
+    },
+    "old_apps_preserved": true,
+    "license_notices": [
+      {
+        "path": "build/Embers-rogue-macos.app/Contents/Resources/licenses/Godot-LICENSE.txt",
+        "bytes": 1149,
+        "sha256": "b0435e3b3e4e55238f05f4b306f30524a1b2e20147810d436eaa554fa6855c80"
+      },
+      {
+        "path": "build/Embers-rogue-macos.app/Contents/Resources/licenses/Godot-COPYRIGHT.txt",
+        "bytes": 100108,
+        "sha256": "cb1980c88089573bcacd7221d777c689bb8bbd778799f24c27fca0fe5f774d6d"
+      },
+      {
+        "path": "build/Embers-rogue-macos.app/Contents/Resources/licenses/README.md",
+        "bytes": 1178,
+        "sha256": "c17e0b7a7a807cf114370d17f61564ab61a601c80e208161a2d9cb0b111ea1d0"
+      }
+    ],
+    "exported_rule_probe": {
+      "result": {
+        "contract_hunter_spawned": true,
+        "controlled_direct_hunter_kill": true,
+        "core_grant_two_bones": true,
+        "horizontal_unlocks": true,
+        "passed": true,
+        "persistent_profile": false,
+        "reward_claimed": true,
+        "route_consumed": true
+      },
+      "log": {
+        "path": "reports/rogue-pack-probe-raw.log",
+        "bytes": 299,
+        "sha256": "af48b0fecb57bb8ce8c80ec2f9b606b681c0c6274fd6a67fd2b4e26633cb1d3a"
+      },
+      "script": {
+        "path": "/private/tmp/broxy-rogue-pck-probe/probe.gd",
+        "bytes": 1671,
+        "sha256": "88ef120ef1cbb009e680de5c6cc45bcdb9eae574215669f645894be62d927efc"
+      },
+      "via": "Isolated editor --main-pack actual exported PCK --script external builtin-only probe, formal state transactions and controlled lethal hunter hit; not OS player interaction."
+    }
+  },
+  "not_run": [
+    "Windows executable or PowerShell execution",
+    "5person human usability/difficulty playtest",
+    "Complete natural OS mouse/keyboard run",
+    "All legal high-rank build pressure matrix"
+  ],
+  "delivery": "Local Git commit only, no remote push or PR. Raw logs/screenshots/build/cache stay ignored."
+}

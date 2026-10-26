@@ -301,6 +301,9 @@ func _on_ended(victory: bool, reason: String) -> void:
 
 func hud_snapshot() -> Dictionary:
 	var value: Dictionary = sim.snapshot()
+	value["rogue"] = {"core_id": sim.run.core_id, "active_route": sim.run.active_route,
+		"hunter_alive": sim.hunter != null and sim.hunter.active and sim.hunter.hunter,
+		"hunter_defeated": sim.run.hunter_defeated}
 	if stress_mode:
 		value["benchmark"] = true
 		value["time_left"] = benchmark_time_left
@@ -456,11 +459,22 @@ func _draw_enemies() -> void:
 			var breathing: float = sin(enemy.age * 2.0 + float(enemy.uid)) * 0.015
 			var width: float = size * (1.0 + breathing)
 			var tint: Color = _enemy_tint(enemy)
+			if enemy.hunter:
+				draw_arc(enemy.position + Vector2(0, 5), enemy.radius + 8.0, 0, TAU, 28, Color("c87866"), 2.0, true)
 			draw_texture_rect(texture, Rect2(enemy.position + Vector2(-width * 0.5, -size * 0.66 + bob), Vector2(width, size)), false, tint)
+			if enemy.hunter:
+				_draw_hunter_mark(enemy, size)
 			if id == "tank" and enemy.health < enemy.max_health:
 				var origin: Vector2 = enemy.position + Vector2(-17, -size * 0.55)
 				draw_line(origin, origin + Vector2(34, 0), Color("242533"), 3.0)
 				draw_line(origin, origin + Vector2(34.0 * enemy.health / enemy.max_health, 0), Color("a9a7a3"), 2.0)
+
+func _draw_hunter_mark(enemy: CombatSim.Enemy, size: float) -> void:
+	var crest: Vector2 = enemy.position + Vector2(0, -size * 0.66 - 7)
+	draw_polyline(PackedVector2Array([crest + Vector2(-9, 4), crest + Vector2(-8, -4), crest + Vector2(-3, 0), crest + Vector2(0, -7), crest + Vector2(3, 0), crest + Vector2(8, -4), crest + Vector2(9, 4), crest + Vector2(-9, 4)]), Color("e0ba7b"), 1.5, true)
+	var origin: Vector2 = crest + Vector2(-20, 11)
+	draw_line(origin, origin + Vector2(40, 0), Color("292131"), 4.0)
+	draw_line(origin, origin + Vector2(40 * clampf(enemy.health / enemy.max_health, 0.0, 1.0), 0), Color("d79b78"), 2.0)
 
 func _enemy_tint(enemy: CombatSim.Enemy) -> Color:
 	var base: Color = Color("b4e9ed") if enemy.slow_timer > 0.0 else Color.WHITE
@@ -528,6 +542,13 @@ func _draw_effects() -> void:
 			draw_arc(effect.position, effect.radius * (0.7 + progress * 0.7), 0, TAU, 12, color, 1.5, true)
 			var ray: float = effect.radius * (0.3 + progress * 0.3)
 			draw_line(effect.position - Vector2(ray, 0), effect.position + Vector2(ray, 0), Color(color, color.a * 0.65), 1.0, true)
+		elif effect.kind == 3:
+			var radius: float = effect.radius * (0.3 + progress * 0.7)
+			draw_arc(effect.position, radius, 0, TAU, 24, color, 2.0, true)
+			for index: int in 6:
+				var direction: Vector2 = Vector2.from_angle(float(index) * TAU / 6.0)
+				draw_line(effect.position + direction * radius * 0.45, effect.position + direction * radius, Color("c9dbed", color.a), 1.5, true)
+			draw_arc(effect.position, radius * 0.55, 0, TAU, 20, Color("e4bb8c", color.a * 0.7), 1.0, true)
 		else:
 			for index: int in 5:
 				var direction: Vector2 = Vector2.from_angle(float(index) * TAU / 5.0)

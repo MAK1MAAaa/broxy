@@ -74,7 +74,7 @@ func _benchmark_signature(app: MAIN_SCRIPT) -> String:
 func _test_real_benchmark_reproducibility() -> void:
 	var profile_existed: bool = FileAccess.file_exists(GameStore.PATH)
 	var original: PackedByteArray = FileAccess.get_file_as_bytes(GameStore.PATH) if profile_existed else PackedByteArray()
-	for mode: String in ["", "--benchmark-runes", "--benchmark-content"]:
+	for mode: String in ["", "--benchmark-runes", "--benchmark-content", "--benchmark-core=frostfire", "--benchmark-core=bone_chorus"]:
 		var reference: String = ""
 		for repeat: int in 2:
 			var app = MAIN.instantiate()
@@ -86,9 +86,14 @@ func _test_real_benchmark_reproducibility() -> void:
 			app.args = PackedStringArray(["--benchmark", "--benchmark-seed=%d" % FIXED_SEED, "--seconds=300"])
 			if not mode.is_empty():
 				app.args.append(mode)
+			if mode.begins_with("--benchmark-core="):
+				app.args.append("--benchmark-content")
 			app._start_benchmark()
 			_check(app.run.summary()["seed"] == FIXED_SEED and app._benchmark and not app.store.persistent, "Real Main begins the requested benchmark with the exact report seed in an isolated profile: " + mode)
 			_check(app.world.sim.enemy_count == 300 and app.world.sim.shot_count == 600 and app.world.sim.soul_count == 200, "A fixed seed preserves the real benchmark population rather than substituting a lightweight fixture")
+			if mode.begins_with("--benchmark-core="):
+				var core: String = mode.trim_prefix("--benchmark-core=")
+				_check(app.run.core_id == core and app._benchmark_report_path == "res://reports/performance-rogue-%s.json" % core, "Core pressure exercises the selected behavior and uses a separate report from historical samples")
 			var signature: String = _benchmark_signature(app)
 			if repeat == 0:
 				reference = signature

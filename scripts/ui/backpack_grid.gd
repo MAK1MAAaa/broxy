@@ -330,6 +330,16 @@ func _make_item(item: Dictionary) -> void:
 		socket.add_theme_color_override("font_color", Color("bfa2e6"))
 		socket.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		button.add_child(socket)
+	if uid in _snapshot.get("linked_weapons", []):
+		var link := Label.new()
+		link.name = "CandleLink"
+		link.text = "↑"
+		link.position = Vector2(button.size.x - 14, 16)
+		link.add_theme_font_size_override("font_size", 12)
+		link.add_theme_color_override("font_color", Color("b7c892"))
+		link.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		button.add_child(link)
+		button.tooltip_text += "\n烛引生效：正下方引魂烛使其优先攻击生命比例最低的敌人。"
 
 func _style_item(button: Button, item: Dictionary) -> void:
 	var definition: ContentDef = _definition(item)

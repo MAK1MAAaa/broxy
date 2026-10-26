@@ -14,6 +14,7 @@ var _screenshot_clock: float = -1.0
 var _screenshot_path: String = ""
 var _benchmark: bool = false
 var _benchmark_seconds: float = 300.0
+var _benchmark_report_path: String = "res://reports/performance.json"
 var _benchmark_start: int = 0
 var _benchmark_warmup: int = 0
 var _frame_samples: Array[float] = []
@@ -49,6 +50,7 @@ func _ready() -> void:
 	add_child(ui)
 	ui.bind(run)
 	ui.set_settings(store.settings)
+	ui.set_progress(store.unlocked_starters)
 	ui.start_requested.connect(_start_run)
 	ui.next_wave_requested.connect(_next_wave)
 	ui.resume_requested.connect(_resume)
@@ -89,6 +91,9 @@ func _ready() -> void:
 			_screenshot_clock = maxf(0.5, argument.trim_prefix("--capture-delay=").to_float())
 
 func _start_run(starter: String) -> void:
+	if not store.starter_unlocked(starter):
+		ui.notify("此起始法器尚未解锁。")
+		return
 	_begin_run(starter)
 
 func _begin_run(starter: String, seed_value: int = 0) -> void:
@@ -111,7 +116,12 @@ func _next_wave() -> void:
 	ui.show_hud()
 	world.begin(run)
 	sound.play("level", -17.0)
-	ui.notify("第 %d 波 · %s" % [run.wave, GameCatalog.wave(run.wave).display_name])
+	var wave_note: String = "第 %d 波 · %s" % [run.wave, str(RogueRules.route(run.active_route).get("name", "原途"))]
+	if not run.core_id.is_empty():
+		wave_note += " · " + str(RogueRules.core(run.core_id)["name"])
+	if run.altar_choice == "accepted" and run.wave == run.altar_wave and not run.hunter_defeated:
+		wave_note += " · 追猎者现身"
+	ui.notify(wave_note)
 
 func _wave_ended(won: bool, reason: String) -> void:
 	# Deferring avoids replacing a simulation while its final signal is still on the stack.
@@ -132,8 +142,14 @@ func _finish_wave(won: bool, reason: String) -> void:
 	if not won or run.wave == GameCatalog.WAVE_DEFS.size():
 		screen = Screen.RESULT
 		store.record_run(run, won)
+		ui.set_progress(store.unlocked_starters)
 		sound.play("victory" if won else "defeat", -8.0)
 		ui.show_result(won, reason, store.best)
+		if not store.last_unlocks.is_empty():
+			var names: PackedStringArray = []
+			for id: String in store.last_unlocks:
+				names.append(GameCatalog.weapon(id).display_name)
+			ui.notify("已解锁起始法器：" + "、".join(names))
 		return
 	run.finish_wave()
 	if run.pending_upgrades > 0:
@@ -225,6 +241,7 @@ func _title() -> void:
 		world.stop()
 	if ui != null:
 		ui.hide_pause()
+		ui.set_progress(store.unlocked_starters)
 		ui.show_title(store.best)
 
 func _pause() -> void:
@@ -313,7 +330,19 @@ func _start_benchmark() -> void:
 		push_error("--benchmark-seed requires a positive integer within the signed 64-bit range")
 		_quit_game(2)
 		return
+	var core: String = ""
+	for argument: String in args:
+		if argument.begins_with("--benchmark-core="):
+			core = argument.trim_prefix("--benchmark-core=")
+			if RogueRules.core(core).is_empty():
+				push_error("--benchmark-core requires frostfire or bone_chorus")
+				_quit_game(2)
+				return
+	_benchmark_report_path = "res://reports/performance-rogue-%s.json" % core if not core.is_empty() else "res://reports/performance.json"
 	_begin_run("bone", seed_value)
+	# Diagnostic pressure bypasses shopping, so select the requested behavior
+	# directly without granting equipment or touching persistent unlocks.
+	run.core_id = core
 	_benchmark = true
 	world.stress_mode = true
 	world.rune_stress_mode = false
@@ -375,7 +404,9 @@ func _record_benchmark() -> void:
 	result["impact_draw_commands_at_end"] = impact_stats["draw_commands"]
 	result["primary_hits"] = world.sim.primary_hits
 	result["secondary_hits"] = world.sim.secondary_hits
-	var output: FileAccess = FileAccess.open("res://reports/performance.json", FileAccess.WRITE)
+	result["core_id"] = run.core_id
+	result["core_activations"] = world.sim.core_activations.duplicate()
+	var output: FileAccess = FileAccess.open(_benchmark_report_path, FileAccess.WRITE)
 	output.store_string(JSON.stringify(result, "\t"))
 	print("BENCHMARK_RESULT ", JSON.stringify(result))
 	_benchmark = false
