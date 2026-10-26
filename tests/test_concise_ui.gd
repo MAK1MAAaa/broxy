@@ -129,9 +129,9 @@ func _test_contextual_guidance() -> void:
 	_check(not _label("RuneGuide").visible, "Leaving rune selection removes the contextual line and its extra height")
 	_ui.show_hud()
 	_ui.update_hud({"health": 100, "max_health": 100, "loadout": state.loadout, "arena_name": "沉沼遗庭", "terrain_name": "", "terrain_multiplier": 1.0})
-	_check(str(_ui._hud["bag_info"].text).contains("沉沼遗庭") and not str(_ui._hud["bag_info"].text).contains("−28%"), "Safe ground shows the selected map without advertising an inactive penalty")
+	_check(not _ui._hud.has("bag_info") and _ui.find_child("HUDMapInfo", true, false) == null, "The battle HUD has no lower-right text column")
 	_ui.update_hud({"health": 100, "max_health": 100, "loadout": state.loadout, "arena_name": "沉沼遗庭", "terrain_name": "泥潭", "terrain_multiplier": 0.72})
-	_check(str(_ui._hud["bag_info"].text).contains("泥潭 −28%") and str(_ui._hud["bag_info"].text).contains("法器 1件"), "Entering real terrain can display the active movement penalty alongside the true equipment count")
+	_check(not _visible_labels(_ui._page).contains("泥潭") and not _visible_labels(_ui._page).contains("Esc暂停"), "Entering terrain never recreates the removed lower-right description")
 	_ui.show_pause()
 	_check(not _visible_labels(_ui).contains("余烬尚未熄灭"), "Pause focuses on actions without an extra slogan")
 	_ui.hide_pause()
@@ -169,32 +169,29 @@ func _test_live_hud_bounds() -> void:
 				terrain_point = Vector2(float(point[0]), float(point[1]))
 			for phase: int in 3:
 				app.world.sim.player_position = terrain_point if phase == 1 else CombatSim.ARENA.get_center()
-				var contained: bool = true
-				var text_fits: bool = true
+				var no_small_copy: bool = true
+				var notice_suppressed: bool = true
 				var slots_contained: bool = true
-				var separated: bool = true
+				var active_counts_match: bool = true
 				for frame: int in 20:
 					app.world._physics_process(1.0 / 60.0)
 					await process_frame
 					if frame < 5:
 						continue
 					var panel: Control = app.ui.find_child("RitualEquipment", true, false)
-					var info: Label = app.ui._hud["bag_info"]
+					app.ui.notify("试炼开始 · 地图与地形说明")
 					var slots: HBoxContainer = app.ui._hud["slots"]
-					contained = contained and panel.get_global_rect().grow(-6).encloses(info.get_global_rect())
-					var font: Font = info.get_theme_font("font")
-					var font_size: int = info.get_theme_font_size("font_size")
-					for line: String in info.text.split("\n"):
-						text_fits = text_fits and font.get_string_size(line, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x <= info.size.x + 0.5
+					no_small_copy = no_small_copy and not app.ui._hud.has("bag_info") and app.ui.find_child("HUDMapInfo", true, false) == null
+					notice_suppressed = notice_suppressed and not app.ui._toast.visible and app.ui._toast.text.is_empty() and app.ui._toast_timer.is_stopped()
+					active_counts_match = active_counts_match and state.loadout.size() == count
 					for child: Node in slots.get_children():
 						if child is Control:
 							slots_contained = slots_contained and panel.get_global_rect().grow(-6).encloses(child.get_global_rect())
-							separated = separated and child.get_global_rect().end.x <= info.get_global_rect().position.x
 				var context: String = "%s / %d weapons / phase %d" % [arena_id, count, phase]
-				_check(contained, "Repeated live Main HUD updates keep map/pause text within the bottom panel: " + context)
-				_check(text_fits, "Map, active terrain penalty and equipment count remain fully readable at the original font size: " + context)
+				_check(no_small_copy, "Repeated live Main HUD updates never recreate lower-right descriptions: " + context)
+				_check(notice_suppressed, "Wave messages stay hidden beneath the health bar during live updates: " + context)
 				_check(slots_contained, "Every visible equipment card and extra-weapons indicator stays in the panel: " + context)
-				_check(separated, "Equipment never overlaps the map/pause information: " + context)
+				_check(active_counts_match, "Removing HUD descriptions preserves the actual active weapon count: " + context)
 			app._title()
 			await _settle()
 	app.sound.shutdown()

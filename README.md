@@ -2,7 +2,7 @@
 
 Godot 4.7.2 普通版、带类型标注的 GDScript 开发的 macOS / Windows 单人割草原型。围绕占格背包、可升阶法器与行为符文，完成短波次战斗、经验强化、商店整理和最终 Boss。
 
-主菜单新增四地图选择：秘仪祭坛、沉沼遗庭、苍霜圣庭、余烬荒原。三张新图具有不同地貌和减速区域，同时影响玩家与敌人，离开恢复；本局八波沿用所选地图。界面移除重复小字，关键数值与风险保留，低频操作改为按钮提示。规则与验证见[地图与地形](docs/maps.md)。
+主菜单新增四地图选择：秘仪祭坛、沉沼遗庭、苍霜圣庭、余烬荒原。三张新图具有不同地貌和减速区域，同时影响玩家与敌人，离开恢复；本局八波沿用所选地图。界面移除重复小字，战斗中取消生命条下方的通知及右下角说明；关键数值与风险保留，低频操作改为按钮提示。规则与验证见[地图与地形](docs/maps.md)。
 
 武器、遗物和松散符文现在装入盒状背包。购买自动找空位，玩家手动移动、旋转和合成；两件同名同阶物品升一阶，最高三阶。初始6×4格，可付32、48魂屑扩到6×6；背包中的所有法器自动攻击，遗物直接生效。操作与数值见[秘术背包](docs/backpack.md)，专项预览使用 `res://tools/preview_backpack.gd`。
 
@@ -40,7 +40,7 @@ Godot 4.7.2 普通版、带类型标注的 GDScript 开发的 macOS / Windows �
 
 Windows x86_64入口为 `build/Embers-windows-x86_64/Embers.exe`，分发包为 `build/Embers-windows-x86_64.zip`。解压后保留同目录的 `Embers.pck` 与 `licenses/`。当前包包含遗物邻接共鸣、盒装材质、占格背包、手动三阶合成、8法器、12遗物、`engraved-06`、波内强化和玩家前景分层。上一轮包另存 `build/Embers-windows-before-resonance-133c5aa.zip`。Windows使用微软雅黑；该Windows交付的历史验收保留，当前Mac交付另见下文。
 
-最新macOS应用为 `build/Embers-terrain-macos.app`，分发包为 `build/Embers-terrain-macos-arm64.zip`，包含四地图选择、实际地形与精简界面，以及此前完整背包／共鸣／秘术抉择内容。适用于Apple Silicon、macOS 13及以上，使用本地ad-hoc签名。验证与限制见 `reports/terrain-validation.json`；旧整合包与历史验收保留。
+最新macOS应用为 `build/Embers-minimal-hud-macos.app`，分发包为 `build/Embers-minimal-hud-macos-arm64.zip`，包含四地图选择、实际地形与精简界面，以及此前完整背包／共鸣／秘术抉择内容。适用于Apple Silicon、macOS 13及以上，使用本地ad-hoc签名。本轮界面验证见 `reports/minimal-hud-validation.json`，地图与性能历史见 `reports/terrain-validation.json`；旧包保留。
 
 | 操作 | 按键 |
 | --- | --- |
@@ -121,14 +121,14 @@ python3 tools/fetch_macos_template.py
 ```sh
 ./tools/build_macos.sh
 # 另存应用，避免替换正在运行的旧版：
-BROXY_APP_PATH="$PWD/build/Embers-terrain-macos.app" ./tools/build_macos.sh
+BROXY_APP_PATH="$PWD/build/Embers-minimal-hud-macos.app" ./tools/build_macos.sh
 ```
 
 构建从官方 Universal 模板提取 arm64，生成 `build/Embers.app` 并执行 ad-hoc 签名验证。引擎许可在应用的 `Contents/Resources/licenses/` 中直接可读。对外发布前应使用自己的 Developer ID 配置签名与公证。
 
 ## 验证
 
-当前地图版460ccea已通过25913条Godot断言、32项Python与18局自动构筑。解锁后补做沉沼／白骨八法器原生压力：5秒预热＋300秒，平均88.428 FPS、P99帧间隔18.597毫秒，末尾300敌人／600弹体／200掉落，达到门槛。五次CUA观察确认窗口可见，源码／素材／已交付Mac包指纹保持；初次锁屏143历史保留。仅覆盖这一压力场景，没有重跑全套、18局或打包。范围见 `reports/terrain-performance-validation.json`。
+地图版460ccea已通过25913条Godot断言、32项Python与18局自动构筑。解锁后补做沉沼／白骨八法器原生压力：5秒预热＋300秒，平均88.428 FPS、P99帧间隔18.597毫秒，末尾300敌人／600弹体／200掉落，达到门槛。五次CUA观察确认窗口可见，源码／素材／已交付Mac包指纹保持；初次锁屏143历史保留。仅覆盖这一压力场景，没有重跑全套、18局或打包。范围见 `reports/terrain-performance-validation.json`。
 
 上一轮整合验证：53套Godot加5个额外档案入口，25418条断言与27项Python通过；新增状态／战斗／UI组合76／147／32条，原生组合UI32条通过。两核心各15局全部完成，192个波次实际包含共鸣法器。白骨八法器预热5秒、采样60秒平均95.754 FPS／P99 26.109ms通过；直接压力弹体默认共鸣0，真实共鸣组合另由行为专项与正常对局验证，未重复300秒。结果见 `reports/macos-main-integration-validation.json` 和 `reports/performance-rogue-bone_chorus.json`。
 
@@ -139,7 +139,7 @@ BROXY_APP_PATH="$PWD/build/Embers-terrain-macos.app" ./tools/build_macos.sh
 ./tools/run.sh --headless --script res://tests/simulate_runs.gd -- --seed=2026 --count=5 --rune=all --core=bone_chorus --route=balanced --altar=accept
 ```
 
-直接CLI入口`--smoke`、`--autoplay`、`--shop-preview`、`--benchmark`、`--capture-only`会在读取档案前关闭持久化；本进程的设置和成绩只留在内存，窗口标注“不保存设置与成绩”。普通启动保持原有保存行为。独立预览脚本仍各自关闭持久化。当前Embers-terrain-macos.app已包含该修复；性能报告另记录实际设置、持久化状态与本次种子。
+直接CLI入口`--smoke`、`--autoplay`、`--shop-preview`、`--benchmark`、`--capture-only`会在读取档案前关闭持久化；本进程的设置和成绩只留在内存，窗口标注“不保存设置与成绩”。普通启动保持原有保存行为。独立预览脚本仍各自关闭持久化。当前Embers-minimal-hud-macos.app已包含该修复；性能报告另记录实际设置、持久化状态与本次种子。
 
 ```sh
 ./tools/test.sh

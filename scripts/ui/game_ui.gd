@@ -329,9 +329,10 @@ func _refresh_arena_selection() -> void:
 
 func show_hud() -> void:
 	_set_screen("hud")
+	_toast.text = ""
+	_toast_timer.stop()
 	_hud.clear()
 	_hud_loadout_key = ""
-	_hud["arena_name"] = str(ArenaCatalog.definition(run.arena_id if run != null else _arena_id)["name"])
 	var top := PanelContainer.new()
 	top.name = "RitualStatus"
 	top.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
@@ -424,19 +425,7 @@ func show_hud() -> void:
 	slots.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	bottom_row.add_child(slots)
 	_hud["slots"] = slots
-	# Reserve a stable HUD column before its first live text update, rather than
-	# letting map/terrain labels change the equipment row's available width.
-	var map_info := Control.new()
-	map_info.name = "HUDMapInfo"
-	map_info.custom_minimum_size.x = 240
-	map_info.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	bottom_row.add_child(map_info)
-	var help := _label("", 15, MUTED)
-	help.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	help.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	help.clip_text = true
-	_hud["bag_info"] = help
-	map_info.add_child(help)
+
 
 
 func update_hud(snapshot: Dictionary) -> void:
@@ -475,12 +464,6 @@ func update_hud(snapshot: Dictionary) -> void:
 	_hud["boss_bar"].value = boss_health
 	var loadout: Array = snapshot.get("loadout", [])
 	var key := str(loadout)
-	if _hud.has("bag_info") and run != null:
-		var arena_name: String = str(snapshot.get("arena_name", _hud["arena_name"]))
-		var terrain_name: String = str(snapshot.get("terrain_name", ""))
-		var terrain_multiplier: float = float(snapshot.get("terrain_multiplier", 1.0))
-		var terrain_text: String = " · %s −%d%%" % [terrain_name, roundi((1.0 - terrain_multiplier) * 100.0)] if not terrain_name.is_empty() and terrain_multiplier < 1.0 else ""
-		_hud["bag_info"].text = "%s%s\n法器 %d件 · Esc暂停" % [arena_name, terrain_text, loadout.size()]
 	if key != _hud_loadout_key:
 		_hud_loadout_key = key
 		_update_hud_slots(loadout)
@@ -694,40 +677,24 @@ func _damage_contributions() -> Array[Dictionary]:
 func notify(message: String) -> void:
 	if _toast == null:
 		return
-	_toast.text = message
 	if _screen == "hud":
-		# The player's art, orbiting weapons and shake extend above its collision
-		# bounds. Use the status panel's spare row, alongside the boss meter.
-		_toast.add_theme_font_size_override("font_size", 13)
-		var style := _box(PANEL_LIGHT, Color(GOLD, 0.55))
-		style.content_margin_left = 6
-		style.content_margin_right = 6
-		style.content_margin_top = 0
-		style.content_margin_bottom = 0
-		_toast.add_theme_stylebox_override("normal", style)
-		_toast.clip_text = true
-		_toast.max_lines_visible = 1
-		_toast.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-		_toast.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
-		_toast.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-		_toast.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT)
-		_toast.offset_left = 54
-		_toast.offset_right = 690
-		_toast.offset_top = 62
-		_toast.offset_bottom = 82
-	else:
-		_toast.add_theme_font_size_override("font_size", 16)
-		_toast.add_theme_stylebox_override("normal", _box(PANEL_LIGHT, GOLD))
-		_toast.clip_text = false
-		_toast.max_lines_visible = -1
-		_toast.text_overrun_behavior = TextServer.OVERRUN_NO_TRIMMING
-		_toast.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		_toast.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-		_toast.set_anchors_and_offsets_preset(Control.PRESET_CENTER_BOTTOM)
-		_toast.offset_left = -430
-		_toast.offset_right = 430
-		_toast.offset_top = -218
-		_toast.offset_bottom = -178
+		_toast.hide()
+		_toast.text = ""
+		_toast_timer.stop()
+		return
+	_toast.text = message
+	_toast.add_theme_font_size_override("font_size", 16)
+	_toast.add_theme_stylebox_override("normal", _box(PANEL_LIGHT, GOLD))
+	_toast.clip_text = false
+	_toast.max_lines_visible = -1
+	_toast.text_overrun_behavior = TextServer.OVERRUN_NO_TRIMMING
+	_toast.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_toast.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	_toast.set_anchors_and_offsets_preset(Control.PRESET_CENTER_BOTTOM)
+	_toast.offset_left = -430
+	_toast.offset_right = 430
+	_toast.offset_top = -218
+	_toast.offset_bottom = -178
 	_toast.show()
 	_toast_timer.start(2.8)
 

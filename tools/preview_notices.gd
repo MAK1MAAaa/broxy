@@ -26,7 +26,7 @@ func _preview() -> void:
 		quit(2)
 		return
 	root.size = Vector2i(1280, 720)
-	root.title = "秘术余烬 · 通知避让验证（固定场景，非实际对局）"
+	root.title = "秘术余烬 · 简洁HUD验证（固定场景，非实际对局）"
 	var state := RunState.new()
 	state.begin(20261022, "bone")
 	if view == "boss":
@@ -50,11 +50,11 @@ func _preview() -> void:
 	ui.bind(state)
 	ui.show_hud()
 	ui.update_hud(world.hud_snapshot())
+	var before: String = JSON.stringify([state.summary(), str(state.rng.state), str(world.sim.rng.state), world.sim.snapshot()])
 	ui.notify("移动躲避 · 法器自动攻击 · 收集魂屑，波间改装" if view != "long" else "这是一段很长的战斗提示。".repeat(40) + "\n另一行不应撑大通知或遮挡角色。")
-	ui._toast_timer.stop()
 	world.queue_redraw()
 	var caption := Label.new()
-	caption.text = "固定通知验证 · 角色位于上边界 · 非实际对局 · " + view
+	caption.text = "固定简洁HUD验证 · 角色位于上边界 · 非实际对局 · " + view
 	caption.position = Vector2(24, 0)
 	caption.add_theme_font_size_override("font_size", 11)
 	caption.add_theme_color_override("font_color", GameUI.MUTED)
@@ -66,7 +66,15 @@ func _preview() -> void:
 	if destination.is_empty():
 		destination = "res://reports/notice-" + view + ".png"
 	var result: Error = root.get_texture().get_image().save_png(destination)
-	var notice: Rect2 = ui._toast.get_global_rect()
 	var boss: Rect2 = ui._hud["boss"].get_global_rect()
-	print("NOTICE_PREVIEW ", JSON.stringify({"view": view, "result": result, "notice": [notice.position.x, notice.position.y, notice.size.x, notice.size.y], "boss": [boss.position.x, boss.position.y, boss.size.x, boss.size.y], "boss_visible": ui._hud["boss"].visible, "player": [world.sim.player_position.x, world.sim.player_position.y], "persistent": false}))
-	quit(0 if result == OK else 1)
+	var unchanged: bool = before == JSON.stringify([state.summary(), str(state.rng.state), str(world.sim.rng.state), world.sim.snapshot()])
+	var clean_hud: bool = not ui._toast.visible and ui._toast.text.is_empty() and ui._toast_timer.is_stopped() and ui.find_child("HUDMapInfo", true, false) == null and not ui._hud.has("bag_info")
+	var boss_correct: bool = (world.sim.boss != null) == bool(ui._hud["boss"].visible)
+	print("NOTICE_PREVIEW ", JSON.stringify({"view": view, "result": result, "notice_visible": ui._toast.visible,
+		"notice_text_empty": ui._toast.text.is_empty(), "notice_timer_stopped": ui._toast_timer.is_stopped(),
+		"right_corner_copy_absent": ui.find_child("HUDMapInfo", true, false) == null and not ui._hud.has("bag_info"),
+		"clean_hud": clean_hud, "state_unchanged": unchanged,
+		"boss": [boss.position.x, boss.position.y, boss.size.x, boss.size.y], "boss_visible": ui._hud["boss"].visible,
+		"boss_correct": boss_correct, "player": [world.sim.player_position.x, world.sim.player_position.y], "persistent": false}))
+	sound.shutdown()
+	quit(0 if result == OK and clean_hud and unchanged and boss_correct else 1)
