@@ -31,6 +31,11 @@ func _ready() -> void:
 	# VSync schedules presentation; a second 60 Hz software limiter can miss vblank.
 	Engine.max_fps = 0
 	args = OS.get_cmdline_user_args()
+	var selected_arena: String = _arena_from_args(args)
+	if selected_arena.is_empty():
+		push_error("--arena requires reliquary, mire, glacier, or ashland")
+		get_tree().quit(2)
+		return
 	# Direct CLI validation must be as isolated as the standalone preview fixtures.
 	# Preserve a caller's explicit persistent=false even for ordinary startup.
 	for diagnostic: String in ["--smoke", "--autoplay", "--shop-preview", "--benchmark", "--capture-only"]:
@@ -49,6 +54,7 @@ func _ready() -> void:
 	ui = GameUI.new()
 	add_child(ui)
 	ui.bind(run)
+	ui.set_selected_arena(selected_arena)
 	ui.set_settings(store.settings)
 	ui.set_progress(store.unlocked_starters)
 	ui.start_requested.connect(_start_run)
@@ -100,12 +106,12 @@ func _begin_run(starter: String, seed_value: int = 0) -> void:
 	_invalidate_combat_upgrades()
 	get_tree().paused = false
 	paused = false
-	run.begin(seed_value if seed_value > 0 else int(Time.get_unix_time_from_system()) ^ Time.get_ticks_usec(), starter)
+	run.begin(seed_value if seed_value > 0 else int(Time.get_unix_time_from_system()) ^ Time.get_ticks_usec(), starter, ui.selected_arena())
 	screen = Screen.COMBAT
 	ui.show_hud()
 	world.begin(run)
 	sound.play("level", -15.0)
-	ui.notify("移动躲避 · 自动攻击 · 升级暂停选择，波间改装")
+	ui.notify(str(ArenaCatalog.definition(run.arena_id)["name"]) + " · 试炼开始")
 
 func _next_wave() -> void:
 	if screen != Screen.SHOP or paused or get_tree().paused:
@@ -306,6 +312,17 @@ func _capture() -> void:
 	if "--smoke" in args or "--capture-only" in args:
 		_quit_game(0 if result == OK else 1)
 
+static func _arena_from_args(arguments: PackedStringArray) -> String:
+	var selected: String = "reliquary"
+	for argument: String in arguments:
+		if argument == "--arena":
+			return ""
+		if argument.begins_with("--arena="):
+			selected = argument.trim_prefix("--arena=")
+			if not ArenaCatalog.IDS.has(selected):
+				return ""
+	return selected
+
 static func _benchmark_seed_from_args(arguments: PackedStringArray) -> int:
 	var seed_value: int = 0
 	for argument: String in arguments:
@@ -340,6 +357,8 @@ func _start_benchmark() -> void:
 				return
 	_benchmark_report_path = "res://reports/performance-rogue-%s.json" % core if not core.is_empty() else "res://reports/performance.json"
 	_begin_run("bone", seed_value)
+	if run.arena_id != "reliquary":
+		_benchmark_report_path = "res://reports/performance-arena-%s%s.json" % [run.arena_id, "-" + core if not core.is_empty() else ""]
 	# Diagnostic pressure bypasses shopping, so select the requested behavior
 	# directly without granting equipment or touching persistent unlocks.
 	run.core_id = core
@@ -395,6 +414,7 @@ func _record_benchmark() -> void:
 	result["settings"] = store.settings.duplicate()
 	result["persistent_profile"] = store.persistent
 	result["run_seed"] = run.summary()["seed"]
+	result["arena_id"] = run.arena_id
 	result["rune_visual_peak"] = _peak_rune_flashes
 	var impact_stats: Dictionary = world._impact_painter.get_stats()
 	result["impact_visual_revision"] = "primary-impact-v1"

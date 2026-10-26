@@ -17,6 +17,7 @@ var _policy_version: String = ""
 var _core: String = "none"
 var _route: String = "balanced"
 var _altar: String = "skip"
+var _arena: String = "reliquary"
 
 func _initialize() -> void:
 	for argument: String in OS.get_cmdline_user_args():
@@ -34,6 +35,12 @@ func _initialize() -> void:
 			_route = argument.trim_prefix("--route=")
 		elif argument.begins_with("--altar="):
 			_altar = argument.trim_prefix("--altar=")
+		elif argument.begins_with("--arena="):
+			_arena = argument.trim_prefix("--arena=")
+	if not ArenaCatalog.IDS.has(_arena):
+		push_error("--arena must be reliquary, mire, glacier, or ashland")
+		quit(2)
+		return
 	if _core not in ["none", "frostfire", "bone_chorus"] or RogueRules.route(_route).is_empty() or _altar not in ["accept", "skip"]:
 		push_error("Use --core=none|frostfire|bone_chorus --route=balanced|swarm|bulwark --altar=accept|skip")
 		quit(2)
@@ -58,6 +65,7 @@ func _initialize() -> void:
 func _content_version() -> String:
 	var sources: Array[String] = ["res://scripts/core/run_state.gd", "res://scripts/core/backpack_inventory.gd", "res://scripts/core/backpack_resonance.gd", "res://scripts/combat/combat_sim.gd", "res://scripts/data/content_def.gd", "res://scripts/data/game_catalog.gd", "res://scripts/data/rune_rules.gd", "res://scripts/data/rogue_rules.gd", "res://scripts/main.gd"]
 	var definitions: Array[ContentDef] = GameCatalog.weapons()
+	sources.append_array(["res://scripts/core/arena_catalog.gd", "res://data/arenas.json"])
 	definitions.append_array(GameCatalog.runes())
 	definitions.append_array(GameCatalog.relics())
 	definitions.append_array(GameCatalog.enemies())
@@ -72,7 +80,7 @@ func _content_version() -> String:
 
 func _play_run(seed_value: int, rune_id: String) -> Dictionary:
 	var state: RunState = RunState.new()
-	state.begin(seed_value, "bone")
+	state.begin(seed_value, "bone", _arena)
 	var trace: Array[Dictionary] = []
 	var shop_observations: Array[Dictionary] = []
 	var wave_results: Array[Dictionary] = []
@@ -122,6 +130,7 @@ func _play_run(seed_value: int, rune_id: String) -> Dictionary:
 		"seed": seed_value, "balance_version": _balance_version, "policy_version": _policy_version,
 		"policy_change_note": POLICY_CHANGE_NOTE, "shop_observation_schema_version": SHOP_OBSERVATION_SCHEMA_VERSION,
 		"rune": rune_id, "wave": state.wave, "won": won, "kills": state.kills, "gold": state.gold,
+		"arena_id": state.arena_id,
 		"elapsed": snappedf(state.elapsed, 0.001), "reason": reason,
 		"equipped_target_runes": equipped_runes, "loadout": state.loadout.duplicate(true),
 		"relic_counts": state.relic_counts.duplicate(true), "wave_results": wave_results, "trace": trace,

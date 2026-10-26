@@ -1,0 +1,172 @@
+{
+  "schema_version": 1,
+  "created_at_utc": "2026-10-26T16:39:40.411813+00:00",
+  "base_commit": "8a0c684dcc91e3e6c5b6d89b10a7ab88d5cc4d71",
+  "change": "Remove battle notifications below the health bar and lower-right map/terrain/count/pause copy. Combat clears text and stops its timer; shop feedback remains.",
+  "source": [
+    {
+      "path": "scripts/ui/game_ui.gd",
+      "bytes": 112359,
+      "sha256": "2029dda083fd90f91f91a22d8f2efa81fa9f7faf956d006af8ab39d88c455afb"
+    },
+    {
+      "path": "tests/test_notifications.gd",
+      "bytes": 10368,
+      "sha256": "e3571c032d6c5770b4f6602bf34b58dd290288d8b57ac803909cf9fe8bbb3fd0"
+    },
+    {
+      "path": "tests/test_ui.gd",
+      "bytes": 33304,
+      "sha256": "2a6f1cb0152dd660a041fd53c736497ce6e2c67dc79686014fa180f046a08b51"
+    },
+    {
+      "path": "tests/test_concise_ui.gd",
+      "bytes": 10687,
+      "sha256": "12f9cc107c55d90be079f9ebd0446051d47bfcb2d8fb2bfd6d0ca0d753fe1c08"
+    },
+    {
+      "path": "tests/test_backpack_ui.gd",
+      "bytes": 17113,
+      "sha256": "5cb982a62c63d4389b1a448620a2c2c214f8478aabe5d64de6551d6c3e4e8f53"
+    },
+    {
+      "path": "tools/preview_notices.gd",
+      "bytes": 3866,
+      "sha256": "cea38795b8069498272e32706ea9b98e63ce88834a2e47e2062eb80ea19bad0e"
+    }
+  ],
+  "tests": {
+    "suites": 56,
+    "extra_profile_processes": 5,
+    "assertions": 25917,
+    "failures": 0,
+    "python_tests": 32,
+    "python_failures": 0,
+    "engine_errors": 0,
+    "exit_code": 0,
+    "log": {
+      "path": "reports/minimal-hud-tests-raw.log",
+      "bytes": 10281,
+      "sha256": "e266881f4aefad75c6ccebfa7aa83d32a0045efb7f3e4636b2018afb69b16db4"
+    },
+    "updated_suites": {
+      "UI": 221,
+      "Notifications": 69,
+      "BackpackUI": 90,
+      "ConciseUI": 257
+    }
+  },
+  "native": {
+    "combat_image": {
+      "path": "reports/minimal-hud-combat.png",
+      "bytes": 247082,
+      "sha256": "4e0507d4d1b853df3b6943b5b3b76d25c2e48f9a52c642bc0132c48585167940"
+    },
+    "combat_log": {
+      "path": "reports/minimal-hud-combat-raw.log",
+      "bytes": 236,
+      "sha256": "4b0d95a65378357fc64af993b9872cae6ec2b0d6d475e5981b1edc1a30f91e6b"
+    },
+    "boss_image": {
+      "path": "reports/minimal-hud-boss.png",
+      "bytes": 361187,
+      "sha256": "15a1ff9850d543c468532179a7b7dded76e699af61d9724d0488a7f2af5a6865"
+    },
+    "boss_log": {
+      "path": "reports/minimal-hud-boss-raw.log",
+      "bytes": 453,
+      "sha256": "767ac180ab23bd7d2339265569ed4daefb5016f3e04a71e6e144ca313b3d1164"
+    },
+    "boss_fixture": {
+      "boss": [
+        720.0,
+        62.0,
+        506.0,
+        20.0
+      ],
+      "boss_correct": true,
+      "boss_visible": true,
+      "clean_hud": true,
+      "notice_text_empty": true,
+      "notice_timer_stopped": true,
+      "notice_visible": false,
+      "persistent": false,
+      "player": [
+        640.0,
+        156.0
+      ],
+      "result": 0,
+      "right_corner_copy_absent": true,
+      "state_unchanged": true,
+      "view": "boss"
+    },
+    "review": "Root inspected normal combat and fixed boss frames. Both requested text areas are empty; existing stats/equipment and boss health remain. Fixed boss positioning is not a natural run or human playtest."
+  },
+  "package": {
+    "app_path": "build/Embers-minimal-hud-macos.app",
+    "zip": {
+      "path": "build/Embers-minimal-hud-macos-arm64.zip",
+      "bytes": 30206935,
+      "sha256": "88fef94cd834b7c3741eec76ba312c834c59874908a3a887ce974043171f2980"
+    },
+    "binary": {
+      "path": "build/Embers-minimal-hud-macos.app/Contents/MacOS/秘术余烬",
+      "bytes": 82421616,
+      "sha256": "735721cd366030ac09f2351b63a2869979eb05bec98c07687c75c74eda856a12"
+    },
+    "pck": {
+      "path": "build/Embers-minimal-hud-macos.app/Contents/Resources/秘术余烬.pck",
+      "bytes": 1610824,
+      "sha256": "68942444f39c0ae5bbce065b0a7795dbb24006dd476f23bd34dd49c8f23964ae"
+    },
+    "plist": {
+      "path": "build/Embers-minimal-hud-macos.app/Contents/Info.plist",
+      "bytes": 1742,
+      "sha256": "b809b8ae0b41a5f3626e6183575e8d71ac705aa940e661ca8505101aa4da8640"
+    },
+    "architecture": "arm64",
+    "strict_adhoc_signature": true,
+    "build_log": {
+      "path": "reports/minimal-hud-build-raw.log",
+      "bytes": 28389,
+      "sha256": "4d249b1669016e0582d1719c7258d7db53defdaf730e4af66a4cd444f0edba0c"
+    },
+    "zip_log": {
+      "path": "reports/minimal-hud-zip-raw.log",
+      "bytes": 3258,
+      "sha256": "d6cd95eca68a039dcddeb9d628c22791def2f997b230179345fb5341c48ce64c"
+    },
+    "actual_app_image": {
+      "path": "reports/minimal-hud-app.png",
+      "bytes": 243855,
+      "sha256": "fef090ddf9c18136436e0e49ba185d69532aab7fcce619d29c18c5f09c7deb3b"
+    },
+    "actual_app_log": {
+      "path": "reports/minimal-hud-app-raw.log",
+      "bytes": 233,
+      "sha256": "00a8034074f79793b6515bfa2fa79b448e84f51600ae6d5992146a9b55f70e57"
+    },
+    "exported_ui_probe": {
+      "combat_clean": true,
+      "controlled_ui_probe": true,
+      "corner_absent": true,
+      "passed": true,
+      "persistent_profile": false,
+      "shop_feedback": true,
+      "transition_clean": true
+    },
+    "exported_ui_probe_log": {
+      "path": "reports/minimal-hud-pack-raw.log",
+      "bytes": 252,
+      "sha256": "4195c8cffd2dbfc40d376203860ad1e847c3d2bc3920d3507d7ce6ba3b2ee50f"
+    },
+    "zip_contents_match_app": true
+  },
+  "gameplay_and_assets_unchanged": true,
+  "not_run": [
+    "New five-minute performance sample",
+    "Normal-run simulation",
+    "Windows build or execution"
+  ],
+  "historical_performance": "reports/terrain-performance-validation.json records the previous460ccea sample; not a new performance result for this HUD change."
+}

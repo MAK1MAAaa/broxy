@@ -49,7 +49,7 @@ func _run_tests() -> void:
 	_check(_buttons_inside(ui), "Title buttons fit in 1280 by 720")
 	_check(_text_inside(ui), "Title text remains inside the reference viewport without vertical clipping")
 	var illustration_space: Control = ui.find_child("IllustrationBreathingSpace", true, false)
-	_check(illustration_space != null and illustration_space.size.x >= 400 and illustration_space.size.y >= 300, "Title reserves a substantial unobstructed area for its illustration")
+	_check(illustration_space != null and illustration_space.size.x >= 400 and illustration_space.size.y >= 260, "Title reserves an unobstructed illustration area above the two-row map selector")
 	_check(_decorations_ignore_input(ui), "Title ornamentation never intercepts input or runs per-frame processing")
 	_press(ui, GameCatalog.weapon("ember").display_name)
 	await _settle()
@@ -74,12 +74,10 @@ func _run_tests() -> void:
 	ui.notify("这是用于验证战斗提示固定宽度的长文本。".repeat(30))
 	await _settle()
 	var hud_notice: Label = ui.get("_toast")
-	var notice_rect: Rect2 = hud_notice.get_global_rect()
 	var boss_status: Control = ui.get("_hud")["boss"]
-	var current_status: Control = ui.find_child("RitualStatus", true, false)
-	_check(current_status.get_global_rect().encloses(notice_rect) and not notice_rect.intersects(CombatSim.ARENA), "Battle notifications stay inside the status panel above the playable arena")
-	_check(boss_status.visible and not notice_rect.intersects(boss_status.get_global_rect()), "Battle notifications never overlap a visible boss status bar")
-	_check(hud_notice.max_lines_visible == 1 and hud_notice.clip_text and hud_notice.text_overrun_behavior == TextServer.OVERRUN_TRIM_ELLIPSIS, "Long battle notifications use one visible ellipsized line inside the status panel")
+	_check(not hud_notice.visible and hud_notice.text.is_empty(), "Battle notifications leave no visible or retained text below the health bar")
+	_check(boss_status.visible and not boss_status.get_global_rect().intersects(CombatSim.ARENA), "Suppressing battle notifications preserves the visible Boss status above the playable arena")
+	_check(ui._toast_timer.is_stopped() and is_zero_approx(ui._toast_timer.time_left), "Ignored long battle notifications never start a timer")
 	_check(hud_notice.mouse_filter == Control.MOUSE_FILTER_IGNORE, "Battle notifications never intercept movement or targeting input")
 	ui.show_pause()
 	paused = true
@@ -320,7 +318,7 @@ func _test_boss_hud(ui: GameUI, loadout: Array) -> void:
 	await _settle()
 	_check(ui.find_child("RitualStatus", true, false).get_global_rect() == status_before and ui.find_child("RitualEquipment", true, false).get_global_rect() == equipment_before and _text_inside(ui), "Boss instructions keep the original readable HUD footprint")
 	var notice: Label = ui._toast
-	_check(not notice.get_global_rect().intersects(boss_status.get_global_rect()) and not notice.get_global_rect().intersects(CombatSim.ARENA), "Boss instructions preserve safe notification space above the arena")
+	_check(not notice.visible and notice.text.is_empty() and ui._toast_timer.is_stopped(), "Boss instructions leave no notification text or timer in the clean HUD")
 	for boundary: Array in [[10.001, "限时  00:11", false], [10.0, "限时  00:10", true], [9.99, "限时  00:10", true], [0.0, "限时  00:00", true]]:
 		boss_snapshot["time_left"] = float(boundary[0])
 		ui.update_hud(boss_snapshot)
@@ -365,7 +363,7 @@ func _test_boss_hud(ui: GameUI, loadout: Array) -> void:
 	_check(wave_label.text == "击败首领" and timer_label.text == "限时  00:10" and boss_status.visible and timer_label.get_theme_color("font_color").is_equal_approx(GameUI.CORAL), "A fresh boss snapshot restores urgency after HUD reconstruction")
 	ui.notify("重建后的首领提示")
 	await _settle()
-	_check(ui.find_child("RitualStatus", true, false).get_global_rect() == status_before and ui.find_child("RitualEquipment", true, false).get_global_rect() == equipment_before and not notice.get_global_rect().intersects(boss_status.get_global_rect()), "HUD reconstruction retains the original layout and notification separation")
+	_check(ui.find_child("RitualStatus", true, false).get_global_rect() == status_before and ui.find_child("RitualEquipment", true, false).get_global_rect() == equipment_before and not notice.visible and notice.text.is_empty() and ui._toast_timer.is_stopped(), "HUD reconstruction retains the original panel layout and suppresses Boss notification text")
 	ui.update_hud({"health": 100, "max_health": 100, "wave": 1, "time_left": 45.0, "loadout": loadout})
 	_check(wave_label.text == "波次  1 / 8" and timer_label.text == "剩余  00:45" and timer_label.get_theme_color("font_color").is_equal_approx(GameUI.BONE), "Ordinary snapshots fully restore timer labels and color after the boss sequence")
 

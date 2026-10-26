@@ -1,0 +1,55 @@
+[
+  {
+    "id": "reliquary",
+    "name": "秘仪祭坛",
+    "subtitle": "古石回廊 · 平坦地面",
+    "texture": "res://assets/arena.svg",
+    "preview_color": "8c819c",
+    "terrain_name": "石板",
+    "move_multiplier": 1.0,
+    "zones": []
+  },
+  {
+    "id": "mire",
+    "name": "沉沼遗庭",
+    "subtitle": "苔石与泥潭 · 泥潭移速 −28%",
+    "texture": "res://assets/maps/mire.svg",
+    "preview_color": "83a894",
+    "terrain_name": "泥潭",
+    "move_multiplier": 0.72,
+    "zones": [
+      {"center": [310, 275], "radius": [150, 68]},
+      {"center": [970, 440], "radius": [155, 78]},
+      {"center": [500, 505], "radius": [125, 55]}
+    ]
+  },
+  {
+    "id": "glacier",
+    "name": "苍霜圣庭",
+    "subtitle": "霜裂石台 · 霜砂移速 −16%",
+    "texture": "res://assets/maps/glacier.svg",
+    "preview_color": "8ab4c7",
+    "terrain_name": "霜砂",
+    "move_multiplier": 0.84,
+    "zones": [
+      {"center": [340, 455], "radius": [170, 78]},
+      {"center": [760, 220], "radius": [170, 52]},
+      {"center": [1030, 400], "radius": [115, 72]}
+    ]
+  },
+  {
+    "id": "ashland",
+    "name": "余烬荒原",
+    "subtitle": "玄武岩与松灰 · 松灰移速 −12%",
+    "texture": "res://assets/maps/ashland.svg",
+    "preview_color": "ba9172",
+    "terrain_name": "松灰",
+    "move_multiplier": 0.88,
+    "zones": [
+      {"center": [245, 230], "radius": [110, 50]},
+      {"center": [490, 480], "radius": [140, 64]},
+      {"center": [900, 285], "radius": [150, 75]},
+      {"center": [1090, 515], "radius": [95, 45]}
+    ]
+  }
+]

@@ -184,6 +184,7 @@ func step(delta: float, movement: Vector2) -> void:
 	run.elapsed += delta
 	invulnerability = maxf(0.0, invulnerability - delta)
 	player_velocity = movement.limit_length() * run.stat("move_speed")
+	player_velocity *= ArenaCatalog.movement_multiplier(run.arena_id, player_position)
 	player_position = clamp_point(player_position + player_velocity * delta, 16.0)
 	if movement.length_squared() > 0.01:
 		player_direction = movement.normalized()
@@ -327,6 +328,7 @@ func _update_enemies(delta: float) -> void:
 				speed *= RogueRules.HUNTER_SPEED_FACTOR
 			if enemy.slow_timer > 0.0:
 				speed *= enemy.slow_factor
+			speed *= ArenaCatalog.movement_multiplier(run.arena_id, enemy.position)
 			# A small deterministic orbit separates packs without an O(n²) rigid-body solver.
 			var side: float = sin(float(enemy.uid) * 2.39996 + enemy.age * 0.35) * 0.24
 			enemy.velocity = direction.rotated(side) * speed
@@ -344,6 +346,7 @@ func _update_boss(enemy: Enemy, direction: Vector2, delta: float) -> void:
 	var speed: float = enemy.definition.speed
 	if enemy.slow_timer > 0.0:
 		speed *= enemy.slow_factor
+	speed *= ArenaCatalog.movement_multiplier(run.arena_id, enemy.position)
 	enemy.position += displacement.limit_length(speed * delta)
 	if enemy.action_timer > 0.0:
 		return
