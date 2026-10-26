@@ -1,0 +1,281 @@
+{
+  "schema_version": 1,
+  "scope": "Relic edge adjacency resonance and boxed inventory materials",
+  "created_at_utc": "2026-10-25T02:09:26.221044+00:00",
+  "source_base_commit": "b20a71404779e0d0437c1145e246bdbbf13c10dc",
+  "engine": "4.7.2.stable.official.ed1daf0bf",
+  "tests": {
+    "godot_suites": 45,
+    "additional_profile_invocations": 5,
+    "godot_assertions": 24688,
+    "python_tests": 27,
+    "native_assertions": {
+      "backpack_flow": 18,
+      "backpack_ui": 90,
+      "enemy_telegraphs": 134,
+      "relic_comparison": 220,
+      "resonance_combat": 68,
+      "resonance_grid": 184,
+      "resonance_rules": 430,
+      "resonance_ui": 32,
+      "rune_equip_comparison": 170
+    },
+    "all_passed": true,
+    "final_combat_headless_and_native_repeated_after_actual_blast_check": true
+  },
+  "rules": {
+    "relic_rank_bonuses": [
+      0.03,
+      0.06,
+      0.12
+    ],
+    "maximum_per_weapon_bonus": 0.18,
+    "positive_shared_edge_only": true,
+    "one_contribution_per_relic_uid": true,
+    "no_chain_or_loose_rune_bonus": true,
+    "damage_formula": "base * global_damage * weapon_rank_multiplier * (1 + local_bonus)",
+    "geometry_evaluated_on_inventory_or_preview_events": true
+  },
+  "simulation": {
+    "runs": 30,
+    "wins": 30,
+    "losses": 0,
+    "seeds": [
+      2026,
+      2035
+    ],
+    "runes": [
+      "pierce",
+      "bounce",
+      "blast"
+    ],
+    "core_versions": [
+      "prototype-0.1.0+19514fc02a89"
+    ],
+    "policy_versions": [
+      "orbit-avoid-v1/backpack-shop-v2/upgrade-timing-v2+5567b9f92e50"
+    ],
+    "policy_preferences_preserved": true,
+    "policy_does_not_optimize_adjacency": true,
+    "trajectory_equivalent_to_previous_balance": false,
+    "actions": {
+      "upgrade": 416,
+      "wave_income": 210,
+      "buy": 776,
+      "reroll": 330,
+      "expand_backpack": 60,
+      "merge": 208,
+      "equip": 144
+    },
+    "live_upgrades": 308,
+    "waves_with_resonant_weapons": 186,
+    "max_resonant_weapons_in_a_wave": 6,
+    "final_supported_weapons": 136,
+    "final_weapon_count": 157,
+    "max_final_bonus": 0.18,
+    "raw_sha256": "4b226f65464ff75c6cc93670bc8731587d4965114426454df2535d83a8dc547e"
+  },
+  "performance": {
+    "seconds": 60,
+    "average_fps": 116.693574953077,
+    "p99_frame_ms": 18.183,
+    "samples": 7003,
+    "end_entities": [
+      300,
+      600,
+      200
+    ],
+    "passed": true,
+    "scope": "Existing catalog stress fixture uses default zero resonance; actual resonance is covered by stored-inventory dispatch and collision suites",
+    "new_300_second_sample": false
+  },
+  "visual": {
+    "fixtures": {
+      "linked": {
+        "bonus": 0.09,
+        "used_cells": 16,
+        "source_uids": [
+          4,
+          5,
+          6
+        ],
+        "capture_sha256": "f5d14d9c81641fb89ed15521376b3cc7b3a821f5868dd8c360473a4c35de8c3e"
+      },
+      "unlinked": {
+        "bonus": 0.0,
+        "used_cells": 16,
+        "source_uids": [],
+        "capture_sha256": "f86c864ded3e1124f3689169dbff2de623ecdf1d5875c20aef1b8df95f6a9714"
+      },
+      "rotated": {
+        "bonus": 0.06,
+        "used_cells": 16,
+        "source_uids": [
+          4,
+          5
+        ],
+        "capture_sha256": "4b7a4f38c7c9379e255bc0b4e9b7d8d3dd628f74157e7f97139c13ffcc6568d1"
+      },
+      "full": {
+        "bonus": 0.18,
+        "used_cells": 36,
+        "source_uids": [
+          4,
+          5,
+          6,
+          11,
+          15,
+          18,
+          21,
+          22
+        ],
+        "capture_sha256": "52cde9dcb3745a7596e9a461ef8b8d0986efe5c47da854b7c6634ce26a6c07aa"
+      }
+    },
+    "root_and_independent_agent_reviewed": true,
+    "physical_rotation_and_relic_move_verified": true,
+    "fixed_oversized_rune_badge_and_added_18_bounds_checks": true,
+    "new_static_assets": 0,
+    "runtime_material_revision": "relic-resonance-v1",
+    "blocking_findings": 0
+  },
+  "review": {
+    "core_combat_independent_read_only_review": "No blocking findings",
+    "ui_grid_independent_read_only_review": "No blocking findings; numeric previews, source IDs, input transparency and 720p layout checked"
+  },
+  "preserved_assets_and_historical_reports": 350,
+  "distribution": {
+    "zip_crc_passed": true,
+    "pe_x86_64_valid": true,
+    "native_exe_smoke_passed": true,
+    "previous_package_preserved": true,
+    "sha256": {
+      "build/Embers-windows-x86_64/Embers.exe": "d34d36f3be1a6c49c56525ae86469b92e4f417ddf0b43cf00dd80c385c4b0562",
+      "build/Embers-windows-x86_64/Embers.pck": "6d5c0ee044ba461192937af84f9d26c41c49287d8a1342b7d3959c814501f0f9",
+      "build/Embers-windows-x86_64.zip": "d7d8ea1d634ae2d775cf2ef87dfaf44735d10b1c0f4aa4fc3abcbaeab9db59f9",
+      "build/Embers-windows-before-resonance-133c5aa.zip": "7130777e66e6240d24d60f0f5495a19502bf38ce39188885603cc7bf32ff9fa0"
+    }
+  },
+  "not_run": [
+    "macOS build on this Windows host",
+    "gamepad-only native play",
+    "human balance and inventory decision playtest"
+  ],
+  "source_sha256": {
+    ".gitignore": "39d4d215b55e2e6c5bc9f79bcb345180e8cb030d1a048abb44d760b74a8992ad",
+    "README.md": "e37d8f5744c0ccc4579835e190a3dced077bcda5bf420bc2cc3eb89edcb5ec7f",
+    "docs/art-direction.md": "8a8b15e4a7497e8350dac9e1ba8cc733027e34fc619b28b3aa2df0ede8acfb9e",
+    "docs/backpack.md": "eaac16e930f1364eb32fe1d76c4858d5a72b8f4480a3803b993aaf170e03bf2f",
+    "docs/optimization-log.md": "e2f12b28d6b15aad0a2a73ded32a9bf77ba0192b78d28d006bb46a000c2eea29",
+    "docs/resonance.md": "07ba40f28a99501f5b66b4073afa7d412ca1bfeddfd5ab09cf67c69859c97729",
+    "docs/verification.md": "f5849d6f8d5454e3c735066859daf0f4dad533a0b2d357dfe96b2d2da189b660",
+    "scripts/combat/combat_sim.gd": "75693ad473cddc2dd49a1c4ca8ea629d1a9a1513ec80f80922da89cdd22b57a2",
+    "scripts/core/backpack_inventory.gd": "d233d65f34514ed29b97c1a5b7bd40e49c98271306c029058ecbd5759ef9b384",
+    "scripts/core/backpack_resonance.gd": "29d937b97ba2a076acc4439d6fd42b7d785f6353af0bd12da249ae44a5c4b17f",
+    "scripts/core/backpack_resonance.gd.uid": "9f39b50037c4cb3f05b4e1527d8e1ad88307733abbebcde741b05b47e26f62ee",
+    "scripts/core/run_state.gd": "8c5b5cbda05df1bd688df0bf36d703dce1f2eea584defd446cdac3106be1e387",
+    "scripts/ui/backpack_grid.gd": "d68e481fbad6b4f9a06a64dd5583ed6b69f2c1b009eca08aaf985b4d680081ec",
+    "scripts/ui/game_ui.gd": "55f3b07dfb7c2894b2e951d63c950fe4c33c59c8516676af8fc820a49d4cda3d",
+    "tests/simulate_runs.gd": "13c1b69ba5b0ad4d8ddf5844558316215be0db6997340df05cc84fd3cdf24fc8",
+    "tests/test_backpack_queries.gd": "a375bd0221663b1aa984917b60718c7581f153e88495cf6f6139c6eac9f61e63",
+    "tests/test_content_expansion.gd": "52f390c23a4109e1a66224f3299eaf02dc75ba8a4ff65b4838a4b11fd494fced",
+    "tests/test_relic_preview.gd": "f755cc58602adfb7b959a91b8702e12b8acb9270f6ca972c1fee71985862946b",
+    "tests/test_resonance_combat.gd": "4f255882735655dd7f4d6ca5965eeb132786cb2bb4076cc7c5dfcf493b4fdeeb",
+    "tests/test_resonance_combat.gd.uid": "a13eb2d4250c622227af49407d1c807b725d665a90322e634ce588e62a8729d4",
+    "tests/test_resonance_grid.gd": "940bc6feb54214cd6240e07e70a856bcc0866605481dcaa46ca352f3d04b5cbb",
+    "tests/test_resonance_grid.gd.uid": "a4113b9cde0dfe24e6e8ea3e5be6dcffa9aa85adf65b1c550b52bf113b9dd841",
+    "tests/test_resonance_rules.gd": "df901977be7e83090e4e5fe6192a332bf7458a6b2054995cfc6e89fb72d4c561",
+    "tests/test_resonance_rules.gd.uid": "4eeb575ed3f2ecaf26d05d039f3176515f600aa9e1ec5f6400664ec1445b434b",
+    "tests/test_resonance_ui.gd": "cc13fabe2a9f6f522af58f102d46fd05148b84e39812946dc4f12ba339a56d2d",
+    "tests/test_resonance_ui.gd.uid": "731d9a796518e65cddc73e0b3a65f27c47b6fb4175dda4a856d7b19e709a1d03",
+    "tests/test_rune_equip_preview.gd": "efe0c3c6e640beb35647903f757253d87eab638dc9db85f313639fd8ef79f938",
+    "tools/preview_resonance.gd": "f6ab53133b5afd1b8fb5ed4c8f4328ae1db5b9ce18ac8f89d109aaf1ac9a5103",
+    "tools/preview_resonance.gd.uid": "7ef02c80589b942a902b4c8c0c3b76ab97e36bb474b34cedb8fcd9a9d6aa0960",
+    "tools/test.ps1": "3f047b999407f9b6e3ba0026c4d8ecd618148db18e099f3a6f90a54eab93e4bd",
+    "tools/test.sh": "74f62f38250888d948764e0084ab54e9a2c06923f655188a0c513fac319a7668"
+  },
+  "evidence_sha256": {
+    "audit-backpack_combat.log": "5f9f2c65c8c29bafc06b995cc9e5fdeec1a8cb8e5e953d519b1b59a9864cc842",
+    "audit-backpack_flow.log": "d02c988d6af3c3d82c9620c459466018dab0b91316df395e19cb0feb9bcf08a6",
+    "audit-backpack_inventory.log": "eb8285c147c9b9f0be949452139d1bc677c00469c242273bb30b78583f9e0646",
+    "audit-backpack_queries.log": "005985eae32e60617cf6454e85fd68438e970c8cb935277d51b3b245e9e0c506",
+    "audit-backpack_shop.log": "90ef5530e915fb666de28f8d0b3889a1b99bd8b2697740f78a2a1afc387009d4",
+    "audit-backpack_ui.log": "d8f5ee69f6dff6a2dfad339dca06c77902359ca4cc21dc2d1b53c34d30bd0cef",
+    "audit-benchmark_seed.log": "f61887ff15c3660aee8e21e8f6cdb67d3a2bc1bed23537cda5fcecce41289de6",
+    "audit-choice_actions.log": "a6c0f21bbd8388a417c29e4a4447c2d332af530b2dd20aad367d22aa89cc7b7e",
+    "audit-combat.log": "ab08e6ba0bfcebfb45e500719453ed09d4f607e5e2332860e56f86f231aa8325",
+    "audit-combat_upgrade_ui.log": "c6708bf7594e9ca3bcd603cececbb84cf6a8ebb9ff681645cbfa52476ac38bdb",
+    "audit-combat_upgrades.log": "41258c5264382ca47e6f059155570ec3568528b1d05cc58b4a2a179314a7b863",
+    "audit-content_expansion.log": "b3a56e62cb3cc9e3fd5ee84a0efe562b35f3926cfb5c96aadcb12bd0214be7e6",
+    "audit-content_presentation.log": "cd3ac97b6b11a2ecf336c5c75107a4a11d895fd02b4927993915b5d731277b57",
+    "audit-enemy_hit_style.log": "3e8b9ba262cff0d7680a428831a54cc112f26c93298e5ff0279596ca2bf63e93",
+    "audit-enemy_telegraphs.log": "48386413575a985772d9719546e6bd49748957d06a42ea15970877589a75fa0a",
+    "audit-feedback.log": "00506400b67bc799af9ef1470ec58a861e42d003353c18fc3dc117ed99fe6f04",
+    "audit-flow.log": "0651b329fa32698600874cedcba9de7488b1f6a0b49d39bd4ae05f27736882ba",
+    "audit-homing.log": "fc981dafb2e9e67ec17b64fa8e6a737aeaca0f0e66447a5e9a19eedd7d50bdf2",
+    "audit-impact_feedback.log": "f95fbd6b8db15ccf1f4ffcdfeb3bd313058f23eba00736ee57b92cdb3cca01f7",
+    "audit-modal.log": "18711a48f30e988109f7d03008c82995ac9da1d1c43091f366de957f5c312eb3",
+    "audit-notifications.log": "625f108b47192ec62824032067c1b1ab45d69288f5bbf8f6f8a4e9bc1362a308",
+    "audit-player_foreground.log": "c944a83308a74c80079af83e167de7b29121f8eca8e1fbcac204a3eb2439b4bd",
+    "audit-profile_modes.log": "be12f5d8227ced693553d5fba1e8da184d5f03a1dd5acc83282c295c11702fa7",
+    "audit-projectile_capacity.log": "36d6906a77e375316412130c40a54d69aaca373ad24e4287fb55c7e0c8626e9e",
+    "audit-projectile_painter.log": "89081a7ca979dd9d5d994a6ee10dc4a87d03b7e8bcbb098f5cf8a703bef8d32d",
+    "audit-purchase_query.log": "e41582a98e814ad0b5cbc11e637daadd020feba02cbc12e468da758c557dbc97",
+    "audit-raw.json": "faeb2a02c0e1b619d1b84e3d00652fe231edec3a2508c89d647ad0b801e4fa01",
+    "audit-relic_comparison.log": "bfbc2ea22a14c573dede82cec547d2f2d630fa9d178af2f564aa93955465101e",
+    "audit-relic_preview.log": "d286a173ea5ea7b85b247fc826d39c9133085dc8995d06a2a3403108fab38ffb",
+    "audit-resonance_combat.log": "68911b15b26c61c035fdeb5f82ced7eabbb726cdd5848ba21a56fca276454b3e",
+    "audit-resonance_grid.log": "0c1e653643ca5d8030dcf7337ff5b3105879e67f967bbbf92170abc5daa211d5",
+    "audit-resonance_rules.log": "8257819cea6a7ef2e3b15ac0c36dd01d98066add94823f486c2baa0de7a8a1e4",
+    "audit-resonance_ui.log": "1a055cd715daedd5bbcb118d0b36a4e023e2d26e18094296f65d0839c135e10a",
+    "audit-return_ring.log": "764761a0ac67c03ddc08eb3d85f8040f94d9d72fd06266a73a207ea12c44b433",
+    "audit-return_ring_presentation.log": "72031090c4244d0fa731dc0e4050f91082fd9ef9c8acf28c99b8cc94e8a39cb0",
+    "audit-return_ring_ui.log": "de9256ab9b72bbefff6e7cb9d4a12a5954634a5ab5325931c9b396de06869555",
+    "audit-rules.log": "09a01b96df76dfbc68c7fb599dfba52ee0ecf7ad5da581cca9524eba15ddf5f0",
+    "audit-rune_equip_comparison.log": "a507b1e920777f9f7d40da7bd4df779811d82ad9de19e270127caa891ecdb034",
+    "audit-rune_equip_preview.log": "f9e4ceeea074743275f6899d645088e6b0c2f194249e39d3129fc58e53dab587",
+    "audit-shop_lock_flow.log": "4808723e1ba0ecc26cf0defe49559112398b58d7b5f39427a167f492f34501c0",
+    "audit-shop_lock_ui.log": "20f7bd977c0765e783b04e8fa203bb0a457e5080ddcb742088b6b01ba107f454",
+    "audit-shop_locks.log": "8e50e3c04f6946f82d71a16ff127d4bc31da7672e32a1a208fa5ea19fe2f65ef",
+    "audit-trail_readability.log": "395e5ec993267f1404c97832ca8b57b6302c5cd648969e936e15fda6d00fc5f8",
+    "audit-ui.log": "88aabecbf0322cf77b43acc0328dc195e4e4bfb6608cc407a405bc476d90c419",
+    "audit-upgrade_previews.log": "2a89742476401a8fc0131e6d7cdf22dd4113245333e807d81349823528833283",
+    "audit-upgrade_timing.log": "4648e39cea7c0dfd793ee032f08bda6d26cb25251b229f30ae88404a194eab3a",
+    "backpack_flow-native.log": "81bda77d6f67d68a3e60013072b0605ff4f1198c34d30d6c876df9729afbd137",
+    "backpack_ui-native.log": "a101317ef6ded799e368a0c099aa2d05491520650de4cc8523e01e0c3ec1163a",
+    "before-filled.png": "ce0887205e59aa8af9fe2f4810336a4be19ef1199c044278d1d8e246a5291e20",
+    "before-full.png": "abf2db728591535df4011d677987c3a63fdb5b8a35a5c4eed2089a738eed6be6",
+    "before-merge.png": "f55e370003eca6d4b3ed5cda5a03eee1d7531faecd23ff615b2f7fb8513a3d03",
+    "benchmark-60s.log": "dfd83a2e865f6bbfb99f539cc4822982eec94b4da9c51297edb1145674a5eddb",
+    "build.log": "f77996b803f983c7e9f055b7023d4649a9d53dc11a72a29830d74fd5c6145b1e",
+    "enemy_telegraphs-native.log": "7fc4353ac36749acbbb184c1f7bec68c2dcbfb3eb1d58faed3fe3bb3845604fc",
+    "export-smoke.log": "5b04d279f4027478e324dd46410f09f78d2403805379068aa096d647d70cfa92",
+    "export-smoke.png": "239d6ddfc912d40af4add3a1cc2e061820ab7d67e45f36288a9ce3d91d09623b",
+    "full.log": "1302012d4a857c6f15c38b97013f9bda9762b7a574e225e8a9efbb91c4b0cd55",
+    "full.png": "52cde9dcb3745a7596e9a461ef8b8d0986efe5c47da854b7c6634ce26a6c07aa",
+    "import.log": "dec92cac9dc7d8ce7b9bfa0e6d7c29947dbba963a274960a47feee6ccd17fb6e",
+    "linked.log": "1ceede8750b48103b6dd9699c016fa8ae968b1fda1895198b325d86dabd48080",
+    "linked.png": "f5d14d9c81641fb89ed15521376b3cc7b3a821f5868dd8c360473a4c35de8c3e",
+    "native-initial.png": "f5d14d9c81641fb89ed15521376b3cc7b3a821f5868dd8c360473a4c35de8c3e",
+    "native-interaction.log": "31a495d7082a43d7bd62ff19a63837f52f2b3e75c6bac07971fc98457384c7d7",
+    "native-interactions.json": "ee354ce3ded715c5271cee72b814a82babc6bb42be5d0d675eb6a296c99775d0",
+    "performance-60s.json": "38bfad4b25c1899f4bff8ffc7aafcaa97989b980bdd3bf92493616a2efb84a23",
+    "relic_comparison-native.log": "bc6b313ae093768e1c560d6f29ad92714db00eddc52b9eb7c8d8d6692d53631e",
+    "resonance_combat-headless.log": "68911b15b26c61c035fdeb5f82ced7eabbb726cdd5848ba21a56fca276454b3e",
+    "resonance_combat-native.log": "87b14668d23f40562d9bb8d8365279a4e43490118e7d97c9b5d20b8e831199a7",
+    "resonance_grid-headless.log": "47a091ba215584e409bac2187d0f60bd60f8b6e746de9bb7f7dd9e46421bb677",
+    "resonance_grid-native.log": "25dfc27e057ad487cbc07f3b314813dd8ab0bf573da6d10335adaafa657f938c",
+    "resonance_rules-headless.log": "8257819cea6a7ef2e3b15ac0c36dd01d98066add94823f486c2baa0de7a8a1e4",
+    "resonance_rules-native.log": "c08c29b034cbd310014c149b70efb76cc874076a5c6d9dc7154443cb004a0f7e",
+    "resonance_ui-headless.log": "bf7bd072489014b4bdf579e99a57c8613c8e42876d19121fbb8e0dfd98ef9e80",
+    "resonance_ui-native.log": "50ec7bd5b97a577c630c29b09960ff1471610d11d7ef345e1dd27d6f7f61948f",
+    "rotated.log": "b5a778b9b6b1851c15bac123476c40c436f7dab7f50cc419ca468e07a1cc4ac2",
+    "rotated.png": "4b7a4f38c7c9379e255bc0b4e9b7d8d3dd628f74157e7f97139c13ffcc6568d1",
+    "rune_equip_comparison-native.log": "6454910fba96d0635535b69b7883c2035e336ba577b0588618236a3475e41a7a",
+    "simulation.json": "0668f182dd224178381a5b46fa26af64a2a0ca73987e6d44d681bc139da736db",
+    "simulation.jsonl": "4b226f65464ff75c6cc93670bc8731587d4965114426454df2535d83a8dc547e",
+    "tests.log": "e82df692867b0c4887dfa5462033a9d960d65daff7ca16ab9e1c8daac61abf51",
+    "unlinked.log": "b55c2756fa628178d4498817665225b2758fa381d1956e7e0f1da673efc8bef9",
+    "unlinked.png": "f86c864ded3e1124f3689169dbff2de623ecdf1d5875c20aef1b8df95f6a9714"
+  }
+}

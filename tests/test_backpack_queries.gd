@@ -72,8 +72,8 @@ func _test_relic_forecasts() -> void:
 				var slot: int = int(change["slot"])
 				var equipped: Dictionary = state.loadout[slot]
 				var weapon: ContentDef = GameCatalog.weapon(str(equipped["id"]))
-				var expected: float = weapon.damage * BackpackInventory.rank_multiplier(int(equipped.get("rank", 1))) * state.stat("damage")
-				_check(is_equal_approx(float(change["damage_after"]), expected), "The weapon forecast includes the stored weapon rank")
+				var expected: float = weapon.damage * BackpackInventory.rank_multiplier(int(equipped.get("rank", 1))) * state.stat("damage") * (1.0 + float(equipped.get("resonance_bonus", 0.0)))
+				_check(is_equal_approx(float(change["damage_after"]), expected), "The weapon forecast includes the stored weapon rank and real purchased-layout resonance")
 				_check(is_equal_approx(float(change["interval_after"]), weapon.cooldown / state.stat("attack_speed")), "The interval forecast uses the same safe attack-speed stat")
 
 func _test_ranked_weapon_forecast() -> void:
@@ -90,7 +90,8 @@ func _test_ranked_weapon_forecast() -> void:
 				var slot: int = int(change["slot"])
 				if int(state.loadout[slot]["uid"]) == uid:
 					found = true
-					_check(is_equal_approx(float(change["damage_after"]), weapon.damage * BackpackInventory.rank_multiplier(rank) * state.stat("damage")), "The relic forecast retains a merged weapon's true rank multiplier")
+					var equipped: Dictionary = state.loadout[slot]
+					_check(is_equal_approx(float(change["damage_after"]), weapon.damage * BackpackInventory.rank_multiplier(rank) * state.stat("damage") * (1.0 + float(equipped.get("resonance_bonus", 0.0)))), "The relic forecast retains a merged weapon's true rank and resulting local resonance")
 			_check(found, "The merged weapon is present in the forecast by its stable UID")
 
 func _test_rune_forecasts() -> void:
@@ -116,3 +117,4 @@ func _test_rune_forecasts() -> void:
 				_check(int(state.loadout[0]["rune"]["uid"]) == incoming_uid and int(state.loadout[0]["rune"]["rank"]) == rank, "The chosen rank and UID reach the weapon socket")
 				_check(state.rune_index_for_uid(previous_uid) >= 0 and state.rune_index_for_uid(incoming_uid) == -1, "Replacement returns the previous rune to real backpack space without duplicating the incoming UID")
 				_check(state.rune_bag.size() == int(preview["bag_after"]), "The actual loose-rune count equals the forecast")
+				_check(is_equal_approx(float(preview["damage"]), state.weapon_damage(state.loadout[0])) and is_equal_approx(float(preview["resonance_bonus"]), float(state.loadout[0]["resonance_bonus"])), "Rune equip preserves the weapon's displayed damage and local relic resonance")

@@ -119,7 +119,10 @@ func _compare_purchase(id: String, layers: int, upgraded: bool) -> void:
 		var weapon_id: String = str(state.loadout[slot]["id"])
 		var weapon: ContentDef = GameCatalog.weapon(weapon_id)
 		_check(int(change["slot"]) == slot and change["id"] == weapon_id and int(change["shots"]) == weapon.shots, "Weapon projections retain slot identity and configured volley size: " + label)
-		_check(float(change["damage_before"]) == weapon.damage * state.stat("damage") and float(change["damage_after"]) == weapon.damage * oracle.stat("damage"), "Per-projectile damage uses the same real multiplier as CombatSim: " + label)
+		var resonance_before: float = float(state.loadout[slot].get("resonance_bonus", 0.0))
+		var resonance_after: float = float(oracle.loadout[slot].get("resonance_bonus", 0.0))
+		_check(is_equal_approx(float(change["damage_before"]), weapon.damage * state.stat("damage") * (1.0 + resonance_before)) and is_equal_approx(float(change["damage_after"]), weapon.damage * oracle.stat("damage") * (1.0 + resonance_after)), "Per-projectile damage includes the real before/after geometry and global multiplier: " + label)
+		_check(is_equal_approx(float(change["resonance_before"]), resonance_before) and is_equal_approx(float(change["resonance_after"]), resonance_after), "Resonance forecast matches actual automatic placement rather than a chosen hypothetical cell: " + label)
 		_check(float(change["interval_before"]) == weapon.cooldown / state.stat("attack_speed") and float(change["interval_after"]) == weapon.cooldown / oracle.stat("attack_speed"), "Nominal intervals use the real cooldown division rather than a DPS estimate: " + label)
 	_check(_snapshot(state) == before, "Reading every forecast result never mutates the source run: " + label)
 
@@ -134,7 +137,7 @@ func _test_tradeoff_values() -> void:
 	var speed: Dictionary = _stat_change(preview, "attack_speed")
 	_check(is_equal_approx(float(damage["before"]), 1.15) and is_equal_approx(float(damage["after"]), 1.09) and is_equal_approx(float(speed["before"]), 1.12) and is_equal_approx(float(speed["after"]), 1.34), "Hourglass shows additive positive and negative changes rather than multiplying current bonuses")
 	var weapon: Dictionary = preview["weapon_changes"][0]
-	_check(is_equal_approx(float(weapon["damage_before"]), 62.1) and is_equal_approx(float(weapon["damage_after"]), 58.86) and is_equal_approx(float(weapon["interval_before"]), 1.55 / 1.12) and is_equal_approx(float(weapon["interval_after"]), 1.55 / 1.34), "Hourglass exposes Comet's actual per-hit reduction and nominal interval improvement")
+	_check(is_equal_approx(float(weapon["damage_before"]), 62.1 * (1.0 + float(weapon["resonance_before"]))) and is_equal_approx(float(weapon["damage_after"]), 58.86 * (1.0 + float(weapon["resonance_after"]))) and is_equal_approx(float(weapon["interval_before"]), 1.55 / 1.12) and is_equal_approx(float(weapon["interval_after"]), 1.55 / 1.34), "Hourglass preserves Comet's global tradeoff while reporting the separate actual-layout resonance")
 	state.offers = [_offer(GameCatalog.relic("pilgrim"))]
 	preview = _query(state)
 	_check(_stat_change(preview, "move_speed")["after"] == 232.0 and _stat_change(preview, "pickup_radius")["after"] == 90.0, "Pilgrim exposes both mobility and collection changes")

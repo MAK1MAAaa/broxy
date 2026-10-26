@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "created_at_utc": "2026-10-26T09:36:34.094899+00:00",
+  "scope": "Merge main into PR4 and resolve documentation conflicts; preserve original resonance production code/assets and incoming Mac scroll-test adaptation.",
+  "pull_request": "https://github.com/MAK1MAAaa/broxy/pull/4",
+  "branch": "codex/backpack-resonance",
+  "previous_head": "632cd062483a89b60384d32badcb93e066f23307",
+  "main_parent": "047d9c1f6c2aba20723eafd5d76f09e1311ec72b",
+  "merge_base_before": "b20a71404779e0d0437c1145e246bdbbf13c10dc",
+  "conflicts": {
+    "README.md": 3,
+    "docs/verification.md": 1
+  },
+  "resolution": "Retain Windows resonance package/test/performance history and distinct pre-resonance Mac package/adaptation history. Record this merge validation separately, never sum historical assertion totals or mix platforms.",
+  "unchanged": {
+    "all_tracked_scripts_data_assets_tools_equal_previous_pr_head": true,
+    "mac_scroll_test_and_historical_mac_report_equal_main": true,
+    "historical_reports_not_rewritten": true
+  },
+  "tests": {
+    "command": "BROXY_PYTHON=<bundled Python3.12.14> ./tools/test.sh",
+    "godot_suites": 45,
+    "additional_profile_processes": 5,
+    "processes": 50,
+    "assertions": 24694,
+    "failures": 0,
+    "python_tests": 27,
+    "python_failures": 0,
+    "exit_code": 0,
+    "log": {
+      "path": "reports/pr4-main-tests-raw.log",
+      "bytes": 7949,
+      "sha256": "fc4f7f117fb031c9e7f684d7dc5104ac4a7b87e92b735cd58c165080cdfb54dc"
+    },
+    "native": [
+      {
+        "suite": "RelicComparison",
+        "assertions": 226,
+        "failures": 0,
+        "exit_code": 0,
+        "log": {
+          "path": "reports/pr4-main-relic-native-raw.log",
+          "bytes": 194,
+          "sha256": "ba25455835b6986e5e21500446202d479575ad9eb34e8cbe50c408287fb0c837"
+        }
+      },
+      {
+        "suite": "ResonanceUI",
+        "assertions": 32,
+        "failures": 0,
+        "exit_code": 0,
+        "log": {
+          "path": "reports/pr4-main-resonance-ui-native-raw.log",
+          "bytes": 189,
+          "sha256": "1e9d10fd423bd175ea5070586f1f396ee5e547a078c4ac7d29f1c46eba73070f"
+        }
+      }
+    ]
+  },
+  "source_files": [
+    {
+      "path": "README.md",
+      "bytes": 27138,
+      "sha256": "83e024e1a96482665aa021c566f90df1e0f60a27691b0b8428b30a02d402e065"
+    },
+    {
+      "path": "docs/verification.md",
+      "bytes": 45622,
+      "sha256": "e1f6df171d79e8b5d6c21a1d02607a56d2db3a52f568dd60330ef04c29250dfd"
+    },
+    {
+      "path": "docs/optimization-log.md",
+      "bytes": 42594,
+      "sha256": "a2d53ff60d600fec5e372984ad34c9da43adf672c8c26bea936d38aee16dc83e"
+    },
+    {
+      "path": "tests/test_relic_comparison.gd",
+      "bytes": 16602,
+      "sha256": "0ba96a38fb4263783a461d9c6cd4542c27681aa36bb9533f3a854ca83bef7fc0"
+    },
+    {
+      "path": "reports/macos-backpack-validation.json",
+      "bytes": 8965,
+      "sha256": "16b762e8c12a6a8f9b7d8b8f0752712d37ba56a8fa1e5132ce1fb03785b029b1"
+    }
+  ],
+  "not_run": [
+    "New game simulation batch",
+    "New graphical pressure sample",
+    "New macOS or Windows build",
+    "Human playtest"
+  ],
+  "delivery": "Normal merge commit, no history rewrite. User authorized pushing PR4 branch and existing feature/macos. PR remains open; not merged into main. The separate feature/macos393083d roguelite changes are not integrated into this PR."
+}

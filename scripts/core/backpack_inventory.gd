@@ -117,6 +117,11 @@ func merge(source_uid: int, target_uid: int) -> bool:
 	last_error = ""
 	return true
 
+func merged_snapshot(source_uid: int, target_uid: int) -> Array[Dictionary]:
+	if not merge_error(source_uid, target_uid).is_empty():
+		return []
+	return _merged_items(source_uid, target_uid)
+
 func remove(uid: int) -> Dictionary:
 	var index: int = _index(_items, uid)
 	if index < 0:

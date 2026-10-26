@@ -798,9 +798,15 @@ func _build_backpack_details() -> void:
 	var dimensions: Vector2i = BACKPACK_GRID._item_size(item, bool(item.get("rotated", false)))
 	_bag_details.add_child(_label("占格 %d×%d · 编号 %d" % [dimensions.x, dimensions.y, uid], 12, MUTED))
 	if str(item["kind"]) == "weapon":
-		var stats := _wrap(_weapon_stats_text(definition, rank), 12, CYAN)
+		var stats := _wrap(_weapon_stats_text(definition, rank, _item_resonance_bonus(item)), 12, CYAN)
 		stats.name = "BackpackWeaponStats"
 		_bag_details.add_child(stats)
+		var weapon_index: int = run.weapon_index_for_uid(uid)
+		var source_count: int = (run.loadout[weapon_index].get("resonance_sources", []) as Array).size() if weapon_index >= 0 else 0
+		var resonance_summary := _label("共鸣+%s · %d件遗物" % [_rune_percent(_item_resonance_bonus(item)), source_count], 12, CYAN)
+		resonance_summary.name = "BackpackResonanceSummary"
+		_enable_tooltip(resonance_summary, _resonance_details(item))
+		_bag_details.add_child(resonance_summary)
 	var partners: Array[Dictionary] = []
 	for other: Dictionary in run.backpack_snapshot()["items"]:
 		var preview: Dictionary = run.merge_preview(uid, int(other["uid"]))
@@ -809,9 +815,10 @@ func _build_backpack_details() -> void:
 	if not partners.is_empty():
 		_section_heading(_bag_details, "同名同阶合成", GOLD, 14)
 		var sample: Dictionary = partners[0]["preview"]
-		var explanation: String = "两件合成一件，释放%d格；属性保持两件合计。" % int(sample.get("cells_freed", dimensions.x * dimensions.y))
+		var explanation: String = "释放%d格；全局属性保持两件合计。\n共鸣按新邻接重算。" % int(sample.get("cells_freed", dimensions.x * dimensions.y))
 		if str(item["kind"]) == "weapon":
-			explanation = "单件伤害 %.1f → %.1f，释放%d格。" % [float(sample.get("damage_before", definition.damage)), float(sample.get("damage_after", definition.damage * 2.0)), int(sample.get("cells_freed", dimensions.x * dimensions.y))]
+			explanation = "目标伤害 %.1f → %.1f，释放%d格。" % [float(sample.get("damage_before", definition.damage)), float(sample.get("damage_after", definition.damage * 2.0)), int(sample.get("cells_freed", dimensions.x * dimensions.y))]
+			explanation += "\n合成后按目标位置重算共鸣。"
 		elif str(item["kind"]) == "rune":
 			explanation = _rune_rank_text(str(item["id"]), rank + 1)
 		var merge_preview := _wrap(explanation, 12, GOLD)
@@ -856,6 +863,10 @@ func _build_backpack_details() -> void:
 			var preview := _shop_button("预览", _preview_rune_equip.bind(index, _shop_epoch, run.rune_bag[_selected_rune].duplicate(true), weapon.duplicate(true)), "rune_preview:%d" % index, Vector2(48, 30))
 			preview.add_theme_font_size_override("font_size", 12)
 			row.add_child(preview)
+	if str(item["kind"]) in ["weapon", "relic"]:
+		var resonance := _wrap(_resonance_details(item), 12, CYAN)
+		resonance.name = "BackpackResonance"
+		_bag_details.add_child(resonance)
 	if partners.size() > 1:
 		_section_heading(_bag_details, "其他合成目标", GOLD, 14)
 		for index: int in range(1, partners.size()):
@@ -875,6 +886,10 @@ func _add_backpack_merge_target(source: int, partner: Dictionary) -> void:
 	merge.add_theme_font_size_override("font_size", 13)
 	var returned: Dictionary = preview.get("returned_rune", {})
 	merge.tooltip_text = "保留目标物品的位置和朝向；该操作不可撤回。" + ("另一份符文退回背包。" if not returned.is_empty() else "")
+	if str(other["kind"]) == "weapon":
+		merge.tooltip_text += "\n当前两件单枚伤害合计 %.1f；合成后 %.1f，共鸣 %s → %s。" % [float(preview.get("combined_damage_before", 0.0)), float(preview.get("damage_after", 0.0)), _rune_percent(float(preview.get("resonance_before", 0.0))), _rune_percent(float(preview.get("resonance_after", 0.0)))]
+	elif str(other["kind"]) == "relic":
+		merge.tooltip_text += "\n遗物总属性保留，周边法器按目标位置重新计算共鸣。"
 	_bag_details.add_child(merge)
 
 
@@ -1065,9 +1080,13 @@ func _offer_card(parent: Control, index: int) -> void:
 	description.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	body.add_child(description)
 	if kind == "weapon":
-		var stats := _wrap(_weapon_stats_text(definition), 12, GOLD)
+		var projection: Dictionary = run.weapon_purchase_preview(index)
+		var has_placement: bool = bool(projection.get("has_projection", false))
+		var predicted_bonus: float = float(projection.get("resonance_bonus", 0.0))
+		var predicted: String = _weapon_stats_text(definition, 1, predicted_bonus) if has_placement else "已售出，不再预测落点。" if sold else "无完整空位，整理后更新共鸣预估。"
+		var stats := _wrap(predicted, 12, GOLD)
 		stats.name = "WeaponStats"
-		_enable_tooltip(stats, _weapon_stats_note())
+		_enable_tooltip(stats, ("按购买时自动落点预计，共鸣 +%s。\n" % _rune_percent(predicted_bonus) if has_placement else "当前没有可用于购买预估的实际落点。\n") + _weapon_stats_note())
 		body.add_child(stats)
 	var price: int = int(offer.get("price", 0))
 	var error: String = run.purchase_error(index)
@@ -1155,6 +1174,8 @@ func _compare_relic(index: int, epoch: int, expected_offer: Dictionary) -> void:
 	var status_text: String = "购前效果预览，尚未购买；关闭后可直接购买。"
 	if not bool(preview["can_buy"]):
 		status_text = "效果预览，尚缺 %d 魂屑；当前不会扣款或放入物品。" % int(preview["shortfall"]) if projected and int(preview["shortfall"]) > 0 else "当前无法购入：%s" % str(preview["error"])
+	if projected and not bool(preview.get("placement_available", false)):
+		status_text += "\n背包无可用落点；下表仅假设全局属性变化，不新增邻接共鸣。"
 	var status := _wrap(status_text, 14, CYAN if bool(preview["can_buy"]) else GOLD)
 	status.name = "ComparisonStatus"
 	body.add_child(status)
@@ -1233,6 +1254,7 @@ func _build_relic_weapon_comparison(parent: Control, preview: Dictionary) -> voi
 		var damage_delta: float = float(change["damage_after"]) - float(change["damage_before"])
 		var damage := _comparison_cell(grid, "%.1f → %.1f\n%s" % [float(change["damage_before"]), float(change["damage_after"]), _comparison_delta(damage_delta, "伤害", 1)], _comparison_change_color(damage_delta), 270)
 		damage.name = "ComparisonWeapon%dDamage" % slot
+		damage.text += "\n共鸣 %s → %s" % [_rune_percent(float(change.get("resonance_before", 0.0))), _rune_percent(float(change.get("resonance_after", 0.0)))]
 		var interval_delta: float = float(change["interval_after"]) - float(change["interval_before"])
 		var interval := _comparison_cell(grid, "%.3f秒 → %.3f秒\n%s" % [float(change["interval_before"]), float(change["interval_after"]), _comparison_delta(interval_delta, "秒", 3) + ("（更快）" if interval_delta < -0.00001 else "（更慢）" if interval_delta > 0.00001 else "")], _comparison_change_color(-interval_delta), 300)
 		interval.name = "ComparisonWeapon%dInterval" % slot
@@ -1341,6 +1363,9 @@ func _preview_rune_equip(index: int, epoch: int, incoming_snapshot: Dictionary, 
 	content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	content.add_theme_constant_override("separation", 12)
 	scroll.add_child(content)
+	var weapon_stats := _wrap(_weapon_stats_text(weapon, int(preview.get("weapon_rank", 1)), float(preview.get("resonance_bonus", 0.0))) + "\n当前共鸣 +%s；装符不改变共边关系。" % _rune_percent(float(preview.get("resonance_bonus", 0.0))), 15, CYAN)
+	weapon_stats.name = "RuneEquipWeaponStats"
+	content.add_child(weapon_stats)
 	_section_heading(content, "逐弹触发与理论上限", PURPLE, 17)
 	var trigger_hit: int = int(preview["trigger_hit"])
 	var trigger_text: String = "从第%d次直接命中触发符文。" % trigger_hit
@@ -1799,10 +1824,38 @@ func _shop_description(definition: ContentDef) -> String:
 	return definition.description
 
 
+func _item_resonance_bonus(item: Dictionary) -> float:
+	if item.has("resonance_bonus"):
+		return float(item["resonance_bonus"])
+	if run == null:
+		return 0.0
+	var index: int = run.weapon_index_for_uid(int(item.get("uid", -1)))
+	return float(run.loadout[index].get("resonance_bonus", 0.0)) if index >= 0 else 0.0
+
+
+func _resonance_details(item: Dictionary) -> String:
+	if run == null:
+		return ""
+	var uid: int = int(item.get("uid", -1))
+	var names: PackedStringArray = []
+	if str(item.get("kind", "weapon")) == "weapon":
+		var index: int = run.weapon_index_for_uid(uid)
+		var sources: Array = run.loadout[index].get("resonance_sources", []) if index >= 0 else item.get("resonance_sources", [])
+		for source_uid: int in sources:
+			var source: Dictionary = run.backpack_item(source_uid)
+			if not source.is_empty():
+				names.append("%s%s #%d" % [GameCatalog.relic(str(source["id"])).display_name, _rank_name(int(source.get("rank", 1))), source_uid])
+		return "邻接共鸣 +%s伤害（上限18%%）\n%s\n遗物共边Ⅰ/Ⅱ/Ⅲ阶 +3/6/12%%，对角不计。" % [_rune_percent(_item_resonance_bonus(item)), "来源：" + "、".join(names) if not names.is_empty() else "尚无共边遗物。"]
+	for weapon: Dictionary in run.loadout:
+		if uid in weapon.get("resonance_sources", []):
+			names.append("%s #%d" % [GameCatalog.weapon(str(weapon["id"])).display_name, int(weapon.get("uid", -1))])
+	return "共边供能 +%s → %s\n每把法器共鸣最高18%%；旋转、合成或出售后按新邻接重算。" % [_rune_percent(0.03 * BackpackInventory.rank_multiplier(int(item.get("rank", 1)))), "、".join(names) if not names.is_empty() else "暂无共边法器"]
+
+
 func _equipment_tooltip(item: Dictionary) -> String:
 	var weapon: ContentDef = GameCatalog.weapon(str(item["id"]))
 	var rune: Dictionary = item.get("rune", {})
-	var details: String = "%s %s阶：%s\n%s\n%s" % [weapon.display_name, _rank_name(int(item.get("rank", 1))), weapon.description, _weapon_stats_text(weapon, int(item.get("rank", 1))), _weapon_stats_note()]
+	var details: String = "%s %s阶：%s\n%s\n%s\n邻接共鸣 +%s伤害（上限18%%）。" % [weapon.display_name, _rank_name(int(item.get("rank", 1))), weapon.description, _weapon_stats_text(weapon, int(item.get("rank", 1)), _item_resonance_bonus(item)), _weapon_stats_note(), _rune_percent(_item_resonance_bonus(item))]
 	if weapon.return_delay > 0.0:
 		details += "\n" + _return_flight_tooltip(weapon)
 	if rune.is_empty():
@@ -1824,14 +1877,14 @@ static func _return_flight_tooltip(weapon: ContentDef) -> String:
 	return "预算未耗尽时，发射后%.2f秒以基础速度%.0f追踪当前玩家返航，接触玩家回收；全航程同一目标不重复直击。冷却独立计时，不等待回收。" % [weapon.return_delay, speed]
 
 
-func _weapon_stats_text(definition: ContentDef, rank: int = 1) -> String:
-	var damage_multiplier: float = run.stat("damage") if run != null else 1.0
+func _weapon_stats_text(definition: ContentDef, rank: int = 1, resonance_bonus: float = 0.0) -> String:
 	var attack_speed: float = run.stat("attack_speed") if run != null else 1.0
-	return "每枚 %.1f伤害 · %d枚/次 · 间隔 %.2f秒" % [definition.damage * damage_multiplier * BackpackInventory.rank_multiplier(rank), definition.shots, definition.cooldown / attack_speed]
+	var damage: float = run.weapon_damage({"id": definition.id, "rank": rank, "resonance_bonus": resonance_bonus}) if run != null else definition.damage * BackpackInventory.rank_multiplier(rank) * (1.0 + resonance_bonus)
+	return "每枚 %.1f伤害 · %d枚/次 · 间隔 %.2f秒" % [damage, definition.shots, definition.cooldown / attack_speed]
 
 
 func _weapon_stats_note() -> String:
-	return "已计当前伤害与攻速加成，未计符文追加命中。间隔为持续攻击时的标称值。"
+	return "已计当前伤害、攻速与该法器的邻接共鸣，未计符文追加命中。间隔为持续攻击时的标称值。"
 
 
 func _enable_tooltip(control: Control, text: String) -> void:
@@ -1919,6 +1972,9 @@ func _loadout_text() -> String:
 		var rune: Dictionary = item.get("rune", {})
 		if not rune.is_empty():
 			text += "·" + GameCatalog.rune(str(rune["id"])).display_name + _rank_name(int(rune.get("rank", 1)))
+		var bonus: float = _item_resonance_bonus(item)
+		if bonus > 0.0:
+			text += " · 共鸣+" + _rune_percent(bonus)
 		parts.append(text)
 	return "\n".join(parts)
 
