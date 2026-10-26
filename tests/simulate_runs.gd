@@ -4,7 +4,7 @@ extends SceneTree
 const DELTA: float = 1.0 / 60.0
 const POLICY_VERSION: String = "orbit-avoid-v1/backpack-shop-v2/upgrade-timing-v2/rogue-choices-v1"
 const SHOP_OBSERVATION_SCHEMA_VERSION: String = "shop-observations-v1"
-const POLICY_CHANGE_NOTE: String = "Explicit configurable core/route/altar choices through shipped transactions before normal space-aware shopping. Free core kits and earned altar runes use production capacity checks. Movement and upgrade priorities unchanged; not a legacy equivalence run."
+const POLICY_CHANGE_NOTE: String = "Explicit core/route/altar choices use shipped transactions before normal space-aware shopping. Relic adjacency affects real damage; this policy does not optimize placement. Movement and upgrade priorities unchanged; not a legacy trajectory-equivalence run."
 const RUNES: Array[String] = ["pierce", "bounce", "blast"]
 const MAX_REROLLS: int = 3
 
@@ -56,7 +56,7 @@ func _initialize() -> void:
 	quit(1 if _require_win and not all_won else 0)
 
 func _content_version() -> String:
-	var sources: Array[String] = ["res://scripts/core/run_state.gd", "res://scripts/core/backpack_inventory.gd", "res://scripts/combat/combat_sim.gd", "res://scripts/data/content_def.gd", "res://scripts/data/game_catalog.gd", "res://scripts/data/rune_rules.gd", "res://scripts/data/rogue_rules.gd", "res://scripts/main.gd"]
+	var sources: Array[String] = ["res://scripts/core/run_state.gd", "res://scripts/core/backpack_inventory.gd", "res://scripts/core/backpack_resonance.gd", "res://scripts/combat/combat_sim.gd", "res://scripts/data/content_def.gd", "res://scripts/data/game_catalog.gd", "res://scripts/data/rune_rules.gd", "res://scripts/data/rogue_rules.gd", "res://scripts/main.gd"]
 	var definitions: Array[ContentDef] = GameCatalog.weapons()
 	definitions.append_array(GameCatalog.runes())
 	definitions.append_array(GameCatalog.relics())
@@ -97,6 +97,7 @@ func _play_run(seed_value: int, rune_id: String) -> Dictionary:
 			"elapsed": snappedf(simulation.elapsed, 0.001),
 			"weapon_count": state.loadout.size(), "backpack_used_cells": state.backpack_snapshot()["used_cells"],
 			"core_activations": simulation.core_activations.duplicate(true),
+			"resonant_weapon_count": state.loadout.filter(func(item: Dictionary) -> bool: return float(item.get("resonance_bonus", 0.0)) > 0.0).size(),
 		})
 		reason = simulation.end_reason if simulation.complete else "Simulation exceeded its frame budget"
 		if not simulation.complete or not simulation.victory:

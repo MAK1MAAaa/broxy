@@ -59,6 +59,7 @@ var _wave_finished: bool = false
 var _upgrade_bonuses: Dictionary = {}
 var _upgrade_options: Array[Dictionary] = []
 var _locked_offers: Dictionary = {}
+var _resonance: Dictionary = {}
 
 func begin(seed_value: int, starter: String) -> void:
 	_run_seed = seed_value
@@ -233,7 +234,18 @@ func backpack_snapshot() -> Dictionary:
 	result["can_expand"] = error.is_empty()
 	result["expansion_error"] = error
 	result["linked_weapons"] = linked_weapon_uids()
+	result["resonance"] = _resonance.duplicate(true)
 	return result
+
+func weapon_damage(item: Dictionary, damage_multiplier: float = -1.0) -> float:
+	var definition: ContentDef = GameCatalog.weapon(str(item.get("id", "")))
+	if definition == null:
+		return 0.0
+	var multiplier: float = stat("damage") if damage_multiplier < 0.0 or not is_finite(damage_multiplier) else damage_multiplier
+	var cached: Dictionary = _resonance.get(int(item.get("uid", -1)), {})
+	var raw_bonus: float = float(item.get("resonance_bonus", cached.get("bonus", 0.0)))
+	var bonus: float = clampf(raw_bonus, 0.0, BackpackResonance.MAX_BONUS) if is_finite(raw_bonus) else 0.0
+	return definition.damage * multiplier * BackpackInventory.rank_multiplier(int(item.get("rank", 1))) * (1.0 + bonus)
 
 func backpack_item(uid: int) -> Dictionary:
 	return backpack.item(uid)
@@ -266,7 +278,7 @@ func merge_preview(source_uid: int, target_uid: int) -> Dictionary:
 	var result: Dictionary = {"source_uid": source_uid, "target_uid": target_uid,
 		"source_rank": int(source.get("rank", 0)), "target_rank": int(target.get("rank", 0)),
 		"result_rank": result_rank, "rank_after": result_rank, "can_merge": error.is_empty(), "error": error,
-		"returned_rune": {}, "stat_changes": [], "damage_before": 0.0, "damage_after": 0.0}
+		"returned_rune": {}, "stat_changes": [], "weapon_changes": [], "damage_before": 0.0, "damage_after": 0.0}
 	if source.is_empty() or target.is_empty():
 		return result
 	var definition: ContentDef = BackpackInventory.definition(str(target["kind"]), str(target["id"]))
@@ -274,14 +286,24 @@ func merge_preview(source_uid: int, target_uid: int) -> Dictionary:
 	result["kind"] = target["kind"]
 	result["paid_after"] = int(source["paid"]) + int(target["paid"])
 	result["cells_freed"] = _item_area(source) if error.is_empty() else 0
+	var projected_items: Array[Dictionary] = backpack.merged_snapshot(source_uid, target_uid)
+	if error.is_empty():
+		result["weapon_changes"] = _projected_weapon_changes(projected_items, stat("damage"), stat("attack_speed"))
 	if not (source.get("rune", {}) as Dictionary).is_empty() and not (target.get("rune", {}) as Dictionary).is_empty():
 		result["returned_rune"] = (source["rune"] as Dictionary).duplicate(true)
 		var returned_size: Vector2i = BackpackInventory.size_for("rune", str(source["rune"]["id"]))
 		result["cells_freed"] = maxi(0, int(result["cells_freed"]) - returned_size.x * returned_size.y) if error.is_empty() else 0
 	if definition.kind == "weapon":
-		result["damage_before"] = definition.damage * stat("damage") * BackpackInventory.rank_multiplier(int(target["rank"]))
-		result["damage_after"] = definition.damage * stat("damage") * BackpackInventory.rank_multiplier(result_rank)
-		result["combined_damage_before"] = float(result["damage_before"]) * 2.0
+		result["damage_before"] = weapon_damage(target)
+		result["source_damage_before"] = weapon_damage(source)
+		result["combined_damage_before"] = float(result["damage_before"]) + float(result["source_damage_before"])
+		var projected_resonance: Dictionary = BackpackResonance.evaluate(projected_items)
+		var merged_target: Dictionary = target.duplicate(true)
+		merged_target["rank"] = result_rank
+		merged_target["resonance_bonus"] = float((projected_resonance.get(target_uid, {}) as Dictionary).get("bonus", 0.0)) if error.is_empty() else float((_resonance.get(target_uid, {}) as Dictionary).get("bonus", 0.0))
+		result["damage_after"] = weapon_damage(merged_target)
+		result["resonance_before"] = float((_resonance.get(target_uid, {}) as Dictionary).get("bonus", 0.0))
+		result["resonance_after"] = merged_target["resonance_bonus"]
 		result["interval"] = definition.cooldown / stat("attack_speed")
 	elif definition.kind == "relic":
 		var changes: Array[Dictionary] = []
@@ -344,10 +366,13 @@ func _sync_backpack_projection() -> void:
 	rune_bag.clear()
 	relic_counts.clear()
 	var entries: Array = backpack.snapshot()["items"]
+	_resonance = BackpackResonance.evaluate(entries)
 	entries.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return int(a["uid"]) < int(b["uid"]))
 	for entry: Dictionary in entries:
 		match str(entry["kind"]):
-			"weapon": loadout.append({"uid": entry["uid"], "id": entry["id"], "rank": entry["rank"], "paid": entry["paid"], "rune": (entry["rune"] as Dictionary).duplicate(true)})
+			"weapon":
+				var resonance: Dictionary = _resonance.get(int(entry["uid"]), {})
+				loadout.append({"uid": entry["uid"], "id": entry["id"], "rank": entry["rank"], "paid": entry["paid"], "rune": (entry["rune"] as Dictionary).duplicate(true), "resonance_bonus": float(resonance.get("bonus", 0.0)), "resonance_sources": (resonance.get("source_uids", []) as Array).duplicate()})
 			"rune": rune_bag.append({"uid": entry["uid"], "id": entry["id"], "rank": entry["rank"], "paid": entry["paid"]})
 			"relic": relic_counts[entry["id"]] = int(relic_counts.get(entry["id"], 0)) + int(BackpackInventory.rank_multiplier(int(entry["rank"])))
 	_next_rune_uid = int(backpack.snapshot()["next_uid"])
@@ -538,6 +563,59 @@ func purchase_error(index: int) -> String:
 		return "背包空间不足。"
 	return ""
 
+func weapon_purchase_preview(index: int) -> Dictionary:
+	if index < 0 or index >= offers.size():
+		return {}
+	var offer: Dictionary = offers[index]
+	if str(offer.get("kind", "")) != "weapon":
+		return {}
+	var definition: ContentDef = GameCatalog.weapon(str(offer.get("id", "")))
+	if definition == null:
+		return {}
+	var error: String = purchase_error(index)
+	var placement: Dictionary = {} if bool(offer.get("sold", false)) else backpack.find_space("weapon", definition.id)
+	var result: Dictionary = {"id": definition.id, "can_buy": error.is_empty(), "error": error,
+		"has_projection": not placement.is_empty(), "placement_available": not placement.is_empty(),
+		"damage": 0.0, "resonance_bonus": 0.0, "resonance_sources": [], "placement": placement.duplicate(true),
+		"shots": definition.shots, "interval": definition.cooldown / stat("attack_speed")}
+	if placement.is_empty():
+		return result
+	var snapshot: Dictionary = backpack.snapshot()
+	var purchased: Dictionary = _projected_purchase_item(snapshot, "weapon", definition.id, placement)
+	var projected: Array = snapshot["items"]
+	projected.append(purchased)
+	var resonance: Dictionary = (BackpackResonance.evaluate(projected).get(int(purchased["uid"]), {}) as Dictionary)
+	purchased["resonance_bonus"] = float(resonance.get("bonus", 0.0))
+	result["damage"] = weapon_damage(purchased)
+	result["resonance_bonus"] = purchased["resonance_bonus"]
+	result["resonance_sources"] = (resonance.get("source_uids", []) as Array).duplicate()
+	return result
+
+static func _projected_purchase_item(snapshot: Dictionary, kind: String, id: String, placement: Dictionary) -> Dictionary:
+	return {"uid": int(snapshot["next_uid"]), "kind": kind, "id": id, "rank": 1,
+		"x": placement["cell"].x, "y": placement["cell"].y, "rotated": placement["rotated"], "paid": 0, "rune": {}}
+
+func _projected_weapon_changes(entries: Array, damage_multiplier: float, attack_speed: float) -> Array[Dictionary]:
+	var resonance: Dictionary = BackpackResonance.evaluate(entries)
+	var changes: Array[Dictionary] = []
+	for entry: Dictionary in entries:
+		if str(entry.get("kind", "")) != "weapon":
+			continue
+		var index: int = weapon_index_for_uid(int(entry["uid"]))
+		if index < 0:
+			continue
+		var current: Dictionary = loadout[index]
+		var definition: ContentDef = GameCatalog.weapon(str(entry["id"]))
+		var before: float = float(current.get("resonance_bonus", 0.0))
+		var after: float = float((resonance.get(int(entry["uid"]), {}) as Dictionary).get("bonus", 0.0))
+		var projected: Dictionary = entry.duplicate(true)
+		projected["resonance_bonus"] = after
+		changes.append({"slot": index, "uid": entry["uid"], "id": entry["id"], "rank": entry["rank"], "shots": definition.shots,
+			"damage_before": weapon_damage(current), "damage_after": weapon_damage(projected, damage_multiplier),
+			"interval_before": definition.cooldown / stat("attack_speed"), "interval_after": definition.cooldown / attack_speed,
+			"resonance_before": before, "resonance_after": after})
+	return changes
+
 func relic_purchase_preview(index: int) -> Dictionary:
 	if index < 0 or index >= offers.size():
 		return {}
@@ -553,6 +631,7 @@ func relic_purchase_preview(index: int) -> Dictionary:
 	var price: int = int(offer.get("price", 0))
 	var count: int = int(relic_counts.get(id, 0))
 	var has_projection: bool = not bool(offer.get("sold", false))
+	var placement: Dictionary = backpack.find_space("relic", id) if has_projection else {}
 	var stat_changes: Array[Dictionary] = []
 	var weapon_changes: Array[Dictionary] = []
 	var projected_health: float = health
@@ -566,28 +645,19 @@ func relic_purchase_preview(index: int) -> Dictionary:
 			var after: float = _stat_with_projected_relic(key, definition)
 			stat_changes.append({"key": key, "before": before, "after": after, "delta": after - before})
 		projected_health = _health_after_relic_purchase(health, stat("max_health"), _stat_with_projected_relic("max_health", definition))
-		var damage_before: float = stat("damage")
 		var damage_after: float = _stat_with_projected_relic("damage", definition)
-		var speed_before: float = stat("attack_speed")
 		var speed_after: float = _stat_with_projected_relic("attack_speed", definition)
-		for slot: int in loadout.size():
-			var weapon_id: String = str(loadout[slot].get("id", ""))
-			var weapon: ContentDef = GameCatalog.weapon(weapon_id)
-			if weapon == null:
-				continue
-			var rank: int = int(loadout[slot].get("rank", 1))
-			var rank_scale: float = BackpackInventory.rank_multiplier(rank)
-			weapon_changes.append({
-				"slot": slot, "id": weapon_id, "rank": rank, "shots": weapon.shots,
-				"damage_before": weapon.damage * rank_scale * damage_before, "damage_after": weapon.damage * rank_scale * damage_after,
-				"interval_before": weapon.cooldown / speed_before, "interval_after": weapon.cooldown / speed_after,
-			})
+		var snapshot: Dictionary = backpack.snapshot()
+		var projected: Array = snapshot["items"]
+		if not placement.is_empty():
+			projected.append(_projected_purchase_item(snapshot, "relic", id, placement))
+		weapon_changes = _projected_weapon_changes(projected, damage_after, speed_after)
 	return {
 		"id": id, "can_buy": can_buy, "error": error, "price": price,
 		"gold_before": gold, "gold_after": gold - price if can_buy else gold, "shortfall": maxi(0, price - gold),
 		"stack_before": count, "stack_after": count + 1 if has_projection else count, "has_projection": has_projection,
 		"stat_changes": stat_changes, "health_before": health, "health_after": projected_health,
-		"weapon_changes": weapon_changes,
+		"weapon_changes": weapon_changes, "placement_available": not placement.is_empty(), "placement": placement.duplicate(true),
 	}
 
 static func _health_after_relic_purchase(current_health: float, previous_max: float, next_max: float) -> float:
@@ -653,6 +723,7 @@ func rune_equip_preview(bag_index: int, weapon_index: int) -> Dictionary:
 	var returns_to_player: bool = weapon.return_delay > 0.0
 	return {
 		"weapon_index": weapon_index, "weapon_id": weapon_id, "rune_id": rune_id,
+		"damage": weapon_damage(loadout[weapon_index]), "resonance_bonus": float(loadout[weapon_index].get("resonance_bonus", 0.0)),
 		"weapon_rank": int(loadout[weapon_index].get("rank", 1)), "rune_rank": rune_rank,
 		"incoming_rune": incoming.duplicate(true), "returned_rune": previous.duplicate(true),
 		"bag_before": rune_bag.size(), "bag_after": rune_bag.size() - 1 + (0 if previous.is_empty() else 1),

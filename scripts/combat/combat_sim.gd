@@ -53,6 +53,7 @@ class Shot:
 	var rune: String = ""
 	var weapon_rank: int = 1
 	var rune_rank: int = 1
+	var resonance_bonus: float = 0.0
 	var remaining: int = 0
 	var innate_remaining: int = 0
 	var return_after: float = 0.0
@@ -460,7 +461,7 @@ func _update_weapons(delta: float) -> void:
 		var fired: bool = false
 		for pellet: int in definition.shots:
 			var offset: float = (float(pellet) - float(definition.shots - 1) * 0.5) * definition.spread
-			var shot: Shot = fire_weapon(str(equipped["id"]), rune, player_position, Vector2.from_angle(angle + offset), int(equipped.get("rank", 1)), int(rune_entry.get("rank", 1)))
+			var shot: Shot = fire_weapon(str(equipped["id"]), rune, player_position, Vector2.from_angle(angle + offset), int(equipped.get("rank", 1)), int(rune_entry.get("rank", 1)), float(equipped.get("resonance_bonus", 0.0)))
 			if shot != null:
 				shot.low_health_priority = _linked_weapons.has(uid)
 			fired = fired or shot != null
@@ -476,7 +477,7 @@ func _fire_chorus(uid: int, equipped: Dictionary, rune_entry: Dictionary, angle:
 	var emitted: bool = false
 	for side: float in [-1.0, 1.0]:
 		var extra: Shot = fire_weapon("bone", str(rune_entry.get("id", "")), player_position,
-			Vector2.from_angle(angle + side * RogueRules.CHORUS_ANGLE), int(equipped.get("rank", 1)), int(rune_entry.get("rank", 1)))
+			Vector2.from_angle(angle + side * RogueRules.CHORUS_ANGLE), int(equipped.get("rank", 1)), int(rune_entry.get("rank", 1)), float(equipped.get("resonance_bonus", 0.0)))
 		if extra != null:
 			extra.damage *= RogueRules.CHORUS_FACTOR
 			extra.low_health_priority = _linked_weapons.has(uid)
@@ -507,7 +508,7 @@ func _weapon_target(point: Vector2, distance: float, slowed_first: bool, low_hea
 		return _weapon_target(point, distance, false, low_health_first, excluded)
 	return result
 
-func fire_weapon(weapon_id: String, rune_id: String, position: Vector2, direction: Vector2, weapon_rank: int = 1, rune_rank: int = 1) -> Shot:
+func fire_weapon(weapon_id: String, rune_id: String, position: Vector2, direction: Vector2, weapon_rank: int = 1, rune_rank: int = 1, resonance_bonus: float = 0.0) -> Shot:
 	var shot: Shot = _allocate_shot()
 	if shot == null:
 		return null
@@ -518,7 +519,8 @@ func fire_weapon(weapon_id: String, rune_id: String, position: Vector2, directio
 	shot.radius = definition.projectile_radius
 	shot.weapon_rank = clampi(weapon_rank, 1, 3)
 	shot.rune_rank = clampi(rune_rank, 1, 3)
-	shot.damage = definition.damage * run.stat("damage") * BackpackInventory.rank_multiplier(shot.weapon_rank)
+	shot.resonance_bonus = clampf(resonance_bonus, 0.0, BackpackResonance.MAX_BONUS) if is_finite(resonance_bonus) else 0.0
+	shot.damage = definition.damage * run.stat("damage") * BackpackInventory.rank_multiplier(shot.weapon_rank) * (1.0 + shot.resonance_bonus)
 	shot.source = weapon_id
 	shot.attacker_id = ""
 	shot.rune = rune_id
@@ -546,6 +548,7 @@ func _allocate_shot() -> Shot:
 	shot.innate_remaining = 0
 	shot.weapon_rank = 1
 	shot.rune_rank = 1
+	shot.resonance_bonus = 0.0
 	shot.return_after = 0.0
 	shot.return_speed = 0.0
 	shot.returning = false

@@ -1,0 +1,70 @@
+{
+	"average_fps": 95.7535228997567,
+	"core_activations": {
+		"bone_chorus": 46,
+		"frostfire": 0
+	},
+	"core_id": "bone_chorus",
+	"damage_by_weapon": {
+		"bone": 151549.824999989,
+		"comet": 1512725.62499921,
+		"crescent": 1267922.24999965,
+		"ember": 383242.612499996,
+		"frost": 429336.737499503,
+		"return_ring": 1532534.40000433,
+		"scatter": 136998.59999998,
+		"storm": 158101.537499998
+	},
+	"duration_seconds": 60.0,
+	"enemies": 300,
+	"enemy_hit_visual_revision": "tempered-hit-v1",
+	"impact_draw_commands_at_end": 8,
+	"impact_visual_capacity": 32,
+	"impact_visual_peak": 32,
+	"impact_visual_revision": "primary-impact-v1",
+	"internal_resolution": "1280x720",
+	"os": "macOS",
+	"p99_frame_ms": 26.109,
+	"passed": true,
+	"persistent_profile": false,
+	"pickups": 200,
+	"primary_hits": 98556,
+	"projectile_families_at_end": {
+		"bone:bounce": 20,
+		"comet:blast": 10,
+		"comet:bounce": 147,
+		"crescent:blast": 96,
+		"crescent:pierce": 3,
+		"ember:pierce": 52,
+		"frost:blast": 32,
+		"return_ring:blast": 52,
+		"return_ring:pierce": 11,
+		"scatter:blast": 2,
+		"scatter:bounce": 81,
+		"storm:bounce": 4,
+		"storm:pierce": 90
+	},
+	"projectile_visual_revision": "arsenal-atlas-v5",
+	"projectiles": 600,
+	"renderer": "gl_compatibility",
+	"run_seed": 20261026,
+	"rune_visual_peak": 32,
+	"samples": 5746,
+	"scenario": "content-feedback",
+	"secondary_hits": 367289,
+	"settings": {
+		"flash": true,
+		"shake": true,
+		"volume": 0.65
+	},
+	"weapon_ids": [
+		"bone",
+		"frost",
+		"ember",
+		"scatter",
+		"crescent",
+		"storm",
+		"comet",
+		"return_ring"
+	]
+}

@@ -49,3 +49,8 @@ reports/backpack/*.jsonl
 reports/backpack/*.png
 reports/backpack/*.import
 reports/backpack/*-raw.json
+reports/resonance/*.log
+reports/resonance/*.jsonl
+reports/resonance/*.png
+reports/resonance/*.import
+reports/resonance/*-raw.json

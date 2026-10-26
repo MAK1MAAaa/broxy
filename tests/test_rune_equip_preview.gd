@@ -94,6 +94,7 @@ func _test_inventory_matrix() -> void:
 					var label: String = "%s/%s/old=%s/full=%s" % [weapon.id, incoming, previous, full]
 					_check(preview["weapon_index"] == 0 and preview["weapon_id"] == weapon.id and preview["rune_id"] == incoming and preview["shots"] == weapon.shots, "Preview identifies the exact destination and independent volley size: " + label)
 					_check(preview["incoming_rune"] == state.rune_bag[selected] and preview["returned_rune"] == state.loadout[0]["rune"], "Incoming and returned records preserve paid price and UID: " + label)
+					_check(is_equal_approx(float(preview["damage"]), state.weapon_damage(state.loadout[0])) and is_equal_approx(float(preview["resonance_bonus"]), float(state.loadout[0].get("resonance_bonus", 0.0))), "Rune preview includes current actual weapon damage and local resonance: " + label)
 					var expected_bag: Array[Dictionary] = state.rune_bag.duplicate(true)
 					expected_bag.remove_at(selected)
 					if not previous.is_empty():
