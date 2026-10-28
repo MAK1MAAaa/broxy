@@ -90,3 +90,8 @@ reports/gamepad-reading/*.jsonl
 reports/gamepad-reading/*.png
 reports/gamepad-reading/*.import
 reports/gamepad-reading/*-raw.json
+reports/backpack-focus/*.log
+reports/backpack-focus/*.jsonl
+reports/backpack-focus/*.png
+reports/backpack-focus/*.import
+reports/backpack-focus/*-raw.json

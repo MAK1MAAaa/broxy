@@ -8,6 +8,7 @@ signal merge_requested(source_uid: int, target_uid: int)
 signal rune_requested(source_uid: int, target_uid: int)
 signal holding_changed(uid: int, rotated: bool, cell: Vector2i)
 signal hint_changed(text: String)
+signal placement_cancelled(uid: int)
 
 const CELL: float = 50.0
 const INK := Color("10141e")
@@ -128,9 +129,11 @@ func begin_placement(uid: int, rotated: Variant = null, cell: Variant = null) ->
 	_refresh_selection()
 	_refresh_preview()
 
-func cancel_placement() -> bool:
+func cancel_placement(restore_focus: bool = false) -> bool:
 	if held_uid < 0:
 		return false
+	var source_uid: int = held_uid
+	var native_drag: bool = _native_dragging
 	held_uid = -1
 	_reset_joy_axes()
 	_grab_offset = Vector2i.ZERO
@@ -141,6 +144,8 @@ func cancel_placement() -> bool:
 	_refresh_resonance()
 	if is_instance_valid(_preview):
 		_preview.queue_redraw()
+	if restore_focus and not native_drag:
+		placement_cancelled.emit(source_uid)
 	return true
 
 func rotate_held() -> void:
@@ -316,7 +321,7 @@ func _input(event: InputEvent) -> void:
 			return
 		match event.button_index:
 			JOY_BUTTON_A: commit_placement()
-			JOY_BUTTON_B: cancel_placement()
+			JOY_BUTTON_B: cancel_placement(true)
 			JOY_BUTTON_X: rotate_held()
 			JOY_BUTTON_DPAD_LEFT: cursor.x -= 1
 			JOY_BUTTON_DPAD_RIGHT: cursor.x += 1
@@ -372,17 +377,18 @@ func _handle_key(event: InputEventKey) -> void:
 		return
 	match event.keycode:
 		KEY_R: rotate_held()
-		KEY_ESCAPE: cancel_placement()
+		KEY_ESCAPE: cancel_placement(true)
 		KEY_ENTER, KEY_KP_ENTER: commit_placement()
 		KEY_LEFT: cursor.x -= 1
 		KEY_RIGHT: cursor.x += 1
 		KEY_UP: cursor.y -= 1
 		KEY_DOWN: cursor.y += 1
 		_: return
-	if not _native_dragging:
-		cursor.x = clampi(cursor.x, 0, int(_snapshot.get("width", 6)) - 1)
-		cursor.y = clampi(cursor.y, 0, int(_snapshot.get("height", 4)) - 1)
-	_refresh_preview()
+	if held_uid >= 0:
+		if not _native_dragging:
+			cursor.x = clampi(cursor.x, 0, int(_snapshot.get("width", 6)) - 1)
+			cursor.y = clampi(cursor.y, 0, int(_snapshot.get("height", 4)) - 1)
+		_refresh_preview()
 	get_viewport().set_input_as_handled()
 
 func _activate_item(uid: int) -> void:

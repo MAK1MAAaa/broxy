@@ -819,18 +819,21 @@ func handle_back() -> bool:
 	if _overlay_mode == "settings_title":
 		hide_pause()
 		return true
-	if _screen == "shop" and is_instance_valid(_bag_grid) and _bag_grid.cancel_placement():
+	if _screen == "shop" and is_instance_valid(_bag_grid) and _bag_grid.cancel_placement(true):
 		return true
 	return false
 
 
 func _begin_overlay(mode: String) -> void:
 	_clear_controls_modal_state()
+	var holding_source: Button
 	if is_instance_valid(_bag_grid):
+		if _bag_grid.held_uid >= 0 and not get_viewport().gui_is_dragging():
+			holding_source = _shop_focus_button("bag_move:%d" % int(_bag_grid.held_uid))
 		_bag_grid.cancel_placement()
 		_bag_grid.interaction_enabled = false
 	if _overlay_mode.is_empty():
-		var current: Control = get_viewport().gui_get_focus_owner()
+		var current: Control = holding_source if holding_source != null else get_viewport().gui_get_focus_owner()
 		_page_focus = current if current != null and _page.is_ancestor_of(current) else null
 		_page_focus_id = str(current.get_meta("shop_focus_id", "")) if _page_focus != null else ""
 	_overlay_mode = mode
@@ -1088,7 +1091,7 @@ func _build_shop() -> void:
 	var next := _shop_button("开始下一波", _next_wave, "next_wave", Vector2(210, 46))
 	_accent(next)
 	footer.add_child(next)
-	_restore_shop_focus.call_deferred(focus_id)
+	_restore_shop_focus.call_deferred(focus_id, _shop_epoch)
 
 
 func _show_rogue_choices(keep_notice: bool = false) -> void:
@@ -1312,6 +1315,7 @@ func _build_backpack(parent: Control) -> void:
 	_bag_grid.rune_requested.connect(_bp_equip.bind(_shop_epoch))
 	_bag_grid.holding_changed.connect(_bp_holding.bind(_shop_epoch))
 	_bag_grid.hint_changed.connect(_bp_hint.bind(_shop_epoch))
+	_bag_grid.placement_cancelled.connect(_bp_cancelled.bind(_shop_epoch))
 	columns.add_child(_bag_grid)
 	var scroll := ScrollContainer.new()
 	scroll.name = "BackpackDetailsScroll"
@@ -1507,6 +1511,16 @@ func _bp_hint(text: String, epoch: int) -> void:
 		_bag_status.text = text
 
 
+func _bp_cancelled(uid: int, epoch: int) -> void:
+	if not _bp_guard(uid, epoch) or uid != _bag_selected_uid or _bag_grid.held_uid >= 0 or not _bag_grid.interaction_enabled or get_viewport().gui_is_dragging():
+		return
+	var target: Button = _shop_focus_button("bag_move:%d" % uid)
+	if target == null:
+		target = _shop_focus_button("bag:%d" % uid)
+	if target != null:
+		target.grab_focus()
+
+
 func _bp_pick_up(uid: int) -> void:
 	if _bp_guard(uid, _shop_epoch) and uid == _bag_selected_uid:
 		_bag_grid.begin_placement(uid)
@@ -1523,42 +1537,54 @@ func _bp_rotate(uid: int) -> void:
 func _bp_move(uid: int, cell: Vector2i, rotated: bool, epoch: int) -> void:
 	if not _bp_guard(uid, epoch):
 		return
-	_bp_complete(run.move_item(uid, cell, rotated), "物品已放置。")
+	_bp_complete(run.move_item(uid, cell, rotated), "物品已放置。", uid)
 
 
 func _bp_merge(source: int, target: int, epoch: int) -> void:
 	if source != _bag_selected_uid or not _bp_guard(source, epoch) or not _bp_guard(target, epoch):
 		return
 	var success: bool = run.merge_items(source, target)
-	if success:
-		_bag_selected_uid = target
-	_bp_complete(success, "合成完成；目标物品升阶，位置保持。")
+	_bp_complete(success, "合成完成；目标物品升阶，位置保持。", target)
 
 
 func _bp_equip(source: int, target: int, epoch: int) -> void:
 	if source != _bag_selected_uid or not _bp_guard(source, epoch) or not _bp_guard(target, epoch):
 		return
-	_bp_complete(run.equip_rune(run.rune_index_for_uid(source), run.weapon_index_for_uid(target)), "符文已装入；原符文退回背包。")
+	_bp_complete(run.equip_rune(run.rune_index_for_uid(source), run.weapon_index_for_uid(target)), "符文已装入；原符文退回背包。", target)
 
 
 func _bp_unequip(uid: int) -> void:
 	if _bp_guard(uid, _shop_epoch) and uid == _bag_selected_uid:
-		_bp_complete(run.unequip_rune(run.weapon_index_for_uid(uid)), "符文已拆下，放入背包空格。")
+		_bp_complete(run.unequip_rune(run.weapon_index_for_uid(uid)), "符文已拆下，放入背包空格。", uid)
 
 
 func _bp_sell(uid: int) -> void:
 	if _bp_guard(uid, _shop_epoch) and uid == _bag_selected_uid:
-		_bp_complete(run.sell_item(uid), "物品已出售。")
+		var items: Array = run.backpack_snapshot()["items"]
+		var index: int = 0
+		for item: Dictionary in items:
+			if int(item["uid"]) == uid:
+				break
+			index += 1
+		var success: bool = run.sell_item(uid)
+		var remaining: Array = run.backpack_snapshot()["items"]
+		var next_uid: int = int(remaining[mini(index, remaining.size() - 1)]["uid"]) if success and not remaining.is_empty() else uid
+		_bp_complete(success, "物品已出售。", next_uid)
 
 
 func _bp_expand() -> void:
 	if not _bp_allowed(_shop_epoch):
 		return
-	_bp_complete(run.expand_backpack(), "背包已解锁一排格子。")
+	_requested_shop_focus = "bag_expand"
+	_handle_action(run.expand_backpack(), "buy", "背包已解锁一排格子。")
 
 
-func _bp_complete(success: bool, message: String) -> void:
+func _bp_complete(success: bool, message: String, result_uid: int) -> void:
 	if success and is_instance_valid(_bag_grid):
+		var native_drag: bool = get_viewport().gui_is_dragging() or bool(_bag_grid._native_dragging)
+		_bag_selected_uid = result_uid
+		_selected_rune = run.rune_index_for_uid(result_uid)
+		_requested_shop_focus = ("bag:%d" if native_drag else "bag_move:%d") % result_uid
 		_bag_grid.cancel_placement()
 	_handle_action(success, "buy", message if success else "")
 
@@ -2646,8 +2672,8 @@ func _perform_shop_action(action: Callable, epoch: int) -> void:
 	action.call()
 
 
-func _restore_shop_focus(focus_id: String) -> void:
-	if _screen != "shop" or _overlay.get_child_count() > 0:
+func _restore_shop_focus(focus_id: String, epoch: int = -1) -> void:
+	if _screen != "shop" or _refresh_queued or _overlay.get_child_count() > 0 or get_viewport().gui_is_dragging() or (epoch >= 0 and epoch != _shop_epoch):
 		return
 	if is_instance_valid(_bag_grid) and _bag_held_uid >= 0 and int(_bag_grid.held_uid) == _bag_held_uid:
 		_bag_grid.grab_focus()
@@ -2669,6 +2695,10 @@ func _restore_shop_focus(focus_id: String) -> void:
 			target = _shop_focus_button("sell_rune:%d" % int(rune["uid"]))
 			if target != null:
 				break
+	elif target == null and operation.begins_with("bag"):
+		target = _shop_focus_button("bag_move:%d" % _bag_selected_uid)
+		if target == null:
+			target = _shop_focus_button("bag:%d" % _bag_selected_uid)
 	if target == null:
 		for index: int in range(run.offers.size()):
 			target = _shop_focus_button("buy:%d" % index)
@@ -2869,6 +2899,8 @@ func _focus_later(control: Control) -> void:
 	# A screen may be replaced again before its deferred focus request runs.
 	var request: Callable = func() -> void:
 		if not is_instance_valid(control) or not control.is_inside_tree() or not control.is_visible_in_tree():
+			return
+		if get_viewport().gui_is_dragging() and not _overlay.is_ancestor_of(control):
 			return
 		# A delayed underlying-page rebuild must never steal a modal's focus.
 		if not _overlay_mode.is_empty() and not _overlay.is_ancestor_of(control):
