@@ -110,3 +110,11 @@ reports/buttons/*.log
 reports/buttons/*.png
 reports/buttons/*.import
 reports/buttons/*-raw.json
+reports/title-cover/*.log
+reports/title-cover/*.png
+reports/title-cover/*.gif
+reports/title-cover/*.import
+reports/title-cover/*-raw.json
+reports/title-cover/frames/
+reports/title-cover/ui-frames/
+reports/title-cover/*/

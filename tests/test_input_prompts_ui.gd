@@ -121,7 +121,7 @@ func _test_observation_and_title() -> void:
 	await _settle()
 	var tracker := _ui.find_child("InputDeviceTracker", false, false) as InputDeviceTracker
 	_check(tracker != null and _ui.get_child(_ui.get_child_count() - 1) == tracker and tracker.process_mode == Node.PROCESS_MODE_ALWAYS, "The always-processing observer is the UI's last child so GUI-consumed input is observed first")
-	_check(_kind() == "keyboard" and _title_note().text.contains("冲刺空格") and _title_note().text.contains("脉冲Q"), "Fresh UI prompts retain the current default keyboard controls")
+	_check(_kind() == "keyboard" and _title_note() == null and _ui._controls == ControlBindings.defaults(), "Fresh UI retains the default keyboard mapping without adding title instructions")
 	var snapshot: Dictionary = _ui.input_device_snapshot()
 	snapshot["kind"] = "gamepad"
 	_check(_kind() == "keyboard", "The public device snapshot is detached from its observer state")
@@ -133,7 +133,7 @@ func _test_observation_and_title() -> void:
 	await _joy(JOY_BUTTON_A)
 	await _settle()
 	_check(_kind() == "gamepad" and int(_ui.input_device_snapshot().get("gamepad_id", -1)) == 7 and _ui._overlay_mode == "settings_title", "A real A event updates the device even when the GUI consumes it to open settings")
-	_check(_title_note().text.contains("左杆") and _title_note().text.contains("十字") and _title_note().text.contains("冲刺A") and _title_note().text.contains("脉冲X") and _title_note().text.contains("Start暂停"), "The existing title hint switches to fixed gamepad controls")
+	_check(_title_note() == null and _ui._screen == "title" and root.gui_get_focus_owner() != null and _ui._overlay.is_ancestor_of(root.gui_get_focus_owner()), "Device observation preserves the real settings focus without recreating title instructions")
 	var focus: Control = root.gui_get_focus_owner()
 	var before: String = _state_signature(_state)
 	await _pointer(Vector2(15, 15), false)
@@ -146,18 +146,22 @@ func _test_observation_and_title() -> void:
 	_ui.hide_pause()
 	var long_bindings: Dictionary = {"move_up": KEY_SCROLLLOCK, "move_down": KEY_BACKSPACE, "move_left": KEY_KP_MULTIPLY, "move_right": KEY_KP_SUBTRACT, "dash": KEY_PAGEDOWN, "pulse": KEY_CAPSLOCK}
 	_ui.set_controls(long_bindings)
+	_ui._show_settings(false)
+	_ui._show_controls(false)
+	await _settle()
 	for physical_size: Vector2i in [Vector2i(1280, 720), Vector2i(960, 540)]:
 		root.size = physical_size
 		await _settle()
-		var note: Label = _title_note()
-		var keyboard_text: String = note.text
+		var panel := _ui.find_child("ControlsPanel", true, false) as Control
 		await _joy()
-		_check(note.text.contains("Start暂停") and root.get_visible_rect().encloses(note.get_global_rect()), "Gamepad title hints fit the actual scaled window: " + str(physical_size))
+		_check(_kind() == "gamepad" and _title_note() == null and panel != null and root.get_visible_rect().encloses(panel.get_global_rect()), "Gamepad observation keeps the actual controls panel in the scaled viewport without title copy: " + str(physical_size))
 		await _key(KEY_F13)
 		await _settle()
-		_check(note.text == keyboard_text and note.size.x + 0.1 >= note.get_minimum_size().x and root.get_visible_rect().encloses(note.get_global_rect()), "Returning to keyboard restores the full configured long-key title without clipping: " + str(physical_size))
+		_check(_kind() == "keyboard" and _ui._controls == long_bindings and panel != null and root.get_visible_rect().encloses(panel.get_global_rect()), "Returning to keyboard preserves the real configured controls and panel bounds: " + str(physical_size))
 		for action: String in ControlBindings.ACTIONS:
-			_check(note.text.contains(ControlBindings.key_label(int(long_bindings[action]))), "Returning from gamepad retains the configured keyboard key: " + action)
+			var binding := _button("Bind_" + action)
+			_check(binding != null and binding.text == ControlBindings.key_label(int(long_bindings[action])) and binding.size.x + 0.1 >= binding.get_minimum_size().x and root.get_visible_rect().encloses(binding.get_global_rect()), "Returning from gamepad retains the complete key in its actual settings button: " + action)
+	_ui.hide_pause()
 	_ui.set_controls(ControlBindings.defaults())
 	root.size = Vector2i(1280, 720)
 
@@ -291,7 +295,15 @@ func _test_backpack_prompts() -> void:
 	_check(hint.text == "保留这条实际交易拒绝原因。" and grid.held_uid < 0, "An idle device switch never replaces a real transaction error with a fake placement or generic instruction")
 	_ui.show_title({})
 	await _settle()
-	_check(_title_note().text.contains("Start暂停"), "A new screen inherits the observer's actual current device instead of resetting prompts to keyboard")
+	var inherited_gamepad: bool = _kind() == "gamepad" and _title_note() == null
+	var inherited_bindings: Dictionary = _ui._controls.duplicate(true)
+	var replacement_sim := CombatSim.new()
+	replacement_sim.begin(_state)
+	var ready_clocks: Array = [replacement_sim.dash_snapshot(), replacement_sim.pulse_snapshot()]
+	_ui.show_hud()
+	_ui.update_hud(replacement_sim.snapshot())
+	await _settle()
+	_check(inherited_gamepad and inherited_bindings == ControlBindings.defaults() and _ui._controls == inherited_bindings and (_ui._hud["dash_label"] as Label).text == "冲刺 · A" and (_ui._hud["pulse_label"] as Label).text == "脉冲 · X" and ready_clocks == [replacement_sim.dash_snapshot(), replacement_sim.pulse_snapshot()], "A replacement screen inherits the actual device and unchanged legal bindings, and displays the real ready simulation's HUD keys without title copy")
 	await _key(KEY_F13)
-	_check(_kind() == "keyboard" and _title_note().text.contains("冲刺空格"), "A later keyboard event restores default hints on the replacement screen")
+	_check(_kind() == "keyboard" and _ui._controls == inherited_bindings and (_ui._hud["dash_label"] as Label).text == "冲刺 · 空格" and (_ui._hud["pulse_label"] as Label).text == "脉冲 · Q" and ready_clocks == [replacement_sim.dash_snapshot(), replacement_sim.pulse_snapshot()], "A later keyboard event restores the same legal default HUD keys without changing either real skill clock")
 	root.size = Vector2i(1280, 720)

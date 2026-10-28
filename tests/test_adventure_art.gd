@@ -43,7 +43,7 @@ func _settle() -> void:
 func _test_path_contract() -> void:
 	_check(AdventureArt.path("res://assets/sprites/player.svg") == ART_ROOT + "sprites/player.svg", "An original sprite selects its presentation-only replacement")
 	_check(AdventureArt.path("res://assets/maps/mire.svg") == ART_ROOT + "maps/mire.svg", "An original map selects its replacement without changing catalog data")
-	_check(AdventureArt.path("res://assets/menu_art.svg") == ART_ROOT + "menu_art.png", "The title selects its original generated PNG illustration")
+	_check(AdventureArt.path("res://assets/menu_art.svg") == ART_ROOT + "menu_art.png", "Legacy menu references retain their preserved static illustration")
 	for source: String in ["res://assets/audio/dash.wav", "res://assets/icons/example.png", "res://other/example.svg", "https://example.test/example.svg", ""]:
 		_check(AdventureArt.path(source) == source, "Audio, non-SVG and external resources keep their original path: " + source)
 
@@ -225,7 +225,7 @@ func _test_real_inventory_presentation() -> void:
 	var before: String = _run_signature(state)
 	ui.show_title({})
 	await _settle()
-	_check(_count_texture(ui._page, ART_ROOT + "menu_art.png") == 1, "The real title displays the generated menu artwork")
+	_check(_count_texture(ui._page, TitleCover.BASE_PATH) == 1, "The real title displays its full-screen animated cover's actual base texture")
 	var starter := ui.find_child("Starter_bone", true, false) as Button
 	_check(starter != null and starter.icon != null and starter.icon.resource_path == ART_ROOT + "icons/bone.svg" and starter.texture_filter == CanvasItem.TEXTURE_FILTER_NEAREST, "The actual starter choice loads its new icon without changing its identity")
 	for id: String in ArenaCatalog.IDS:

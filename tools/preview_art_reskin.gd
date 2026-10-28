@@ -23,6 +23,9 @@ func _preview() -> void:
 	var ui := GameUI.new()
 	root.add_child(ui)
 	ui.show_title({})
+	var cover := ui.find_child("MenuArtwork", true, false) as TitleCover
+	if cover != null:
+		cover.set_frame(0)
 	if settings:
 		ui._show_settings(false)
 	for frame: int in 4:

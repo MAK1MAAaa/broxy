@@ -56,7 +56,7 @@ func _run() -> void:
 	await _test_layout_restore_and_stale_callbacks()
 	await _test_paused_joypad_navigation()
 	await _test_mapped_hud()
-	await _test_long_title_bindings()
+	await _test_long_bindings_in_settings()
 	_check(_input_map_signature() == input_map_before, "UI editing and synthetic navigation never install or modify global gameplay or ui_* InputMap actions")
 	paused = false
 	_ui.queue_free()
@@ -243,8 +243,11 @@ func _test_layout_restore_and_stale_callbacks() -> void:
 	custom["dash"] = KEY_F
 	_ui.set_controls(custom)
 	custom["dash"] = KEY_Z
-	var title := _ui.find_child("TitleControls", true, false) as Label
-	_check(title != null and title.text.contains("冲刺F") and int(_ui._controls["dash"]) == KEY_F and _emissions.size() == count, "Loading controls updates the title from a detached mapping without an unsolicited save signal")
+	var title_has_no_copy: bool = _ui.find_child("TitleControls", true, false) == null
+	_ui._show_settings(false)
+	_ui._show_controls(false)
+	await _settle()
+	_check(title_has_no_copy and _button("Bind_dash").text == "F" and int(_ui._controls["dash"]) == KEY_F and _emissions.size() == count, "Loading detached controls updates the actual settings button without title copy or an unsolicited save signal")
 	root.size = Vector2i(1280, 720)
 
 func _test_paused_joypad_navigation() -> void:
@@ -313,21 +316,25 @@ func _test_mapped_hud() -> void:
 	_check(not _ui._toast.visible and not _ui._hud.has("bag_info") and _ui.find_child("HUDMapInfo", true, false) == null, "Control hints do not restore removed battle notifications or lower-right descriptions")
 	_ui.set_controls(ControlBindings.defaults())
 
-func _test_long_title_bindings() -> void:
+func _test_long_bindings_in_settings() -> void:
 	await _key(KEY_F6)
 	var bindings: Dictionary = {"move_up": KEY_SCROLLLOCK, "move_down": KEY_BACKSPACE, "move_left": KEY_KP_MULTIPLY, "move_right": KEY_KP_SUBTRACT, "dash": KEY_PAGEDOWN, "pulse": KEY_CAPSLOCK}
-	_check(ControlBindings.normalize(bindings) == bindings, "The title-width fixture uses six distinct formally valid long key names")
+	_check(ControlBindings.normalize(bindings) == bindings, "The settings-width fixture uses six distinct formally valid long key names")
 	_ui.set_controls(bindings)
 	_ui.show_title({})
+	await _settle()
+	_ui._show_settings(false)
+	_ui._show_controls(false)
 	await _settle()
 	for physical_size: Vector2i in [Vector2i(1280, 720), Vector2i(960, 540)]:
 		root.size = physical_size
 		await _settle()
-		var note := _ui.find_child("TitleControls", true, false) as Label
-		_check(note != null and root.get_visible_rect().encloses(note.get_global_rect()) and note.size.x + 0.1 >= note.get_minimum_size().x, "The full title binding hint fits with four long movement keys and two long skill keys: %s (rect=%s, minimum=%s)" % [physical_size, note.get_global_rect() if note != null else Rect2(), note.get_minimum_size() if note != null else Vector2.ZERO])
-		if note != null:
-			for action: String in ControlBindings.ACTIONS:
-				_check(note.text.contains(ControlBindings.key_label(int(bindings[action]))), "The visible title hint retains the complete configured long key name: " + action)
+		var panel := _ui.find_child("ControlsPanel", true, false) as Control
+		_check(_ui.find_child("TitleControls", true, false) == null and panel != null and root.get_visible_rect().encloses(panel.get_global_rect()), "Long bindings remain in the actual settings panel, without a title hint: " + str(physical_size))
+		for action: String in ControlBindings.ACTIONS:
+			var binding := _button("Bind_" + action)
+			_check(binding != null and binding.text == ControlBindings.key_label(int(bindings[action])) and binding.size.x + 0.1 >= binding.get_minimum_size().x and root.get_visible_rect().encloses(binding.get_global_rect()), "The actual binding button retains its complete configured long key name: " + action)
+	_ui.hide_pause()
 	_ui.set_controls(ControlBindings.defaults())
 	root.size = Vector2i(1280, 720)
 

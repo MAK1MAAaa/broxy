@@ -58,6 +58,9 @@ func _preview() -> void:
 			ui._show_controls(false)
 		elif view == "pause":
 			ui.show_pause()
+	var cover := ui.find_child("MenuArtwork", true, false) as TitleCover
+	if cover != null:
+		cover.set_frame(0)
 	await _settle()
 	_move_pointer(Vector2(20, 20))
 	await _settle()

@@ -79,7 +79,7 @@ func _test_starters() -> void:
 	_check(_button("Starter_bone") != null and _button("Starter_ember") != null, "The existing starter button identities remain available")
 	_check(_button("Starter_frost").disabled and _button("Starter_scatter").disabled, "Fresh profiles expose locked horizontal options without making them selectable")
 	_check(_button("Starter_frost").focus_mode == Control.FOCUS_NONE and _button("Starter_scatter").focus_mode == Control.FOCUS_NONE and _button("Starter_ember").focus_mode == Control.FOCUS_ALL, "Locked starter cards skip keyboard traversal while unlocked cards remain focusable")
-	_check(_button("Starter_frost").tooltip_text.contains("第3波") and _button("Starter_scatter").tooltip_text.contains("追猎"), "Locked starters explain their distinct challenge unlocks")
+	_check(_button("Starter_frost").tooltip_text.is_empty() and _button("Starter_scatter").tooltip_text.is_empty() and _button("Starter_frost").get_node_or_null("SelectionMark") != null and _button("Starter_scatter").get_node_or_null("SelectionMark") != null, "Locked starters expose lock marks without explanatory hover copy")
 	_ui._select_starter("frost")
 	_ui._start()
 	_check(starts == ["bone"], "A direct locked selection cannot start a locked weapon")
@@ -99,7 +99,7 @@ func _test_starters() -> void:
 	_ui.show_title({})
 	await _settle()
 	var breathing: Control = _ui.find_child("IllustrationBreathingSpace", true, false)
-	_check(breathing.size.x >= 400 and breathing.size.y >= 260, "Four compact starter cards preserve the illustration above the two-row map selector")
+	_check(breathing.size.x >= 400 and breathing.size.y >= 260, "Compact selectors preserve the complete right-hand illustration space")
 
 func _test_core_route_and_modal() -> void:
 	var state: RunState = _state(1)

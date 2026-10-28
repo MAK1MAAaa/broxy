@@ -68,6 +68,28 @@ class RitualRule:
 		draw_rect(Rect2(center - Vector2(3, 1), Vector2(6, 2)), Color(tint, 0.8))
 
 
+class TitleChoiceMark:
+	extends Control
+
+	func _ready() -> void:
+		mouse_filter = Control.MOUSE_FILTER_IGNORE
+		focus_mode = Control.FOCUS_NONE
+		set_process(false)
+		resized.connect(queue_redraw)
+
+	func _draw() -> void:
+		var button := get_parent() as Button
+		if button == null or (not button.disabled and not button.button_pressed):
+			return
+		var point := Vector2(size.x - 16, 8)
+		draw_rect(Rect2(point - Vector2.ONE, Vector2(13, 13)), Color(GameUI.PANEL, 0.96))
+		if button.disabled:
+			draw_rect(Rect2(point + Vector2(2, 5), Vector2(7, 6)), GameUI.MUTED)
+			draw_polyline(PackedVector2Array([point + Vector2(3, 5), point + Vector2(3, 2), point + Vector2(8, 2), point + Vector2(8, 5)]), GameUI.MUTED, 2.0)
+		else:
+			draw_polyline(PackedVector2Array([point + Vector2(1, 6), point + Vector2(4, 9), point + Vector2(10, 2)]), GameUI.CYAN, 2.0, true)
+
+
 var run: RunState
 var _root: Control
 var _page: Control
@@ -180,10 +202,6 @@ func _on_input_device_changed(kind: String, _device: int) -> void:
 
 
 func _refresh_input_prompts() -> void:
-	if _page != null:
-		var title_controls := _page.find_child("TitleControls", true, false) as Label
-		if title_controls != null:
-			title_controls.text = _title_controls_text()
 	if _screen == "hud" and not _hud.is_empty() and not _hud_skill_snapshot.is_empty():
 		_update_dash_hud(_hud_skill_snapshot)
 		_update_pulse_hud(_hud_skill_snapshot)
@@ -329,22 +347,20 @@ func show_title(best: Dictionary) -> void:
 	shell.add_child(columns)
 	var left := VBoxContainer.new()
 	left.name = "TitleActions"
-	left.custom_minimum_size.x = 530
+	left.custom_minimum_size.x = 520
 	left.add_theme_constant_override("separation", 8)
 	columns.add_child(left)
-	var title := _label("EMBERS", 68, BONE)
+	var title := _label("EMBERS", 60, BONE)
 	var title_font := SystemFont.new()
 	title_font.font_names = PackedStringArray(["Trebuchet MS", "Avenir Next", "Verdana", "Arial"])
 	title_font.font_weight = 800
 	title.add_theme_font_override("font", title_font)
 	left.add_child(title)
-	left.add_child(_label("秘 术 余 烬", 27, PURPLE))
-	_rule(left)
+	left.add_child(_label("秘 术 余 烬", 24, PURPLE))
 	var start_card := _panel(left)
 	start_card.name = "StarterAltar"
-	var start_body := _inside(start_card, 16)
-	start_body.add_theme_constant_override("separation", 8)
-	_section_heading(start_body, "选择起始法器", GOLD, 18)
+	var start_body := _inside(start_card, 12)
+	start_body.add_theme_constant_override("separation", 6)
 	var starters := HBoxContainer.new()
 	starters.add_theme_constant_override("separation", 12)
 	start_body.add_child(starters)
@@ -354,32 +370,23 @@ func show_title(best: Dictionary) -> void:
 		option.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		option.add_theme_constant_override("separation", 4)
 		starters.add_child(option)
-		var card := _button(definition.display_name, _select_starter.bind(id), Vector2(0, 62))
+		var card := _button(definition.display_name, _select_starter.bind(id), Vector2(0, 58))
 		card.name = "Starter_" + id
 		card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		card.toggle_mode = true
 		card.disabled = not _unlocked_starters.has(id)
 		card.focus_mode = Control.FOCUS_NONE if card.disabled else Control.FOCUS_ALL
 		card.button_pressed = _starter == id
-		card.tooltip_text = definition.description if _unlocked_starters.has(id) else _starter_unlock_text(id)
 		card.add_theme_font_size_override("font_size", 17)
 		ButtonSkin.apply(card, "choice")
 		_set_button_icon(card, definition)
 		option.add_child(card)
-		var role := _label(definition.subtitle.get_slice(" · ", 1) if _unlocked_starters.has(id) else _starter_unlock_text(id), 11, GOLD if _starter == id else MUTED)
-		role.name = "StarterRole_" + id
-		role.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		option.add_child(role)
-	var chosen: ContentDef = GameCatalog.weapon(_starter)
-	var starter_description := _wrap(chosen.description, 14, MUTED)
-	starter_description.name = "StarterDescription"
-	start_body.add_child(starter_description)
-	var start := _button("进入试炼", _start, Vector2(0, 46))
+		_add_title_choice_mark(card)
+	_build_arena_selection(left)
+	var start := _button("进入试炼", _start, Vector2(0, 50))
 	_accent(start)
-	start_body.add_child(start)
+	left.add_child(start)
 	_focus_later(start)
-	left.add_child(_label("最佳记录", 14, GOLD))
-	left.add_child(_wrap(_best_text(best), 13, MUTED))
 	var right := VBoxContainer.new()
 	right.name = "TitleIllustrationSpace"
 	right.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -390,31 +397,11 @@ func show_title(best: Dictionary) -> void:
 	space.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	space.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	right.add_child(space)
-	_build_arena_selection(right)
 	var footer := HBoxContainer.new()
 	footer.add_theme_constant_override("separation", 12)
 	shell.add_child(footer)
 	footer.add_child(_button("设置", _show_settings.bind(false), Vector2(120, 40)))
 	footer.add_child(_button("退出游戏", _quit, Vector2(140, 40)))
-	var note := _label(_title_controls_text(), 14, MUTED)
-	note.name = "TitleControls"
-	var note_background := StyleBoxFlat.new()
-	note_background.bg_color = Color(PANEL, 0.94)
-	note_background.content_margin_left = 8
-	note_background.content_margin_right = 8
-	note.add_theme_stylebox_override("normal", note_background)
-	note.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	note.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	footer.add_child(note)
-
-
-func _title_controls_text() -> String:
-	if _input_kind == "gamepad":
-		return "左杆 / 十字移动 · 冲刺A · 脉冲X · Start暂停"
-	var movement: PackedStringArray = []
-	for action: String in ["move_up", "move_left", "move_down", "move_right"]:
-		movement.append(ControlBindings.key_label(int(_controls[action])))
-	return "%s / 方向键移动 · 冲刺%s · 脉冲%s · Esc暂停" % ["/".join(movement), ControlBindings.key_label(int(_controls["dash"])), ControlBindings.key_label(int(_controls["pulse"]))]
 
 
 func selected_arena() -> String:
@@ -434,8 +421,7 @@ func _build_arena_selection(parent: Control) -> void:
 	card.name = "ArenaSelection"
 	card.add_theme_stylebox_override("panel", _box(Color(PANEL, 0.96), Color(GOLD, 0.25)))
 	var body := _inside(card, 12)
-	body.add_theme_constant_override("separation", 8)
-	_section_heading(body, "选择地图", GOLD, 18)
+	body.add_theme_constant_override("separation", 6)
 	var grid := GridContainer.new()
 	grid.columns = 2
 	grid.add_theme_constant_override("h_separation", 10)
@@ -443,12 +429,11 @@ func _build_arena_selection(parent: Control) -> void:
 	body.add_child(grid)
 	for id: String in ArenaCatalog.IDS:
 		var definition: Dictionary = ArenaCatalog.definition(id)
-		var option := _button("", _select_arena.bind(id), Vector2(0, 122))
+		var option := _button("", _select_arena.bind(id), Vector2(0, 84))
 		option.name = "Arena_" + id
 		option.toggle_mode = true
 		option.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		option.clip_contents = true
-		option.tooltip_text = "%s\n%s" % [str(definition["subtitle"]), "你和敌人进入地形均减速，离开即恢复；可自由穿过，弹体速度不变。" if float(definition["move_multiplier"]) < 1.0 else "开阔石地，移动速度不变。"]
 		ButtonSkin.apply(option, "choice")
 		grid.add_child(option)
 		var inset := MarginContainer.new()
@@ -458,11 +443,11 @@ func _build_arena_selection(parent: Control) -> void:
 		option.add_child(inset)
 		var content := VBoxContainer.new()
 		content.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		content.add_theme_constant_override("separation", 4)
+		content.add_theme_constant_override("separation", 2)
 		inset.add_child(content)
 		var image := TextureRect.new()
 		image.name = "ArenaPreview_" + id
-		image.custom_minimum_size.y = 58
+		image.custom_minimum_size.y = 32
 		image.size_flags_vertical = Control.SIZE_EXPAND_FILL
 		image.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		image.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
@@ -473,15 +458,17 @@ func _build_arena_selection(parent: Control) -> void:
 		var name_label := _label(str(definition["name"]), 16, BONE)
 		name_label.name = "ArenaName_" + id
 		content.add_child(name_label)
-		var effect := _label(_arena_effect_text(definition), 13, MUTED)
-		effect.name = "ArenaEffect_" + id
-		content.add_child(effect)
+		_add_title_choice_mark(option)
 	_refresh_arena_selection()
 
 
-func _arena_effect_text(definition: Dictionary) -> String:
-	var multiplier: float = float(definition["move_multiplier"])
-	return "%s · 移速 −%d%%" % [str(definition["terrain_name"]), roundi((1.0 - multiplier) * 100.0)] if multiplier < 1.0 else "开阔石地 · 无减速"
+func _add_title_choice_mark(button: Button) -> void:
+	var mark := TitleChoiceMark.new()
+	mark.name = "SelectionMark"
+	mark.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	mark.focus_mode = Control.FOCUS_NONE
+	button.add_child(mark)
+	mark.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
 
 func _select_arena(id: String) -> void:
@@ -496,9 +483,12 @@ func _refresh_arena_selection() -> void:
 		var option := _page.find_child("Arena_" + id, true, false) as Button
 		if option != null:
 			option.set_pressed_no_signal(_arena_id == id)
+			var mark := option.get_node_or_null("SelectionMark") as Control
+			if mark != null:
+				mark.queue_redraw()
 		var name_label := _page.find_child("ArenaName_" + id, true, false) as Label
 		if name_label != null:
-			name_label.text = ("已选 · " if _arena_id == id else "") + str(ArenaCatalog.definition(id)["name"])
+			name_label.text = str(ArenaCatalog.definition(id)["name"])
 			name_label.add_theme_color_override("font_color", GOLD if _arena_id == id else BONE)
 
 
@@ -2314,10 +2304,6 @@ func _change_toggle(value: bool, key: String) -> void:
 	setting_changed.emit(key, value)
 
 
-static func _starter_unlock_text(id: String) -> String:
-	return "完成第3波解锁" if id == "frost" else "击败追猎者解锁"
-
-
 func _candle_link_names(candle: Dictionary) -> String:
 	var names: PackedStringArray = []
 	var candle_size: Vector2i = BACKPACK_GRID._item_size(candle, bool(candle.get("rotated", false)))
@@ -2345,14 +2331,11 @@ func _refresh_title() -> void:
 	# or its source control and keyboard focus.
 	for id: String in ["bone", "ember", "frost", "scatter"]:
 		var button := _page.find_child("Starter_" + id, true, false) as Button
-		var role := _page.find_child("StarterRole_" + id, true, false) as Label
 		if button != null:
 			button.set_pressed_no_signal(_starter == id)
-		if role != null:
-			role.add_theme_color_override("font_color", GOLD if _starter == id else MUTED)
-	var description := _page.find_child("StarterDescription", true, false) as Label
-	if description != null:
-		description.text = GameCatalog.weapon(_starter).description
+			var mark := button.get_node_or_null("SelectionMark") as Control
+			if mark != null:
+				mark.queue_redraw()
 
 
 func _start() -> void:
@@ -2781,23 +2764,35 @@ func _background() -> void:
 
 
 func _menu_art() -> void:
-	var path := AdventureArt.path("res://assets/menu_art.svg")
-	if not ResourceLoader.exists(path):
-		return
-	var art := TextureRect.new()
+	var art := TitleCover.new()
 	art.name = "MenuArtwork"
-	art.texture = load(path) as Texture2D
-	art.set_anchors_and_offsets_preset(Control.PRESET_RIGHT_WIDE)
-	art.offset_left = -690
-	art.offset_right = 10
-	art.offset_top = -230
-	art.offset_bottom = 0
+	art.texture = load(TitleCover.BASE_PATH) as Texture2D
+	art.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	art.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	art.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 	art.modulate = Color.WHITE
 	art.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	art.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_page.add_child(art)
+	var gradient := Gradient.new()
+	gradient.offsets = PackedFloat32Array([0.0, 0.35, 0.7, 1.0])
+	gradient.colors = PackedColorArray([Color(PANEL, 0.94), Color(PANEL, 0.88), Color(PANEL, 0.30), Color(PANEL, 0.0)])
+	gradient.interpolation_mode = Gradient.GRADIENT_INTERPOLATE_CUBIC
+	var veil_texture := GradientTexture2D.new()
+	veil_texture.gradient = gradient
+	veil_texture.width = 256
+	veil_texture.height = 2
+	veil_texture.fill_from = Vector2.ZERO
+	veil_texture.fill_to = Vector2(0.64, 0)
+	var veil := TextureRect.new()
+	veil.name = "TitleReadabilityVeil"
+	veil.texture = veil_texture
+	veil.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	veil.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	veil.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	veil.focus_mode = Control.FOCUS_NONE
+	veil.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
+	_page.add_child(veil)
 
 
 func _shell(horizontal: int, vertical: int) -> VBoxContainer:

@@ -75,7 +75,8 @@ func _test_map_selection() -> void:
 		option.grab_focus()
 		await _key(KEY_ENTER)
 		_check(_ui.selected_arena() == id and option.button_pressed, "Actual Enter selects the intended map without starting combat: " + id)
-		_check(_label("ArenaName_" + id).text.begins_with("已选"), "Selection is conveyed with text as well as a border: " + id)
+		var mark := option.find_child("SelectionMark", false, false) as Control
+		_check(_label("ArenaName_" + id).text == str(ArenaCatalog.definition(id)["name"]) and mark != null and mark.mouse_filter == Control.MOUSE_FILTER_IGNORE and mark.focus_mode == Control.FOCUS_NONE and not mark.is_processing(), "Selection keeps the actual map name and a non-interactive check mark rather than descriptive copy: " + id)
 		var selected: int = 0
 		for other: String in ArenaCatalog.IDS:
 			selected += 1 if _button("Arena_" + other).button_pressed else 0
@@ -102,11 +103,15 @@ func _test_map_selection() -> void:
 	_check(viewport.encloses(panel.get_global_rect()), "The complete map selector fits the reference viewport")
 	for id: String in ArenaCatalog.IDS:
 		var option: Button = _button("Arena_" + id)
-		_check(panel.get_global_rect().encloses(option.get_global_rect()) and option.size.y >= 120, "The complete map card stays inside its panel at a readable size: " + id)
+		_check(panel.get_global_rect().encloses(option.get_global_rect()) and option.size.y >= 82, "The compact map card stays inside the left action panel at a readable size: " + id)
 		var name: Label = _label("ArenaName_" + id)
 		var effect: Label = _label("ArenaEffect_" + id)
-		_check(option.get_global_rect().encloses(name.get_global_rect()) and option.get_global_rect().encloses(effect.get_global_rect()), "Map names and terrain effects stay inside the interactive card: " + id)
-	_check(not _visible_labels(_ui).contains("THE LAST ALTAR") and not _visible_labels(_ui).contains("试炼守则") and _label("TitleControls").text.contains("方向键"), "Decorative title copy and repeated rules are removed while movement and pause remain discoverable")
+		_check(option.get_global_rect().encloses(name.get_global_rect()) and effect == null and option.tooltip_text.is_empty(), "Map cards contain their name without terrain descriptions or explanatory tooltip: " + id)
+	var no_small_copy: bool = _label("TitleControls") == null and _label("StarterDescription") == null
+	for id: String in ["bone", "ember", "frost", "scatter"]:
+		no_small_copy = no_small_copy and _label("StarterRole_" + id) == null
+	var visible: String = _visible_labels(_ui)
+	_check(no_small_copy and not visible.contains("THE LAST ALTAR") and not visible.contains("试炼守则") and not visible.contains("最佳记录") and not visible.contains("尚无记录"), "The title exposes choices and actions without descriptive small copy or empty records")
 
 func _test_contextual_guidance() -> void:
 	var state := RunState.new()
