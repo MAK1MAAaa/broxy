@@ -46,13 +46,15 @@ Q释放秘术脉冲：半径144内的普通敌人径向击退70像素，独立�
 
 ## 直接游玩
 
-Windows x86_64入口为 `build/Embers-windows-x86_64/Embers.exe`，分发包为 `build/Embers-windows-x86_64.zip`。解压后保留同目录的 `Embers.pck` 与 `licenses/`。当前包基于最新 `main` 的四地图、秘术抉择、邻接共鸣与精简HUD，加入空格冲刺、成功闪避确认、Q脉冲、技能遗物、键位／手柄操作及设备提示，共51项资源。前一版包另存 `build/Embers-windows-before-input-prompts-07e9b53.zip`，更早版本继续保留。Windows使用微软雅黑；本轮验收见[输入设备提示](docs/input-prompts.md)，macOS包保留此前版本。
+Windows x86_64入口为 `build/Embers-windows-x86_64/Embers.exe`，分发包为 `build/Embers-windows-x86_64.zip`。解压后保留同目录的 `Embers.pck` 与 `licenses/`。当前包基于最新 `main` 的四地图、秘术抉择、邻接共鸣与精简HUD，加入空格冲刺、成功闪避确认、Q脉冲、技能遗物、键位／手柄操作、设备提示及肩键翻页，并修正轻推冲刺方向，共51项资源。前一版包另存 `build/Embers-windows-before-gamepad-reading-be7d405.zip`，更早版本继续保留。Windows使用微软雅黑；本轮验收见[手柄阅读与轻推冲刺](docs/gamepad-reading.md)，macOS包保留此前版本。
 
 最新macOS应用为 `build/Embers-minimal-hud-macos.app`，分发包为 `build/Embers-minimal-hud-macos-arm64.zip`，包含四地图选择、实际地形与精简界面，以及此前完整背包／共鸣／秘术抉择内容。适用于Apple Silicon、macOS 13及以上，使用本地ad-hoc签名。本轮界面验证见 `reports/minimal-hud-validation.json`，地图与性能历史见 `reports/terrain-validation.json`；旧包保留。
 
 主菜单或暂停菜单的“设置 → 操作设置”可重绑四个移动主键、冲刺与脉冲；支持冲突校验、取消和恢复默认，方向键固定保留。手柄左杆／十字移动，A冲刺、X脉冲、Start暂停；菜单A确认／B返回，背包持物时X旋转、A放置、B取消，左杆或十字逐格移动。配置独立保存，诊断模式不读写个人档案。操作边界与验证见[键位与手柄](docs/controls.md)。下表为默认键盘操作。
 
 标题、HUD和背包现在按最近有效输入切换键鼠／手柄提示；鼠标移动、释放事件和左杆漂移不会抢提示，返回键鼠后保留自定义键位。整理时显示对应A／X／B，原生拖拽仍提示松手确认；切换保留焦点、持物和冷却。规则及新验收见[输入设备提示](docs/input-prompts.md)。
+
+手柄LB／RB可向上／下翻阅遗物对照、符文预览、秘术抉择、背包详情与结算构筑，每次约80%可视高度；只滚动当前顶层内容，保留原焦点，持物与拖拽时暂停翻页。阅读提示随设备切换。轻推左杆时的冲刺方向也已修正：死区外的有效慢移会更新面向，按A沿该方向冲刺，松杆后保留最后面向。规则和Windows验收见[手柄阅读与轻推冲刺](docs/gamepad-reading.md)。
 
 | 操作 | 按键 |
 | --- | --- |

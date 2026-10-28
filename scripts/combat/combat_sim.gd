@@ -272,13 +272,16 @@ func _move_player(delta: float, movement: Vector2, dash_pressed: bool) -> void:
 	player_velocity = movement.limit_length() * run.stat("move_speed")
 	player_velocity *= ArenaCatalog.movement_multiplier(run.arena_id, player_position)
 	player_position = clamp_point(player_position + player_velocity * movement_delta, 16.0)
-	if movement.length_squared() > 0.01:
+	if _has_movement_direction(movement):
 		player_direction = movement.normalized()
+
+static func _has_movement_direction(movement: Vector2) -> bool:
+	return movement.is_finite() and movement.length_squared() > 0.0
 
 func _try_start_dash(movement: Vector2) -> void:
 	if complete or run == null or run.health <= 0.0 or dash_time_left > 0.0 or dash_cooldown_left > 0.0 or not movement.is_finite():
 		return
-	var direction: Vector2 = movement.normalized() if movement.length_squared() > 0.01 else player_direction
+	var direction: Vector2 = movement.normalized() if _has_movement_direction(movement) else player_direction
 	if not direction.is_finite() or direction.length_squared() <= 0.01:
 		direction = Vector2.RIGHT
 	dash_direction = direction.normalized()

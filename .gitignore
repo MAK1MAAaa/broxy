@@ -85,3 +85,8 @@ reports/input-prompts/*.jsonl
 reports/input-prompts/*.png
 reports/input-prompts/*.import
 reports/input-prompts/*-raw.json
+reports/gamepad-reading/*.log
+reports/gamepad-reading/*.jsonl
+reports/gamepad-reading/*.png
+reports/gamepad-reading/*.import
+reports/gamepad-reading/*-raw.json

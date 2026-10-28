@@ -1,0 +1,275 @@
+{
+  "created_utc": "2026-10-28T05:52:14.210554+00:00",
+  "base_commit": "be7d4052b05e57ae022a2367a89d87421ee482e3",
+  "platform": "Windows x86_64",
+  "engine": "Godot 4.7.2 stable ed1daf0bf",
+  "regression": {
+    "invocations": 84,
+    "assertions": 29359,
+    "failures": 0,
+    "sha256": "0ab9a90b985151b22875a4f3d20801300c8f9571e6d54e98a619a05fb7123857"
+  },
+  "godot_suites": 79,
+  "diagnostic_entries": 5,
+  "python_tests": 32,
+  "native": {
+    "gamepad_reading": {
+      "invocations": 1,
+      "assertions": 227,
+      "failures": 0,
+      "sha256": "841718921158febbb5d1159f0d102dda37a1a2c2e36feaccbb66141342eb92ba"
+    },
+    "analog_dash": {
+      "invocations": 1,
+      "assertions": 71,
+      "failures": 0,
+      "sha256": "2abe19d4e6f76a825fd4b7e7ffd79cba2e2daf552cc1d4bb29648fd15823e436"
+    },
+    "controls_flow": {
+      "invocations": 1,
+      "assertions": 45,
+      "failures": 0,
+      "sha256": "1ff13ca4b36af3583997a99a00a6f8c666e111d75bb8df85be9b136722a7a749"
+    },
+    "relic_comparison": {
+      "invocations": 1,
+      "assertions": 240,
+      "failures": 0,
+      "sha256": "90e8713123fb859616609bfbe8be01a9fe98877f8b0216c4ecb3815c4b20efbb"
+    },
+    "rune_equip_comparison": {
+      "invocations": 1,
+      "assertions": 170,
+      "failures": 0,
+      "sha256": "6454910fba96d0635535b69b7883c2035e336ba577b0588618236a3475e41a7a"
+    },
+    "rogue_ui": {
+      "invocations": 1,
+      "assertions": 63,
+      "failures": 0,
+      "sha256": "1831866a07dad9557a1ea0af4a067dd92823fd18a440ea860a71953af079e25f"
+    },
+    "input_prompts_ui": {
+      "invocations": 1,
+      "assertions": 60,
+      "failures": 0,
+      "sha256": "0cc3387c369de6179d830a1c8b398e0dff2b6f2fb00dee3906dfacec6f38f48b"
+    }
+  },
+  "compiled_pck_checks": {
+    "analog_dash": {
+      "invocations": 1,
+      "assertions": 71,
+      "failures": 0,
+      "sha256": "2abe19d4e6f76a825fd4b7e7ffd79cba2e2daf552cc1d4bb29648fd15823e436"
+    },
+    "controls_flow": {
+      "invocations": 1,
+      "assertions": 45,
+      "failures": 0,
+      "sha256": "1ff13ca4b36af3583997a99a00a6f8c666e111d75bb8df85be9b136722a7a749"
+    }
+  },
+  "red_before_fix": {
+    "analog_dash": {
+      "assertions": 71,
+      "failures": 32
+    },
+    "controls_flow": {
+      "assertions": 45,
+      "failures": 4
+    }
+  },
+  "previews": {
+    "relic": {
+      "capture_result": 0,
+      "case": "relic",
+      "connected_gamepads": [],
+      "fixture_passed": true,
+      "focus": "CloseRelicComparison",
+      "occupied_cells": 34,
+      "persistent_profile": false,
+      "reading_guide": "LB / RB 翻页 · B 返回",
+      "scroll": "ComparisonScroll",
+      "scroll_limit": 583,
+      "scroll_position": 583,
+      "synthetic_gamepad_events": true,
+      "weapons": 10,
+      "png_sha256": "76c56176d5b2ee686ed1a785847e88cd58ae7a9822c3716fac3ca382c5f4ba73"
+    },
+    "rune": {
+      "capture_result": 0,
+      "case": "rune",
+      "connected_gamepads": [],
+      "fixture_passed": true,
+      "focus": "CloseRuneEquipComparison",
+      "occupied_cells": 34,
+      "persistent_profile": false,
+      "reading_guide": "LB / RB 翻页 · B 返回",
+      "scroll": "RuneEquipScroll",
+      "scroll_limit": 104,
+      "scroll_position": 104,
+      "synthetic_gamepad_events": true,
+      "weapons": 10,
+      "png_sha256": "a0cd1fb625ed82aec22bcd0d590ab2e7ea7a8bb7f4deed19a27ecae7d337fdc0"
+    },
+    "backpack": {
+      "capture_result": 0,
+      "case": "backpack",
+      "connected_gamepads": [],
+      "fixture_passed": true,
+      "focus": "@Button@147",
+      "occupied_cells": 34,
+      "persistent_profile": false,
+      "reading_guide": "LB / RB 查看物品详情",
+      "scroll": "BackpackDetailsScroll",
+      "scroll_limit": 280,
+      "scroll_position": 280,
+      "synthetic_gamepad_events": true,
+      "weapons": 10,
+      "png_sha256": "f0beb854f8176d0078800b8a34c2c740edd37f060fc90327c75a9fff5386ea6e"
+    },
+    "result": {
+      "capture_result": 0,
+      "case": "result",
+      "connected_gamepads": [],
+      "fixture_passed": true,
+      "focus": "@Button@168",
+      "occupied_cells": 36,
+      "persistent_profile": false,
+      "reading_guide": "LB / RB 查看最终构筑",
+      "scroll": "ResultBuildScroll",
+      "scroll_limit": 34,
+      "scroll_position": 34,
+      "synthetic_gamepad_events": true,
+      "weapons": 8,
+      "png_sha256": "a409ba1eb4e26d78f3758a912abd736d6f326a037295bc13439eea7e91883cdf"
+    },
+    "pack-relic": {
+      "capture_result": 0,
+      "case": "relic",
+      "connected_gamepads": [],
+      "fixture_passed": true,
+      "focus": "CloseRelicComparison",
+      "occupied_cells": 34,
+      "persistent_profile": false,
+      "reading_guide": "LB / RB 翻页 · B 返回",
+      "scroll": "ComparisonScroll",
+      "scroll_limit": 583,
+      "scroll_position": 583,
+      "synthetic_gamepad_events": true,
+      "weapons": 10,
+      "png_sha256": "76c56176d5b2ee686ed1a785847e88cd58ae7a9822c3716fac3ca382c5f4ba73"
+    },
+    "pack-rune": {
+      "capture_result": 0,
+      "case": "rune",
+      "connected_gamepads": [],
+      "fixture_passed": true,
+      "focus": "CloseRuneEquipComparison",
+      "occupied_cells": 34,
+      "persistent_profile": false,
+      "reading_guide": "LB / RB 翻页 · B 返回",
+      "scroll": "RuneEquipScroll",
+      "scroll_limit": 104,
+      "scroll_position": 104,
+      "synthetic_gamepad_events": true,
+      "weapons": 10,
+      "png_sha256": "a0cd1fb625ed82aec22bcd0d590ab2e7ea7a8bb7f4deed19a27ecae7d337fdc0"
+    },
+    "pack-backpack": {
+      "capture_result": 0,
+      "case": "backpack",
+      "connected_gamepads": [],
+      "fixture_passed": true,
+      "focus": "@Button@147",
+      "occupied_cells": 34,
+      "persistent_profile": false,
+      "reading_guide": "LB / RB 查看物品详情",
+      "scroll": "BackpackDetailsScroll",
+      "scroll_limit": 280,
+      "scroll_position": 280,
+      "synthetic_gamepad_events": true,
+      "weapons": 10,
+      "png_sha256": "f0beb854f8176d0078800b8a34c2c740edd37f060fc90327c75a9fff5386ea6e"
+    },
+    "pack-result": {
+      "capture_result": 0,
+      "case": "result",
+      "connected_gamepads": [],
+      "fixture_passed": true,
+      "focus": "@Button@168",
+      "occupied_cells": 36,
+      "persistent_profile": false,
+      "reading_guide": "LB / RB 查看最终构筑",
+      "scroll": "ResultBuildScroll",
+      "scroll_limit": 34,
+      "scroll_position": 34,
+      "synthetic_gamepad_events": true,
+      "weapons": 8,
+      "png_sha256": "a409ba1eb4e26d78f3758a912abd736d6f326a037295bc13439eea7e91883cdf"
+    }
+  },
+  "simulation_report": "simulation.json",
+  "preserved_existing_assets_data_reports": 432,
+  "assets": 51,
+  "package": {
+    "path": "build/Embers-windows-x86_64.zip",
+    "sha256": "f7123a520557824458288269792bcbeaae73c96d74cc3dc6ac11a1b6d99aa8a1",
+    "zip_crc_and_members_match": true,
+    "x64_pe": true,
+    "exe_smoke_exit_code": 0,
+    "prior_package_path": "build/Embers-windows-before-gamepad-reading-be7d405.zip",
+    "prior_package_sha256": "d3b52fbc29f6ef6daca0597937c82959d66b7d50f12a0f1cd7f156da84bc5d4b"
+  },
+  "source_and_document_sha256": {
+    "README.md": "deab1e15a83559c6f6d34b2eb0950c84480d6e2c0898a41ea3fe056fa4653eba",
+    "docs/controls.md": "f5cfc17cd2ecce8edd5a67a2a67422a9f41e1766bb57c2f8e14be7cc1e4202b0",
+    "docs/dash.md": "4964f5adc551d994245b09e3ee5ebfdef1266491fc85612b49cc16b06db1a582",
+    "docs/input-prompts.md": "5ef63055f549180ba1db64a3d0861e826da492ac28d7269c948ee1d7ed28e2af",
+    "scripts/combat/combat_sim.gd": "e761301cd8de986d066e06ededf46ed97f52ca422fc35dc24cf7bbb532051aa7",
+    "scripts/core/input_device_tracker.gd": "e41bb3b998cf86ef57f35fff1eed8dd62d1151e0c6bd86f561818057973bae64",
+    "scripts/ui/game_ui.gd": "3c2d6b2f6a5796836d8993a929d14a6c0c007f4d177ded8e69be8827aa6cb9e2",
+    "tests/test_controls_flow.gd": "d5b04764593ecd4fd2f1c063b09a22b87bb43d124a44cf6439e6bb555a168a32",
+    "tests/test_input_devices.gd": "f8b291f21ee5e88978a4aae9917726c2fb99eb61978904f01582096303a92f25",
+    "tools/test.ps1": "a6a90c991f6b81bca19cc5a2fb029ea0489147c4615fc977ebd0c6d477e5370d",
+    "tools/test.sh": "668868d094b48de57cfbed278b98b6949a06c384d845ddc46fdf87ecb87c972f",
+    "docs/gamepad-reading.md": "327ba9fe7fa5545576d8d03e01f7de4a2e311b8513680b3522b14b1eefbdde5d",
+    "tests/test_analog_dash.gd": "0488cd2216eb836bd33295fc12045f6794eb66b8ae667ee8f3922d072e38366a",
+    "tests/test_analog_dash.gd.uid": "ee34b7ab6ea0ede3227158e96d2a3d6d58c9edf0fa6afb11108ee9ec768fad8e",
+    "tests/test_gamepad_reading.gd": "b5ab3fc621b103258ede9ebb68eb5ab923b1e6e60cc02cb6932ac3c2a2835164",
+    "tests/test_gamepad_reading.gd.uid": "fcee2449ae0e90fb4222479865611e000d19d3e900ab7875e8aa2d7ab2d72ff5",
+    "tools/preview_gamepad_reading.gd": "12aa4424edb62353951cadb7deb50da8221d570d30895ee563307a3ab496dcd8",
+    "tools/preview_gamepad_reading.gd.uid": "58ee9af7f67169e5e1a81b90a6135945ccf3424064f3b3945e363f0767645340"
+  },
+  "evidence_sha256": {
+    "pack-analog_dash.log": "2abe19d4e6f76a825fd4b7e7ffd79cba2e2daf552cc1d4bb29648fd15823e436",
+    "pack-controls_flow.log": "1ff13ca4b36af3583997a99a00a6f8c666e111d75bb8df85be9b136722a7a749",
+    "regression.log": "0ab9a90b985151b22875a4f3d20801300c8f9571e6d54e98a619a05fb7123857",
+    "analog_dash-before.log": "a5da78c34a4682e24ad034be4866476796bf231a69cdc0ade64c2688a9749af4",
+    "controls_flow-before.log": "b6deca0b017b7da25af0867f5eba52eca1801de6f8ed26f15c54c0cd674b8c98",
+    "build.log": "397b5f6ec1d573d844b0280e89a1ddcfb60158b21fdee63dc4d88728b97134de",
+    "export-smoke.log": "f1b31b53e8d257cc7669cac7099dfdd72fbc8475847c61293a88851e08ac0338",
+    "gamepad_reading-native.log": "841718921158febbb5d1159f0d102dda37a1a2c2e36feaccbb66141342eb92ba",
+    "analog_dash-native.log": "2abe19d4e6f76a825fd4b7e7ffd79cba2e2daf552cc1d4bb29648fd15823e436",
+    "controls_flow-native.log": "1ff13ca4b36af3583997a99a00a6f8c666e111d75bb8df85be9b136722a7a749",
+    "relic_comparison-native.log": "90e8713123fb859616609bfbe8be01a9fe98877f8b0216c4ecb3815c4b20efbb",
+    "rune_equip_comparison-native.log": "6454910fba96d0635535b69b7883c2035e336ba577b0588618236a3475e41a7a",
+    "rogue_ui-native.log": "1831866a07dad9557a1ea0af4a067dd92823fd18a440ea860a71953af079e25f",
+    "input_prompts_ui-native.log": "0cc3387c369de6179d830a1c8b398e0dff2b6f2fb00dee3906dfacec6f38f48b",
+    "relic.log": "88ce6f92b5b04fc65a46a0f7590dab98f463471a691c280a602014866b1ba4ca",
+    "rune.log": "7448659156cbabe4908d2aa9f7cd95add6772b8b21a23530542654c483825de1",
+    "backpack.log": "41694762d8bfa78160ae0d4a7583700d5ca4cb78e40b979fc9305c2fba4d7ffb",
+    "result.log": "2b6e53c17e0d227f19bc86fd6667d239062e29b495c4df34402eb659401e334c",
+    "pack-relic.log": "88ce6f92b5b04fc65a46a0f7590dab98f463471a691c280a602014866b1ba4ca",
+    "pack-rune.log": "7448659156cbabe4908d2aa9f7cd95add6772b8b21a23530542654c483825de1",
+    "pack-backpack.log": "41694762d8bfa78160ae0d4a7583700d5ca4cb78e40b979fc9305c2fba4d7ffb",
+    "pack-result.log": "2b6e53c17e0d227f19bc86fd6667d239062e29b495c4df34402eb659401e334c"
+  },
+  "limits": [
+    "No physical controller connected: shoulder/buttons/axes are parsed software events.",
+    "PCK previews load compiled production resources with an external fixture using the matching Windows engine; ordinary EXE is separately smoke-tested.",
+    "Result scrolling uses its natural range (34 pixels in the recorded 720p fixture); no artificial content height is introduced.",
+    "No macOS rebuild or new pressure timing sample in this functional input iteration."
+  ]
+}

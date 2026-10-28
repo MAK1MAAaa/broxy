@@ -196,6 +196,69 @@ func _refresh_input_prompts() -> void:
 		if rotate != null:
 			rotate.text = _backpack_rotate_text()
 			rotate.tooltip_text = _backpack_rotate_tooltip()
+	_refresh_reading_guides()
+
+
+func _refresh_reading_guides() -> void:
+	for surface: Control in [_page, _overlay]:
+		if surface == null:
+			continue
+		var guide := surface.find_child("ReadingGuide", true, false) as Label
+		if guide != null:
+			guide.text = str(guide.get_meta("gamepad_text" if _input_kind == "gamepad" else "keyboard_text"))
+			if surface == _page and _screen == "shop" and _input_kind == "gamepad" and _bag_held_uid >= 0:
+				guide.text = "整理完成后可用 LB / RB 查看详情"
+
+
+func _add_reading_guide(parent: Control, keyboard_text: String, gamepad_text: String) -> void:
+	var guide := _label(gamepad_text if _input_kind == "gamepad" else keyboard_text, 13, MUTED)
+	guide.name = "ReadingGuide"
+	guide.set_meta("keyboard_text", keyboard_text)
+	guide.set_meta("gamepad_text", gamepad_text)
+	guide.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	parent.add_child(guide)
+
+
+func _reading_footer(parent: Control, close: Button) -> void:
+	var footer := HBoxContainer.new()
+	footer.add_theme_constant_override("separation", 14)
+	parent.add_child(footer)
+	_add_reading_guide(footer, "Tab 选择内容 · PageUp / PageDown 翻页 · Esc 返回", "LB / RB 翻页 · B 返回")
+	close.custom_minimum_size.x = 200
+	footer.add_child(close)
+
+
+func _gamepad_reading_target() -> ScrollContainer:
+	var surface: Control = _overlay if not _overlay_mode.is_empty() else _page
+	var target_name: String = ""
+	if not _overlay_mode.is_empty():
+		target_name = str({"relic_comparison": "ComparisonScroll", "rune_equip_comparison": "RuneEquipScroll", "rogue_choices": "RogueChoicesScroll"}.get(_overlay_mode, ""))
+	elif _screen == "shop" and not _refresh_queued and _bag_held_uid < 0:
+		if is_instance_valid(_bag_grid) and _bag_grid.held_uid < 0 and _bag_grid.interaction_enabled:
+			target_name = "BackpackDetailsScroll"
+	elif _screen == "result":
+		target_name = "ResultBuildScroll"
+	if target_name.is_empty() or get_viewport().gui_is_dragging():
+		return null
+	var target := surface.find_child(target_name, true, false) as ScrollContainer
+	return target if target != null and target.is_visible_in_tree() else null
+
+
+func _page_gamepad_reading(event: InputEvent) -> bool:
+	if not event is InputEventJoypadButton or not event.pressed or event.device < 0:
+		return false
+	if event.button_index not in [JOY_BUTTON_LEFT_SHOULDER, JOY_BUTTON_RIGHT_SHOULDER]:
+		return false
+	var target: ScrollContainer = _gamepad_reading_target()
+	if target == null:
+		return false
+	var direction: int = -1 if event.button_index == JOY_BUTTON_LEFT_SHOULDER else 1
+	var page: int = maxi(1, int(target.size.y * 0.8))
+	var bar: VScrollBar = target.get_v_scroll_bar()
+	var limit: int = maxi(0, ceili(bar.max_value - bar.page))
+	target.scroll_vertical = clampi(target.scroll_vertical + direction * page, 0, limit)
+	get_viewport().set_input_as_handled()
+	return true
 
 
 func _input(event: InputEvent) -> void:
@@ -235,6 +298,8 @@ func _input(event: InputEvent) -> void:
 					_set_controls_notice("请按键盘按键；Esc / 手柄B取消。", RED)
 			elif event is InputEventMouseButton and event.pressed:
 				_set_controls_notice("请按键盘按键；Esc / 手柄B取消。", RED)
+		return
+	if _page_gamepad_reading(event):
 		return
 	if event is InputEventJoypadButton and event.pressed and event.button_index == JOY_BUTTON_B and handle_back():
 		get_viewport().set_input_as_handled()
@@ -835,6 +900,7 @@ func show_result(victory: bool, reason: String, best: Dictionary) -> void:
 	build_scroll.focus_mode = Control.FOCUS_ALL
 	body.add_child(build_scroll)
 	build_scroll.add_child(_wrap(_loadout_text(), 15, BONE))
+	_add_reading_guide(body, "滚轮查看最终构筑", "LB / RB 查看最终构筑")
 	body.add_child(_wrap("最佳记录：" + _best_text(best), 13, MUTED))
 	var damage_card := _panel(columns)
 	damage_card.name = "DamageContribution"
@@ -1132,10 +1198,10 @@ func _show_rogue_choices(keep_notice: bool = false) -> void:
 			inside.add_child(select)
 	else:
 		content.add_child(_wrap("首领战使用固定敌群；普通波结束后可选择下一波路线。", 14, MUTED))
-	var close := _button("返回商店 · Esc", _close_rogue_choices.bind(epoch), Vector2(0, 40))
+	var close := _button("返回商店", _close_rogue_choices.bind(epoch), Vector2(0, 40))
 	close.name = "CloseRogueChoices"
 	_accent(close)
-	body.add_child(close)
+	_reading_footer(body, close)
 	_focus_later(_first_page_button(content) if _first_page_button(content) != null else close)
 
 
@@ -1262,6 +1328,7 @@ func _build_backpack(parent: Control) -> void:
 	_bag_details.add_theme_constant_override("separation", 6)
 	scroll.add_child(_bag_details)
 	_build_backpack_details()
+	_add_reading_guide(body, "滚轮查看物品详情", "LB / RB 查看物品详情")
 	_bag_status = _wrap(_backpack_default_hint(), 13, MUTED)
 	_bag_hint_is_default = true
 	_bag_status.name = "BackpackHint"
@@ -1431,6 +1498,7 @@ func _bp_holding(uid: int, rotated: bool, cell: Vector2i, epoch: int) -> void:
 		_bag_held_uid = uid
 		_bag_held_rotated = rotated
 		_bag_cursor = cell
+		_refresh_reading_guides()
 
 
 func _bp_hint(text: String, epoch: int) -> void:
@@ -1741,7 +1809,7 @@ func _compare_relic(index: int, epoch: int, expected_offer: Dictionary) -> void:
 	var close := _button("返回商品", _close_relic_comparison.bind(epoch), Vector2(0, 42))
 	close.name = "CloseRelicComparison"
 	_accent(close)
-	body.add_child(close)
+	_reading_footer(body, close)
 	_focus_later(close)
 
 
@@ -1965,7 +2033,7 @@ func _preview_rune_equip(index: int, epoch: int, incoming_snapshot: Dictionary, 
 	var close := _button("返回背包", _close_rune_equip_comparison.bind(epoch), Vector2(0, 42))
 	close.name = "CloseRuneEquipComparison"
 	_accent(close)
-	body.add_child(close)
+	_reading_footer(body, close)
 	_focus_later(close)
 
 

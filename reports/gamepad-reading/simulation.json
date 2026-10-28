@@ -1,0 +1,46 @@
+{
+  "seed": 20261028,
+  "arena": "mire",
+  "core": "bone_chorus",
+  "route": "balanced",
+  "altar": "accept",
+  "policies": [
+    {
+      "mode": "default-policy",
+      "runs": 3,
+      "wins": 3,
+      "different_fields_from_be7d405": [
+        [
+          "balance_version"
+        ],
+        [
+          "balance_version"
+        ],
+        [
+          "balance_version"
+        ]
+      ],
+      "result_log_sha256": "7f87e252579bec6238122a66e12c5fd7388e78e96ce6b87efe51f23c065869cf",
+      "balance_version": "prototype-0.1.0+a769a0d89fbd"
+    },
+    {
+      "mode": "pulse-policy",
+      "runs": 3,
+      "wins": 3,
+      "different_fields_from_be7d405": [
+        [
+          "balance_version"
+        ],
+        [
+          "balance_version"
+        ],
+        [
+          "balance_version"
+        ]
+      ],
+      "result_log_sha256": "b21cc90419da4e8cdac6d61125d9cd47fc08609444c8bb5ddc906c1cb5927c79",
+      "balance_version": "prototype-0.1.0+a769a0d89fbd"
+    }
+  ],
+  "scope": "All gameplay result and trace fields equal the previous input-prompts build; only the combat source fingerprint changes. These automated policies do not exercise UI shoulder reading or human light-stick play."
+}

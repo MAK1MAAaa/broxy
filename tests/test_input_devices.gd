@@ -88,7 +88,7 @@ func _is_device(device_kind: String, device: int = -1) -> bool:
 	return _tracker.kind == device_kind and _tracker.gamepad_id == device and _tracker.snapshot() == {"kind": device_kind, "gamepad_id": device}
 
 func _test_buttons_and_keyboard() -> void:
-	for button: int in [JOY_BUTTON_A, JOY_BUTTON_B, JOY_BUTTON_X, JOY_BUTTON_Y, JOY_BUTTON_START, JOY_BUTTON_DPAD_UP, JOY_BUTTON_DPAD_DOWN, JOY_BUTTON_DPAD_LEFT, JOY_BUTTON_DPAD_RIGHT]:
+	for button: int in [JOY_BUTTON_A, JOY_BUTTON_B, JOY_BUTTON_X, JOY_BUTTON_Y, JOY_BUTTON_LEFT_SHOULDER, JOY_BUTTON_RIGHT_SHOULDER, JOY_BUTTON_START, JOY_BUTTON_DPAD_UP, JOY_BUTTON_DPAD_DOWN, JOY_BUTTON_DPAD_LEFT, JOY_BUTTON_DPAD_RIGHT]:
 		_tracker.reset()
 		var before: int = _changes.size()
 		await _send(_button(button, 3))
@@ -126,7 +126,7 @@ func _test_buttons_and_keyboard() -> void:
 		_check(_is_device("keyboard"), "A deliberate mouse press, including scrolling, selects keyboard-and-mouse hints: " + str(button))
 		await _send(_mouse(button, false))
 	_tracker.reset()
-	for button: int in [JOY_BUTTON_BACK, JOY_BUTTON_GUIDE, JOY_BUTTON_LEFT_SHOULDER, JOY_BUTTON_RIGHT_SHOULDER, JOY_BUTTON_LEFT_STICK, JOY_BUTTON_RIGHT_STICK]:
+	for button: int in [JOY_BUTTON_BACK, JOY_BUTTON_GUIDE, JOY_BUTTON_LEFT_STICK, JOY_BUTTON_RIGHT_STICK]:
 		await _send(_button(button, 1))
 		_check(_is_device("keyboard"), "An unrelated gamepad button does not switch hint mode: " + str(button))
 	_tracker.observe(_button(JOY_BUTTON_A, -1))

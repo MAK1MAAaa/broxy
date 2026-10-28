@@ -83,6 +83,7 @@ func _run() -> void:
 	await _settle()
 	await _test_rebinding()
 	await _test_movement()
+	await _test_light_stick_dash()
 	await _test_gamepad_skills()
 	await _test_pause_and_disconnect()
 	await _test_screen_isolation()
@@ -176,6 +177,32 @@ func _test_gamepad_skills() -> void:
 	await _button(JOY_BUTTON_X)
 	_tick()
 	_check(sim.dashes_used == 2 and sim.pulses_used == 2, "A fresh gamepad press works after the cooldown finishes")
+
+func _test_light_stick_dash() -> void:
+	for stick: Vector2 in [Vector2(0.0, -0.24), Vector2(0.17, -0.17)]:
+		var sim: CombatSim = _start()
+		await _axis(JOY_AXIS_LEFT_X, stick.x)
+		await _axis(JOY_AXIS_LEFT_Y, stick.y)
+		var movement: Vector2 = _app.world._movement()
+		_check(movement.length() > 0.0 and movement.length() < 0.1, "A real light stick deflection survives the input deadzone below the former facing threshold")
+		var origin: Vector2 = sim.player_position
+		_tick()
+		_check(sim.player_position.distance_to(origin + movement * sim.run.stat("move_speed") * STEP) < 0.003 and sim.player_direction.is_equal_approx(movement.normalized()), "The real World preserves light analog speed while facing its actual movement")
+		origin = sim.player_position
+		await _button(JOY_BUTTON_A)
+		_tick()
+		_check(sim.dashes_used == 1 and sim.dash_direction.is_equal_approx(movement.normalized()) and sim.player_position.distance_to(origin + movement.normalized() * 11.0) < 0.003, "A from the same parsed light stick input dashes along the current direction instead of the old rightward facing")
+		await _axis(JOY_AXIS_LEFT_X, 0.0)
+		await _axis(JOY_AXIS_LEFT_Y, 0.0)
+	var neutral: CombatSim = _start()
+	neutral.player_direction = Vector2.UP
+	await _axis(JOY_AXIS_LEFT_X, 0.1)
+	await _axis(JOY_AXIS_LEFT_Y, -0.1)
+	await _button(JOY_BUTTON_A)
+	_tick()
+	_check(_app.world._movement() == Vector2.ZERO and neutral.dash_direction == Vector2.UP, "Actual stick drift inside the deadzone still produces a stationary dash along the previous facing")
+	await _axis(JOY_AXIS_LEFT_X, 0.0)
+	await _axis(JOY_AXIS_LEFT_Y, 0.0)
 
 func _test_pause_and_disconnect() -> void:
 	var sim: CombatSim = _start()
