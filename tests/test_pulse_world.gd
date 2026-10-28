@@ -135,7 +135,7 @@ func _test_queue_and_cooldown() -> void:
 	_check(int(_pulse(world)["uses"]) == 1 and not world._pulse_pending, "The next real fixed step consumes exactly one pulse request")
 	_check(feedback["active"] and is_equal_approx(feedback["remaining"], 0.30) and feedback["origin"] == origin and feedback["radius"] == 144.0 and feedback["affected"] == 0 and feedback["animated"], "One bounded 300ms slot reports the real origin, radius and zero-target cast")
 	_check(hud.size() == 1 and int(hud[0]["pulse"]["uses"]) == 1, "Cast feedback immediately publishes the actual cooldown snapshot")
-	_check(sound.names == ["rune"] and sound.levels == [-20.0] and sound.cues == ["pulse"], "Pulse uses the real independent cue API at its intended level")
+	_check(sound.names == ["pulse"] and sound.levels == [-20.0] and sound.cues == ["pulse"], "An empty pulse uses the real independent cue API at its intended level")
 	_check(world._numbers.is_empty() and world._number_free.size() == CombatWorld.NUMBER_LIMIT and world._shake == 0.0 and world.sim.run.health == 100.0 and world.sim.run.gold == 0, "A pulse adds no damage numbers, camera shake, health cost or reward")
 	for frame: int in 18:
 		world._physics_process(STEP)
@@ -172,7 +172,7 @@ func _test_dual_skill_control() -> void:
 	_check(behind.health == behind.max_health and behind.hurt_timer == 0.0 and world._numbers.is_empty(), "Control changes no enemy health or damage-number accounting")
 	_check(ids == world._dash_afterimages.map(func(image: CombatWorld.DashAfterimage) -> int: return image.get_instance_id()) and ids.size() == 6 and world.dash_afterimage_count() > 0, "Dual casting retains all six original dash afterimage slots")
 	var sound: ProbeSoundBank = world.sound as ProbeSoundBank
-	_check(sound.cues == ["pulse", ""] and sound.names == ["rune", "rune"], "The original dash sound and independent pulse cue follow their actual simulation order")
+	_check(sound.cues == ["pulse", "dash"] and sound.names == ["pulse_hit", "dash"], "The controlled pulse and dash activation cues follow their actual simulation order")
 	world._physics_process(STEP)
 	_check(int(_pulse(world)["uses"]) == 1 and world.sim.dashes_used == 1 and world.pulse_feedback_snapshot()["origin"] == origin, "Later ticks cannot replay either queued skill or move the stored pulse origin")
 	await _dispose(world)

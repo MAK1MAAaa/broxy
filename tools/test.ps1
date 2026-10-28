@@ -23,7 +23,8 @@ try {
         'pulse_rules', 'pulse_world', 'pulse_flow', 'pulse_ui',
         'skill_relics', 'skill_relic_combat', 'skill_relic_ui',
         'control_bindings', 'controls_flow', 'controls_ui', 'gamepad_backpack',
-        'input_devices', 'input_prompts_ui', 'input_prompts_flow', 'analog_dash', 'gamepad_reading', 'backpack_focus'
+        'input_devices', 'input_prompts_ui', 'input_prompts_flow', 'analog_dash', 'gamepad_reading', 'backpack_focus',
+        'skill_audio', 'skill_feedback'
     )
     foreach ($suite in $suites) {
         & $runner --headless --script "res://tests/test_$suite.gd"

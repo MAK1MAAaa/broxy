@@ -44,6 +44,8 @@ const DASH_EVASION_LIFE: float = 0.32
 const DASH_EVASION_TEXT: String = "闪避"
 const DASH_EVASION_FONT_SIZE: int = 14
 const PULSE_FEEDBACK_LIFE: float = 0.30
+const SKILL_FEEDBACK_LIFE: float = 0.45
+const SKILL_FEEDBACK_FONT_SIZE: int = 14
 const PULSE_HINDER_TINT: Color = Color("c1b2d8")
 
 class DashAfterimage:
@@ -59,6 +61,12 @@ var _pulse_radius: float = 0.0
 var _pulse_affected: int = 0
 var _pulse_animated: bool = false
 var _pulse_feedback_use: int = -1
+var _skill_feedback_remaining: float = 0.0
+var _skill_feedback_text: String = ""
+var _skill_feedback_affected: int = 0
+var _skill_feedback_origin: Vector2 = Vector2.ZERO
+var _skill_feedback_anchor: Vector2 = Vector2.ZERO
+var _skill_feedback_text_width: float = 0.0
 var _dash_afterimages: Array[DashAfterimage] = []
 var _dash_afterimage_next: int = 0
 var _dash_afterimage_clock: float = 0.0
@@ -258,6 +266,17 @@ func pulse_feedback_snapshot() -> Dictionary:
 		"animated": _pulse_remaining > 0.0 and _pulse_animated and bool(settings.get("flash", true)),
 	}
 
+func skill_feedback_snapshot() -> Dictionary:
+	return {
+		"active": _skill_feedback_remaining > 0.0,
+		"remaining": _skill_feedback_remaining,
+		"text": _skill_feedback_text,
+		"affected": _skill_feedback_affected,
+		"origin": _skill_feedback_origin,
+		"anchor": _skill_feedback_anchor,
+		"text_width": _skill_feedback_text_width,
+	}
+
 func _on_pulse_cast(origin: Vector2, affected: int) -> void:
 	if not active or sim == null or sim.complete or not origin.is_finite():
 		return
@@ -272,12 +291,27 @@ func _on_pulse_cast(origin: Vector2, affected: int) -> void:
 	_pulse_affected = maxi(0, affected)
 	_pulse_remaining = PULSE_FEEDBACK_LIFE
 	_pulse_animated = bool(settings.get("flash", true))
+	_skill_feedback_affected = _pulse_affected
+	_skill_feedback_origin = origin
+	_skill_feedback_text = "受控 ×%d" % _pulse_affected if _pulse_affected > 0 else "未受控"
+	_skill_feedback_text_width = _dash_evasion_font.get_string_size(_skill_feedback_text, HORIZONTAL_ALIGNMENT_LEFT, -1, SKILL_FEEDBACK_FONT_SIZE).x if _dash_evasion_font != null else 0.0
+	var half_width: float = _skill_feedback_text_width * 0.5
+	var anchor_y: float = origin.y + 54.0
+	if anchor_y > CombatSim.ARENA.end.y - 8.0:
+		anchor_y = origin.y - 62.0
+	_skill_feedback_anchor = Vector2(
+		clampf(origin.x, CombatSim.ARENA.position.x + half_width + 8.0, CombatSim.ARENA.end.x - half_width - 8.0),
+		clampf(anchor_y, CombatSim.ARENA.position.y + SKILL_FEEDBACK_FONT_SIZE + 8.0, CombatSim.ARENA.end.y - 8.0))
+	_skill_feedback_remaining = SKILL_FEEDBACK_LIFE if _damage_flash <= 0.0 and _dash_evasion_remaining <= 0.0 else 0.0
 	if sound != null:
-		sound.play_cue("rune", -20.0, "pulse")
+		sound.play_cue("pulse_hit" if _pulse_affected > 0 else "pulse", -20.0, "pulse")
 	hud_changed.emit(hud_snapshot())
 	queue_redraw()
 
 func _advance_pulse_feedback(delta: float) -> void:
+	_skill_feedback_remaining = maxf(0.0, _skill_feedback_remaining - delta)
+	if _skill_feedback_remaining < 0.0000001:
+		_skill_feedback_remaining = 0.0
 	_pulse_remaining = maxf(0.0, _pulse_remaining - delta)
 	if _pulse_remaining < 0.0000001:
 		_pulse_remaining = 0.0
@@ -290,6 +324,12 @@ func _clear_pulse_feedback() -> void:
 	_pulse_affected = 0
 	_pulse_animated = false
 	_pulse_feedback_use = -1
+	_skill_feedback_remaining = 0.0
+	_skill_feedback_text = ""
+	_skill_feedback_affected = 0
+	_skill_feedback_origin = Vector2.ZERO
+	_skill_feedback_anchor = Vector2.ZERO
+	_skill_feedback_text_width = 0.0
 
 func dash_afterimage_count() -> int:
 	var count: int = 0
@@ -302,7 +342,7 @@ func _on_dash_started(origin: Vector2, direction: Vector2) -> void:
 	_dash_afterimage_clock = 0.0
 	_add_dash_afterimage(origin, direction)
 	if sound != null:
-		sound.play("rune", -20.0)
+		sound.play_cue("dash", -20.0, "dash")
 	hud_changed.emit(hud_snapshot())
 
 func dash_evasion_feedback_snapshot() -> Dictionary:
@@ -317,10 +357,11 @@ func _on_dash_evaded(point: Vector2, _origin: Vector2, _source_id: String, _kind
 	if not active or sim == null or sim.complete or not point.is_finite() or sim.dashes_used <= 0 or _dash_evasion_dash == sim.dashes_used:
 		return
 	_dash_evasion_dash = sim.dashes_used
+	_skill_feedback_remaining = 0.0
 	_dash_evasion_remaining = DASH_EVASION_LIFE
 	_dash_evasion_pulse_remaining = DASH_EVASION_LIFE if bool(settings.get("flash", true)) else 0.0
 	if sound != null:
-		sound.play_cue("rune", -22.0, "dash_evasion")
+		sound.play_cue("evade", -22.0, "dash_evasion")
 	hud_changed.emit(hud_snapshot())
 	queue_redraw()
 
@@ -380,6 +421,9 @@ func _on_damage_dealt(point: Vector2, amount: float, source: String, secondary: 
 func _on_player_damaged(amount: float, _source_id: String, _kind: String, origin: Vector2) -> void:
 	_dash_evasion_remaining = 0.0
 	_dash_evasion_pulse_remaining = 0.0
+	_skill_feedback_remaining = 0.0
+	if sound != null:
+		sound.cancel_cue("dash_evasion")
 	_spawn_number(sim.player_position + Vector2(0, -40), amount, "player", true, false)
 	_damage_flash = 0.22
 	_damage_direction = (origin - sim.player_position).normalized() if origin.is_finite() else Vector2.ZERO
@@ -396,6 +440,8 @@ func _on_rune_activated(rune_id: String, origin: Vector2, incoming: Vector2, out
 	_rune_flashes.append(flash)
 
 func _reset_feedback() -> void:
+	if sound != null:
+		sound.stop_combat_cues()
 	clear_pending_actions()
 	_clear_dash_afterimages()
 	_clear_dash_evasion_feedback()
@@ -497,6 +543,8 @@ func _advance_feedback(delta: float) -> void:
 
 func _on_ended(victory: bool, reason: String) -> void:
 	active = false
+	if sound != null:
+		sound.stop_combat_cues()
 	clear_pending_actions()
 	_clear_dash_afterimages()
 	_clear_dash_evasion_feedback()
@@ -538,10 +586,22 @@ func _draw() -> void:
 	_draw_rune_feedback()
 	_draw_outgoing_feedback()
 	_draw_player()
+	_draw_skill_feedback()
 	_draw_dash_evasion_feedback()
 	_draw_feedback()
 	# Hostile projectiles and telegraphs stay above all friendly spell effects.
 	_draw_danger()
+
+func _draw_skill_feedback() -> void:
+	if _skill_feedback_remaining <= 0.0 or _dash_evasion_font == null:
+		return
+	_draw_skill_feedback_text(_skill_feedback_anchor)
+
+func _draw_skill_feedback_text(anchor: Vector2) -> void:
+	var point: Vector2 = anchor - Vector2(_skill_feedback_text_width * 0.5, 0)
+	var color: Color = Color("d4c5e2") if _skill_feedback_affected > 0 else Color("b5aebd")
+	draw_string_outline(_dash_evasion_font, point, _skill_feedback_text, HORIZONTAL_ALIGNMENT_LEFT, -1, SKILL_FEEDBACK_FONT_SIZE, 3, Color("0c121a"))
+	draw_string(_dash_evasion_font, point, _skill_feedback_text, HORIZONTAL_ALIGNMENT_LEFT, -1, SKILL_FEEDBACK_FONT_SIZE, color)
 
 func _draw_pulse_feedback() -> void:
 	if _pulse_remaining <= 0.0 or _pulse_radius <= 1.0:

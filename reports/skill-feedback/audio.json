@@ -1,0 +1,161 @@
+{
+  "source_raw_wav_format": "mono, 16-bit PCM, 22050Hz",
+  "asset_count": 55,
+  "old_resources_unchanged": 51,
+  "generator_repeat_equal": true,
+  "engine_mixes": {
+    "source": {
+      "scenario": "isolated-skill-audio-listening-mix",
+      "os": "Windows",
+      "driver": "WASAPI",
+      "format": "signed-16-bit-little-endian-PCM",
+      "sample_rate": 48000,
+      "channels": 2,
+      "frames": 293888,
+      "duration_seconds": 6.12266666666667,
+      "peak": 0.0606692805886269,
+      "rms": 0.00420172030078682,
+      "clipped_samples": 0,
+      "nonfinite_samples": 0,
+      "discarded_frames": 0,
+      "gain": {
+        "explicit_linear_gain": 0.65,
+        "includes_default_ambience": true,
+        "master_effects_bypassed_during_diagnostic": true,
+        "master_linear_gain": 1.0,
+        "method": "dedicated unity bus with ordered AudioEffectAmplify then AudioEffectCapture",
+        "nominal_equivalence": "0.65 default Master gain for this isolated bank in a linear no-other-effects mix"
+      },
+      "wav_sha256": "cd84612ad43b545ba5e82479ad4bec3427769cb05ff2f06d9d6dcdae10dabd68",
+      "all_requests_accepted": true,
+      "audio_state_restored": true,
+      "passed": true,
+      "phase_count": 13,
+      "raw_report_sha256": "d3b51a59287550e329ea84def94c0a769d48c26708c9566a7e1d0cbcf98aa0ea"
+    },
+    "compiled_pck": {
+      "scenario": "isolated-skill-audio-listening-mix",
+      "os": "Windows",
+      "driver": "WASAPI",
+      "format": "signed-16-bit-little-endian-PCM",
+      "sample_rate": 48000,
+      "channels": 2,
+      "frames": 293888,
+      "duration_seconds": 6.12266666666667,
+      "peak": 0.0606692805886269,
+      "rms": 0.00420252629991663,
+      "clipped_samples": 0,
+      "nonfinite_samples": 0,
+      "discarded_frames": 0,
+      "gain": {
+        "explicit_linear_gain": 0.65,
+        "includes_default_ambience": true,
+        "master_effects_bypassed_during_diagnostic": true,
+        "master_linear_gain": 1.0,
+        "method": "dedicated unity bus with ordered AudioEffectAmplify then AudioEffectCapture",
+        "nominal_equivalence": "0.65 default Master gain for this isolated bank in a linear no-other-effects mix"
+      },
+      "wav_sha256": "465e9911ba948b8aa94253ee615e81231a8d2c3ff81aa7fee2c8590df0af7083",
+      "all_requests_accepted": true,
+      "audio_state_restored": true,
+      "passed": true,
+      "phase_count": 13,
+      "raw_report_sha256": "2b8c56ad28e2b7f09c1d532a6790f5b0864aadcc698e646e543bbdba8d130ed0"
+    }
+  },
+  "loaded_sfx_imported_data": {
+    "buy": {
+      "format": 3,
+      "length_seconds": 0.28,
+      "mix_rate": 22050,
+      "sha256": "8228d8773a2e06cb6c88e385dfce97595b88a3ed26b67d1534b3a7183d06d36f",
+      "stereo": false
+    },
+    "dash": {
+      "format": 3,
+      "length_seconds": 0.18,
+      "mix_rate": 22050,
+      "sha256": "600730f43c556f7049b46bfa21581fffbac6ccef884e998f7e955d830620da74",
+      "stereo": false
+    },
+    "death": {
+      "format": 3,
+      "length_seconds": 0.38,
+      "mix_rate": 22050,
+      "sha256": "9a0bd0c8786c60e2906e2f7bf3fefae4ab79ff6ce69ce97fc67d5fab2d647c47",
+      "stereo": false
+    },
+    "defeat": {
+      "format": 3,
+      "length_seconds": 0.750022675736961,
+      "mix_rate": 22050,
+      "sha256": "b213787b1c97280308d4e8bc5572a9fe58f8c65f17a007e84aedd313ed3c451e",
+      "stereo": false
+    },
+    "evade": {
+      "format": 3,
+      "length_seconds": 0.22,
+      "mix_rate": 22050,
+      "sha256": "b30c5607c1b18c8a6e3470dee896c85cdd598cf2db835837942be5121035446a",
+      "stereo": false
+    },
+    "hit": {
+      "format": 3,
+      "length_seconds": 0.129977324263039,
+      "mix_rate": 22050,
+      "sha256": "4bd9cdb797eab569da51ee42b94f5be8d85aa0a8819ecbe4033b56c90436b15a",
+      "stereo": false
+    },
+    "hurt": {
+      "format": 3,
+      "length_seconds": 0.329977324263039,
+      "mix_rate": 22050,
+      "sha256": "4314c5e6e4f1ae47e5a4c2ed4f21ad9173bc6af22726df618ebc4de235fda6b9",
+      "stereo": false
+    },
+    "level": {
+      "format": 3,
+      "length_seconds": 0.649977324263039,
+      "mix_rate": 22050,
+      "sha256": "086e0d448e37a4ab1af3af3a22980dc0629fe7d44fb6f120e01c2d6cf9dd28fb",
+      "stereo": false
+    },
+    "pulse": {
+      "format": 3,
+      "length_seconds": 0.28,
+      "mix_rate": 22050,
+      "sha256": "a53f88294022f26aa97ca9e4e94e9e00d56754855fa7e8e5adf6c7adb55c1176",
+      "stereo": false
+    },
+    "pulse_hit": {
+      "format": 3,
+      "length_seconds": 0.34,
+      "mix_rate": 22050,
+      "sha256": "33c00558afb8d028ed32aa5321067dcedc493c1819eeac5a1d55fbf057d5dbc0",
+      "stereo": false
+    },
+    "rune": {
+      "format": 3,
+      "length_seconds": 0.46,
+      "mix_rate": 22050,
+      "sha256": "01b8eb1705e02b7613597236f50c1610a6582a6eddbb0f4650e6d0e66b0f8569",
+      "stereo": false
+    },
+    "shoot": {
+      "format": 3,
+      "length_seconds": 0.14,
+      "mix_rate": 22050,
+      "sha256": "659897ddbb573480285a3657bfd857710b461f26826c80a1b8a912dd14ae2b89",
+      "stereo": false
+    },
+    "victory": {
+      "format": 3,
+      "length_seconds": 0.78,
+      "mix_rate": 22050,
+      "sha256": "c62c4a4fa855381f63fe771b4d5c0fce9a6bb1a36aaba8a429ac46d4302f4439",
+      "stereo": false
+    }
+  },
+  "source_pck_imported_audio_data_equal": true,
+  "scope": "Actual isolated engine bus capture after explicit .65 gain. Imported stream data may use Godot compression (format recorded); this is not system loopback or a speaker listening review. Audio input is unavailable to this agent, so no subjective hearing approval is claimed."
+}

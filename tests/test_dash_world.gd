@@ -12,6 +12,8 @@ class ProbeSoundBank extends SoundBank:
 		pass
 	func play(name: String, _loudness: float = -10.0) -> void:
 		played.append(name)
+	func play_cue(name: String, _loudness: float, _cue_id: String) -> void:
+		played.append(name)
 
 class ProbeWorld extends CombatWorld:
 	var movement: Vector2 = Vector2.RIGHT
@@ -96,7 +98,7 @@ func _test_request_consumption() -> void:
 	_check(world.sim.dashes_used == 1 and not world._dash_pending and world.sim.player_position.x > origin.x + 5.0, "The next physics step consumes exactly one queued dash and applies its real movement")
 	_check(hud.size() == 1 and bool(hud[0]["dash"]["active"]), "Dash start immediately reports its active state before the ordinary 100ms HUD interval")
 	var sound: ProbeSoundBank = world.sound as ProbeSoundBank
-	_check(sound.played.count("rune") == 1 and world._shake == 0.0, "Accepted dash has one restrained existing sound without introducing camera shake")
+	_check(sound.played.count("dash") == 1 and world._shake == 0.0, "Accepted dash has one restrained dedicated sound without introducing camera shake")
 	world.movement = Vector2.ZERO
 	for frame: int in 24:
 		_check(not world.request_dash(), "Requests during burst or cooldown are rejected instead of being cached")

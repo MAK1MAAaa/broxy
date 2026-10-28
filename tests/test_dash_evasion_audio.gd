@@ -12,6 +12,9 @@ func _initialize() -> void:
 	_run.call_deferred()
 
 func _run() -> void:
+	var master_volume: float = AudioServer.get_bus_volume_db(0)
+	var master_muted: bool = AudioServer.is_bus_mute(0)
+	AudioServer.set_bus_mute(0, false)
 	_bank = SoundBank.new()
 	root.add_child(_bank)
 	if _prepare_voices():
@@ -25,6 +28,8 @@ func _run() -> void:
 		await process_frame
 	# Playback stops are consumed by the audio thread after scene-node deletion.
 	await create_timer(0.10, true).timeout
+	AudioServer.set_bus_volume_db(0, master_volume)
+	AudioServer.set_bus_mute(0, master_muted)
 	print("DashEvasionAudio: %d assertions, %d failures; native loaded voices=%s; headless injected fixture=%s; scheduling only" % [_checks, _failures, _native_loaded_voices, _headless_injected_fixture])
 	quit(0 if _failures == 0 else 1)
 
@@ -87,6 +92,7 @@ func _test_activation_and_cue() -> void:
 
 func _test_source_throttling() -> void:
 	for sound: String in ["rune", "hurt", "shoot", "hit", "death"]:
+		_bank.stop_combat_cues()
 		var cue_id: String = "interval_" + sound
 		var key: String = "cue:%s:%s" % [cue_id, sound]
 		var before: int = _bank.cursor
@@ -119,6 +125,7 @@ func _test_invalid_requests() -> void:
 	empty.free()
 
 func _test_voice_budget() -> void:
+	_bank.stop_combat_cues()
 	var ids: Array = _bank.voices.map(func(voice: AudioStreamPlayer) -> int: return voice.get_instance_id())
 	var before: int = _bank.cursor
 	var child_count: int = _bank.get_child_count()

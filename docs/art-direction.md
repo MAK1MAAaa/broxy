@@ -1,5 +1,7 @@
 # 美术方向：月蚀圣匣 · engraved-07
 
+当前资源家族为55项：41张SVG、14段WAV。`skill-feedback-01`新增冲刺、脉冲空放、脉冲控制与成功闪避四段短音色，原51项资源逐字节保持，所有视觉修订不变。来源为`tools/audio_skills.py`，规则、客观音频检查与引擎混音范围见[技能反馈](skill-feedback.md)；以下数量和画面均保留对应历史阶段。
+
 当前整合保留皮革／金属／16px符文徽章和共鸣接缝，同时保留合成／装符候选、逐格裁剪预览与持有压暗。烛引↑下移以避开符文徽章；新组合UI验证材质尺寸、两种联动和弹层输入／焦点。linked、full、lamp、core四种原生固定图均已复核；46项资源逐字节保持Mac393083d版本，Boss古金不回退。详见 `reports/macos-main-integration-validation.json`。
 
 当前`rogue-choices-v1`继续复用46项素材和弹体图集：秘术抉择采用独立可滚动弹层，旧金核心、珊瑚契约与灰紫路线分节，Esc返回商店。四种起始法器共用原图标，锁定卡压暗并写出条件、跳过Tab。引魂烛联动法器显示淡绿↑与文字说明；追猎者用古金冠、珊瑚圈和独立生命条标识。寒焰真实触发后绘制蓝金双环与六道短纹，位于原危险提示下层。七组界面、三组战斗固定陈列已逐图复核，来源及规则见[秘术抉择](rogue-choices.md)。没有新增位图或改变既有SVG/WAV；下列背包目标和Boss材质记录保留对应历史范围。
@@ -18,15 +20,17 @@ engraved-06阶段新增归魂环、血契书与引魂烛三枚独立图标和八
 
 ## 生成来源与原始尺寸
 
-`tools/generate_assets.py`统一写入SVG、合成WAV及manifest，各模块通过`save_svg(name,width,height,body,role)`回调接入。当前共46项资源：36张SVG、10段WAV。
+`tools/generate_assets.py`统一写入SVG、合成WAV及manifest，各视觉模块通过`save_svg(name,width,height,body,role)`回调接入。当前共55项资源：41张SVG、14段WAV。
 
 | 来源 | 资源与画布 | 约束 |
 | --- | --- | --- |
 | `tools/art_sprites.py` | 主角96×96；幽魂64×64；爪兽64×64；重甲80×80；术士72×72；Boss160×160 | 6张角色原始透明画布及中心锚点保持不变 |
 | `tools/art_environment.py` | 竞技场1280×720；菜单插画640×720 | 场景为完整背景；菜单左150像素保持安静 |
-| `tools/art_icons.py` | 24枚64×64透明图标；`fx/glow.svg`与`fx/seal.svg`各96×96；应用图标256×256 | 图标和FX保留透明背景；应用图标保留独立底色 |
+| `tools/art_icons.py` | 26枚64×64透明图标；`fx/glow.svg`与`fx/seal.svg`各96×96；应用图标256×256 | 图标和FX保留透明背景；应用图标保留独立底色 |
 | `tools/art_projectiles.py` | 512×64透明头部图集，8帧64×64，每帧对应32×32世界像素 | 半径读取正式法器资源；固定UV，2倍采样，归魂环无白核 |
 | `tools/generate_assets.py` | 10段原有WAV | 原创确定性合成，声音内容不因美术细化改变 |
+| `tools/audio_skills.py` | 4段短技能WAV | 独立固定种子、平滑收尾，不改旧音源 |
+| `tools/art_arenas.py` | 3张1280×720地图SVG | 可见地形区域与正式数据保持一致 |
 
 角色、图标和FX没有自动裁切或改变原始画布。运行时缩放与微动不改变素材中心、实体位置或碰撞半径；阴影、符印与披风边缘均不是碰撞边界。资源与模块来源逐项记录在`assets/manifest.json`，原创及CC0授权见`assets/PROVENANCE.md`。
 

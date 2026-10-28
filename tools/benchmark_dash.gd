@@ -50,6 +50,15 @@ var _sample_pulses_start: int = 0
 var _sample_affected_start: int = 0
 var _pulse_feedback_peak: int = 0
 var _sample_pulse_feedback_peak: int = 0
+var _skill_feedback: bool = false
+var _skill_feedback_peak: int = 0
+var _sample_skill_feedback_peak: int = 0
+var _positive_pulse_casts: int = 0
+var _zero_pulse_casts: int = 0
+var _sample_positive_pulse_start: int = 0
+var _sample_zero_pulse_start: int = 0
+var _skill_audio_playing_peak: int = 0
+var _skill_audio_streams_observed: Dictionary = {}
 
 func _initialize() -> void:
 	_start.call_deferred()
@@ -78,8 +87,10 @@ func _parse_arguments() -> bool:
 			_skill_relics = true
 		elif argument == "--input-prompts":
 			_input_prompts = true
+		elif argument == "--skill-feedback":
+			_skill_feedback = true
 		else:
-			push_error("Supported arguments: --seconds=<at least 5> --output=<report.json> [--evasion-probes] [--pulse-cycles] [--skill-relics] [--input-prompts]")
+			push_error("Supported arguments: --seconds=<at least 5> --output=<report.json> [--evasion-probes] [--pulse-cycles] [--skill-relics] [--input-prompts] [--skill-feedback]")
 			return false
 	return true
 
@@ -117,6 +128,12 @@ func _start() -> void:
 	_app.world.sim.populate_stress()
 	_app.world.enable_rune_stress(true)
 	_app.world.apply_visual_settings(_app.store.settings)
+	if _skill_feedback:
+		for path: String in _audio_input_paths():
+			if not FileAccess.file_exists(path):
+				_abort("Missing skill-audio fingerprint input: " + path)
+				return
+		_app.world.sim.pulse_cast.connect(_observe_pulse_cast)
 	root.title = "秘术余烬 · 冲刺压力夹具（非自然对局，不保存设置与成绩）"
 	_make_caption()
 	_dash_start_count = _app.world.sim.dashes_used
@@ -127,7 +144,7 @@ func _start() -> void:
 	physics_frame.connect(_before_world_physics)
 	_running = true
 	_update_caption(_started_usec)
-	print("DASH_BENCHMARK_START ", JSON.stringify({
+	var start_report: Dictionary = {
 		"scenario": "dash-content-pressure", "natural_run": false,
 		"warmup_seconds": WARMUP_SECONDS, "duration_seconds": _seconds,
 		"seed": SEED, "arena_id": "mire", "core_id": "bone_chorus",
@@ -138,7 +155,12 @@ func _start() -> void:
 		"pulse_cycles": _pulse_cycles,
 		"skill_relics": _skill_relics,
 		"input_prompts": _input_prompts,
-	}))
+	}
+	if _skill_feedback:
+		start_report["skill_feedback"] = true
+		start_report["source_files"] = _source_fingerprint()["files"]
+		start_report["audio_source_files"] = _audio_source_fingerprint()["files"]
+	print("DASH_BENCHMARK_START ", JSON.stringify(start_report))
 
 func _equip_skill_relics() -> bool:
 	# Fixture-only money and stock; every item, merge and occupied cell is real.
@@ -260,10 +282,29 @@ func _observe_feedback() -> void:
 	_evasion_feedback_peak = maxi(_evasion_feedback_peak, evasion_active)
 	_afterimage_peak = maxi(_afterimage_peak, count)
 	_rune_peak = maxi(_rune_peak, _app.world._rune_flashes.size())
+	if _skill_feedback:
+		var active: int = 1 if bool(_app.world.skill_feedback_snapshot().get("active", false)) else 0
+		_skill_feedback_peak = maxi(_skill_feedback_peak, active)
+		if _sampling:
+			_sample_skill_feedback_peak = maxi(_sample_skill_feedback_peak, active)
+		var skill_voices: int = 0
+		for voice: AudioStreamPlayer in _app.sound.voices:
+			if voice.playing and voice.stream != null:
+				var sound_name: String = voice.stream.resource_path.get_file().get_basename()
+				if sound_name in ["dash", "pulse", "pulse_hit", "evade"]:
+					skill_voices += 1
+					_skill_audio_streams_observed[sound_name] = true
+		_skill_audio_playing_peak = maxi(_skill_audio_playing_peak, skill_voices)
 	if _sampling:
 		_sample_afterimage_peak = maxi(_sample_afterimage_peak, count)
 		_sample_evasion_feedback_peak = maxi(_sample_evasion_feedback_peak, evasion_active)
 		_sample_pulse_feedback_peak = maxi(_sample_pulse_feedback_peak, pulse_active)
+
+func _observe_pulse_cast(_origin: Vector2, affected: int) -> void:
+	if affected > 0:
+		_positive_pulse_casts += 1
+	else:
+		_zero_pulse_casts += 1
 
 func _process(_delta: float) -> bool:
 	if not _running or _finished:
@@ -279,6 +320,8 @@ func _process(_delta: float) -> bool:
 		_sample_pulses_start = _app.world.sim.pulses_used
 		_sample_affected_start = _app.world.sim.pulse_affected
 		_sample_prompt_switches_start = _prompt_switches
+		_sample_positive_pulse_start = _positive_pulse_casts
+		_sample_zero_pulse_start = _zero_pulse_casts
 	elif _sampling:
 		_frame_samples.append(float(now - _last_frame_usec) / 1000.0)
 		_last_frame_usec = now
@@ -301,14 +344,33 @@ func _source_fingerprint() -> Dictionary:
 	var paths: Array[String] = ["res://project.godot", "res://tools/benchmark_dash.gd"]
 	for directory: String in ["res://scripts", "res://data", "res://scenes"]:
 		_collect_sources(directory, paths)
+	if _skill_feedback:
+		paths.append_array(_audio_input_paths())
 	paths.sort()
 	var manifest := PackedStringArray()
 	var files: Dictionary = {}
 	for path: String in paths:
-		var digest: String = FileAccess.get_file_as_string(path).sha256_text()
+		var digest: String = FileAccess.get_sha256(path) if _skill_feedback else FileAccess.get_file_as_string(path).sha256_text()
 		files[path] = digest
 		manifest.append(path + ":" + digest)
 	return {"hash": "\n".join(manifest).sha256_text(), "algorithm": "sha256-path-and-content-manifest", "files": files}
+
+func _audio_input_paths() -> Array[String]:
+	var paths: Array[String] = ["res://assets/manifest.json", "res://tools/audio_skills.py", "res://tools/generate_assets.py"]
+	for name: String in SoundBank.NAMES:
+		paths.append("res://assets/audio/%s.wav" % name)
+	paths.append("res://assets/audio/ambience.wav")
+	paths.sort()
+	return paths
+
+func _audio_source_fingerprint() -> Dictionary:
+	var files: Dictionary = {}
+	var manifest := PackedStringArray()
+	for path: String in _audio_input_paths():
+		var digest: String = FileAccess.get_sha256(path)
+		files[path] = digest
+		manifest.append(path + ":" + digest)
+	return {"hash": "\n".join(manifest).sha256_text(), "files": files}
 
 func _stop_updates() -> void:
 	_running = false
@@ -401,6 +463,27 @@ func _finish_report(now: int) -> void:
 		report["checks"]["input_prompt_switching_and_drift"] = prompt_valid
 	if _evasion_probes:
 		report["fixture_overrides"].append("each accepted dash clears old received-hit immunity and adds one stationary, positive-damage hostile projectile at its next-step position; normal collision and dash immunity decide the result")
+	if _skill_feedback:
+		var sample_positive: int = _positive_pulse_casts - _sample_positive_pulse_start
+		var feedback_validity: bool = _skill_feedback_peak <= 1 and _sample_skill_feedback_peak == 1 and sample_positive > 0
+		var audio_source: Dictionary = _audio_source_fingerprint()
+		var observed_streams: Array = _skill_audio_streams_observed.keys()
+		observed_streams.sort()
+		report["skill_feedback"] = true
+		report["skill_feedback_peak"] = _skill_feedback_peak
+		report["sample_skill_feedback_peak"] = _sample_skill_feedback_peak
+		report["positive_pulse_casts"] = _positive_pulse_casts
+		report["zero_pulse_casts"] = _zero_pulse_casts
+		report["sample_positive_pulse_casts"] = sample_positive
+		report["sample_zero_pulse_casts"] = _zero_pulse_casts - _sample_zero_pulse_start
+		report["skill_audio_playing_peak"] = _skill_audio_playing_peak
+		report["skill_audio_streams_observed"] = observed_streams
+		report["audio_voice_capacity"] = _app.sound.voices.size()
+		report["audio_source_hash"] = audio_source["hash"]
+		report["audio_source_files"] = audio_source["files"]
+		report["checks"]["skill_feedback_single_slot_and_real_control"] = feedback_validity
+		report["passed"] = bool(report["passed"]) and feedback_validity
+		report["fixture_overrides"].append("skill-feedback option only observes real control results and native player streams; enemy layout and skill request timing stay unchanged; zero-target coverage is reported honestly and tested separately")
 	var absolute: String = ProjectSettings.globalize_path(_output)
 	var directory_error: Error = DirAccess.make_dir_recursive_absolute(absolute.get_base_dir())
 	if directory_error != OK:

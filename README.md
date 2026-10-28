@@ -8,7 +8,7 @@ Godot 4.7.2 普通版、带类型标注的 GDScript 开发的 macOS / Windows �
 
 当前源码包含8种法器、14种遗物和 `rogue-choices-v1` 秘术抉择。第1波后可选霜火共鸣或白骨齐鸣核心；第2波后可自愿挑战追猎者，击杀后在波间自选符文。普通波可选择原途、密集魂潮或重甲巡礼；引魂烛与正上方相接法器联动，改变目标优先级。完成第3波解锁霜矛起手，击杀追猎者解锁散魂起手，没有永久属性加成。完整规则与边界见[秘术抉择](docs/rogue-choices.md)。
 
-原46项 `engraved-07` 素材与 `arsenal-atlas-v5` 图集保持，新增3张 `biomes-01` 地图背景，加入两张技能遗物图标后共51项资源。背包沿用 `backpack-targets-v1` 合成／装符候选和逐格预览，新增淡绿↑烛引标记；追猎者有冠、圈和生命条，寒焰以蓝金双环显示，敌方危险提示继续置顶。操作与美术约定见[秘术背包](docs/backpack.md)及 `docs/art-direction.md`。
+原46项 `engraved-07` 素材与 `arsenal-atlas-v5` 图集保持，新增3张 `biomes-01` 地图背景和两张技能遗物图标后为51项；本轮再加入4段原创技能音效，当前共55项资源，原51项字节保持。背包沿用 `backpack-targets-v1` 合成／装符候选和逐格预览，新增淡绿↑烛引标记；追猎者有冠、圈和生命条，寒焰以蓝金双环显示，敌方危险提示继续置顶。操作与美术约定见[秘术背包](docs/backpack.md)及 `docs/art-direction.md`。
 
 归魂环发射0.60秒后追随玩家当前位置返航，往返共享已命中目标，不会重复伤害同一敌人；本体可命中2个不同目标，成功弹射会永久取消返航。冷却独立推进，接回魂环不回复生命或魂屑。新增内容沿用商店购买、商品锁定、遗物购前对照和符文装入预览；归魂环阶段的Windows完整回归、原生画面、固定种子压力采样与新包验证记录保留。八法器头部使用预生成图集与复用缓冲，保持危险提示优先。
 
@@ -46,7 +46,7 @@ Q释放秘术脉冲：半径144内的普通敌人径向击退70像素，独立�
 
 ## 直接游玩
 
-Windows x86_64入口为 `build/Embers-windows-x86_64/Embers.exe`，分发包为 `build/Embers-windows-x86_64.zip`。解压后保留同目录的 `Embers.pck` 与 `licenses/`。当前包基于最新 `main` 的四地图、秘术抉择、邻接共鸣与精简HUD，加入空格冲刺、成功闪避确认、Q脉冲、技能遗物、键位／手柄操作、设备提示、肩键翻页与连续背包整理，并修正轻推冲刺方向，共51项资源。前一版包另存 `build/Embers-windows-before-backpack-focus-399ad9a.zip`，更早版本继续保留。Windows使用微软雅黑；本轮验收见[背包连续整理](docs/backpack-focus.md)，macOS包保留此前版本。
+Windows x86_64入口为 `build/Embers-windows-x86_64/Embers.exe`，分发包为 `build/Embers-windows-x86_64.zip`。解压后保留同目录的 `Embers.pck` 与 `licenses/`。当前包基于最新 `main` 的四地图、秘术抉择、邻接共鸣与精简HUD，加入冲刺、成功闪避、Q脉冲、技能遗物、键位／手柄、设备提示、肩键翻页、连续整理及独立技能音效与受控确认，共55项资源。前一版包另存 `build/Embers-windows-before-skill-feedback-6317fa9.zip`，更早版本继续保留。Windows使用微软雅黑；本轮验收见[技能音效与命中反馈](docs/skill-feedback.md)，macOS包保留此前版本。
 
 最新macOS应用为 `build/Embers-minimal-hud-macos.app`，分发包为 `build/Embers-minimal-hud-macos-arm64.zip`，包含四地图选择、实际地形与精简界面，以及此前完整背包／共鸣／秘术抉择内容。适用于Apple Silicon、macOS 13及以上，使用本地ad-hoc签名。本轮界面验证见 `reports/minimal-hud-validation.json`，地图与性能历史见 `reports/terrain-validation.json`；旧包保留。
 
@@ -57,6 +57,8 @@ Windows x86_64入口为 `build/Embers-windows-x86_64/Embers.exe`，分发包为 
 手柄LB／RB可向上／下翻阅遗物对照、符文预览、秘术抉择、背包详情与结算构筑，每次约80%可视高度；只滚动当前顶层内容，保留原焦点，持物与拖拽时暂停翻页。阅读提示随设备切换。轻推左杆时的冲刺方向也已修正：死区外的有效慢移会更新面向，按A沿该方向冲刺，松杆后保留最后面向。规则和Windows验收见[手柄阅读与轻推冲刺](docs/gamepad-reading.md)。
 
 背包支持连续整理：手动放置或取消后返回原物品的“拿起 / 移动”，合成或装符后返回实际目标，下一次A或Enter即可继续拿起。拆符保留原武器，出售后选中可用物品，扩容可保留当前持物。失败整理、暂停与原生拖拽分别保留各自的输入和焦点边界，规则及验证见[背包连续整理](docs/backpack-focus.md)。
+
+冲刺、脉冲空放、脉冲实际控制及成功闪避使用四段独立短音色；原12路SFX池会保护关键尾音，承伤优先，普通射击／命中音不能覆盖仍在播放的技能。Q在施法点短暂显示“受控 ×N”或“未受控”，关闭闪光仍可读；闪避确认及真实承伤会撤下结果签，危险预警继续置顶。Q不增加伤害或保护，玩法数值保持。规则、混音样本和验收见[技能反馈](docs/skill-feedback.md)。
 
 | 操作 | 按键 |
 | --- | --- |
