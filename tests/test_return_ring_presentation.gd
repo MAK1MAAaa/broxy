@@ -62,14 +62,14 @@ func _test_heads() -> void:
 	impact.add_hit(Vector2(450, 300), "return_ring", 71)
 	impact.add_hit(Vector2(450, 300), "return_ring", 71)
 	impact.rebuild()
-	_check(impact.active_count() == 1 and impact.get_stats()["draw_commands"] == 1, "The new weapon reuses one source-aware ordinary impact mark without duplicate feedback")
+	_check(impact.active_count() == 1 and impact.get_stats()["draw_commands"] == 2, "The new weapon reuses one outlined ordinary impact mark without duplicate feedback")
 
 
 func _test_hollow_atlas() -> void:
 	var painter := ProjectilePainter.new()
-	_check(painter.atlas_texture != null and painter.atlas_texture.resource_path == "res://assets/fx/projectile_heads.svg", "The displayed texture uses the tested authored head atlas")
+	_check(painter.atlas_texture != null and painter.atlas_texture.resource_path == AdventureArt.path("res://assets/fx/projectile_heads.svg"), "The displayed texture uses the tested authored pixel head atlas")
 	var image := Image.new()
-	var error: Error = image.load_svg_from_string(FileAccess.get_file_as_string("res://assets/fx/projectile_heads.svg"))
+	var error: Error = image.load_svg_from_string(FileAccess.get_file_as_string(AdventureArt.path("res://assets/fx/projectile_heads.svg")))
 	_check(error == OK and image.get_size() == Vector2i(512, 64), "The actual SVG can be rasterized at its declared eight-frame resolution")
 	if error != OK or image.get_size() != Vector2i(512, 64):
 		return

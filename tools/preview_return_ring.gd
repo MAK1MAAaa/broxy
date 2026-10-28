@@ -71,7 +71,7 @@ func _preview() -> void:
 				await _activate("compare:1" if case_name == "blood_pact" else "compare:2")
 			_record["summary"] = state.summary()
 			_record["overlay"] = _app.ui._overlay_mode
-			_record["fixture_passed"] = bool(_record["fixture_passed"]) and state.loadout.size() == 3 and state.rune_bag.size() == 3 and state.relic_counts.size() == GameCatalog.relics().size() and state.backpack_snapshot()["used_cells"] == 34
+			_record["fixture_passed"] = bool(_record["fixture_passed"]) and state.loadout.size() == 3 and state.rune_bag.size() == 3 and state.relic_counts.size() == GameCatalog.relics().size() and state.backpack_snapshot()["used_cells"] == 36
 	_note("归魂环固定陈列 · 正式规则与资源 · 非自然对局 · 不写档案")
 	await _settle()
 	if destination.is_empty():
@@ -108,7 +108,7 @@ func _art() -> void:
 	body.add_theme_constant_override("separation", 12)
 	margin.add_child(body)
 	body.add_child(_app.ui._label("归魂军械 · 一件回旋法器与两件取舍遗物", 28, GameUI.BONE))
-	body.add_child(_app.ui._label("engraved-06 · 冷白断骨 / 旧金封蜡 / 冷青魂焰 · 8法器 / 12遗物", 15, GameUI.CYAN))
+	body.add_child(_app.ui._label("engraved-06 · 冷白断骨 / 旧金封蜡 / 冷青魂焰 · %d法器 / %d遗物" % [GameCatalog.weapons().size(), GameCatalog.relics().size()], 15, GameUI.CYAN))
 	var row := HBoxContainer.new()
 	row.custom_minimum_size.y = 400
 	row.add_theme_constant_override("separation", 14)

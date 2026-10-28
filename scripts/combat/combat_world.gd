@@ -10,6 +10,7 @@ var sound: SoundBank
 var settings: Dictionary = {"shake": true, "flash": true}
 var textures: Dictionary = {}
 var arena_texture: Texture2D
+var _camera: Camera2D
 var _arena_id: String = "reliquary"
 var _arena_name: String = "秘仪祭坛"
 var _arena_color: Color = Color(0.78, 0.67, 0.50)
@@ -37,6 +38,47 @@ const ENEMY_HIT_PULSE_SECONDS: float = 0.06
 const ENEMY_HIT_TIMER_CUTOFF: float = 0.04
 const ENEMY_HIT_PEAK_GAIN: float = 0.22
 const PLAYER_FOREGROUND_VISUAL_REVISION: String = "foreground-player-v1"
+const DASH_AFTERIMAGE_LIMIT: int = 6
+const DASH_AFTERIMAGE_LIFE: float = 0.16
+const DASH_AFTERIMAGE_INTERVAL: float = 0.03
+const DASH_EVASION_LIFE: float = 0.32
+const DASH_EVASION_TEXT: String = "闪避"
+const DASH_EVASION_FONT_SIZE: int = 14
+const PULSE_FEEDBACK_LIFE: float = 0.30
+const SKILL_FEEDBACK_LIFE: float = 0.45
+const SKILL_FEEDBACK_FONT_SIZE: int = 14
+const PULSE_HINDER_TINT: Color = Color("c1b2d8")
+
+class DashAfterimage:
+	var position: Vector2 = Vector2.ZERO
+	var lean: float = 0.0
+	var life: float = 0.0
+
+var _dash_pending: bool = false
+var _pulse_pending: bool = false
+var _secondary_skill_pending: bool = false
+var _pulse_pending_uid: int = -1
+var _secondary_pending_uid: int = -1
+var _pulse_remaining: float = 0.0
+var _pulse_origin: Vector2 = Vector2.ZERO
+var _pulse_radius: float = 0.0
+var _pulse_affected: int = 0
+var _pulse_animated: bool = false
+var _pulse_feedback_use: int = -1
+var _skill_feedback_remaining: float = 0.0
+var _skill_feedback_text: String = ""
+var _skill_feedback_affected: int = 0
+var _skill_feedback_origin: Vector2 = Vector2.ZERO
+var _skill_feedback_anchor: Vector2 = Vector2.ZERO
+var _skill_feedback_text_width: float = 0.0
+var _dash_afterimages: Array[DashAfterimage] = []
+var _dash_afterimage_next: int = 0
+var _dash_afterimage_clock: float = 0.0
+var _dash_evasion_remaining: float = 0.0
+var _dash_evasion_pulse_remaining: float = 0.0
+var _dash_evasion_dash: int = -1
+var _dash_evasion_font: Font
+var _dash_evasion_text_width: float = 32.0
 
 class RuneFlash:
 	var kind: int = 0
@@ -83,8 +125,14 @@ const ENEMY_TELEGRAPH_SCRIPT = preload("res://scripts/combat/enemy_telegraph_pai
 var _enemy_telegraphs: ENEMY_TELEGRAPH_SCRIPT = ENEMY_TELEGRAPH_SCRIPT.new()
 const IMPACT_PAINTER_SCRIPT = preload("res://scripts/combat/impact_painter.gd")
 var _impact_painter: IMPACT_PAINTER_SCRIPT = IMPACT_PAINTER_SCRIPT.new()
+const ACTIVE_SKILL_PAINTER_SCRIPT = preload("res://scripts/combat/active_skill_painter.gd")
+var _active_skill_painter: ACTIVE_SKILL_PAINTER_SCRIPT = ACTIVE_SKILL_PAINTER_SCRIPT.new()
+const GROUNDING_PAINTER_SCRIPT = preload("res://scripts/combat/grounding_painter.gd")
+var _grounding_painter: GROUNDING_PAINTER_SCRIPT = GROUNDING_PAINTER_SCRIPT.new()
 
 func _init() -> void:
+	for index: int in DASH_AFTERIMAGE_LIMIT:
+		_dash_afterimages.append(DashAfterimage.new())
 	for index: int in NUMBER_LIMIT:
 		_number_pool.append(FloatingNumber.new())
 	for index: int in RUNE_FLASH_LIMIT:
@@ -98,15 +146,26 @@ func _init() -> void:
 	_reset_feedback()
 
 func _ready() -> void:
+	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	ControlBindings.ensure_installed()
 	_number_font = ThemeDB.fallback_font
-	arena_texture = load(str(ArenaCatalog.definition(_arena_id)["texture"])) as Texture2D
-	soul_texture = load("res://assets/icons/soul.svg")
-	glow_texture = load("res://assets/fx/glow.svg")
-	seal_texture = load("res://assets/fx/seal.svg")
+	_dash_evasion_font = GameUI.create_ui_font()
+	_dash_evasion_text_width = _dash_evasion_font.get_string_size(DASH_EVASION_TEXT, HORIZONTAL_ALIGNMENT_LEFT, -1, DASH_EVASION_FONT_SIZE).x
+	arena_texture = load(ArenaCatalog.texture_path(_arena_id)) as Texture2D
+	_camera = Camera2D.new()
+	_camera.name = "ExplorationCamera"
+	_camera.top_level = true
+	_camera.enabled = false
+	_camera.process_callback = Camera2D.CAMERA2D_PROCESS_PHYSICS
+	add_child(_camera)
+	soul_texture = load(AdventureArt.path("res://assets/icons/soul.svg"))
+	glow_texture = load(AdventureArt.path("res://assets/fx/glow.svg"))
+	seal_texture = load(AdventureArt.path("res://assets/fx/seal.svg"))
 	for id: String in ["player", "chaser", "rusher", "tank", "caster", "boss"]:
-		textures[id] = load("res://assets/sprites/%s.svg" % id)
+		textures[id] = load(AdventureArt.path("res://assets/sprites/%s.svg" % id))
 	for definition: ContentDef in GameCatalog.weapons():
-		textures[definition.id] = load("res://assets/icons/%s.svg" % definition.icon)
+		textures[definition.id] = load(AdventureArt.path("res://assets/icons/%s.svg" % definition.icon))
+	_update_camera()
 	queue_redraw()
 
 func apply_visual_settings(value: Dictionary) -> void:
@@ -114,6 +173,10 @@ func apply_visual_settings(value: Dictionary) -> void:
 	# Settings remain responsive while the scene tree pauses combat updates.
 	if not bool(settings.get("flash", true)):
 		_impact_painter.clear()
+		_clear_dash_afterimages()
+		_dash_evasion_pulse_remaining = 0.0
+		_pulse_animated = false
+		_active_skill_painter.disable_animation()
 	queue_redraw()
 
 func begin(state: RunState) -> void:
@@ -123,7 +186,7 @@ func begin(state: RunState) -> void:
 	# Keep off-tree simulation fixtures free of render resources; _ready handles
 	# a world begun before it is attached, using the same selected arena.
 	if is_node_ready():
-		arena_texture = load(str(arena["texture"])) as Texture2D
+		arena_texture = load(ArenaCatalog.texture_path(_arena_id)) as Texture2D
 	_arena_color = Color(str(arena["preview_color"])) if _arena_id != "reliquary" else Color(0.78, 0.67, 0.50)
 	sim = CombatSim.new()
 	sim.begin(state)
@@ -135,12 +198,17 @@ func begin(state: RunState) -> void:
 	sim.damage_dealt.connect(_on_damage_dealt)
 	sim.player_damaged.connect(_on_player_damaged)
 	sim.rune_activated.connect(_on_rune_activated)
+	sim.dash_started.connect(_on_dash_started)
+	sim.dash_evaded.connect(_on_dash_evaded)
+	sim.pulse_cast.connect(_on_pulse_cast)
+	sim.active_skill_cast.connect(_on_active_skill_cast)
 	_reset_feedback()
 	active = true
 	_last_kills = state.kills
 	_hud_clock = 0.0
 	_shake = 0.0
 	position = Vector2.ZERO
+	_update_camera()
 	hud_changed.emit(hud_snapshot())
 	queue_redraw()
 
@@ -148,17 +216,56 @@ func stop() -> void:
 	active = false
 	_reset_feedback()
 	position = Vector2.ZERO
+	if is_instance_valid(_camera) and _camera.is_current():
+		_camera.position = ArenaCatalog.MAX_VIEW_SIZE * 0.5
+		_camera.force_update_scroll()
+		_camera.enabled = false
 	queue_redraw()
+
+func camera_view() -> Rect2:
+	return ArenaCatalog.visible_rect(sim.player_position if sim != null else CombatSim.ARENA.get_center())
+
+func _update_camera() -> void:
+	if not active or sim == null or not is_instance_valid(_camera):
+		return
+	_camera.position = ArenaCatalog.camera_center(sim.player_position)
+	_camera.enabled = true
+	if not _camera.is_current():
+		_camera.make_current()
+	_camera.force_update_scroll()
+
+func _feedback_safe_rect() -> Rect2:
+	var view: Rect2 = camera_view()
+	var safe := Rect2(view.position + Vector2(24, 110), view.size - Vector2(48, 222))
+	return safe.intersection(CombatSim.ARENA.grow(-8.0))
 
 func _physics_process(delta: float) -> void:
 	if not active or sim == null:
 		return
+	if is_inside_tree() and get_tree().paused:
+		clear_pending_actions()
+		return
+	if not is_finite(delta) or delta <= 0.0:
+		return
 	_visual_time += delta
 	_advance_feedback(delta)
+	_advance_dash_afterimages(delta)
+	_advance_dash_evasion_feedback(delta)
+	_advance_pulse_feedback(delta)
+	_active_skill_painter.advance(delta)
 	var movement: Vector2 = _movement()
 	if autopilot:
 		movement = BotPolicy.movement(sim)
-	sim.step(delta, movement)
+	var dash_pressed: bool = _dash_pending and not stress_mode and not autopilot
+	var skill_requests: Array[Dictionary] = []
+	if not stress_mode and not autopilot:
+		if _pulse_pending:
+			skill_requests.append({"slot": 0, "uid": _pulse_pending_uid})
+		if _secondary_skill_pending:
+			skill_requests.append({"slot": 1, "uid": _secondary_pending_uid})
+	clear_pending_actions()
+	sim.step(delta, movement, dash_pressed, false, skill_requests)
+	_record_dash_motion(delta)
 	if stress_mode:
 		_maintain_stress()
 	_hud_clock += delta
@@ -170,13 +277,211 @@ func _physics_process(delta: float) -> void:
 		position = Vector2(sin(_visual_time * 99.0), cos(_visual_time * 83.0)) * _shake
 	else:
 		position = Vector2.ZERO
+	_update_camera()
 	queue_redraw()
 
+func request_dash() -> bool:
+	if not active or sim == null or sim.complete or _dash_pending or stress_mode or autopilot:
+		return false
+	if (is_inside_tree() and get_tree().paused) or sim.run == null or sim.run.health <= 0.0:
+		return false
+	if sim.dash_time_left > 0.0 or sim.dash_cooldown_left > 0.0:
+		return false
+	_dash_pending = true
+	return true
+
+func clear_pending_actions() -> void:
+	_dash_pending = false
+	_pulse_pending = false
+	_secondary_skill_pending = false
+	_pulse_pending_uid = -1
+	_secondary_pending_uid = -1
+
+func request_pulse() -> bool:
+	return request_skill(0)
+
+func request_skill(slot: int) -> bool:
+	if slot < 0 or slot >= ActiveSkillRules.LIMIT:
+		return false
+	if not active or sim == null or sim.complete or stress_mode or autopilot:
+		return false
+	if (slot == 0 and _pulse_pending) or (slot == 1 and _secondary_skill_pending):
+		return false
+	if (is_inside_tree() and get_tree().paused) or sim.run == null or sim.run.health <= 0.0:
+		return false
+	var skill: Dictionary = sim.active_skill_snapshot(slot)
+	if not bool(skill.get("available", false)) or not bool(skill.get("ready", false)):
+		return false
+	if slot == 0:
+		_pulse_pending = true
+		_pulse_pending_uid = int(skill["uid"])
+	else:
+		_secondary_skill_pending = true
+		_secondary_pending_uid = int(skill["uid"])
+	return true
+
+func _on_active_skill_cast(id: String, uid: int, origin: Vector2, direction: Vector2, affected: int, rank: int) -> void:
+	if id == "pulse" or not active or sim == null or sim.complete:
+		return
+	var parameters: Dictionary = ActiveSkillRules.parameters(id, rank, {})
+	if parameters.is_empty() or uid < 0:
+		return
+	_active_skill_painter.add_cast(id, origin, direction, float(parameters["radius"]), bool(settings.get("flash", true)))
+	if affected > 0:
+		_shake = maxf(_shake, 1.4 if id == "starfall" else 0.8)
+	if sound != null:
+		sound.play_cue("pulse_hit" if affected > 0 else "pulse", -22.0, "active_skill:%d" % uid)
+	hud_changed.emit(hud_snapshot())
+
+func pulse_feedback_snapshot() -> Dictionary:
+	return {
+		"active": _pulse_remaining > 0.0,
+		"remaining": _pulse_remaining,
+		"origin": _pulse_origin,
+		"radius": _pulse_radius,
+		"affected": _pulse_affected,
+		"animated": _pulse_remaining > 0.0 and _pulse_animated and bool(settings.get("flash", true)),
+	}
+
+func skill_feedback_snapshot() -> Dictionary:
+	return {
+		"active": _skill_feedback_remaining > 0.0,
+		"remaining": _skill_feedback_remaining,
+		"text": _skill_feedback_text,
+		"affected": _skill_feedback_affected,
+		"origin": _skill_feedback_origin,
+		"anchor": _skill_feedback_anchor,
+		"text_width": _skill_feedback_text_width,
+	}
+
+func _on_pulse_cast(origin: Vector2, affected: int) -> void:
+	if not active or sim == null or sim.complete or not origin.is_finite():
+		return
+	var pulse: Dictionary = sim.snapshot().get("pulse", {})
+	var radius: float = float(pulse.get("last_cast_radius", 0.0))
+	var uses: int = int(pulse.get("uses", 0))
+	if uses <= 0 or uses == _pulse_feedback_use or not is_finite(radius) or radius <= 0.0:
+		return
+	_pulse_feedback_use = uses
+	_pulse_origin = origin
+	_pulse_radius = radius
+	_pulse_affected = maxi(0, affected)
+	_pulse_remaining = PULSE_FEEDBACK_LIFE
+	_pulse_animated = bool(settings.get("flash", true))
+	_skill_feedback_affected = _pulse_affected
+	_skill_feedback_origin = origin
+	_skill_feedback_text = "受控 ×%d" % _pulse_affected if _pulse_affected > 0 else "未受控"
+	_skill_feedback_text_width = _dash_evasion_font.get_string_size(_skill_feedback_text, HORIZONTAL_ALIGNMENT_LEFT, -1, SKILL_FEEDBACK_FONT_SIZE).x if _dash_evasion_font != null else 0.0
+	var half_width: float = _skill_feedback_text_width * 0.5
+	var safe: Rect2 = _feedback_safe_rect()
+	var anchor_y: float = origin.y + 54.0
+	if anchor_y > safe.end.y:
+		anchor_y = origin.y - 62.0
+	_skill_feedback_anchor = Vector2(
+		clampf(origin.x, safe.position.x + half_width, safe.end.x - half_width),
+		clampf(anchor_y, safe.position.y + SKILL_FEEDBACK_FONT_SIZE, safe.end.y))
+	_skill_feedback_remaining = SKILL_FEEDBACK_LIFE if _damage_flash <= 0.0 and _dash_evasion_remaining <= 0.0 else 0.0
+	if sound != null:
+		sound.play_cue("pulse_hit" if _pulse_affected > 0 else "pulse", -20.0, "pulse")
+	hud_changed.emit(hud_snapshot())
+	queue_redraw()
+
+func _advance_pulse_feedback(delta: float) -> void:
+	_skill_feedback_remaining = maxf(0.0, _skill_feedback_remaining - delta)
+	if _skill_feedback_remaining < 0.0000001:
+		_skill_feedback_remaining = 0.0
+	_pulse_remaining = maxf(0.0, _pulse_remaining - delta)
+	if _pulse_remaining < 0.0000001:
+		_pulse_remaining = 0.0
+		_pulse_animated = false
+
+func _clear_pulse_feedback() -> void:
+	_pulse_remaining = 0.0
+	_pulse_origin = Vector2.ZERO
+	_pulse_radius = 0.0
+	_pulse_affected = 0
+	_pulse_animated = false
+	_pulse_feedback_use = -1
+	_skill_feedback_remaining = 0.0
+	_skill_feedback_text = ""
+	_skill_feedback_affected = 0
+	_skill_feedback_origin = Vector2.ZERO
+	_skill_feedback_anchor = Vector2.ZERO
+	_skill_feedback_text_width = 0.0
+
+func dash_afterimage_count() -> int:
+	var count: int = 0
+	for afterimage: DashAfterimage in _dash_afterimages:
+		count += 1 if afterimage.life > 0.0 else 0
+	return count
+
+func _on_dash_started(origin: Vector2, direction: Vector2) -> void:
+	_clear_dash_evasion_feedback()
+	_dash_afterimage_clock = 0.0
+	_add_dash_afterimage(origin, direction)
+	if sound != null:
+		sound.play_cue("dash", -20.0, "dash")
+	hud_changed.emit(hud_snapshot())
+
+func dash_evasion_feedback_snapshot() -> Dictionary:
+	return {
+		"active": _dash_evasion_remaining > 0.0,
+		"remaining": _dash_evasion_remaining,
+		"pulse_remaining": _dash_evasion_pulse_remaining,
+		"text": DASH_EVASION_TEXT if _dash_evasion_remaining > 0.0 else "",
+	}
+
+func _on_dash_evaded(point: Vector2, _origin: Vector2, _source_id: String, _kind: String) -> void:
+	if not active or sim == null or sim.complete or not point.is_finite() or sim.dashes_used <= 0 or _dash_evasion_dash == sim.dashes_used:
+		return
+	_dash_evasion_dash = sim.dashes_used
+	_skill_feedback_remaining = 0.0
+	_dash_evasion_remaining = DASH_EVASION_LIFE
+	_dash_evasion_pulse_remaining = DASH_EVASION_LIFE if bool(settings.get("flash", true)) else 0.0
+	if sound != null:
+		sound.play_cue("evade", -22.0, "dash_evasion")
+	hud_changed.emit(hud_snapshot())
+	queue_redraw()
+
+func _advance_dash_evasion_feedback(delta: float) -> void:
+	_dash_evasion_remaining = maxf(0.0, _dash_evasion_remaining - delta)
+	_dash_evasion_pulse_remaining = maxf(0.0, _dash_evasion_pulse_remaining - delta)
+
+func _clear_dash_evasion_feedback() -> void:
+	_dash_evasion_remaining = 0.0
+	_dash_evasion_pulse_remaining = 0.0
+	_dash_evasion_dash = -1
+
+func _add_dash_afterimage(point: Vector2, direction: Vector2) -> void:
+	if not bool(settings.get("flash", true)) or not point.is_finite() or not direction.is_finite():
+		return
+	var afterimage: DashAfterimage = _dash_afterimages[_dash_afterimage_next]
+	afterimage.position = point
+	afterimage.lean = clampf(direction.x * 0.12, -0.045, 0.045)
+	afterimage.life = DASH_AFTERIMAGE_LIFE
+	_dash_afterimage_next = (_dash_afterimage_next + 1) % DASH_AFTERIMAGE_LIMIT
+
+func _record_dash_motion(delta: float) -> void:
+	if not active or sim == null or sim.complete or sim.dash_time_left <= 0.0 or not bool(settings.get("flash", true)):
+		_dash_afterimage_clock = 0.0
+		return
+	_dash_afterimage_clock += delta
+	if _dash_afterimage_clock >= DASH_AFTERIMAGE_INTERVAL:
+		_dash_afterimage_clock = fmod(_dash_afterimage_clock, DASH_AFTERIMAGE_INTERVAL)
+		_add_dash_afterimage(sim.player_position, sim.dash_direction)
+
+func _advance_dash_afterimages(delta: float) -> void:
+	for afterimage: DashAfterimage in _dash_afterimages:
+		afterimage.life = maxf(0.0, afterimage.life - delta)
+
+func _clear_dash_afterimages() -> void:
+	for afterimage: DashAfterimage in _dash_afterimages:
+		afterimage.life = 0.0
+	_dash_afterimage_next = 0
+	_dash_afterimage_clock = 0.0
+
 func _movement() -> Vector2:
-	var value: Vector2 = Vector2.ZERO
-	value.x = float(Input.is_physical_key_pressed(KEY_D) or Input.is_physical_key_pressed(KEY_RIGHT)) - float(Input.is_physical_key_pressed(KEY_A) or Input.is_physical_key_pressed(KEY_LEFT))
-	value.y = float(Input.is_physical_key_pressed(KEY_S) or Input.is_physical_key_pressed(KEY_DOWN)) - float(Input.is_physical_key_pressed(KEY_W) or Input.is_physical_key_pressed(KEY_UP))
-	return value.limit_length()
+	return ControlBindings.movement()
 
 func _on_player_hurt() -> void:
 	_shake = 4.0
@@ -186,12 +491,18 @@ func _on_player_hurt() -> void:
 func _on_damage_dealt(point: Vector2, amount: float, source: String, secondary: bool, target_uid: int = -1) -> void:
 	if not point.is_finite() or not is_finite(amount) or amount <= 0.0:
 		return
-	_spawn_number(point + Vector2(0, -22), amount, source, false, secondary, target_uid)
+	var height: float = -38.0 if source == "skill:starfall" else -22.0
+	_spawn_number(point + Vector2(0, height), amount, source, false, secondary, target_uid)
 	# Damage events identify the enemy center, not an impact normal or contact point.
 	if active and sim != null and not sim.complete and not secondary and bool(settings.get("flash", true)):
 		_impact_painter.add_hit(point, source, target_uid)
 
 func _on_player_damaged(amount: float, _source_id: String, _kind: String, origin: Vector2) -> void:
+	_dash_evasion_remaining = 0.0
+	_dash_evasion_pulse_remaining = 0.0
+	_skill_feedback_remaining = 0.0
+	if sound != null:
+		sound.cancel_cue("dash_evasion")
 	_spawn_number(sim.player_position + Vector2(0, -40), amount, "player", true, false)
 	_damage_flash = 0.22
 	_damage_direction = (origin - sim.player_position).normalized() if origin.is_finite() else Vector2.ZERO
@@ -208,8 +519,16 @@ func _on_rune_activated(rune_id: String, origin: Vector2, incoming: Vector2, out
 	_rune_flashes.append(flash)
 
 func _reset_feedback() -> void:
+	if sound != null:
+		sound.stop_combat_cues()
+	clear_pending_actions()
+	_clear_dash_afterimages()
+	_clear_dash_evasion_feedback()
+	_clear_pulse_feedback()
 	_enemy_telegraphs.clear()
 	_impact_painter.clear()
+	_active_skill_painter.clear()
+	_grounding_painter.clear()
 	_numbers.clear()
 	_number_lookup.clear()
 	_number_free.clear()
@@ -305,8 +624,16 @@ func _advance_feedback(delta: float) -> void:
 
 func _on_ended(victory: bool, reason: String) -> void:
 	active = false
+	if sound != null:
+		sound.stop_combat_cues()
+	clear_pending_actions()
+	_clear_dash_afterimages()
+	_clear_dash_evasion_feedback()
+	_clear_pulse_feedback()
 	_enemy_telegraphs.clear()
 	_impact_painter.clear()
+	_active_skill_painter.clear()
+	_grounding_painter.clear()
 	hud_changed.emit(hud_snapshot())
 	wave_ended.emit(victory, reason)
 
@@ -316,6 +643,7 @@ func hud_snapshot() -> Dictionary:
 	value["arena_name"] = _arena_name
 	value["terrain_name"] = ArenaCatalog.terrain_name(_arena_id, sim.player_position)
 	value["terrain_multiplier"] = ArenaCatalog.movement_multiplier(_arena_id, sim.player_position)
+	value["minimap"] = minimap_snapshot()
 	value["rogue"] = {"core_id": sim.run.core_id, "active_route": sim.run.active_route,
 		"hunter_alive": sim.hunter != null and sim.hunter.active and sim.hunter.hunter,
 		"hunter_defeated": sim.run.hunter_defeated}
@@ -326,24 +654,79 @@ func hud_snapshot() -> Dictionary:
 		value["projectiles"] = sim.shot_count
 	return value
 
+func minimap_snapshot() -> Dictionary:
+	if sim == null:
+		return {}
+	var enemies: Array[Dictionary] = []
+	for enemy: CombatSim.Enemy in sim.enemies:
+		if enemy.active and enemy.health > 0.0 and enemy.position.is_finite():
+			enemies.append({"position": enemy.position, "boss": enemy.definition.id == "boss", "hunter": enemy.hunter})
+	var zones: Array[Dictionary] = []
+	for zone: Dictionary in ArenaCatalog.definition(_arena_id)["zones"]:
+		zones.append({"center": Vector2(float(zone["center"][0]), float(zone["center"][1])),
+			"radius": Vector2(float(zone["radius"][0]), float(zone["radius"][1]))})
+	return {"bounds": CombatSim.ARENA, "player": sim.player_position, "facing": sim.player_direction,
+		"view": camera_view(), "enemies": enemies, "zones": zones, "arena_id": _arena_id}
+
 func _draw() -> void:
 	if arena_texture != null:
-		draw_texture_rect(arena_texture, Rect2(Vector2.ZERO, Vector2(1280, 720)), false)
+		draw_texture_rect(arena_texture, ArenaCatalog.art_rect(), false)
 	if sim == null:
 		return
 	_draw_atmosphere()
+	_draw_pulse_feedback()
+	_draw_ground_contacts()
+	_draw_player_ground()
 	_draw_souls()
 	_draw_enemies()
 	_draw_friendly_shots()
-	_draw_player_ground()
 	_draw_effects()
+	_active_skill_painter.draw(self)
 	_draw_impact_feedback()
 	_draw_rune_feedback()
 	_draw_outgoing_feedback()
 	_draw_player()
+	_draw_skill_feedback()
+	_draw_dash_evasion_feedback()
 	_draw_feedback()
 	# Hostile projectiles and telegraphs stay above all friendly spell effects.
 	_draw_danger()
+
+func _draw_ground_contacts() -> void:
+	if not active or sim == null:
+		_grounding_painter.clear()
+		return
+	_grounding_painter.rebuild(sim, camera_view())
+	_grounding_painter.draw(self)
+
+func _draw_skill_feedback() -> void:
+	if _skill_feedback_remaining <= 0.0 or _dash_evasion_font == null:
+		return
+	_draw_skill_feedback_text(_skill_feedback_anchor)
+
+func _draw_skill_feedback_text(anchor: Vector2) -> void:
+	var point: Vector2 = anchor - Vector2(_skill_feedback_text_width * 0.5, 0)
+	var color: Color = Color("d4c5e2") if _skill_feedback_affected > 0 else Color("b5aebd")
+	draw_string_outline(_dash_evasion_font, point, _skill_feedback_text, HORIZONTAL_ALIGNMENT_LEFT, -1, SKILL_FEEDBACK_FONT_SIZE, 3, Color("0c121a"))
+	draw_string(_dash_evasion_font, point, _skill_feedback_text, HORIZONTAL_ALIGNMENT_LEFT, -1, SKILL_FEEDBACK_FONT_SIZE, color)
+
+func _draw_pulse_feedback() -> void:
+	if _pulse_remaining <= 0.0 or _pulse_radius <= 1.0:
+		return
+	_draw_pulse_range(_pulse_origin, _pulse_radius)
+	if _pulse_animated and bool(settings.get("flash", true)):
+		var progress: float = clampf(1.0 - _pulse_remaining / PULSE_FEEDBACK_LIFE, 0.0, 1.0)
+		_draw_pulse_animation(_pulse_origin, _pulse_radius * (0.20 + progress * 0.72), progress)
+
+func _draw_pulse_range(origin: Vector2, radius: float) -> void:
+	draw_arc(origin, radius - 1.0, 0.0, TAU, 72, Color(0.13, 0.35, 0.45, 0.48), 1.0, true)
+
+func _draw_pulse_animation(origin: Vector2, radius: float, progress: float) -> void:
+	var tint: Color = Color(0.12, 0.52, 0.56, (1.0 - progress) * 0.28)
+	draw_arc(origin, radius, 0.0, TAU, 48, tint, 1.0, true)
+	for index: int in 6:
+		var direction: Vector2 = Vector2.from_angle(float(index) * TAU / 6.0)
+		draw_line(origin + direction * maxf(0.0, _pulse_radius - 7.0), origin + direction * maxf(0.0, _pulse_radius - 2.0), tint, 1.0, true)
 
 func _draw_impact_feedback() -> void:
 	_impact_painter.rebuild(bool(settings.get("flash", true)))
@@ -429,6 +812,35 @@ func _draw_feedback() -> void:
 	_draw_numbers(true)
 	_draw_player_damage_direction()
 
+func _draw_dash_evasion_feedback() -> void:
+	if _dash_evasion_remaining <= 0.0 or sim == null:
+		return
+	if _dash_evasion_pulse_remaining > 0.0 and bool(settings.get("flash", true)):
+		_draw_dash_evasion_pulse(sim.player_position + Vector2(0, 6))
+	_draw_dash_evasion_text(_dash_evasion_text_anchor())
+
+func _dash_evasion_text_anchor() -> Vector2:
+	var anchor: Vector2 = sim.player_position + Vector2(0, -62)
+	var safe: Rect2 = _feedback_safe_rect()
+	if anchor.y - 16.0 < safe.position.y:
+		anchor.y = sim.player_position.y + 72.0
+	var half_width: float = _dash_evasion_text_width * 0.5
+	anchor.x = clampf(anchor.x, safe.position.x + half_width, safe.end.x - half_width)
+	anchor.y = clampf(anchor.y, safe.position.y + 16.0, safe.end.y)
+	return anchor
+
+func _draw_dash_evasion_pulse(center: Vector2) -> void:
+	var strength: float = clampf(_dash_evasion_pulse_remaining / DASH_EVASION_LIFE, 0.0, 1.0)
+	var radius: float = 17.0 + (1.0 - strength) * 2.0
+	draw_arc(center, radius, PI * 0.12, PI * 0.88, 12, Color(0.68, 0.88, 0.90, strength * 0.24), 1.25, true)
+
+func _draw_dash_evasion_text(anchor: Vector2) -> void:
+	if _dash_evasion_font == null:
+		return
+	var point: Vector2 = anchor - Vector2(_dash_evasion_text_width * 0.5, 0)
+	draw_string_outline(_dash_evasion_font, point, DASH_EVASION_TEXT, HORIZONTAL_ALIGNMENT_LEFT, -1, DASH_EVASION_FONT_SIZE, 3, Color("0c121a"))
+	draw_string(_dash_evasion_font, point, DASH_EVASION_TEXT, HORIZONTAL_ALIGNMENT_LEFT, -1, DASH_EVASION_FONT_SIZE, Color("d0e6df"))
+
 func _draw_player_damage_direction() -> void:
 	if _damage_flash > 0.0 and bool(settings.get("flash", true)):
 		var alpha: float = _damage_flash / 0.22
@@ -442,15 +854,16 @@ func _draw_player_damage_direction() -> void:
 
 func _draw_atmosphere() -> void:
 	# Analytic motion keeps atmosphere cosmetic and out of the simulation RNG.
+	var view: Rect2 = camera_view()
 	for index: int in 22:
 		var phase: float = float(index) * 2.39996
 		var point := Vector2(
-			90.0 + fposmod(float(index) * 127.3 + sin(_visual_time * 0.12 + phase) * 19.0, 1100.0),
-			150.0 + fposmod(float(index) * 73.7 - _visual_time * (2.0 + float(index % 3)), 420.0))
+			view.position.x + 40.0 + fposmod(float(index) * 127.3 + sin(_visual_time * 0.12 + phase) * 19.0, view.size.x - 80.0),
+			view.position.y + 100.0 + fposmod(float(index) * 73.7 - _visual_time * (2.0 + float(index % 3)), view.size.y - 220.0))
 		var alpha: float = 0.07 + (sin(_visual_time * 0.7 + phase) + 1.0) * 0.035
 		draw_circle(point, 1.0 if index % 3 else 1.5, Color(_arena_color, alpha))
 	if sim.boss != null and sim.boss.active:
-		var pulse: float = 0.32 + sin(_visual_time * 1.5) * 0.05
+		var pulse: float = 0.13 + sin(_visual_time * 1.5) * 0.02
 		draw_texture_rect(glow_texture, Rect2(sim.boss.position - Vector2(110, 100), Vector2(220, 180)), false, Color(0.73, 0.59, 0.85, pulse))
 
 func _draw_souls() -> void:
@@ -472,11 +885,10 @@ func _draw_enemies() -> void:
 			var stride: float = sin(enemy.age * (9.0 if id == "rusher" else 4.0) + float(enemy.uid))
 			var bob: float = stride * (1.0 if id == "tank" else 2.0)
 			var breathing: float = sin(enemy.age * 2.0 + float(enemy.uid)) * 0.015
-			var width: float = size * (1.0 + breathing)
 			var tint: Color = _enemy_tint(enemy)
 			if enemy.hunter:
 				draw_arc(enemy.position + Vector2(0, 5), enemy.radius + 8.0, 0, TAU, 28, Color("c87866"), 2.0, true)
-			draw_texture_rect(texture, Rect2(enemy.position + Vector2(-width * 0.5, -size * 0.66 + bob), Vector2(width, size)), false, tint)
+			draw_texture_rect(texture, enemy_draw_rect(enemy, bob, breathing), false, tint)
 			if enemy.hunter:
 				_draw_hunter_mark(enemy, size)
 			if id == "tank" and enemy.health < enemy.max_health:
@@ -491,8 +903,23 @@ func _draw_hunter_mark(enemy: CombatSim.Enemy, size: float) -> void:
 	draw_line(origin, origin + Vector2(40, 0), Color("292131"), 4.0)
 	draw_line(origin, origin + Vector2(40 * clampf(enemy.health / enemy.max_health, 0.0, 1.0), 0), Color("d79b78"), 2.0)
 
+func enemy_draw_rect(enemy: CombatSim.Enemy, bob: float, breathing: float) -> Rect2:
+	var size: float = enemy.radius * 3.0 + 15.0
+	var impact: float = 0.0
+	if bool(settings.get("flash", true)) and is_finite(enemy.hurt_timer):
+		impact = clampf((enemy.hurt_timer - ENEMY_HIT_TIMER_CUTOFF) / ENEMY_HIT_PULSE_SECONDS, 0.0, 1.0)
+		impact *= impact * (0.5 if enemy.definition.id == "boss" else 1.0)
+	var width: float = size * (1.0 + breathing) * (1.0 + impact * 0.04)
+	var height: float = size * (1.0 - impact * 0.05)
+	var bottom: float = enemy.position.y + size * 0.34 + bob
+	return Rect2(Vector2(enemy.position.x - width * 0.5, bottom - height), Vector2(width, height))
+
 func _enemy_tint(enemy: CombatSim.Enemy) -> Color:
-	var base: Color = Color("b4e9ed") if enemy.slow_timer > 0.0 else Color.WHITE
+	var base: Color = Color.WHITE
+	if enemy.slow_timer > 0.0:
+		base = Color("b4e9ed")
+	elif enemy.pulse_hinder_timer > 0.0 and not enemy.hunter and enemy.definition.id != "boss":
+		base = PULSE_HINDER_TINT
 	if not bool(settings.get("flash", true)) or not is_finite(enemy.hurt_timer) or enemy.hurt_timer <= ENEMY_HIT_TIMER_CUTOFF:
 		return base
 	# The simulation retains its 100ms receipt; only the first 60ms brighten the art.
@@ -506,18 +933,21 @@ func _draw_friendly_shots() -> void:
 
 func _draw_player_ground() -> void:
 	var center: Vector2 = sim.player_position
-	draw_texture_rect(glow_texture, Rect2(center - Vector2(44, 34), Vector2(88, 70)), false, Color(0.89, 0.78, 1.0, 0.35))
+	draw_texture_rect(glow_texture, Rect2(center - Vector2(44, 34), Vector2(88, 70)), false, Color(0.89, 0.78, 1.0, 0.16))
 	draw_set_transform(center + Vector2(0, 9), 0.0, Vector2(1.0, 0.48))
-	draw_texture_rect(seal_texture, Rect2(-Vector2.ONE * 32.0, Vector2.ONE * 64.0), false, Color(1.0, 0.95, 0.85, 0.55 + sin(_visual_time * 1.6) * 0.08))
+	draw_texture_rect(seal_texture, Rect2(-Vector2.ONE * 32.0, Vector2.ONE * 64.0), false, Color(1.0, 0.95, 0.85, 0.24 + sin(_visual_time * 1.6) * 0.03))
 	draw_set_transform(Vector2.ZERO)
 
 func _player_tint() -> Color:
 	var tint: Color = Color.WHITE
+	if sim.dash_time_left > 0.0:
+		return Color("d7e7e6") if bool(settings.get("flash", true)) else tint
 	if sim.invulnerability > 0.0 and bool(settings.get("flash", true)):
 		tint.a = 0.55 + sin(_visual_time * 35.0) * 0.30
 	return tint
 
 func _draw_player() -> void:
+	_draw_dash_afterimages()
 	var center: Vector2 = sim.player_position
 	var bob: float = sin(_visual_time * 9.0) * minf(2.0, sim.player_velocity.length() * 0.012)
 	var tint: Color = _player_tint()
@@ -543,6 +973,19 @@ func _draw_player() -> void:
 		var point: Vector2 = center + Vector2(-width * 0.5, 28.0)
 		draw_string_outline(_number_font, point, extra, HORIZONTAL_ALIGNMENT_LEFT, -1, 12, 3, Color("0d111b"))
 		draw_string(_number_font, point, extra, HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color("f0e5cc"))
+
+func _draw_dash_afterimages() -> void:
+	if not bool(settings.get("flash", true)) or not textures.has("player"):
+		return
+	for offset: int in DASH_AFTERIMAGE_LIMIT:
+		var index: int = (_dash_afterimage_next + offset) % DASH_AFTERIMAGE_LIMIT
+		var afterimage: DashAfterimage = _dash_afterimages[index]
+		if afterimage.life <= 0.0:
+			continue
+		var opacity: float = 0.16 * clampf(afterimage.life / DASH_AFTERIMAGE_LIFE, 0.0, 1.0)
+		draw_set_transform(afterimage.position, afterimage.lean)
+		draw_texture_rect(textures["player"], Rect2(Vector2(-34, -50), Vector2(68, 68)), false, Color(0.70, 0.88, 0.90, opacity))
+	draw_set_transform(Vector2.ZERO)
 
 func _draw_effects() -> void:
 	for effect: CombatSim.Effect in sim.effects:
@@ -580,12 +1023,12 @@ func _draw_danger() -> void:
 		var progress: float = minf(1.0, zone.age / zone.delay)
 		draw_circle(zone.position, zone.radius, Color(0.9, 0.22, 0.16, 0.10 + progress * 0.06))
 		draw_arc(zone.position, zone.radius, 0, TAU, 40, Color("b85246"), 1.3, true)
-		draw_arc(zone.position, zone.radius, -PI * 0.5, -PI * 0.5 + TAU * progress, 40, Color("ffbe88"), 3.0, true)
+		draw_arc(zone.position, zone.radius, -PI * 0.5, -PI * 0.5 + TAU * progress, 40, Color("c94d50"), 3.0, true)
 		for index: int in 8:
 			var direction: Vector2 = Vector2.from_angle(float(index) * TAU / 8.0)
-			draw_line(zone.position + direction * (zone.radius - 4.0), zone.position + direction * (zone.radius + 3.0), Color("efaa7c"), 1.3, true)
-		draw_line(zone.position - Vector2(8, 0), zone.position + Vector2(8, 0), Color("ffb68a"), 1.0, true)
-		draw_line(zone.position - Vector2(0, 8), zone.position + Vector2(0, 8), Color("ffb68a"), 1.0, true)
+			draw_line(zone.position + direction * (zone.radius - 4.0), zone.position + direction * (zone.radius + 3.0), Color("963e42"), 1.3, true)
+		draw_line(zone.position - Vector2(8, 0), zone.position + Vector2(8, 0), Color("963e42"), 1.0, true)
+		draw_line(zone.position - Vector2(0, 8), zone.position + Vector2(0, 8), Color("963e42"), 1.0, true)
 	# Live hostile rounds remain above all warning strokes.
 	for shot: CombatSim.Shot in sim.shots:
 		if not shot.active or not shot.hostile:

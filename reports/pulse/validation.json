@@ -1,0 +1,1336 @@
+{
+  "schema_version": 1,
+  "created_at_utc": "2026-10-28T04:20:41.403912+00:00",
+  "source_base_commit": "a86b1dd2bd991d883e24d79f2339615191a2222c",
+  "scope": "Second active skill: Q radial knockback and independent hinder status; continuing game-feel goal remains active",
+  "tests": {
+    "godot_suites": 67,
+    "additional_profile_invocations": 5,
+    "godot_assertions": 26586,
+    "python_tests": 32,
+    "native_assertions": {
+      "pulse_rules": 110,
+      "pulse_world": 63,
+      "pulse_flow": 18,
+      "pulse_ui": 77,
+      "dash_rules": 82,
+      "dash_world": 69,
+      "dash_ui": 49,
+      "enemy_telegraphs": 134,
+      "concise_ui": 257
+    },
+    "all_passed": true
+  },
+  "rules": {
+    "radius": 144,
+    "radial_push": 70,
+    "hinder_seconds": 1,
+    "hinder_speed_factor": 0.65,
+    "cooldown_seconds": 8,
+    "center_inclusive": true,
+    "boss_and_hunter_immune": true,
+    "frost_timers_independent_and_stronger_wins": true,
+    "frostfire_priming": false,
+    "damage_or_rewards": false,
+    "projectile_or_ritual_clear": false,
+    "cast_before_dash_movement": true,
+    "default_bot_source_unchanged": true
+  },
+  "presentation": {
+    "single_slot_seconds": 0.3,
+    "origin_locked": true,
+    "flash_off_keeps_static_range": true,
+    "no_animation_replay": true,
+    "danger_last": true,
+    "new_static_assets": 0,
+    "hud_cooldown_progress_step": 0,
+    "range_arena_clipping": false
+  },
+  "visual": {
+    "fixtures": {
+      "ready": {
+        "pulse": {
+          "affected": 0,
+          "cooldown_left": 0.0,
+          "cooldown_total": 8.0,
+          "last_affected": 0,
+          "radius": 144.0,
+          "ready": true,
+          "uses": 0
+        },
+        "feedback": {
+          "active": false,
+          "affected": 0,
+          "animated": false,
+          "origin": "(0.0, 0.0)",
+          "radius": 0.0,
+          "remaining": 0.0
+        },
+        "before": [
+          {
+            "frost": 0.0,
+            "hinder": 0.0,
+            "hunter": false,
+            "id": "chaser",
+            "position": [
+              690.0,
+              365.0
+            ],
+            "uid": 1
+          },
+          {
+            "frost": 0.0,
+            "hinder": 0.0,
+            "hunter": false,
+            "id": "tank",
+            "position": [
+              640.0,
+              445.0
+            ],
+            "uid": 2
+          },
+          {
+            "frost": 0.0,
+            "hinder": 0.0,
+            "hunter": false,
+            "id": "rusher",
+            "position": [
+              540.0,
+              365.0
+            ],
+            "uid": 3
+          },
+          {
+            "frost": 0.0,
+            "hinder": 0.0,
+            "hunter": false,
+            "id": "caster",
+            "position": [
+              785.0,
+              365.0
+            ],
+            "uid": 4
+          }
+        ],
+        "after": [
+          {
+            "frost": 0.0,
+            "hinder": 0.0,
+            "hunter": false,
+            "id": "chaser",
+            "position": [
+              690.0,
+              365.0
+            ],
+            "uid": 1
+          },
+          {
+            "frost": 0.0,
+            "hinder": 0.0,
+            "hunter": false,
+            "id": "tank",
+            "position": [
+              640.0,
+              445.0
+            ],
+            "uid": 2
+          },
+          {
+            "frost": 0.0,
+            "hinder": 0.0,
+            "hunter": false,
+            "id": "rusher",
+            "position": [
+              540.0,
+              365.0
+            ],
+            "uid": 3
+          },
+          {
+            "frost": 0.0,
+            "hinder": 0.0,
+            "hunter": false,
+            "id": "caster",
+            "position": [
+              785.0,
+              365.0
+            ],
+            "uid": 4
+          }
+        ],
+        "hostiles": 0,
+        "zones": 0,
+        "capture_sha256": "09f243f62bd62a54402d68133c69ae637d9fc7c61d35705971dda35b6e4c60da"
+      },
+      "cast": {
+        "pulse": {
+          "affected": 3,
+          "cooldown_left": 7.98333333333333,
+          "cooldown_total": 8.0,
+          "last_affected": 3,
+          "radius": 144.0,
+          "ready": false,
+          "uses": 1
+        },
+        "feedback": {
+          "active": true,
+          "affected": 3,
+          "animated": true,
+          "origin": "(640.0, 365.0)",
+          "radius": 144.0,
+          "remaining": 0.3
+        },
+        "before": [
+          {
+            "frost": 0.0,
+            "hinder": 0.0,
+            "hunter": false,
+            "id": "chaser",
+            "position": [
+              690.0,
+              365.0
+            ],
+            "uid": 1
+          },
+          {
+            "frost": 0.0,
+            "hinder": 0.0,
+            "hunter": false,
+            "id": "tank",
+            "position": [
+              640.0,
+              445.0
+            ],
+            "uid": 2
+          },
+          {
+            "frost": 0.0,
+            "hinder": 0.0,
+            "hunter": false,
+            "id": "rusher",
+            "position": [
+              540.0,
+              365.0
+            ],
+            "uid": 3
+          },
+          {
+            "frost": 0.0,
+            "hinder": 0.0,
+            "hunter": false,
+            "id": "caster",
+            "position": [
+              785.0,
+              365.0
+            ],
+            "uid": 4
+          }
+        ],
+        "after": [
+          {
+            "frost": 0.0,
+            "hinder": 0.983333333333333,
+            "hunter": false,
+            "id": "chaser",
+            "position": [
+              760.0,
+              365.0
+            ],
+            "uid": 1
+          },
+          {
+            "frost": 0.0,
+            "hinder": 0.983333333333333,
+            "hunter": false,
+            "id": "tank",
+            "position": [
+              640.0,
+              515.0
+            ],
+            "uid": 2
+          },
+          {
+            "frost": 0.0,
+            "hinder": 0.983333333333333,
+            "hunter": false,
+            "id": "rusher",
+            "position": [
+              470.0,
+              365.0
+            ],
+            "uid": 3
+          },
+          {
+            "frost": 0.0,
+            "hinder": 0.0,
+            "hunter": false,
+            "id": "caster",
+            "position": [
+              785.582763671875,
+              364.974822998047
+            ],
+            "uid": 4
+          }
+        ],
+        "hostiles": 0,
+        "zones": 0,
+        "capture_sha256": "144010a85a45125131c838e50f3d42c613d5a93dc9d304c9f6eef9afbe3356ee"
+      },
+      "flash_off": {
+        "pulse": {
+          "affected": 3,
+          "cooldown_left": 7.98333333333333,
+          "cooldown_total": 8.0,
+          "last_affected": 3,
+          "radius": 144.0,
+          "ready": false,
+          "uses": 1
+        },
+        "feedback": {
+          "active": true,
+          "affected": 3,
+          "animated": false,
+          "origin": "(640.0, 365.0)",
+          "radius": 144.0,
+          "remaining": 0.3
+        },
+        "before": [
+          {
+            "frost": 0.0,
+            "hinder": 0.0,
+            "hunter": false,
+            "id": "chaser",
+            "position": [
+              690.0,
+              365.0
+            ],
+            "uid": 1
+          },
+          {
+            "frost": 0.0,
+            "hinder": 0.0,
+            "hunter": false,
+            "id": "tank",
+            "position": [
+              640.0,
+              445.0
+            ],
+            "uid": 2
+          },
+          {
+            "frost": 0.0,
+            "hinder": 0.0,
+            "hunter": false,
+            "id": "rusher",
+            "position": [
+              540.0,
+              365.0
+            ],
+            "uid": 3
+          },
+          {
+            "frost": 0.0,
+            "hinder": 0.0,
+            "hunter": false,
+            "id": "caster",
+            "position": [
+              785.0,
+              365.0
+            ],
+            "uid": 4
+          }
+        ],
+        "after": [
+          {
+            "frost": 0.0,
+            "hinder": 0.983333333333333,
+            "hunter": false,
+            "id": "chaser",
+            "position": [
+              760.0,
+              365.0
+            ],
+            "uid": 1
+          },
+          {
+            "frost": 0.0,
+            "hinder": 0.983333333333333,
+            "hunter": false,
+            "id": "tank",
+            "position": [
+              640.0,
+              515.0
+            ],
+            "uid": 2
+          },
+          {
+            "frost": 0.0,
+            "hinder": 0.983333333333333,
+            "hunter": false,
+            "id": "rusher",
+            "position": [
+              470.0,
+              365.0
+            ],
+            "uid": 3
+          },
+          {
+            "frost": 0.0,
+            "hinder": 0.0,
+            "hunter": false,
+            "id": "caster",
+            "position": [
+              785.582763671875,
+              364.974822998047
+            ],
+            "uid": 4
+          }
+        ],
+        "hostiles": 0,
+        "zones": 0,
+        "capture_sha256": "98c5edbe012060a34e2ddf5d592fae3b68286ce43e6dc8259eecc6ca74c96bee"
+      },
+      "immune": {
+        "pulse": {
+          "affected": 0,
+          "cooldown_left": 7.98333333333333,
+          "cooldown_total": 8.0,
+          "last_affected": 0,
+          "radius": 144.0,
+          "ready": false,
+          "uses": 1
+        },
+        "feedback": {
+          "active": true,
+          "affected": 0,
+          "animated": true,
+          "origin": "(640.0, 365.0)",
+          "radius": 144.0,
+          "remaining": 0.3
+        },
+        "before": [
+          {
+            "frost": 0.0,
+            "hinder": 0.0,
+            "hunter": false,
+            "id": "boss",
+            "position": [
+              740.0,
+              365.0
+            ],
+            "uid": 1
+          },
+          {
+            "frost": 0.0,
+            "hinder": 0.0,
+            "hunter": true,
+            "id": "rusher",
+            "position": [
+              540.0,
+              365.0
+            ],
+            "uid": 2
+          }
+        ],
+        "after": [
+          {
+            "frost": 0.0,
+            "hinder": 0.0,
+            "hunter": false,
+            "id": "boss",
+            "position": [
+              740.0,
+              365.0
+            ],
+            "uid": 1
+          },
+          {
+            "frost": 0.0,
+            "hinder": 0.0,
+            "hunter": true,
+            "id": "rusher",
+            "position": [
+              540.0,
+              365.0
+            ],
+            "uid": 2
+          }
+        ],
+        "hostiles": 0,
+        "zones": 0,
+        "capture_sha256": "03a26f2e674de445a780d0d514ffd77bbbbec366a47e4c10fd060885f8f0280f"
+      },
+      "corner": {
+        "pulse": {
+          "affected": 3,
+          "cooldown_left": 7.98333333333333,
+          "cooldown_total": 8.0,
+          "last_affected": 3,
+          "radius": 144.0,
+          "ready": false,
+          "uses": 1
+        },
+        "feedback": {
+          "active": true,
+          "affected": 3,
+          "animated": true,
+          "origin": "(96.0, 170.0)",
+          "radius": 144.0,
+          "remaining": 0.3
+        },
+        "before": [
+          {
+            "frost": 0.0,
+            "hinder": 0.0,
+            "hunter": false,
+            "id": "chaser",
+            "position": [
+              146.0,
+              170.0
+            ],
+            "uid": 1
+          },
+          {
+            "frost": 0.0,
+            "hinder": 0.0,
+            "hunter": false,
+            "id": "tank",
+            "position": [
+              96.0,
+              250.0
+            ],
+            "uid": 2
+          },
+          {
+            "frost": 0.0,
+            "hinder": 0.0,
+            "hunter": false,
+            "id": "rusher",
+            "position": [
+              66.0,
+              170.0
+            ],
+            "uid": 3
+          },
+          {
+            "frost": 0.0,
+            "hinder": 0.0,
+            "hunter": false,
+            "id": "caster",
+            "position": [
+              241.0,
+              170.0
+            ],
+            "uid": 4
+          }
+        ],
+        "after": [
+          {
+            "frost": 0.0,
+            "hinder": 0.983333333333333,
+            "hunter": false,
+            "id": "chaser",
+            "position": [
+              216.0,
+              170.0
+            ],
+            "uid": 1
+          },
+          {
+            "frost": 0.0,
+            "hinder": 0.983333333333333,
+            "hunter": false,
+            "id": "tank",
+            "position": [
+              96.0,
+              320.0
+            ],
+            "uid": 2
+          },
+          {
+            "frost": 0.0,
+            "hinder": 0.983333333333333,
+            "hunter": false,
+            "id": "rusher",
+            "position": [
+              66.0,
+              170.0
+            ],
+            "uid": 3
+          },
+          {
+            "frost": 0.0,
+            "hinder": 0.0,
+            "hunter": false,
+            "id": "caster",
+            "position": [
+              241.582794189453,
+              169.974822998047
+            ],
+            "uid": 4
+          }
+        ],
+        "hostiles": 0,
+        "zones": 0,
+        "capture_sha256": "af85fe7d399d2f264dfd836cf6b701ac11f98856a97552eea36adc6d8cfd803c"
+      },
+      "danger": {
+        "pulse": {
+          "affected": 3,
+          "cooldown_left": 7.98333333333333,
+          "cooldown_total": 8.0,
+          "last_affected": 3,
+          "radius": 144.0,
+          "ready": false,
+          "uses": 1
+        },
+        "feedback": {
+          "active": true,
+          "affected": 3,
+          "animated": true,
+          "origin": "(640.0, 365.0)",
+          "radius": 144.0,
+          "remaining": 0.3
+        },
+        "before": [
+          {
+            "frost": 0.0,
+            "hinder": 0.0,
+            "hunter": false,
+            "id": "chaser",
+            "position": [
+              690.0,
+              365.0
+            ],
+            "uid": 1
+          },
+          {
+            "frost": 0.0,
+            "hinder": 0.0,
+            "hunter": false,
+            "id": "tank",
+            "position": [
+              640.0,
+              445.0
+            ],
+            "uid": 2
+          },
+          {
+            "frost": 0.0,
+            "hinder": 0.0,
+            "hunter": false,
+            "id": "rusher",
+            "position": [
+              540.0,
+              365.0
+            ],
+            "uid": 3
+          },
+          {
+            "frost": 0.0,
+            "hinder": 0.0,
+            "hunter": false,
+            "id": "caster",
+            "position": [
+              785.0,
+              365.0
+            ],
+            "uid": 4
+          }
+        ],
+        "after": [
+          {
+            "frost": 0.0,
+            "hinder": 0.983333333333333,
+            "hunter": false,
+            "id": "chaser",
+            "position": [
+              760.0,
+              365.0
+            ],
+            "uid": 1
+          },
+          {
+            "frost": 0.0,
+            "hinder": 0.983333333333333,
+            "hunter": false,
+            "id": "tank",
+            "position": [
+              640.0,
+              515.0
+            ],
+            "uid": 2
+          },
+          {
+            "frost": 0.0,
+            "hinder": 0.983333333333333,
+            "hunter": false,
+            "id": "rusher",
+            "position": [
+              470.0,
+              365.0
+            ],
+            "uid": 3
+          },
+          {
+            "frost": 0.0,
+            "hinder": 0.0,
+            "hunter": false,
+            "id": "caster",
+            "position": [
+              785.582763671875,
+              364.974822998047
+            ],
+            "uid": 4
+          }
+        ],
+        "hostiles": 1,
+        "zones": 1,
+        "capture_sha256": "700f4c55c823f5765bdc408d2e656e09a83fc04813ec8e6b268e7090e07c3d14"
+      },
+      "resumed": {
+        "pulse": {
+          "affected": 3,
+          "cooldown_left": 7.96666666666667,
+          "cooldown_total": 8.0,
+          "last_affected": 3,
+          "radius": 144.0,
+          "ready": false,
+          "uses": 1
+        },
+        "feedback": {
+          "active": true,
+          "affected": 3,
+          "animated": true,
+          "origin": "(640.0, 365.0)",
+          "radius": 144.0,
+          "remaining": 0.283333333333333
+        },
+        "before": [
+          {
+            "frost": 0.0,
+            "hinder": 0.0,
+            "hunter": false,
+            "id": "chaser",
+            "position": [
+              690.0,
+              365.0
+            ],
+            "uid": 1
+          },
+          {
+            "frost": 0.0,
+            "hinder": 0.0,
+            "hunter": false,
+            "id": "tank",
+            "position": [
+              640.0,
+              445.0
+            ],
+            "uid": 2
+          },
+          {
+            "frost": 0.0,
+            "hinder": 0.0,
+            "hunter": false,
+            "id": "rusher",
+            "position": [
+              540.0,
+              365.0
+            ],
+            "uid": 3
+          },
+          {
+            "frost": 0.0,
+            "hinder": 0.0,
+            "hunter": false,
+            "id": "caster",
+            "position": [
+              785.0,
+              365.0
+            ],
+            "uid": 4
+          }
+        ],
+        "after": [
+          {
+            "frost": 0.0,
+            "hinder": 0.966666666666667,
+            "hunter": false,
+            "id": "chaser",
+            "position": [
+              760.0,
+              365.0
+            ],
+            "uid": 1
+          },
+          {
+            "frost": 0.0,
+            "hinder": 0.966666666666667,
+            "hunter": false,
+            "id": "tank",
+            "position": [
+              640.0,
+              515.0
+            ],
+            "uid": 2
+          },
+          {
+            "frost": 0.0,
+            "hinder": 0.966666666666667,
+            "hunter": false,
+            "id": "rusher",
+            "position": [
+              470.0,
+              365.0
+            ],
+            "uid": 3
+          },
+          {
+            "frost": 0.0,
+            "hinder": 0.0,
+            "hunter": false,
+            "id": "caster",
+            "position": [
+              786.16552734375,
+              364.94873046875
+            ],
+            "uid": 4
+          }
+        ],
+        "hostiles": 0,
+        "zones": 0,
+        "capture_sha256": "273db90c4515fdb8f7022c04e7eeeba6260e55acb6c1c52ba6db033635c1288f"
+      },
+      "pack-cast": {
+        "pulse": {
+          "affected": 3,
+          "cooldown_left": 7.98333333333333,
+          "cooldown_total": 8.0,
+          "last_affected": 3,
+          "radius": 144.0,
+          "ready": false,
+          "uses": 1
+        },
+        "feedback": {
+          "active": true,
+          "affected": 3,
+          "animated": true,
+          "origin": "(640.0, 365.0)",
+          "radius": 144.0,
+          "remaining": 0.3
+        },
+        "before": [
+          {
+            "frost": 0.0,
+            "hinder": 0.0,
+            "hunter": false,
+            "id": "chaser",
+            "position": [
+              690.0,
+              365.0
+            ],
+            "uid": 1
+          },
+          {
+            "frost": 0.0,
+            "hinder": 0.0,
+            "hunter": false,
+            "id": "tank",
+            "position": [
+              640.0,
+              445.0
+            ],
+            "uid": 2
+          },
+          {
+            "frost": 0.0,
+            "hinder": 0.0,
+            "hunter": false,
+            "id": "rusher",
+            "position": [
+              540.0,
+              365.0
+            ],
+            "uid": 3
+          },
+          {
+            "frost": 0.0,
+            "hinder": 0.0,
+            "hunter": false,
+            "id": "caster",
+            "position": [
+              785.0,
+              365.0
+            ],
+            "uid": 4
+          }
+        ],
+        "after": [
+          {
+            "frost": 0.0,
+            "hinder": 0.983333333333333,
+            "hunter": false,
+            "id": "chaser",
+            "position": [
+              760.0,
+              365.0
+            ],
+            "uid": 1
+          },
+          {
+            "frost": 0.0,
+            "hinder": 0.983333333333333,
+            "hunter": false,
+            "id": "tank",
+            "position": [
+              640.0,
+              515.0
+            ],
+            "uid": 2
+          },
+          {
+            "frost": 0.0,
+            "hinder": 0.983333333333333,
+            "hunter": false,
+            "id": "rusher",
+            "position": [
+              470.0,
+              365.0
+            ],
+            "uid": 3
+          },
+          {
+            "frost": 0.0,
+            "hinder": 0.0,
+            "hunter": false,
+            "id": "caster",
+            "position": [
+              785.582763671875,
+              364.974822998047
+            ],
+            "uid": 4
+          }
+        ],
+        "hostiles": 0,
+        "zones": 0,
+        "capture_sha256": "144010a85a45125131c838e50f3d42c613d5a93dc9d304c9f6eef9afbe3356ee"
+      },
+      "pack-immune": {
+        "pulse": {
+          "affected": 0,
+          "cooldown_left": 7.98333333333333,
+          "cooldown_total": 8.0,
+          "last_affected": 0,
+          "radius": 144.0,
+          "ready": false,
+          "uses": 1
+        },
+        "feedback": {
+          "active": true,
+          "affected": 0,
+          "animated": true,
+          "origin": "(640.0, 365.0)",
+          "radius": 144.0,
+          "remaining": 0.3
+        },
+        "before": [
+          {
+            "frost": 0.0,
+            "hinder": 0.0,
+            "hunter": false,
+            "id": "boss",
+            "position": [
+              740.0,
+              365.0
+            ],
+            "uid": 1
+          },
+          {
+            "frost": 0.0,
+            "hinder": 0.0,
+            "hunter": true,
+            "id": "rusher",
+            "position": [
+              540.0,
+              365.0
+            ],
+            "uid": 2
+          }
+        ],
+        "after": [
+          {
+            "frost": 0.0,
+            "hinder": 0.0,
+            "hunter": false,
+            "id": "boss",
+            "position": [
+              740.0,
+              365.0
+            ],
+            "uid": 1
+          },
+          {
+            "frost": 0.0,
+            "hinder": 0.0,
+            "hunter": true,
+            "id": "rusher",
+            "position": [
+              540.0,
+              365.0
+            ],
+            "uid": 2
+          }
+        ],
+        "hostiles": 0,
+        "zones": 0,
+        "capture_sha256": "03a26f2e674de445a780d0d514ffd77bbbbec366a47e4c10fd060885f8f0280f"
+      }
+    },
+    "root_and_independent_agent_reviewed_seven_source_images": true,
+    "minimum_window_ui_tested": [
+      960,
+      540
+    ],
+    "blocking_findings": 0
+  },
+  "performance": {
+    "actual_duration_seconds": 60.004913,
+    "actual_warmup_seconds": 5.008731,
+    "after_step_counts_at_end": {
+      "enemies": 300,
+      "pickups": 200,
+      "projectiles": 597
+    },
+    "afterimage_capacity": 6,
+    "afterimage_peak": 6,
+    "arena_id": "mire",
+    "average_fps": 115.040580093833,
+    "checks": {
+      "dash_feedback": true,
+      "default_settings_and_no_profile": true,
+      "evasion_feedback": true,
+      "load": true,
+      "performance": true,
+      "pulse_control": true
+    },
+    "core_activations": {
+      "bone_chorus": 46,
+      "frostfire": 0
+    },
+    "core_id": "bone_chorus",
+    "counter_scope": "total dash/feedback/hit/damage/core counters include warmup; sample-prefixed counters exclude it",
+    "counts_measurement_phase": "physics_frame_before_combat_world",
+    "damage_by_weapon": {
+      "bone": 92417.4999999944,
+      "comet": 945365.174999927,
+      "crescent": 1311914.24999931,
+      "ember": 277971.524999995,
+      "frost": 283142.199999761,
+      "return_ring": 906801.000001429,
+      "scatter": 87693.5000000054,
+      "storm": 133947.787499999
+    },
+    "dash_rules": {
+      "cooldown": 2.4,
+      "duration": 0.2,
+      "invulnerability": 0.12,
+      "speed": 660.0
+    },
+    "dashes_used": 28,
+    "display_server": "Windows",
+    "duration_seconds": 60.0,
+    "enemies": 300,
+    "engine": "4.7.2-stable (official)",
+    "evades": 28,
+    "evasion_feedback_peak": 1,
+    "evasion_probes": true,
+    "evasion_probes_spawned": 28,
+    "fixture_overrides": [
+      "300 enemies with synthetic high health",
+      "600 real content/rune projectiles replenished before each World step",
+      "200 synthetic pickups replenished before each World step",
+      "full player health restored before each World step",
+      "bone_chorus core assigned directly",
+      "earned-upgrade modals suppressed by Main._benchmark while Main._process is disabled",
+      "facing alternates right/left on real dash readiness; no synthetic movement input",
+      "autoplay argument only prevents focus-loss pause; World autopilot remains disabled",
+      "real Q requests at readiness; pulse control occurs before the normal World fixed step movement, while synthetic pressure positions are replenished each frame",
+      "each accepted dash clears old received-hit immunity and adds one stationary, positive-damage hostile projectile at its next-step position; normal collision and dash immunity decide the result"
+    ],
+    "internal_resolution": "1280x720",
+    "load_targets": {
+      "enemies": 300,
+      "pickups": 200,
+      "projectiles": 600
+    },
+    "main_benchmark_upgrade_suppression": true,
+    "main_process_enabled": false,
+    "minimum_pre_step_counts": {
+      "enemies": 300,
+      "pickups": 200,
+      "projectiles": 600
+    },
+    "natural_run": false,
+    "os": "Windows",
+    "p99_frame_ms": 18.375,
+    "passed": true,
+    "persistent_profile": false,
+    "physics_steps": 3907,
+    "physics_ticks_per_second": 60,
+    "pickups": 200,
+    "pre_step_counts_exclude_one_optional_probe_shot": true,
+    "primary_hits": 71699,
+    "projectile_families_at_end": {
+      "bone:bounce": 10,
+      "comet:blast": 5,
+      "comet:bounce": 184,
+      "crescent:blast": 103,
+      "crescent:pierce": 2,
+      "ember:pierce": 36,
+      "frost:blast": 26,
+      "return_ring:blast": 49,
+      "return_ring:pierce": 3,
+      "scatter:bounce": 65,
+      "storm:bounce": 1,
+      "storm:pierce": 113
+    },
+    "projectiles": 600,
+    "pulse_affected": 325,
+    "pulse_cycles": true,
+    "pulse_feedback_peak": 1,
+    "pulses_used": 9,
+    "renderer": "gl_compatibility",
+    "run_seed": 20261028,
+    "rune_visual_peak": 32,
+    "sample_afterimage_peak": 6,
+    "sample_dashes_used": 25,
+    "sample_evades": 25,
+    "sample_evasion_feedback_peak": 1,
+    "sample_physics_steps": 3600,
+    "sample_pulse_affected": 287,
+    "sample_pulse_feedback_peak": 1,
+    "sample_pulses_used": 8,
+    "samples": 6903,
+    "scenario": "dash-content-pressure",
+    "secondary_hits": 272137,
+    "seed": 20261028,
+    "settings": {
+      "flash": true,
+      "shake": true,
+      "volume": 0.65
+    },
+    "source_hash": "45b3abd65ea0918c1f22d947be27171dd59031711c1f1f224cd6a97279f727d7",
+    "source_hash_algorithm": "sha256-path-and-content-manifest",
+    "thresholds": {
+      "maximum_p99_frame_ms": 33.0,
+      "minimum_afterimage_peak": 1,
+      "minimum_fps": 58.0,
+      "minimum_sample_dashes": 11
+    },
+    "warmup_dashes_used": 3,
+    "warmup_seconds": 5.0,
+    "weapon_ids": [
+      "bone",
+      "frost",
+      "ember",
+      "scatter",
+      "crescent",
+      "storm",
+      "comet",
+      "return_ring"
+    ],
+    "window_size": [
+      1280,
+      720
+    ],
+    "window_visible": true,
+    "world_autopilot": false,
+    "world_stress_mode": false,
+    "source_file_count": 61,
+    "source_files_start_end_current_equal": true,
+    "raw_report_sha256": "78e48844591b9bbf89db97dbbe16c56cf053f8a6f725e657553085d71e438c5b",
+    "raw_log_sha256": "41f20017340f0a85621f02cb1299dbfb80aa15cfe7dc73514a219bfeef94c90f"
+  },
+  "simulation": {
+    "scenario": "three matched rune lanes, same seed/arena/core/route/altar; ordinary shipped transactions",
+    "arena": "mire",
+    "core": "bone_chorus",
+    "seed": 20261028,
+    "route": "balanced",
+    "altar": "accept",
+    "policies": [
+      {
+        "mode": "default-policy",
+        "runs": 3,
+        "wins": 3,
+        "pulses_used": 0,
+        "pulse_affected": 0,
+        "core_versions": [
+          "prototype-0.1.0+cd36d8ba8fc2"
+        ],
+        "policy_versions": [
+          "orbit-avoid-v1/backpack-shop-v2/upgrade-timing-v2/rogue-choices-v1/bone_chorus/balanced/accept+50ec63992513"
+        ],
+        "log_sha256": "e1719d103890fd6c60b33c0e403affb7538771bbd06209b9d84b55b58cfa3328",
+        "per_rune": [
+          {
+            "rune": "pierce",
+            "won": true,
+            "end_wave": 8,
+            "pulses": 0
+          },
+          {
+            "rune": "bounce",
+            "won": true,
+            "end_wave": 8,
+            "pulses": 0
+          },
+          {
+            "rune": "blast",
+            "won": true,
+            "end_wave": 8,
+            "pulses": 0
+          }
+        ]
+      },
+      {
+        "mode": "pulse-policy",
+        "runs": 3,
+        "wins": 3,
+        "pulses_used": 17,
+        "pulse_affected": 75,
+        "core_versions": [
+          "prototype-0.1.0+cd36d8ba8fc2"
+        ],
+        "policy_versions": [
+          "orbit-avoid-v1/backpack-shop-v2/upgrade-timing-v2/rogue-choices-v1/pulse-peel-v1/bone_chorus/balanced/accept+50ec63992513"
+        ],
+        "log_sha256": "0abc7ab7ac1999326d3f76cd7b6dc58dcb5373a73644d48747df5d25c9d564bb",
+        "per_rune": [
+          {
+            "rune": "pierce",
+            "won": true,
+            "end_wave": 8,
+            "pulses": 7
+          },
+          {
+            "rune": "bounce",
+            "won": true,
+            "end_wave": 8,
+            "pulses": 5
+          },
+          {
+            "rune": "blast",
+            "won": true,
+            "end_wave": 8,
+            "pulses": 5
+          }
+        ]
+      }
+    ],
+    "default_bot_unchanged": true,
+    "no_automatic_dash": true,
+    "human_win_rate_claim": false,
+    "limits": "Explicit pulse policy changes trajectories and later random consumption; six runs do not establish balance or causality."
+  },
+  "distribution": {
+    "zip_crc_passed": true,
+    "pe_x86_64_valid": true,
+    "native_exe_smoke_passed": true,
+    "compiled_pck_control_and_immunity_fixtures_passed": true,
+    "compiled_fixture_runtime": "Matching Windows Godot engine --main-pack with external test harness; separate from normal EXE smoke",
+    "previous_zip_preserved": true,
+    "sha256": {
+      "build/Embers-windows-x86_64/Embers.exe": "d34d36f3be1a6c49c56525ae86469b92e4f417ddf0b43cf00dd80c385c4b0562",
+      "build/Embers-windows-x86_64/Embers.pck": "b83da5ab983ba588d3f5d340326881d7e7521ed69c1ccc2e6a32f5ff89f1ebd8",
+      "build/Embers-windows-x86_64.zip": "cbb9c596eeac8663c156689430a2f95230a61469d650d541c70a8479fd3212ae",
+      "build/Embers-windows-before-pulse-a86b1dd.zip": "ea8316a840dc332edc48621719c94dda444f410ed6745b21fd3de8b769bd7963"
+    }
+  },
+  "compiled_pck_physical_input": {
+    "method": "computer-use skill / @oai/sky physical Q on compiled PCK with external fixed harness",
+    "fixed_fixture": true,
+    "persistent_profile": false,
+    "events": [
+      {
+        "affected": 3,
+        "origin": [
+          640.0,
+          365.0
+        ]
+      }
+    ],
+    "visible_cast_and_enemy_push_observed": true,
+    "quit_through_pause_menu_exit_zero": true
+  },
+  "preserved_assets_data_and_historical_reports": 414,
+  "source_sha256": {
+    ".gitignore": "86319a43d0dd4eadd9a8effc327b52afda8ca1b4cbb37f0eafde87299ec4bfa5",
+    "README.md": "266906fbd06d12308e0b1161d5e10f27a30ba7869804e213dfc5fd51d7721039",
+    "docs/pulse.md": "22dc26120a55c0cd79b982602a1cf89c960b623034c3a8ae050c24ff0213895e",
+    "scripts/combat/combat_sim.gd": "5880b3bfba12d7acc0148e6179ce12ef529eeabe15fee0fcde3b3048d38999cb",
+    "scripts/combat/combat_world.gd": "4f509415ec3527e7f2c9fa859fbb11f9be63097b3a0601fa347c0d98a352132c",
+    "scripts/data/pulse_rules.gd": "d0e93732fa1e372228cedbe5a921d8c06d948c87dc9f6e3b445e36a82e12dad7",
+    "scripts/data/pulse_rules.gd.uid": "a978f4c609b21e7046071c77c0ae341051696f9ea22e34cb5dfb421101964642",
+    "scripts/main.gd": "cd3341713eb0150fb44414785d9bdba923aeb8cb1b3d68620fc6687c68d5dde8",
+    "scripts/ui/game_ui.gd": "01650f7e99aae0a6c7d9e16c3d7ffb5da07e0c5cde80c853978f5feda0834120",
+    "tests/simulate_runs.gd": "39bd74e0e8d057a5aec46ce6e98c36733efb370453be1463ecb27b61dfb72cbc",
+    "tests/test_pulse_flow.gd": "406f6a94ebd79d1a90612db490cb685dad0c4155a202b6e84d70826e998c7743",
+    "tests/test_pulse_flow.gd.uid": "09fb783820d964f2c413dac15c9cb51368655be9e1beeb9d2387605fcb678bcf",
+    "tests/test_pulse_rules.gd": "fe5185e64b14f1d20b65b7f80cb095ccb8ad1bc2006a4580fb58fe199dd0d0e9",
+    "tests/test_pulse_rules.gd.uid": "444c2b5abaa3de815b27233acb6bdbd7ff63ef936d61c1f19edfa7f9acb4b9ad",
+    "tests/test_pulse_ui.gd": "000877405fbffb4bc4795e7ba1e40da12ddbaf40165920b7681fc18c6fb32973",
+    "tests/test_pulse_ui.gd.uid": "0b657fe5240ecc25cd21152bd44883e743c358c429264cb2ff8ffc922582aa04",
+    "tests/test_pulse_world.gd": "bca82b1e24e5794c619e1a6a4a44967a871ba9857a480b3645635d939fa31e9d",
+    "tests/test_pulse_world.gd.uid": "f557a388461cc0c55cfddc2c9bbfc0103c53cf9255786aae010162bbffb2334b",
+    "tools/benchmark_dash.gd": "ce4678ded59286b4e74b493e27c72efd206117670ec66ecf8048d8a6e908610f",
+    "tools/preview_pulse.gd": "535df556c14d517b4c85053017dd6207976f3cbacc9cf2edf274f8c093d67462",
+    "tools/preview_pulse.gd.uid": "cf7d838a8f370cb321bf5d2bb69b5e720159bb856f21df702e4fd4fa20f1e98b",
+    "tools/test.ps1": "ea808f9bd4a374320c57eb0039953be6b0dec68c7f3c4f5b52cceb770d2eeb8e",
+    "tools/test.sh": "49ed2439f87c19335b0b5448586f17395cff1f8741c05e7a2059aeac6c9e3769"
+  },
+  "evidence_sha256": {
+    "regression.log": "d0f0f4dd9267a6b37763b729d511100e82242c329baa3d63e0da59f057b884bc",
+    "import.log": "ad30c2c236288ca4d4afc059c77a6b6e784cb2098b558a0e371cd08a473b16b7",
+    "build.log": "fcf1e935d912d0a824c5c654465d60ad68b36ac86b20e871f88f866ef291017a",
+    "export-smoke.log": "285821f86409c7c4f422d0d9c7bf3d76c20b337dd6900d43c283648cf7026b06",
+    "performance.log": "41f20017340f0a85621f02cb1299dbfb80aa15cfe7dc73514a219bfeef94c90f",
+    "performance-raw.json": "78e48844591b9bbf89db97dbbe16c56cf053f8a6f725e657553085d71e438c5b",
+    "performance-start-raw.json": "c1a3d1c439b6e1eb75aab077ba7f00edaad7ee99438860815d9ad7f69557f9ee",
+    "default-policy.jsonl": "e1719d103890fd6c60b33c0e403affb7538771bbd06209b9d84b55b58cfa3328",
+    "pulse-policy.jsonl": "0abc7ab7ac1999326d3f76cd7b6dc58dcb5373a73644d48747df5d25c9d564bb",
+    "pack-interactive.log": "e551866ba019c7e87438920ef2b5dd52a0144a8e2af9d32be214d17e45af3c26",
+    "pulse_rules-native.log": "afef55d76b7dc3979d5b0c73d80f46977439f111243a1653f17c69decf811295",
+    "pulse_world-native.log": "4c029c506b663dd23289e70d4512f10f05d205d1a0e7a3dc491a66a343f1b426",
+    "pulse_flow-native.log": "a564da268cd098161337ebbd4a03919fc63c6f6941f3d41865b87ace6fde2dc1",
+    "pulse_ui-native.log": "121313491d6aa97c9ba669ae1a5358c842aff3af7753efcab02218a78987e9cf",
+    "dash_rules-native.log": "1f72e4f6a25a53489f09a6095fcb618d69f2dc6cf60f0606431df94878daf221",
+    "dash_world-native.log": "3fbfaec03743f43444a4e0c5b73f2a4c033d9af8d378f466f55d0076b88c361e",
+    "dash_ui-native.log": "60fc112387eff1bedb6b6220011331b8d93d20028a50520d70ca9e881af5c2a2",
+    "enemy_telegraphs-native.log": "7fc4353ac36749acbbb184c1f7bec68c2dcbfb3eb1d58faed3fe3bb3845604fc",
+    "concise_ui-native.log": "be235975a862e6db7e6a3403becf6dc835c4b39b128549ad479f60870757b532",
+    "ready.log": "70f193e677c0b12e07a3350e5c1be08cb584a02a1bbe9519b200e693ce79fda2",
+    "cast.log": "00aa69ffa8d7c2892e2ba070dd60ed1d443b32716979d8ae80b1128d9af5723f",
+    "flash_off.log": "66a20d6bd4a63724e003c310fc1063d184eb96bb0f01f920d0df3b82858155e5",
+    "immune.log": "41569c1434327c7dd165bad368a1dd4b0bf238b39b3572e637f16d9278b9211d",
+    "corner.log": "9e048988be24f1abd92fd7185319c8261b8727a21fce6452255e397bfcb9846d",
+    "danger.log": "593f36d1ac1b8e6fab85f31b624f43c854e64159b3859924394756f27d160664",
+    "resumed.log": "184d6f8f711eca57f4e5efab46d74e1d5e22f3d664812321b0cddc556ff34e1c",
+    "pack-cast.log": "00aa69ffa8d7c2892e2ba070dd60ed1d443b32716979d8ae80b1128d9af5723f",
+    "pack-immune.log": "41569c1434327c7dd165bad368a1dd4b0bf238b39b3572e637f16d9278b9211d"
+  },
+  "not_run": [
+    "macOS rebuild on Windows",
+    "300-second pressure sample",
+    "long-term human balance and threat recognition study",
+    "gamepad-only play"
+  ],
+  "limits": [
+    "Hinder and damage retain fixed-step endpoint sampling",
+    "Seven source images are sparse fixed mire scenes; range may extend beyond arena bounds",
+    "Synthetic pressure restores health and positions and adds one hostile probe per dash",
+    "Six matched seeded runs are not human win rates or proof of balance causality"
+  ],
+  "passed": true
+}

@@ -1,0 +1,256 @@
+{
+  "created_utc": "2026-10-28T09:51:44.547341+00:00",
+  "base_commit": "956003d48294b5e94ac8d030196f14705a1cf378",
+  "scope": "Existing game title UI redesign without explanatory small copy; full-width cover and shared native/GIF animation states",
+  "engine": "Godot 4.7.2 ed1daf0bf",
+  "platform": "Windows x86_64",
+  "godot_suites": 84,
+  "diagnostic_entries": 5,
+  "regression": {
+    "invocations": 89,
+    "assertions": 29837,
+    "failures": 0,
+    "log_sha256": "baf868f68d85b812ff3497a3c18923b49faa97fb9269276c426c8c603eb686dd"
+  },
+  "python_tests": 43,
+  "post_encoder_python_sha256": "efa2e54b49379bca7354c668bbaaac201892e3df6268f15c81cf5ba3cc661ff0",
+  "native": {
+    "title_cover": {
+      "invocations": 1,
+      "assertions": 72,
+      "failures": 0,
+      "log_sha256": "37bb4488227a8e55478ff3b9c7137b23ec2cab5cde16d8e46d9f06d1c210b93a"
+    },
+    "ui": {
+      "invocations": 1,
+      "assertions": 223,
+      "failures": 0,
+      "log_sha256": "69fd586ab2b112c6bdefa7f463308eb07f104a48cd1c514b6975fd794240f6cb"
+    },
+    "concise_ui": {
+      "invocations": 1,
+      "assertions": 257,
+      "failures": 0,
+      "log_sha256": "be235975a862e6db7e6a3403becf6dc835c4b39b128549ad479f60870757b532"
+    },
+    "controls_ui": {
+      "invocations": 1,
+      "assertions": 113,
+      "failures": 0,
+      "log_sha256": "fbb7a797c60fd30bbf04df7852937317ffaefea06c5f3ecf2100ee0ae8324e0f"
+    },
+    "input_prompts_ui": {
+      "invocations": 1,
+      "assertions": 60,
+      "failures": 0,
+      "log_sha256": "0cc3387c369de6179d830a1c8b398e0dff2b6f2fb00dee3906dfacec6f38f48b"
+    },
+    "adventure_art": {
+      "invocations": 1,
+      "assertions": 191,
+      "failures": 0,
+      "log_sha256": "1d7ab02989b299b8f101e948d3e9761cf4499c70d87b3b322b7ffc82c6aa2a72"
+    },
+    "rogue_ui": {
+      "invocations": 1,
+      "assertions": 63,
+      "failures": 0,
+      "log_sha256": "1831866a07dad9557a1ea0af4a067dd92823fd18a440ea860a71953af079e25f"
+    }
+  },
+  "compiled_pck": {
+    "title_cover": {
+      "invocations": 1,
+      "assertions": 72,
+      "failures": 0,
+      "log_sha256": "37bb4488227a8e55478ff3b9c7137b23ec2cab5cde16d8e46d9f06d1c210b93a"
+    },
+    "ui": {
+      "invocations": 1,
+      "assertions": 223,
+      "failures": 0,
+      "log_sha256": "69fd586ab2b112c6bdefa7f463308eb07f104a48cd1c514b6975fd794240f6cb"
+    },
+    "concise_ui": {
+      "invocations": 1,
+      "assertions": 257,
+      "failures": 0,
+      "log_sha256": "be235975a862e6db7e6a3403becf6dc835c4b39b128549ad479f60870757b532"
+    },
+    "controls_ui": {
+      "invocations": 1,
+      "assertions": 113,
+      "failures": 0,
+      "log_sha256": "fbb7a797c60fd30bbf04df7852937317ffaefea06c5f3ecf2100ee0ae8324e0f"
+    },
+    "input_prompts_ui": {
+      "invocations": 1,
+      "assertions": 60,
+      "failures": 0,
+      "log_sha256": "0cc3387c369de6179d830a1c8b398e0dff2b6f2fb00dee3906dfacec6f38f48b"
+    },
+    "adventure_art": {
+      "invocations": 1,
+      "assertions": 191,
+      "failures": 0,
+      "log_sha256": "1d7ab02989b299b8f101e948d3e9761cf4499c70d87b3b322b7ffc82c6aa2a72"
+    },
+    "rogue_ui": {
+      "invocations": 1,
+      "assertions": 63,
+      "failures": 0,
+      "log_sha256": "1831866a07dad9557a1ea0af4a067dd92823fd18a440ea860a71953af079e25f"
+    }
+  },
+  "source_pck_identical_previews_1280x720": {
+    "title": "575dc968d9b4381438086552adce028ad95b71c59b275c293483ee8e1ce23c4a",
+    "settings": "e4a6564c45f5de8f0495acc693f1893efdad7661cd8de0ff476e40e9bfe735c7",
+    "controls": "eba792f9d1763fc75daa97d5930d42d1d24fc17ea63f59786d0504137ef3e79f",
+    "pause": "2e7e551450cd2e563bfd7048507f18b40928c945fa38e329a0be5aa10bc4cd2c",
+    "shop": "a84a80395f1d9de0be732f63b82661002c6e99dd97dd69a4354877836921af46",
+    "poor": "f5e676f8d3486d500bd77bfacf0e24f20d9a575673c5f7bc19a1a05a0d5c32f4",
+    "locked": "ca77a4bc2030e74e3d6f512dbe3aee9285376c10826a96666147ad931c71b9db",
+    "sold": "1ec1dad4a4981895d95bab4dba763ce29492dcfc0fedbf71e0b6efa0ea1054a0",
+    "upgrades": "784e960ae511a29297d833813aeb1432a94a41f34035d18ae5666b062d7e3a51",
+    "hover": "4d1615e441caac9d530bdb9fb7fa128bf12d301e1429189cdeab1157ccac0165",
+    "pressed": "932433586e480a5b6d72846880cb4c66e0513c5034524f8318dc2ec09f0554b6",
+    "title-small": "575dc968d9b4381438086552adce028ad95b71c59b275c293483ee8e1ce23c4a",
+    "shop-small": "a84a80395f1d9de0be732f63b82661002c6e99dd97dd69a4354877836921af46"
+  },
+  "gif": {
+    "cover": {
+      "path": "assets/title/cover.gif",
+      "sha256": "76fed25179b9a78e903ac3cf1e28c9cceace5df0e5309f27744a9e7186086804",
+      "bytes": 689522,
+      "frames": 24,
+      "frame_ms": 120,
+      "loop_ms": 2880,
+      "infinite_loop": true,
+      "opaque": true,
+      "native_stationary_pixel_mismatches": 0,
+      "left_static_region_changes": 0,
+      "source_pck_identical_native_frames": 24
+    },
+    "ui_preview": {
+      "path": "reports/title-cover/title-preview.gif",
+      "sha256": "53420cf7653c238ca8674f184aec4f352e51ee985564dc06aebd62276b603284",
+      "bytes": 551558,
+      "frames": 24,
+      "frame_ms": 120,
+      "loop_ms": 2880,
+      "infinite_loop": true,
+      "opaque": true,
+      "native_stationary_pixel_mismatches": 0,
+      "left_static_region_changes": 0,
+      "source_pck_identical_native_frames": 24
+    }
+  },
+  "old_asset_files_preserved": 200,
+  "unchanged_rule_and_inventory_files": 84,
+  "package": {
+    "path": "build/Embers-windows-x86_64.zip",
+    "sha256": "14e358c175e493ef72813e3438d128c8b82a1090a8c11aef1dd710c6f61f5e01",
+    "x64_pe_crc_and_member_bytes": true,
+    "exe_smoke_exit_code": 0,
+    "previous_path": "build/Embers-windows-before-title-cover-956003d.zip",
+    "previous_sha256": "dc42324af686ea1a6ce7f5edcdcb7f70468481ff6c348d04174ccffa2a8fcee1"
+  },
+  "source_and_document_sha256": {
+    ".gitignore": "2861fe8bfc0be0497b5a8ca2c1e4a372224ef1bc9ea4579637001d0525cc0001",
+    "AGENTS.md": "bb92c574f94940dc9518ae24efb7f591577b2abee6dbcafd7359932a4b3e4914",
+    "README.md": "b8e513c8895555c570deadd825aea20a80f3a9325d96e497b1f1a3e6a9f7609d",
+    "assets/title/PROVENANCE.md": "7117b0c66e36ffadbed62a49c7be18022a9161cf78f54e3dfeb9b146305ad2c8",
+    "assets/title/animation.json": "f3f3f117a22a763b467ad2e06dff9672b75cc121ee52c8d937ad04879498aa5e",
+    "assets/title/cover.gif": "76fed25179b9a78e903ac3cf1e28c9cceace5df0e5309f27744a9e7186086804",
+    "assets/title/cover.png": "1edd0ddc8105aa1529f3dbdf1925f5808430cc57cf9a37822092ed3ba79443c5",
+    "assets/title/cover.png.import": "e7cbbf53615eab5ce161df9b233fe13619cfb218e3aac6b155891ab871ca9052",
+    "assets/title/image-generation.json": "9b351ea6bb51c0b5a5c8ede384b4b9402562f4b90e84ec61d49ba642a7ccc3ba",
+    "docs/title-cover.md": "b89e8f498250c62d33860e7339b435d0051dee7d10653ddfde864ee98f15e878",
+    "export_presets.cfg": "3126d1e67891017bc3970365ee2f26671acafffb77837972f177b2d4ebc525f7",
+    "scripts/ui/game_ui.gd": "70d786a13624e1d73406ccb7162e9f16eca767f619994b49695c01e3655901e5",
+    "scripts/ui/title_cover.gd": "5b5006cbca602ce105e20340f7e82dd71610f7c5d5b355c02b797be7e7b2c56c",
+    "scripts/ui/title_cover.gd.uid": "0c3f4756e240fd728ea80306643c04016b6528ab33680396dbb40d5a68bf6b50",
+    "tests/test_adventure_art.gd": "e101dcc8eae754393226970766cf009dd7f99edce732db722c383f6d6d5bfdd3",
+    "tests/test_concise_ui.gd": "ebb39ef899dae996f86631e3f1c462de850336d6b98814d66972b08b5709374c",
+    "tests/test_controls_ui.gd": "90bd80201b37b11e249b0ce7e9dbf6f9c652b544dbf785896fe2891be4877f7c",
+    "tests/test_input_prompts_ui.gd": "2efa350f0819782ac3d2ce48034a0c605139d5fab73964e55478ff0d0eb44899",
+    "tests/test_rogue_ui.gd": "354cb07f0be3c39ac1ef1c3ef3ec19514fc25990c42d2b99a3d819fbf5552d9c",
+    "tests/test_title_cover.gd": "4c45f7eb0ce3dbd9354e55a6bb10e4eaad8c95e726a811dfa2483c86a525e8f8",
+    "tests/test_title_cover.gd.uid": "61bef180f4fd4210ddc87e010bd44715ec1caf810b183ecaf9ef47e47d4f8fa0",
+    "tests/test_title_cover_assets.py": "53b7a1bf26aa1c1e5ba5b5855620383487bf5d7cd77db88cec33de45f4f90a08",
+    "tests/test_ui.gd": "625aa6295d111608004b363b7deaa074185a84da42bb68501cba46ae612590db",
+    "tools/package_title_cover_gif.py": "b4f9a5bb2a4e363434c09de9876668aa675e5341e148284fa9430e9371f4faf4",
+    "tools/preview_art_reskin.gd": "319a1e563ce44cec3b59ebb41d7017c0150db3011405925bf7da8e89e90666ae",
+    "tools/preview_button_polish.gd": "832af26d58f794404c23b6d7e9974e78d7a55e3af80d630d5e0808dc6a444ca1",
+    "tools/render_title_cover.gd": "1e11c677c7013bbdfb8548c6d7769157a5f6150241f3eae7b8c92157865a7582",
+    "tools/render_title_cover.gd.uid": "71a19c6bafc92bdf7bbc9db6df58be1c36b0e584ad45ca1a23a906196206c3ac",
+    "tools/requirements-art.txt": "41b54a6fb2918667ca47a61d73b522629d84490f3d78f0f20b21135faba10d35",
+    "tools/test.ps1": "a9c3ef13d1ea7a54e55f1f20c5c00896591fe7faf745b2d8f0ef2725265960ba",
+    "tools/test.sh": "5e9a141ff5c07b17c4aaa5ea818d84685c0d2db86b86151626024023b70558bc"
+  },
+  "evidence_sha256": {
+    "bake.log": "75b24373d39cd9263e9625f31bbdc46061afe5a2115b28391ebb8f5f42d9d6e4",
+    "build.log": "3fd149d9aa44ea5d0e813c79bc1598af1f3ecffe868878718fa2237cb228e4eb",
+    "check-adventure_art.log": "de720b49071da0e1d663a8a92f070680c43c8d2270f6e089d3b2c82adcd340c4",
+    "check-concise_ui.log": "acb587b0eec27b6380110da433344bf59b542688bb5ffe8566308e3908feca63",
+    "check-controls_ui.log": "475261c4cc7751ca1713dbc728389e1560457c6e906d639bc18a7831550fa414",
+    "check-input_prompts_ui.log": "29e3fc1cbff1522cbebdd531fb5537fd6af40bbe8cafe34bfe62362c4758b673",
+    "check-rogue_ui.log": "4ab53965e17655532c2bee11e4db7b8018cd73c30e596360f22daf417461dab0",
+    "check-title_cover.log": "2e70e9fc54c4691100ef5ad11d798d479c3f80891e691b30481dfc0129c06816",
+    "check-ui.log": "80e98568fdf4e2bf0c5710738dd0835216db19c92c3079f0d23cf44906235a2a",
+    "controls.log": "ca7963f51039b8d48681d01d9a67560ececc08d82f5e5381d59188e3db2b4743",
+    "exe-smoke.log": "502e7d871a528510202e07d937bdfc8d18f5c04a0462bf8128868cfbaacfd69f",
+    "first-title.log": "1fb5ca3c53118eae121a3509b5f20a8a60d138b65bb3795d967a89d4b0be7a3f",
+    "hover.log": "8216651ea76e063355062f6cd50125317a7b5f1ad91b981ea6475bbc3d56c53b",
+    "import.log": "e498573d6221eb1291cb62bc34e4f5f5662db508243f0a5070899bd455f2a54c",
+    "locked.log": "9bc3570212ab5d83dbabdb1218fa6028b0f793020d2f2de903654c26e2133588",
+    "native-adventure_art.log": "1d7ab02989b299b8f101e948d3e9761cf4499c70d87b3b322b7ffc82c6aa2a72",
+    "native-concise_ui.log": "be235975a862e6db7e6a3403becf6dc835c4b39b128549ad479f60870757b532",
+    "native-controls_ui.log": "fbb7a797c60fd30bbf04df7852937317ffaefea06c5f3ecf2100ee0ae8324e0f",
+    "native-input_prompts_ui.log": "0cc3387c369de6179d830a1c8b398e0dff2b6f2fb00dee3906dfacec6f38f48b",
+    "native-rogue_ui.log": "1831866a07dad9557a1ea0af4a067dd92823fd18a440ea860a71953af079e25f",
+    "native-title_cover.log": "37bb4488227a8e55478ff3b9c7137b23ec2cab5cde16d8e46d9f06d1c210b93a",
+    "native-ui.log": "69fd586ab2b112c6bdefa7f463308eb07f104a48cd1c514b6975fd794240f6cb",
+    "pack-bake.log": "4fa32ac5c2de16fbc0320ebdf8ff2045019896d1a90b153c67f11dc703548379",
+    "pack-check-adventure_art.log": "1d7ab02989b299b8f101e948d3e9761cf4499c70d87b3b322b7ffc82c6aa2a72",
+    "pack-check-concise_ui.log": "be235975a862e6db7e6a3403becf6dc835c4b39b128549ad479f60870757b532",
+    "pack-check-controls_ui.log": "fbb7a797c60fd30bbf04df7852937317ffaefea06c5f3ecf2100ee0ae8324e0f",
+    "pack-check-input_prompts_ui.log": "0cc3387c369de6179d830a1c8b398e0dff2b6f2fb00dee3906dfacec6f38f48b",
+    "pack-check-rogue_ui.log": "1831866a07dad9557a1ea0af4a067dd92823fd18a440ea860a71953af079e25f",
+    "pack-check-title_cover.log": "37bb4488227a8e55478ff3b9c7137b23ec2cab5cde16d8e46d9f06d1c210b93a",
+    "pack-check-ui.log": "69fd586ab2b112c6bdefa7f463308eb07f104a48cd1c514b6975fd794240f6cb",
+    "pack-controls.log": "4d714bbbb194fb0bea6a248daec28a6535c007ccbdc964ca0a5413981137eedc",
+    "pack-hover.log": "341ee020be5ec15d9fc0fbb11488bbc8f7eecc22765dfd31343ea2bfe090cfdf",
+    "pack-locked.log": "b9e512bbc3ed3af90c442487836fe067261f60e5c8490a734f73d8114738eb48",
+    "pack-pause.log": "98fce07808889b3beab770457ca8ab4e7a304a3abdbf9690fe2147678c17af57",
+    "pack-poor.log": "f2c057fa4bddb15cc87a3605d7651272d0ce3af36c183d023a558d0846ac506c",
+    "pack-pressed.log": "474c58bcc3b6cd37627117670340985c63d6a90cff001aaea03286df380e1988",
+    "pack-settings.log": "b844d15677b5ef79460eeba9e11e13eb9dc15169aa7fba58c081faa2c07ef2f4",
+    "pack-shop-small.log": "56fd81ac60cb0dedcc2e3a21e7192a466c3f0e0c08bf90259339cf2ab827a59c",
+    "pack-shop.log": "409a599ad85017684cf880188ff7a3962b60191919cd8d56996812d2b60defb6",
+    "pack-sold.log": "4661e28846c17ceff01175d2fad9ab0a96aacc778162fb3d21fc811abe8b99bb",
+    "pack-title-small.log": "b922657b722d03f458fb637712987f1399ee961e657f5daa54c2d74974837cc1",
+    "pack-title.log": "496723a644f0c14e05a782723a02ba17d508600ff3bdfe94cc25cac626e8fd29",
+    "pack-ui-bake.log": "cb99efcab37e17cee808a84afeedaccb187696c7fb7be82e064e7490d4188dd8",
+    "pack-upgrades.log": "d679c89f248575e925a8da2e5ff4859230f1e3e63a2e17f6a2f1f89e3bd776d7",
+    "pause.log": "fac00fc4fb8c012bd8767d3609a53dad8013cd49b7512e56bc6dd56b961dd1f5",
+    "poor.log": "c2bf109a50a7a13f315e591920130c649a4f7a13d3ac601ecc0062f9772d145d",
+    "pressed.log": "9b0a541129d42ce80ba320b6b0d1aadb5d3ecf0603f409e8a6eab2f40b9ee346",
+    "python-final.log": "efa2e54b49379bca7354c668bbaaac201892e3df6268f15c81cf5ba3cc661ff0",
+    "regression.log": "baf868f68d85b812ff3497a3c18923b49faa97fb9269276c426c8c603eb686dd",
+    "settings.log": "d3f0265b595ebb2669883ca08e8da912a58197949b90cf71bf2302595d0813a7",
+    "shop-small.log": "1938053714df291288d212fe95f831aa4b2b33ce19811be6f1ed2ba78225e295",
+    "shop.log": "b90237186239d874d3bcde9ecadbddf6f09c3fb1626e2e4b84a36a91d6448919",
+    "sold.log": "1e2cc1531bb701bfe730518522d2566b1a8add77ed04e99ccf605d34490266df",
+    "title-small.log": "f4847ba371380ecc032d33cdcf30e5cc613cbaec3f3c70a7c08cce093001484e",
+    "title.log": "b4fdf372e2a517c03a1597497c1a51532c9f97ee3aa267dba7768ba38b734b6b",
+    "ui-bake.log": "d6be3762890544e3598dd598f3b55b71144353d93ac84e34d1f301a5e9641a76",
+    "upgrades.log": "3a1baae34514efb1e0282e100d8905b7a4aeb8201554ab65848b0beab092003c"
+  },
+  "limits": [
+    "GIF uses a fixed 255-color palette; native full-color frames have format quantization differences.",
+    "Small-window previews use 960x540 windows with 1280x720 logical viewport captures, not desktop pixel screenshots.",
+    "Fixed UI states and software input; no physical-controller or long human playtest claim.",
+    "No new combat pressure, full automatic simulation, or macOS build."
+  ]
+}

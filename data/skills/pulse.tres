@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ContentDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/content_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "pulse"
+kind = "skill"
+display_name = "秘术脉冲"
+description = "径向击退与减速。升阶扩大范围。"
+icon = "skill_pulse"
+color = Color(0.63, 0.85, 0.97, 1)
+price = 20
+cooldown = 8.0
+radius = 144.0
+inventory_size = Vector2i(2, 1)

@@ -104,7 +104,7 @@ func _test_return_facts() -> void:
 func _test_shop_and_tooltips(ui: GameUI) -> void:
 	var state: RunState = make_fixture()
 	await _show(ui, state)
-	_check(state.loadout.size() == 3 and state.rune_bag.size() == 3 and state.relic_counts.size() == GameCatalog.relics().size() and state.backpack_snapshot()["used_cells"] == 34 and _controls_fit(ui._page), "Three weapons, loose runes and every relic occupy a legal 34-cell backpack inside the native shop")
+	_check(state.loadout.size() == 3 and state.rune_bag.size() == 3 and state.relic_counts.size() == GameCatalog.relics().size() and state.backpack_snapshot()["used_cells"] == 36 and _controls_fit(ui._page), "Three weapons, loose runes and every relic occupy the legal 36-cell backpack inside the native shop")
 	var offer: Control = ui.find_child("Offer1", true, false)
 	var description: Label = offer.find_child("OfferDescription", true, false)
 	var definition: ContentDef = GameCatalog.weapon("return_ring")
@@ -168,11 +168,17 @@ func _test_rune_preview(ui: GameUI, rune: String) -> void:
 	await _settle()
 	_check(ui._overlay_mode.is_empty() and root.gui_get_focus_owner() == source and ui._selected_rune == 0, "Escape restores the return-ring source and reserve selection: " + rune)
 	await _accept(ui, "bag_equip:%d" % int(state.loadout[1]["uid"]))
-	_check(state.loadout[1]["rune"] == incoming and state.rune_bag.size() == 3 and ui._selected_rune == -1 and state.backpack_snapshot()["used_cells"] == 34, "The return-ring rune swaps from the backpack with its original UID, paid record and occupied cells: " + rune)
+	_check(state.loadout[1]["rune"] == incoming and state.rune_bag.size() == 3 and ui._selected_rune == -1 and state.backpack_snapshot()["used_cells"] == 36, "The return-ring rune swaps from the full backpack with its original UID, paid record and occupied cells: " + rune)
 
 
 func _test_relic_tradeoffs(ui: GameUI) -> void:
 	var state: RunState = make_fixture()
+	var sold: int = 0
+	for item: Dictionary in state.backpack_snapshot()["items"]:
+		if str(item["kind"]) == "relic" and str(item["id"]) in ["fold_clasp", "echo_stone"]:
+			_check(state.sell_item(int(item["uid"])), "The tradeoff fixture legally sells each new single-cell skill relic before showing the shop")
+			sold += 1
+	_check(sold == 2 and int(state.backpack_snapshot()["used_cells"]) == 34 and state.purchase_error(1).is_empty(), "Two real sales free contiguous cells for the blood pact's actual two-cell footprint")
 	await _show(ui, state)
 	var before: String = _signature(state)
 	await _accept(ui, "compare:1")

@@ -18,6 +18,7 @@ var _core: String = "none"
 var _route: String = "balanced"
 var _altar: String = "skip"
 var _arena: String = "reliquary"
+var _pulse_policy: bool = false
 
 func _initialize() -> void:
 	for argument: String in OS.get_cmdline_user_args():
@@ -29,6 +30,8 @@ func _initialize() -> void:
 			_rune = argument.trim_prefix("--rune=")
 		elif argument == "--require-win":
 			_require_win = true
+		elif argument == "--pulse-policy":
+			_pulse_policy = true
 		elif argument.begins_with("--core="):
 			_core = argument.trim_prefix("--core=")
 		elif argument.begins_with("--route="):
@@ -51,7 +54,7 @@ func _initialize() -> void:
 		return
 	_balance_version = _content_version()
 	var policy_source: String = FileAccess.get_file_as_string("res://scripts/combat/bot_policy.gd") + FileAccess.get_file_as_string("res://tests/simulate_runs.gd")
-	_policy_version = POLICY_VERSION + "/%s/%s/%s+" % [_core, _route, _altar] + policy_source.sha256_text().left(12)
+	_policy_version = POLICY_VERSION + ("/pulse-peel-v2" if _pulse_policy else "") + "/%s/%s/%s+" % [_core, _route, _altar] + policy_source.sha256_text().left(12)
 	var all_won: bool = true
 	for offset: int in range(_count):
 		for rune_id: String in RUNES:
@@ -65,9 +68,10 @@ func _initialize() -> void:
 func _content_version() -> String:
 	var sources: Array[String] = ["res://scripts/core/run_state.gd", "res://scripts/core/backpack_inventory.gd", "res://scripts/core/backpack_resonance.gd", "res://scripts/combat/combat_sim.gd", "res://scripts/data/content_def.gd", "res://scripts/data/game_catalog.gd", "res://scripts/data/rune_rules.gd", "res://scripts/data/rogue_rules.gd", "res://scripts/main.gd"]
 	var definitions: Array[ContentDef] = GameCatalog.weapons()
-	sources.append_array(["res://scripts/core/arena_catalog.gd", "res://data/arenas.json"])
+	sources.append_array(["res://scripts/core/arena_catalog.gd", "res://data/arenas.json", "res://scripts/data/dash_rules.gd", "res://scripts/data/pulse_rules.gd", "res://scripts/data/active_skill_rules.gd", "res://scripts/core/control_bindings.gd"])
 	definitions.append_array(GameCatalog.runes())
 	definitions.append_array(GameCatalog.relics())
+	definitions.append_array(GameCatalog.skills())
 	definitions.append_array(GameCatalog.enemies())
 	definitions.append_array(GameCatalog.waves())
 	for definition: ContentDef in definitions:
@@ -107,6 +111,9 @@ func _play_run(seed_value: int, rune_id: String) -> Dictionary:
 			"core_activations": simulation.core_activations.duplicate(true),
 			"resonant_weapon_count": state.loadout.filter(func(item: Dictionary) -> bool: return float(item.get("resonance_bonus", 0.0)) > 0.0).size(),
 		})
+		if _pulse_policy:
+			wave_results[-1]["pulses_used"] = simulation.pulses_used
+			wave_results[-1]["pulse_affected"] = simulation.pulse_affected
 		reason = simulation.end_reason if simulation.complete else "Simulation exceeded its frame budget"
 		if not simulation.complete or not simulation.victory:
 			break
@@ -126,18 +133,23 @@ func _play_run(seed_value: int, rune_id: String) -> Dictionary:
 	for weapon: Dictionary in state.loadout:
 		if str((weapon.get("rune", {}) as Dictionary).get("id", "")) == rune_id:
 			equipped_runes += 1
-	return {
+	var result: Dictionary = {
 		"seed": seed_value, "balance_version": _balance_version, "policy_version": _policy_version,
 		"policy_change_note": POLICY_CHANGE_NOTE, "shop_observation_schema_version": SHOP_OBSERVATION_SCHEMA_VERSION,
 		"rune": rune_id, "wave": state.wave, "won": won, "kills": state.kills, "gold": state.gold,
 		"arena_id": state.arena_id,
 		"elapsed": snappedf(state.elapsed, 0.001), "reason": reason,
 		"equipped_target_runes": equipped_runes, "loadout": state.loadout.duplicate(true),
+		"active_skills": state.active_skills.duplicate(true),
 		"relic_counts": state.relic_counts.duplicate(true), "wave_results": wave_results, "trace": trace,
 		"shop_observations": shop_observations,
 		"backpack": state.backpack_snapshot(),
 		"rogue": state.rogue_choices(), "requested_core": _core, "requested_route": _route, "requested_altar": _altar,
 	}
+	if _pulse_policy:
+		result["skill_policy"] = "pulse-peel-v2: buy one pulse box from the real intermission shop, then cast when at least three eligible enemies are within 100 pixels; no automatic dash"
+		result["policy_change_note"] = POLICY_CHANGE_NOTE + " Explicit pulse-peel-v2 pays the shop price and occupies real backpack cells; no pulse exists in wave one. Crowd control changes trajectories and random consumption without granting rewards or damage."
+	return result
 
 func _choose_rogue_options(state: RunState, rune_id: String, trace: Array[Dictionary]) -> void:
 	var choices: Dictionary = state.rogue_choices()
@@ -161,9 +173,23 @@ func _claim_rogue_reward(state: RunState, rune_id: String, trace: Array[Dictiona
 func _advance_combat_tick(simulation: CombatSim, state: RunState, trace: Array[Dictionary]) -> void:
 	if simulation.complete:
 		return
-	simulation.step(DELTA, BotPolicy.movement(simulation))
+	if _pulse_policy:
+		simulation.step(DELTA, BotPolicy.movement(simulation), false, _wants_pulse(simulation))
+	else:
+		simulation.step(DELTA, BotPolicy.movement(simulation))
 	if not simulation.complete and state.pending_upgrades > 0:
 		_choose_upgrades(state, trace, "combat", simulation.elapsed)
+
+func _wants_pulse(simulation: CombatSim) -> bool:
+	if not bool(simulation.pulse_snapshot()["ready"]):
+		return false
+	var nearby: int = 0
+	for enemy: CombatSim.Enemy in simulation.enemies:
+		if enemy.active and enemy.health > 0.0 and not enemy.hunter and enemy.definition.id != "boss" and enemy.position.distance_squared_to(simulation.player_position) <= 10000.0:
+			nearby += 1
+			if nearby >= 3:
+				return true
+	return false
 
 func _choose_upgrades(state: RunState, trace: Array[Dictionary], context: String = "intermission", wave_elapsed: float = -1.0) -> void:
 	while state.pending_upgrades > 0:
@@ -261,6 +287,15 @@ func _evaluate_offer(state: RunState, offer: Dictionary, rune_id: String, ignore
 				evaluation["reason"] = "rune_rank_target_met"
 			else:
 				evaluation["score"] = 100.0 if _empty_slots(state) > 0 else 87.0
+		"skill":
+			if not _pulse_policy:
+				evaluation["reason"] = "active_skill_policy_disabled"
+			elif id != "pulse":
+				evaluation["reason"] = "skill_not_prioritized"
+			elif _owns_pulse(state):
+				evaluation["reason"] = "pulse_already_equipped"
+			else:
+				evaluation["score"] = 125.0
 		"relic":
 			if int(state.relic_counts.get(id, 0)) >= _relic_policy_limit(id):
 				evaluation["reason"] = "relic_policy_target_met"
@@ -286,6 +321,12 @@ func _evaluate_offer(state: RunState, offer: Dictionary, rune_id: String, ignore
 		else:
 			evaluation["reason"] = "eligible"
 	return evaluation
+
+func _owns_pulse(state: RunState) -> bool:
+	for item: Dictionary in state.active_skills:
+		if str(item["id"]) == "pulse":
+			return true
+	return false
 
 func _weapon_power(state: RunState) -> int:
 	var total: int = 0
@@ -328,6 +369,8 @@ func _observe_shop(state: RunState, rune_id: String, observations: Array[Diction
 	})
 
 func _search_reserve(state: RunState, rune_id: String) -> int:
+	if _pulse_policy and not _owns_pulse(state) and state.backpack.can_add("skill", "pulse"):
+		return state.shop_price(GameCatalog.skill("pulse"))
 	if _weapon_power(state) < _desired_weapon_power(state) and state.backpack.can_add("weapon", "bone"):
 		return state.shop_price(GameCatalog.weapon("bone"))
 	if _needs_rune(state, rune_id) and state.backpack.can_add("rune", rune_id):

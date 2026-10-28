@@ -1,0 +1,328 @@
+{
+  "created_utc": "2026-10-28T08:44:57.601221+00:00",
+  "base_commit": "fe97510618849312a5867020f1e09d7faa1baceb",
+  "scope": "Presentation-only button skins in existing Embers; gameplay, layout containers, callbacks and inventory boxes preserved",
+  "engine": "Godot 4.7.2 ed1daf0bf",
+  "platform": "Windows x86_64",
+  "godot_suites": 83,
+  "diagnostic_entries": 5,
+  "regression": {
+    "invocations": 88,
+    "assertions": 29771,
+    "failures": 0,
+    "log_sha256": "15e4279fa4d9880bec03bbc7aa6ed1d58c2ae369675680449a7e9154a5ff3caa"
+  },
+  "python_tests": 40,
+  "native": {
+    "ui": {
+      "invocations": 1,
+      "assertions": 223,
+      "failures": 0,
+      "log_sha256": "69fd586ab2b112c6bdefa7f463308eb07f104a48cd1c514b6975fd794240f6cb"
+    },
+    "modal": {
+      "invocations": 1,
+      "assertions": 37,
+      "failures": 0,
+      "log_sha256": "61a2ac8cb080a9c09f18f7262d2dd999990c4eac3668e77bcedacc778dfb6512"
+    },
+    "backpack_focus": {
+      "invocations": 1,
+      "assertions": 126,
+      "failures": 0,
+      "log_sha256": "31c1b936e84d4a3485fd8f47f355147e15ebdd8c7d79ee4a6d6c4f23a99d784d"
+    },
+    "shop_lock_ui": {
+      "invocations": 1,
+      "assertions": 63,
+      "failures": 0,
+      "log_sha256": "26e46e92cbe18fbaead905b33f7a605bed1e68fd8500fbef0c967c956d0a4755"
+    },
+    "controls_ui": {
+      "invocations": 1,
+      "assertions": 113,
+      "failures": 0,
+      "log_sha256": "fbb7a797c60fd30bbf04df7852937317ffaefea06c5f3ecf2100ee0ae8324e0f"
+    },
+    "gamepad_backpack": {
+      "invocations": 1,
+      "assertions": 42,
+      "failures": 0,
+      "log_sha256": "e7799b224fe1e0ffe53aed01322268cbcc6e5945bd310144aa07595e7a14e2e6"
+    },
+    "gamepad_reading": {
+      "invocations": 1,
+      "assertions": 227,
+      "failures": 0,
+      "log_sha256": "841718921158febbb5d1159f0d102dda37a1a2c2e36feaccbb66141342eb92ba"
+    },
+    "concise_ui": {
+      "invocations": 1,
+      "assertions": 257,
+      "failures": 0,
+      "log_sha256": "be235975a862e6db7e6a3403becf6dc835c4b39b128549ad479f60870757b532"
+    },
+    "adventure_art": {
+      "invocations": 1,
+      "assertions": 191,
+      "failures": 0,
+      "log_sha256": "1d7ab02989b299b8f101e948d3e9761cf4499c70d87b3b322b7ffc82c6aa2a72"
+    }
+  },
+  "compiled_pck": {
+    "ui": {
+      "invocations": 1,
+      "assertions": 223,
+      "failures": 0,
+      "log_sha256": "69fd586ab2b112c6bdefa7f463308eb07f104a48cd1c514b6975fd794240f6cb"
+    },
+    "shop_lock_ui": {
+      "invocations": 1,
+      "assertions": 63,
+      "failures": 0,
+      "log_sha256": "26e46e92cbe18fbaead905b33f7a605bed1e68fd8500fbef0c967c956d0a4755"
+    },
+    "backpack_focus": {
+      "invocations": 1,
+      "assertions": 126,
+      "failures": 0,
+      "log_sha256": "31c1b936e84d4a3485fd8f47f355147e15ebdd8c7d79ee4a6d6c4f23a99d784d"
+    },
+    "adventure_art": {
+      "invocations": 1,
+      "assertions": 191,
+      "failures": 0,
+      "log_sha256": "1d7ab02989b299b8f101e948d3e9761cf4499c70d87b3b322b7ffc82c6aa2a72"
+    }
+  },
+  "source_pck_identical_previews": {
+    "title": {
+      "png_sha256": "4a3618490d685fe28acc44eafd225df1b47c253dae5eb39b416613d8a3309c18",
+      "window": [
+        1280,
+        720
+      ],
+      "viewport": [
+        1280,
+        720
+      ],
+      "draw_mode": -1
+    },
+    "settings": {
+      "png_sha256": "22fd3ba128230fbb81addd2f74dc96fa34ad2364c6f62e0e74c46745c20b2a57",
+      "window": [
+        1280,
+        720
+      ],
+      "viewport": [
+        1280,
+        720
+      ],
+      "draw_mode": -1
+    },
+    "controls": {
+      "png_sha256": "c4222631a49fd5431af69946abbaf513ecf6bfd255b751c44ebe968affe7fa77",
+      "window": [
+        1280,
+        720
+      ],
+      "viewport": [
+        1280,
+        720
+      ],
+      "draw_mode": -1
+    },
+    "pause": {
+      "png_sha256": "d330814434d594ebfdadb2117708b8de25390f265102f9a2163f7cc5fbb4d2df",
+      "window": [
+        1280,
+        720
+      ],
+      "viewport": [
+        1280,
+        720
+      ],
+      "draw_mode": -1
+    },
+    "shop": {
+      "png_sha256": "a84a80395f1d9de0be732f63b82661002c6e99dd97dd69a4354877836921af46",
+      "window": [
+        1280,
+        720
+      ],
+      "viewport": [
+        1280,
+        720
+      ],
+      "draw_mode": -1
+    },
+    "poor": {
+      "png_sha256": "f5e676f8d3486d500bd77bfacf0e24f20d9a575673c5f7bc19a1a05a0d5c32f4",
+      "window": [
+        1280,
+        720
+      ],
+      "viewport": [
+        1280,
+        720
+      ],
+      "draw_mode": -1
+    },
+    "locked": {
+      "png_sha256": "ca77a4bc2030e74e3d6f512dbe3aee9285376c10826a96666147ad931c71b9db",
+      "window": [
+        1280,
+        720
+      ],
+      "viewport": [
+        1280,
+        720
+      ],
+      "draw_mode": -1
+    },
+    "sold": {
+      "png_sha256": "1ec1dad4a4981895d95bab4dba763ce29492dcfc0fedbf71e0b6efa0ea1054a0",
+      "window": [
+        1280,
+        720
+      ],
+      "viewport": [
+        1280,
+        720
+      ],
+      "draw_mode": -1
+    },
+    "upgrades": {
+      "png_sha256": "784e960ae511a29297d833813aeb1432a94a41f34035d18ae5666b062d7e3a51",
+      "window": [
+        1280,
+        720
+      ],
+      "viewport": [
+        1280,
+        720
+      ],
+      "draw_mode": -1
+    },
+    "hover": {
+      "png_sha256": "c0c52b522759909ccb8684ad2f2f209609621f569e1bf3af5007282262af2cd8",
+      "window": [
+        1280,
+        720
+      ],
+      "viewport": [
+        1280,
+        720
+      ],
+      "draw_mode": 2
+    },
+    "pressed": {
+      "png_sha256": "17f401c55ede44653081fba3bdb9398a56bc2739a3cdcf0c86b9fbe2102be8dc",
+      "window": [
+        1280,
+        720
+      ],
+      "viewport": [
+        1280,
+        720
+      ],
+      "draw_mode": 1
+    },
+    "title-small": {
+      "png_sha256": "4a3618490d685fe28acc44eafd225df1b47c253dae5eb39b416613d8a3309c18",
+      "window": [
+        960,
+        540
+      ],
+      "viewport": [
+        1280,
+        720
+      ],
+      "draw_mode": -1
+    },
+    "shop-small": {
+      "png_sha256": "a84a80395f1d9de0be732f63b82661002c6e99dd97dd69a4354877836921af46",
+      "window": [
+        960,
+        540
+      ],
+      "viewport": [
+        1280,
+        720
+      ],
+      "draw_mode": -1
+    }
+  },
+  "all_existing_asset_files_unchanged": 200,
+  "core_combat_data_project_and_inventory_presentation_files_unchanged": 83,
+  "package": {
+    "path": "build/Embers-windows-x86_64.zip",
+    "sha256": "dc42324af686ea1a6ce7f5edcdcb7f70468481ff6c348d04174ccffa2a8fcee1",
+    "x64_pe_crc_and_member_bytes": true,
+    "exe_smoke_exit_code": 0,
+    "previous_path": "build/Embers-windows-before-button-polish-fe97510.zip",
+    "previous_sha256": "9ba02bafc47648e98ecd7652b937ca2a916c69404dee12637eb3278b0fe5ca9c"
+  },
+  "source_and_document_sha256": {
+    ".gitignore": "d1725b7e95357e7bccfd53ef92180dca2e7ce053ae7d6bfe4a713728280b1b01",
+    "README.md": "edd5ba9b1cdbde167699b2c61bcaf61a7a02a4015ff4a180a83ef5b383e7b31c",
+    "docs/button-style.md": "c940a40b0ea60b476bdc7efae87272c9e0f88809ce40b93a1bf6e60fdc20f775",
+    "scripts/ui/button_skin.gd": "59667ddeb55b8133c03ac587a64f237c25a80dea01af2c601139abd8b67b6d97",
+    "scripts/ui/button_skin.gd.uid": "e10b45ace37c378281ee45a1e7822679449e2d4f6a9ee7ac273180141bfe298e",
+    "scripts/ui/game_ui.gd": "d4efc37c814759ea81d4bb9a2964c8d8cce5375f62b122748969141ba1008841",
+    "tools/preview_button_polish.gd": "b0a06427e3fc360b96e7a257f43654a68131af0ef3d922f87b233464ad454565",
+    "tools/preview_button_polish.gd.uid": "02447a7e5b9aacc29261eabd11253731dd925e880c748758f2a94ed8b830a16c"
+  },
+  "evidence_sha256": {
+    "build.log": "4765a378055cf92fee6ee8bdf55a7cc9cdfa4a4e05f5285220ab7a81be685256",
+    "controls.log": "49902b7097bb83a973eb0f6d125286d7fb4b9caaaf292101ce3bfab3644cc36f",
+    "exe-smoke.log": "fb00742a88ed9dd94eb02ded98ea754bc555f491f1809c589e78b8c7983611b2",
+    "hover.log": "79c7950de9c49bef4bfea62a82d3567d4151fd29e31e3434f9685a171fb98d8f",
+    "import.log": "31cb48cdc464f2076be212a4c4252c4f848e50794be94f595efdb2064fab4df9",
+    "locked.log": "325dbeba967e57d2ad1cc6a2da4870fad47049fbbb1c409c75f401e449687908",
+    "native-adventure_art.log": "1d7ab02989b299b8f101e948d3e9761cf4499c70d87b3b322b7ffc82c6aa2a72",
+    "native-backpack_focus.log": "31c1b936e84d4a3485fd8f47f355147e15ebdd8c7d79ee4a6d6c4f23a99d784d",
+    "native-concise_ui.log": "be235975a862e6db7e6a3403becf6dc835c4b39b128549ad479f60870757b532",
+    "native-controls_ui.log": "fbb7a797c60fd30bbf04df7852937317ffaefea06c5f3ecf2100ee0ae8324e0f",
+    "native-gamepad_backpack.log": "e7799b224fe1e0ffe53aed01322268cbcc6e5945bd310144aa07595e7a14e2e6",
+    "native-gamepad_reading.log": "841718921158febbb5d1159f0d102dda37a1a2c2e36feaccbb66141342eb92ba",
+    "native-modal.log": "61a2ac8cb080a9c09f18f7262d2dd999990c4eac3668e77bcedacc778dfb6512",
+    "native-shop_lock_ui.log": "26e46e92cbe18fbaead905b33f7a605bed1e68fd8500fbef0c967c956d0a4755",
+    "native-ui.log": "69fd586ab2b112c6bdefa7f463308eb07f104a48cd1c514b6975fd794240f6cb",
+    "pack-check-adventure_art.log": "1d7ab02989b299b8f101e948d3e9761cf4499c70d87b3b322b7ffc82c6aa2a72",
+    "pack-check-backpack_focus.log": "31c1b936e84d4a3485fd8f47f355147e15ebdd8c7d79ee4a6d6c4f23a99d784d",
+    "pack-check-shop_lock_ui.log": "26e46e92cbe18fbaead905b33f7a605bed1e68fd8500fbef0c967c956d0a4755",
+    "pack-check-ui.log": "69fd586ab2b112c6bdefa7f463308eb07f104a48cd1c514b6975fd794240f6cb",
+    "pack-controls.log": "e40b0f5ffa4f7a8b9312a3250d0debecd41a0423dfb135583cae1de74bc82e3d",
+    "pack-hover.log": "554274098767b2204877aa919793f47e7728dfc6738ab830c3b6298fa1c2c5ee",
+    "pack-locked.log": "0a7c2fbd1f1a47890b6959ca2822dc0229ab1691538560317ebcac44fd685965",
+    "pack-pause.log": "90886fbd384dedcdcea060294f57fbdcc78cba92b137d3ac763c387d54115dd0",
+    "pack-poor.log": "ce6b75938c8ce19cab338b365f2b3e48dcbf1b68c5e6e56e0ff1b87c3ed75175",
+    "pack-pressed.log": "4d8c92d672f916a24582d908e2db7016351ab7347f413fae06a3dee6f2e6f3a1",
+    "pack-settings.log": "6dee21b4ad4b24c6f96379722a9f55524ee2d873c5197eabbe6b9faf33dc8afe",
+    "pack-shop-small.log": "7760cf6db681a636b245a20788652586a950915eb5f69878af5391dc9998c77f",
+    "pack-shop.log": "c38b477bbffda1951a4f6a06e212f0ac208d4ab91cf9942f7babf9eba153e6cc",
+    "pack-sold.log": "b0527900c2cc0c23f628cb223aacf7749a56beabb1232271d5aeb2424c3fa654",
+    "pack-title-small.log": "167737c0004582baa17e07cf400d60b3f188389c5e27d5fff3e34e9be4780c12",
+    "pack-title.log": "68ad148e3d48ce723adb87963a411f083af04f706463e550dedb48c46b6f604e",
+    "pack-upgrades.log": "3256ea366249c87de0a950b69d45f428e6eb87b82cb67d583965cc7b1a9c3676",
+    "pause.log": "edbe3c8d66c25154dcf518d19a9ba261de765fbc7203ff1fa3864ede00aa2972",
+    "poor.log": "00370ba17462c9a6d572de48062b05a0d402fcab051fb0a77c5753d66c955cfd",
+    "pressed.log": "3c407af61bd402ccf8b65e68411cf287961d2cd304c4a9fa654d598f5ca49c1a",
+    "regression.log": "15e4279fa4d9880bec03bbc7aa6ed1d58c2ae369675680449a7e9154a5ff3caa",
+    "settings.log": "f82e98f05a46691d4f19245571f95781874f0f7f226afd5bdbe4f1a396adfcd0",
+    "shop-base.log": "bc9d3fed05360fb6689a9d8896e66cf38189c4e689bb70bc6b20c436cbd864c6",
+    "shop-small.log": "c364423d572b40f2033d7b94f8da612d79d56d1092526683bea8c5ae323a6b58",
+    "shop.log": "8a3640ec023c0f7b783738e03b1891a3742969883342aa0b610cb6668f264ff8",
+    "sold.log": "5197ea36b54adc11a87d118da61c5153366e7dcedca27d2526bc0d4b6ef62873",
+    "title-small.log": "0283e8221632f986825f03c8f42d73c34be1aaa1f2ba6625d09833da77dd9155",
+    "title.log": "2e6c38fc7e430df5842c33a8732a6082888b55a8547fe1d407b2e14dda396ab9",
+    "upgrades.log": "7a99800a3da96128a26635d8b686b8a55430d3f0e33f6bd3357339e9e02dff6f"
+  },
+  "limits": [
+    "Fixed UI fixtures and software input; no physical-controller or human playtest claim.",
+    "960x540 window cases still capture the 1280x720 logical viewport, not 540p desktop pixels.",
+    "Pause preview places the real overlay over a fixed title, not a naturally paused combat run.",
+    "No new combat pressure, full automatic simulation, macOS build, audio generation or listening review."
+  ]
+}

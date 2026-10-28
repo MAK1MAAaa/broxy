@@ -43,6 +43,8 @@ func _ready() -> void:
 			store.persistent = false
 			break
 	store.load_profile()
+	ControlBindings.install(store.controls)
+	Input.joy_connection_changed.connect(_on_joy_connection_changed)
 	sound = SoundBank.new()
 	add_child(sound)
 	sound.set_volume(float(store.settings["volume"]))
@@ -56,6 +58,7 @@ func _ready() -> void:
 	ui.bind(run)
 	ui.set_selected_arena(selected_arena)
 	ui.set_settings(store.settings)
+	ui.set_controls(store.controls)
 	ui.set_progress(store.unlocked_starters)
 	ui.start_requested.connect(_start_run)
 	ui.next_wave_requested.connect(_next_wave)
@@ -63,6 +66,7 @@ func _ready() -> void:
 	ui.menu_requested.connect(_title)
 	ui.quit_requested.connect(_quit_game)
 	ui.setting_changed.connect(_setting_changed)
+	ui.controls_changed.connect(_controls_changed)
 	ui.feedback.connect(func(name: String) -> void: sound.play(name, -12.0))
 	ui.upgrades_finished.connect(_upgrades_finished)
 	world.hud_changed.connect(ui.update_hud)
@@ -204,6 +208,7 @@ func _open_combat_upgrades(simulation: CombatSim, generation: int) -> void:
 	_combat_upgrade_sim = simulation
 	_combat_upgrade_generation = generation
 	screen = Screen.UPGRADE
+	world.clear_pending_actions()
 	get_tree().paused = true
 	ui.show_upgrades(true)
 	sound.play("level", -12.0)
@@ -232,6 +237,8 @@ func _upgrades_finished() -> void:
 
 func _invalidate_combat_upgrades() -> void:
 	_run_generation += 1
+	if world != null:
+		world.clear_pending_actions()
 	_upgrade_request_sim = null
 	_upgrade_request_generation = -1
 	_combat_upgrade_sim = null
@@ -253,6 +260,7 @@ func _title() -> void:
 func _pause() -> void:
 	if screen == Screen.TITLE or screen == Screen.RESULT or _benchmark:
 		return
+	world.clear_pending_actions()
 	paused = true
 	get_tree().paused = true
 	ui.show_pause()
@@ -270,19 +278,83 @@ func _setting_changed(key: String, value: Variant) -> void:
 		sound.set_volume(float(value))
 	store.save_profile()
 
+func _controls_changed(value: Dictionary) -> void:
+	store.controls = ControlBindings.normalize(value)
+	ControlBindings.install(store.controls)
+	ui.set_controls(store.controls)
+	world.clear_pending_actions()
+	store.save_profile()
+
 func _unhandled_key_input(event: InputEvent) -> void:
-	if event is InputEventKey and event.pressed and not event.echo:
+	if event is InputEventKey:
+		_handle_control_input(event)
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventJoypadButton:
+		_handle_control_input(event)
+
+func _handle_control_input(event: InputEvent) -> void:
+	if event is InputEventKey:
+		if not event.pressed or event.echo:
+			return
 		if event.keycode == KEY_ESCAPE:
-			if ui.handle_back():
-				pass
-			elif paused:
+			_handle_back_input(true)
+			return
+		if event.keycode == KEY_F11 or (event.keycode == KEY_F and event.alt_pressed):
+			var fullscreen: bool = DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN
+			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED if fullscreen else DisplayServer.WINDOW_MODE_FULLSCREEN)
+			return
+	elif event is InputEventJoypadButton:
+		if not event.pressed:
+			return
+		if event.button_index == JOY_BUTTON_B:
+			_handle_back_input(false)
+			return
+		if event.button_index == JOY_BUTTON_START:
+			if paused:
 				_resume()
 			else:
 				_pause()
 			get_viewport().set_input_as_handled()
-		elif event.keycode == KEY_F11 or (event.keycode == KEY_F and event.alt_pressed):
-			var fullscreen: bool = DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN
-			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED if fullscreen else DisplayServer.WINDOW_MODE_FULLSCREEN)
+			return
+	else:
+		return
+	if not _can_request_combat_skill():
+		return
+	if ControlBindings.pressed(event, "dash"):
+		world.request_dash()
+		get_viewport().set_input_as_handled()
+	elif ControlBindings.pressed(event, "pulse"):
+		world.request_pulse()
+		get_viewport().set_input_as_handled()
+	elif ControlBindings.pressed(event, "skill_secondary"):
+		world.request_skill(1)
+		get_viewport().set_input_as_handled()
+
+func _handle_back_input(allow_pause: bool) -> void:
+	if ui.handle_back():
+		pass
+	elif paused:
+		_resume()
+	elif allow_pause:
+		_pause()
+	else:
+		return
+	get_viewport().set_input_as_handled()
+
+func _on_joy_connection_changed(_device: int, connected: bool) -> void:
+	if connected or _benchmark or screen != Screen.COMBAT or world == null or not world.active or world.sim == null or world.sim.complete:
+		return
+	world.clear_pending_actions()
+	if not paused:
+		_pause()
+
+func _can_request_combat_skill() -> bool:
+	return (
+		screen == Screen.COMBAT and not paused and not get_tree().paused and not _benchmark
+		and world != null and world.active and world.sim != null and not world.sim.complete
+		and run.health > 0.0
+	)
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_APPLICATION_FOCUS_OUT and (screen == Screen.COMBAT or _combat_upgrades_active()) and not paused and not _benchmark and not ("--smoke" in args) and not ("--autoplay" in args):

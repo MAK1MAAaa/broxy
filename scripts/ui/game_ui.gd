@@ -7,25 +7,27 @@ signal resume_requested
 signal menu_requested
 signal quit_requested
 signal setting_changed(key: String, value: Variant)
+signal controls_changed(bindings: Dictionary)
 signal upgrades_finished
 signal feedback(sound: String)
 
-const INK := Color("0d111b")
-const PANEL := Color("151a27")
-const PANEL_LIGHT := Color("242737")
-const BONE := Color("f0e5cc")
-const MUTED := Color("aaa4b3")
-const GOLD := Color("c4a76f")
-const PURPLE := Color("bfa2e6")
-const CYAN := Color("89d8d2")
-const RED := Color("df888d")
+const INK := Color("dceef0")
+const PANEL := Color("fff9e8")
+const PANEL_LIGHT := Color("f0ead8")
+const BONE := Color("253d54")
+const MUTED := Color("526575")
+const GOLD := Color("8a5b20")
+const PURPLE := Color("765093")
+const CYAN := Color("14766f")
+const RED := Color("b83c50")
 const CORAL := Color("ed9a86")
 const BACKPACK_GRID = preload("res://scripts/ui/backpack_grid.gd")
+const MINIMAP_VIEW = preload("res://scripts/ui/minimap_view.gd")
 
-## Painted only on construction/resize. Decorative controls never intercept input.
+## Paper-and-brass ornaments draw only on construction/resize and never intercept input.
 class RitualFrame:
 	extends Control
-	var tint: Color = Color("c4a76f")
+	var tint: Color = Color("8a5b20")
 	var quiet: bool = false
 
 	func _ready() -> void:
@@ -35,34 +37,59 @@ class RitualFrame:
 	func _draw() -> void:
 		if size.x < 28 or size.y < 20:
 			return
-		var inset := 4.0
-		var length := 8.0 if quiet else 13.0
+		var inset := 5.0
+		var length := 7.0 if quiet else 12.0
 		var corners: Array[Vector2] = [Vector2(inset, inset), Vector2(size.x - inset, inset), Vector2(inset, size.y - inset), size - Vector2.ONE * inset]
 		for corner: Vector2 in corners:
-			var x_direction := 1.0 if corner.x < size.x * 0.5 else -1.0
-			var y_direction := 1.0 if corner.y < size.y * 0.5 else -1.0
-			draw_line(corner, corner + Vector2(length * x_direction, 0), Color(tint, 0.65), 1.0)
-			draw_line(corner, corner + Vector2(0, length * y_direction), Color(tint, 0.65), 1.0)
-		if not quiet:
-			draw_rect(Rect2(Vector2.ONE * 7, size - Vector2.ONE * 14), Color(tint, 0.09), false, 1.0)
-			if size.x > 150:
-				var center := Vector2(size.x * 0.5, 4)
-				draw_colored_polygon(PackedVector2Array([center + Vector2(0, -3), center + Vector2(3, 0), center + Vector2(0, 3), center + Vector2(-3, 0)]), Color(tint, 0.8))
+			var horizontal := 1.0 if corner.x < size.x * 0.5 else -1.0
+			var vertical := 1.0 if corner.y < size.y * 0.5 else -1.0
+			draw_line(corner, corner + Vector2(length * horizontal, 0), Color(tint, 0.48), 2.0)
+			draw_line(corner, corner + Vector2(0, length * vertical), Color(tint, 0.48), 2.0)
+			draw_rect(Rect2(corner + Vector2(3 * horizontal - 1, 3 * vertical - 1), Vector2(2, 2)), Color(tint, 0.65))
+		if not quiet and size.x > 150:
+			var center := Vector2(floorf(size.x * 0.5), 5)
+			draw_rect(Rect2(center - Vector2(1, 4), Vector2(2, 8)), Color(tint, 0.8))
+			draw_rect(Rect2(center - Vector2(4, 1), Vector2(8, 2)), Color(tint, 0.8))
+			draw_rect(Rect2(center - Vector2(2, 2), Vector2(4, 4)), Color(tint, 0.8))
 
 
 class RitualRule:
 	extends Control
-	var tint: Color = Color("c4a76f")
+	var tint: Color = Color("8a5b20")
 
 	func _ready() -> void:
 		mouse_filter = Control.MOUSE_FILTER_IGNORE
 		resized.connect(queue_redraw)
 
 	func _draw() -> void:
-		var center := Vector2(size.x * 0.5, size.y * 0.5)
-		draw_line(Vector2(0, center.y), center - Vector2(11, 0), Color(tint, 0.22), 1.0)
-		draw_line(center + Vector2(11, 0), Vector2(size.x, center.y), Color(tint, 0.22), 1.0)
-		draw_colored_polygon(PackedVector2Array([center + Vector2(0, -3), center + Vector2(3, 0), center + Vector2(0, 3), center + Vector2(-3, 0)]), Color(tint, 0.8))
+		var center := Vector2(floorf(size.x * 0.5), floorf(size.y * 0.5))
+		draw_line(Vector2(0, center.y), center - Vector2(11, 0), Color(tint, 0.28), 1.0)
+		draw_line(center + Vector2(11, 0), Vector2(size.x, center.y), Color(tint, 0.28), 1.0)
+		draw_rect(Rect2(center - Vector2(1, 3), Vector2(2, 6)), Color(tint, 0.8))
+		draw_rect(Rect2(center - Vector2(3, 1), Vector2(6, 2)), Color(tint, 0.8))
+
+
+class TitleChoiceMark:
+	extends Control
+
+	func _ready() -> void:
+		mouse_filter = Control.MOUSE_FILTER_IGNORE
+		focus_mode = Control.FOCUS_NONE
+		set_process(false)
+		resized.connect(queue_redraw)
+
+	func _draw() -> void:
+		var button := get_parent() as Button
+		if button == null or (not button.disabled and not button.button_pressed):
+			return
+		var point := Vector2(size.x - 16, 8)
+		draw_rect(Rect2(point - Vector2.ONE, Vector2(13, 13)), Color(GameUI.PANEL, 0.96))
+		if button.disabled:
+			draw_rect(Rect2(point + Vector2(2, 5), Vector2(7, 6)), GameUI.MUTED)
+			draw_polyline(PackedVector2Array([point + Vector2(3, 5), point + Vector2(3, 2), point + Vector2(8, 2), point + Vector2(8, 5)]), GameUI.MUTED, 2.0)
+		else:
+			draw_polyline(PackedVector2Array([point + Vector2(1, 6), point + Vector2(4, 9), point + Vector2(10, 2)]), GameUI.CYAN, 2.0, true)
+
 
 var run: RunState
 var _root: Control
@@ -76,6 +103,15 @@ var _arena_id := "reliquary"
 var _selected_rune := -1
 var _refresh_queued := false
 var _settings := {"volume": 0.65, "shake": true, "flash": true}
+var _controls: Dictionary = ControlBindings.defaults()
+var _control_buttons: Dictionary = {}
+var _controls_notice: Label
+var _capture_label: Label
+var _capture_action: String = ""
+var _controls_epoch: int = 0
+var _hud_skill_snapshot: Dictionary = {}
+var _input_device_tracker: InputDeviceTracker
+var _input_kind: String = "keyboard"
 var _hud: Dictionary = {}
 var _hud_loadout_key := ""
 var _best: Dictionary = {}
@@ -93,6 +129,7 @@ var _bag_cursor: Vector2i = Vector2i.ZERO
 var _bag_grid: Control
 var _bag_details: VBoxContainer
 var _bag_status: Label
+var _bag_hint_is_default: bool = true
 var _unlocked_starters: Array[String] = ["bone", "ember"]
 var _rogue_epoch: int = 0
 var _rogue_notice: String = ""
@@ -130,6 +167,10 @@ func _ready() -> void:
 	_toast_timer.one_shot = true
 	_toast_timer.timeout.connect(_toast.hide)
 	add_child(_toast_timer)
+	_input_device_tracker = InputDeviceTracker.new()
+	_input_device_tracker.name = "InputDeviceTracker"
+	_input_device_tracker.device_changed.connect(_on_input_device_changed)
+	add_child(_input_device_tracker)
 
 
 func bind(state: RunState) -> void:
@@ -144,6 +185,154 @@ func set_settings(values: Dictionary) -> void:
 	for key: String in _settings:
 		if values.has(key):
 			_settings[key] = values[key]
+
+
+func set_controls(bindings: Dictionary) -> void:
+	_controls = ControlBindings.normalize(bindings)
+	_refresh_control_buttons()
+	_refresh_input_prompts()
+
+
+func input_device_snapshot() -> Dictionary:
+	return _input_device_tracker.snapshot() if is_instance_valid(_input_device_tracker) else {"kind": "keyboard", "gamepad_id": -1}
+
+
+func _on_input_device_changed(kind: String, _device: int) -> void:
+	_input_kind = "gamepad" if kind == "gamepad" else "keyboard"
+	_refresh_input_prompts()
+
+
+func _refresh_input_prompts() -> void:
+	if _screen == "hud" and not _hud.is_empty() and not _hud_skill_snapshot.is_empty():
+		_update_dash_hud(_hud_skill_snapshot)
+		_update_pulse_hud(_hud_skill_snapshot)
+	if is_instance_valid(_bag_grid):
+		_bag_grid.set_skill_bindings(_controls)
+		_bag_grid.set_input_device(_input_kind)
+	if is_instance_valid(_bag_status) and _bag_hint_is_default:
+		_bag_status.text = _backpack_default_hint()
+	if _page != null:
+		var move := _page.find_child("MoveBackpackItem", true, false) as Button
+		if move != null:
+			move.tooltip_text = _backpack_move_tooltip()
+		var rotate := _page.find_child("RotateBackpackItem", true, false) as Button
+		if rotate != null:
+			rotate.text = _backpack_rotate_text()
+			rotate.tooltip_text = _backpack_rotate_tooltip()
+		var skill_slot := _page.find_child("BackpackSkillSlot", true, false) as Label
+		if skill_slot != null and run != null:
+			var slot_index: int = _active_skill_index(_bag_selected_uid)
+			if slot_index >= 0:
+				var action: String = "pulse" if slot_index == 0 else "skill_secondary"
+				var input_key: String = ("X" if slot_index == 0 else "Y") if _input_kind == "gamepad" else ControlBindings.key_label(int(_controls[action]))
+				skill_slot.text = "技能%d · %s" % [slot_index + 1, input_key]
+	_refresh_reading_guides()
+
+
+func _refresh_reading_guides() -> void:
+	for surface: Control in [_page, _overlay]:
+		if surface == null:
+			continue
+		var guide := surface.find_child("ReadingGuide", true, false) as Label
+		if guide != null:
+			guide.text = str(guide.get_meta("gamepad_text" if _input_kind == "gamepad" else "keyboard_text"))
+			if surface == _page and _screen == "shop" and _input_kind == "gamepad" and _bag_held_uid >= 0:
+				guide.text = "整理完成后可用 LB / RB 查看详情"
+
+
+func _add_reading_guide(parent: Control, keyboard_text: String, gamepad_text: String) -> void:
+	var guide := _label(gamepad_text if _input_kind == "gamepad" else keyboard_text, 13, MUTED)
+	guide.name = "ReadingGuide"
+	guide.set_meta("keyboard_text", keyboard_text)
+	guide.set_meta("gamepad_text", gamepad_text)
+	guide.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	parent.add_child(guide)
+
+
+func _reading_footer(parent: Control, close: Button) -> void:
+	var footer := HBoxContainer.new()
+	footer.add_theme_constant_override("separation", 14)
+	parent.add_child(footer)
+	_add_reading_guide(footer, "Tab 选择内容 · PageUp / PageDown 翻页 · Esc 返回", "LB / RB 翻页 · B 返回")
+	close.custom_minimum_size.x = 200
+	footer.add_child(close)
+
+
+func _gamepad_reading_target() -> ScrollContainer:
+	var surface: Control = _overlay if not _overlay_mode.is_empty() else _page
+	var target_name: String = ""
+	if not _overlay_mode.is_empty():
+		target_name = str({"relic_comparison": "ComparisonScroll", "rune_equip_comparison": "RuneEquipScroll", "rogue_choices": "RogueChoicesScroll"}.get(_overlay_mode, ""))
+	elif _screen == "shop" and not _refresh_queued and _bag_held_uid < 0:
+		if is_instance_valid(_bag_grid) and _bag_grid.held_uid < 0 and _bag_grid.interaction_enabled:
+			target_name = "BackpackDetailsScroll"
+	elif _screen == "result":
+		target_name = "ResultBuildScroll"
+	if target_name.is_empty() or get_viewport().gui_is_dragging():
+		return null
+	var target := surface.find_child(target_name, true, false) as ScrollContainer
+	return target if target != null and target.is_visible_in_tree() else null
+
+
+func _page_gamepad_reading(event: InputEvent) -> bool:
+	if not event is InputEventJoypadButton or not event.pressed or event.device < 0:
+		return false
+	if event.button_index not in [JOY_BUTTON_LEFT_SHOULDER, JOY_BUTTON_RIGHT_SHOULDER]:
+		return false
+	var target: ScrollContainer = _gamepad_reading_target()
+	if target == null:
+		return false
+	var direction: int = -1 if event.button_index == JOY_BUTTON_LEFT_SHOULDER else 1
+	var page: int = maxi(1, int(target.size.y * 0.8))
+	var bar: VScrollBar = target.get_v_scroll_bar()
+	var limit: int = maxi(0, ceili(bar.max_value - bar.page))
+	target.scroll_vertical = clampi(target.scroll_vertical + direction * page, 0, limit)
+	get_viewport().set_input_as_handled()
+	return true
+
+
+func _input(event: InputEvent) -> void:
+	if not _capture_action.is_empty():
+		if event is InputEventKey:
+			get_viewport().set_input_as_handled()
+			if not event.pressed or event.echo:
+				return
+			var key: int = int(event.physical_keycode if event.physical_keycode != KEY_NONE else event.keycode)
+			if key == KEY_ESCAPE:
+				_cancel_control_capture()
+				return
+			if event.alt_pressed or event.ctrl_pressed or event.meta_pressed or event.shift_pressed:
+				_set_controls_notice("请使用单个按键，不使用修饰键组合。", RED)
+				return
+			var error: String = ControlBindings.binding_error(_controls, _capture_action, key)
+			if not error.is_empty():
+				_set_controls_notice(error, RED)
+				return
+			var action: String = _capture_action
+			var next_bindings: Dictionary = _controls.duplicate(true)
+			next_bindings[action] = key
+			_capture_action = ""
+			set_controls(next_bindings)
+			_set_controls_notice("%s已绑定为%s。" % [ControlBindings.action_label(action), ControlBindings.key_label(key)], CYAN)
+			var source := _control_buttons.get(action) as Button
+			if source != null:
+				_focus_later(source)
+			controls_changed.emit(_controls.duplicate(true))
+			return
+		if event is InputEventMouse or event is InputEventJoypadButton or event is InputEventJoypadMotion:
+			get_viewport().set_input_as_handled()
+			if event is InputEventJoypadButton:
+				if event.pressed and event.button_index == JOY_BUTTON_B:
+					_cancel_control_capture()
+				elif event.pressed:
+					_set_controls_notice("请按键盘按键；Esc / 手柄B取消。", RED)
+			elif event is InputEventMouseButton and event.pressed:
+				_set_controls_notice("请按键盘按键；Esc / 手柄B取消。", RED)
+		return
+	if _page_gamepad_reading(event):
+		return
+	if event is InputEventJoypadButton and event.pressed and event.button_index == JOY_BUTTON_B and handle_back():
+		get_viewport().set_input_as_handled()
 
 
 func set_progress(starters: Array[String]) -> void:
@@ -167,21 +356,20 @@ func show_title(best: Dictionary) -> void:
 	shell.add_child(columns)
 	var left := VBoxContainer.new()
 	left.name = "TitleActions"
-	left.custom_minimum_size.x = 530
+	left.custom_minimum_size.x = 520
 	left.add_theme_constant_override("separation", 8)
 	columns.add_child(left)
-	var title := _label("EMBERS", 68, BONE)
+	var title := _label("EMBERS", 60, BONE)
 	var title_font := SystemFont.new()
-	title_font.font_names = PackedStringArray(["Baskerville", "Georgia", "Times New Roman"])
+	title_font.font_names = PackedStringArray(["Trebuchet MS", "Avenir Next", "Verdana", "Arial"])
+	title_font.font_weight = 800
 	title.add_theme_font_override("font", title_font)
 	left.add_child(title)
-	left.add_child(_label("秘 术 余 烬", 27, PURPLE))
-	_rule(left)
+	left.add_child(_label("秘 术 余 烬", 24, PURPLE))
 	var start_card := _panel(left)
 	start_card.name = "StarterAltar"
-	var start_body := _inside(start_card, 16)
-	start_body.add_theme_constant_override("separation", 8)
-	_section_heading(start_body, "选择起始法器", GOLD, 18)
+	var start_body := _inside(start_card, 12)
+	start_body.add_theme_constant_override("separation", 6)
 	var starters := HBoxContainer.new()
 	starters.add_theme_constant_override("separation", 12)
 	start_body.add_child(starters)
@@ -191,34 +379,23 @@ func show_title(best: Dictionary) -> void:
 		option.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		option.add_theme_constant_override("separation", 4)
 		starters.add_child(option)
-		var card := _button(definition.display_name, _select_starter.bind(id), Vector2(0, 62))
+		var card := _button(definition.display_name, _select_starter.bind(id), Vector2(0, 58))
 		card.name = "Starter_" + id
 		card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		card.toggle_mode = true
 		card.disabled = not _unlocked_starters.has(id)
 		card.focus_mode = Control.FOCUS_NONE if card.disabled else Control.FOCUS_ALL
 		card.button_pressed = _starter == id
-		card.tooltip_text = definition.description if _unlocked_starters.has(id) else _starter_unlock_text(id)
 		card.add_theme_font_size_override("font_size", 17)
-		card.add_theme_color_override("font_pressed_color", BONE)
-		card.add_theme_stylebox_override("normal", _box(Color("1d2230"), Color(GOLD, 0.3)))
-		card.add_theme_stylebox_override("pressed", _box(Color("302b3b"), GOLD))
+		ButtonSkin.apply(card, "choice")
 		_set_button_icon(card, definition)
 		option.add_child(card)
-		var role := _label(definition.subtitle.get_slice(" · ", 1) if _unlocked_starters.has(id) else _starter_unlock_text(id), 11, GOLD if _starter == id else MUTED)
-		role.name = "StarterRole_" + id
-		role.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		option.add_child(role)
-	var chosen: ContentDef = GameCatalog.weapon(_starter)
-	var starter_description := _wrap(chosen.description, 14, MUTED)
-	starter_description.name = "StarterDescription"
-	start_body.add_child(starter_description)
-	var start := _button("进入试炼", _start, Vector2(0, 46))
+		_add_title_choice_mark(card)
+	_build_arena_selection(left)
+	var start := _button("进入试炼", _start, Vector2(0, 50))
 	_accent(start)
-	start_body.add_child(start)
+	left.add_child(start)
 	_focus_later(start)
-	left.add_child(_label("最佳记录", 14, GOLD))
-	left.add_child(_wrap(_best_text(best), 13, MUTED))
 	var right := VBoxContainer.new()
 	right.name = "TitleIllustrationSpace"
 	right.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -229,17 +406,11 @@ func show_title(best: Dictionary) -> void:
 	space.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	space.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	right.add_child(space)
-	_build_arena_selection(right)
 	var footer := HBoxContainer.new()
 	footer.add_theme_constant_override("separation", 12)
 	shell.add_child(footer)
 	footer.add_child(_button("设置", _show_settings.bind(false), Vector2(120, 40)))
 	footer.add_child(_button("退出游戏", _quit, Vector2(140, 40)))
-	var note := _label("WASD / 方向键移动 · 自动攻击 · Esc暂停", 14, MUTED)
-	note.name = "TitleControls"
-	note.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	note.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	footer.add_child(note)
 
 
 func selected_arena() -> String:
@@ -257,10 +428,9 @@ func set_selected_arena(id: String) -> void:
 func _build_arena_selection(parent: Control) -> void:
 	var card := _panel(parent)
 	card.name = "ArenaSelection"
-	card.add_theme_stylebox_override("panel", _box(Color(0.05, 0.07, 0.11, 0.9), Color(GOLD, 0.25)))
+	card.add_theme_stylebox_override("panel", _box(Color(PANEL, 0.96), Color(GOLD, 0.25)))
 	var body := _inside(card, 12)
-	body.add_theme_constant_override("separation", 8)
-	_section_heading(body, "选择地图", GOLD, 18)
+	body.add_theme_constant_override("separation", 6)
 	var grid := GridContainer.new()
 	grid.columns = 2
 	grid.add_theme_constant_override("h_separation", 10)
@@ -268,14 +438,12 @@ func _build_arena_selection(parent: Control) -> void:
 	body.add_child(grid)
 	for id: String in ArenaCatalog.IDS:
 		var definition: Dictionary = ArenaCatalog.definition(id)
-		var option := _button("", _select_arena.bind(id), Vector2(0, 122))
+		var option := _button("", _select_arena.bind(id), Vector2(0, 84))
 		option.name = "Arena_" + id
 		option.toggle_mode = true
 		option.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		option.clip_contents = true
-		option.tooltip_text = "%s\n%s" % [str(definition["subtitle"]), "你和敌人进入地形均减速，离开即恢复；可自由穿过，弹体速度不变。" if float(definition["move_multiplier"]) < 1.0 else "开阔石地，移动速度不变。"]
-		option.add_theme_stylebox_override("normal", _box(Color("171f2a"), Color(GOLD, 0.22)))
-		option.add_theme_stylebox_override("pressed", _box(Color("292c39"), GOLD))
+		ButtonSkin.apply(option, "choice")
 		grid.add_child(option)
 		var inset := MarginContainer.new()
 		inset.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -284,29 +452,32 @@ func _build_arena_selection(parent: Control) -> void:
 		option.add_child(inset)
 		var content := VBoxContainer.new()
 		content.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		content.add_theme_constant_override("separation", 4)
+		content.add_theme_constant_override("separation", 2)
 		inset.add_child(content)
 		var image := TextureRect.new()
 		image.name = "ArenaPreview_" + id
-		image.custom_minimum_size.y = 58
+		image.custom_minimum_size.y = 32
 		image.size_flags_vertical = Control.SIZE_EXPAND_FILL
 		image.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		image.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-		image.texture = load(str(definition["texture"])) as Texture2D
+		image.texture = load(AdventureArt.path(str(definition["texture"]))) as Texture2D
+		image.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 		image.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		content.add_child(image)
 		var name_label := _label(str(definition["name"]), 16, BONE)
 		name_label.name = "ArenaName_" + id
 		content.add_child(name_label)
-		var effect := _label(_arena_effect_text(definition), 13, MUTED)
-		effect.name = "ArenaEffect_" + id
-		content.add_child(effect)
+		_add_title_choice_mark(option)
 	_refresh_arena_selection()
 
 
-func _arena_effect_text(definition: Dictionary) -> String:
-	var multiplier: float = float(definition["move_multiplier"])
-	return "%s · 移速 −%d%%" % [str(definition["terrain_name"]), roundi((1.0 - multiplier) * 100.0)] if multiplier < 1.0 else "开阔石地 · 无减速"
+func _add_title_choice_mark(button: Button) -> void:
+	var mark := TitleChoiceMark.new()
+	mark.name = "SelectionMark"
+	mark.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	mark.focus_mode = Control.FOCUS_NONE
+	button.add_child(mark)
+	mark.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
 
 func _select_arena(id: String) -> void:
@@ -321,9 +492,12 @@ func _refresh_arena_selection() -> void:
 		var option := _page.find_child("Arena_" + id, true, false) as Button
 		if option != null:
 			option.set_pressed_no_signal(_arena_id == id)
+			var mark := option.get_node_or_null("SelectionMark") as Control
+			if mark != null:
+				mark.queue_redraw()
 		var name_label := _page.find_child("ArenaName_" + id, true, false) as Label
 		if name_label != null:
-			name_label.text = ("已选 · " if _arena_id == id else "") + str(ArenaCatalog.definition(id)["name"])
+			name_label.text = str(ArenaCatalog.definition(id)["name"])
 			name_label.add_theme_color_override("font_color", GOLD if _arena_id == id else BONE)
 
 
@@ -345,9 +519,11 @@ func show_hud() -> void:
 	_decorate(top, GOLD, true)
 	var margin := MarginContainer.new()
 	_margin(margin, 18, 4)
+	margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	top.add_child(margin)
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 30)
+	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	margin.add_child(row)
 	var health_box := VBoxContainer.new()
 	health_box.custom_minimum_size.x = 260
@@ -359,7 +535,7 @@ func show_hud() -> void:
 	hp.custom_minimum_size.y = 9
 	hp.show_percentage = false
 	hp.add_theme_stylebox_override("fill", _bar_style(RED))
-	hp.add_theme_stylebox_override("background", _bar_style(Color("2d2630")))
+	hp.add_theme_stylebox_override("background", _bar_style(Color("dbd3c3")))
 	health_box.add_child(hp)
 	_hud["health_bar"] = hp
 	for entry: Array in [["wave", "波次  1 / 8"], ["time", "剩余  00:45"], ["gold", "魂屑  0"], ["level", "等级  1"]]:
@@ -367,6 +543,7 @@ func show_hud() -> void:
 		item.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		row.add_child(item)
 		_hud[str(entry[0])] = item
+	_add_hud_skill(row, "dash", "Dash", "空格：向当前移动方向冲刺；静止时沿面向。\n短冲距离约132，冷却2.4秒；起始短暂闪避，可冲离减速地形。")
 	var xp := ProgressBar.new()
 	xp.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
 	xp.offset_left = 26
@@ -376,7 +553,7 @@ func show_hud() -> void:
 	xp.show_percentage = false
 	xp.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	xp.add_theme_stylebox_override("fill", _bar_style(PURPLE))
-	xp.add_theme_stylebox_override("background", _bar_style(Color("292334")))
+	xp.add_theme_stylebox_override("background", _bar_style(Color("d9e4df")))
 	_page.add_child(xp)
 	_hud["xp_bar"] = xp
 	var boss := HBoxContainer.new()
@@ -399,11 +576,22 @@ func show_hud() -> void:
 	boss_hp.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	boss_hp.show_percentage = false
 	boss_hp.add_theme_stylebox_override("fill", _bar_style(RED))
-	boss_hp.add_theme_stylebox_override("background", _bar_style(Color("2d2630")))
+	boss_hp.add_theme_stylebox_override("background", _bar_style(Color("dbd3c3")))
 	boss.add_child(boss_hp)
 	boss.hide()
 	_hud["boss"] = boss
 	_hud["boss_bar"] = boss_hp
+	var minimap := MINIMAP_VIEW.new()
+	minimap.name = "ArenaMinimap"
+	minimap.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
+	minimap.offset_left = -216
+	minimap.offset_right = -24
+	minimap.offset_top = 104
+	minimap.offset_bottom = 230
+	minimap.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	minimap.focus_mode = Control.FOCUS_NONE
+	_page.add_child(minimap)
+	_hud["minimap"] = minimap
 	var bottom := PanelContainer.new()
 	bottom.name = "RitualEquipment"
 	bottom.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
@@ -425,12 +613,23 @@ func show_hud() -> void:
 	slots.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	bottom_row.add_child(slots)
 	_hud["slots"] = slots
+	var active_slots := HBoxContainer.new()
+	active_slots.name = "ActiveSkillSlots"
+	active_slots.add_theme_constant_override("separation", 10)
+	active_slots.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	bottom_row.add_child(active_slots)
+	_add_active_skill_slot(active_slots, "pulse", "Pulse")
+	_add_active_skill_slot(active_slots, "secondary", "Secondary")
 
 
 
 func update_hud(snapshot: Dictionary) -> void:
 	if _screen != "hud" or _hud.is_empty():
 		return
+	_hud_skill_snapshot = {"health": snapshot.get("health", 0.0), "benchmark": snapshot.get("benchmark", false)}
+	for key: String in ["dash", "skills"]:
+		var skill: Variant = snapshot.get(key, {})
+		_hud_skill_snapshot[key] = skill.duplicate(true) if skill is Dictionary or skill is Array else skill
 	var hp := float(snapshot.get("health", 0.0))
 	var maximum := maxf(1.0, float(snapshot.get("max_health", 1.0)))
 	_hud["health"].text = "生命  %d / %d" % [ceili(hp), ceili(maximum)]
@@ -445,6 +644,7 @@ func update_hud(snapshot: Dictionary) -> void:
 	var timer: Label = _hud["time"]
 	timer.text = "剩余  %02d:%02d" % [seconds / 60, seconds % 60]
 	timer.add_theme_color_override("font_color", BONE)
+	timer.add_theme_constant_override("outline_size", 0)
 	_hud["gold"].text = "魂屑  %d" % int(snapshot.get("gold", 0))
 	_hud["level"].text = "等级  %d" % int(snapshot.get("level", 1))
 	if bool(snapshot.get("benchmark", false)):
@@ -457,16 +657,225 @@ func update_hud(snapshot: Dictionary) -> void:
 		timer.text = "限时  %02d:%02d" % [seconds / 60, seconds % 60]
 		if time_left <= 10.0:
 			timer.add_theme_color_override("font_color", CORAL)
+			timer.add_theme_color_override("font_outline_color", BONE)
+			timer.add_theme_constant_override("outline_size", 2)
 	_hud["xp_bar"].max_value = maxf(1, float(snapshot.get("xp_needed", 1)))
 	_hud["xp_bar"].value = float(snapshot.get("xp", 0))
 	_hud["boss"].visible = boss_alive
 	_hud["boss_bar"].max_value = maxf(1, boss_max)
 	_hud["boss_bar"].value = boss_health
+	(_hud["minimap"] as MinimapView).update_snapshot(snapshot.get("minimap"))
+	_update_dash_hud(snapshot)
+	_update_pulse_hud(snapshot)
 	var loadout: Array = snapshot.get("loadout", [])
 	var key := str(loadout)
 	if key != _hud_loadout_key:
 		_hud_loadout_key = key
 		_update_hud_slots(loadout)
+
+
+func _add_hud_skill(row: HBoxContainer, key: String, prefix: String, tooltip: String) -> void:
+	var indicator := VBoxContainer.new()
+	indicator.name = prefix + "Skill"
+	indicator.custom_minimum_size.x = 106
+	indicator.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+	indicator.add_theme_constant_override("separation", 3)
+	indicator.mouse_filter = Control.MOUSE_FILTER_PASS
+	indicator.focus_mode = Control.FOCUS_NONE
+	indicator.tooltip_text = tooltip
+	row.add_child(indicator)
+	var label := _label("", 14, CYAN)
+	label.name = prefix + "Status"
+	label.focus_mode = Control.FOCUS_NONE
+	label.clip_text = true
+	label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	indicator.add_child(label)
+	var meter := ProgressBar.new()
+	meter.name = prefix + "Cooldown"
+	meter.custom_minimum_size.y = 5
+	meter.max_value = 1.0
+	meter.step = 0.0
+	meter.show_percentage = false
+	meter.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	meter.focus_mode = Control.FOCUS_NONE
+	meter.add_theme_stylebox_override("fill", _bar_style(CYAN))
+	meter.add_theme_stylebox_override("background", _bar_style(Color("d9e4df")))
+	indicator.add_child(meter)
+	indicator.hide()
+	_hud[key] = indicator
+	_hud[key + "_label"] = label
+	_hud[key + "_bar"] = meter
+
+
+func _clear_hud_skill(key: String) -> void:
+	_hud[key].hide()
+	_hud[key + "_label"].text = ""
+	_hud[key + "_bar"].value = 0.0
+
+
+func _update_dash_hud(snapshot: Dictionary) -> void:
+	var indicator: Control = _hud["dash"]
+	var label: Label = _hud["dash_label"]
+	var meter: ProgressBar = _hud["dash_bar"]
+	var value: Variant = snapshot.get("dash", {})
+	if bool(snapshot.get("benchmark", false)) or not value is Dictionary or value.is_empty() or float(snapshot.get("health", 0.0)) <= 0.0:
+		_clear_hud_skill("dash")
+		return
+	var dash: Dictionary = value
+	var remaining: float = float(dash.get("cooldown_left", 0.0))
+	var total: float = float(dash.get("cooldown_total", 0.0))
+	remaining = maxf(0.0, remaining) if is_finite(remaining) else 0.0
+	total = maxf(0.0, total) if is_finite(total) else 0.0
+	var active: bool = bool(dash.get("active", false))
+	var ready: bool = bool(dash.get("ready", false))
+	var next_total: float = _skill_tooltip_value(dash.get("next_cooldown_total", total), DashRules.COOLDOWN)
+	var key: String = "A" if _input_kind == "gamepad" else ControlBindings.key_label(int(_controls["dash"]))
+	indicator.tooltip_text = "%s：向当前移动方向冲刺；静止时沿面向。\n短冲距离约132，冷却%s秒；起始短暂闪避，可冲离减速地形。" % [key, _skill_number(next_total)]
+	if remaining > 0.0 and total > 0.0 and not is_equal_approx(total, next_total):
+		indicator.tooltip_text += "\n本次冷却总长%s秒；改装仅影响下次施放。" % _skill_number(total)
+	indicator.show()
+	if active:
+		label.text = "冲刺中"
+		label.add_theme_color_override("font_color", GOLD)
+		meter.value = 0.0
+	elif ready:
+		label.text = "冲刺 · " + key
+		label.add_theme_color_override("font_color", CYAN)
+		meter.value = 1.0
+	else:
+		label.text = "冲刺 %.1f秒" % (ceilf(remaining * 10.0) / 10.0) if remaining > 0.0 else "冲刺"
+		label.add_theme_color_override("font_color", MUTED)
+		meter.value = clampf(1.0 - remaining / total, 0.0, 1.0) if remaining > 0.0 and total > 0.0 else 0.0
+
+
+func _add_active_skill_slot(parent: HBoxContainer, key: String, prefix: String) -> void:
+	var card := PanelContainer.new()
+	card.name = prefix + "Skill"
+	card.custom_minimum_size = Vector2(104, 64)
+	card.mouse_filter = Control.MOUSE_FILTER_PASS
+	card.focus_mode = Control.FOCUS_NONE
+	var style := _box(Color("e5efe9"), Color(CYAN, 0.45))
+	style.content_margin_left = 8
+	style.content_margin_right = 8
+	style.content_margin_top = 3
+	style.content_margin_bottom = 3
+	card.add_theme_stylebox_override("panel", style)
+	parent.add_child(card)
+	var box := VBoxContainer.new()
+	box.add_theme_constant_override("separation", 1)
+	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(box)
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 4)
+	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	box.add_child(row)
+	var badge := _label("", 14, CYAN)
+	badge.name = prefix + "Key"
+	badge.custom_minimum_size.x = 18
+	badge.clip_text = true
+	badge.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	row.add_child(badge)
+	var icon := TextureRect.new()
+	icon.name = prefix + "Icon"
+	icon.custom_minimum_size = Vector2(26, 26)
+	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	row.add_child(icon)
+	var clock := _label("", 12, CYAN)
+	clock.name = prefix + "Time"
+	clock.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	clock.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	row.add_child(clock)
+	var label := _label("空槽", 12, MUTED)
+	label.name = prefix + "Status"
+	label.clip_text = true
+	label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	box.add_child(label)
+	var meter := ProgressBar.new()
+	meter.name = prefix + "Cooldown"
+	meter.custom_minimum_size.y = 5
+	meter.max_value = 1.0
+	meter.step = 0.0
+	meter.show_percentage = false
+	meter.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	meter.add_theme_stylebox_override("fill", _bar_style(CYAN))
+	meter.add_theme_stylebox_override("background", _bar_style(Color("c9d9d2")))
+	box.add_child(meter)
+	_hud[key] = card
+	_hud[key + "_label"] = label
+	_hud[key + "_bar"] = meter
+	_hud[key + "_key"] = badge
+	_hud[key + "_icon"] = icon
+	_hud[key + "_time"] = clock
+	card.hide()
+
+
+func _update_pulse_hud(snapshot: Dictionary) -> void:
+	var values: Variant = snapshot.get("skills", [])
+	for index: int in 2:
+		var key: String = "pulse" if index == 0 else "secondary"
+		var indicator: Control = _hud[key]
+		var label: Label = _hud[key + "_label"]
+		var meter: ProgressBar = _hud[key + "_bar"]
+		var badge: Label = _hud[key + "_key"]
+		var icon: TextureRect = _hud[key + "_icon"]
+		var clock: Label = _hud[key + "_time"]
+		if bool(snapshot.get("benchmark", false)) or float(snapshot.get("health", 0.0)) <= 0.0:
+			_clear_hud_skill(key)
+			badge.text = ""
+			clock.text = ""
+			icon.texture = null
+			continue
+		var skill: Dictionary = {}
+		if values is Array and index < values.size() and values[index] is Dictionary:
+			skill = values[index]
+		var action: String = "pulse" if index == 0 else "skill_secondary"
+		var input_key: String = ("X" if index == 0 else "Y") if _input_kind == "gamepad" else ControlBindings.key_label(int(_controls[action]))
+		badge.text = input_key
+		indicator.show()
+		var id: String = str(skill.get("id", ""))
+		var available: bool = bool(skill.get("available", false)) and int(skill.get("uid", -1)) >= 0 and not id.is_empty()
+		var definition: ContentDef = GameCatalog.skill(id) if available else null
+		if definition == null:
+			label.text = "空槽"
+			label.add_theme_color_override("font_color", MUTED)
+			clock.text = "—"
+			clock.add_theme_color_override("font_color", MUTED)
+			icon.texture = null
+			meter.value = 0.0
+			indicator.tooltip_text = input_key + " · 空槽"
+			indicator.set_meta("skill_uid", -1)
+			continue
+		var remaining: float = float(skill.get("cooldown_remaining", 0.0))
+		var total: float = float(skill.get("cooldown_duration", 0.0))
+		remaining = maxf(0.0, remaining) if is_finite(remaining) else 0.0
+		total = maxf(0.0, total) if is_finite(total) else 0.0
+		var ready: bool = bool(skill.get("ready", false)) and remaining <= 0.0
+		label.text = definition.display_name
+		label.add_theme_color_override("font_color", CYAN if ready else MUTED)
+		clock.text = "就绪" if ready else "%.1f" % (ceilf(remaining * 10.0) / 10.0) if remaining > 0.0 else "—"
+		clock.add_theme_color_override("font_color", CYAN if ready else MUTED)
+		var icon_id: String = definition.icon
+		if str(icon.get_meta("skill_icon", "")) != icon_id or icon.texture == null:
+			icon.texture = load(AdventureArt.path("res://assets/icons/%s.svg" % icon_id))
+			icon.set_meta("skill_icon", icon_id)
+		icon.modulate = Color.WHITE if ready else Color(0.65, 0.72, 0.70)
+		meter.value = 1.0 if ready else clampf(1.0 - remaining / total, 0.0, 1.0) if remaining > 0.0 and total > 0.0 else 0.0
+		indicator.tooltip_text = "%s · %s阶\n%s · 伤害%s · 范围%s · 冷却%s秒" % [definition.display_name, _rank_name(int(skill.get("rank", 1))), input_key, _skill_number(float(skill.get("damage", 0.0))), _skill_number(float(skill.get("radius", 0.0))), _skill_number(total)]
+		if id == "pulse":
+			indicator.tooltip_text = "%s · %s阶\n%s · 击退%s · 减速%s%%\n范围%s · 冷却%s秒" % [definition.display_name, _rank_name(int(skill.get("rank", 1))), input_key, _skill_number(PulseRules.PUSH_DISTANCE), _skill_number((1.0 - PulseRules.HINDER_FACTOR) * 100.0), _skill_number(float(skill.get("radius", 0.0))), _skill_number(total)]
+		indicator.set_meta("skill_uid", int(skill["uid"]))
+
+
+static func _skill_tooltip_value(value: Variant, fallback: float) -> float:
+	var number: float = float(value) if value is float or value is int else fallback
+	return number if is_finite(number) and number > 0.0 else fallback
+
+
+static func _skill_number(value: float) -> String:
+	return ("%.1f" % value).trim_suffix(".0")
 
 
 func show_shop() -> void:
@@ -499,6 +908,7 @@ func show_pause() -> void:
 
 func hide_pause() -> void:
 	var restore_focus: bool = not _overlay_mode.is_empty()
+	_clear_controls_modal_state()
 	_clear(_overlay)
 	_overlay_mode = ""
 	_page.focus_behavior_recursive = Control.FOCUS_BEHAVIOR_INHERITED
@@ -511,6 +921,12 @@ func hide_pause() -> void:
 
 
 func handle_back() -> bool:
+	if not _capture_action.is_empty():
+		_cancel_control_capture()
+		return true
+	if _overlay_mode in ["controls_title", "controls_pause"]:
+		_show_settings(_overlay_mode == "controls_pause")
+		return true
 	if _overlay_mode in ["relic_details", "relic_comparison", "rune_equip_comparison", "rogue_choices"]:
 		hide_pause()
 		return true
@@ -520,17 +936,21 @@ func handle_back() -> bool:
 	if _overlay_mode == "settings_title":
 		hide_pause()
 		return true
-	if _screen == "shop" and is_instance_valid(_bag_grid) and _bag_grid.cancel_placement():
+	if _screen == "shop" and is_instance_valid(_bag_grid) and _bag_grid.cancel_placement(true):
 		return true
 	return false
 
 
 func _begin_overlay(mode: String) -> void:
+	_clear_controls_modal_state()
+	var holding_source: Button
 	if is_instance_valid(_bag_grid):
+		if _bag_grid.held_uid >= 0 and not get_viewport().gui_is_dragging():
+			holding_source = _shop_focus_button("bag_move:%d" % int(_bag_grid.held_uid))
 		_bag_grid.cancel_placement()
 		_bag_grid.interaction_enabled = false
 	if _overlay_mode.is_empty():
-		var current: Control = get_viewport().gui_get_focus_owner()
+		var current: Control = holding_source if holding_source != null else get_viewport().gui_get_focus_owner()
 		_page_focus = current if current != null and _page.is_ancestor_of(current) else null
 		_page_focus_id = str(current.get_meta("shop_focus_id", "")) if _page_focus != null else ""
 	_overlay_mode = mode
@@ -600,6 +1020,7 @@ func show_result(victory: bool, reason: String, best: Dictionary) -> void:
 	build_scroll.focus_mode = Control.FOCUS_ALL
 	body.add_child(build_scroll)
 	build_scroll.add_child(_wrap(_loadout_text(), 15, BONE))
+	_add_reading_guide(body, "滚轮查看最终构筑", "LB / RB 查看最终构筑")
 	body.add_child(_wrap("最佳记录：" + _best_text(best), 13, MUTED))
 	var damage_card := _panel(columns)
 	damage_card.name = "DamageContribution"
@@ -637,7 +1058,7 @@ func show_result(victory: bool, reason: String, best: Dictionary) -> void:
 			bar.show_percentage = false
 			bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			bar.add_theme_stylebox_override("fill", _bar_style(Color(definition.color, 0.85)))
-			bar.add_theme_stylebox_override("background", _bar_style(Color("252638")))
+			bar.add_theme_stylebox_override("background", _bar_style(Color("e0e5dc")))
 			row.add_child(bar)
 		damage_body.add_child(_label("实际总伤害  %.1f" % total, 14, MUTED))
 	var actions := HBoxContainer.new()
@@ -787,7 +1208,7 @@ func _build_shop() -> void:
 	var next := _shop_button("开始下一波", _next_wave, "next_wave", Vector2(210, 46))
 	_accent(next)
 	footer.add_child(next)
-	_restore_shop_focus.call_deferred(focus_id)
+	_restore_shop_focus.call_deferred(focus_id, _shop_epoch)
 
 
 func _show_rogue_choices(keep_notice: bool = false) -> void:
@@ -897,10 +1318,10 @@ func _show_rogue_choices(keep_notice: bool = false) -> void:
 			inside.add_child(select)
 	else:
 		content.add_child(_wrap("首领战使用固定敌群；普通波结束后可选择下一波路线。", 14, MUTED))
-	var close := _button("返回商店 · Esc", _close_rogue_choices.bind(epoch), Vector2(0, 40))
+	var close := _button("返回商店", _close_rogue_choices.bind(epoch), Vector2(0, 40))
 	close.name = "CloseRogueChoices"
 	_accent(close)
-	body.add_child(close)
+	_reading_footer(body, close)
 	_focus_later(_first_page_button(content) if _first_page_button(content) != null else close)
 
 
@@ -961,6 +1382,22 @@ func _rogue_scroll_input(event: InputEvent, scroll: ScrollContainer, epoch: int)
 	scroll.accept_event()
 
 
+func _backpack_default_hint() -> String:
+	return "在「拿起」按A；持物用左杆 / 十字移动，A放置、X旋转、B取消" if _input_kind == "gamepad" else "拖拽整理 · R旋转 · Esc取消"
+
+
+func _backpack_move_tooltip() -> String:
+	return "A拿起后，用左杆 / 十字键移动、A放置、X旋转、B取消。" if _input_kind == "gamepad" else "拿起后用方向键移动、Enter放置、R旋转、Esc取消；也可直接拖拽。"
+
+
+func _backpack_rotate_text() -> String:
+	return "旋转 X" if _input_kind == "gamepad" else "旋转 R"
+
+
+func _backpack_rotate_tooltip() -> String:
+	return "A确定旋转按钮；持物时X旋转、A放置、B取消。" if _input_kind == "gamepad" else "旋转选中物品；整理时也可按R，Enter放置、Esc取消。"
+
+
 func _build_backpack(parent: Control) -> void:
 	var snapshot: Dictionary = run.backpack_snapshot()
 	var items: Array = snapshot["items"]
@@ -978,7 +1415,7 @@ func _build_backpack(parent: Control) -> void:
 	var title := _label("秘术行囊", 20, GOLD)
 	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	heading.add_child(title)
-	var capacity := _label("占格 %d / %d · 法器 %d" % [int(snapshot["used_cells"]), int(snapshot["total_cells"]), run.loadout.size()], 14, CYAN)
+	var capacity := _label("占格 %d / %d · 法器 %d · 技能 %d/2" % [int(snapshot["used_cells"]), int(snapshot["total_cells"]), run.loadout.size(), run.active_skills.size()], 14, CYAN)
 	capacity.name = "BackpackCapacity"
 	heading.add_child(capacity)
 	var columns := HBoxContainer.new()
@@ -987,13 +1424,16 @@ func _build_backpack(parent: Control) -> void:
 	body.add_child(columns)
 	_bag_grid = BACKPACK_GRID.new()
 	_bag_grid.name = "BackpackGrid"
+	_bag_grid.set_skill_bindings(_controls)
 	_bag_grid.configure(snapshot, _shop_epoch, _bag_selected_uid)
+	_bag_grid.set_input_device(_input_kind)
 	_bag_grid.item_selected.connect(_bp_select.bind(_shop_epoch))
 	_bag_grid.move_requested.connect(_bp_move.bind(_shop_epoch))
 	_bag_grid.merge_requested.connect(_bp_merge.bind(_shop_epoch))
 	_bag_grid.rune_requested.connect(_bp_equip.bind(_shop_epoch))
 	_bag_grid.holding_changed.connect(_bp_holding.bind(_shop_epoch))
 	_bag_grid.hint_changed.connect(_bp_hint.bind(_shop_epoch))
+	_bag_grid.placement_cancelled.connect(_bp_cancelled.bind(_shop_epoch))
 	columns.add_child(_bag_grid)
 	var scroll := ScrollContainer.new()
 	scroll.name = "BackpackDetailsScroll"
@@ -1010,7 +1450,9 @@ func _build_backpack(parent: Control) -> void:
 	_bag_details.add_theme_constant_override("separation", 6)
 	scroll.add_child(_bag_details)
 	_build_backpack_details()
-	_bag_status = _wrap("拖拽整理 · R旋转 · Esc取消", 13, MUTED)
+	_add_reading_guide(body, "滚轮查看物品详情", "LB / RB 查看物品详情")
+	_bag_status = _wrap(_backpack_default_hint(), 13, MUTED)
+	_bag_hint_is_default = true
 	_bag_status.name = "BackpackHint"
 	_bag_status.custom_minimum_size.y = 32
 	body.add_child(_bag_status)
@@ -1061,6 +1503,17 @@ func _build_backpack_details() -> void:
 		resonance_summary.name = "BackpackResonanceSummary"
 		_enable_tooltip(resonance_summary, _resonance_details(item))
 		_bag_details.add_child(resonance_summary)
+	elif str(item["kind"]) == "skill":
+		var skill_stats := _wrap(_active_skill_stats_text(run.active_skill_parameters(item)), 14, CYAN)
+		skill_stats.name = "BackpackSkillStats"
+		_bag_details.add_child(skill_stats)
+		var slot_index: int = _active_skill_index(uid)
+		if slot_index >= 0:
+			var action: String = "pulse" if slot_index == 0 else "skill_secondary"
+			var input_key: String = ("X" if slot_index == 0 else "Y") if _input_kind == "gamepad" else ControlBindings.key_label(int(_controls[action]))
+			var slot_status := _label("技能%d · %s" % [slot_index + 1, input_key], 14, CYAN)
+			slot_status.name = "BackpackSkillSlot"
+			_bag_details.add_child(slot_status)
 	var partners: Array[Dictionary] = []
 	for other: Dictionary in run.backpack_snapshot()["items"]:
 		var preview: Dictionary = run.merge_preview(uid, int(other["uid"]))
@@ -1075,6 +1528,16 @@ func _build_backpack_details() -> void:
 			explanation += "\n合成后按目标位置重算共鸣。"
 		elif str(item["kind"]) == "rune":
 			explanation = _rune_rank_text(str(item["id"]), rank + 1)
+		elif str(item["kind"]) == "skill":
+			explanation = "伤害 %s → %s\n范围 %s → %s · 冷却 %s → %s秒" % [_skill_number(float(sample.get("damage_before", 0.0))), _skill_number(float(sample.get("damage_after", 0.0))), _skill_number(float(sample.get("radius_before", 0.0))), _skill_number(float(sample.get("radius_after", 0.0))), _skill_number(float(sample.get("cooldown_before", 0.0))), _skill_number(float(sample.get("cooldown_after", 0.0)))]
+			if str(item["id"]) == "pulse":
+				explanation = "范围 %s → %s\n冷却 %s → %s秒" % [_skill_number(float(sample.get("radius_before", 0.0))), _skill_number(float(sample.get("radius_after", 0.0))), _skill_number(float(sample.get("cooldown_before", 0.0))), _skill_number(float(sample.get("cooldown_after", 0.0)))]
+		elif str(item["kind"]) == "relic" and str(item["id"]) in ["fold_clasp", "echo_stone"]:
+			var effects: PackedStringArray = []
+			for change: Dictionary in sample.get("stat_changes", []):
+				var key: String = str(change["key"])
+				effects.append("%s %s → %s" % [_relic_stat_name(key), _relic_amount_text(key, float(change["before"])), _relic_amount_text(key, float(change["after"]))])
+			explanation += "\n目标单件：" + "；".join(effects)
 		var merge_preview := _wrap(explanation, 12, GOLD)
 		merge_preview.name = "BackpackMergePreview"
 		_bag_details.add_child(merge_preview)
@@ -1085,16 +1548,17 @@ func _build_backpack_details() -> void:
 	var move := _shop_button("拿起 / 移动", _bp_pick_up.bind(uid), "bag_move:%d" % uid, Vector2(110, 32))
 	move.name = "MoveBackpackItem"
 	move.add_theme_font_size_override("font_size", 13)
-	move.tooltip_text = "拿起后用方向键移动、Enter放置、R旋转、Esc取消；也可直接拖拽。"
+	move.tooltip_text = _backpack_move_tooltip()
 	actions.add_child(move)
-	var rotate := _shop_button("旋转 R", _bp_rotate.bind(uid), "bag_rotate:%d" % uid, Vector2(76, 32))
+	var rotate := _shop_button(_backpack_rotate_text(), _bp_rotate.bind(uid), "bag_rotate:%d" % uid, Vector2(76, 32))
 	rotate.name = "RotateBackpackItem"
 	rotate.add_theme_font_size_override("font_size", 13)
+	rotate.tooltip_text = _backpack_rotate_tooltip()
 	actions.add_child(rotate)
 	var sale := _shop_button("出售 · %d魂屑" % int(floorf(float(item.get("paid", 0)) * 0.5)), _bp_sell.bind(uid), "bag_sell:%d" % uid, Vector2(0, 32))
 	sale.name = "SellBackpackItem"
 	sale.add_theme_font_size_override("font_size", 13)
-	sale.tooltip_text = "出售不可撤回；必须保留至少一件法器。法器上的符文退回背包空格。"
+	sale.tooltip_text = "出售不可撤回。" if str(item["kind"]) == "skill" else "出售不可撤回；必须保留至少一件法器。法器上的符文退回背包空格。"
 	_bag_details.add_child(sale)
 	var rune: Dictionary = item.get("rune", {})
 	if str(item["kind"]) == "weapon" and not rune.is_empty():
@@ -1126,9 +1590,10 @@ func _build_backpack_details() -> void:
 		_section_heading(_bag_details, "其他合成目标", GOLD, 14)
 		for index: int in range(1, partners.size()):
 			_add_backpack_merge_target(uid, partners[index])
-	var description := _wrap(_backpack_effect_text(item), 13, CYAN)
-	description.name = "BackpackItemEffect"
-	_bag_details.add_child(description)
+	if str(item["kind"]) != "skill":
+		var description := _wrap(_backpack_effect_text(item), 13, CYAN)
+		description.name = "BackpackItemEffect"
+		_bag_details.add_child(description)
 
 
 func _add_backpack_merge_target(source: int, partner: Dictionary) -> void:
@@ -1143,6 +1608,8 @@ func _add_backpack_merge_target(source: int, partner: Dictionary) -> void:
 		merge.tooltip_text += "\n当前两件单枚伤害合计 %.1f；合成后 %.1f，共鸣 %s → %s。" % [float(preview.get("combined_damage_before", 0.0)), float(preview.get("damage_after", 0.0)), _rune_percent(float(preview.get("resonance_before", 0.0))), _rune_percent(float(preview.get("resonance_after", 0.0)))]
 	elif str(other["kind"]) == "relic":
 		merge.tooltip_text += "\n遗物总属性保留，周边法器按目标位置重新计算共鸣。"
+	elif str(other["kind"]) == "skill":
+		merge.tooltip_text += "\n" + _active_skill_stats_text(preview.get("skill_after", {}))
 	_bag_details.add_child(merge)
 
 
@@ -1171,11 +1638,23 @@ func _bp_holding(uid: int, rotated: bool, cell: Vector2i, epoch: int) -> void:
 		_bag_held_uid = uid
 		_bag_held_rotated = rotated
 		_bag_cursor = cell
+		_refresh_reading_guides()
 
 
 func _bp_hint(text: String, epoch: int) -> void:
 	if epoch == _shop_epoch and is_instance_valid(_bag_status):
+		_bag_hint_is_default = false
 		_bag_status.text = text
+
+
+func _bp_cancelled(uid: int, epoch: int) -> void:
+	if not _bp_guard(uid, epoch) or uid != _bag_selected_uid or _bag_grid.held_uid >= 0 or not _bag_grid.interaction_enabled or get_viewport().gui_is_dragging():
+		return
+	var target: Button = _shop_focus_button("bag_move:%d" % uid)
+	if target == null:
+		target = _shop_focus_button("bag:%d" % uid)
+	if target != null:
+		target.grab_focus()
 
 
 func _bp_pick_up(uid: int) -> void:
@@ -1194,42 +1673,54 @@ func _bp_rotate(uid: int) -> void:
 func _bp_move(uid: int, cell: Vector2i, rotated: bool, epoch: int) -> void:
 	if not _bp_guard(uid, epoch):
 		return
-	_bp_complete(run.move_item(uid, cell, rotated), "物品已放置。")
+	_bp_complete(run.move_item(uid, cell, rotated), "物品已放置。", uid)
 
 
 func _bp_merge(source: int, target: int, epoch: int) -> void:
 	if source != _bag_selected_uid or not _bp_guard(source, epoch) or not _bp_guard(target, epoch):
 		return
 	var success: bool = run.merge_items(source, target)
-	if success:
-		_bag_selected_uid = target
-	_bp_complete(success, "合成完成；目标物品升阶，位置保持。")
+	_bp_complete(success, "合成完成；目标物品升阶，位置保持。", target)
 
 
 func _bp_equip(source: int, target: int, epoch: int) -> void:
 	if source != _bag_selected_uid or not _bp_guard(source, epoch) or not _bp_guard(target, epoch):
 		return
-	_bp_complete(run.equip_rune(run.rune_index_for_uid(source), run.weapon_index_for_uid(target)), "符文已装入；原符文退回背包。")
+	_bp_complete(run.equip_rune(run.rune_index_for_uid(source), run.weapon_index_for_uid(target)), "符文已装入；原符文退回背包。", target)
 
 
 func _bp_unequip(uid: int) -> void:
 	if _bp_guard(uid, _shop_epoch) and uid == _bag_selected_uid:
-		_bp_complete(run.unequip_rune(run.weapon_index_for_uid(uid)), "符文已拆下，放入背包空格。")
+		_bp_complete(run.unequip_rune(run.weapon_index_for_uid(uid)), "符文已拆下，放入背包空格。", uid)
 
 
 func _bp_sell(uid: int) -> void:
 	if _bp_guard(uid, _shop_epoch) and uid == _bag_selected_uid:
-		_bp_complete(run.sell_item(uid), "物品已出售。")
+		var items: Array = run.backpack_snapshot()["items"]
+		var index: int = 0
+		for item: Dictionary in items:
+			if int(item["uid"]) == uid:
+				break
+			index += 1
+		var success: bool = run.sell_item(uid)
+		var remaining: Array = run.backpack_snapshot()["items"]
+		var next_uid: int = int(remaining[mini(index, remaining.size() - 1)]["uid"]) if success and not remaining.is_empty() else uid
+		_bp_complete(success, "物品已出售。", next_uid)
 
 
 func _bp_expand() -> void:
 	if not _bp_allowed(_shop_epoch):
 		return
-	_bp_complete(run.expand_backpack(), "背包已解锁一排格子。")
+	_requested_shop_focus = "bag_expand"
+	_handle_action(run.expand_backpack(), "buy", "背包已解锁一排格子。")
 
 
-func _bp_complete(success: bool, message: String) -> void:
+func _bp_complete(success: bool, message: String, result_uid: int) -> void:
 	if success and is_instance_valid(_bag_grid):
+		var native_drag: bool = get_viewport().gui_is_dragging() or bool(_bag_grid._native_dragging)
+		_bag_selected_uid = result_uid
+		_selected_rune = run.rune_index_for_uid(result_uid)
+		_requested_shop_focus = ("bag:%d" if native_drag else "bag_move:%d") % result_uid
 		_bag_grid.cancel_placement()
 	_handle_action(success, "buy", message if success else "")
 
@@ -1238,6 +1729,7 @@ func _backpack_effect_text(item: Dictionary) -> String:
 	var rank: int = int(item.get("rank", 1))
 	var definition: ContentDef = _definition(str(item["kind"]), str(item["id"]))
 	match str(item["kind"]):
+		"skill": return definition.description
 		"weapon":
 			var text: String = definition.description
 			var rune: Dictionary = item.get("rune", {})
@@ -1253,13 +1745,40 @@ func _backpack_effect_text(item: Dictionary) -> String:
 				if str(pair[0]).is_empty():
 					continue
 				var amount: float = float(pair[1]) * BackpackInventory.rank_multiplier(rank)
-				var names: Dictionary = {"damage": "伤害", "attack_speed": "攻速", "move_speed": "移速", "max_health": "生命上限", "armor": "护甲", "pickup_radius": "拾取范围"}
-				result.append("%s %+.0f%%" % [names.get(pair[0], pair[0]), amount * 100.0] if str(pair[0]) in ["damage", "attack_speed"] else "%s %+.0f" % [names.get(pair[0], pair[0]), amount])
+				result.append("%s %s" % [_relic_stat_name(str(pair[0])), _relic_amount_text(str(pair[0]), amount)])
 			var text: String = "\n".join(result)
 			if definition.id == "grave_candle":
 				text += "\n正上方边缘相接的法器优先攻击残血目标；不叠加。\n当前连接：" + _candle_link_names(item)
+			elif definition.id == "fold_clasp":
+				text += "\n当前构筑：冲刺冷却%s秒，最低%s秒。" % [_skill_number(run.stat("dash_cooldown")), _skill_number(DashRules.MIN_COOLDOWN)]
+			elif definition.id == "echo_stone":
+				text += "\n当前构筑：脉冲半径%s，冷却%s秒。\n半径上限%s，冷却上限%s秒。" % [_skill_number(run.stat("pulse_radius")), _skill_number(run.stat("pulse_cooldown")), _skill_number(PulseRules.MAX_RADIUS), _skill_number(PulseRules.MAX_COOLDOWN)]
 			return text
 	return definition.description
+
+
+func _active_skill_index(uid: int) -> int:
+	for index: int in run.active_skills.size():
+		if int(run.active_skills[index]["uid"]) == uid:
+			return index
+	return -1
+
+
+static func _active_skill_stats_text(parameters: Dictionary) -> String:
+	if str(parameters.get("id", "")) == "pulse":
+		return "范围 %s · 冷却 %s秒\n击退 %s · 减速 %s%%" % [_skill_number(float(parameters.get("radius", 0.0))), _skill_number(float(parameters.get("cooldown", 0.0))), _skill_number(float(parameters.get("push_distance", PulseRules.PUSH_DISTANCE))), _skill_number((1.0 - float(parameters.get("hinder_factor", PulseRules.HINDER_FACTOR))) * 100.0)]
+	return "伤害 %s · 范围 %s\n冷却 %s秒" % [_skill_number(float(parameters.get("damage", 0.0))), _skill_number(float(parameters.get("radius", 0.0))), _skill_number(float(parameters.get("cooldown", 0.0)))]
+
+
+static func _relic_stat_name(key: String) -> String:
+	var names: Dictionary = {"damage": "伤害", "attack_speed": "攻速", "move_speed": "移速", "max_health": "生命上限", "armor": "护甲", "pickup_radius": "拾取范围", "dash_cooldown": "冲刺冷却", "pulse_radius": "脉冲半径", "pulse_cooldown": "脉冲冷却"}
+	return str(names.get(key, key))
+
+
+static func _relic_amount_text(key: String, value: float) -> String:
+	if key in ["damage", "attack_speed"]:
+		return "%+.0f%%" % (value * 100.0)
+	return "%+.1f秒" % value if key in ["dash_cooldown", "pulse_cooldown"] else "%+.0f" % value
 
 
 static func _rank_name(rank: int) -> String:
@@ -1280,10 +1799,10 @@ func _offer_card(parent: Control, index: int) -> void:
 	var definition = _definition(kind, str(offer.get("id", "")))
 	var card := _panel(parent, Vector2(252, 180))
 	card.name = "Offer%d" % (index + 1)
-	var category: Color = {"weapon": GOLD, "rune": PURPLE, "relic": CYAN}.get(kind, GOLD)
+	var category: Color = {"weapon": GOLD, "rune": PURPLE, "relic": CYAN, "skill": Color("287eb5")}.get(kind, GOLD)
 	var locked: bool = run.is_offer_locked(index)
 	var sold: bool = bool(offer.get("sold", false))
-	var border := _box(Color("171c29"), Color(GOLD, 0.74) if locked else Color(category, 0.48))
+	var border := _box(Color("fffbed"), Color(GOLD, 0.74) if locked else Color(category, 0.48))
 	border.border_width_left = 3
 	card.add_theme_stylebox_override("panel", border)
 	card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -1320,17 +1839,12 @@ func _offer_card(parent: Control, index: int) -> void:
 		var lock_error: String = run.shop_lock_error(index)
 		if not lock_error.is_empty():
 			lock_button.tooltip_text += "\n" + lock_error
-	for state: String in ["normal", "hover", "pressed", "disabled", "focus"]:
-		var style := _box(Color(0, 0, 0, 0) if state == "focus" else Color("292834") if locked else PANEL_LIGHT, CYAN if state == "focus" else GOLD if locked else Color(GOLD, 0.45))
-		style.content_margin_left = 6
-		style.content_margin_right = 6
-		style.content_margin_top = 2
-		style.content_margin_bottom = 2
-		lock_button.add_theme_stylebox_override(state, style)
+	ButtonSkin.apply(lock_button, "primary" if locked else "quiet", true)
 	title_row.add_child(lock_button)
 	var dimensions: Vector2i = definition.inventory_size
-	names.add_child(_label("Ⅰ阶 · %s · 占格%d×%d" % [{"weapon": "法器", "rune": "符文", "relic": "遗物"}.get(kind, kind), dimensions.x, dimensions.y], 11, category))
-	var summary: String = _shop_description(definition)
+	var offer_rank: int = int(offer.get("rank", 1)) if kind == "skill" else 1
+	names.add_child(_label("%s阶 · %s · 占格%d×%d" % [_rank_name(offer_rank), {"weapon": "法器", "rune": "符文", "relic": "遗物", "skill": "技能"}.get(kind, kind), dimensions.x, dimensions.y], 11, category))
+	var summary: String = _shop_description(definition) if kind != "skill" else ""
 	var description := _wrap(summary, 13, MUTED)
 	description.name = "OfferDescription"
 	description.max_lines_visible = 2
@@ -1338,6 +1852,7 @@ func _offer_card(parent: Control, index: int) -> void:
 	_enable_tooltip(description, definition.description)
 	description.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	body.add_child(description)
+	description.visible = kind != "skill"
 	if kind == "weapon":
 		var projection: Dictionary = run.weapon_purchase_preview(index)
 		var has_placement: bool = bool(projection.get("has_projection", false))
@@ -1347,6 +1862,11 @@ func _offer_card(parent: Control, index: int) -> void:
 		stats.name = "WeaponStats"
 		_enable_tooltip(stats, ("按购买时自动落点预计，共鸣 +%s。\n" % _rune_percent(predicted_bonus) if has_placement else "当前没有可用于购买预估的实际落点。\n") + _weapon_stats_note())
 		body.add_child(stats)
+	elif kind == "skill":
+		var projection: Dictionary = run.skill_purchase_preview(index)
+		var stats := _wrap(_active_skill_stats_text(projection.get("parameters", projection)), 13, category)
+		stats.name = "SkillStats"
+		body.add_child(stats)
 	var price: int = int(offer.get("price", 0))
 	var error: String = run.purchase_error(index)
 	var blocked: bool = not sold and not error.is_empty()
@@ -1355,12 +1875,12 @@ func _offer_card(parent: Control, index: int) -> void:
 		var reason: String = {
 			"魂屑不足。": "魂屑不足",
 			"背包空间不足。": "背包无空位",
+			"主动技能已达上限（2）。": "技能已满 2/2",
 		}.get(error, "暂不可购")
 		buy_text = "%s · %d魂屑" % [reason, price]
 	var buy := _shop_button(buy_text, _buy.bind(index), "buy:%d" % index, Vector2(0, 35))
 	buy.add_theme_font_size_override("font_size", 14)
-	buy.add_theme_color_override("font_color", MUTED if blocked else GOLD)
-	buy.add_theme_stylebox_override("normal", _box(Color("1a1d29") if blocked else Color("232231"), Color(MUTED, 0.3) if blocked else Color(category, 0.48)))
+	ButtonSkin.apply(buy, "blocked" if blocked else "primary", true)
 	buy.tooltip_text = error
 	if error == "魂屑不足。":
 		buy.tooltip_text += "还差%d魂屑。" % (price - run.gold)
@@ -1466,7 +1986,7 @@ func _compare_relic(index: int, epoch: int, expected_offer: Dictionary) -> void:
 	var close := _button("返回商品", _close_relic_comparison.bind(epoch), Vector2(0, 42))
 	close.name = "CloseRelicComparison"
 	_accent(close)
-	body.add_child(close)
+	_reading_footer(body, close)
 	_focus_later(close)
 
 
@@ -1479,14 +1999,15 @@ func _build_relic_stat_comparison(parent: Control, preview: Dictionary) -> void:
 	parent.add_child(grid)
 	for heading: Array in [["属性", 170], ["当前", 150], ["购后", 150], ["变化", 260]]:
 		_comparison_cell(grid, str(heading[0]), GOLD, float(heading[1]))
-	var names: Dictionary = {"max_health": "生命上限", "damage": "伤害倍率", "attack_speed": "攻击速度倍率", "move_speed": "移动速度", "armor": "护甲", "pickup_radius": "拾取范围"}
+	var names: Dictionary = {"max_health": "生命上限", "damage": "伤害倍率", "attack_speed": "攻击速度倍率", "move_speed": "移动速度", "armor": "护甲", "pickup_radius": "拾取范围", "dash_cooldown": "冲刺冷却", "pulse_radius": "脉冲半径", "pulse_cooldown": "脉冲冷却"}
 	for change: Dictionary in preview["stat_changes"]:
 		var key: String = str(change["key"])
 		var delta: float = float(change["delta"])
 		_comparison_cell(grid, str(names.get(key, key)), BONE, 170)
 		_comparison_cell(grid, _comparison_stat_value(key, float(change["before"])), MUTED, 150)
 		_comparison_cell(grid, _comparison_stat_value(key, float(change["after"])), BONE, 150)
-		var variation := _comparison_cell(grid, _comparison_delta(delta, "倍" if key in ["damage", "attack_speed"] else "", 2 if key in ["damage", "attack_speed"] else 0), _comparison_change_color(delta), 260)
+		var cooldown: bool = key in ["dash_cooldown", "pulse_cooldown"]
+		var variation := _comparison_cell(grid, _comparison_delta(delta, "秒" if cooldown else "倍" if key in ["damage", "attack_speed"] else "", 1 if cooldown else 2 if key in ["damage", "attack_speed"] else 0), _comparison_change_color(-delta if cooldown else delta), 260)
 		variation.name = "ComparisonStat_" + key
 	var health_gain: float = float(preview["health_after"]) - float(preview["health_before"])
 	_comparison_cell(grid, "当前生命", BONE, 170)
@@ -1527,6 +2048,8 @@ func _comparison_cell(parent: Control, text: String, color: Color, width: float)
 
 
 static func _comparison_stat_value(key: String, value: float) -> String:
+	if key in ["dash_cooldown", "pulse_cooldown"]:
+		return "%.1f秒" % value
 	return "×%.2f" % value if key in ["damage", "attack_speed"] else "%.0f" % value
 
 
@@ -1687,7 +2210,7 @@ func _preview_rune_equip(index: int, epoch: int, incoming_snapshot: Dictionary, 
 	var close := _button("返回背包", _close_rune_equip_comparison.bind(epoch), Vector2(0, 42))
 	close.name = "CloseRuneEquipComparison"
 	_accent(close)
-	body.add_child(close)
+	_reading_footer(body, close)
 	_focus_later(close)
 
 
@@ -1787,8 +2310,9 @@ func _perform_upgrade_action(id: String, epoch: int) -> void:
 
 
 func _show_settings(from_pause: bool) -> void:
+	var returning_from_controls: bool = _overlay_mode in ["controls_title", "controls_pause"]
 	_begin_overlay("settings_pause" if from_pause else "settings_title")
-	var body := _modal("设置", Vector2(540, 440))
+	var body := _modal("设置", Vector2(540, 500))
 	body.add_child(_label("主音量", 18, BONE))
 	var volume := HSlider.new()
 	volume.min_value = 0
@@ -1796,22 +2320,136 @@ func _show_settings(from_pause: bool) -> void:
 	volume.step = 0.05
 	volume.value = float(_settings["volume"])
 	volume.custom_minimum_size.y = 34
+	volume.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	volume.value_changed.connect(_change_volume)
 	body.add_child(volume)
 	var shake := CheckButton.new()
 	shake.text = "镜头震动"
+	ButtonSkin.apply(shake)
 	shake.button_pressed = bool(_settings["shake"])
 	shake.toggled.connect(_change_toggle.bind("shake"))
 	body.add_child(shake)
 	var flash := CheckButton.new()
 	flash.text = "受击闪光"
+	ButtonSkin.apply(flash)
 	flash.button_pressed = bool(_settings["flash"])
 	flash.toggled.connect(_change_toggle.bind("flash"))
 	body.add_child(flash)
+	var controls := _button("操作设置", _show_controls.bind(from_pause), Vector2(0, 42))
+	controls.name = "ControlsSettings"
+	body.add_child(controls)
 	_spacer(body, 8)
 	var back := _button("返回", show_pause if from_pause else hide_pause, Vector2(0, 46))
 	body.add_child(back)
-	_focus_later(back)
+	_focus_later(controls if returning_from_controls else back)
+
+
+func _show_controls(from_pause: bool) -> void:
+	_begin_overlay("controls_pause" if from_pause else "controls_title")
+	var epoch: int = _controls_epoch
+	var body := _modal("操作设置", Vector2(700, 646))
+	(body.get_parent().get_parent() as Control).name = "ControlsPanel"
+	body.add_theme_constant_override("separation", 8)
+	body.add_child(_wrap("选择动作后按新键；Esc / 手柄B取消本次重绑。", 14, MUTED))
+	var grid := GridContainer.new()
+	grid.columns = 2
+	grid.add_theme_constant_override("h_separation", 24)
+	grid.add_theme_constant_override("v_separation", 6)
+	body.add_child(grid)
+	for action: String in ControlBindings.ACTIONS:
+		var label := _label(ControlBindings.action_label(action), 16, BONE)
+		label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		grid.add_child(label)
+		var binding := _button("", _begin_control_capture.bind(action, epoch), Vector2(210, 34))
+		binding.name = "Bind_" + action
+		binding.add_theme_font_size_override("font_size", 16)
+		binding.tooltip_text = "修改%s的键盘主键；方向键始终可用于移动。" % ControlBindings.action_label(action)
+		grid.add_child(binding)
+		_control_buttons[action] = binding
+	_capture_label = _label("", 14, GOLD)
+	_capture_label.name = "BindingCapture"
+	body.add_child(_capture_label)
+	_controls_notice = _wrap("主键不可重复；界面保留键不可重绑。", 14, MUTED)
+	_controls_notice.name = "BindingStatus"
+	_controls_notice.custom_minimum_size.y = 34
+	body.add_child(_controls_notice)
+	var guide := _wrap("键盘：方向键始终可用；Esc、Enter、Tab、F11及修饰键保留。\n手柄：左杆 / 十字移动，A冲刺，X / Y技能，Start暂停。\n菜单A确定、B返回；背包持物时X旋转。", 13, MUTED)
+	guide.name = "ControllerGuide"
+	body.add_child(guide)
+	var actions := HBoxContainer.new()
+	actions.add_theme_constant_override("separation", 12)
+	body.add_child(actions)
+	var restore := _button("恢复默认", _restore_controls.bind(epoch), Vector2(0, 42))
+	restore.name = "RestoreControls"
+	restore.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	actions.add_child(restore)
+	var back := _button("返回设置", _close_controls.bind(from_pause, epoch), Vector2(0, 42))
+	back.name = "CloseControls"
+	back.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	actions.add_child(back)
+	_refresh_control_buttons()
+	_focus_later(_control_buttons["move_up"] as Button)
+
+
+func _controls_page_current(epoch: int) -> bool:
+	return epoch == _controls_epoch and _overlay_mode in ["controls_title", "controls_pause"]
+
+
+func _begin_control_capture(action: String, epoch: int) -> void:
+	if not _controls_page_current(epoch) or not _controls.has(action):
+		return
+	_capture_action = action
+	_refresh_control_buttons()
+	_set_controls_notice("按下新的键盘主键；Esc / 手柄B取消。", MUTED)
+
+
+func _cancel_control_capture() -> void:
+	var source := _control_buttons.get(_capture_action) as Button
+	_capture_action = ""
+	_refresh_control_buttons()
+	_set_controls_notice("已取消，原按键保持。", MUTED)
+	if is_instance_valid(source):
+		_focus_later(source)
+
+
+func _refresh_control_buttons() -> void:
+	for action: String in _control_buttons:
+		var button := _control_buttons[action] as Button
+		if not is_instance_valid(button):
+			continue
+		button.text = "请按新键…" if _capture_action == action else ControlBindings.key_label(int(_controls[action]))
+		button.add_theme_color_override("font_color", CYAN if _capture_action == action else BONE)
+	if is_instance_valid(_capture_label):
+		_capture_label.text = "正在重绑：" + ControlBindings.action_label(_capture_action) if not _capture_action.is_empty() else "选择一个动作开始重绑。"
+
+
+func _set_controls_notice(message: String, color: Color) -> void:
+	if is_instance_valid(_controls_notice):
+		_controls_notice.text = message
+		_controls_notice.add_theme_color_override("font_color", color)
+
+
+func _restore_controls(epoch: int) -> void:
+	if not _controls_page_current(epoch):
+		return
+	_capture_action = ""
+	set_controls(ControlBindings.defaults())
+	_set_controls_notice("已恢复默认键位。", CYAN)
+	controls_changed.emit(_controls.duplicate(true))
+
+
+func _close_controls(from_pause: bool, epoch: int) -> void:
+	if _controls_page_current(epoch):
+		_show_settings(from_pause)
+
+
+func _clear_controls_modal_state() -> void:
+	_controls_epoch += 1
+	_capture_action = ""
+	_control_buttons.clear()
+	_controls_notice = null
+	_capture_label = null
 
 
 func _change_volume(value: float) -> void:
@@ -1822,10 +2460,6 @@ func _change_volume(value: float) -> void:
 func _change_toggle(value: bool, key: String) -> void:
 	_settings[key] = value
 	setting_changed.emit(key, value)
-
-
-static func _starter_unlock_text(id: String) -> String:
-	return "完成第3波解锁" if id == "frost" else "击败追猎者解锁"
 
 
 func _candle_link_names(candle: Dictionary) -> String:
@@ -1855,14 +2489,11 @@ func _refresh_title() -> void:
 	# or its source control and keyboard focus.
 	for id: String in ["bone", "ember", "frost", "scatter"]:
 		var button := _page.find_child("Starter_" + id, true, false) as Button
-		var role := _page.find_child("StarterRole_" + id, true, false) as Label
 		if button != null:
 			button.set_pressed_no_signal(_starter == id)
-		if role != null:
-			role.add_theme_color_override("font_color", GOLD if _starter == id else MUTED)
-	var description := _page.find_child("StarterDescription", true, false) as Label
-	if description != null:
-		description.text = GameCatalog.weapon(_starter).description
+			var mark := button.get_node_or_null("SelectionMark") as Control
+			if mark != null:
+				mark.queue_redraw()
 
 
 func _start() -> void:
@@ -2008,6 +2639,8 @@ func _refresh() -> void:
 
 
 func _set_screen(screen: String) -> void:
+	_clear_controls_modal_state()
+	_hud_skill_snapshot.clear()
 	_rogue_epoch += 1
 	_rogue_notice = ""
 	_screen = screen
@@ -2040,7 +2673,7 @@ func _update_hud_slots(loadout: Array) -> void:
 		card.name = "EquipmentSlot%d" % (index + 1)
 		card.custom_minimum_size.x = 94
 		card.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		var style := _box(Color("1c1e2c"), Color(GOLD, 0.22))
+		var style := _box(Color("f4edd8"), Color(GOLD, 0.22))
 		style.content_margin_left = 8
 		style.content_margin_right = 8
 		style.content_margin_top = 4
@@ -2083,6 +2716,8 @@ func _definition(kind: String, id: String) -> ContentDef:
 			return GameCatalog.rune(id)
 		"relic":
 			return GameCatalog.relic(id)
+		"skill":
+			return GameCatalog.skill(id)
 	return GameCatalog.weapon(id)
 
 
@@ -2186,8 +2821,8 @@ func _perform_shop_action(action: Callable, epoch: int) -> void:
 	action.call()
 
 
-func _restore_shop_focus(focus_id: String) -> void:
-	if _screen != "shop" or _overlay.get_child_count() > 0:
+func _restore_shop_focus(focus_id: String, epoch: int = -1) -> void:
+	if _screen != "shop" or _refresh_queued or _overlay.get_child_count() > 0 or get_viewport().gui_is_dragging() or (epoch >= 0 and epoch != _shop_epoch):
 		return
 	if is_instance_valid(_bag_grid) and _bag_held_uid >= 0 and int(_bag_grid.held_uid) == _bag_held_uid:
 		_bag_grid.grab_focus()
@@ -2209,6 +2844,10 @@ func _restore_shop_focus(focus_id: String) -> void:
 			target = _shop_focus_button("sell_rune:%d" % int(rune["uid"]))
 			if target != null:
 				break
+	elif target == null and operation.begins_with("bag"):
+		target = _shop_focus_button("bag_move:%d" % _bag_selected_uid)
+		if target == null:
+			target = _shop_focus_button("bag:%d" % _bag_selected_uid)
 	if target == null:
 		for index: int in range(run.offers.size()):
 			target = _shop_focus_button("buy:%d" % index)
@@ -2285,22 +2924,35 @@ func _background() -> void:
 
 
 func _menu_art() -> void:
-	var path := "res://assets/menu_art.svg"
-	if not ResourceLoader.exists(path):
-		return
-	var art := TextureRect.new()
+	var art := TitleCover.new()
 	art.name = "MenuArtwork"
-	art.texture = load(path) as Texture2D
-	art.set_anchors_and_offsets_preset(Control.PRESET_RIGHT_WIDE)
-	art.offset_left = -690
-	art.offset_right = 10
-	art.offset_top = 0
-	art.offset_bottom = 0
+	art.texture = load(TitleCover.BASE_PATH) as Texture2D
+	art.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	art.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	art.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	art.modulate = Color(1, 1, 1, 0.82)
+	art.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	art.modulate = Color.WHITE
+	art.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	art.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_page.add_child(art)
+	var gradient := Gradient.new()
+	gradient.offsets = PackedFloat32Array([0.0, 0.35, 0.7, 1.0])
+	gradient.colors = PackedColorArray([Color(PANEL, 0.94), Color(PANEL, 0.88), Color(PANEL, 0.30), Color(PANEL, 0.0)])
+	gradient.interpolation_mode = Gradient.GRADIENT_INTERPOLATE_CUBIC
+	var veil_texture := GradientTexture2D.new()
+	veil_texture.gradient = gradient
+	veil_texture.width = 256
+	veil_texture.height = 2
+	veil_texture.fill_from = Vector2.ZERO
+	veil_texture.fill_to = Vector2(0.64, 0)
+	var veil := TextureRect.new()
+	veil.name = "TitleReadabilityVeil"
+	veil.texture = veil_texture
+	veil.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	veil.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	veil.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	veil.focus_mode = Control.FOCUS_NONE
+	veil.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
+	_page.add_child(veil)
 
 
 func _shell(horizontal: int, vertical: int) -> VBoxContainer:
@@ -2316,7 +2968,7 @@ func _shell(horizontal: int, vertical: int) -> VBoxContainer:
 
 func _modal(title: String, dimensions: Vector2) -> VBoxContainer:
 	var shade := ColorRect.new()
-	shade.color = Color(0.02, 0.03, 0.06, 0.88)
+	shade.color = Color(0.10, 0.20, 0.27, 0.72)
 	shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_overlay.add_child(shade)
 	var card := PanelContainer.new()
@@ -2402,6 +3054,7 @@ func _button(text: String, action: Callable, minimum: Vector2 = Vector2(0, 40)) 
 	button.focus_mode = Control.FOCUS_ALL
 	button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	button.pressed.connect(action)
+	ButtonSkin.apply(button, "secondary", minimum.y > 0.0 and minimum.y <= 35.0)
 	return button
 
 
@@ -2409,6 +3062,8 @@ func _focus_later(control: Control) -> void:
 	# A screen may be replaced again before its deferred focus request runs.
 	var request: Callable = func() -> void:
 		if not is_instance_valid(control) or not control.is_inside_tree() or not control.is_visible_in_tree():
+			return
+		if get_viewport().gui_is_dragging() and not _overlay.is_ancestor_of(control):
 			return
 		# A delayed underlying-page rebuild must never steal a modal's focus.
 		if not _overlay_mode.is_empty() and not _overlay.is_ancestor_of(control):
@@ -2418,10 +3073,7 @@ func _focus_later(control: Control) -> void:
 
 
 func _accent(button: Button) -> void:
-	button.add_theme_stylebox_override("normal", _box(Color("343043"), Color(GOLD, 0.9)))
-	button.add_theme_stylebox_override("hover", _box(Color("474058"), GOLD))
-	button.add_theme_color_override("font_color", BONE)
-	_decorate(button, GOLD, true)
+	ButtonSkin.apply(button, "primary")
 
 
 func _spacer(parent: Control, height: float) -> void:
@@ -2441,9 +3093,10 @@ func _margin(margin: MarginContainer, horizontal: int, vertical: int) -> void:
 func _box(fill: Color, border: Color, radius: int = 1) -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()
 	style.bg_color = fill
-	style.border_color = Color(border, border.a * 0.65)
+	style.border_color = Color(border, border.a * 0.85)
 	style.set_border_width_all(1)
 	style.set_corner_radius_all(radius)
+	style.anti_aliasing = false
 	style.content_margin_left = 12
 	style.content_margin_right = 12
 	style.content_margin_top = 7
@@ -2455,6 +3108,29 @@ func _bar_style(color: Color) -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()
 	style.bg_color = color
 	return style
+
+
+func _slider_track(fill: Color, border: Color) -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+	style.bg_color = fill
+	style.border_color = border
+	style.set_border_width_all(1)
+	style.content_margin_top = 4
+	style.content_margin_bottom = 4
+	style.anti_aliasing = false
+	return style
+
+
+func _slider_grabber(fill: Color) -> ImageTexture:
+	var image := Image.create(14, 18, false, Image.FORMAT_RGBA8)
+	image.fill(Color.TRANSPARENT)
+	image.fill_rect(Rect2i(2, 0, 10, 18), BONE)
+	image.fill_rect(Rect2i(0, 2, 14, 14), BONE)
+	image.fill_rect(Rect2i(2, 2, 10, 14), fill)
+	image.fill_rect(Rect2i(3, 3, 8, 2), fill.lightened(0.35))
+	for x: int in [5, 8]:
+		image.fill_rect(Rect2i(x, 6, 1, 7), BONE)
+	return ImageTexture.create_from_image(image)
 
 
 static func create_ui_font() -> SystemFont:
@@ -2474,17 +3150,28 @@ func _make_theme() -> Theme:
 	theme.default_font_size = 17
 	theme.set_color("font_color", "Label", BONE)
 	theme.set_color("font_color", "Button", BONE)
-	theme.set_color("font_hover_color", "Button", CYAN)
-	theme.set_color("font_pressed_color", "Button", GOLD)
-	theme.set_color("font_disabled_color", "Button", Color("676a78"))
+	theme.set_color("font_hover_color", "Button", BONE)
+	theme.set_color("font_pressed_color", "Button", BONE)
+	theme.set_color("font_focus_color", "Button", BONE)
+	theme.set_color("font_disabled_color", "Button", MUTED)
 	theme.set_stylebox("panel", "PanelContainer", _box(PANEL, Color(GOLD, 0.3), 0))
 	theme.set_stylebox("normal", "Button", _box(PANEL_LIGHT, Color(GOLD, 0.45)))
-	theme.set_stylebox("hover", "Button", _box(Color("353449"), GOLD))
-	theme.set_stylebox("pressed", "Button", _box(Color("353047"), PURPLE))
-	theme.set_stylebox("disabled", "Button", _box(Color("161b26"), Color("424650")))
+	theme.set_stylebox("hover", "Button", _box(Color("d5eee1"), GOLD))
+	theme.set_stylebox("pressed", "Button", _box(Color("bfdfd4"), PURPLE))
+	theme.set_stylebox("disabled", "Button", _box(Color("e1e4db"), Color("aeb9ac")))
 	var focus := _box(Color(0, 0, 0, 0), CYAN)
-	focus.set_border_width_all(2)
+	focus.set_border_width_all(3)
 	theme.set_stylebox("focus", "Button", focus)
+	for state: String in ["font_color", "font_hover_color", "font_pressed_color", "font_hover_pressed_color", "font_focus_color"]:
+		theme.set_color(state, "CheckButton", BONE)
+	theme.set_stylebox("panel", "TooltipPanel", _box(PANEL, GOLD))
+	theme.set_color("font_color", "TooltipLabel", BONE)
+	theme.set_stylebox("slider", "HSlider", _slider_track(Color("dce8dd"), Color("8fafa6")))
+	theme.set_stylebox("grabber_area", "HSlider", _slider_track(CYAN, CYAN.darkened(0.2)))
+	theme.set_stylebox("grabber_area_highlight", "HSlider", _slider_track(CYAN, CYAN.darkened(0.2)))
+	theme.set_icon("grabber", "HSlider", _slider_grabber(Color("8bdbc0")))
+	theme.set_icon("grabber_highlight", "HSlider", _slider_grabber(Color("f1c96b")))
+	theme.set_icon("grabber_disabled", "HSlider", _slider_grabber(Color("b8c6bd")))
 	theme.set_constant("separation", "VBoxContainer", 10)
 	theme.set_constant("separation", "HBoxContainer", 10)
 	return theme
@@ -2493,7 +3180,8 @@ func _make_theme() -> Theme:
 func _icon_texture(definition: ContentDef) -> Texture2D:
 	if definition == null or definition.icon.is_empty():
 		return null
-	var path: String = definition.icon if definition.icon.begins_with("res://") else "res://assets/icons/%s.svg" % definition.icon
+	var source: String = definition.icon if definition.icon.begins_with("res://") else "res://assets/icons/%s.svg" % definition.icon
+	var path: String = AdventureArt.path(source)
 	if ResourceLoader.exists(path):
 		return load(path) as Texture2D
 	return null
@@ -2505,6 +3193,7 @@ func _add_icon(parent: Control, definition: ContentDef, size: int) -> void:
 		return
 	var rect := TextureRect.new()
 	rect.texture = texture
+	rect.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	rect.custom_minimum_size = Vector2(size, size)
 	rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
@@ -2516,6 +3205,7 @@ func _set_button_icon(button: Button, definition: ContentDef) -> void:
 	var texture := _icon_texture(definition)
 	if texture != null:
 		button.icon = texture
+		button.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 		button.expand_icon = true
 		button.add_theme_constant_override("icon_max_width", 36)
 

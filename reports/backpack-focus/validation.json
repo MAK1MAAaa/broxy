@@ -1,0 +1,332 @@
+{
+  "created_utc": "2026-10-28T06:11:36.416605+00:00",
+  "base_commit": "399ad9ada73e70141a34a5909b626d78a3e4adff",
+  "platform": "Windows x86_64",
+  "engine": "Godot 4.7.2 ed1daf0bf",
+  "godot_suites": 80,
+  "diagnostic_entries": 5,
+  "regression": {
+    "invocations": 85,
+    "assertions": 29456,
+    "failures": 0,
+    "sha256": "022625cc5ae42bf640b369bbd735886a958b3a8e4d55dac995703c2a51bb3b7d"
+  },
+  "python_tests": 32,
+  "minimal_before_fix": {
+    "assertions": 32,
+    "failures": 15,
+    "scope": "The original uninterrupted move/cancel/merge/rune chains before the new boundary cases."
+  },
+  "headless_focus": {
+    "invocations": 1,
+    "assertions": 97,
+    "failures": 0,
+    "sha256": "e13ec686e305892f762dad6f381f225a383ed328720d694b6af68b1f8642f8f5"
+  },
+  "native": {
+    "backpack_focus": {
+      "invocations": 1,
+      "assertions": 126,
+      "failures": 0,
+      "sha256": "31c1b936e84d4a3485fd8f47f355147e15ebdd8c7d79ee4a6d6c4f23a99d784d"
+    },
+    "backpack_ui": {
+      "invocations": 1,
+      "assertions": 90,
+      "failures": 0,
+      "sha256": "a101317ef6ded799e368a0c099aa2d05491520650de4cc8523e01e0c3ec1163a"
+    },
+    "gamepad_backpack": {
+      "invocations": 1,
+      "assertions": 42,
+      "failures": 0,
+      "sha256": "e7799b224fe1e0ffe53aed01322268cbcc6e5945bd310144aa07595e7a14e2e6"
+    },
+    "modal": {
+      "invocations": 1,
+      "assertions": 37,
+      "failures": 0,
+      "sha256": "61a2ac8cb080a9c09f18f7262d2dd999990c4eac3668e77bcedacc778dfb6512"
+    },
+    "input_prompts_flow": {
+      "invocations": 1,
+      "assertions": 80,
+      "failures": 0,
+      "sha256": "ec3967c414b2606854e7c7e1743ac3cd15224f104ae4f8ec16c6b23ec1d79985"
+    },
+    "gamepad_reading": {
+      "invocations": 1,
+      "assertions": 227,
+      "failures": 0,
+      "sha256": "841718921158febbb5d1159f0d102dda37a1a2c2e36feaccbb66141342eb92ba"
+    }
+  },
+  "compiled_pck_focus": {
+    "invocations": 1,
+    "assertions": 126,
+    "failures": 0,
+    "sha256": "31c1b936e84d4a3485fd8f47f355147e15ebdd8c7d79ee4a6d6c4f23a99d784d"
+  },
+  "native_mouse_mode": "Engine warp synchronizes actual Windows cursor with parsed software events before real GUI drag/drop. No direct accept_drop/drop_at, no physical controller.",
+  "native_valid_drop": {
+    "cursor": [
+      2,
+      2
+    ],
+    "drop_target_cell": [
+      2,
+      3
+    ],
+    "grab_offset": [
+      0,
+      1
+    ],
+    "grid_rect": [
+      624.0,
+      131.0,
+      300.0,
+      322.0
+    ],
+    "gui_is_dragging": true,
+    "mouse_position": [
+      749.0,
+      306.0
+    ],
+    "native_dragging": true,
+    "placement": {
+      "error": "点击或Enter放置霜矛；R旋转，Esc取消。暂无合成或装符候选。",
+      "kind": "move",
+      "valid": true
+    },
+    "release_point": [
+      749.0,
+      306.0
+    ],
+    "uid": 2
+  },
+  "previews": {
+    "move": {
+      "backpack_hint": "已取消整理，物品仍在原位。",
+      "capture_result": 0,
+      "case": "move",
+      "connected_gamepads": [],
+      "continued_without_focus_repair": true,
+      "fixture_passed": true,
+      "focus": "MoveBackpackItem",
+      "focus_id": "bag_move:1",
+      "held_uid": -1,
+      "persistent_profile": false,
+      "result_uid": 1,
+      "rng_unchanged": true,
+      "selected_uid": 1,
+      "source_uid": 1,
+      "synthetic_gamepad_events": true,
+      "toast_timer_stopped": true,
+      "toast_visible": false,
+      "wallet_unchanged": true,
+      "png_sha256": "6dee973bbdaddd379f31b21f0f68d3b9fa0e312f4e5fabf1f2233274d670bb41"
+    },
+    "merge": {
+      "backpack_hint": "已取消整理，物品仍在原位。",
+      "capture_result": 0,
+      "case": "merge",
+      "connected_gamepads": [],
+      "continued_without_focus_repair": true,
+      "fixture_passed": true,
+      "focus": "MoveBackpackItem",
+      "focus_id": "bag_move:1",
+      "held_uid": -1,
+      "persistent_profile": false,
+      "result_uid": 1,
+      "rng_unchanged": true,
+      "selected_uid": 1,
+      "source_uid": 2,
+      "synthetic_gamepad_events": true,
+      "toast_timer_stopped": true,
+      "toast_visible": false,
+      "wallet_unchanged": true,
+      "png_sha256": "b4296c61eda00e1eb4359b3796ae32055c1ab9d86f196b35d2d57632fa8c14bd"
+    },
+    "rune": {
+      "backpack_hint": "已取消整理，物品仍在原位。",
+      "capture_result": 0,
+      "case": "rune",
+      "connected_gamepads": [],
+      "continued_without_focus_repair": true,
+      "fixture_passed": true,
+      "focus": "MoveBackpackItem",
+      "focus_id": "bag_move:2",
+      "held_uid": -1,
+      "persistent_profile": false,
+      "result_uid": 2,
+      "rng_unchanged": true,
+      "selected_uid": 2,
+      "source_uid": 3,
+      "synthetic_gamepad_events": true,
+      "toast_timer_stopped": true,
+      "toast_visible": false,
+      "wallet_unchanged": true,
+      "png_sha256": "bde6d324663d77335430b0c9e950ee9e0efd6d9bff0484549415f2db42edd02b"
+    },
+    "cancel": {
+      "backpack_hint": "已取消整理，物品仍在原位。",
+      "capture_result": 0,
+      "case": "cancel",
+      "connected_gamepads": [],
+      "continued_without_focus_repair": true,
+      "fixture_passed": true,
+      "focus": "MoveBackpackItem",
+      "focus_id": "bag_move:1",
+      "held_uid": -1,
+      "persistent_profile": false,
+      "result_uid": 1,
+      "rng_unchanged": true,
+      "selected_uid": 1,
+      "source_uid": 1,
+      "synthetic_gamepad_events": true,
+      "toast_timer_stopped": true,
+      "toast_visible": false,
+      "wallet_unchanged": true,
+      "png_sha256": "462508bafbc52cf10aab7ba0aa87dbfb9fd24e37a7ec6704f6698a5fab8c0375"
+    },
+    "pack-move": {
+      "backpack_hint": "已取消整理，物品仍在原位。",
+      "capture_result": 0,
+      "case": "move",
+      "connected_gamepads": [],
+      "continued_without_focus_repair": true,
+      "fixture_passed": true,
+      "focus": "MoveBackpackItem",
+      "focus_id": "bag_move:1",
+      "held_uid": -1,
+      "persistent_profile": false,
+      "result_uid": 1,
+      "rng_unchanged": true,
+      "selected_uid": 1,
+      "source_uid": 1,
+      "synthetic_gamepad_events": true,
+      "toast_timer_stopped": true,
+      "toast_visible": false,
+      "wallet_unchanged": true,
+      "png_sha256": "6dee973bbdaddd379f31b21f0f68d3b9fa0e312f4e5fabf1f2233274d670bb41"
+    },
+    "pack-merge": {
+      "backpack_hint": "已取消整理，物品仍在原位。",
+      "capture_result": 0,
+      "case": "merge",
+      "connected_gamepads": [],
+      "continued_without_focus_repair": true,
+      "fixture_passed": true,
+      "focus": "MoveBackpackItem",
+      "focus_id": "bag_move:1",
+      "held_uid": -1,
+      "persistent_profile": false,
+      "result_uid": 1,
+      "rng_unchanged": true,
+      "selected_uid": 1,
+      "source_uid": 2,
+      "synthetic_gamepad_events": true,
+      "toast_timer_stopped": true,
+      "toast_visible": false,
+      "wallet_unchanged": true,
+      "png_sha256": "b4296c61eda00e1eb4359b3796ae32055c1ab9d86f196b35d2d57632fa8c14bd"
+    },
+    "pack-rune": {
+      "backpack_hint": "已取消整理，物品仍在原位。",
+      "capture_result": 0,
+      "case": "rune",
+      "connected_gamepads": [],
+      "continued_without_focus_repair": true,
+      "fixture_passed": true,
+      "focus": "MoveBackpackItem",
+      "focus_id": "bag_move:2",
+      "held_uid": -1,
+      "persistent_profile": false,
+      "result_uid": 2,
+      "rng_unchanged": true,
+      "selected_uid": 2,
+      "source_uid": 3,
+      "synthetic_gamepad_events": true,
+      "toast_timer_stopped": true,
+      "toast_visible": false,
+      "wallet_unchanged": true,
+      "png_sha256": "bde6d324663d77335430b0c9e950ee9e0efd6d9bff0484549415f2db42edd02b"
+    },
+    "pack-cancel": {
+      "backpack_hint": "已取消整理，物品仍在原位。",
+      "capture_result": 0,
+      "case": "cancel",
+      "connected_gamepads": [],
+      "continued_without_focus_repair": true,
+      "fixture_passed": true,
+      "focus": "MoveBackpackItem",
+      "focus_id": "bag_move:1",
+      "held_uid": -1,
+      "persistent_profile": false,
+      "result_uid": 1,
+      "rng_unchanged": true,
+      "selected_uid": 1,
+      "source_uid": 1,
+      "synthetic_gamepad_events": true,
+      "toast_timer_stopped": true,
+      "toast_visible": false,
+      "wallet_unchanged": true,
+      "png_sha256": "462508bafbc52cf10aab7ba0aa87dbfb9fd24e37a7ec6704f6698a5fab8c0375"
+    }
+  },
+  "unchanged_core_combat_data_files": 67,
+  "preserved_existing_assets_data_reports": 434,
+  "assets": 51,
+  "package": {
+    "path": "build/Embers-windows-x86_64.zip",
+    "sha256": "e3407bb32db7cd0a243b80bed36d8ee6ccba6d388788465958c7968d438523cf",
+    "crc_and_member_bytes_match": true,
+    "x64_pe": true,
+    "exe_smoke_exit_code": 0,
+    "previous_path": "build/Embers-windows-before-backpack-focus-399ad9a.zip",
+    "previous_sha256": "f7123a520557824458288269792bcbeaae73c96d74cc3dc6ac11a1b6d99aa8a1"
+  },
+  "source_and_document_sha256": {
+    "README.md": "0cf27e38d3c9d0d96c38b3142b8ad06c990c26adbbafa60dcd22d80e78ed2eeb",
+    "docs/backpack.md": "b3a9724e1eeda774f0679e5a8cb59cf48764d459bf9bf5feaddc0a1f0b7f606f",
+    "docs/controls.md": "1588c49cc70f99bc463d57ee1aae54ad4f6ed7e84ece8d66e38b4909dbd53d69",
+    "scripts/ui/backpack_grid.gd": "e3a90a5c04ead63a02e6cde67c4237ce52236855dc25fcc9b6f7a1fb02939a73",
+    "scripts/ui/game_ui.gd": "d03b5840ebdedfe3fe7d5400f8756394e0b2ea8b921ed134e978b886401f0acc",
+    "tools/test.ps1": "dbfb27e2e77a8506c5cb3473a9b101fb308bbe418b10bb24a97e85696797c8bd",
+    "tools/test.sh": "c86461ad4fbbd001ea23a3cfd20c1a49ddceb2d8ff0ebe1ccd489a846745ebde",
+    "docs/backpack-focus.md": "fa4b0a46bd70312e8d530b83fb0abfe4fdc2a6ad8630566b18d424292760a740",
+    "tests/test_backpack_focus.gd": "b10f9a5066003b5aa7d86cc6a5ad83991bb8d9032a87e2f67cbd7cb6f4cf49c0",
+    "tests/test_backpack_focus.gd.uid": "eebd109d48b46c9c139bdfcf469a0f7f18126c376b03f6e5cda7fe4c3d1a7e24",
+    "tools/preview_backpack_focus.gd": "9051bb3b8a066a0cc36a9d85378694d87cb6da915d19b272149dce12ee3a686e",
+    "tools/preview_backpack_focus.gd.uid": "3d6c316366bbb0a95c789ef98a96f584f2d202c20e85f74c1b637c45312fd434"
+  },
+  "evidence_sha256": {
+    "regression.log": "022625cc5ae42bf640b369bbd735886a958b3a8e4d55dac995703c2a51bb3b7d",
+    "backpack_focus-before.log": "8a0f2991bbf4beebedcd8ea4358c6439e2fa7be1f46d4f2b96a525f4ae2cb54d",
+    "backpack_focus-headless.log": "e13ec686e305892f762dad6f381f225a383ed328720d694b6af68b1f8642f8f5",
+    "backpack_focus-native-unwarped.log": "4466f792b58e1067150041a4cefe4ece4e90644c1e7f4d0d42551901612b70fb",
+    "build.log": "e82f2bf9577c89cd0d865922fff3d33022ec6375a1ea9e08889964fea4502a99",
+    "export-smoke.log": "b874044276b737438556a12fad81c4c4ffd97092341a92a1d4ee24bfdd19649a",
+    "pack-backpack_focus.log": "31c1b936e84d4a3485fd8f47f355147e15ebdd8c7d79ee4a6d6c4f23a99d784d",
+    "backpack_focus-native.log": "31c1b936e84d4a3485fd8f47f355147e15ebdd8c7d79ee4a6d6c4f23a99d784d",
+    "backpack_ui-native.log": "a101317ef6ded799e368a0c099aa2d05491520650de4cc8523e01e0c3ec1163a",
+    "gamepad_backpack-native.log": "e7799b224fe1e0ffe53aed01322268cbcc6e5945bd310144aa07595e7a14e2e6",
+    "modal-native.log": "61a2ac8cb080a9c09f18f7262d2dd999990c4eac3668e77bcedacc778dfb6512",
+    "input_prompts_flow-native.log": "ec3967c414b2606854e7c7e1743ac3cd15224f104ae4f8ec16c6b23ec1d79985",
+    "gamepad_reading-native.log": "841718921158febbb5d1159f0d102dda37a1a2c2e36feaccbb66141342eb92ba",
+    "move.log": "3c26f083e75194ffbc04654b6d144077dfb8487159856d07280eac990db9c125",
+    "merge.log": "479bf43f97def11bf081b12ecf21ff23cbd0abfc2746d8b1c135ddbea237963d",
+    "rune.log": "bbeaa0f6741e2b8bd606fd1119f2193121f9949c26b8ff088326e9ecf8a2d0ef",
+    "cancel.log": "56506fb99f064d988519ec1a2aab71342e212e41448d8f1bc723556b498a62fc",
+    "pack-move.log": "3c26f083e75194ffbc04654b6d144077dfb8487159856d07280eac990db9c125",
+    "pack-merge.log": "479bf43f97def11bf081b12ecf21ff23cbd0abfc2746d8b1c135ddbea237963d",
+    "pack-rune.log": "bbeaa0f6741e2b8bd606fd1119f2193121f9949c26b8ff088326e9ecf8a2d0ef",
+    "pack-cancel.log": "56506fb99f064d988519ec1a2aab71342e212e41448d8f1bc723556b498a62fc"
+  },
+  "limits": [
+    "Software keyboard/gamepad events and engine-warped native mouse; no physical controller connected.",
+    "PCK checks use the matching Windows engine with external fixtures; ordinary EXE is separately smoke-tested.",
+    "Four PNGs are 1280x720; no new 960x540 screenshot claim.",
+    "No new automated simulation, pressure sample or macOS rebuild: this iteration changes UI and preserves all core/combat/data sources."
+  ]
+}

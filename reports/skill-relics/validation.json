@@ -1,0 +1,287 @@
+{
+  "schema_version": 1,
+  "created_at_utc": "2026-10-28T04:42:35.232484+00:00",
+  "source_base_commit": "8c8cd36f614f824855177c5fb746d7d5967a6af9",
+  "scope": "Active-skill relic growth; subsequent keyboard rebinding and gamepad operation are the user-selected next priority and are not claimed here.",
+  "tests": {
+    "godot_suites": 70,
+    "additional_profile_invocations": 5,
+    "godot_assertions": 28496,
+    "python_tests": 32,
+    "native_assertions": {
+      "skill_relics": 262,
+      "skill_relic_combat": 226,
+      "skill_relic_ui": 53,
+      "pulse_rules": 110,
+      "pulse_world": 63,
+      "pulse_ui": 77,
+      "dash_rules": 82,
+      "dash_ui": 49,
+      "return_ring_ui": 91,
+      "relic_comparison": 240,
+      "shop_lock_ui": 63,
+      "upgrade_previews": 350,
+      "content_presentation": 565
+    },
+    "all_passed": true
+  },
+  "fixtures": {
+    "shop": {
+      "capture_sha256": "d21ca9c6ce84ec2f72c3fa9baa186d5b0a25e76242b7fe086eb331e92ae5d883",
+      "dash_cooldown": 1.8,
+      "pulse_radius": 180.0,
+      "pulse_cooldown": 9.6,
+      "gold_after": 412,
+      "events": [],
+      "occupied_cells": 7
+    },
+    "comparison": {
+      "capture_sha256": "03ed22545a4a2ece1dfe965bee1e920bbf612f03e2de10ac7fe93d0fa4f594bc",
+      "dash_cooldown": 1.8,
+      "pulse_radius": 180.0,
+      "pulse_cooldown": 9.6,
+      "gold_after": 412,
+      "events": [],
+      "occupied_cells": 7
+    },
+    "merge": {
+      "capture_sha256": "1696841c70cb9ba76e02301e92a6eb44c1bf46d8d2d1d159ccc417ba3587e407",
+      "dash_cooldown": 1.8,
+      "pulse_radius": 180.0,
+      "pulse_cooldown": 9.6,
+      "gold_after": 412,
+      "events": [],
+      "occupied_cells": 6
+    },
+    "cast": {
+      "capture_sha256": "e3b1e843c91fcd18d1787ac34b4360e6c08068288138a335003863b4f8b954a5",
+      "dash_cooldown": 1.2,
+      "pulse_radius": 216.0,
+      "pulse_cooldown": 11.2,
+      "gold_after": 324,
+      "events": [
+        {
+          "affected": 3,
+          "cooldown": 11.2,
+          "origin": [
+            640.0,
+            365.0
+          ],
+          "radius": 216.0
+        }
+      ],
+      "occupied_cells": 5
+    },
+    "flash_off": {
+      "capture_sha256": "c385c100f8582b39fd5997896af9205d94f116456f8c28a54a016294f905c19e",
+      "dash_cooldown": 1.2,
+      "pulse_radius": 216.0,
+      "pulse_cooldown": 11.2,
+      "gold_after": 324,
+      "events": [
+        {
+          "affected": 3,
+          "cooldown": 11.2,
+          "origin": [
+            640.0,
+            365.0
+          ],
+          "radius": 216.0
+        }
+      ],
+      "occupied_cells": 5
+    },
+    "corner": {
+      "capture_sha256": "b8cfca18ca579e9e7d16ac57132881ea10f5f319d463818af387367ecb5ccc8e",
+      "dash_cooldown": 1.2,
+      "pulse_radius": 216.0,
+      "pulse_cooldown": 11.2,
+      "gold_after": 324,
+      "events": [
+        {
+          "affected": 3,
+          "cooldown": 11.2,
+          "origin": [
+            96.0,
+            170.0
+          ],
+          "radius": 216.0
+        }
+      ],
+      "occupied_cells": 5
+    },
+    "pack-comparison": {
+      "capture_sha256": "03ed22545a4a2ece1dfe965bee1e920bbf612f03e2de10ac7fe93d0fa4f594bc",
+      "dash_cooldown": 1.8,
+      "pulse_radius": 180.0,
+      "pulse_cooldown": 9.6,
+      "gold_after": 412,
+      "events": [],
+      "occupied_cells": 7
+    },
+    "pack-cast": {
+      "capture_sha256": "e3b1e843c91fcd18d1787ac34b4360e6c08068288138a335003863b4f8b954a5",
+      "dash_cooldown": 1.2,
+      "pulse_radius": 216.0,
+      "pulse_cooldown": 11.2,
+      "gold_after": 324,
+      "events": [
+        {
+          "affected": 3,
+          "cooldown": 11.2,
+          "origin": [
+            640.0,
+            365.0
+          ],
+          "radius": 216.0
+        }
+      ],
+      "occupied_cells": 5
+    }
+  },
+  "visual_review": {
+    "native_size": [
+      1280,
+      720
+    ],
+    "reviewers": [
+      "root",
+      "independent UI agent"
+    ],
+    "blocking_findings": [],
+    "diagnostic_caption_shop_overlap": "removed from shop and comparison fixtures before final recapture",
+    "corner_limit": "Full world-space range circle extends past arena edge; viewport/HUD clipping retained",
+    "actual_960_by_540_window": "new skill UI suite verifies comparison tables, labels, layout and input passthrough"
+  },
+  "performance": {
+    "summary": "reports/skill-relics/performance.json",
+    "average_fps": 114.358296490288,
+    "p99_frame_ms": 18.387,
+    "window_observed_during_sample": true,
+    "source_files": 63
+  },
+  "simulation": {
+    "summary": "reports/skill-relics/simulation.json",
+    "runs": 6,
+    "wins": 6,
+    "new_relics_purchased_by_existing_policies": false
+  },
+  "distribution": {
+    "path": "build/Embers-windows-x86_64.zip",
+    "sha256": "c8ec0507740b67514e9eea73c5622b4d34efc02de9ebadb08a890bf5f756a6b2",
+    "previous_package": "build/Embers-windows-before-skill-relics-8c8cd36.zip",
+    "previous_sha256": "cbb9c596eeac8663c156689430a2f95230a61469d650d541c70a8479fd3212ae",
+    "zip_crc_and_members_match": true,
+    "pe_x86_64": true,
+    "actual_release_exe_smoke": true,
+    "compiled_pack_external_fixture": "Matching Windows engine loads shipped PCK, plus external fixture; separate from EXE smoke",
+    "system_q_input": [
+      {
+        "affected": 3,
+        "cooldown": 11.2,
+        "origin": [
+          640.0,
+          365.0
+        ],
+        "radius": 216.0
+      }
+    ]
+  },
+  "preservation": {
+    "files_checked": 415,
+    "existing_assets_data_reports_identical_except_extended_manifest_and_provenance": true,
+    "old_manifest_entries_preserved": 49,
+    "asset_count": 51
+  },
+  "source_sha256": {
+    ".gitignore": "0b0655a5b32f337b0435de9513c28457f99b925e7bc98bc09a028b8d0faeaeaa",
+    "README.md": "a060ef153f9e3d4a8af61ada3ff3bf2f49f873f87142c62cd936d6cb88b9b800",
+    "assets/PROVENANCE.md": "d59df0649c66b1541f427b1177c7295fb88694e5c00baafcfb40828ebeef0d0a",
+    "assets/icons/echo_stone.svg": "cb6658363589698020855294d6cef6c3b763e17995f0207743082659d56e81f8",
+    "assets/icons/echo_stone.svg.import": "0c6d6e800f8ef5b56737d807da91668fc49628490f7bb11a8bc688622b58f9b2",
+    "assets/icons/fold_clasp.svg": "5cf4a2c872c6bba373a507d6e77e2410f244a589e73a702381135e0aaff754a9",
+    "assets/icons/fold_clasp.svg.import": "138eb6edcb796b7a009d9dd2e3d0f22885efac2108b7b81662d6f4509ad25004",
+    "assets/manifest.json": "c5195bc8b7b725540a034bb13166e076f918819d89dd64033a25cc347ebe00f8",
+    "data/relics/echo_stone.tres": "fc11c36280d836528a3342403135554d32c0b55ad9e90790b4fb08a89cfa95b8",
+    "data/relics/fold_clasp.tres": "34d35a7c0650dc7d5be69a90531ecccd9a781ddeb13a2ccc4a4a7d10674ff929",
+    "docs/art-direction.md": "969d0121288e9e4a5ed5f852d08aeb2612b4dd93b49b46dc2f8dde48c5fed115",
+    "docs/dash.md": "aa16210d18833ac9c59d2694fde8ce8f7427311dc3b07ddfe210e6b79b672248",
+    "docs/pulse.md": "ed9727972c0967dd3f7cfdee74c73fc7afc2e253c13d335cbe4ce80d7fdfb1b3",
+    "docs/skill-relics.md": "98f166c2b84b6a4786af6c9615ea9768a8d107a109cc8ec3d6e3ac2c124a3355",
+    "scripts/combat/combat_sim.gd": "2322502eca0b79d34a599741eb3dab1e83725288c6814e73fbbc914c2859905a",
+    "scripts/combat/combat_world.gd": "94db6ce3248c6b2aaf4e5801fe63ba485158b812d55462ed8b5dad9c59d84287",
+    "scripts/core/run_state.gd": "763e93e17dedf866b2deaec4f1a2e3f70e4f21d52ac445f2fa30b23a83f8d865",
+    "scripts/data/dash_rules.gd": "385b45260f8014ac41c4f39a449f63d1a3568b9c88d0151799557aa0443db416",
+    "scripts/data/game_catalog.gd": "097589a79ffc71f767b77fe864445c0cd3118b176e5d9aa00b0e287e1d855ba7",
+    "scripts/data/pulse_rules.gd": "d3bdb993eceaea0f954defa08675bfb4b42281ed05a3dd542973d615b95339f5",
+    "scripts/ui/game_ui.gd": "d4e60510dad2e6170e1f46236d9b0abd69a5781150863df85eeadb9b321434f8",
+    "tests/test_content_expansion.gd": "c650ab631195d388ea765f185edbc48e72544cc83c0db93a131b4f2e797329e4",
+    "tests/test_content_presentation.gd": "6bc13ca6fe7dc9bbd83106b020d8c400f6ccb68984380050de38e1c9656c7a25",
+    "tests/test_relic_comparison.gd": "968d79925bcb7beecd851ff5f58ffa26534f012206b9d09a3e768262ad0ed384",
+    "tests/test_return_ring.gd": "94dc015e6b760664ce9e5b0932d30a978d134879ee04fc7ca442ac1923bf7bd3",
+    "tests/test_return_ring_ui.gd": "1169113bfb4928e8e96deafaa5709fff5996707f8f28bfc9bc99432d7fa0a37c",
+    "tests/test_rules.gd": "8622c35150e9798d3ef3ab0030716eb103fd960b6a7ce77f6fa9d58c0a4450f4",
+    "tests/test_shop_lock_ui.gd": "bd927cc67c558ac10f99940cb0a23e0b92c9cfbcb3997b237fba1cced739d32d",
+    "tests/test_skill_relic_combat.gd": "3820fe201bd2d90acd0874fb4ebca5428119e9d6cbf09c3f3eaffc9e3b035706",
+    "tests/test_skill_relic_combat.gd.uid": "443a43cca0ceee0695bf6c754e46d6ed932255ed51a2d55b060cdb356d257e82",
+    "tests/test_skill_relic_ui.gd": "74619478793d3ea514dd0e057faa270ab3b76b6b40351ed31a2a50c343d82e83",
+    "tests/test_skill_relic_ui.gd.uid": "59dd9c158a6da2e05b9847c13ff59ba6931842a76238de55de573639b1d6d606",
+    "tests/test_skill_relics.gd": "17fac33e1de0be1d9c5b6999cce1a59165ee2c0f7a9b9f8a85fcddb1964a5a46",
+    "tests/test_skill_relics.gd.uid": "b5f6ec261b7d0cca69482fab0cae9733bcea626fd5d4f8e441eb17a55a17aac8",
+    "tests/test_upgrade_previews.gd": "33a7366949f5895cd38d97c8410ba4a74b68ab07e44f8eff77101d5f7d534789",
+    "tools/art_icons.py": "3647be48e590a0db41c17b8b16543b5a6724025dc81a16ed25df380d48f5d79b",
+    "tools/benchmark_dash.gd": "27ed0aacbf9dab7575f107094f46c964ea193466fa6f0962c311ba82ab030299",
+    "tools/generate_assets.py": "8fdc80c0934bf43e2bdaf211b76c732b44fc304cb20eec9182aa8c56ad924edd",
+    "tools/preview_content.gd": "cdcb0ef85a8cf6fbdd134f97f7a57a9fcb83bf345aefb90e810ab0c21cf1fe17",
+    "tools/preview_relic_comparison.gd": "fc049b95f681babd1f07383354413ebe41038976e20891679642e7a87a3a8ffe",
+    "tools/preview_return_ring.gd": "47a47667fc51ba21af221d933b35413063e4e745d8a8d208b98db20629124b0d",
+    "tools/preview_shop_locks.gd": "d72d1e2ac9a8cceb6f27576ee01bfa99f966b95b411ad1a428cef1a27f11b971",
+    "tools/preview_skill_relics.gd": "adaa40576426bd023a7363d96cf5af582f80fe7e93efd8d75d3f2edec2207f3c",
+    "tools/preview_skill_relics.gd.uid": "a1dbd0406ff2d35f89c879350201a67b7758cdeb22d7a352e35dd3705e65468e",
+    "tools/test.ps1": "34245e9c400e9c1169c820a79390dd2149e7d6179ebd4a5e8ba3ebf670f6a6b6",
+    "tools/test.sh": "e084d3f85afce60e4f23a54adf02ef594645292e7cdb4c6d0274d67fac316236"
+  },
+  "evidence_sha256": {
+    "regression.log": "cda7c97a07eb7ed4f03706cfb3d689dd3eb009f9b9ebdb1baff3d294ae9aa60b",
+    "import.log": "159c7ff0e386ce10c216425a9d14183f4796871a5b37a41a51cb1bfe057d5168",
+    "build.log": "ad975476b18385195dbcf97412fd4926a0b675ec5f4ae0771133497a4f32d027",
+    "export-smoke.log": "00c4d4d53f22b27ff0bc351092aaf31fda7c054b0881d7d878d80f66f5c0aba0",
+    "performance.log": "dac1181a8a2173f7dffc233484ccbc253df621ad263a8a697db492452b70be09",
+    "performance-raw.json": "991ed3fe6fc9e3ed8d009e680e515802e8549be9d70479e7aa8c2c20564464a0",
+    "performance-start-raw.json": "eec9574bbd72361cb346ae28b9f09e3b2bb728e82562666c005fdb350a9d7a41",
+    "default-policy.jsonl": "c426f848df7b52d46aa1ec930628f20bc879a36d219e574f0279c762714a63b6",
+    "pulse-policy.jsonl": "77bd07549985cf1f3a5496d50017ab7ba33eb3a759afb2d9c706027cab93e9a1",
+    "pack-interactive.log": "0dad580b2217a91640138af295fde67442fb60a8837edff3870389024edd733a",
+    "skill_relics-native.log": "943df546e6e828f032f47340c9628de777dbab55c28b2b8d0561c20f51cf18d4",
+    "skill_relic_combat-native.log": "9ae5537cc2d6b43533cf9e988bd8303e54321eb9fbba30faf66b3e50dda600f3",
+    "skill_relic_ui-native.log": "5572ad038cc27f481cf7176fee3850a446dadfa275cf99e2865c05a21a3adbbd",
+    "pulse_rules-native.log": "afef55d76b7dc3979d5b0c73d80f46977439f111243a1653f17c69decf811295",
+    "pulse_world-native.log": "4c029c506b663dd23289e70d4512f10f05d205d1a0e7a3dc491a66a343f1b426",
+    "pulse_ui-native.log": "121313491d6aa97c9ba669ae1a5358c842aff3af7753efcab02218a78987e9cf",
+    "dash_rules-native.log": "1f72e4f6a25a53489f09a6095fcb618d69f2dc6cf60f0606431df94878daf221",
+    "dash_ui-native.log": "60fc112387eff1bedb6b6220011331b8d93d20028a50520d70ca9e881af5c2a2",
+    "return_ring_ui-native.log": "ff92003da51535c65fddc72701d74073c263220144f7c195541e4f1f81d94eb6",
+    "relic_comparison-native.log": "90e8713123fb859616609bfbe8be01a9fe98877f8b0216c4ecb3815c4b20efbb",
+    "shop_lock_ui-native.log": "26e46e92cbe18fbaead905b33f7a605bed1e68fd8500fbef0c967c956d0a4755",
+    "upgrade_previews-native.log": "9de3ab129f49dd9c1bc5e627472645eb73ed75b8973c604fdc3074664a486788",
+    "content_presentation-native.log": "b7bd3405b4f310ceee723413d5ed8c93917923128e9339d3d919f1589ce9131d",
+    "shop.log": "c5150d70ab65bc775449da02e40dae17968f70b8ac484d2d1c78a7d0de9c27e9",
+    "comparison.log": "f2dfa83be97ba8c6097656f351a0e3c863b71b3a6f55a4c1b09fa9aabaa1c564",
+    "merge.log": "3898686df4657125c5572affd9a7282dd3bdf2dd231ad44f97423f94373555d9",
+    "cast.log": "2680f42a5e661862e93ebabe7206fea0c89a1c8b952e1fe41b5b509ebdd7d6af",
+    "flash_off.log": "c1441189a06feb244bca2c403f16562762d6fb853a2e76caf2c4aaa904d42cd6",
+    "corner.log": "a5fae213fc777bc8325fff3d95bfa271999242e6a0ae507d8e162d864c5bc951",
+    "pack-comparison.log": "f2dfa83be97ba8c6097656f351a0e3c863b71b3a6f55a4c1b09fa9aabaa1c564",
+    "pack-cast.log": "2680f42a5e661862e93ebabe7206fea0c89a1c8b952e1fe41b5b509ebdd7d6af",
+    "preview_content.log": "f48459c36695f8171a810929666af385c0b1729d68360c21c1df83bfd65ee5b3",
+    "preview_shop_locks.log": "84de94833d31863f7d08246b852b16ae472354f0ec9337c9df10e8de70408ed3",
+    "preview_return_ring.log": "a9eb8b623dc701828f5bb5a3ff7aeaf8aa415f6497cf69727cb9a905e4cd3dfd",
+    "preview_relic_comparison.log": "2ff5c3f686966d8a2b5f6b30cf5c0f68d9e003b1476eab8fe4cf9851b348c399"
+  },
+  "limits": [
+    "No macOS build from Windows",
+    "60-second native sample, no repeated 300-second run",
+    "No long human balance trial or physical gamepad validation",
+    "Existing automatic policies do not buy the two new skill relics"
+  ]
+}

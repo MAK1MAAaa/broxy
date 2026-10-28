@@ -71,14 +71,14 @@ func _test_impact_aliases() -> void:
 		painter.add_hit(Vector2(500, 300), source, 15)
 	_check(painter.active_count() == 6, "Shared impact shapes retain distinct weapon sources while merging repeat hits from the same source and target")
 	painter.rebuild()
-	_check(painter.get_stats()["draw_commands"] == 3, "Six weapon sources share three compatible shape batches")
+	_check(painter.get_stats()["draw_commands"] == 6, "Six weapon sources share three compatible outlined shape batches")
 	for phase: int in 2:
 		painter.advance(0.045)
 		for source: String in ["bone", "crescent", "frost", "storm", "ember", "scatter", "comet"]:
 			painter.add_hit(Vector2(500, 300), source, 16 + phase)
 	painter.rebuild()
 	_check(painter.active_count() == 20, "Impact aliases retain marks independently at all three fade stages")
-	_check(painter.get_stats()["draw_commands"] <= 12, "All seven weapons remain within the existing twelve impact draw commands")
+	_check(painter.get_stats()["draw_commands"] <= 24, "All seven weapons remain within twenty-four outlined impact draw commands")
 	painter.clear()
 	_check(painter.get_stats()["free_marks"] == 32 and painter.active_count() == 0, "Impact aliases reuse the original bounded pool")
 
@@ -204,7 +204,7 @@ func _test_full_shop() -> void:
 		var id: String = ["pierce", "bounce", "blast"][index]
 		_check(_purchase(state, "rune", GameCatalog.rune(id)) and state.equip_rune(0, index), "The fixture formally sockets its purchased rune: " + id)
 	for definition: ContentDef in GameCatalog.relics():
-		_check(_purchase(state, "relic", definition), "All twelve original relic kinds can be represented by real occupied boxes: " + definition.id)
+		_check(_purchase(state, "relic", definition), "All fourteen catalog relic kinds can be represented by real occupied boxes: " + definition.id)
 	for id: String in ["bounce", "blast"]:
 		_check(_purchase(state, "rune", GameCatalog.rune(id)), "A loose rune occupies its own physical cell: " + id)
 	while state.backpack.can_add("relic", "armor"):

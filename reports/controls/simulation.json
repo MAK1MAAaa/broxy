@@ -1,0 +1,36 @@
+{
+  "seed": 20261028,
+  "arena": "mire",
+  "core": "bone_chorus",
+  "route": "balanced",
+  "altar": "accept",
+  "policies": [
+    {
+      "mode": "default-policy",
+      "runs": 3,
+      "wins": 3,
+      "gameplay_results_identical_to_fbb1a07": true,
+      "core_versions": [
+        "prototype-0.1.0+ab993642153d"
+      ],
+      "policy_versions": [
+        "orbit-avoid-v1/backpack-shop-v2/upgrade-timing-v2/rogue-choices-v1/bone_chorus/balanced/accept+31fe154e12fe"
+      ],
+      "log_sha256": "53b4aadd440abb00c113d9c3aa4c18d085aca3eebf45dcff7cebf5880650b9bb"
+    },
+    {
+      "mode": "pulse-policy",
+      "runs": 3,
+      "wins": 3,
+      "gameplay_results_identical_to_fbb1a07": true,
+      "core_versions": [
+        "prototype-0.1.0+ab993642153d"
+      ],
+      "policy_versions": [
+        "orbit-avoid-v1/backpack-shop-v2/upgrade-timing-v2/rogue-choices-v1/pulse-peel-v1/bone_chorus/balanced/accept+31fe154e12fe"
+      ],
+      "log_sha256": "20f5dd3bf27b89563494a1d057a60cd0d95189ee16cfc9b05177fbc1473c187e"
+    }
+  ],
+  "comparison_scope": "Every result field except balance_version and policy_version equals the prior skill-relic build. simulate_runs only adds ControlBindings to the source fingerprint. BotPolicy and shopping/upgrade logic unchanged; this does not test a human controller policy."
+}

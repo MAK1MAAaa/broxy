@@ -1,0 +1,11 @@
+{
+  "tool": "image_gen.imagegen built-in",
+  "mode": "edit",
+  "purpose": "Full-screen animated cover for the existing Embers title; preserve masked caster identity",
+  "output": "cover.png",
+  "source_output": "exec-e0478834-203e-4863-a239-88168f0126ae.png",
+  "technical_normalization": "nearest resize to logical 1280x720; no content repaint",
+  "prompt": "Edit target: the existing game menu illustration in Image 1. Create a NEW WIDE FULL-SCREEN 16:9 version, preferably 1280x720 or 1536x864, for the SAME existing game Embers of the Occult. Preserve its original hooded spellcaster identity: distinctive long bone-white bird-beak mask with black eye openings, teal and blue-violet hooded robe, gold ritual chain, floating bone wand and purple spellbook. Keep the bright detailed crisp illustrated pixel-art craft, navy outlines, cream stone, turquoise sky, verdant moss, warm aged gold and teal. Recompose as ONE CONTINUOUS PANORAMIC SCENE across the ENTIRE 16:9 canvas, with NO hard vertical split, panel, picture border or collage. Put the masked caster and the huge golden moon-ring astrolabe on the RIGHT HALF: caster head around x80% y28%, feet around y88%, character full body contained, looking slightly toward left; the astrolabe rising behind them on the far right. The LEFT 44% must be naturally quiet, low contrast cream sunlit stone and pale turquoise atmospheric haze with broad simple pixel cloud shapes and distant faint ruined arches, to support native UI overlaid later. The scenery must flow naturally from pale quieter left into richly detailed right: same continuous perspective, ground and light, no blank flat rectangle. Keep stars, ivy, small candles and ancient magical courtyard motifs mainly on the right edge and foreground, with a few calm clouds in the upper middle. Strong cinematic focal hierarchy, gentle adventurous fantasy mood. Do not include any text, letters, game logo, labels, interface, card panels or buttons in the art. No new human face, no new characters, no pinball hardware, no 3D render, no smooth vector flat icon scene. Produce only the full-bleed standalone landscape artwork; it will become the base of a subtle 24-frame loop of magic light and drifting motes.",
+  "reference": "assets/starfall/menu_art.png",
+  "external_game_art_embedded": false
+}

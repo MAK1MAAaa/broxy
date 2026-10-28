@@ -7,6 +7,7 @@
     "preview_color": "8c819c",
     "terrain_name": "石板",
     "move_multiplier": 1.0,
+    "legacy_zone_count": 0,
     "zones": []
   },
   {
@@ -17,10 +18,19 @@
     "preview_color": "83a894",
     "terrain_name": "泥潭",
     "move_multiplier": 0.72,
+    "legacy_zone_count": 3,
     "zones": [
       {"center": [310, 275], "radius": [150, 68]},
       {"center": [970, 440], "radius": [155, 78]},
-      {"center": [500, 505], "radius": [125, 55]}
+      {"center": [500, 505], "radius": [125, 55]},
+      {"center": [-670, -200], "radius": [210, 110]},
+      {"center": [250, -300], "radius": [240, 90]},
+      {"center": [1410, -220], "radius": [230, 110]},
+      {"center": [2010, 200], "radius": [190, 125]},
+      {"center": [-720, 660], "radius": [190, 115]},
+      {"center": [90, 1000], "radius": [240, 125]},
+      {"center": [1110, 1010], "radius": [225, 120]},
+      {"center": [2010, 940], "radius": [190, 140]}
     ]
   },
   {
@@ -31,10 +41,19 @@
     "preview_color": "8ab4c7",
     "terrain_name": "霜砂",
     "move_multiplier": 0.84,
+    "legacy_zone_count": 3,
     "zones": [
       {"center": [340, 455], "radius": [170, 78]},
       {"center": [760, 220], "radius": [170, 52]},
-      {"center": [1030, 400], "radius": [115, 72]}
+      {"center": [1030, 400], "radius": [115, 72]},
+      {"center": [-720, -250], "radius": [210, 95]},
+      {"center": [180, -310], "radius": [230, 100]},
+      {"center": [1250, -220], "radius": [200, 115]},
+      {"center": [2080, 260], "radius": [155, 125]},
+      {"center": [-720, 670], "radius": [220, 115]},
+      {"center": [230, 1020], "radius": [240, 110]},
+      {"center": [1240, 1030], "radius": [220, 100]},
+      {"center": [2060, 980], "radius": [170, 130]}
     ]
   },
   {
@@ -45,11 +64,20 @@
     "preview_color": "ba9172",
     "terrain_name": "松灰",
     "move_multiplier": 0.88,
+    "legacy_zone_count": 4,
     "zones": [
       {"center": [245, 230], "radius": [110, 50]},
       {"center": [490, 480], "radius": [140, 64]},
       {"center": [900, 285], "radius": [150, 75]},
-      {"center": [1090, 515], "radius": [95, 45]}
+      {"center": [1090, 515], "radius": [95, 45]},
+      {"center": [-740, -260], "radius": [180, 95]},
+      {"center": [300, -320], "radius": [210, 90]},
+      {"center": [1390, -210], "radius": [230, 100]},
+      {"center": [2040, 290], "radius": [190, 125]},
+      {"center": [-710, 680], "radius": [210, 120]},
+      {"center": [210, 1010], "radius": [220, 120]},
+      {"center": [1160, 1030], "radius": [230, 100]},
+      {"center": [2020, 990], "radius": [190, 130]}
     ]
   }
 ]

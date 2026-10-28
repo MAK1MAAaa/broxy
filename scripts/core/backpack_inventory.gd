@@ -20,6 +20,7 @@ static func definition(kind: String, id: String) -> ContentDef:
 		"weapon": return GameCatalog.weapon(id)
 		"rune": return GameCatalog.rune(id)
 		"relic": return GameCatalog.relic(id)
+		"skill": return GameCatalog.skill(id)
 	return null
 
 static func size_for(kind: String, id: String, rotated: bool = false) -> Vector2i:
@@ -66,9 +67,20 @@ func find_space(kind: String, id: String) -> Dictionary:
 func can_add(kind: String, id: String) -> bool:
 	return not find_space(kind, id).is_empty()
 
+func addition_error(kind: String, id: String) -> String:
+	if definition(kind, id) == null:
+		return "无效的背包物品。"
+	if kind == "skill" and _skill_count(_items) >= ActiveSkillRules.LIMIT:
+		return "主动技能已达上限（2）。"
+	return "背包空间不足。" if find_space(kind, id).is_empty() else ""
+
 func add(kind: String, id: String, paid: int = 0, rank: int = 1) -> Dictionary:
 	if definition(kind, id) == null or paid < 0 or rank < 1 or rank > MAX_RANK:
 		_fail("无效的背包物品。")
+		return {}
+	var error: String = addition_error(kind, id)
+	if not error.is_empty():
+		_fail(error)
 		return {}
 	var placement: Dictionary = find_space(kind, id)
 	if placement.is_empty():
@@ -214,6 +226,8 @@ func _restore_rune(work: Array[Dictionary], rune: Dictionary, preferred: Vector2
 	return true
 
 func _find_space(entries: Array[Dictionary], kind: String, id: String) -> Dictionary:
+	if kind == "skill" and _skill_count(entries) >= ActiveSkillRules.LIMIT:
+		return {}
 	var original: Vector2i = size_for(kind, id)
 	if original.x <= 0 or original.y <= 0:
 		return {}
@@ -226,6 +240,13 @@ func _find_space(entries: Array[Dictionary], kind: String, id: String) -> Dictio
 				if _fits(entries, kind, id, cell, rotated):
 					return {"cell": cell, "x": cell.x, "y": cell.y, "rotated": rotated}
 	return {}
+
+static func _skill_count(entries: Array[Dictionary]) -> int:
+	var count: int = 0
+	for entry: Dictionary in entries:
+		if str(entry.get("kind", "")) == "skill":
+			count += 1
+	return count
 
 func _fits(entries: Array[Dictionary], kind: String, id: String, cell: Vector2i, rotated: bool, ignore_uid: int = -1) -> bool:
 	var size: Vector2i = size_for(kind, id, rotated)

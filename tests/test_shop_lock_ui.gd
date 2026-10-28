@@ -172,7 +172,7 @@ func _test_full_shop_and_existing_flows(ui: GameUI) -> void:
 	await _accept(ui, "lock:0")
 	await _accept(ui, "lock:1")
 	_check(state.loadout.size() == 3 and state.rune_bag.size() == 3 and state.relic_counts.size() == GameCatalog.relics().size() and ui._selected_rune == 0, "Stock locks preserve a loose rune selected from a legally purchased backpack build")
-	_check(before_swap_cells == 34 and _controls_inside(ui._page), "The six-row backpack, four offers, lock controls and bounded details remain inside 720p")
+	_check(before_swap_cells == 36 and _controls_inside(ui._page), "The full six-row backpack, four offers, lock controls and bounded details remain inside 720p")
 	for index: int in 4:
 		var title: Control = ui.find_child("OfferLock%d" % index, true, false).get_parent()
 		_check(title.size.y <= 30.1, "The small title-row lock does not add card height: %d" % index)
@@ -196,6 +196,13 @@ func _test_full_shop_and_existing_flows(ui: GameUI) -> void:
 	await _accept(ui, "compare:2")
 	state.set_offer_locked(0, false)
 	_check(ui._overlay_mode.is_empty(), "An official external lock change invalidates an already-open comparison")
+	await _settle()
+	var sold: int = 0
+	for item: Dictionary in state.backpack_snapshot()["items"]:
+		if str(item["kind"]) == "relic" and str(item["id"]) in ["fold_clasp", "echo_stone"]:
+			_check(state.sell_item(int(item["uid"])), "The locked-stock fixture legally sells a skill relic to recover its single cell")
+			sold += 1
+	_check(sold == 2 and int(state.backpack_snapshot()["used_cells"]) == 34 and state.purchase_error(2).is_empty(), "Two real sales leave a contiguous two-cell opening for the reserved hourglass")
 	await _settle()
 	var count_before: int = int(state.relic_counts["hourglass"])
 	var gold_before: int = state.gold

@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="ContentDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/content_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "starfall"
+kind = "skill"
+display_name = "落星"
+description = "星辉轰击敌群。升阶提高伤害与范围。"
+icon = "skill_starfall"
+color = Color(0.98, 0.79, 0.47, 1)
+price = 26
+damage = 32.0
+cooldown = 10.0
+radius = 112.0
+inventory_size = Vector2i(2, 2)
