@@ -31,6 +31,9 @@ var _sample_evades_start: int = 0
 var _evasion_feedback_peak: int = 0
 var _sample_evasion_feedback_peak: int = 0
 var _rune_peak: int = 0
+var _grounding_peak: int = 0
+var _sample_grounding_peak: int = 0
+var _grounding_draw_peak: int = 0
 var _physics_steps: int = 0
 var _sample_physics_steps: int = 0
 var _pre_step_minimum: Vector3i = Vector3i(2147483647, 2147483647, 2147483647)
@@ -365,6 +368,11 @@ func _exercise_input_prompts() -> void:
 	_prompt_wants_gamepad = not _prompt_wants_gamepad
 
 func _observe_feedback() -> void:
+	var grounding: Dictionary = _app.world._grounding_painter.get_stats()
+	_grounding_peak = maxi(_grounding_peak, int(grounding["active_count"]))
+	_grounding_draw_peak = maxi(_grounding_draw_peak, int(grounding["draw_commands"]))
+	if _sampling:
+		_sample_grounding_peak = maxi(_sample_grounding_peak, int(grounding["active_count"]))
 	var count: int = _app.world.dash_afterimage_count()
 	var evasion_active: int = 1 if bool(_app.world.dash_evasion_feedback_snapshot()["active"]) else 0
 	var pulse_active: int = 1 if bool(_app.world.pulse_feedback_snapshot()["active"]) else 0
@@ -473,6 +481,8 @@ func _source_fingerprint() -> Dictionary:
 	for id: String in ArenaCatalog.IDS:
 		paths.append(ArenaCatalog.texture_path(id))
 	paths.append("res://assets/starfall/maps/expanded/manifest.json")
+	for id: String in ["player", "chaser", "rusher", "tank", "caster", "boss"]:
+		paths.append("res://assets/starfall/sprites/%s.svg" % id)
 	for directory: String in ["res://scripts", "res://data", "res://scenes"]:
 		_collect_sources(directory, paths)
 	if _skill_feedback:
@@ -666,6 +676,10 @@ func _finish_report(now: int) -> void:
 		report["passed"] = bool(report["passed"]) and bool(results["valid"]) and fx_valid and source_valid
 		report["fixture_overrides"].append("fixture grants exact prices and explicit stock, then purchases one rank-I starfall and one rank-I arc_slash through RunState.buy_offer, occupying two real skill slots and six backpack cells")
 		report["fixture_overrides"].append("each ready purchased UID is queued only through World.request_skill(slot); normal fixed steps produce the recorded uses, active_skill_cast events, actual skill damage and bounded painter effects; the existing enemy, projectile and pickup pressure layout is unchanged")
+	report["grounding"] = {"peak_including_warmup": _grounding_peak, "sample_peak": _sample_grounding_peak,
+		"draw_command_peak": _grounding_draw_peak, "capacity": GroundingPainter.CAPACITY}
+	report["checks"]["grounding_budget"] = _sample_grounding_peak > 0 and _grounding_peak <= GroundingPainter.CAPACITY and _grounding_draw_peak == 1
+	report["passed"] = bool(report["passed"]) and bool(report["checks"]["grounding_budget"])
 	if _pulse_cycles:
 		report["fixture_overrides"].append("real Q requests at readiness; pulse control occurs before the normal World fixed step movement, while synthetic pressure positions are replenished each frame")
 	if _pulse_cycles or _skill_feedback or _skill_relics:

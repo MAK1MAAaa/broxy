@@ -41,6 +41,13 @@ class PixelCanvas:
             for column in range(x, x + width):
                 self.dot(column, row, color)
 
+    def shade_rect(self, x: int, y: int, width: int, height: int, materials: tuple[str, ...], color: str) -> None:
+        """Repaint material pixels without expanding the established silhouette."""
+        for row in range(y, y + height):
+            for column in range(x, x + width):
+                if self.pixels.get((column, row)) in materials:
+                    self.pixels[column, row] = color
+
     def poly(self, vertices: Iterable[tuple[int, int]], color: str) -> None:
         points = tuple(vertices)
         for y in range(min(p[1] for p in points), max(p[1] for p in points) + 1):
@@ -145,6 +152,17 @@ def _player() -> PixelCanvas:
     p.rect(16, 22, 3, 3, GOLD_DARK)
     p.rect(16, 22, 2, 2, GOLD)
     p.dot(17, 22, CREAM)
+    p.shade_rect(10, 9, 3, 5, (PURPLE,), "#d3c3ed")
+    p.shade_rect(21, 10, 3, 8, (PURPLE_DARK,), "#454875")
+    p.shade_rect(13, 11, 4, 2, (CREAM,), "#fff9e3")
+    p.shade_rect(20, 17, 4, 2, ("#c9b793",), "#ae9675")
+    p.shade_rect(11, 19, 3, 3, (PURPLE,), "#c0afe2")
+    p.shade_rect(7, 21, 3, 3, (TEAL,), TEAL_LIGHT)
+    p.shade_rect(20, 23, 5, 3, (TEAL,), TEAL_DARK)
+    p.shade_rect(23, 24, 3, 3, (TEAL_DARK,), "#24546c")
+    p.shade_rect(11, 28, 2, 1, ("#725347",), "#ab7954")
+    p.shade_rect(18, 28, 2, 1, ("#725347",), "#ab7954")
+    p.shade_rect(8, 24, 5, 1, ("#b9844f",), GOLD_DARK)
     p.outline()
     return p
 
@@ -160,6 +178,13 @@ def _chaser() -> PixelCanvas:
     p.rect(15, 17, 2, 2, INK)
     p.line((11, 10), (14, 7), TEAL_LIGHT)
     p.line((10, 20), (9, 23), TEAL_LIGHT)
+    p.shade_rect(10, 9, 2, 7, (TEAL,), TEAL_LIGHT)
+    p.shade_rect(17, 7, 3, 2, (TEAL,), "#71cec5")
+    p.shade_rect(20, 14, 4, 8, (TEAL_DARK,), "#24546c")
+    p.shade_rect(12, 22, 2, 4, (TEAL,), TEAL_DARK)
+    p.shade_rect(18, 23, 3, 3, (TEAL_DARK,), "#24546c")
+    p.shade_rect(13, 10, 3, 2, (CREAM,), "#fff9e3")
+    p.shade_rect(18, 16, 2, 3, ("#c2cfbd",), "#9aafa7")
     p.outline()
     return p
 
@@ -181,6 +206,14 @@ def _rusher() -> PixelCanvas:
     p.rect(5, 27, 5, 1, CREAM)
     p.rect(15, 27, 4, 1, CREAM)
     p.line((19, 18), (21, 19), "#d3c3ed")
+    p.shade_rect(7, 11, 2, 2, (CREAM,), "#fff9e3")
+    p.shade_rect(14, 13, 3, 3, (CREAM,), "#c9b793")
+    p.shade_rect(7, 20, 3, 2, ("#d7cba9",), CREAM)
+    p.shade_rect(13, 21, 3, 1, ("#d7cba9",), "#b4a586")
+    p.shade_rect(17, 15, 4, 2, (PURPLE,), "#c0afe2")
+    p.shade_rect(19, 21, 3, 3, (PURPLE_DARK,), "#454875")
+    p.shade_rect(25, 15, 3, 5, (PURPLE_DARK,), "#454875")
+    p.shade_rect(8, 24, 2, 2, (PURPLE_DARK,), PURPLE)
     p.outline()
     return p
 
@@ -207,6 +240,17 @@ def _tank() -> PixelCanvas:
     p.dot(16, 18, CREAM)
     for x, y in ((7, 12), (25, 12), (7, 22), (25, 22)):
         p.rect(x, y, 2, 2, GOLD)
+    p.shade_rect(7, 9, 4, 2, (BLUE,), BLUE_LIGHT)
+    p.shade_rect(4, 15, 2, 3, (BLUE_LIGHT,), "#e4e9da")
+    p.shade_rect(12, 5, 4, 2, (BLUE_LIGHT,), "#e4e9da")
+    p.shade_rect(19, 5, 2, 3, (BLUE_LIGHT,), BLUE)
+    p.shade_rect(24, 19, 4, 4, (BLUE,), "#4f6d94")
+    p.shade_rect(8, 25, 3, 1, (BLUE,), "#4f6d94")
+    p.shade_rect(10, 18, 3, 4, (TEAL_DARK,), TEAL)
+    p.shade_rect(19, 20, 3, 4, (TEAL_DARK,), "#24546c")
+    p.shade_rect(14, 19, 2, 3, (GOLD,), GOLD_DARK)
+    p.shade_rect(5, 28, 4, 1, (BLUE,), BLUE_LIGHT)
+    p.shade_rect(19, 28, 4, 1, (BLUE,), BLUE_LIGHT)
     p.outline()
     return p
 
@@ -233,6 +277,14 @@ def _caster() -> PixelCanvas:
     p.rect(15, 10, 2, 2, GOLD)
     p.poly(((10, 18), (15, 21), (20, 18), (19, 21), (15, 24), (10, 21)), GOLD_DARK)
     p.line((11, 19), (15, 22), GOLD)
+    p.shade_rect(12, 9, 2, 2, (PURPLE,), "#d3c3ed")
+    p.shade_rect(18, 10, 3, 3, (PURPLE,), "#7a74b0")
+    p.shade_rect(10, 19, 2, 5, (PURPLE,), "#c0afe2")
+    p.shade_rect(19, 24, 3, 4, (PURPLE_DARK, "#7a74b0"), "#454875")
+    p.shade_rect(13, 25, 1, 2, (GOLD,), CREAM)
+    p.shade_rect(23, 5, 3, 2, (CREAM,), "#fff9e3")
+    p.shade_rect(28, 8, 1, 3, (CREAM,), "#c9b793")
+    p.shade_rect(25, 13, 1, 12, (GOLD_DARK,), GOLD)
     p.outline()
     return p
 
@@ -266,6 +318,17 @@ def _boss() -> PixelCanvas:
     p.rect(33, 27, 2, 2, BLUE_LIGHT)
     p.line((13, 31), (15, 33), GOLD)
     p.line((26, 31), (24, 33), GOLD)
+    p.shade_rect(12, 5, 4, 2, (GOLD,), CREAM)
+    p.shade_rect(25, 7, 3, 2, (GOLD,), GOLD_DARK)
+    p.shade_rect(13, 15, 3, 3, (CREAM,), "#fff9e3")
+    p.shade_rect(24, 19, 3, 3, ("#c9b793",), "#ae9675")
+    p.shade_rect(13, 25, 3, 7, (TEAL,), TEAL_LIGHT)
+    p.shade_rect(24, 28, 5, 5, (TEAL_DARK, "#3a618c"), "#24546c")
+    p.shade_rect(16, 24, 2, 4, (BLUE_LIGHT,), "#e4e9da")
+    p.shade_rect(23, 26, 3, 3, (BLUE,), "#4f6d94")
+    p.shade_rect(3, 22, 3, 2, (CREAM,), "#fff9e3")
+    p.shade_rect(35, 27, 3, 3, ("#c9b793",), "#ae9675")
+    p.shade_rect(3, 24, 2, 1, (GOLD,), CREAM)
     p.outline()
     return p
 

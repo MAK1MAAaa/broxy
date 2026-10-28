@@ -76,7 +76,7 @@ def main() -> None:
                     "pivot": [0.5, 0.5], "role": "Existing masked caster and ritual courtyard menu illustration",
                     "source": "image-generation.json", "license": "Project generated artwork; see PROVENANCE.md",
                     "sha256": hashlib.sha256(content).hexdigest()})
-    manifest = {"schema_version": 1, "art_revision": "starfall-01", "purpose": "Reskin of the existing Embers of the Occult game",
+    manifest = {"schema_version": 1, "art_revision": "starfall-01", "sprite_material_revision": "upper-left-light-02", "purpose": "Reskin of the existing Embers of the Occult game",
                 "generator": "python tools/generate_starfall_art.py", "filter": "nearest for art; existing antialiased UI font",
                 "legacy_manifest": "assets/manifest.json", "assets": entries}
     (DESTINATION / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")

@@ -11,7 +11,7 @@ from xml.etree import ElementTree
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
-from generate_expanded_maps import ARENA, ART_MARGINS, DESTINATION, IDS, ORIGIN, SIZE, WALKABLE, build_maps
+from generate_expanded_maps import ARENA, ART_MARGINS, DESTINATION, IDS, MATERIALS, ORIGIN, SIZE, WALKABLE, build_maps
 
 SVG = "{http://www.w3.org/2000/svg}"
 
@@ -30,6 +30,7 @@ class ExpandedMapAssetTests(unittest.TestCase):
         self.assertEqual(SIZE, (ARENA[2] + ART_MARGINS[0] + ART_MARGINS[2], ARENA[3] + ART_MARGINS[1] + ART_MARGINS[3]))
         self.assertEqual(WALKABLE, (64, 144, 3508, 1944))
         self.assertTrue(self.manifest["legacy_assets_preserved"])
+        self.assertEqual(self.manifest["art_revision"], "expanded-arena-02")
         for (kind, content), row in zip(self.generated, self.manifest["assets"]):
             with self.subTest(arena=kind):
                 self.assertEqual((DESTINATION / f"{kind}.svg").read_bytes(), content)
@@ -38,6 +39,7 @@ class ExpandedMapAssetTests(unittest.TestCase):
                 self.assertEqual(row["world_origin"], list(ORIGIN))
                 self.assertEqual(row["walkable_bounds"], list(ARENA))
                 self.assertEqual(row["art_margins"], list(ART_MARGINS))
+                self.assertEqual(row["material"], MATERIALS[kind])
                 self.assertEqual(row["license"], "CC0-1.0")
                 self.assertTrue((ROOT / row["source"]).is_file())
                 self.assertEqual(row["sha256"], hashlib.sha256(content).hexdigest())
@@ -89,6 +91,27 @@ class ExpandedMapAssetTests(unittest.TestCase):
         before = random.getstate()
         self.assertEqual(build_maps(), self.generated)
         self.assertEqual(random.getstate(), before)
+
+    def test_biome_materials_are_flat_and_keep_the_combat_floor_unobstructed(self) -> None:
+        material_ids: set[str] = set()
+        ornament_ids: set[str] = set()
+        for kind, content in self.generated:
+            xml = ElementTree.fromstring(content)
+            materials = [node for node in xml.iter(SVG + "g") if node.get("data-role") == "floor-material"]
+            self.assertEqual(len(materials), 1)
+            self.assertEqual(materials[0].get("data-flat"), "true")
+            material_ids.add(materials[0].get("data-material"))
+            left, top, right, bottom = WALKABLE
+            for node in materials[0].iter(SVG + "rect"):
+                x, y, width, height = (int(node.get(key)) for key in ("x", "y", "width", "height"))
+                self.assertTrue(left <= x < x + width <= right and top <= y < y + height <= bottom, kind)
+            ornaments = [node for node in xml.iter(SVG + "g") if node.get("data-role") == "rim-decoration"]
+            ornament_ids.update(node.get("data-kind") for node in ornaments)
+            for node in xml.iter(SVG + "rect"):
+                red, green, blue = (int(node.get("fill")[index:index + 2], 16) for index in (1, 3, 5))
+                self.assertFalse(red > 180 and red > green * 1.25 and red > blue * 1.25, "Background cannot impersonate a hostile red warning")
+        self.assertEqual(len(material_ids), 4)
+        self.assertEqual(len(ornament_ids), 4)
 
 
 if __name__ == "__main__":

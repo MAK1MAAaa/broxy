@@ -3,7 +3,7 @@ extends SceneTree
 
 const MAIN: PackedScene = preload("res://scenes/main.tscn")
 const STEP: float = 1.0 / 60.0
-const VIEWS: Array[String] = ["center", "northwest", "northeast", "southeast", "distant", "boss", "small", "reliquary", "mire", "glacier", "ashland"]
+const VIEWS: Array[String] = ["center", "northwest", "northeast", "southeast", "distant", "boss", "small", "reliquary", "mire", "glacier", "ashland", "reliquary_inlay", "mire_inlay", "glacier_inlay", "ashland_inlay"]
 var _app: Node
 
 func _initialize() -> void:
@@ -34,6 +34,8 @@ func _preview() -> void:
 	_app.args = PackedStringArray(["--autoplay"])
 	_app.sound.set_volume(0.0)
 	var arena: String = view if view in ArenaCatalog.IDS else "mire"
+	if view.ends_with("_inlay"):
+		arena = view.trim_suffix("_inlay")
 	_app.ui.set_selected_arena(arena)
 	_app._begin_run("bone", 20261028)
 	_app.world.set_physics_process(false)
@@ -49,6 +51,8 @@ func _preview() -> void:
 		point = CombatSim.ARENA.end - Vector2(16, 16)
 	elif view in ["distant", "boss", "small"] or view in ArenaCatalog.IDS:
 		point = Vector2(1880, 910)
+	elif view.ends_with("_inlay"):
+		point = Vector2(1540, 365)
 	sim.player_position = point
 	sim.player_direction = Vector2.UP
 	_app.run.gold = 1000
@@ -68,6 +72,9 @@ func _preview() -> void:
 	if view == "boss":
 		sim.boss = sim.spawn_enemy("boss", CombatSim.clamp_point(point + Vector2(0, -200)))
 		sim.boss.action_timer = 9999.0
+	for index: int in 5:
+		var drop: Vector2 = point + Vector2(-145.0 + float(index) * 35.0, 95.0 + float(index % 2) * 22.0)
+		sim._drop_soul(CombatSim.clamp_point(drop, 24.0), 1 if index % 2 == 0 else 3)
 	_app.world._physics_process(STEP)
 	_app.ui.update_hud(_app.world.hud_snapshot())
 	var focus: Control = root.gui_get_focus_owner()
@@ -85,5 +92,6 @@ func _preview() -> void:
 		"persistent_profile": _app.store.persistent, "fixed_fixture": true, "world_bounds": str(CombatSim.ARENA),
 		"player": [sim.player_position.x, sim.player_position.y], "camera_center": [_app.world._camera.position.x, _app.world._camera.position.y],
 		"window_size": [root.size.x, root.size.y], "enemy_markers": map.presentation_snapshot()["enemy_count"],
-		"terrain_markers": map.presentation_snapshot()["zone_count"], "minimap_rect": str(map.get_global_rect()), "capture": output}))
+		"terrain_markers": map.presentation_snapshot()["zone_count"], "grounding": _app.world._grounding_painter.get_stats(),
+		"minimap_rect": str(map.get_global_rect()), "capture": output}))
 	_app._quit_game(0 if result == OK else 1)

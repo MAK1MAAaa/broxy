@@ -1,6 +1,7 @@
 {
   "schema_version": 1,
   "art_revision": "starfall-01",
+  "sprite_material_revision": "upper-left-light-02",
   "purpose": "Reskin of the existing Embers of the Occult game",
   "generator": "python tools/generate_starfall_art.py",
   "filter": "nearest for art; existing antialiased UI font",
@@ -19,7 +20,7 @@
       "role": "original pixel sprite; existing beaked ivory mask, violet pointed hood, teal cape and gold ritual chain; centered canvas; decorative silhouette",
       "source": "tools/starfall_sprites.py",
       "license": "CC0-1.0",
-      "sha256": "b99918593ff57744b7f4be83d4fa6402336985dfe78c92f32d79dfae23d57af0"
+      "sha256": "80497b724a6f9d6e93ab18d4c91a96254d1e83b236682e7d139864fe4e7c7fbf"
     },
     {
       "path": "assets/starfall/sprites/chaser.svg",
@@ -34,7 +35,7 @@
       "role": "original pixel sprite; existing tattered ghost; ivory hollow face; teal shroud and separated rag strips; centered canvas; decorative silhouette",
       "source": "tools/starfall_sprites.py",
       "license": "CC0-1.0",
-      "sha256": "036586a0e4051684ece4e2ca8e7625ab95a4936e7079688d91f278a31fc7d94d"
+      "sha256": "ba224a94d3d129600b5bfed46a3193924bef2f9a9714761598d39b691f6b3e71"
     },
     {
       "path": "assets/starfall/sprites/rusher.svg",
@@ -49,7 +50,7 @@
       "role": "original pixel sprite; existing low violet beast; angular bone mask and paired pale claws; centered canvas; decorative silhouette",
       "source": "tools/starfall_sprites.py",
       "license": "CC0-1.0",
-      "sha256": "d229a85942487cb806e1349a2fdab2d5392f9508fdf344870b42625902b9c2db"
+      "sha256": "91fedad5c2dc0217621c4570572b2276aec4f50d5a6f9e943b56201d3e5eab4a"
     },
     {
       "path": "assets/starfall/sprites/tank.svg",
@@ -64,7 +65,7 @@
       "role": "original pixel sprite; broad blue stone guardian; inset teal shield and gold star core; centered canvas; decorative silhouette",
       "source": "tools/starfall_sprites.py",
       "license": "CC0-1.0",
-      "sha256": "a7ddf3318511469874518eb90c4b923e646fcb115ff409202ce15ec2aeb6d189"
+      "sha256": "25a733fd6d50ae6796af908ba3e6750eea69fedeadcc4f4559aa74e5dd95bc60"
     },
     {
       "path": "assets/starfall/sprites/caster.svg",
@@ -79,7 +80,7 @@
       "role": "original pixel sprite; existing violet ritual mage; hooded eyes; separate carved skull staff; centered canvas; decorative silhouette",
       "source": "tools/starfall_sprites.py",
       "license": "CC0-1.0",
-      "sha256": "fb3895085faf0d728892d2955ff6c0ea51593f11798a7d6150a7125776e018c7"
+      "sha256": "37ec2e89c22b4d3125f7cdff90ac8b36eae75a5e0a921c255bd8a51643fd5068"
     },
     {
       "path": "assets/starfall/sprites/boss.svg",
@@ -94,7 +95,7 @@
       "role": "original pixel sprite; existing floating-crown priest; ivory idol face and detached hands; teal ceremonial robe; centered canvas; decorative silhouette",
       "source": "tools/starfall_sprites.py",
       "license": "CC0-1.0",
-      "sha256": "20a2041677b287f9564bc11c97411c9e3568bca273ef01e3a89132c99f674071"
+      "sha256": "f8bcaabf6229e55ee92d3f9f52833c78bf00743040cd113fe9501b1d70754cec"
     },
     {
       "path": "assets/starfall/arena.svg",

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "art_revision": "expanded-arena-01",
-  "purpose": "Continuous world-scale maps for the existing game",
+  "art_revision": "expanded-arena-02",
+  "purpose": "Continuous world-scale maps with biome materials and carved landmarks",
   "legacy_assets_preserved": true,
   "filter": "nearest",
   "assets": [
@@ -29,6 +29,7 @@
         160
       ],
       "pixel_grid": 4,
+      "material": "worn-limestone",
       "pivot": [
         0.0,
         0.0
@@ -37,7 +38,7 @@
       "palette_source": "tools/starfall_environment.py",
       "terrain_source": "data/arenas.json",
       "license": "CC0-1.0",
-      "sha256": "ce1d71ba619382b6be93854d849b89659efaf4330d5084d4897714962d77f887"
+      "sha256": "3e8699704e8b0da7dc6a3496701840a534f60c0f6b00ed4e4e4cdc31654df549"
     },
     {
       "id": "mire",
@@ -63,6 +64,7 @@
         160
       ],
       "pixel_grid": 4,
+      "material": "mossy-wet-stone",
       "pivot": [
         0.0,
         0.0
@@ -71,7 +73,7 @@
       "palette_source": "tools/starfall_environment.py",
       "terrain_source": "data/arenas.json",
       "license": "CC0-1.0",
-      "sha256": "2971df3e224bf7ef044826791a706bc90f2e7d7e20ca3e2051483ff242fe0695"
+      "sha256": "11b337a8474ec0d81a2dad9afcde5c2f242c67ffe1cfa2e4aaa57df120312b9c"
     },
     {
       "id": "glacier",
@@ -97,6 +99,7 @@
         160
       ],
       "pixel_grid": 4,
+      "material": "frosted-slate",
       "pivot": [
         0.0,
         0.0
@@ -105,7 +108,7 @@
       "palette_source": "tools/starfall_environment.py",
       "terrain_source": "data/arenas.json",
       "license": "CC0-1.0",
-      "sha256": "3f80a2dfd1767f5ed38f8f1ca5c652b14ecf51f7aba7815f59fcf3b21a0e509e"
+      "sha256": "467de42f5e1db7d0bac6aa5c8fa3d231dfc0d4dd3bf2ec360524f20f8729eed5"
     },
     {
       "id": "ashland",
@@ -131,6 +134,7 @@
         160
       ],
       "pixel_grid": 4,
+      "material": "weathered-basalt",
       "pivot": [
         0.0,
         0.0
@@ -139,7 +143,7 @@
       "palette_source": "tools/starfall_environment.py",
       "terrain_source": "data/arenas.json",
       "license": "CC0-1.0",
-      "sha256": "e9275a5ffe6468ed79f4ecd5e26ab5b4f428ac62729654b80b3525ef96924208"
+      "sha256": "b975a144b4173fb00ce16d0230585670d81cbad0370c611f613f8ec002852fb9"
     }
   ]
 }

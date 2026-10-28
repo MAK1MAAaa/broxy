@@ -34,6 +34,8 @@ class DrawSpy extends ProbeWorld:
 	var animation_radii: Array[float] = []
 	func _draw_atmosphere() -> void:
 		passes.append("atmosphere")
+	func _draw_ground_contacts() -> void:
+		passes.append("contacts")
 	func _draw_pulse_range(origin: Vector2, radius: float) -> void:
 		passes.append("range")
 		range_origins.append(origin)

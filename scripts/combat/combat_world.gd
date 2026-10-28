@@ -127,6 +127,8 @@ const IMPACT_PAINTER_SCRIPT = preload("res://scripts/combat/impact_painter.gd")
 var _impact_painter: IMPACT_PAINTER_SCRIPT = IMPACT_PAINTER_SCRIPT.new()
 const ACTIVE_SKILL_PAINTER_SCRIPT = preload("res://scripts/combat/active_skill_painter.gd")
 var _active_skill_painter: ACTIVE_SKILL_PAINTER_SCRIPT = ACTIVE_SKILL_PAINTER_SCRIPT.new()
+const GROUNDING_PAINTER_SCRIPT = preload("res://scripts/combat/grounding_painter.gd")
+var _grounding_painter: GROUNDING_PAINTER_SCRIPT = GROUNDING_PAINTER_SCRIPT.new()
 
 func _init() -> void:
 	for index: int in DASH_AFTERIMAGE_LIMIT:
@@ -526,6 +528,7 @@ func _reset_feedback() -> void:
 	_enemy_telegraphs.clear()
 	_impact_painter.clear()
 	_active_skill_painter.clear()
+	_grounding_painter.clear()
 	_numbers.clear()
 	_number_lookup.clear()
 	_number_free.clear()
@@ -630,6 +633,7 @@ func _on_ended(victory: bool, reason: String) -> void:
 	_enemy_telegraphs.clear()
 	_impact_painter.clear()
 	_active_skill_painter.clear()
+	_grounding_painter.clear()
 	hud_changed.emit(hud_snapshot())
 	wave_ended.emit(victory, reason)
 
@@ -671,10 +675,11 @@ func _draw() -> void:
 		return
 	_draw_atmosphere()
 	_draw_pulse_feedback()
+	_draw_ground_contacts()
+	_draw_player_ground()
 	_draw_souls()
 	_draw_enemies()
 	_draw_friendly_shots()
-	_draw_player_ground()
 	_draw_effects()
 	_active_skill_painter.draw(self)
 	_draw_impact_feedback()
@@ -686,6 +691,13 @@ func _draw() -> void:
 	_draw_feedback()
 	# Hostile projectiles and telegraphs stay above all friendly spell effects.
 	_draw_danger()
+
+func _draw_ground_contacts() -> void:
+	if not active or sim == null:
+		_grounding_painter.clear()
+		return
+	_grounding_painter.rebuild(sim, camera_view())
+	_grounding_painter.draw(self)
 
 func _draw_skill_feedback() -> void:
 	if _skill_feedback_remaining <= 0.0 or _dash_evasion_font == null:
@@ -851,7 +863,7 @@ func _draw_atmosphere() -> void:
 		var alpha: float = 0.07 + (sin(_visual_time * 0.7 + phase) + 1.0) * 0.035
 		draw_circle(point, 1.0 if index % 3 else 1.5, Color(_arena_color, alpha))
 	if sim.boss != null and sim.boss.active:
-		var pulse: float = 0.32 + sin(_visual_time * 1.5) * 0.05
+		var pulse: float = 0.13 + sin(_visual_time * 1.5) * 0.02
 		draw_texture_rect(glow_texture, Rect2(sim.boss.position - Vector2(110, 100), Vector2(220, 180)), false, Color(0.73, 0.59, 0.85, pulse))
 
 func _draw_souls() -> void:
@@ -921,9 +933,9 @@ func _draw_friendly_shots() -> void:
 
 func _draw_player_ground() -> void:
 	var center: Vector2 = sim.player_position
-	draw_texture_rect(glow_texture, Rect2(center - Vector2(44, 34), Vector2(88, 70)), false, Color(0.89, 0.78, 1.0, 0.35))
+	draw_texture_rect(glow_texture, Rect2(center - Vector2(44, 34), Vector2(88, 70)), false, Color(0.89, 0.78, 1.0, 0.16))
 	draw_set_transform(center + Vector2(0, 9), 0.0, Vector2(1.0, 0.48))
-	draw_texture_rect(seal_texture, Rect2(-Vector2.ONE * 32.0, Vector2.ONE * 64.0), false, Color(1.0, 0.95, 0.85, 0.55 + sin(_visual_time * 1.6) * 0.08))
+	draw_texture_rect(seal_texture, Rect2(-Vector2.ONE * 32.0, Vector2.ONE * 64.0), false, Color(1.0, 0.95, 0.85, 0.24 + sin(_visual_time * 1.6) * 0.03))
 	draw_set_transform(Vector2.ZERO)
 
 func _player_tint() -> Color:

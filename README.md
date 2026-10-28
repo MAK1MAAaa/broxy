@@ -4,6 +4,8 @@ Godot 4.7.2 普通版、带类型标注的 GDScript 开发的 macOS / Windows �
 
 当前版本在原游戏基础上更换为明快像素美术，参考《弹射世界》的像素簇与鲜明轮廓：保留鸟喙面具主角、全部敌人与道具身份，重绘六角色、四地图、26枚图标、弹体与界面，使用奶油纸卡和青绿装备盒。玩法与关卡数据沿用原版；旧55项素材保留，新40张像素SVG与菜单PNG独立存放。来源、生成方式与验证见[美术换装](docs/art-reskin.md)。
 
+当前材质迭代细化六角色的面具、披风、护甲、法杖和金冠，统一左上光与右下暗面，保留原透明轮廓。四张连续大地图使用变长石板、湿苔、冰裂和玄武岩碎屑，外缘分别采用石柱、苔冠、冰晶与岩块。人物、敌人及魂屑增加静止贴地阴影；脚下法阵和Boss光斑压低，并置于实体下方，敌方预警继续置顶。规则与验收见[材质与贴地层次](docs/art-polish.md)。
+
 操作按钮统一为有高光、底边与轻投影的圆角样式：主操作使用深青绿珐琅和奶油白文字，次操作使用奶油色；法器／地图选择、购买、锁定及设置开关同步适配。按下文字轻移，键盘／手柄焦点使用描边与菱形标记；受阻商品仍可聚焦查看原因，背包物品格继续使用装备盒。实现与原生预览见[按钮美化](docs/button-style.md)。
 
 封面改为全屏连贯横幅：鸟喙面具角色与月环仪器居右，法器、地图与开始入口集中左侧，以缩略图、对勾和锁形状态表达选择，不再堆放定位标签、介绍、空记录与底部说明。星尘、环光、烛火和符印组成24帧循环；`assets/title/cover.gif`为1280×720、每帧120毫秒的实际动图，游戏复用同一组离散绘制状态。新增项目约定要求用直观UI解决信息问题，拒绝用解释小字补救。制作、来源和验收见[全屏动画封面](docs/title-cover.md)。
@@ -56,7 +58,7 @@ Godot 4.7.2 普通版、带类型标注的 GDScript 开发的 macOS / Windows �
 
 ## 直接游玩
 
-Windows x86_64入口为 `build/Embers-windows-x86_64/Embers.exe`，分发包为 `build/Embers-windows-x86_64.zip`。解压后保留同目录的 `Embers.pck` 与 `licenses/`。当前内容包含连续大地图、跟随镜头、角落小地图、双背包技能和增强命中反馈，并保留明快像素美术、立体按钮及全屏动画封面。地图更新前包备份为 `build/Embers-windows-before-expanded-map-ad8c5a9.zip`，更早版本继续保留。Windows使用微软雅黑；本轮验收见[大地图与小地图](docs/expanded-map.md)，此前技能记录见[背包主动技能与打击反馈](docs/active-skills.md)，macOS包保留此前版本。
+Windows x86_64入口为 `build/Embers-windows-x86_64/Embers.exe`，分发包为 `build/Embers-windows-x86_64.zip`。解压后保留同目录的 `Embers.pck` 与 `licenses/`。当前内容包含四地图与六角色材质细化、贴地阴影、连续大地图、角落小地图、双背包技能和增强命中反馈，并保留立体按钮及全屏动画封面。材质更新前包备份为 `build/Embers-windows-before-art-polish-8ed662b.zip`，更早版本继续保留。Windows使用微软雅黑；本轮验收见[材质与贴地层次](docs/art-polish.md)，此前地图记录见[大地图与小地图](docs/expanded-map.md)，macOS包保留此前版本。
 
 最新macOS应用为 `build/Embers-minimal-hud-macos.app`，分发包为 `build/Embers-minimal-hud-macos-arm64.zip`，包含四地图选择、实际地形与精简界面，以及此前完整背包／共鸣／秘术抉择内容。适用于Apple Silicon、macOS 13及以上，使用本地ad-hoc签名。本轮界面验证见 `reports/minimal-hud-validation.json`，地图与性能历史见 `reports/terrain-validation.json`；旧包保留。
 
@@ -158,6 +160,8 @@ BROXY_APP_PATH="$PWD/build/Embers-minimal-hud-macos.app" ./tools/build_macos.sh
 构建从官方 Universal 模板提取 arm64，生成 `build/Embers.app` 并执行 ad-hoc 签名验证。引擎许可在应用的 `Contents/Resources/licenses/` 中直接可读。对外发布前应使用自己的 Developer ID 配置签名与公证。
 
 ## 验证
+
+材质与贴地版Windows通过 `./tools/test.sh` 的92套Godot与5个档案诊断入口，共31899条断言、49项Python测试；新增阴影投影／World集成33／20条，9套原生与9套编译PCK专项通过。15组源代码与包内画面像素一致，另检查危险与闪光关闭画面；六角色透明轮廓逐点保持。60秒中央合成压力平均83.841 FPS、P99 18.427毫秒，501个接触影峰值保持一次绘制，90项源码／资源指纹一致。六局完整对局除版本标识外与大地图版全部字段一致。Windows已重建并启动EXE；证据见[材质与贴地层次](docs/art-polish.md)及 `reports/art-polish/validation.json`。
 
 大地图版Windows通过 `./tools/test.sh` 的90套Godot与5个档案诊断入口，共31846条断言、48项Python测试；地图／镜头／小地图新增181／189／47条，9套原生与9套编译PCK专项通过。11组原生及11组包内画面覆盖四图、远区、边缘、Boss和960×540窗口，像素一致。中央300敌人／600弹体／200掉落的60秒合成压力平均91.083 FPS、P99 18.598毫秒，83项源码与资源指纹一致。三条符文路线的默认／购入脉冲策略共6局均完成8波。Windows包已重新导出并启动EXE；macOS保留历史包。完整范围及证据见[大地图与小地图](docs/expanded-map.md)及 `reports/expanded-map/validation.json`。
 
