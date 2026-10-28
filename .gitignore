@@ -122,3 +122,7 @@ reports/active-skills/*.log
 reports/active-skills/*.png
 reports/active-skills/*.import
 reports/active-skills/*-raw.json
+reports/expanded-map/*.log
+reports/expanded-map/*.png
+reports/expanded-map/*.import
+reports/expanded-map/*-raw.json

@@ -247,7 +247,8 @@ func _test_draw_order_and_boundaries() -> void:
 	_begin(world)
 	_trigger(world)
 	var bounds: Rect2 = CombatSim.ARENA.grow(-16.0)
-	var points: Array[Vector2] = [bounds.position, Vector2(bounds.end.x, bounds.position.y), bounds.end, Vector2(bounds.position.x, bounds.end.y), Vector2(0, 365), Vector2(1280, 365)]
+	var center: Vector2 = bounds.get_center()
+	var points: Array[Vector2] = [bounds.position, Vector2(bounds.end.x, bounds.position.y), bounds.end, Vector2(bounds.position.x, bounds.end.y), center - Vector2(900, 0), center + Vector2(900, 0), center - Vector2(0, 500), center + Vector2(0, 500)]
 	for point: Vector2 in points:
 		world.sim.player_position = point
 		world.passes.clear()
@@ -261,9 +262,13 @@ func _test_draw_order_and_boundaries() -> void:
 		_check(world.text_anchors.size() == 3 and world.pulse_centers.size() == 3 and world.pulse_centers[-1] == point + Vector2(0, 6), "Text and its small foot arc follow the current player rather than the old evasion location")
 		var anchor: Vector2 = world.text_anchors[-1]
 		var half_width: float = world._dash_evasion_text_width * 0.5
-		_check(anchor.x - half_width >= 8.0 and anchor.x + half_width <= 1272.0 and anchor.y - 16.0 >= 110.0, "The confirmation respects canvas side padding and the top HUD safety line")
-		var clear_of_player: bool = anchor.y - point.y >= 58.0 if point.y == bounds.position.y else point.y - anchor.y >= 58.0
-		_check(clear_of_player, "The upper-edge label moves below the orbit area; other labels stay clear above the head and weapons")
+		var view: Rect2 = world.camera_view()
+		var safe: Rect2 = world._feedback_safe_rect()
+		var text_rect := Rect2(anchor - Vector2(half_width, 16), Vector2(half_width * 2.0, 16))
+		_check(view.grow(0.01).encloses(safe) and safe.grow(0.01).encloses(text_rect), "The confirmation stays inside the current camera's HUD-safe world rectangle")
+		var below_player: bool = point.y - 78.0 < safe.position.y
+		var clear_of_player: bool = anchor.y - point.y >= 58.0 if below_player else point.y - anchor.y >= 58.0
+		_check(clear_of_player, "A player near the camera's top HUD receives a label below the orbit; other labels clear the head and weapons")
 	world.apply_visual_settings({"shake": true, "flash": false})
 	world.passes.clear()
 	world._draw()

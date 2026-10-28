@@ -26,6 +26,7 @@ static func movement(sim: CombatSim) -> Vector2:
 		if not zone.triggered and zone.position.distance_to(sim.player_position) < zone.radius + 38.0:
 			steering += (sim.player_position - zone.position).normalized() * 4.0
 	var point: Vector2 = sim.player_position
-	steering.x += clampf((115.0 - point.x) / 30.0, 0.0, 3.0) - clampf((point.x - 1165.0) / 30.0, 0.0, 3.0)
-	steering.y += clampf((160.0 - point.y) / 30.0, 0.0, 3.0) - clampf((point.y - 595.0) / 30.0, 0.0, 3.0)
+	var safe: Rect2 = CombatSim.ARENA.grow(-45.0)
+	steering.x += clampf((safe.position.x - point.x) / 30.0, 0.0, 3.0) - clampf((point.x - safe.end.x) / 30.0, 0.0, 3.0)
+	steering.y += clampf((safe.position.y - point.y) / 30.0, 0.0, 3.0) - clampf((point.y - safe.end.y) / 30.0, 0.0, 3.0)
 	return steering.limit_length()

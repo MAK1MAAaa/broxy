@@ -159,10 +159,12 @@ func _snapshot(state: RunState) -> Dictionary:
 
 
 func _reachable_player_art_bounds() -> Rect2:
-	# CombatSim clamps the body center with a 16 px inset. The rendered texture
-	# extends 50 px above that center; checking ARENA alone misses the masked face.
-	var centers: Rect2 = Rect2(CombatSim.clamp_point(Vector2(-10000, -10000), 16.0), Vector2.ZERO)
-	centers.end = CombatSim.clamp_point(Vector2(10000, 10000), 16.0)
+	# Axis-clamped camera projection is bounded by its four reachable corners.
+	var first: Vector2 = CombatSim.clamp_point(CombatSim.ARENA.position, 16.0)
+	var last: Vector2 = CombatSim.clamp_point(CombatSim.ARENA.end, 16.0)
+	var centers := Rect2(first - ArenaCatalog.visible_rect(first).position, Vector2.ZERO)
+	for point: Vector2 in [first, Vector2(last.x, first.y), last, Vector2(first.x, last.y)]:
+		centers = centers.expand(point - ArenaCatalog.visible_rect(point).position)
 	# Conservative continuous envelope for CombatWorld._draw_player: texture
 	# x +/-34, y -50..18; bob +/-2, lean +/-0.045, world shake +/-4.
 	var body_x: float = 34.0 + 52.0 * sin(0.045)

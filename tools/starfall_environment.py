@@ -318,6 +318,8 @@ def _ornaments(canvas: Canvas, palette: Palette, id: str) -> None:
 def generate(save_svg: SaveSVG) -> None:
     definitions = json.loads((ROOT / "data/arenas.json").read_text(encoding="utf-8"))
     for index, definition in enumerate(definitions):
+        definition = dict(definition)
+        definition["zones"] = definition["zones"][:definition.get("legacy_zone_count", len(definition["zones"]))]
         id = str(definition["id"])
         if id not in PALETTES:
             raise ValueError(f"No Starfall environment palette for {id}")

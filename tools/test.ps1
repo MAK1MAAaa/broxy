@@ -25,7 +25,8 @@ try {
         'control_bindings', 'controls_flow', 'controls_ui', 'gamepad_backpack',
         'input_devices', 'input_prompts_ui', 'input_prompts_flow', 'analog_dash', 'gamepad_reading', 'backpack_focus',
         'skill_audio', 'skill_feedback', 'adventure_art', 'title_cover',
-        'active_skill_inventory', 'active_skill_combat', 'active_skill_world'
+        'active_skill_inventory', 'active_skill_combat', 'active_skill_world',
+        'expanded_arena', 'expanded_world', 'minimap_ui'
     )
     foreach ($suite in $suites) {
         & $runner --headless --script "res://tests/test_$suite.gd"

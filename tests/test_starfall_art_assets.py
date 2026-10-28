@@ -71,8 +71,9 @@ class StarfallArtTests(unittest.TestCase):
             name = "arena.svg" if definition["id"] == "reliquary" else f'maps/{definition["id"]}.svg'
             xml = ElementTree.parse(ROOT / "assets/starfall" / name).getroot()
             ellipses = list(xml.iter(SVG + "ellipse"))
-            self.assertEqual(len(ellipses), len(definition["zones"]))
-            for node, zone in zip(ellipses, definition["zones"]):
+            legacy_zones = definition["zones"][:definition["legacy_zone_count"]]
+            self.assertEqual(len(ellipses), len(legacy_zones))
+            for node, zone in zip(ellipses, legacy_zones):
                 self.assertEqual(tuple(float(node.get(key)) for key in ("cx", "cy", "rx", "ry")),
                                  tuple(zone["center"] + zone["radius"]))
                 self.assertNotIn(node.get("fill"), (None, "none"))

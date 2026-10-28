@@ -108,11 +108,12 @@ func _test_coincident_and_boundaries() -> void:
 	for arena: String in ArenaCatalog.IDS:
 		for positive: bool in [false, true]:
 			var sim: CombatSim = _sim(arena)
-			sim.player_position = Vector2(1194, 570) if positive else Vector2(86, 160)
+			var bounds: Rect2 = CombatSim.ARENA
+			sim.player_position = bounds.end - Vector2(20, 20) if positive else bounds.position + Vector2(20, 20)
 			var offset: Vector2 = Vector2(10, 10) if positive else Vector2(-10, -10)
 			var enemy: CombatSim.Enemy = _enemy(sim, "tank", sim.player_position + offset)
 			sim._try_cast_pulse()
-			_check(enemy.position == (Vector2(1214, 590) if positive else Vector2(66, 140)) and enemy.pulse_hinder_timer == 1.0 and sim.last_pulse_affected == 1, "Push clamps to the default enemy arena bounds in " + arena)
+			_check(enemy.position == (bounds.end if positive else bounds.position) and enemy.pulse_hinder_timer == 1.0 and sim.last_pulse_affected == 1, "Push clamps to the shared expanded enemy arena bounds in " + arena)
 
 func _test_enemy_actions_and_immunity() -> void:
 	var sim: CombatSim = _sim()

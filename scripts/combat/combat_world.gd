@@ -10,6 +10,7 @@ var sound: SoundBank
 var settings: Dictionary = {"shake": true, "flash": true}
 var textures: Dictionary = {}
 var arena_texture: Texture2D
+var _camera: Camera2D
 var _arena_id: String = "reliquary"
 var _arena_name: String = "秘仪祭坛"
 var _arena_color: Color = Color(0.78, 0.67, 0.50)
@@ -148,7 +149,13 @@ func _ready() -> void:
 	_number_font = ThemeDB.fallback_font
 	_dash_evasion_font = GameUI.create_ui_font()
 	_dash_evasion_text_width = _dash_evasion_font.get_string_size(DASH_EVASION_TEXT, HORIZONTAL_ALIGNMENT_LEFT, -1, DASH_EVASION_FONT_SIZE).x
-	arena_texture = load(AdventureArt.path(str(ArenaCatalog.definition(_arena_id)["texture"]))) as Texture2D
+	arena_texture = load(ArenaCatalog.texture_path(_arena_id)) as Texture2D
+	_camera = Camera2D.new()
+	_camera.name = "ExplorationCamera"
+	_camera.top_level = true
+	_camera.enabled = false
+	_camera.process_callback = Camera2D.CAMERA2D_PROCESS_PHYSICS
+	add_child(_camera)
 	soul_texture = load(AdventureArt.path("res://assets/icons/soul.svg"))
 	glow_texture = load(AdventureArt.path("res://assets/fx/glow.svg"))
 	seal_texture = load(AdventureArt.path("res://assets/fx/seal.svg"))
@@ -156,6 +163,7 @@ func _ready() -> void:
 		textures[id] = load(AdventureArt.path("res://assets/sprites/%s.svg" % id))
 	for definition: ContentDef in GameCatalog.weapons():
 		textures[definition.id] = load(AdventureArt.path("res://assets/icons/%s.svg" % definition.icon))
+	_update_camera()
 	queue_redraw()
 
 func apply_visual_settings(value: Dictionary) -> void:
@@ -176,7 +184,7 @@ func begin(state: RunState) -> void:
 	# Keep off-tree simulation fixtures free of render resources; _ready handles
 	# a world begun before it is attached, using the same selected arena.
 	if is_node_ready():
-		arena_texture = load(AdventureArt.path(str(arena["texture"]))) as Texture2D
+		arena_texture = load(ArenaCatalog.texture_path(_arena_id)) as Texture2D
 	_arena_color = Color(str(arena["preview_color"])) if _arena_id != "reliquary" else Color(0.78, 0.67, 0.50)
 	sim = CombatSim.new()
 	sim.begin(state)
@@ -198,6 +206,7 @@ func begin(state: RunState) -> void:
 	_hud_clock = 0.0
 	_shake = 0.0
 	position = Vector2.ZERO
+	_update_camera()
 	hud_changed.emit(hud_snapshot())
 	queue_redraw()
 
@@ -205,7 +214,28 @@ func stop() -> void:
 	active = false
 	_reset_feedback()
 	position = Vector2.ZERO
+	if is_instance_valid(_camera) and _camera.is_current():
+		_camera.position = ArenaCatalog.MAX_VIEW_SIZE * 0.5
+		_camera.force_update_scroll()
+		_camera.enabled = false
 	queue_redraw()
+
+func camera_view() -> Rect2:
+	return ArenaCatalog.visible_rect(sim.player_position if sim != null else CombatSim.ARENA.get_center())
+
+func _update_camera() -> void:
+	if not active or sim == null or not is_instance_valid(_camera):
+		return
+	_camera.position = ArenaCatalog.camera_center(sim.player_position)
+	_camera.enabled = true
+	if not _camera.is_current():
+		_camera.make_current()
+	_camera.force_update_scroll()
+
+func _feedback_safe_rect() -> Rect2:
+	var view: Rect2 = camera_view()
+	var safe := Rect2(view.position + Vector2(24, 110), view.size - Vector2(48, 222))
+	return safe.intersection(CombatSim.ARENA.grow(-8.0))
 
 func _physics_process(delta: float) -> void:
 	if not active or sim == null:
@@ -245,6 +275,7 @@ func _physics_process(delta: float) -> void:
 		position = Vector2(sin(_visual_time * 99.0), cos(_visual_time * 83.0)) * _shake
 	else:
 		position = Vector2.ZERO
+	_update_camera()
 	queue_redraw()
 
 func request_dash() -> bool:
@@ -340,12 +371,13 @@ func _on_pulse_cast(origin: Vector2, affected: int) -> void:
 	_skill_feedback_text = "受控 ×%d" % _pulse_affected if _pulse_affected > 0 else "未受控"
 	_skill_feedback_text_width = _dash_evasion_font.get_string_size(_skill_feedback_text, HORIZONTAL_ALIGNMENT_LEFT, -1, SKILL_FEEDBACK_FONT_SIZE).x if _dash_evasion_font != null else 0.0
 	var half_width: float = _skill_feedback_text_width * 0.5
+	var safe: Rect2 = _feedback_safe_rect()
 	var anchor_y: float = origin.y + 54.0
-	if anchor_y > CombatSim.ARENA.end.y - 8.0:
+	if anchor_y > safe.end.y:
 		anchor_y = origin.y - 62.0
 	_skill_feedback_anchor = Vector2(
-		clampf(origin.x, CombatSim.ARENA.position.x + half_width + 8.0, CombatSim.ARENA.end.x - half_width - 8.0),
-		clampf(anchor_y, CombatSim.ARENA.position.y + SKILL_FEEDBACK_FONT_SIZE + 8.0, CombatSim.ARENA.end.y - 8.0))
+		clampf(origin.x, safe.position.x + half_width, safe.end.x - half_width),
+		clampf(anchor_y, safe.position.y + SKILL_FEEDBACK_FONT_SIZE, safe.end.y))
 	_skill_feedback_remaining = SKILL_FEEDBACK_LIFE if _damage_flash <= 0.0 and _dash_evasion_remaining <= 0.0 else 0.0
 	if sound != null:
 		sound.play_cue("pulse_hit" if _pulse_affected > 0 else "pulse", -20.0, "pulse")
@@ -607,6 +639,7 @@ func hud_snapshot() -> Dictionary:
 	value["arena_name"] = _arena_name
 	value["terrain_name"] = ArenaCatalog.terrain_name(_arena_id, sim.player_position)
 	value["terrain_multiplier"] = ArenaCatalog.movement_multiplier(_arena_id, sim.player_position)
+	value["minimap"] = minimap_snapshot()
 	value["rogue"] = {"core_id": sim.run.core_id, "active_route": sim.run.active_route,
 		"hunter_alive": sim.hunter != null and sim.hunter.active and sim.hunter.hunter,
 		"hunter_defeated": sim.run.hunter_defeated}
@@ -617,9 +650,23 @@ func hud_snapshot() -> Dictionary:
 		value["projectiles"] = sim.shot_count
 	return value
 
+func minimap_snapshot() -> Dictionary:
+	if sim == null:
+		return {}
+	var enemies: Array[Dictionary] = []
+	for enemy: CombatSim.Enemy in sim.enemies:
+		if enemy.active and enemy.health > 0.0 and enemy.position.is_finite():
+			enemies.append({"position": enemy.position, "boss": enemy.definition.id == "boss", "hunter": enemy.hunter})
+	var zones: Array[Dictionary] = []
+	for zone: Dictionary in ArenaCatalog.definition(_arena_id)["zones"]:
+		zones.append({"center": Vector2(float(zone["center"][0]), float(zone["center"][1])),
+			"radius": Vector2(float(zone["radius"][0]), float(zone["radius"][1]))})
+	return {"bounds": CombatSim.ARENA, "player": sim.player_position, "facing": sim.player_direction,
+		"view": camera_view(), "enemies": enemies, "zones": zones, "arena_id": _arena_id}
+
 func _draw() -> void:
 	if arena_texture != null:
-		draw_texture_rect(arena_texture, Rect2(Vector2.ZERO, Vector2(1280, 720)), false)
+		draw_texture_rect(arena_texture, ArenaCatalog.art_rect(), false)
 	if sim == null:
 		return
 	_draw_atmosphere()
@@ -762,10 +809,12 @@ func _draw_dash_evasion_feedback() -> void:
 
 func _dash_evasion_text_anchor() -> Vector2:
 	var anchor: Vector2 = sim.player_position + Vector2(0, -62)
-	if anchor.y - 16.0 < 110.0:
+	var safe: Rect2 = _feedback_safe_rect()
+	if anchor.y - 16.0 < safe.position.y:
 		anchor.y = sim.player_position.y + 72.0
 	var half_width: float = _dash_evasion_text_width * 0.5
-	anchor.x = clampf(anchor.x, half_width + 8.0, 1280.0 - half_width - 8.0)
+	anchor.x = clampf(anchor.x, safe.position.x + half_width, safe.end.x - half_width)
+	anchor.y = clampf(anchor.y, safe.position.y + 16.0, safe.end.y)
 	return anchor
 
 func _draw_dash_evasion_pulse(center: Vector2) -> void:
@@ -793,11 +842,12 @@ func _draw_player_damage_direction() -> void:
 
 func _draw_atmosphere() -> void:
 	# Analytic motion keeps atmosphere cosmetic and out of the simulation RNG.
+	var view: Rect2 = camera_view()
 	for index: int in 22:
 		var phase: float = float(index) * 2.39996
 		var point := Vector2(
-			90.0 + fposmod(float(index) * 127.3 + sin(_visual_time * 0.12 + phase) * 19.0, 1100.0),
-			150.0 + fposmod(float(index) * 73.7 - _visual_time * (2.0 + float(index % 3)), 420.0))
+			view.position.x + 40.0 + fposmod(float(index) * 127.3 + sin(_visual_time * 0.12 + phase) * 19.0, view.size.x - 80.0),
+			view.position.y + 100.0 + fposmod(float(index) * 73.7 - _visual_time * (2.0 + float(index % 3)), view.size.y - 220.0))
 		var alpha: float = 0.07 + (sin(_visual_time * 0.7 + phase) + 1.0) * 0.035
 		draw_circle(point, 1.0 if index % 3 else 1.5, Color(_arena_color, alpha))
 	if sim.boss != null and sim.boss.active:

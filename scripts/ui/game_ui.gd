@@ -22,6 +22,7 @@ const CYAN := Color("14766f")
 const RED := Color("b83c50")
 const CORAL := Color("ed9a86")
 const BACKPACK_GRID = preload("res://scripts/ui/backpack_grid.gd")
+const MINIMAP_VIEW = preload("res://scripts/ui/minimap_view.gd")
 
 ## Paper-and-brass ornaments draw only on construction/resize and never intercept input.
 class RitualFrame:
@@ -580,6 +581,17 @@ func show_hud() -> void:
 	boss.hide()
 	_hud["boss"] = boss
 	_hud["boss_bar"] = boss_hp
+	var minimap := MINIMAP_VIEW.new()
+	minimap.name = "ArenaMinimap"
+	minimap.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
+	minimap.offset_left = -216
+	minimap.offset_right = -24
+	minimap.offset_top = 104
+	minimap.offset_bottom = 230
+	minimap.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	minimap.focus_mode = Control.FOCUS_NONE
+	_page.add_child(minimap)
+	_hud["minimap"] = minimap
 	var bottom := PanelContainer.new()
 	bottom.name = "RitualEquipment"
 	bottom.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
@@ -652,6 +664,7 @@ func update_hud(snapshot: Dictionary) -> void:
 	_hud["boss"].visible = boss_alive
 	_hud["boss_bar"].max_value = maxf(1, boss_max)
 	_hud["boss_bar"].value = boss_health
+	(_hud["minimap"] as MinimapView).update_snapshot(snapshot.get("minimap"))
 	_update_dash_hud(snapshot)
 	_update_pulse_hud(snapshot)
 	var loadout: Array = snapshot.get("loadout", [])

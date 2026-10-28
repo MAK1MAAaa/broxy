@@ -294,7 +294,10 @@ func _test_draw_and_edges() -> void:
 		var feedback: Dictionary = world.skill_feedback_snapshot()
 		var anchor: Vector2 = feedback["anchor"]
 		var width: float = float(feedback["text_width"])
-		_check(width > 0.0 and anchor.x - width * 0.5 >= CombatSim.ARENA.position.x + 8.0 and anchor.x + width * 0.5 <= CombatSim.ARENA.end.x - 8.0 and anchor.y - CombatWorld.SKILL_FEEDBACK_FONT_SIZE >= CombatSim.ARENA.position.y + 8.0 and anchor.y <= CombatSim.ARENA.end.y - 8.0, "The cached result remains inside the safe playfield at corner: " + str(origin))
+		var view: Rect2 = world.camera_view()
+		var safe: Rect2 = world._feedback_safe_rect()
+		var text_rect := Rect2(anchor - Vector2(width * 0.5, CombatWorld.SKILL_FEEDBACK_FONT_SIZE), Vector2(width, CombatWorld.SKILL_FEEDBACK_FONT_SIZE))
+		_check(width > 0.0 and view.grow(0.01).encloses(safe) and safe.grow(0.01).encloses(text_rect), "The cached result stays inside the translated camera's HUD-safe rectangle at corner: " + str(origin))
 		_check(anchor.y - origin.y >= 54.0 or origin.y - anchor.y >= 62.0, "A bottom-edge result moves above the body instead of covering the player or bottom HUD")
 		world.passes.clear()
 		world.anchors.clear()

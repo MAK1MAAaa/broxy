@@ -4,6 +4,13 @@ extends RefCounted
 
 const IDS: Array[String] = ["reliquary", "mire", "glacier", "ashland"]
 const SOURCE_PATH: String = "res://data/arenas.json"
+const WORLD_BOUNDS: Rect2 = Rect2(-1082, -535, 3444, 1800)
+const MAX_VIEW_SIZE: Vector2 = Vector2(1280, 720)
+const BORDER_SIZE: float = 64.0
+const ART_MARGIN_LEFT: float = 64.0
+const ART_MARGIN_TOP: float = 144.0
+const ART_MARGIN_RIGHT: float = 272.0
+const ART_MARGIN_BOTTOM: float = 160.0
 
 static var _definitions: Dictionary = {}
 
@@ -15,6 +22,34 @@ static func normalize_id(id: String) -> String:
 static func definition(id: String) -> Dictionary:
 	_ensure_loaded()
 	return (_definitions[normalize_id(id)] as Dictionary).duplicate(true)
+
+
+static func art_rect() -> Rect2:
+	var offset := Vector2(ART_MARGIN_LEFT, ART_MARGIN_TOP)
+	var extension := Vector2(ART_MARGIN_LEFT + ART_MARGIN_RIGHT, ART_MARGIN_TOP + ART_MARGIN_BOTTOM)
+	return Rect2(WORLD_BOUNDS.position - offset, WORLD_BOUNDS.size + extension)
+
+
+static func texture_path(id: String) -> String:
+	return "res://assets/starfall/maps/expanded/%s.svg" % normalize_id(id)
+
+
+static func camera_center(point: Vector2, view_size: Vector2 = MAX_VIEW_SIZE) -> Vector2:
+	var half: Vector2 = _safe_view_size(view_size) * 0.5
+	var bounds: Rect2 = art_rect()
+	var target: Vector2 = point if point.is_finite() else WORLD_BOUNDS.get_center()
+	return Vector2(clampf(target.x, bounds.position.x + half.x, bounds.end.x - half.x), clampf(target.y, bounds.position.y + half.y, bounds.end.y - half.y))
+
+
+static func visible_rect(point: Vector2, view_size: Vector2 = MAX_VIEW_SIZE) -> Rect2:
+	var size: Vector2 = _safe_view_size(view_size)
+	return Rect2(camera_center(point, size) - size * 0.5, size)
+
+
+static func _safe_view_size(value: Vector2) -> Vector2:
+	if not value.is_finite() or value.x <= 0.0 or value.y <= 0.0:
+		return MAX_VIEW_SIZE
+	return Vector2(minf(value.x, MAX_VIEW_SIZE.x), minf(value.y, MAX_VIEW_SIZE.y))
 
 
 static func movement_multiplier(id: String, point: Vector2) -> float:

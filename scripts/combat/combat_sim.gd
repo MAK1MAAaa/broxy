@@ -16,7 +16,10 @@ signal pulse_cast(origin: Vector2, affected: int)
 signal active_skill_cast(skill_id: String, uid: int, origin: Vector2, direction: Vector2, affected: int, rank: int)
 signal ended(victory: bool, reason: String)
 
-const ARENA: Rect2 = Rect2(66, 140, 1148, 450)
+const ARENA: Rect2 = ArenaCatalog.WORLD_BOUNDS
+const SPAWN_MARGIN: float = 48.0
+const SPAWN_INSET: float = 24.0
+const ENEMY_DESPAWN_DISTANCE: float = 1800.0
 const CELL: float = 80.0
 const ENEMY_LIMIT: int = 340
 const SHOT_LIMIT: int = 1600
@@ -535,16 +538,37 @@ func spawn_enemy(id: String, position: Vector2 = Vector2.INF) -> Enemy:
 	return enemy
 
 func _edge_position() -> Vector2:
-	var point: Vector2
-	match rng.randi_range(0, 3):
-		0: point = Vector2(ARENA.position.x, rng.randf_range(ARENA.position.y, ARENA.end.y))
-		1: point = Vector2(ARENA.end.x, rng.randf_range(ARENA.position.y, ARENA.end.y))
-		2: point = Vector2(rng.randf_range(ARENA.position.x, ARENA.end.x), ARENA.position.y)
-		_: point = Vector2(rng.randf_range(ARENA.position.x, ARENA.end.x), ARENA.end.y)
-	# Spawning never creates an unavoidable contact hit at a boundary.
-	if point.distance_squared_to(player_position) < 180.0 * 180.0:
-		point = ARENA.get_center() * 2.0 - point
-	return point
+	var view: Rect2 = ArenaCatalog.visible_rect(player_position)
+	var ring: Rect2 = view.grow(SPAWN_MARGIN)
+	var bounds: Rect2 = ARENA.grow(-SPAWN_INSET)
+	var low: Vector2 = ring.position.max(bounds.position)
+	var high: Vector2 = ring.end.min(bounds.end)
+	var segments: Array[Rect2] = []
+	if high.y > low.y:
+		if ring.position.x >= bounds.position.x:
+			segments.append(Rect2(Vector2(ring.position.x, low.y), Vector2(0, high.y - low.y)))
+		if ring.end.x <= bounds.end.x:
+			segments.append(Rect2(Vector2(ring.end.x, low.y), Vector2(0, high.y - low.y)))
+	if high.x > low.x:
+		if ring.position.y >= bounds.position.y:
+			segments.append(Rect2(Vector2(low.x, ring.position.y), Vector2(high.x - low.x, 0)))
+		if ring.end.y <= bounds.end.y:
+			segments.append(Rect2(Vector2(low.x, ring.end.y), Vector2(high.x - low.x, 0)))
+	var edge_roll: float = rng.randf()
+	var position_roll: float = rng.randf()
+	var length: float = 0.0
+	for segment: Rect2 in segments:
+		length += segment.size.length()
+	var remaining: float = edge_roll * length
+	for segment: Rect2 in segments:
+		remaining -= segment.size.length()
+		if remaining <= 0.0:
+			return segment.position + segment.size * position_roll
+	if not segments.is_empty():
+		var last: Rect2 = segments.back()
+		return last.position + last.size * position_roll
+	# The bounded reference view always leaves a hidden edge; retain a safe fallback.
+	return bounds.position if player_position.distance_squared_to(bounds.position) > player_position.distance_squared_to(bounds.end) else bounds.end
 
 func _spawn_wave_group() -> void:
 	var count: int = 2 + int(run.wave / 2)
@@ -571,6 +595,11 @@ func _update_enemies(delta: float) -> void:
 		if complete:
 			return
 		if not enemy.active:
+			continue
+		if not enemy.hunter and enemy.definition.id != "boss" and enemy.position.distance_squared_to(player_position) > ENEMY_DESPAWN_DISTANCE * ENEMY_DESPAWN_DISTANCE:
+			enemy.active = false
+			enemy_count -= 1
+			_enemy_free.append(enemy.slot)
 			continue
 		enemy.age += delta
 		enemy.action_timer -= delta
@@ -635,7 +664,7 @@ func _update_enemies(delta: float) -> void:
 			_hurt_player(enemy.definition.damage * (1.0 + 0.09 * float(run.wave - 1)), id, "contact", contact_origin)
 
 func _update_boss(enemy: Enemy, direction: Vector2, delta: float) -> void:
-	var target: Vector2 = Vector2(640, 320) + Vector2(sin(enemy.age * 0.35) * 220.0, cos(enemy.age * 0.25) * 100.0)
+	var target: Vector2 = clamp_point(player_position + Vector2(0, -45) + Vector2(sin(enemy.age * 0.35) * 220.0, cos(enemy.age * 0.25) * 100.0), enemy.radius)
 	var displacement: Vector2 = target - enemy.position
 	var speed: float = enemy.definition.speed
 	if enemy.slow_timer > 0.0:

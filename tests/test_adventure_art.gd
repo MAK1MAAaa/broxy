@@ -111,8 +111,7 @@ func _test_world_resources_and_redraws() -> void:
 		root.add_child(world)
 		world.begin(state)
 		world.set_physics_process(false)
-		var map_source: String = str(ArenaCatalog.definition(id)["texture"])
-		_expect_texture(world.arena_texture, ART_ROOT + map_source.trim_prefix("res://assets/"), Vector2(1280, 720), "world arena " + id)
+		_expect_texture(world.arena_texture, ArenaCatalog.texture_path(id), ArenaCatalog.art_rect().size, "expanded world arena " + id)
 		_check(world.texture_filter == CanvasItem.TEXTURE_FILTER_NEAREST, "The actual world uses local nearest filtering: " + id)
 		for sprite: String in SPRITE_SIZES:
 			_expect_texture(world.textures.get(sprite) as Texture2D, ART_ROOT + "sprites/%s.svg" % sprite, SPRITE_SIZES[sprite], "world " + sprite)

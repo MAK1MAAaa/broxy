@@ -57,7 +57,7 @@ func _test_catalog() -> void:
 		_check(ArenaCatalog.movement_multiplier(id, CombatSim.ARENA.get_center()) == 1.0 and ArenaCatalog.terrain_name(id, CombatSim.ARENA.get_center()).is_empty(), "Each map leaves the actual player spawn on ordinary ground: " + id)
 		_check(ArenaCatalog.movement_multiplier(id, Vector2.INF) == 1.0, "Nonfinite coordinates never activate terrain: " + id)
 		var zones: Array = definition["zones"]
-		_check(zones.is_empty() if id == "reliquary" else zones.size() in [3, 4], "New maps contain three or four distinct ground patches: " + id)
+		_check(zones.is_empty() if id == "reliquary" else zones.size() >= int(definition["legacy_zone_count"]) + 6, "Expanded maps preserve the original patches and add distant terrain: " + id)
 		for zone: Dictionary in zones:
 			var center: Vector2 = _center(zone)
 			var radius: Vector2 = _radius(zone)

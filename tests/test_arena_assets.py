@@ -45,7 +45,7 @@ class ArenaAssetTests(unittest.TestCase):
                 continue
             xml = ElementTree.parse(ROOT / definition["texture"].removeprefix("res://")).getroot()
             shapes = [node for node in xml.iter(f"{SVG}ellipse")]
-            for zone in definition["zones"]:
+            for zone in definition["zones"][:definition["legacy_zone_count"]]:
                 with self.subTest(map=definition["id"], center=zone["center"]):
                     x, y = zone["center"]
                     rx, ry = zone["radius"]

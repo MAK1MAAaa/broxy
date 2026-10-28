@@ -10,6 +10,8 @@ Godot 4.7.2 普通版、带类型标注的 GDScript 开发的 macOS / Windows �
 
 主菜单新增四地图选择：秘仪祭坛、沉沼遗庭、苍霜圣庭、余烬荒原。三张新图具有不同地貌和减速区域，同时影响玩家与敌人，离开恢复；本局八波沿用所选地图。界面移除重复小字，战斗中取消生命条下方的通知及右下角说明；关键数值与风险保留，低频操作改为按钮提示。规则与验证见[地图与地形](docs/maps.md)。
 
+四张战场现拓宽为3444×1800，可活动面积为原来的12倍，镜头跟随角色并在边缘留出HUD空间；角色、武器和像素纹理保持原比例。右上小地图显示场地、地形、视窗、玩家朝向、敌人及首领，不增加文字图例。三张减速地图各新增8处远区地形，共34处；敌人在玩家视野外刷入，Boss跟随玩家所在区域，普通远敌无奖励回收以释放敌人池。连续背景与具体规则见[大地图与小地图](docs/expanded-map.md)。
+
 武器、遗物和松散符文现在装入盒状背包。购买自动找空位，玩家手动移动、旋转和合成；两件同名同阶物品升一阶，最高三阶。初始6×4格，可付32、48魂屑扩到6×6；背包中的所有法器自动攻击，遗物直接生效。操作与数值见[秘术背包](docs/backpack.md)，专项预览使用 `res://tools/preview_backpack.gd`。
 
 当前源码包含8种法器、14种遗物和 `rogue-choices-v1` 秘术抉择。第1波后可选霜火共鸣或白骨齐鸣核心；第2波后可自愿挑战追猎者，击杀后在波间自选符文。普通波可选择原途、密集魂潮或重甲巡礼；引魂烛与正上方相接法器联动，改变目标优先级。完成第3波解锁霜矛起手，击杀追猎者解锁散魂起手，没有永久属性加成。完整规则与边界见[秘术抉择](docs/rogue-choices.md)。
@@ -54,7 +56,7 @@ Godot 4.7.2 普通版、带类型标注的 GDScript 开发的 macOS / Windows �
 
 ## 直接游玩
 
-Windows x86_64入口为 `build/Embers-windows-x86_64/Embers.exe`，分发包为 `build/Embers-windows-x86_64.zip`。解压后保留同目录的 `Embers.pck` 与 `licenses/`。当前内容包含双背包技能、落星／月弧特效和增强命中反馈，并保留明快像素美术、立体按钮、全屏动画封面及此前玩法。更新前包备份为 `build/Embers-windows-before-skill-backpack-d395142.zip`，更早版本继续保留。Windows使用微软雅黑；本轮验收见[背包主动技能与打击反馈](docs/active-skills.md)，此前封面记录见[全屏动画封面](docs/title-cover.md)，macOS包保留此前版本。
+Windows x86_64入口为 `build/Embers-windows-x86_64/Embers.exe`，分发包为 `build/Embers-windows-x86_64.zip`。解压后保留同目录的 `Embers.pck` 与 `licenses/`。当前内容包含连续大地图、跟随镜头、角落小地图、双背包技能和增强命中反馈，并保留明快像素美术、立体按钮及全屏动画封面。地图更新前包备份为 `build/Embers-windows-before-expanded-map-ad8c5a9.zip`，更早版本继续保留。Windows使用微软雅黑；本轮验收见[大地图与小地图](docs/expanded-map.md)，此前技能记录见[背包主动技能与打击反馈](docs/active-skills.md)，macOS包保留此前版本。
 
 最新macOS应用为 `build/Embers-minimal-hud-macos.app`，分发包为 `build/Embers-minimal-hud-macos-arm64.zip`，包含四地图选择、实际地形与精简界面，以及此前完整背包／共鸣／秘术抉择内容。适用于Apple Silicon、macOS 13及以上，使用本地ad-hoc签名。本轮界面验证见 `reports/minimal-hud-validation.json`，地图与性能历史见 `reports/terrain-validation.json`；旧包保留。
 
@@ -156,6 +158,8 @@ BROXY_APP_PATH="$PWD/build/Embers-minimal-hud-macos.app" ./tools/build_macos.sh
 构建从官方 Universal 模板提取 arm64，生成 `build/Embers.app` 并执行 ad-hoc 签名验证。引擎许可在应用的 `Contents/Resources/licenses/` 中直接可读。对外发布前应使用自己的 Developer ID 配置签名与公证。
 
 ## 验证
+
+大地图版Windows通过 `./tools/test.sh` 的90套Godot与5个档案诊断入口，共31846条断言、48项Python测试；地图／镜头／小地图新增181／189／47条，9套原生与9套编译PCK专项通过。11组原生及11组包内画面覆盖四图、远区、边缘、Boss和960×540窗口，像素一致。中央300敌人／600弹体／200掉落的60秒合成压力平均91.083 FPS、P99 18.598毫秒，83项源码与资源指纹一致。三条符文路线的默认／购入脉冲策略共6局均完成8波。Windows包已重新导出并启动EXE；macOS保留历史包。完整范围及证据见[大地图与小地图](docs/expanded-map.md)及 `reports/expanded-map/validation.json`。
 
 背包技能版Windows通过 `./tools/test.sh` 的87套Godot与5个档案诊断入口，共30995条断言、43项Python测试；原生与编译PCK各9套专项通过，覆盖真实技能交易、双槽冷却、输入、界面与美术资源。300敌人／600弹体／200掉落的60秒原生合成压力平均101.760 FPS、P99 18.291毫秒，采样落星6次、月弧10次，特效峰值2／容量8；77项源码与资源指纹一致。三条符文路线的默认／实际购买脉冲策略共6局均通关。Windows包已导出并启动EXE，7类原生与包内画面检查通过；新测试音频退出清理另补做源代码、原生和PCK验证。未重建macOS、重复300秒压力或开展实体手柄验收。详见[背包主动技能与打击反馈](docs/active-skills.md)及 `reports/active-skills/validation.json`。
 

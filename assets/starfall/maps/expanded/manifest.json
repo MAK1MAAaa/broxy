@@ -1,0 +1,145 @@
+{
+  "schema_version": 1,
+  "art_revision": "expanded-arena-01",
+  "purpose": "Continuous world-scale maps for the existing game",
+  "legacy_assets_preserved": true,
+  "filter": "nearest",
+  "assets": [
+    {
+      "id": "reliquary",
+      "path": "assets/starfall/maps/expanded/reliquary.svg",
+      "size": [
+        3780,
+        2104
+      ],
+      "world_origin": [
+        -1146,
+        -679
+      ],
+      "walkable_bounds": [
+        -1082,
+        -535,
+        3444,
+        1800
+      ],
+      "art_margins": [
+        64,
+        144,
+        272,
+        160
+      ],
+      "pixel_grid": 4,
+      "pivot": [
+        0.0,
+        0.0
+      ],
+      "source": "tools/generate_expanded_maps.py",
+      "palette_source": "tools/starfall_environment.py",
+      "terrain_source": "data/arenas.json",
+      "license": "CC0-1.0",
+      "sha256": "ce1d71ba619382b6be93854d849b89659efaf4330d5084d4897714962d77f887"
+    },
+    {
+      "id": "mire",
+      "path": "assets/starfall/maps/expanded/mire.svg",
+      "size": [
+        3780,
+        2104
+      ],
+      "world_origin": [
+        -1146,
+        -679
+      ],
+      "walkable_bounds": [
+        -1082,
+        -535,
+        3444,
+        1800
+      ],
+      "art_margins": [
+        64,
+        144,
+        272,
+        160
+      ],
+      "pixel_grid": 4,
+      "pivot": [
+        0.0,
+        0.0
+      ],
+      "source": "tools/generate_expanded_maps.py",
+      "palette_source": "tools/starfall_environment.py",
+      "terrain_source": "data/arenas.json",
+      "license": "CC0-1.0",
+      "sha256": "2971df3e224bf7ef044826791a706bc90f2e7d7e20ca3e2051483ff242fe0695"
+    },
+    {
+      "id": "glacier",
+      "path": "assets/starfall/maps/expanded/glacier.svg",
+      "size": [
+        3780,
+        2104
+      ],
+      "world_origin": [
+        -1146,
+        -679
+      ],
+      "walkable_bounds": [
+        -1082,
+        -535,
+        3444,
+        1800
+      ],
+      "art_margins": [
+        64,
+        144,
+        272,
+        160
+      ],
+      "pixel_grid": 4,
+      "pivot": [
+        0.0,
+        0.0
+      ],
+      "source": "tools/generate_expanded_maps.py",
+      "palette_source": "tools/starfall_environment.py",
+      "terrain_source": "data/arenas.json",
+      "license": "CC0-1.0",
+      "sha256": "3f80a2dfd1767f5ed38f8f1ca5c652b14ecf51f7aba7815f59fcf3b21a0e509e"
+    },
+    {
+      "id": "ashland",
+      "path": "assets/starfall/maps/expanded/ashland.svg",
+      "size": [
+        3780,
+        2104
+      ],
+      "world_origin": [
+        -1146,
+        -679
+      ],
+      "walkable_bounds": [
+        -1082,
+        -535,
+        3444,
+        1800
+      ],
+      "art_margins": [
+        64,
+        144,
+        272,
+        160
+      ],
+      "pixel_grid": 4,
+      "pivot": [
+        0.0,
+        0.0
+      ],
+      "source": "tools/generate_expanded_maps.py",
+      "palette_source": "tools/starfall_environment.py",
+      "terrain_source": "data/arenas.json",
+      "license": "CC0-1.0",
+      "sha256": "e9275a5ffe6468ed79f4ecd5e26ab5b4f428ac62729654b80b3525ef96924208"
+    }
+  ]
+}

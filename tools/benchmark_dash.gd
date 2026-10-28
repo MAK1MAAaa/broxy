@@ -470,6 +470,9 @@ func _collect_sources(directory: String, paths: Array[String]) -> void:
 
 func _source_fingerprint() -> Dictionary:
 	var paths: Array[String] = ["res://project.godot", "res://tools/benchmark_dash.gd"]
+	for id: String in ArenaCatalog.IDS:
+		paths.append(ArenaCatalog.texture_path(id))
+	paths.append("res://assets/starfall/maps/expanded/manifest.json")
 	for directory: String in ["res://scripts", "res://data", "res://scenes"]:
 		_collect_sources(directory, paths)
 	if _skill_feedback:

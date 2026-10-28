@@ -76,7 +76,10 @@ func _run_tests() -> void:
 	var hud_notice: Label = ui.get("_toast")
 	var boss_status: Control = ui.get("_hud")["boss"]
 	_check(not hud_notice.visible and hud_notice.text.is_empty(), "Battle notifications leave no visible or retained text below the health bar")
-	_check(boss_status.visible and not boss_status.get_global_rect().intersects(CombatSim.ARENA), "Suppressing battle notifications preserves the visible Boss status above the playable arena")
+	var top_center: Vector2 = CombatSim.clamp_point(CombatSim.ARENA.position, 16.0)
+	var screen_center: Vector2 = top_center - ArenaCatalog.visible_rect(top_center).position
+	var art_extent: float = maxf(52.0 + 34.0 * sin(0.045), 39.0 + 3.0 + 15.0) + 4.0
+	_check(boss_status.visible and boss_status.get_global_rect().end.y <= screen_center.y - art_extent, "Suppressing battle notifications preserves the Boss status above the complete camera-projected player art")
 	_check(ui._toast_timer.is_stopped() and is_zero_approx(ui._toast_timer.time_left), "Ignored long battle notifications never start a timer")
 	_check(hud_notice.mouse_filter == Control.MOUSE_FILTER_IGNORE, "Battle notifications never intercept movement or targeting input")
 	ui.show_pause()

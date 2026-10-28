@@ -190,20 +190,23 @@ func _test_swept_recovery() -> void:
 	_check(sim._shot_free.count(shot.slot) == 1, "Recovery returns the slot exactly once")
 
 func _test_edges_and_lifetime() -> void:
+	var bounds: Rect2 = CombatSim.ARENA
+	var cleanup_bounds: Rect2 = bounds.grow(100.0)
+	var left_launch := Vector2(bounds.position.x + 16.0, bounds.get_center().y)
 	var edge: CombatSim = _sim()
-	edge.player_position = Vector2(82, 300)
+	edge.player_position = left_launch
 	var ring: CombatSim.Shot = edge.fire_weapon("return_ring", "", edge.player_position, Vector2.LEFT)
 	_advance(edge, 30)
-	_check(ring.active and ring.position.x < CombatSim.ARENA.grow(100.0).position.x, "Outward edge launches are not deleted before their return deadline")
+	_check(ring.active and ring.position.x < cleanup_bounds.position.x, "Outward edge launches are not deleted before their return deadline")
 	_advance(edge, 120)
 	_check(not ring.active and edge.shot_count == 0, "An out-of-bounds ring can reenter and recover normally")
 	var old: CombatSim = _sim("bone")
-	var needle: CombatSim.Shot = old.fire_weapon("bone", "", Vector2(-40, 300), Vector2.LEFT)
+	var needle: CombatSim.Shot = old.fire_weapon("bone", "", Vector2(cleanup_bounds.position.x - 6.0, bounds.get_center().y), Vector2.LEFT)
 	old._update_shots(STEP)
-	_check(not needle.active, "Ordinary projectiles retain the exact old expanded-arena cleanup")
+	_check(not needle.active, "Ordinary projectiles retain cleanup beyond the actual arena's one-hundred-pixel envelope")
 	var timeout: CombatSim = _sim()
-	var lost: CombatSim.Shot = timeout.fire_weapon("return_ring", "", Vector2(82, 300), Vector2.LEFT)
-	timeout.player_position = Vector2(1190, 300)
+	var lost: CombatSim.Shot = timeout.fire_weapon("return_ring", "", left_launch, Vector2.LEFT)
+	timeout.player_position = Vector2(bounds.end.x - 24.0, bounds.get_center().y)
 	_advance(timeout, 150)
 	_check(not lost.active and lost.life <= 0.0 and timeout.shot_count == 0, "A distant or faster-moving player cannot create an immortal returning projectile")
 
