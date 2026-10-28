@@ -1,0 +1,142 @@
+{
+  "actual_duration_seconds": 60.001484,
+  "actual_warmup_seconds": 5.009,
+  "after_step_counts_at_end": {
+    "enemies": 300,
+    "pickups": 200,
+    "projectiles": 598
+  },
+  "afterimage_capacity": 6,
+  "afterimage_peak": 6,
+  "arena_id": "mire",
+  "average_fps": 111.830567390633,
+  "checks": {
+    "dash_feedback": true,
+    "default_settings_and_no_profile": true,
+    "load": true,
+    "performance": true
+  },
+  "core_activations": {
+    "bone_chorus": 46,
+    "frostfire": 0
+  },
+  "core_id": "bone_chorus",
+  "counter_scope": "total dash/feedback/hit/damage/core counters include warmup; sample-prefixed counters exclude it",
+  "counts_measurement_phase": "physics_frame_before_combat_world",
+  "damage_by_weapon": {
+    "bone": 103214.299999993,
+    "comet": 1049216.6249998,
+    "crescent": 1321798.49999921,
+    "ember": 300149.999999995,
+    "frost": 322245.13749969,
+    "return_ring": 1213046.20000292,
+    "scatter": 94395.4000000045,
+    "storm": 137544.749999999
+  },
+  "dash_rules": {
+    "cooldown": 2.4,
+    "duration": 0.2,
+    "invulnerability": 0.12,
+    "speed": 660.0
+  },
+  "dashes_used": 28,
+  "display_server": "Windows",
+  "duration_seconds": 60.0,
+  "enemies": 300,
+  "engine": "4.7.2-stable (official)",
+  "fixture_overrides": [
+    "300 enemies with synthetic high health",
+    "600 real content/rune projectiles replenished before each World step",
+    "200 synthetic pickups replenished before each World step",
+    "full player health restored before each World step",
+    "bone_chorus core assigned directly",
+    "earned-upgrade modals suppressed by Main._benchmark while Main._process is disabled",
+    "facing alternates right/left on real dash readiness; no synthetic movement input",
+    "autoplay argument only prevents focus-loss pause; World autopilot remains disabled"
+  ],
+  "internal_resolution": "1280x720",
+  "load_targets": {
+    "enemies": 300,
+    "pickups": 200,
+    "projectiles": 600
+  },
+  "main_benchmark_upgrade_suppression": true,
+  "main_process_enabled": false,
+  "minimum_pre_step_counts": {
+    "enemies": 300,
+    "pickups": 200,
+    "projectiles": 600
+  },
+  "natural_run": false,
+  "os": "Windows",
+  "p99_frame_ms": 18.3,
+  "passed": true,
+  "persistent_profile": false,
+  "physics_steps": 3906,
+  "physics_ticks_per_second": 60,
+  "pickups": 200,
+  "primary_hits": 77322,
+  "projectile_families_at_end": {
+    "bone:bounce": 10,
+    "comet:blast": 4,
+    "comet:bounce": 170,
+    "crescent:blast": 106,
+    "crescent:pierce": 1,
+    "ember:pierce": 36,
+    "frost:blast": 28,
+    "return_ring:blast": 55,
+    "return_ring:pierce": 2,
+    "scatter:blast": 1,
+    "scatter:bounce": 60,
+    "storm:bounce": 1,
+    "storm:pierce": 124
+  },
+  "projectiles": 600,
+  "renderer": "gl_compatibility",
+  "run_seed": 20261028,
+  "rune_visual_peak": 32,
+  "sample_afterimage_peak": 6,
+  "sample_dashes_used": 25,
+  "sample_physics_steps": 3600,
+  "samples": 6710,
+  "scenario": "dash-content-pressure",
+  "secondary_hits": 313437,
+  "seed": 20261028,
+  "settings": {
+    "flash": true,
+    "shake": true,
+    "volume": 0.65
+  },
+  "source_hash": "5afa74a73b336e5036d8b481d3f1ffa5e36f5a61e838a06dd2ddf12b618482d6",
+  "source_hash_algorithm": "sha256-path-and-content-manifest",
+  "thresholds": {
+    "maximum_p99_frame_ms": 33.0,
+    "minimum_afterimage_peak": 1,
+    "minimum_fps": 58.0,
+    "minimum_sample_dashes": 11
+  },
+  "warmup_dashes_used": 3,
+  "warmup_seconds": 5.0,
+  "weapon_ids": [
+    "bone",
+    "frost",
+    "ember",
+    "scatter",
+    "crescent",
+    "storm",
+    "comet",
+    "return_ring"
+  ],
+  "window_size": [
+    1280,
+    720
+  ],
+  "window_visible": true,
+  "world_autopilot": false,
+  "world_stress_mode": false,
+  "source_file_count": 60,
+  "source_files_start_end_current_equal": true,
+  "raw_report_sha256": "3e370957a2fa3c4bf84aca660b8b0eca4af2c5a6e2a65152cb94640609018b5e",
+  "raw_log_sha256": "3b71038aa961e74bf995c7ddbedf5bc589a1ebdc5a9b18609fca049282b5de23",
+  "native_visible_window_observed_during_sampling": true
+}

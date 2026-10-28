@@ -10,6 +10,7 @@ signal damage_dealt(position: Vector2, amount: float, source: String, secondary:
 signal player_damaged(amount: float, source_id: String, kind: String, origin: Vector2)
 signal rune_activated(rune_id: String, origin: Vector2, incoming_direction: Vector2, outgoing_direction: Vector2)
 signal core_activated(core_id: String, origin: Vector2)
+signal dash_started(origin: Vector2, direction: Vector2)
 signal ended(victory: bool, reason: String)
 
 const ARENA: Rect2 = Rect2(66, 140, 1148, 450)
@@ -97,6 +98,11 @@ var player_position: Vector2 = ARENA.get_center()
 var player_velocity: Vector2 = Vector2.ZERO
 var player_direction: Vector2 = Vector2.RIGHT
 var invulnerability: float = 0.0
+var dash_time_left: float = 0.0
+var dash_cooldown_left: float = 0.0
+var dash_direction: Vector2 = Vector2.RIGHT
+var dash_invulnerability_left: float = 0.0
+var dashes_used: int = 0
 var elapsed: float = 0.0
 var duration: float = 45.0
 var complete: bool = false
@@ -162,6 +168,11 @@ func begin(state: RunState) -> void:
 	core_activations = {"frostfire": 0, "bone_chorus": 0}
 	hunter = null
 	player_position = ARENA.get_center()
+	dash_time_left = 0.0
+	dash_cooldown_left = 0.0
+	dash_direction = Vector2.RIGHT
+	dash_invulnerability_left = 0.0
+	dashes_used = 0
 	_cooldowns.clear()
 	for index: int in run.loadout.size():
 		_cooldowns.append(float(index) * 0.14)
@@ -176,18 +187,14 @@ func begin(state: RunState) -> void:
 			hunter.health = hunter.max_health
 	_spawn_timer = 0.6
 
-func step(delta: float, movement: Vector2) -> void:
+func step(delta: float, movement: Vector2, dash_pressed: bool = false) -> void:
 	_explosion_grid_active = false
 	if complete:
 		return
 	elapsed += delta
 	run.elapsed += delta
 	invulnerability = maxf(0.0, invulnerability - delta)
-	player_velocity = movement.limit_length() * run.stat("move_speed")
-	player_velocity *= ArenaCatalog.movement_multiplier(run.arena_id, player_position)
-	player_position = clamp_point(player_position + player_velocity * delta, 16.0)
-	if movement.length_squared() > 0.01:
-		player_direction = movement.normalized()
+	_move_player(delta, movement, dash_pressed)
 	_update_enemies(delta)
 	if run.health <= 0.0:
 		_finish(false, _death_reason())
@@ -220,6 +227,57 @@ func step(delta: float, movement: Vector2) -> void:
 			else:
 				collect_remaining_souls()
 				_finish(true, "邪潮暂歇")
+
+func _move_player(delta: float, movement: Vector2, dash_pressed: bool) -> void:
+	var advances_time: bool = is_finite(delta) and delta > 0.0
+	if advances_time:
+		if dash_pressed:
+			_try_start_dash(movement)
+		dash_cooldown_left = _dash_timer_after(dash_cooldown_left, delta)
+		dash_invulnerability_left = _dash_timer_after(dash_invulnerability_left, delta)
+	var movement_delta: float = delta
+	if advances_time and dash_time_left > 0.0:
+		var dash_delta: float = minf(delta, dash_time_left)
+		player_velocity = dash_direction * DashRules.SPEED
+		player_position = clamp_point(player_position + player_velocity * dash_delta, 16.0)
+		player_direction = dash_direction
+		dash_time_left = _dash_timer_after(dash_time_left, dash_delta)
+		movement_delta = delta - dash_delta
+		if movement_delta <= 0.0:
+			return
+	player_velocity = movement.limit_length() * run.stat("move_speed")
+	player_velocity *= ArenaCatalog.movement_multiplier(run.arena_id, player_position)
+	player_position = clamp_point(player_position + player_velocity * movement_delta, 16.0)
+	if movement.length_squared() > 0.01:
+		player_direction = movement.normalized()
+
+func _try_start_dash(movement: Vector2) -> void:
+	if complete or run == null or run.health <= 0.0 or dash_time_left > 0.0 or dash_cooldown_left > 0.0 or not movement.is_finite():
+		return
+	var direction: Vector2 = movement.normalized() if movement.length_squared() > 0.01 else player_direction
+	if not direction.is_finite() or direction.length_squared() <= 0.01:
+		direction = Vector2.RIGHT
+	dash_direction = direction.normalized()
+	dash_time_left = DashRules.DURATION
+	dash_cooldown_left = DashRules.COOLDOWN
+	dash_invulnerability_left = DashRules.INVULNERABILITY
+	dashes_used += 1
+	dash_started.emit(player_position, dash_direction)
+
+static func _dash_timer_after(remaining: float, delta: float) -> float:
+	var result: float = maxf(0.0, remaining - delta)
+	return 0.0 if result < 0.0000001 else result
+
+func dash_snapshot() -> Dictionary:
+	return {
+		"ready": not complete and run != null and run.health > 0.0 and dash_time_left <= 0.0 and dash_cooldown_left <= 0.0,
+		"active": dash_time_left > 0.0,
+		"remaining": dash_time_left,
+		"cooldown_left": dash_cooldown_left,
+		"cooldown_total": DashRules.COOLDOWN,
+		"direction": dash_direction,
+		"uses": dashes_used,
+	}
 
 func spawn_enemy(id: String, position: Vector2 = Vector2.INF) -> Enemy:
 	if _enemy_free.is_empty():
@@ -333,7 +391,7 @@ func _update_enemies(delta: float) -> void:
 			var side: float = sin(float(enemy.uid) * 2.39996 + enemy.age * 0.35) * 0.24
 			enemy.velocity = direction.rotated(side) * speed
 			enemy.position = clamp_point(enemy.position + enemy.velocity * delta)
-		if distance < enemy.radius + 13.0 and invulnerability <= 0.0:
+		if distance < enemy.radius + 13.0 and invulnerability <= 0.0 and dash_invulnerability_left <= 0.0:
 			var contact_origin: Vector2 = enemy.position
 			# Retreat/charge movement can point away from the player; recoil is radial.
 			var recoil_direction: Vector2 = (contact_origin - player_position).normalized()
@@ -874,7 +932,7 @@ func _update_zones(delta: float) -> void:
 			zones.remove_at(index)
 
 func _hurt_player(amount: float, source_id: String = "enemy", kind: String = "contact", origin: Vector2 = Vector2.INF) -> void:
-	if complete or invulnerability > 0.0 or run.health <= 0.0:
+	if complete or invulnerability > 0.0 or dash_invulnerability_left > 0.0 or run.health <= 0.0:
 		return
 	var actual: float = run.take_damage(amount, source_id, kind)
 	if actual <= 0.0:
@@ -941,6 +999,7 @@ func snapshot() -> Dictionary:
 		"time_left": maxf(0.0, duration - elapsed), "gold": run.gold, "level": run.level,
 		"xp": run.xp, "xp_needed": run.xp_to_next_level(), "kills": run.kills, "loadout": run.loadout,
 		"backpack": run.backpack_snapshot(),
+		"dash": dash_snapshot(),
 		"boss_health": boss.health if boss != null and boss.active else 0.0,
 		"boss_max_health": boss.max_health if boss != null else 0.0,
 	}

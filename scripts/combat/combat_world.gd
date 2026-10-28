@@ -37,6 +37,19 @@ const ENEMY_HIT_PULSE_SECONDS: float = 0.06
 const ENEMY_HIT_TIMER_CUTOFF: float = 0.04
 const ENEMY_HIT_PEAK_GAIN: float = 0.22
 const PLAYER_FOREGROUND_VISUAL_REVISION: String = "foreground-player-v1"
+const DASH_AFTERIMAGE_LIMIT: int = 6
+const DASH_AFTERIMAGE_LIFE: float = 0.16
+const DASH_AFTERIMAGE_INTERVAL: float = 0.03
+
+class DashAfterimage:
+	var position: Vector2 = Vector2.ZERO
+	var lean: float = 0.0
+	var life: float = 0.0
+
+var _dash_pending: bool = false
+var _dash_afterimages: Array[DashAfterimage] = []
+var _dash_afterimage_next: int = 0
+var _dash_afterimage_clock: float = 0.0
 
 class RuneFlash:
 	var kind: int = 0
@@ -85,6 +98,8 @@ const IMPACT_PAINTER_SCRIPT = preload("res://scripts/combat/impact_painter.gd")
 var _impact_painter: IMPACT_PAINTER_SCRIPT = IMPACT_PAINTER_SCRIPT.new()
 
 func _init() -> void:
+	for index: int in DASH_AFTERIMAGE_LIMIT:
+		_dash_afterimages.append(DashAfterimage.new())
 	for index: int in NUMBER_LIMIT:
 		_number_pool.append(FloatingNumber.new())
 	for index: int in RUNE_FLASH_LIMIT:
@@ -114,6 +129,7 @@ func apply_visual_settings(value: Dictionary) -> void:
 	# Settings remain responsive while the scene tree pauses combat updates.
 	if not bool(settings.get("flash", true)):
 		_impact_painter.clear()
+		_clear_dash_afterimages()
 	queue_redraw()
 
 func begin(state: RunState) -> void:
@@ -135,6 +151,7 @@ func begin(state: RunState) -> void:
 	sim.damage_dealt.connect(_on_damage_dealt)
 	sim.player_damaged.connect(_on_player_damaged)
 	sim.rune_activated.connect(_on_rune_activated)
+	sim.dash_started.connect(_on_dash_started)
 	_reset_feedback()
 	active = true
 	_last_kills = state.kills
@@ -153,12 +170,19 @@ func stop() -> void:
 func _physics_process(delta: float) -> void:
 	if not active or sim == null:
 		return
+	if is_inside_tree() and get_tree().paused:
+		clear_pending_actions()
+		return
 	_visual_time += delta
 	_advance_feedback(delta)
+	_advance_dash_afterimages(delta)
 	var movement: Vector2 = _movement()
 	if autopilot:
 		movement = BotPolicy.movement(sim)
-	sim.step(delta, movement)
+	var dash_pressed: bool = _dash_pending and not stress_mode and not autopilot
+	clear_pending_actions()
+	sim.step(delta, movement, dash_pressed)
+	_record_dash_motion(delta)
 	if stress_mode:
 		_maintain_stress()
 	_hud_clock += delta
@@ -171,6 +195,60 @@ func _physics_process(delta: float) -> void:
 	else:
 		position = Vector2.ZERO
 	queue_redraw()
+
+func request_dash() -> bool:
+	if not active or sim == null or sim.complete or _dash_pending or stress_mode or autopilot:
+		return false
+	if (is_inside_tree() and get_tree().paused) or sim.run == null or sim.run.health <= 0.0:
+		return false
+	if sim.dash_time_left > 0.0 or sim.dash_cooldown_left > 0.0:
+		return false
+	_dash_pending = true
+	return true
+
+func clear_pending_actions() -> void:
+	_dash_pending = false
+
+func dash_afterimage_count() -> int:
+	var count: int = 0
+	for afterimage: DashAfterimage in _dash_afterimages:
+		count += 1 if afterimage.life > 0.0 else 0
+	return count
+
+func _on_dash_started(origin: Vector2, direction: Vector2) -> void:
+	_dash_afterimage_clock = 0.0
+	_add_dash_afterimage(origin, direction)
+	if sound != null:
+		sound.play("rune", -20.0)
+	hud_changed.emit(hud_snapshot())
+
+func _add_dash_afterimage(point: Vector2, direction: Vector2) -> void:
+	if not bool(settings.get("flash", true)) or not point.is_finite() or not direction.is_finite():
+		return
+	var afterimage: DashAfterimage = _dash_afterimages[_dash_afterimage_next]
+	afterimage.position = point
+	afterimage.lean = clampf(direction.x * 0.12, -0.045, 0.045)
+	afterimage.life = DASH_AFTERIMAGE_LIFE
+	_dash_afterimage_next = (_dash_afterimage_next + 1) % DASH_AFTERIMAGE_LIMIT
+
+func _record_dash_motion(delta: float) -> void:
+	if not active or sim == null or sim.complete or sim.dash_time_left <= 0.0 or not bool(settings.get("flash", true)):
+		_dash_afterimage_clock = 0.0
+		return
+	_dash_afterimage_clock += delta
+	if _dash_afterimage_clock >= DASH_AFTERIMAGE_INTERVAL:
+		_dash_afterimage_clock = fmod(_dash_afterimage_clock, DASH_AFTERIMAGE_INTERVAL)
+		_add_dash_afterimage(sim.player_position, sim.dash_direction)
+
+func _advance_dash_afterimages(delta: float) -> void:
+	for afterimage: DashAfterimage in _dash_afterimages:
+		afterimage.life = maxf(0.0, afterimage.life - delta)
+
+func _clear_dash_afterimages() -> void:
+	for afterimage: DashAfterimage in _dash_afterimages:
+		afterimage.life = 0.0
+	_dash_afterimage_next = 0
+	_dash_afterimage_clock = 0.0
 
 func _movement() -> Vector2:
 	var value: Vector2 = Vector2.ZERO
@@ -208,6 +286,8 @@ func _on_rune_activated(rune_id: String, origin: Vector2, incoming: Vector2, out
 	_rune_flashes.append(flash)
 
 func _reset_feedback() -> void:
+	clear_pending_actions()
+	_clear_dash_afterimages()
 	_enemy_telegraphs.clear()
 	_impact_painter.clear()
 	_numbers.clear()
@@ -305,6 +385,8 @@ func _advance_feedback(delta: float) -> void:
 
 func _on_ended(victory: bool, reason: String) -> void:
 	active = false
+	clear_pending_actions()
+	_clear_dash_afterimages()
 	_enemy_telegraphs.clear()
 	_impact_painter.clear()
 	hud_changed.emit(hud_snapshot())
@@ -513,11 +595,14 @@ func _draw_player_ground() -> void:
 
 func _player_tint() -> Color:
 	var tint: Color = Color.WHITE
+	if sim.dash_time_left > 0.0:
+		return Color("d7e7e6") if bool(settings.get("flash", true)) else tint
 	if sim.invulnerability > 0.0 and bool(settings.get("flash", true)):
 		tint.a = 0.55 + sin(_visual_time * 35.0) * 0.30
 	return tint
 
 func _draw_player() -> void:
+	_draw_dash_afterimages()
 	var center: Vector2 = sim.player_position
 	var bob: float = sin(_visual_time * 9.0) * minf(2.0, sim.player_velocity.length() * 0.012)
 	var tint: Color = _player_tint()
@@ -543,6 +628,19 @@ func _draw_player() -> void:
 		var point: Vector2 = center + Vector2(-width * 0.5, 28.0)
 		draw_string_outline(_number_font, point, extra, HORIZONTAL_ALIGNMENT_LEFT, -1, 12, 3, Color("0d111b"))
 		draw_string(_number_font, point, extra, HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color("f0e5cc"))
+
+func _draw_dash_afterimages() -> void:
+	if not bool(settings.get("flash", true)) or not textures.has("player"):
+		return
+	for offset: int in DASH_AFTERIMAGE_LIMIT:
+		var index: int = (_dash_afterimage_next + offset) % DASH_AFTERIMAGE_LIMIT
+		var afterimage: DashAfterimage = _dash_afterimages[index]
+		if afterimage.life <= 0.0:
+			continue
+		var opacity: float = 0.16 * clampf(afterimage.life / DASH_AFTERIMAGE_LIFE, 0.0, 1.0)
+		draw_set_transform(afterimage.position, afterimage.lean)
+		draw_texture_rect(textures["player"], Rect2(Vector2(-34, -50), Vector2(68, 68)), false, Color(0.70, 0.88, 0.90, opacity))
+	draw_set_transform(Vector2.ZERO)
 
 func _draw_effects() -> void:
 	for effect: CombatSim.Effect in sim.effects:

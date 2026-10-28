@@ -345,9 +345,11 @@ func show_hud() -> void:
 	_decorate(top, GOLD, true)
 	var margin := MarginContainer.new()
 	_margin(margin, 18, 4)
+	margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	top.add_child(margin)
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 30)
+	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	margin.add_child(row)
 	var health_box := VBoxContainer.new()
 	health_box.custom_minimum_size.x = 260
@@ -367,6 +369,33 @@ func show_hud() -> void:
 		item.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		row.add_child(item)
 		_hud[str(entry[0])] = item
+	var dash := VBoxContainer.new()
+	dash.name = "DashSkill"
+	dash.custom_minimum_size.x = 106
+	dash.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+	dash.add_theme_constant_override("separation", 3)
+	dash.mouse_filter = Control.MOUSE_FILTER_PASS
+	dash.focus_mode = Control.FOCUS_NONE
+	dash.tooltip_text = "空格：向当前移动方向冲刺；静止时沿面向。\n短冲距离约132，冷却2.4秒；起始短暂闪避，可冲离减速地形。"
+	row.add_child(dash)
+	var dash_label := _label("", 14, CYAN)
+	dash_label.name = "DashStatus"
+	dash_label.focus_mode = Control.FOCUS_NONE
+	dash.add_child(dash_label)
+	var dash_bar := ProgressBar.new()
+	dash_bar.name = "DashCooldown"
+	dash_bar.custom_minimum_size.y = 5
+	dash_bar.max_value = 1.0
+	dash_bar.show_percentage = false
+	dash_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	dash_bar.focus_mode = Control.FOCUS_NONE
+	dash_bar.add_theme_stylebox_override("fill", _bar_style(CYAN))
+	dash_bar.add_theme_stylebox_override("background", _bar_style(Color("292334")))
+	dash.add_child(dash_bar)
+	dash.hide()
+	_hud["dash"] = dash
+	_hud["dash_label"] = dash_label
+	_hud["dash_bar"] = dash_bar
 	var xp := ProgressBar.new()
 	xp.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
 	xp.offset_left = 26
@@ -462,11 +491,44 @@ func update_hud(snapshot: Dictionary) -> void:
 	_hud["boss"].visible = boss_alive
 	_hud["boss_bar"].max_value = maxf(1, boss_max)
 	_hud["boss_bar"].value = boss_health
+	_update_dash_hud(snapshot)
 	var loadout: Array = snapshot.get("loadout", [])
 	var key := str(loadout)
 	if key != _hud_loadout_key:
 		_hud_loadout_key = key
 		_update_hud_slots(loadout)
+
+
+func _update_dash_hud(snapshot: Dictionary) -> void:
+	var indicator: Control = _hud["dash"]
+	var label: Label = _hud["dash_label"]
+	var meter: ProgressBar = _hud["dash_bar"]
+	var value: Variant = snapshot.get("dash", {})
+	if bool(snapshot.get("benchmark", false)) or not value is Dictionary or value.is_empty() or float(snapshot.get("health", 0.0)) <= 0.0:
+		indicator.hide()
+		label.text = ""
+		meter.value = 0.0
+		return
+	var dash: Dictionary = value
+	var remaining: float = float(dash.get("cooldown_left", 0.0))
+	var total: float = float(dash.get("cooldown_total", 0.0))
+	remaining = maxf(0.0, remaining) if is_finite(remaining) else 0.0
+	total = maxf(0.0, total) if is_finite(total) else 0.0
+	var active: bool = bool(dash.get("active", false))
+	var ready: bool = bool(dash.get("ready", false))
+	indicator.show()
+	if active:
+		label.text = "冲刺中"
+		label.add_theme_color_override("font_color", GOLD)
+		meter.value = 0.0
+	elif ready:
+		label.text = "冲刺 · 空格"
+		label.add_theme_color_override("font_color", CYAN)
+		meter.value = 1.0
+	else:
+		label.text = "冲刺 %.1f秒" % (ceilf(remaining * 10.0) / 10.0) if remaining > 0.0 else "冲刺"
+		label.add_theme_color_override("font_color", MUTED)
+		meter.value = clampf(1.0 - remaining / total, 0.0, 1.0) if remaining > 0.0 and total > 0.0 else 0.0
 
 
 func show_shop() -> void:

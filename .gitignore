@@ -54,3 +54,8 @@ reports/resonance/*.jsonl
 reports/resonance/*.png
 reports/resonance/*.import
 reports/resonance/*-raw.json
+reports/dash/*.log
+reports/dash/*.jsonl
+reports/dash/*.png
+reports/dash/*.import
+reports/dash/*-raw.json

@@ -204,6 +204,7 @@ func _open_combat_upgrades(simulation: CombatSim, generation: int) -> void:
 	_combat_upgrade_sim = simulation
 	_combat_upgrade_generation = generation
 	screen = Screen.UPGRADE
+	world.clear_pending_actions()
 	get_tree().paused = true
 	ui.show_upgrades(true)
 	sound.play("level", -12.0)
@@ -232,6 +233,8 @@ func _upgrades_finished() -> void:
 
 func _invalidate_combat_upgrades() -> void:
 	_run_generation += 1
+	if world != null:
+		world.clear_pending_actions()
 	_upgrade_request_sim = null
 	_upgrade_request_generation = -1
 	_combat_upgrade_sim = null
@@ -253,6 +256,7 @@ func _title() -> void:
 func _pause() -> void:
 	if screen == Screen.TITLE or screen == Screen.RESULT or _benchmark:
 		return
+	world.clear_pending_actions()
 	paused = true
 	get_tree().paused = true
 	ui.show_pause()
@@ -280,9 +284,20 @@ func _unhandled_key_input(event: InputEvent) -> void:
 			else:
 				_pause()
 			get_viewport().set_input_as_handled()
+		elif event.keycode == KEY_SPACE or event.physical_keycode == KEY_SPACE:
+			if not event.alt_pressed and not event.ctrl_pressed and not event.meta_pressed and _can_request_dash():
+				world.request_dash()
+				get_viewport().set_input_as_handled()
 		elif event.keycode == KEY_F11 or (event.keycode == KEY_F and event.alt_pressed):
 			var fullscreen: bool = DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN
 			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED if fullscreen else DisplayServer.WINDOW_MODE_FULLSCREEN)
+
+func _can_request_dash() -> bool:
+	return (
+		screen == Screen.COMBAT and not paused and not get_tree().paused and not _benchmark
+		and world != null and world.active and world.sim != null and not world.sim.complete
+		and run.health > 0.0
+	)
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_APPLICATION_FOCUS_OUT and (screen == Screen.COMBAT or _combat_upgrades_active()) and not paused and not _benchmark and not ("--smoke" in args) and not ("--autoplay" in args):
