@@ -2,6 +2,8 @@
 
 Godot 4.7.2 普通版、带类型标注的 GDScript 开发的 macOS / Windows 单人割草原型。围绕占格背包、可升阶法器与行为符文，完成短波次战斗、经验强化、商店整理和最终 Boss。
 
+当前版本在原游戏基础上更换为明快像素美术，参考《弹射世界》的像素簇与鲜明轮廓：保留鸟喙面具主角、全部敌人与道具身份，重绘六角色、四地图、26枚图标、弹体与界面，使用奶油纸卡和青绿装备盒。玩法与关卡数据沿用原版；旧55项素材保留，新40张像素SVG与菜单PNG独立存放。来源、生成方式与验证见[美术换装](docs/art-reskin.md)。
+
 主菜单新增四地图选择：秘仪祭坛、沉沼遗庭、苍霜圣庭、余烬荒原。三张新图具有不同地貌和减速区域，同时影响玩家与敌人，离开恢复；本局八波沿用所选地图。界面移除重复小字，战斗中取消生命条下方的通知及右下角说明；关键数值与风险保留，低频操作改为按钮提示。规则与验证见[地图与地形](docs/maps.md)。
 
 武器、遗物和松散符文现在装入盒状背包。购买自动找空位，玩家手动移动、旋转和合成；两件同名同阶物品升一阶，最高三阶。初始6×4格，可付32、48魂屑扩到6×6；背包中的所有法器自动攻击，遗物直接生效。操作与数值见[秘术背包](docs/backpack.md)，专项预览使用 `res://tools/preview_backpack.gd`。
@@ -46,7 +48,7 @@ Q释放秘术脉冲：半径144内的普通敌人径向击退70像素，独立�
 
 ## 直接游玩
 
-Windows x86_64入口为 `build/Embers-windows-x86_64/Embers.exe`，分发包为 `build/Embers-windows-x86_64.zip`。解压后保留同目录的 `Embers.pck` 与 `licenses/`。当前包基于最新 `main` 的四地图、秘术抉择、邻接共鸣与精简HUD，加入冲刺、成功闪避、Q脉冲、技能遗物、键位／手柄、设备提示、肩键翻页、连续整理及独立技能音效与受控确认，共55项资源。前一版包另存 `build/Embers-windows-before-skill-feedback-6317fa9.zip`，更早版本继续保留。Windows使用微软雅黑；本轮验收见[技能音效与命中反馈](docs/skill-feedback.md)，macOS包保留此前版本。
+Windows x86_64入口为 `build/Embers-windows-x86_64/Embers.exe`，分发包为 `build/Embers-windows-x86_64.zip`。解压后保留同目录的 `Embers.pck` 与 `licenses/`。当前包保留四地图、秘术抉择、邻接共鸣、精简HUD、冲刺、Q脉冲、技能遗物、键位／手柄与连续整理，完成现有内容的明快像素换装；活动资源为41项新显示素材与原14段音频，旧55项资源另行保留。换装前包备份为 `build/Embers-windows-before-art-reskin-b7118a5.zip`，更早版本继续保留。Windows使用微软雅黑；本轮验收见[美术换装](docs/art-reskin.md)，macOS包保留此前版本。
 
 最新macOS应用为 `build/Embers-minimal-hud-macos.app`，分发包为 `build/Embers-minimal-hud-macos-arm64.zip`，包含四地图选择、实际地形与精简界面，以及此前完整背包／共鸣／秘术抉择内容。适用于Apple Silicon、macOS 13及以上，使用本地ad-hoc签名。本轮界面验证见 `reports/minimal-hud-validation.json`，地图与性能历史见 `reports/terrain-validation.json`；旧包保留。
 

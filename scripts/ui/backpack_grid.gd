@@ -11,12 +11,12 @@ signal hint_changed(text: String)
 signal placement_cancelled(uid: int)
 
 const CELL: float = 50.0
-const INK := Color("10141e")
-const BONE := Color("f0e5cc")
-const GOLD := Color("c4a76f")
-const CYAN := Color("89d8d2")
-const RED := Color("df888d")
-const PURPLE := Color("bfa2e6")
+const INK := Color("fff9e8")
+const BONE := Color("253d54")
+const GOLD := Color("8a5b20")
+const CYAN := Color("14766f")
+const RED := Color("b83c50")
+const PURPLE := Color("765093")
 
 class ItemButton extends Button:
 	var owner_grid: Control
@@ -98,6 +98,7 @@ func configure(snapshot: Dictionary, epoch: int, selected: int = -1) -> void:
 	_preview = PreviewLayer.new()
 	_preview.name = "PlacementPreview"
 	_preview.owner_grid = self
+	_preview.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	_preview.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_preview.clip_contents = true
 	_preview.size = custom_minimum_size
@@ -427,7 +428,8 @@ func _make_item(item: Dictionary) -> void:
 	button.add_child(artwork)
 	var icon := TextureRect.new()
 	icon.name = "ItemIcon"
-	icon.texture = load("res://assets/icons/%s.svg" % definition.icon)
+	icon.texture = load(AdventureArt.path("res://assets/icons/%s.svg" % definition.icon))
+	icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	_icons[uid] = icon.texture
 	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
@@ -441,7 +443,7 @@ func _make_item(item: Dictionary) -> void:
 	rank.text = ["", "Ⅰ", "Ⅱ", "Ⅲ"][clampi(int(item.get("rank", 1)), 1, 3)]
 	rank.position = Vector2(5, 1)
 	rank.add_theme_font_size_override("font_size", 12)
-	rank.add_theme_color_override("font_color", CYAN if int(item.get("rank", 1)) == 2 else Color("d8b5f1") if int(item.get("rank", 1)) == 3 else GOLD)
+	rank.add_theme_color_override("font_color", CYAN if int(item.get("rank", 1)) == 2 else Color("765093") if int(item.get("rank", 1)) == 3 else GOLD)
 	rank.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	button.add_child(rank)
 	if button.size.y > 60 or button.size.x > 70:
@@ -463,7 +465,8 @@ func _make_item(item: Dictionary) -> void:
 		socket.name = "SocketRuneBadge"
 		socket.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		socket.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		socket.texture = load("res://assets/icons/%s.svg" % definition_rune.icon)
+		socket.texture = load(AdventureArt.path("res://assets/icons/%s.svg" % definition_rune.icon))
+		socket.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 		socket.position = Vector2(button.size.x - 19, 3)
 		socket.size = Vector2(16, 16)
 		socket.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -476,7 +479,7 @@ func _make_item(item: Dictionary) -> void:
 		link.text = "↑"
 		link.position = Vector2(button.size.x - 14, 24)
 		link.add_theme_font_size_override("font_size", 12)
-		link.add_theme_color_override("font_color", Color("b7c892"))
+		link.add_theme_color_override("font_color", Color("356936"))
 		link.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		button.add_child(link)
 
@@ -491,7 +494,8 @@ func _style_item(button: Button, item: Dictionary) -> void:
 			style.bg_color = style.bg_color.lightened(0.05)
 		style.border_color = CYAN if int(item["uid"]) == selected_uid or state == "focus" else definition.color.lerp(GOLD, 0.5)
 		style.set_border_width_all(2 if int(item["uid"]) == selected_uid or state == "focus" else 1)
-		style.set_corner_radius_all(3)
+		style.set_corner_radius_all(0)
+		style.anti_aliasing = false
 		button.add_theme_stylebox_override(state, style)
 
 func _refresh_selection() -> void:
@@ -513,16 +517,16 @@ func _draw() -> void:
 		for x: int in int(_snapshot.get("width", 6)):
 			var active: bool = y < int(_snapshot.get("height", 4))
 			var rect := Rect2(Vector2(x, y) * CELL + Vector2.ONE, Vector2.ONE * (CELL - 2.0))
-			draw_rect(rect, Color("252127") if active else Color("11151e"))
-			draw_rect(rect, Color("615247") if active else Color("2d303a"), false, 1.0)
+			draw_rect(rect, Color("e7dabb") if active else Color("d3ddd6"))
+			draw_rect(rect, Color("a58654") if active else Color("acb8b0"), false, 1.0)
 			if active:
-				draw_line(rect.position + Vector2(4, 5), rect.position + Vector2(43, 5), Color("40323a"), 1.0)
-				draw_line(rect.position + Vector2(5, 43), rect.position + Vector2(43, 43), Color("171720"), 1.0)
+				draw_line(rect.position + Vector2(4, 5), rect.position + Vector2(43, 5), Color("f7edcf"), 1.0)
+				draw_line(rect.position + Vector2(5, 43), rect.position + Vector2(43, 43), Color("b9aa86"), 1.0)
 				for stitch: int in 3:
 					var stitch_y: float = float(12 + stitch * 11)
-					draw_line(rect.position + Vector2(4, stitch_y), rect.position + Vector2(6, stitch_y + 3), Color("51413d"), 1.0)
+					draw_line(rect.position + Vector2(4, stitch_y), rect.position + Vector2(6, stitch_y + 3), Color("b29465"), 1.0)
 			if not active:
-				draw_line(rect.position + Vector2(16, 24), rect.position + Vector2(32, 24), Color("3e3b42"), 1.0)
+				draw_line(rect.position + Vector2(16, 24), rect.position + Vector2(32, 24), Color("8c9b91"), 1.0)
 
 func draw_preview(canvas: Control) -> void:
 	for contact: Dictionary in _resonance_contacts:
@@ -560,7 +564,7 @@ func draw_preview(canvas: Control) -> void:
 		var icon_rect := Rect2(rect.get_center() - Vector2.ONE * extent * 0.5, Vector2.ONE * extent)
 		# Keep the icon's original shape when a native grab crosses the grid edge.
 		if texture != null and bounds.encloses(icon_rect):
-			canvas.draw_texture_rect(texture, icon_rect, false, Color(tint, 0.85))
+			canvas.draw_texture_rect(texture, icon_rect, false, Color(1, 1, 1, 0.85))
 	canvas.draw_rect(clipped, tint, false, 2.0)
 
 func _draw_held_cells(canvas: Control, tint: Color, bounds: Rect2) -> void:
@@ -649,38 +653,35 @@ func draw_item_material(canvas: Control, item: Dictionary) -> void:
 	var extent: Vector2 = canvas.size
 	var kind: String = str(item["kind"])
 	var tint: Color = _definition(item).color.lerp(GOLD, 0.65)
-	canvas.draw_rect(Rect2(Vector2(4, 4), Vector2(extent.x - 8, 10)), Color(tint, 0.045))
-	canvas.draw_line(Vector2(5, extent.y - 5), Vector2(extent.x - 5, extent.y - 5), Color("12141c"), 2.0)
+	canvas.draw_rect(Rect2(Vector2(4, 4), Vector2(extent.x - 8, 8)), Color(1, 1, 1, 0.35))
+	canvas.draw_line(Vector2(4, extent.y - 5), Vector2(extent.x - 4, extent.y - 5), Color("adbea9"), 2.0)
 	if kind == "weapon":
-		canvas.draw_line(Vector2(5, 19), Vector2(extent.x - 5, 7), Color(tint, 0.08), 1.0)
+		canvas.draw_line(Vector2(5, 16), Vector2(extent.x - 5, 16), Color(tint, 0.22), 3.0)
 	elif kind == "relic":
-		for row: int in range(20, int(extent.y) - 8, 12):
-			canvas.draw_line(Vector2(5, row), Vector2(8, row + 2), Color(tint, 0.11), 1.0)
+		for row: int in range(20, int(extent.y) - 8, 10):
+			canvas.draw_rect(Rect2(Vector2(5, row), Vector2(2, 3)), Color(tint, 0.35))
 	else:
-		canvas.draw_rect(Rect2(Vector2(6, 6), extent - Vector2.ONE * 12), Color(tint, 0.08), false, 1.0)
-	for corner: Vector2 in [Vector2(4, 4), Vector2(extent.x - 4, 4), Vector2(4, extent.y - 4), extent - Vector2.ONE * 4]:
-		var horizontal: float = 1.0 if corner.x < extent.x * 0.5 else -1.0
-		var vertical: float = 1.0 if corner.y < extent.y * 0.5 else -1.0
-		canvas.draw_line(corner, corner + Vector2(7 * horizontal, 0), Color(tint, 0.48), 1.0)
-		canvas.draw_line(corner, corner + Vector2(0, 7 * vertical), Color(tint, 0.48), 1.0)
+		canvas.draw_rect(Rect2(Vector2(6, 6), extent - Vector2.ONE * 12), Color(PURPLE, 0.16), false, 1.0)
+	for corner: Vector2 in [Vector2(4, 4), Vector2(extent.x - 6, 4), Vector2(4, extent.y - 6), extent - Vector2.ONE * 6]:
+		canvas.draw_rect(Rect2(corner, Vector2(2, 2)), Color(GOLD, 0.65))
 	var rank: int = clampi(int(item.get("rank", 1)), 1, 3)
-	var rank_tint: Color = CYAN if rank == 2 else Color("d8b5f1") if rank == 3 else GOLD
+	var rank_tint: Color = CYAN if rank == 2 else PURPLE if rank == 3 else GOLD
 	for mark: int in rank:
 		var mark_y: float = float(22 + mark * 5)
-		canvas.draw_line(Vector2(3, mark_y), Vector2(6, mark_y), Color(rank_tint, 0.85), 1.0, true)
+		canvas.draw_rect(Rect2(Vector2(3, mark_y), Vector2(3, 2)), rank_tint)
 	var rune: Dictionary = item.get("rune", {})
 	if not rune.is_empty():
-		canvas.draw_rect(Rect2(Vector2(extent.x - 20, 2), Vector2(18, 18)), Color("191725"))
-		canvas.draw_rect(Rect2(Vector2(extent.x - 20, 2), Vector2(18, 18)), Color("746382"), false, 1.0)
+		canvas.draw_rect(Rect2(Vector2(extent.x - 20, 2), Vector2(18, 18)), Color("f8f1ff"))
+		canvas.draw_rect(Rect2(Vector2(extent.x - 20, 2), Vector2(18, 18)), Color("9671ad"), false, 1.0)
 		for mark: int in clampi(int(rune.get("rank", 1)), 1, 3):
 			var mark_x: float = extent.x - 17 + float(mark * 4)
-			canvas.draw_line(Vector2(mark_x, 21), Vector2(mark_x + 2, 21), Color("bfa2e6"), 1.0)
+			canvas.draw_rect(Rect2(Vector2(mark_x, 21), Vector2(2, 1)), PURPLE)
 
 static func _material_color(kind: String) -> Color:
 	match kind:
-		"weapon": return Color("242a34")
-		"relic": return Color("2e272c")
-	return Color("282537")
+		"weapon": return Color("dceef0")
+		"relic": return Color("f6e6bd")
+	return Color("e9e0f2")
 
 static func _definition(item: Dictionary) -> ContentDef:
 	match str(item["kind"]):

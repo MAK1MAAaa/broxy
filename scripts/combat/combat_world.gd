@@ -138,18 +138,19 @@ func _init() -> void:
 	_reset_feedback()
 
 func _ready() -> void:
+	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	ControlBindings.ensure_installed()
 	_number_font = ThemeDB.fallback_font
 	_dash_evasion_font = GameUI.create_ui_font()
 	_dash_evasion_text_width = _dash_evasion_font.get_string_size(DASH_EVASION_TEXT, HORIZONTAL_ALIGNMENT_LEFT, -1, DASH_EVASION_FONT_SIZE).x
-	arena_texture = load(str(ArenaCatalog.definition(_arena_id)["texture"])) as Texture2D
-	soul_texture = load("res://assets/icons/soul.svg")
-	glow_texture = load("res://assets/fx/glow.svg")
-	seal_texture = load("res://assets/fx/seal.svg")
+	arena_texture = load(AdventureArt.path(str(ArenaCatalog.definition(_arena_id)["texture"]))) as Texture2D
+	soul_texture = load(AdventureArt.path("res://assets/icons/soul.svg"))
+	glow_texture = load(AdventureArt.path("res://assets/fx/glow.svg"))
+	seal_texture = load(AdventureArt.path("res://assets/fx/seal.svg"))
 	for id: String in ["player", "chaser", "rusher", "tank", "caster", "boss"]:
-		textures[id] = load("res://assets/sprites/%s.svg" % id)
+		textures[id] = load(AdventureArt.path("res://assets/sprites/%s.svg" % id))
 	for definition: ContentDef in GameCatalog.weapons():
-		textures[definition.id] = load("res://assets/icons/%s.svg" % definition.icon)
+		textures[definition.id] = load(AdventureArt.path("res://assets/icons/%s.svg" % definition.icon))
 	queue_redraw()
 
 func apply_visual_settings(value: Dictionary) -> void:
@@ -169,7 +170,7 @@ func begin(state: RunState) -> void:
 	# Keep off-tree simulation fixtures free of render resources; _ready handles
 	# a world begun before it is attached, using the same selected arena.
 	if is_node_ready():
-		arena_texture = load(str(arena["texture"])) as Texture2D
+		arena_texture = load(AdventureArt.path(str(arena["texture"]))) as Texture2D
 	_arena_color = Color(str(arena["preview_color"])) if _arena_id != "reliquary" else Color(0.78, 0.67, 0.50)
 	sim = CombatSim.new()
 	sim.begin(state)
@@ -612,10 +613,10 @@ func _draw_pulse_feedback() -> void:
 		_draw_pulse_animation(_pulse_origin, _pulse_radius * (0.20 + progress * 0.72), progress)
 
 func _draw_pulse_range(origin: Vector2, radius: float) -> void:
-	draw_arc(origin, radius - 1.0, 0.0, TAU, 72, Color(0.72, 0.65, 0.84, 0.24), 1.0, true)
+	draw_arc(origin, radius - 1.0, 0.0, TAU, 72, Color(0.13, 0.35, 0.45, 0.48), 1.0, true)
 
 func _draw_pulse_animation(origin: Vector2, radius: float, progress: float) -> void:
-	var tint: Color = Color(0.72, 0.65, 0.84, (1.0 - progress) * 0.14)
+	var tint: Color = Color(0.12, 0.52, 0.56, (1.0 - progress) * 0.28)
 	draw_arc(origin, radius, 0.0, TAU, 48, tint, 1.0, true)
 	for index: int in 6:
 		var direction: Vector2 = Vector2.from_angle(float(index) * TAU / 6.0)
@@ -903,12 +904,12 @@ func _draw_danger() -> void:
 		var progress: float = minf(1.0, zone.age / zone.delay)
 		draw_circle(zone.position, zone.radius, Color(0.9, 0.22, 0.16, 0.10 + progress * 0.06))
 		draw_arc(zone.position, zone.radius, 0, TAU, 40, Color("b85246"), 1.3, true)
-		draw_arc(zone.position, zone.radius, -PI * 0.5, -PI * 0.5 + TAU * progress, 40, Color("ffbe88"), 3.0, true)
+		draw_arc(zone.position, zone.radius, -PI * 0.5, -PI * 0.5 + TAU * progress, 40, Color("c94d50"), 3.0, true)
 		for index: int in 8:
 			var direction: Vector2 = Vector2.from_angle(float(index) * TAU / 8.0)
-			draw_line(zone.position + direction * (zone.radius - 4.0), zone.position + direction * (zone.radius + 3.0), Color("efaa7c"), 1.3, true)
-		draw_line(zone.position - Vector2(8, 0), zone.position + Vector2(8, 0), Color("ffb68a"), 1.0, true)
-		draw_line(zone.position - Vector2(0, 8), zone.position + Vector2(0, 8), Color("ffb68a"), 1.0, true)
+			draw_line(zone.position + direction * (zone.radius - 4.0), zone.position + direction * (zone.radius + 3.0), Color("963e42"), 1.3, true)
+		draw_line(zone.position - Vector2(8, 0), zone.position + Vector2(8, 0), Color("963e42"), 1.0, true)
+		draw_line(zone.position - Vector2(0, 8), zone.position + Vector2(0, 8), Color("963e42"), 1.0, true)
 	# Live hostile rounds remain above all warning strokes.
 	for shot: CombatSim.Shot in sim.shots:
 		if not shot.active or not shot.hostile:

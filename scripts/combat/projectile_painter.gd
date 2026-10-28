@@ -63,7 +63,7 @@ var _head_meshes: Dictionary = {}
 func _init() -> void:
 	bodies = _multimesh(_disc_mesh(true), LIMIT)
 	_body_buffer.resize(LIMIT * INSTANCE_STRIDE)
-	atlas_texture = load("res://assets/fx/projectile_heads.svg")
+	atlas_texture = load(AdventureArt.path("res://assets/fx/projectile_heads.svg"))
 	for frame: int in HEAD_SOURCES.size():
 		var source: String = HEAD_SOURCES[frame]
 		_head_base_radii[source] = GameCatalog.weapon(source).projectile_radius

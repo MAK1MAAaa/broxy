@@ -102,3 +102,7 @@ reports/skill-feedback/*.import
 reports/skill-feedback/*.wav
 reports/skill-feedback/*-raw.json
 reports/skill-feedback/engine-mix.json
+reports/starfall/*.log
+reports/starfall/*.png
+reports/starfall/*.import
+reports/starfall/*-raw.json

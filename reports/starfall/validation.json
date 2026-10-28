@@ -1,0 +1,227 @@
+{
+  "created_utc": "2026-10-28T08:05:06.419223+00:00",
+  "base_commit": "b7118a5bfbacf02d6386e64f6b214734f80b580c",
+  "purpose": "Presentation-only reskin of existing Embers of the Occult; no new game or rules",
+  "engine": "Godot 4.7.2 ed1daf0bf",
+  "platform": "Windows x86_64",
+  "godot_suites": 83,
+  "diagnostic_entries": 5,
+  "regression": {
+    "invocations": 88,
+    "assertions": 29771,
+    "failures": 0,
+    "log_sha256": "c51e5791932f8e9b761622c9aea00d6710e6a26969eda2005019b9ee07ffff7c"
+  },
+  "python_tests": 40,
+  "native": {
+    "adventure_art": {
+      "invocations": 1,
+      "assertions": 191,
+      "failures": 0,
+      "log_sha256": "1d7ab02989b299b8f101e948d3e9761cf4499c70d87b3b322b7ffc82c6aa2a72"
+    },
+    "ui": {
+      "invocations": 1,
+      "assertions": 223,
+      "failures": 0,
+      "log_sha256": "69fd586ab2b112c6bdefa7f463308eb07f104a48cd1c514b6975fd794240f6cb"
+    },
+    "backpack_focus": {
+      "invocations": 1,
+      "assertions": 126,
+      "failures": 0,
+      "log_sha256": "31c1b936e84d4a3485fd8f47f355147e15ebdd8c7d79ee4a6d6c4f23a99d784d"
+    },
+    "controls_ui": {
+      "invocations": 1,
+      "assertions": 113,
+      "failures": 0,
+      "log_sha256": "fbb7a797c60fd30bbf04df7852937317ffaefea06c5f3ecf2100ee0ae8324e0f"
+    },
+    "gamepad_backpack": {
+      "invocations": 1,
+      "assertions": 42,
+      "failures": 0,
+      "log_sha256": "e7799b224fe1e0ffe53aed01322268cbcc6e5945bd310144aa07595e7a14e2e6"
+    },
+    "pulse_world": {
+      "invocations": 1,
+      "assertions": 63,
+      "failures": 0,
+      "log_sha256": "4c029c506b663dd23289e70d4512f10f05d205d1a0e7a3dc491a66a343f1b426"
+    },
+    "skill_feedback": {
+      "invocations": 1,
+      "assertions": 76,
+      "failures": 0,
+      "log_sha256": "21b7c5e0d336551af51e0d73a5e312b97e4df024f3379dba861f597055088208"
+    },
+    "return_ring_presentation": {
+      "invocations": 1,
+      "assertions": 34,
+      "failures": 0,
+      "log_sha256": "df506a3c8fe66798f4e7e378fc40919ec2fdbdaa18c7044ad0d208eba121491d"
+    },
+    "enemy_telegraphs": {
+      "invocations": 1,
+      "assertions": 134,
+      "failures": 0,
+      "log_sha256": "7fc4353ac36749acbbb184c1f7bec68c2dcbfb3eb1d58faed3fe3bb3845604fc"
+    }
+  },
+  "compiled_pck": {
+    "adventure_art": {
+      "invocations": 1,
+      "assertions": 191,
+      "failures": 0,
+      "log_sha256": "1d7ab02989b299b8f101e948d3e9761cf4499c70d87b3b322b7ffc82c6aa2a72"
+    },
+    "skill_feedback": {
+      "invocations": 1,
+      "assertions": 76,
+      "failures": 0,
+      "log_sha256": "21b7c5e0d336551af51e0d73a5e312b97e4df024f3379dba861f597055088208"
+    },
+    "return_ring_presentation": {
+      "invocations": 1,
+      "assertions": 34,
+      "failures": 0,
+      "log_sha256": "df506a3c8fe66798f4e7e378fc40919ec2fdbdaa18c7044ad0d208eba121491d"
+    }
+  },
+  "source_pck_identical_previews_1280x720": {
+    "reliquary": "8545b7e2edb8d7d87e17c9fc4447f7647b07173f84c9efa79a00e9841c5b3048",
+    "mire": "effb0d22548d5b4579f564f2e51083be9d5d38ff148f6dfe712fff5ebe94421e",
+    "glacier": "9d2cc4fabf8420a316c086bd4f81143117d459de6991138fdbd7945e56032e3a",
+    "ashland": "3c110100f418838455abe0a62944711dd99a101747886a13a75575fce39f9ac4",
+    "shop-base": "b67dbb2b8d53296bfc626ad48cf5a8c4309b28895f33b4c8026c47b2aa5d9e1d",
+    "shop-fullbag": "e950aa34091e75228d0e6aa3a07bbb90469b0b2202717a7a75d87f92bdb90aaa",
+    "title": "e4c48a1918fe96ceca8389d414c0293b9ace22f22bfd3439a3589b17b1cf5f30",
+    "settings": "0b34f14238fbda2a29854e6513ebf6619bd1b881c75c70437e22e111c29a3596",
+    "skill-hit": "6efe71357663bcfc37cce17b6bf7c0c4ca379f346aa1d9b3190a78402ba5969b",
+    "skill-empty": "f8168bade89f9aca563489ef5dd202891ed8d8ae9f58ff96b48e0074d1230b1c",
+    "skill-flash_off": "0ced6a0f1f9190a934cab6e3d6512112e0ed06275ba9b7c0114a285f8b5fe01c",
+    "skill-danger": "c1bf8361092eba97d0a72d7484d5f97d866f868fd50bf5cfef3d57b675948cda",
+    "skill-hurt": "13d4c4f9c47e8027404564eff4130e3674aacb0f56e0b831cffc811b510e3eb2",
+    "skill-corner": "b095f0735c7af197461ce4d14e2ff362d6f7c9f004e44a316c4f0db9e465c768"
+  },
+  "assets": {
+    "new_svg_count": 40,
+    "new_menu_png_count": 1,
+    "manifest_sha256": "a2e8cd368ec760577928e02cf3af927ac33a68c4e113752df5d0ed980fa90518",
+    "old_resources_preserved_byte_for_byte": 55,
+    "unchanged_core_combat_data_files": 77,
+    "repeatable_generation": true,
+    "original_identity_and_content_preserved": true
+  },
+  "pressure": {
+    "passed": true,
+    "warmup_seconds": 5.0,
+    "duration_seconds": 60.0,
+    "average_fps": 113.160043032148,
+    "p99_frame_ms": 18.287,
+    "samples": 6790,
+    "sample_dashes_used": 50,
+    "sample_evades": 50,
+    "sample_pulses_used": 5,
+    "sample_pulse_affected": 394,
+    "sample_skill_feedback_peak": 1,
+    "skill_audio_playing_peak": 3
+  },
+  "pressure_art_inputs_before_after_current_equal": 48,
+  "pressure_source_inputs_before_after_current_equal": 83,
+  "package": {
+    "path": "build/Embers-windows-x86_64.zip",
+    "sha256": "9ba02bafc47648e98ecd7652b937ca2a916c69404dee12637eb3278b0fe5ca9c",
+    "x64_pe_zip_crc_and_member_bytes": true,
+    "exe_smoke_exit_code": 0,
+    "previous_path": "build/Embers-windows-before-art-reskin-b7118a5.zip",
+    "previous_sha256": "b25da80ef7235734fd843a7618e776056df2ddea1f351817ef08e46f78436149"
+  },
+  "source_and_document_sha256": {
+    ".gitignore": "23f5b3c80f07633a473da3f52d8ff4a2436f80d3ef9d6af57b5e76faf40cf52b",
+    "README.md": "93a47cc6ea025dea5f7e4497b15b4cdd01836b15eceb98c3cf99370eb192fd65",
+    "assets/PROVENANCE.md": "e2ea1648316dfa704239ff9742d16bd01884e76664f51dae03707fe056e447d4",
+    "assets/starfall/PROVENANCE.md": "8b6ef4b60d57befdffae5634413ea16a94b53a9a34ea10564f9fb92c3e3b206b",
+    "assets/starfall/image-generation.json": "730d823e1753609328d00ad5d736eff4dfa5f72531831df8c1612d072f24ecb6",
+    "assets/starfall/manifest.json": "a2e8cd368ec760577928e02cf3af927ac33a68c4e113752df5d0ed980fa90518",
+    "docs/art-direction.md": "3842b92bc6c6e10f52fdf8e1fa97f4b50ebc715fd8b521211f2f4ef155c3b62f",
+    "docs/art-reskin.md": "85ff8677f58f6a3e700ac4a047a0ec086cba91c09dedd6ea076d82e15c4fb7dc",
+    "project.godot": "1f5418f6b3f7be4dec17318adc96bfb899fa3b9f75541c35a269e391e0ba1cdc",
+    "scripts/combat/combat_world.gd": "07efac1317b4eacd8f8c26dc4e57a0ffeae0e0612a7530e266e65c0eaf643cf9",
+    "scripts/combat/projectile_painter.gd": "6b9395f66e4f99269388848edbad628d0436973d9e33fbd9e06b5093d6ff48e9",
+    "scripts/core/adventure_art.gd": "ebd51ea889d2b3e2b5399ca280176136594170ea2909aa2a9591f5f99b36f6b0",
+    "scripts/core/adventure_art.gd.uid": "b085619ce1751fbf97687c3adaf986604bda8bf617962f27a4f2dfc4c12880ac",
+    "scripts/ui/backpack_grid.gd": "34b576c35d8b033c4c344808e522bbbc01b45eee837db467ba00e0c7cd002a0f",
+    "scripts/ui/game_ui.gd": "cff8044e37713b6420ddab477829e571e8603a89dec559d0fc424b1797785b54",
+    "tests/test_adventure_art.gd": "9a0ecd528b8cd0027ccc71788ef460de1380f5e96da94610908633793712f3b4",
+    "tests/test_adventure_art.gd.uid": "8c11e705a004ed5f6c32a28e0baa29218ad1d0a419ebb145ab0bedc0c61bffa4",
+    "tests/test_arena_flow.gd": "b5a7c547565964cbfc6c3700b13467ce87dd17139893db6f9b374289626fbac7",
+    "tests/test_return_ring_presentation.gd": "677ab4e4a34e8a3376c2642acef08683076921fbe87781c8abf0f917ea279726",
+    "tests/test_starfall_art_assets.py": "0c9b180d3954fc589684ee907803e7c89ae3df8911fe55ebb3f65e1e583f3782",
+    "tools/generate_assets.py": "0de7367ed7ee77389c3fde086889d80361c9e4d27de93b1e1958bc6878fbea2c",
+    "tools/generate_starfall_art.py": "328859d5daa99672c374b250dff1a09e5aef521dcbf37022aadea4fb4acf26d9",
+    "tools/preview_art_reskin.gd": "6aa7e9c3790b3b5cb621f98479e67d7fa97e7cd2c93889690cb501d3f32fa206",
+    "tools/preview_art_reskin.gd.uid": "6e8f38eb74fbf1b5613b79923153b897287bee46fc61af3a6521a8496dc5faae",
+    "tools/starfall_environment.py": "da1ae25b3d8f36fc5a169e51ef07f4747494549498ccc5c0fad04a4514842497",
+    "tools/starfall_icons.py": "74b49c5f63aaf47bb1587b49a6028f66ce366877fc407e0bc8b160761b7336d6",
+    "tools/starfall_sprites.py": "a26029bd589346b798e3fcd829b1be6658b2947b5dbcb535080cb43bc5418109",
+    "tools/test.ps1": "224e23dab7eeb5aa07eddab0e4b4c9f73e2c02a712d7360a68756725599ef7b9",
+    "tools/test.sh": "7b58657bdd7d76a804f71fd1df424795909b24f3f22123a72a055e69b2a6b321"
+  },
+  "evidence_sha256": {
+    "ashland.log": "b6226636e2b8598b1a1989f0d0ab8328767dd9c4b35ce9dd0a461de6b03a434e",
+    "build.log": "3a976024926537146c39918822067950d2eed4a8ed82156e6017be037b58258d",
+    "check-adventure_art.log": "de720b49071da0e1d663a8a92f070680c43c8d2270f6e089d3b2c82adcd340c4",
+    "check-arena_flow.log": "31d346f7446396323f600bb1dced44f4f6397abc11dd765377d688f5a3289835",
+    "check-return_ring_presentation.log": "72031090c4244d0fa731dc0e4050f91082fd9ef9c8acf28c99b8cc94e8a39cb0",
+    "exe-smoke.log": "7f3fa2222dbd58f31cac6cfe506e3184dcbe6226be44264964d6df1784ae2911",
+    "glacier.log": "8c6ce3b24e244d1060564d2594d3482b6c48797c4e32649dec1f183cc89455a3",
+    "import.log": "cefed133d7c3808aca372ffd231f21a388e22cba42cedf9858e1a579ed074f62",
+    "mire.log": "d8d30646a604c0cbef0487272350c4c9c7f44f792929a981754942fcdefbb14a",
+    "native-adventure_art.log": "1d7ab02989b299b8f101e948d3e9761cf4499c70d87b3b322b7ffc82c6aa2a72",
+    "native-backpack_focus.log": "31c1b936e84d4a3485fd8f47f355147e15ebdd8c7d79ee4a6d6c4f23a99d784d",
+    "native-controls_ui.log": "fbb7a797c60fd30bbf04df7852937317ffaefea06c5f3ecf2100ee0ae8324e0f",
+    "native-enemy_telegraphs.log": "7fc4353ac36749acbbb184c1f7bec68c2dcbfb3eb1d58faed3fe3bb3845604fc",
+    "native-gamepad_backpack.log": "e7799b224fe1e0ffe53aed01322268cbcc6e5945bd310144aa07595e7a14e2e6",
+    "native-pulse_world.log": "4c029c506b663dd23289e70d4512f10f05d205d1a0e7a3dc491a66a343f1b426",
+    "native-return_ring_presentation.log": "df506a3c8fe66798f4e7e378fc40919ec2fdbdaa18c7044ad0d208eba121491d",
+    "native-skill_feedback.log": "21b7c5e0d336551af51e0d73a5e312b97e4df024f3379dba861f597055088208",
+    "native-ui.log": "69fd586ab2b112c6bdefa7f463308eb07f104a48cd1c514b6975fd794240f6cb",
+    "pack-ashland.log": "451628328c17fb7fd93740663ccfce9bf7710e2a84320d9bc9bd024878eb921d",
+    "pack-check-adventure_art.log": "1d7ab02989b299b8f101e948d3e9761cf4499c70d87b3b322b7ffc82c6aa2a72",
+    "pack-check-return_ring_presentation.log": "df506a3c8fe66798f4e7e378fc40919ec2fdbdaa18c7044ad0d208eba121491d",
+    "pack-check-skill_feedback.log": "21b7c5e0d336551af51e0d73a5e312b97e4df024f3379dba861f597055088208",
+    "pack-glacier.log": "f3cc686b80cb51f175d0578884f24724c6ca96d52160b963ba3e55ba83576fb4",
+    "pack-mire.log": "d9c5949e8f5d14406103db178bb16fef8d0923be3c539fc3c3c280f612704c44",
+    "pack-reliquary.log": "15a7b901f2c88a910760f1a66a2b77c0c08cf619a334d2ecf5c94683bcb4b9a7",
+    "pack-settings.log": "e25385467364274730020802fe4d4746b71ed7e55ed20dbb1d2612afb76eb833",
+    "pack-shop-base.log": "bc9d3fed05360fb6689a9d8896e66cf38189c4e689bb70bc6b20c436cbd864c6",
+    "pack-shop-fullbag.log": "4eed74d7e992fbb890ea6270685c63f0d4ea0470a918493a8da8a0d52c0f268f",
+    "pack-skill-corner.log": "aabaa69393d5f686c80db82765dc0a7b035e5acf996e09168b8dcfdb3a2c3c80",
+    "pack-skill-danger.log": "d97aaeb6057008cb7d0a0c0613bb60eba2b44ea3d904c8402e1a7f14440342ba",
+    "pack-skill-empty.log": "faa5a07ebc6e2beddcb24f0777b7098569c729aac003dc332bd9a56ee805302a",
+    "pack-skill-flash_off.log": "ea6f83e096efeefe6a5514c31cc696cec9c5bd6180f3ac563495b6d4c92f1edd",
+    "pack-skill-hit.log": "d9a642e44379b3371abe8e117f177bde5e6916b10f9bebc326847776a697ff27",
+    "pack-skill-hurt.log": "73e4e142fd8eb31a8eec95bf9eddc418ef0511be626765ad469798f4df3cc3f5",
+    "pack-title.log": "29f88a6a2473560a1cfe93188b6b46293c265b39891a8664615d2ec323a5df2f",
+    "performance.log": "3b5587eb995729f970158cdafdbe7357c1410b2de39c02e06f92584d9ec79a69",
+    "regression.log": "c51e5791932f8e9b761622c9aea00d6710e6a26969eda2005019b9ee07ffff7c",
+    "reliquary.log": "8ae821ab3f65296d7f9b36f033422883380d3faa573d200ec37792f1a38b84db",
+    "settings.log": "b7fd0cd875abf27b7c52305a1fddead6f02e5cd016e4c9bee235596e4e17937e",
+    "shop-base.log": "bc9d3fed05360fb6689a9d8896e66cf38189c4e689bb70bc6b20c436cbd864c6",
+    "shop-fullbag.log": "4eed74d7e992fbb890ea6270685c63f0d4ea0470a918493a8da8a0d52c0f268f",
+    "skill-corner.log": "ccf5c734d5866181a7014391a9fcf82ab4121e4b29e2f9748ed43c90e4db729c",
+    "skill-danger.log": "d6e5c92dc43c25b0c412011ccd826a41c4fc9159dd0d736e4a778f7383281c35",
+    "skill-empty.log": "1e32e3ab98c693881d38125038a71fdc46d0c27146b766ead7fbf317bf64618a",
+    "skill-flash_off.log": "e3ab7f09b0f066a90dcb17df2115127d373e6742a686b0d466c8e15bbc3e2bf6",
+    "skill-hit.log": "95ceb03e275a21af5565feac9e1ffbf1754b859ac60a512f2126300baf5be902",
+    "skill-hurt.log": "36dc9e325197034a7d892c809e21dcab68741025a2c8e09228a9b537de8a2fc3",
+    "title.log": "0d2f214f541e8a72f4351db1561eb1ab5bdb50b36703befffc2f5d1f304c938a"
+  },
+  "limits": [
+    "Fixed scenes and software input; no physical-controller or human combat-readability approval.",
+    "Synthetic pressure refills health/load and suppresses upgrade modals; not natural balance or difficulty.",
+    "No macOS rebuild, new full automatic simulation, 300-second sample, or new speaker listening review."
+  ]
+}

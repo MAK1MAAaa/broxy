@@ -11,22 +11,22 @@ signal controls_changed(bindings: Dictionary)
 signal upgrades_finished
 signal feedback(sound: String)
 
-const INK := Color("0d111b")
-const PANEL := Color("151a27")
-const PANEL_LIGHT := Color("242737")
-const BONE := Color("f0e5cc")
-const MUTED := Color("aaa4b3")
-const GOLD := Color("c4a76f")
-const PURPLE := Color("bfa2e6")
-const CYAN := Color("89d8d2")
-const RED := Color("df888d")
+const INK := Color("dceef0")
+const PANEL := Color("fff9e8")
+const PANEL_LIGHT := Color("f0ead8")
+const BONE := Color("253d54")
+const MUTED := Color("526575")
+const GOLD := Color("8a5b20")
+const PURPLE := Color("765093")
+const CYAN := Color("14766f")
+const RED := Color("b83c50")
 const CORAL := Color("ed9a86")
 const BACKPACK_GRID = preload("res://scripts/ui/backpack_grid.gd")
 
-## Painted only on construction/resize. Decorative controls never intercept input.
+## Paper-and-brass ornaments draw only on construction/resize and never intercept input.
 class RitualFrame:
 	extends Control
-	var tint: Color = Color("c4a76f")
+	var tint: Color = Color("8a5b20")
 	var quiet: bool = false
 
 	func _ready() -> void:
@@ -36,34 +36,37 @@ class RitualFrame:
 	func _draw() -> void:
 		if size.x < 28 or size.y < 20:
 			return
-		var inset := 4.0
-		var length := 8.0 if quiet else 13.0
+		var inset := 5.0
+		var length := 7.0 if quiet else 12.0
 		var corners: Array[Vector2] = [Vector2(inset, inset), Vector2(size.x - inset, inset), Vector2(inset, size.y - inset), size - Vector2.ONE * inset]
 		for corner: Vector2 in corners:
-			var x_direction := 1.0 if corner.x < size.x * 0.5 else -1.0
-			var y_direction := 1.0 if corner.y < size.y * 0.5 else -1.0
-			draw_line(corner, corner + Vector2(length * x_direction, 0), Color(tint, 0.65), 1.0)
-			draw_line(corner, corner + Vector2(0, length * y_direction), Color(tint, 0.65), 1.0)
-		if not quiet:
-			draw_rect(Rect2(Vector2.ONE * 7, size - Vector2.ONE * 14), Color(tint, 0.09), false, 1.0)
-			if size.x > 150:
-				var center := Vector2(size.x * 0.5, 4)
-				draw_colored_polygon(PackedVector2Array([center + Vector2(0, -3), center + Vector2(3, 0), center + Vector2(0, 3), center + Vector2(-3, 0)]), Color(tint, 0.8))
+			var horizontal := 1.0 if corner.x < size.x * 0.5 else -1.0
+			var vertical := 1.0 if corner.y < size.y * 0.5 else -1.0
+			draw_line(corner, corner + Vector2(length * horizontal, 0), Color(tint, 0.48), 2.0)
+			draw_line(corner, corner + Vector2(0, length * vertical), Color(tint, 0.48), 2.0)
+			draw_rect(Rect2(corner + Vector2(3 * horizontal - 1, 3 * vertical - 1), Vector2(2, 2)), Color(tint, 0.65))
+		if not quiet and size.x > 150:
+			var center := Vector2(floorf(size.x * 0.5), 5)
+			draw_rect(Rect2(center - Vector2(1, 4), Vector2(2, 8)), Color(tint, 0.8))
+			draw_rect(Rect2(center - Vector2(4, 1), Vector2(8, 2)), Color(tint, 0.8))
+			draw_rect(Rect2(center - Vector2(2, 2), Vector2(4, 4)), Color(tint, 0.8))
 
 
 class RitualRule:
 	extends Control
-	var tint: Color = Color("c4a76f")
+	var tint: Color = Color("8a5b20")
 
 	func _ready() -> void:
 		mouse_filter = Control.MOUSE_FILTER_IGNORE
 		resized.connect(queue_redraw)
 
 	func _draw() -> void:
-		var center := Vector2(size.x * 0.5, size.y * 0.5)
-		draw_line(Vector2(0, center.y), center - Vector2(11, 0), Color(tint, 0.22), 1.0)
-		draw_line(center + Vector2(11, 0), Vector2(size.x, center.y), Color(tint, 0.22), 1.0)
-		draw_colored_polygon(PackedVector2Array([center + Vector2(0, -3), center + Vector2(3, 0), center + Vector2(0, 3), center + Vector2(-3, 0)]), Color(tint, 0.8))
+		var center := Vector2(floorf(size.x * 0.5), floorf(size.y * 0.5))
+		draw_line(Vector2(0, center.y), center - Vector2(11, 0), Color(tint, 0.28), 1.0)
+		draw_line(center + Vector2(11, 0), Vector2(size.x, center.y), Color(tint, 0.28), 1.0)
+		draw_rect(Rect2(center - Vector2(1, 3), Vector2(2, 6)), Color(tint, 0.8))
+		draw_rect(Rect2(center - Vector2(3, 1), Vector2(6, 2)), Color(tint, 0.8))
+
 
 var run: RunState
 var _root: Control
@@ -331,7 +334,8 @@ func show_title(best: Dictionary) -> void:
 	columns.add_child(left)
 	var title := _label("EMBERS", 68, BONE)
 	var title_font := SystemFont.new()
-	title_font.font_names = PackedStringArray(["Baskerville", "Georgia", "Times New Roman"])
+	title_font.font_names = PackedStringArray(["Trebuchet MS", "Avenir Next", "Verdana", "Arial"])
+	title_font.font_weight = 800
 	title.add_theme_font_override("font", title_font)
 	left.add_child(title)
 	left.add_child(_label("秘 术 余 烬", 27, PURPLE))
@@ -360,8 +364,8 @@ func show_title(best: Dictionary) -> void:
 		card.tooltip_text = definition.description if _unlocked_starters.has(id) else _starter_unlock_text(id)
 		card.add_theme_font_size_override("font_size", 17)
 		card.add_theme_color_override("font_pressed_color", BONE)
-		card.add_theme_stylebox_override("normal", _box(Color("1d2230"), Color(GOLD, 0.3)))
-		card.add_theme_stylebox_override("pressed", _box(Color("302b3b"), GOLD))
+		card.add_theme_stylebox_override("normal", _box(Color("f7f1df"), Color(GOLD, 0.3)))
+		card.add_theme_stylebox_override("pressed", _box(Color("d4eddf"), GOLD))
 		_set_button_icon(card, definition)
 		option.add_child(card)
 		var role := _label(definition.subtitle.get_slice(" · ", 1) if _unlocked_starters.has(id) else _starter_unlock_text(id), 11, GOLD if _starter == id else MUTED)
@@ -396,6 +400,11 @@ func show_title(best: Dictionary) -> void:
 	footer.add_child(_button("退出游戏", _quit, Vector2(140, 40)))
 	var note := _label(_title_controls_text(), 14, MUTED)
 	note.name = "TitleControls"
+	var note_background := StyleBoxFlat.new()
+	note_background.bg_color = Color(PANEL, 0.94)
+	note_background.content_margin_left = 8
+	note_background.content_margin_right = 8
+	note.add_theme_stylebox_override("normal", note_background)
 	note.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	note.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	footer.add_child(note)
@@ -425,7 +434,7 @@ func set_selected_arena(id: String) -> void:
 func _build_arena_selection(parent: Control) -> void:
 	var card := _panel(parent)
 	card.name = "ArenaSelection"
-	card.add_theme_stylebox_override("panel", _box(Color(0.05, 0.07, 0.11, 0.9), Color(GOLD, 0.25)))
+	card.add_theme_stylebox_override("panel", _box(Color(PANEL, 0.96), Color(GOLD, 0.25)))
 	var body := _inside(card, 12)
 	body.add_theme_constant_override("separation", 8)
 	_section_heading(body, "选择地图", GOLD, 18)
@@ -442,8 +451,8 @@ func _build_arena_selection(parent: Control) -> void:
 		option.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		option.clip_contents = true
 		option.tooltip_text = "%s\n%s" % [str(definition["subtitle"]), "你和敌人进入地形均减速，离开即恢复；可自由穿过，弹体速度不变。" if float(definition["move_multiplier"]) < 1.0 else "开阔石地，移动速度不变。"]
-		option.add_theme_stylebox_override("normal", _box(Color("171f2a"), Color(GOLD, 0.22)))
-		option.add_theme_stylebox_override("pressed", _box(Color("292c39"), GOLD))
+		option.add_theme_stylebox_override("normal", _box(Color("fff9e8"), Color(GOLD, 0.22)))
+		option.add_theme_stylebox_override("pressed", _box(Color("d9edde"), GOLD))
 		grid.add_child(option)
 		var inset := MarginContainer.new()
 		inset.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -460,7 +469,8 @@ func _build_arena_selection(parent: Control) -> void:
 		image.size_flags_vertical = Control.SIZE_EXPAND_FILL
 		image.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		image.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-		image.texture = load(str(definition["texture"])) as Texture2D
+		image.texture = load(AdventureArt.path(str(definition["texture"]))) as Texture2D
+		image.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 		image.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		content.add_child(image)
 		var name_label := _label(str(definition["name"]), 16, BONE)
@@ -529,7 +539,7 @@ func show_hud() -> void:
 	hp.custom_minimum_size.y = 9
 	hp.show_percentage = false
 	hp.add_theme_stylebox_override("fill", _bar_style(RED))
-	hp.add_theme_stylebox_override("background", _bar_style(Color("2d2630")))
+	hp.add_theme_stylebox_override("background", _bar_style(Color("dbd3c3")))
 	health_box.add_child(hp)
 	_hud["health_bar"] = hp
 	for entry: Array in [["wave", "波次  1 / 8"], ["time", "剩余  00:45"], ["gold", "魂屑  0"], ["level", "等级  1"]]:
@@ -548,7 +558,7 @@ func show_hud() -> void:
 	xp.show_percentage = false
 	xp.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	xp.add_theme_stylebox_override("fill", _bar_style(PURPLE))
-	xp.add_theme_stylebox_override("background", _bar_style(Color("292334")))
+	xp.add_theme_stylebox_override("background", _bar_style(Color("d9e4df")))
 	_page.add_child(xp)
 	_hud["xp_bar"] = xp
 	var boss := HBoxContainer.new()
@@ -571,7 +581,7 @@ func show_hud() -> void:
 	boss_hp.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	boss_hp.show_percentage = false
 	boss_hp.add_theme_stylebox_override("fill", _bar_style(RED))
-	boss_hp.add_theme_stylebox_override("background", _bar_style(Color("2d2630")))
+	boss_hp.add_theme_stylebox_override("background", _bar_style(Color("dbd3c3")))
 	boss.add_child(boss_hp)
 	boss.hide()
 	_hud["boss"] = boss
@@ -621,6 +631,7 @@ func update_hud(snapshot: Dictionary) -> void:
 	var timer: Label = _hud["time"]
 	timer.text = "剩余  %02d:%02d" % [seconds / 60, seconds % 60]
 	timer.add_theme_color_override("font_color", BONE)
+	timer.add_theme_constant_override("outline_size", 0)
 	_hud["gold"].text = "魂屑  %d" % int(snapshot.get("gold", 0))
 	_hud["level"].text = "等级  %d" % int(snapshot.get("level", 1))
 	if bool(snapshot.get("benchmark", false)):
@@ -633,6 +644,8 @@ func update_hud(snapshot: Dictionary) -> void:
 		timer.text = "限时  %02d:%02d" % [seconds / 60, seconds % 60]
 		if time_left <= 10.0:
 			timer.add_theme_color_override("font_color", CORAL)
+			timer.add_theme_color_override("font_outline_color", BONE)
+			timer.add_theme_constant_override("outline_size", 2)
 	_hud["xp_bar"].max_value = maxf(1, float(snapshot.get("xp_needed", 1)))
 	_hud["xp_bar"].value = float(snapshot.get("xp", 0))
 	_hud["boss"].visible = boss_alive
@@ -672,7 +685,7 @@ func _add_hud_skill(row: HBoxContainer, key: String, prefix: String, tooltip: St
 	meter.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	meter.focus_mode = Control.FOCUS_NONE
 	meter.add_theme_stylebox_override("fill", _bar_style(CYAN))
-	meter.add_theme_stylebox_override("background", _bar_style(Color("292334")))
+	meter.add_theme_stylebox_override("background", _bar_style(Color("d9e4df")))
 	indicator.add_child(meter)
 	indicator.hide()
 	_hud[key] = indicator
@@ -941,7 +954,7 @@ func show_result(victory: bool, reason: String, best: Dictionary) -> void:
 			bar.show_percentage = false
 			bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			bar.add_theme_stylebox_override("fill", _bar_style(Color(definition.color, 0.85)))
-			bar.add_theme_stylebox_override("background", _bar_style(Color("252638")))
+			bar.add_theme_stylebox_override("background", _bar_style(Color("e0e5dc")))
 			row.add_child(bar)
 		damage_body.add_child(_label("实际总伤害  %.1f" % total, 14, MUTED))
 	var actions := HBoxContainer.new()
@@ -1652,7 +1665,7 @@ func _offer_card(parent: Control, index: int) -> void:
 	var category: Color = {"weapon": GOLD, "rune": PURPLE, "relic": CYAN}.get(kind, GOLD)
 	var locked: bool = run.is_offer_locked(index)
 	var sold: bool = bool(offer.get("sold", false))
-	var border := _box(Color("171c29"), Color(GOLD, 0.74) if locked else Color(category, 0.48))
+	var border := _box(Color("fffbed"), Color(GOLD, 0.74) if locked else Color(category, 0.48))
 	border.border_width_left = 3
 	card.add_theme_stylebox_override("panel", border)
 	card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -1690,7 +1703,7 @@ func _offer_card(parent: Control, index: int) -> void:
 		if not lock_error.is_empty():
 			lock_button.tooltip_text += "\n" + lock_error
 	for state: String in ["normal", "hover", "pressed", "disabled", "focus"]:
-		var style := _box(Color(0, 0, 0, 0) if state == "focus" else Color("292834") if locked else PANEL_LIGHT, CYAN if state == "focus" else GOLD if locked else Color(GOLD, 0.45))
+		var style := _box(Color(0, 0, 0, 0) if state == "focus" else Color("f5e4ba") if locked else PANEL_LIGHT, CYAN if state == "focus" else GOLD if locked else Color(GOLD, 0.45))
 		style.content_margin_left = 6
 		style.content_margin_right = 6
 		style.content_margin_top = 2
@@ -1729,7 +1742,7 @@ func _offer_card(parent: Control, index: int) -> void:
 	var buy := _shop_button(buy_text, _buy.bind(index), "buy:%d" % index, Vector2(0, 35))
 	buy.add_theme_font_size_override("font_size", 14)
 	buy.add_theme_color_override("font_color", MUTED if blocked else GOLD)
-	buy.add_theme_stylebox_override("normal", _box(Color("1a1d29") if blocked else Color("232231"), Color(MUTED, 0.3) if blocked else Color(category, 0.48)))
+	buy.add_theme_stylebox_override("normal", _box(Color("e4e5dd") if blocked else Color("e3f0e5"), Color(MUTED, 0.3) if blocked else Color(category, 0.48)))
 	buy.tooltip_text = error
 	if error == "魂屑不足。":
 		buy.tooltip_text += "还差%d魂屑。" % (price - run.gold)
@@ -2169,6 +2182,7 @@ func _show_settings(from_pause: bool) -> void:
 	volume.step = 0.05
 	volume.value = float(_settings["volume"])
 	volume.custom_minimum_size.y = 34
+	volume.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	volume.value_changed.connect(_change_volume)
 	body.add_child(volume)
 	var shake := CheckButton.new()
@@ -2526,7 +2540,7 @@ func _update_hud_slots(loadout: Array) -> void:
 		card.name = "EquipmentSlot%d" % (index + 1)
 		card.custom_minimum_size.x = 94
 		card.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		var style := _box(Color("1c1e2c"), Color(GOLD, 0.22))
+		var style := _box(Color("f4edd8"), Color(GOLD, 0.22))
 		style.content_margin_left = 8
 		style.content_margin_right = 8
 		style.content_margin_top = 4
@@ -2775,7 +2789,7 @@ func _background() -> void:
 
 
 func _menu_art() -> void:
-	var path := "res://assets/menu_art.svg"
+	var path := AdventureArt.path("res://assets/menu_art.svg")
 	if not ResourceLoader.exists(path):
 		return
 	var art := TextureRect.new()
@@ -2784,11 +2798,12 @@ func _menu_art() -> void:
 	art.set_anchors_and_offsets_preset(Control.PRESET_RIGHT_WIDE)
 	art.offset_left = -690
 	art.offset_right = 10
-	art.offset_top = 0
+	art.offset_top = -230
 	art.offset_bottom = 0
 	art.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	art.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	art.modulate = Color(1, 1, 1, 0.82)
+	art.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	art.modulate = Color.WHITE
+	art.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	art.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_page.add_child(art)
 
@@ -2806,7 +2821,7 @@ func _shell(horizontal: int, vertical: int) -> VBoxContainer:
 
 func _modal(title: String, dimensions: Vector2) -> VBoxContainer:
 	var shade := ColorRect.new()
-	shade.color = Color(0.02, 0.03, 0.06, 0.88)
+	shade.color = Color(0.10, 0.20, 0.27, 0.72)
 	shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_overlay.add_child(shade)
 	var card := PanelContainer.new()
@@ -2910,8 +2925,8 @@ func _focus_later(control: Control) -> void:
 
 
 func _accent(button: Button) -> void:
-	button.add_theme_stylebox_override("normal", _box(Color("343043"), Color(GOLD, 0.9)))
-	button.add_theme_stylebox_override("hover", _box(Color("474058"), GOLD))
+	button.add_theme_stylebox_override("normal", _box(Color("8bdbc0"), Color(GOLD, 0.9)))
+	button.add_theme_stylebox_override("hover", _box(Color("b5ead3"), GOLD))
 	button.add_theme_color_override("font_color", BONE)
 	_decorate(button, GOLD, true)
 
@@ -2933,9 +2948,10 @@ func _margin(margin: MarginContainer, horizontal: int, vertical: int) -> void:
 func _box(fill: Color, border: Color, radius: int = 1) -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()
 	style.bg_color = fill
-	style.border_color = Color(border, border.a * 0.65)
+	style.border_color = Color(border, border.a * 0.85)
 	style.set_border_width_all(1)
 	style.set_corner_radius_all(radius)
+	style.anti_aliasing = false
 	style.content_margin_left = 12
 	style.content_margin_right = 12
 	style.content_margin_top = 7
@@ -2947,6 +2963,29 @@ func _bar_style(color: Color) -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()
 	style.bg_color = color
 	return style
+
+
+func _slider_track(fill: Color, border: Color) -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+	style.bg_color = fill
+	style.border_color = border
+	style.set_border_width_all(1)
+	style.content_margin_top = 4
+	style.content_margin_bottom = 4
+	style.anti_aliasing = false
+	return style
+
+
+func _slider_grabber(fill: Color) -> ImageTexture:
+	var image := Image.create(14, 18, false, Image.FORMAT_RGBA8)
+	image.fill(Color.TRANSPARENT)
+	image.fill_rect(Rect2i(2, 0, 10, 18), BONE)
+	image.fill_rect(Rect2i(0, 2, 14, 14), BONE)
+	image.fill_rect(Rect2i(2, 2, 10, 14), fill)
+	image.fill_rect(Rect2i(3, 3, 8, 2), fill.lightened(0.35))
+	for x: int in [5, 8]:
+		image.fill_rect(Rect2i(x, 6, 1, 7), BONE)
+	return ImageTexture.create_from_image(image)
 
 
 static func create_ui_font() -> SystemFont:
@@ -2966,17 +3005,28 @@ func _make_theme() -> Theme:
 	theme.default_font_size = 17
 	theme.set_color("font_color", "Label", BONE)
 	theme.set_color("font_color", "Button", BONE)
-	theme.set_color("font_hover_color", "Button", CYAN)
-	theme.set_color("font_pressed_color", "Button", GOLD)
-	theme.set_color("font_disabled_color", "Button", Color("676a78"))
+	theme.set_color("font_hover_color", "Button", BONE)
+	theme.set_color("font_pressed_color", "Button", BONE)
+	theme.set_color("font_focus_color", "Button", BONE)
+	theme.set_color("font_disabled_color", "Button", MUTED)
 	theme.set_stylebox("panel", "PanelContainer", _box(PANEL, Color(GOLD, 0.3), 0))
 	theme.set_stylebox("normal", "Button", _box(PANEL_LIGHT, Color(GOLD, 0.45)))
-	theme.set_stylebox("hover", "Button", _box(Color("353449"), GOLD))
-	theme.set_stylebox("pressed", "Button", _box(Color("353047"), PURPLE))
-	theme.set_stylebox("disabled", "Button", _box(Color("161b26"), Color("424650")))
+	theme.set_stylebox("hover", "Button", _box(Color("d5eee1"), GOLD))
+	theme.set_stylebox("pressed", "Button", _box(Color("bfdfd4"), PURPLE))
+	theme.set_stylebox("disabled", "Button", _box(Color("e1e4db"), Color("aeb9ac")))
 	var focus := _box(Color(0, 0, 0, 0), CYAN)
-	focus.set_border_width_all(2)
+	focus.set_border_width_all(3)
 	theme.set_stylebox("focus", "Button", focus)
+	for state: String in ["font_color", "font_hover_color", "font_pressed_color", "font_hover_pressed_color", "font_focus_color"]:
+		theme.set_color(state, "CheckButton", BONE)
+	theme.set_stylebox("panel", "TooltipPanel", _box(PANEL, GOLD))
+	theme.set_color("font_color", "TooltipLabel", BONE)
+	theme.set_stylebox("slider", "HSlider", _slider_track(Color("dce8dd"), Color("8fafa6")))
+	theme.set_stylebox("grabber_area", "HSlider", _slider_track(CYAN, CYAN.darkened(0.2)))
+	theme.set_stylebox("grabber_area_highlight", "HSlider", _slider_track(CYAN, CYAN.darkened(0.2)))
+	theme.set_icon("grabber", "HSlider", _slider_grabber(Color("8bdbc0")))
+	theme.set_icon("grabber_highlight", "HSlider", _slider_grabber(Color("f1c96b")))
+	theme.set_icon("grabber_disabled", "HSlider", _slider_grabber(Color("b8c6bd")))
 	theme.set_constant("separation", "VBoxContainer", 10)
 	theme.set_constant("separation", "HBoxContainer", 10)
 	return theme
@@ -2985,7 +3035,8 @@ func _make_theme() -> Theme:
 func _icon_texture(definition: ContentDef) -> Texture2D:
 	if definition == null or definition.icon.is_empty():
 		return null
-	var path: String = definition.icon if definition.icon.begins_with("res://") else "res://assets/icons/%s.svg" % definition.icon
+	var source: String = definition.icon if definition.icon.begins_with("res://") else "res://assets/icons/%s.svg" % definition.icon
+	var path: String = AdventureArt.path(source)
 	if ResourceLoader.exists(path):
 		return load(path) as Texture2D
 	return null
@@ -2997,6 +3048,7 @@ func _add_icon(parent: Control, definition: ContentDef, size: int) -> void:
 		return
 	var rect := TextureRect.new()
 	rect.texture = texture
+	rect.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	rect.custom_minimum_size = Vector2(size, size)
 	rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
@@ -3008,6 +3060,7 @@ func _set_button_icon(button: Button, definition: ContentDef) -> void:
 	var texture := _icon_texture(definition)
 	if texture != null:
 		button.icon = texture
+		button.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 		button.expand_icon = true
 		button.add_theme_constant_override("icon_max_width", 36)
 
