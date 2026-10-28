@@ -42,6 +42,8 @@ var session_epoch: int = 0
 var interaction_enabled: bool = true:
 	set(value):
 		interaction_enabled = value
+		if not value:
+			_reset_joy_axes()
 		_refresh_selection()
 		if is_instance_valid(_preview):
 			_preview.queue_redraw()
@@ -58,6 +60,8 @@ var _native_dragging: bool = false
 var _native_committed: bool = false
 var _drop_target_cell: Vector2i = Vector2i.ZERO
 var _resonance_contacts: Array[Dictionary] = []
+var _joy_axis_x: int = 0
+var _joy_axis_y: int = 0
 
 func configure(snapshot: Dictionary, epoch: int, selected: int = -1) -> void:
 	_snapshot = snapshot.duplicate(true)
@@ -99,6 +103,7 @@ func begin_placement(uid: int, rotated: Variant = null, cell: Variant = null) ->
 	if not interaction_enabled or not _items.has(uid):
 		return
 	held_uid = uid
+	_reset_joy_axes()
 	selected_uid = uid
 	held_rotated = bool(_items[uid].get("rotated", false)) if rotated == null else bool(rotated)
 	cursor = Vector2i(int(_items[uid]["x"]), int(_items[uid]["y"])) if cell == null else Vector2i(cell)
@@ -112,6 +117,7 @@ func cancel_placement() -> bool:
 	if held_uid < 0:
 		return false
 	held_uid = -1
+	_reset_joy_axes()
 	_grab_offset = Vector2i.ZERO
 	_native_dragging = false
 	_refresh_selection()
@@ -253,6 +259,61 @@ func _gui_input(event: InputEvent) -> void:
 		accept_event()
 	elif event is InputEventKey:
 		_handle_key(event)
+
+func _input(event: InputEvent) -> void:
+	if held_uid < 0 or not interaction_enabled or not is_visible_in_tree() or _native_dragging:
+		return
+	if event is InputEventJoypadButton:
+		if not event.pressed:
+			return
+		match event.button_index:
+			JOY_BUTTON_A: commit_placement()
+			JOY_BUTTON_B: cancel_placement()
+			JOY_BUTTON_X: rotate_held()
+			JOY_BUTTON_DPAD_LEFT: cursor.x -= 1
+			JOY_BUTTON_DPAD_RIGHT: cursor.x += 1
+			JOY_BUTTON_DPAD_UP: cursor.y -= 1
+			JOY_BUTTON_DPAD_DOWN: cursor.y += 1
+			_: return
+		_finish_joy_placement_input()
+	elif event is InputEventJoypadMotion:
+		var previous: int = 0
+		var next: int = 0
+		if event.axis == JOY_AXIS_LEFT_X:
+			previous = _joy_axis_x
+			next = _joy_axis_direction(event.axis_value, previous)
+			_joy_axis_x = next
+			if next != 0 and next != previous:
+				cursor.x += next
+		elif event.axis == JOY_AXIS_LEFT_Y:
+			previous = _joy_axis_y
+			next = _joy_axis_direction(event.axis_value, previous)
+			_joy_axis_y = next
+			if next != 0 and next != previous:
+				cursor.y += next
+		else:
+			return
+		_finish_joy_placement_input()
+
+static func _joy_axis_direction(value: float, previous: int) -> int:
+	if not is_finite(value) or absf(value) <= 0.25:
+		return 0
+	if value >= 0.55:
+		return 1
+	if value <= -0.55:
+		return -1
+	return previous
+
+func _reset_joy_axes() -> void:
+	_joy_axis_x = 0
+	_joy_axis_y = 0
+
+func _finish_joy_placement_input() -> void:
+	if held_uid >= 0:
+		cursor.x = clampi(cursor.x, 0, int(_snapshot.get("width", 6)) - 1)
+		cursor.y = clampi(cursor.y, 0, int(_snapshot.get("height", 4)) - 1)
+		_refresh_preview()
+	get_viewport().set_input_as_handled()
 
 func _unhandled_key_input(event: InputEvent) -> void:
 	if held_uid >= 0 and interaction_enabled and is_visible_in_tree() and event is InputEventKey:

@@ -46,9 +46,11 @@ Q释放秘术脉冲：半径144内的普通敌人径向击退70像素，独立�
 
 ## 直接游玩
 
-Windows x86_64入口为 `build/Embers-windows-x86_64/Embers.exe`，分发包为 `build/Embers-windows-x86_64.zip`。解压后保留同目录的 `Embers.pck` 与 `licenses/`。当前包基于最新 `main` 的四地图、秘术抉择、邻接共鸣与精简HUD，加入空格冲刺、成功闪避确认、Q脉冲及两件技能遗物，共51项资源。前一版包另存 `build/Embers-windows-before-skill-relics-8c8cd36.zip`，更早版本继续保留。Windows使用微软雅黑；本轮验收见[主动技能遗物](docs/skill-relics.md)，macOS包保留此前版本。
+Windows x86_64入口为 `build/Embers-windows-x86_64/Embers.exe`，分发包为 `build/Embers-windows-x86_64.zip`。解压后保留同目录的 `Embers.pck` 与 `licenses/`。当前包基于最新 `main` 的四地图、秘术抉择、邻接共鸣与精简HUD，加入空格冲刺、成功闪避确认、Q脉冲、技能遗物及键位／手柄操作，共51项资源。前一版包另存 `build/Embers-windows-before-controls-fbb1a07.zip`，更早版本继续保留。Windows使用微软雅黑；本轮验收见[键位与手柄](docs/controls.md)，macOS包保留此前版本。
 
 最新macOS应用为 `build/Embers-minimal-hud-macos.app`，分发包为 `build/Embers-minimal-hud-macos-arm64.zip`，包含四地图选择、实际地形与精简界面，以及此前完整背包／共鸣／秘术抉择内容。适用于Apple Silicon、macOS 13及以上，使用本地ad-hoc签名。本轮界面验证见 `reports/minimal-hud-validation.json`，地图与性能历史见 `reports/terrain-validation.json`；旧包保留。
+
+主菜单或暂停菜单的“设置 → 操作设置”可重绑四个移动主键、冲刺与脉冲；支持冲突校验、取消和恢复默认，方向键固定保留。手柄左杆／十字移动，A冲刺、X脉冲、Start暂停；菜单A确认／B返回，背包持物时X旋转、A放置、B取消，左杆或十字逐格移动。配置独立保存，诊断模式不读写个人档案。操作边界与验证见[键位与手柄](docs/controls.md)。下表为默认键盘操作。
 
 | 操作 | 按键 |
 | --- | --- |
@@ -138,6 +140,8 @@ BROXY_APP_PATH="$PWD/build/Embers-minimal-hud-macos.app" ./tools/build_macos.sh
 构建从官方 Universal 模板提取 arm64，生成 `build/Embers.app` 并执行 ad-hoc 签名验证。引擎许可在应用的 `Contents/Resources/licenses/` 中直接可读。对外发布前应使用自己的 Developer ID 配置签名与公证。
 
 ## 验证
+
+键位／手柄版Windows通过 `./tools/test.sh` 的74套Godot加5个档案诊断入口，共28835条断言、32项Python测试；四套新增原生专项146／38／113／42条通过，包含真实GUI焦点、菜单方向导航与背包库存事务。六局自动流程除版本元数据外与技能遗物版完全一致。60秒原生压力平均113.645 FPS、P99 17.319毫秒，64项源码指纹一致；Windows已重新导出并启动EXE，另验证包内配置、改键及合成手柄路径。未连接实体手柄；系统工具对字母／功能键注入出现Pause识别差异，未据此宣称硬件键码一致性。范围与证据见[键位与手柄](docs/controls.md)和 `reports/controls/validation.json`。
 
 技能遗物版Windows通过 `./tools/test.sh` 的70套Godot加5个档案诊断入口，共28496条断言、32项Python测试；新状态／战斗／UI专项原生262／226／53条通过，既有满背包夹具同步迁移到14遗物。两件Ⅲ阶遗物的60秒原生合成压力实际完成50次冲刺挡伤、5次Q累计受控394次，平均114.358 FPS、P99 18.387毫秒。六局既有策略对局均通关，但未购买新遗物；购买、合成、范围与冷却由专项及真实系统Q／空格另验。已重导出Windows包并启动EXE，保留前包；当前证据见[主动技能遗物](docs/skill-relics.md)和 `reports/skill-relics/validation.json`。未重复300秒、未重建Mac或开展实体手柄验收。
 

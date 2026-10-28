@@ -130,6 +130,7 @@ func _init() -> void:
 	_reset_feedback()
 
 func _ready() -> void:
+	ControlBindings.ensure_installed()
 	_number_font = ThemeDB.fallback_font
 	_dash_evasion_font = GameUI.create_ui_font()
 	_dash_evasion_text_width = _dash_evasion_font.get_string_size(DASH_EVASION_TEXT, HORIZONTAL_ALIGNMENT_LEFT, -1, DASH_EVASION_FONT_SIZE).x
@@ -361,10 +362,7 @@ func _clear_dash_afterimages() -> void:
 	_dash_afterimage_clock = 0.0
 
 func _movement() -> Vector2:
-	var value: Vector2 = Vector2.ZERO
-	value.x = float(Input.is_physical_key_pressed(KEY_D) or Input.is_physical_key_pressed(KEY_RIGHT)) - float(Input.is_physical_key_pressed(KEY_A) or Input.is_physical_key_pressed(KEY_LEFT))
-	value.y = float(Input.is_physical_key_pressed(KEY_S) or Input.is_physical_key_pressed(KEY_DOWN)) - float(Input.is_physical_key_pressed(KEY_W) or Input.is_physical_key_pressed(KEY_UP))
-	return value.limit_length()
+	return ControlBindings.movement()
 
 func _on_player_hurt() -> void:
 	_shake = 4.0

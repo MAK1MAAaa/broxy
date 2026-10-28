@@ -68,7 +68,7 @@ func _initialize() -> void:
 func _content_version() -> String:
 	var sources: Array[String] = ["res://scripts/core/run_state.gd", "res://scripts/core/backpack_inventory.gd", "res://scripts/core/backpack_resonance.gd", "res://scripts/combat/combat_sim.gd", "res://scripts/data/content_def.gd", "res://scripts/data/game_catalog.gd", "res://scripts/data/rune_rules.gd", "res://scripts/data/rogue_rules.gd", "res://scripts/main.gd"]
 	var definitions: Array[ContentDef] = GameCatalog.weapons()
-	sources.append_array(["res://scripts/core/arena_catalog.gd", "res://data/arenas.json", "res://scripts/data/dash_rules.gd", "res://scripts/data/pulse_rules.gd"])
+	sources.append_array(["res://scripts/core/arena_catalog.gd", "res://data/arenas.json", "res://scripts/data/dash_rules.gd", "res://scripts/data/pulse_rules.gd", "res://scripts/core/control_bindings.gd"])
 	definitions.append_array(GameCatalog.runes())
 	definitions.append_array(GameCatalog.relics())
 	definitions.append_array(GameCatalog.enemies())

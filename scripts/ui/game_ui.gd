@@ -7,6 +7,7 @@ signal resume_requested
 signal menu_requested
 signal quit_requested
 signal setting_changed(key: String, value: Variant)
+signal controls_changed(bindings: Dictionary)
 signal upgrades_finished
 signal feedback(sound: String)
 
@@ -76,6 +77,13 @@ var _arena_id := "reliquary"
 var _selected_rune := -1
 var _refresh_queued := false
 var _settings := {"volume": 0.65, "shake": true, "flash": true}
+var _controls: Dictionary = ControlBindings.defaults()
+var _control_buttons: Dictionary = {}
+var _controls_notice: Label
+var _capture_label: Label
+var _capture_action: String = ""
+var _controls_epoch: int = 0
+var _hud_skill_snapshot: Dictionary = {}
 var _hud: Dictionary = {}
 var _hud_loadout_key := ""
 var _best: Dictionary = {}
@@ -144,6 +152,60 @@ func set_settings(values: Dictionary) -> void:
 	for key: String in _settings:
 		if values.has(key):
 			_settings[key] = values[key]
+
+
+func set_controls(bindings: Dictionary) -> void:
+	_controls = ControlBindings.normalize(bindings)
+	_refresh_control_buttons()
+	if _page != null:
+		var title_controls := _page.find_child("TitleControls", true, false) as Label
+		if title_controls != null:
+			title_controls.text = _title_controls_text()
+	if _screen == "hud" and not _hud.is_empty() and not _hud_skill_snapshot.is_empty():
+		_update_dash_hud(_hud_skill_snapshot)
+		_update_pulse_hud(_hud_skill_snapshot)
+
+
+func _input(event: InputEvent) -> void:
+	if not _capture_action.is_empty():
+		if event is InputEventKey:
+			get_viewport().set_input_as_handled()
+			if not event.pressed or event.echo:
+				return
+			var key: int = int(event.physical_keycode if event.physical_keycode != KEY_NONE else event.keycode)
+			if key == KEY_ESCAPE:
+				_cancel_control_capture()
+				return
+			if event.alt_pressed or event.ctrl_pressed or event.meta_pressed or event.shift_pressed:
+				_set_controls_notice("请使用单个按键，不使用修饰键组合。", RED)
+				return
+			var error: String = ControlBindings.binding_error(_controls, _capture_action, key)
+			if not error.is_empty():
+				_set_controls_notice(error, RED)
+				return
+			var action: String = _capture_action
+			var next_bindings: Dictionary = _controls.duplicate(true)
+			next_bindings[action] = key
+			_capture_action = ""
+			set_controls(next_bindings)
+			_set_controls_notice("%s已绑定为%s。" % [ControlBindings.action_label(action), ControlBindings.key_label(key)], CYAN)
+			var source := _control_buttons.get(action) as Button
+			if source != null:
+				_focus_later(source)
+			controls_changed.emit(_controls.duplicate(true))
+			return
+		if event is InputEventMouse or event is InputEventJoypadButton or event is InputEventJoypadMotion:
+			get_viewport().set_input_as_handled()
+			if event is InputEventJoypadButton:
+				if event.pressed and event.button_index == JOY_BUTTON_B:
+					_cancel_control_capture()
+				elif event.pressed:
+					_set_controls_notice("请按键盘按键；Esc / 手柄B取消。", RED)
+			elif event is InputEventMouseButton and event.pressed:
+				_set_controls_notice("请按键盘按键；Esc / 手柄B取消。", RED)
+		return
+	if event is InputEventJoypadButton and event.pressed and event.button_index == JOY_BUTTON_B and handle_back():
+		get_viewport().set_input_as_handled()
 
 
 func set_progress(starters: Array[String]) -> void:
@@ -235,11 +297,18 @@ func show_title(best: Dictionary) -> void:
 	shell.add_child(footer)
 	footer.add_child(_button("设置", _show_settings.bind(false), Vector2(120, 40)))
 	footer.add_child(_button("退出游戏", _quit, Vector2(140, 40)))
-	var note := _label("WASD / 方向键移动 · 自动攻击 · Esc暂停", 14, MUTED)
+	var note := _label(_title_controls_text(), 14, MUTED)
 	note.name = "TitleControls"
 	note.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	note.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	footer.add_child(note)
+
+
+func _title_controls_text() -> String:
+	var movement: PackedStringArray = []
+	for action: String in ["move_up", "move_left", "move_down", "move_right"]:
+		movement.append(ControlBindings.key_label(int(_controls[action])))
+	return "%s / 方向键移动 · 冲刺%s · 脉冲%s · Esc暂停" % ["/".join(movement), ControlBindings.key_label(int(_controls["dash"])), ControlBindings.key_label(int(_controls["pulse"]))]
 
 
 func selected_arena() -> String:
@@ -435,6 +504,10 @@ func show_hud() -> void:
 func update_hud(snapshot: Dictionary) -> void:
 	if _screen != "hud" or _hud.is_empty():
 		return
+	_hud_skill_snapshot = {"health": snapshot.get("health", 0.0), "benchmark": snapshot.get("benchmark", false)}
+	for key: String in ["dash", "pulse"]:
+		var skill: Variant = snapshot.get(key, {})
+		_hud_skill_snapshot[key] = skill.duplicate(true) if skill is Dictionary else skill
 	var hp := float(snapshot.get("health", 0.0))
 	var maximum := maxf(1.0, float(snapshot.get("max_health", 1.0)))
 	_hud["health"].text = "生命  %d / %d" % [ceili(hp), ceili(maximum)]
@@ -488,6 +561,8 @@ func _add_hud_skill(row: HBoxContainer, key: String, prefix: String, tooltip: St
 	var label := _label("", 14, CYAN)
 	label.name = prefix + "Status"
 	label.focus_mode = Control.FOCUS_NONE
+	label.clip_text = true
+	label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	indicator.add_child(label)
 	var meter := ProgressBar.new()
 	meter.name = prefix + "Cooldown"
@@ -528,7 +603,8 @@ func _update_dash_hud(snapshot: Dictionary) -> void:
 	var active: bool = bool(dash.get("active", false))
 	var ready: bool = bool(dash.get("ready", false))
 	var next_total: float = _skill_tooltip_value(dash.get("next_cooldown_total", total), DashRules.COOLDOWN)
-	indicator.tooltip_text = "空格：向当前移动方向冲刺；静止时沿面向。\n短冲距离约132，冷却%s秒；起始短暂闪避，可冲离减速地形。" % _skill_number(next_total)
+	var key: String = ControlBindings.key_label(int(_controls["dash"]))
+	indicator.tooltip_text = "%s：向当前移动方向冲刺；静止时沿面向。\n短冲距离约132，冷却%s秒；起始短暂闪避，可冲离减速地形。" % [key, _skill_number(next_total)]
 	if remaining > 0.0 and total > 0.0 and not is_equal_approx(total, next_total):
 		indicator.tooltip_text += "\n本次冷却总长%s秒；改装仅影响下次施放。" % _skill_number(total)
 	indicator.show()
@@ -537,7 +613,7 @@ func _update_dash_hud(snapshot: Dictionary) -> void:
 		label.add_theme_color_override("font_color", GOLD)
 		meter.value = 0.0
 	elif ready:
-		label.text = "冲刺 · 空格"
+		label.text = "冲刺 · " + key
 		label.add_theme_color_override("font_color", CYAN)
 		meter.value = 1.0
 	else:
@@ -562,12 +638,13 @@ func _update_pulse_hud(snapshot: Dictionary) -> void:
 	var next_total: float = _skill_tooltip_value(pulse.get("next_cooldown_total", total), PulseRules.COOLDOWN)
 	var radius: float = _skill_tooltip_value(pulse.get("radius", PulseRules.RADIUS), PulseRules.RADIUS)
 	var cast_radius: float = _skill_tooltip_value(pulse.get("last_cast_radius", radius), radius)
-	indicator.tooltip_text = "Q：击退周围%s范围内的普通敌人70，并减速35%%持续1秒。\n冷却%s秒；首领和追猎者免疫，不能挡弹。" % [_skill_number(radius), _skill_number(next_total)]
+	var key: String = ControlBindings.key_label(int(_controls["pulse"]))
+	indicator.tooltip_text = "%s：击退周围%s范围内的普通敌人70，并减速35%%持续1秒。\n冷却%s秒；首领和追猎者免疫，不能挡弹。" % [key, _skill_number(radius), _skill_number(next_total)]
 	if remaining > 0.0 and ((total > 0.0 and not is_equal_approx(total, next_total)) or not is_equal_approx(cast_radius, radius)):
 		indicator.tooltip_text += "\n本次已施放范围%s，冷却%s秒；改装仅影响下次施放。" % [_skill_number(cast_radius), _skill_number(total)]
 	indicator.show()
 	if bool(pulse.get("ready", false)):
-		label.text = "脉冲 · Q"
+		label.text = "脉冲 · " + key
 		label.add_theme_color_override("font_color", CYAN)
 		meter.value = 1.0
 	else:
@@ -615,6 +692,7 @@ func show_pause() -> void:
 
 func hide_pause() -> void:
 	var restore_focus: bool = not _overlay_mode.is_empty()
+	_clear_controls_modal_state()
 	_clear(_overlay)
 	_overlay_mode = ""
 	_page.focus_behavior_recursive = Control.FOCUS_BEHAVIOR_INHERITED
@@ -627,6 +705,12 @@ func hide_pause() -> void:
 
 
 func handle_back() -> bool:
+	if not _capture_action.is_empty():
+		_cancel_control_capture()
+		return true
+	if _overlay_mode in ["controls_title", "controls_pause"]:
+		_show_settings(_overlay_mode == "controls_pause")
+		return true
 	if _overlay_mode in ["relic_details", "relic_comparison", "rune_equip_comparison", "rogue_choices"]:
 		hide_pause()
 		return true
@@ -642,6 +726,7 @@ func handle_back() -> bool:
 
 
 func _begin_overlay(mode: String) -> void:
+	_clear_controls_modal_state()
 	if is_instance_valid(_bag_grid):
 		_bag_grid.cancel_placement()
 		_bag_grid.interaction_enabled = false
@@ -1926,8 +2011,9 @@ func _perform_upgrade_action(id: String, epoch: int) -> void:
 
 
 func _show_settings(from_pause: bool) -> void:
+	var returning_from_controls: bool = _overlay_mode in ["controls_title", "controls_pause"]
 	_begin_overlay("settings_pause" if from_pause else "settings_title")
-	var body := _modal("设置", Vector2(540, 440))
+	var body := _modal("设置", Vector2(540, 500))
 	body.add_child(_label("主音量", 18, BONE))
 	var volume := HSlider.new()
 	volume.min_value = 0
@@ -1947,10 +2033,121 @@ func _show_settings(from_pause: bool) -> void:
 	flash.button_pressed = bool(_settings["flash"])
 	flash.toggled.connect(_change_toggle.bind("flash"))
 	body.add_child(flash)
+	var controls := _button("操作设置", _show_controls.bind(from_pause), Vector2(0, 42))
+	controls.name = "ControlsSettings"
+	body.add_child(controls)
 	_spacer(body, 8)
 	var back := _button("返回", show_pause if from_pause else hide_pause, Vector2(0, 46))
 	body.add_child(back)
-	_focus_later(back)
+	_focus_later(controls if returning_from_controls else back)
+
+
+func _show_controls(from_pause: bool) -> void:
+	_begin_overlay("controls_pause" if from_pause else "controls_title")
+	var epoch: int = _controls_epoch
+	var body := _modal("操作设置", Vector2(700, 646))
+	(body.get_parent().get_parent() as Control).name = "ControlsPanel"
+	body.add_theme_constant_override("separation", 8)
+	body.add_child(_wrap("选择动作后按新键；Esc / 手柄B取消本次重绑。", 14, MUTED))
+	var grid := GridContainer.new()
+	grid.columns = 2
+	grid.add_theme_constant_override("h_separation", 24)
+	grid.add_theme_constant_override("v_separation", 6)
+	body.add_child(grid)
+	for action: String in ["move_up", "move_down", "move_left", "move_right", "dash", "pulse"]:
+		var label := _label(ControlBindings.action_label(action), 16, BONE)
+		label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		grid.add_child(label)
+		var binding := _button("", _begin_control_capture.bind(action, epoch), Vector2(210, 34))
+		binding.name = "Bind_" + action
+		binding.add_theme_font_size_override("font_size", 16)
+		binding.tooltip_text = "修改%s的键盘主键；方向键始终可用于移动。" % ControlBindings.action_label(action)
+		grid.add_child(binding)
+		_control_buttons[action] = binding
+	_capture_label = _label("", 14, GOLD)
+	_capture_label.name = "BindingCapture"
+	body.add_child(_capture_label)
+	_controls_notice = _wrap("主键不可重复；界面保留键不可重绑。", 14, MUTED)
+	_controls_notice.name = "BindingStatus"
+	_controls_notice.custom_minimum_size.y = 34
+	body.add_child(_controls_notice)
+	var guide := _wrap("键盘：方向键始终可用；Esc、Enter、Tab、F11及修饰键保留。\n手柄：左杆 / 十字移动，A冲刺，X脉冲，Start暂停。\n菜单A确定、B返回；背包持物时X旋转。", 13, MUTED)
+	guide.name = "ControllerGuide"
+	body.add_child(guide)
+	var actions := HBoxContainer.new()
+	actions.add_theme_constant_override("separation", 12)
+	body.add_child(actions)
+	var restore := _button("恢复默认", _restore_controls.bind(epoch), Vector2(0, 42))
+	restore.name = "RestoreControls"
+	restore.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	actions.add_child(restore)
+	var back := _button("返回设置", _close_controls.bind(from_pause, epoch), Vector2(0, 42))
+	back.name = "CloseControls"
+	back.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	actions.add_child(back)
+	_refresh_control_buttons()
+	_focus_later(_control_buttons["move_up"] as Button)
+
+
+func _controls_page_current(epoch: int) -> bool:
+	return epoch == _controls_epoch and _overlay_mode in ["controls_title", "controls_pause"]
+
+
+func _begin_control_capture(action: String, epoch: int) -> void:
+	if not _controls_page_current(epoch) or not _controls.has(action):
+		return
+	_capture_action = action
+	_refresh_control_buttons()
+	_set_controls_notice("按下新的键盘主键；Esc / 手柄B取消。", MUTED)
+
+
+func _cancel_control_capture() -> void:
+	var source := _control_buttons.get(_capture_action) as Button
+	_capture_action = ""
+	_refresh_control_buttons()
+	_set_controls_notice("已取消，原按键保持。", MUTED)
+	if is_instance_valid(source):
+		_focus_later(source)
+
+
+func _refresh_control_buttons() -> void:
+	for action: String in _control_buttons:
+		var button := _control_buttons[action] as Button
+		if not is_instance_valid(button):
+			continue
+		button.text = "请按新键…" if _capture_action == action else ControlBindings.key_label(int(_controls[action]))
+		button.add_theme_color_override("font_color", CYAN if _capture_action == action else BONE)
+	if is_instance_valid(_capture_label):
+		_capture_label.text = "正在重绑：" + ControlBindings.action_label(_capture_action) if not _capture_action.is_empty() else "选择一个动作开始重绑。"
+
+
+func _set_controls_notice(message: String, color: Color) -> void:
+	if is_instance_valid(_controls_notice):
+		_controls_notice.text = message
+		_controls_notice.add_theme_color_override("font_color", color)
+
+
+func _restore_controls(epoch: int) -> void:
+	if not _controls_page_current(epoch):
+		return
+	_capture_action = ""
+	set_controls(ControlBindings.defaults())
+	_set_controls_notice("已恢复默认键位。", CYAN)
+	controls_changed.emit(_controls.duplicate(true))
+
+
+func _close_controls(from_pause: bool, epoch: int) -> void:
+	if _controls_page_current(epoch):
+		_show_settings(from_pause)
+
+
+func _clear_controls_modal_state() -> void:
+	_controls_epoch += 1
+	_capture_action = ""
+	_control_buttons.clear()
+	_controls_notice = null
+	_capture_label = null
 
 
 func _change_volume(value: float) -> void:
@@ -2147,6 +2344,8 @@ func _refresh() -> void:
 
 
 func _set_screen(screen: String) -> void:
+	_clear_controls_modal_state()
+	_hud_skill_snapshot.clear()
 	_rogue_epoch += 1
 	_rogue_notice = ""
 	_screen = screen

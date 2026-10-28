@@ -1,0 +1,299 @@
+{
+  "schema_version": 1,
+  "created_at_utc": "2026-10-28T05:06:21.358337+00:00",
+  "source_base_commit": "fbb1a07d7a3959faccd73d8a280bcb91bdffa326",
+  "scope": "Keyboard rebinding and software gamepad gameplay/menu/backpack input; continuous game-feel goal remains active.",
+  "tests": {
+    "godot_suites": 74,
+    "additional_profile_invocations": 5,
+    "godot_assertions": 28835,
+    "python_tests": 32,
+    "native_assertions": {
+      "control_bindings": 146,
+      "controls_flow": 38,
+      "controls_ui": 113,
+      "gamepad_backpack": 42,
+      "dash_flow": 20,
+      "pulse_flow": 18,
+      "profile_modes": 25,
+      "modal": 37,
+      "backpack_ui": 90,
+      "backpack_targets": 86
+    },
+    "all_passed": true
+  },
+  "fixtures": {
+    "settings": {
+      "capture_sha256": "b94a711bf20e3bd09fd70119c0217e1103fc53cbf236710d651eeb7b6479bbdf",
+      "bindings": {
+        "dash": 32,
+        "move_down": 83,
+        "move_left": 65,
+        "move_right": 68,
+        "move_up": 87,
+        "pulse": 81
+      },
+      "overlay": "controls_title",
+      "dash_uses": 0,
+      "pulse_uses": 0,
+      "connected_gamepads": [],
+      "synthetic_gamepad": false
+    },
+    "capture": {
+      "capture_sha256": "9e2ce3b529dca0eb938fc69d59a1d05bb4eb3ff4546cd69ba45fafca239ffba9",
+      "bindings": {
+        "dash": 32,
+        "move_down": 83,
+        "move_left": 65,
+        "move_right": 68,
+        "move_up": 87,
+        "pulse": 81
+      },
+      "overlay": "controls_title",
+      "dash_uses": 0,
+      "pulse_uses": 0,
+      "connected_gamepads": [],
+      "synthetic_gamepad": false
+    },
+    "conflict": {
+      "capture_sha256": "41d503f5f3a42235a7ed2b18136aa15f87fc53894ebf21217a3ebf53167b844b",
+      "bindings": {
+        "dash": 32,
+        "move_down": 83,
+        "move_left": 65,
+        "move_right": 68,
+        "move_up": 87,
+        "pulse": 81
+      },
+      "overlay": "controls_title",
+      "dash_uses": 0,
+      "pulse_uses": 0,
+      "connected_gamepads": [],
+      "synthetic_gamepad": false
+    },
+    "remapped": {
+      "capture_sha256": "e4cf5da089ad19868debbdca58bfb7fd184dc1a65305f8833c904c76d7f1aa7e",
+      "bindings": {
+        "dash": 69,
+        "move_down": 83,
+        "move_left": 65,
+        "move_right": 68,
+        "move_up": 87,
+        "pulse": 82
+      },
+      "overlay": "",
+      "dash_uses": 1,
+      "pulse_uses": 1,
+      "connected_gamepads": [],
+      "synthetic_gamepad": false
+    },
+    "gamepad": {
+      "capture_sha256": "a854c3c8de15d72878d70b2005fa1b71a0cc6156febb6ea1e5cdee28b2369bb9",
+      "bindings": {
+        "dash": 32,
+        "move_down": 83,
+        "move_left": 65,
+        "move_right": 68,
+        "move_up": 87,
+        "pulse": 81
+      },
+      "overlay": "",
+      "dash_uses": 1,
+      "pulse_uses": 1,
+      "connected_gamepads": [],
+      "synthetic_gamepad": true
+    },
+    "backpack": {
+      "capture_sha256": "c011edd0aac29a1f53812bac70ce348116e01fc134c0bab0308a7b138f31dbf7",
+      "bindings": {
+        "dash": 32,
+        "move_down": 83,
+        "move_left": 65,
+        "move_right": 68,
+        "move_up": 87,
+        "pulse": 81
+      },
+      "overlay": "",
+      "dash_uses": 0,
+      "pulse_uses": 0,
+      "connected_gamepads": [],
+      "synthetic_gamepad": true
+    },
+    "pack-settings": {
+      "capture_sha256": "b94a711bf20e3bd09fd70119c0217e1103fc53cbf236710d651eeb7b6479bbdf",
+      "bindings": {
+        "dash": 32,
+        "move_down": 83,
+        "move_left": 65,
+        "move_right": 68,
+        "move_up": 87,
+        "pulse": 81
+      },
+      "overlay": "controls_title",
+      "dash_uses": 0,
+      "pulse_uses": 0,
+      "connected_gamepads": [],
+      "synthetic_gamepad": false
+    },
+    "pack-gamepad": {
+      "capture_sha256": "a854c3c8de15d72878d70b2005fa1b71a0cc6156febb6ea1e5cdee28b2369bb9",
+      "bindings": {
+        "dash": 32,
+        "move_down": 83,
+        "move_left": 65,
+        "move_right": 68,
+        "move_up": 87,
+        "pulse": 81
+      },
+      "overlay": "",
+      "dash_uses": 1,
+      "pulse_uses": 1,
+      "connected_gamepads": [],
+      "synthetic_gamepad": true
+    },
+    "pack-remapped": {
+      "capture_sha256": "e4cf5da089ad19868debbdca58bfb7fd184dc1a65305f8833c904c76d7f1aa7e",
+      "bindings": {
+        "dash": 69,
+        "move_down": 83,
+        "move_left": 65,
+        "move_right": 68,
+        "move_up": 87,
+        "pulse": 82
+      },
+      "overlay": "",
+      "dash_uses": 1,
+      "pulse_uses": 1,
+      "connected_gamepads": [],
+      "synthetic_gamepad": false
+    },
+    "pack-backpack": {
+      "capture_sha256": "c011edd0aac29a1f53812bac70ce348116e01fc134c0bab0308a7b138f31dbf7",
+      "bindings": {
+        "dash": 32,
+        "move_down": 83,
+        "move_left": 65,
+        "move_right": 68,
+        "move_up": 87,
+        "pulse": 81
+      },
+      "overlay": "",
+      "dash_uses": 0,
+      "pulse_uses": 0,
+      "connected_gamepads": [],
+      "synthetic_gamepad": true
+    }
+  },
+  "visual_review": {
+    "native_size": [
+      1280,
+      720
+    ],
+    "independent_review": true,
+    "blocking_findings": [],
+    "actual_960_by_540_window": "ControlsUI verifies modal enclosure, long bindings, HUD and title text"
+  },
+  "performance": {
+    "summary": "reports/controls/performance.json",
+    "average_fps": 113.645456636276,
+    "p99_frame_ms": 17.319,
+    "window_observed_during_sample": true,
+    "source_files": 64
+  },
+  "simulation": {
+    "summary": "reports/controls/simulation.json",
+    "runs": 6,
+    "wins": 6,
+    "all_gameplay_fields_match_previous_build": true
+  },
+  "distribution": {
+    "path": "build/Embers-windows-x86_64.zip",
+    "sha256": "a5038a5706561555cf2a89ba38297afeaf648c7e084f0d42b33796bd68953481",
+    "previous_package": "build/Embers-windows-before-controls-fbb1a07.zip",
+    "previous_sha256": "c8ec0507740b67514e9eea73c5622b4d34efc02de9ebadb08a890bf5f756a6b2",
+    "zip_crc_members_and_pe_x64_passed": true,
+    "actual_release_exe_smoke": true,
+    "compiled_pack_external_fixture": "Matching Windows engine loads shipped PCK plus external fixture, separately from EXE smoke",
+    "system_input": {
+      "captured_binding": "Pause",
+      "saved_keycode": 4194313,
+      "dash_uses": 1,
+      "normal_window_close_exit": 0,
+      "limitation": "CUA requests for e and F6 were both captured as Pause; original event fields were not recorded, so this does not establish E/F6 hardware identity. A system Pause request actuated the actual captured binding. Accurate E/R remapping and old-key rejection are separately verified by native parsed-event fixtures."
+    }
+  },
+  "preservation": {
+    "files_checked": 426,
+    "all_previous_assets_data_reports_identical": true,
+    "asset_count": 51
+  },
+  "source_sha256": {
+    ".gitignore": "741e949ed5a39704c2fc79e8267999fb74d159dc6635418e198de32b6c9aba5e",
+    "README.md": "96e304827022bf2ca52afe5680a77c125d74826b20335ee062bc1223a74e2d00",
+    "docs/backpack.md": "31c1ca6313dc06930612d6861bbf80473c27e17ca0a0b69174f23834502f5f31",
+    "docs/controls.md": "e3b7a50b678639df21b5e282630f9644b490b675072b2afd18ae97f086495fce",
+    "docs/dash.md": "3530fb5166a19ba25daaf8474bdd068a263a7c1d766ebf56572d2d72d22b7dee",
+    "docs/pulse.md": "3f11d20dd8dd9ac74942da6062204a3097e9325f7a6cec31d147623e251c50ad",
+    "project.godot": "d2e81f8194bf24ff3da9898aeb69439789ff0496eb74a4d6441fe49e1341d3e1",
+    "scripts/combat/combat_world.gd": "e5afe0b221aa831ec4525ff05a20bd9924a745f56e73037d121fbb84dd2dd72b",
+    "scripts/core/control_bindings.gd": "9665aeaf4c9854c1efcda4b95558d8df8286fb1622e65e3145d1cc17d10caeab",
+    "scripts/core/control_bindings.gd.uid": "510042d97352ed19659e024911cf973811279049934aa465a83f6d2a097ffbfd",
+    "scripts/core/game_store.gd": "390ac85b2f79b71b901b1008f1e4160e9f5c4d81eefc72fcf7625d75651e19a4",
+    "scripts/main.gd": "ebac2b776efae5e38e2c7cfa1e2b5f3dbfd6f2ecc743bee2f553c2451829a3a7",
+    "scripts/ui/backpack_grid.gd": "375621af2aba7df6cc881a65682e3c3c0d91cb65a6d6ec3a184b48a7f3fed560",
+    "scripts/ui/game_ui.gd": "1a6bd73a9a8ded63b6b7d3d1f35267cfe683c558dfea90b15d7ae95a9b7d55dd",
+    "tests/simulate_runs.gd": "405a1ac7377222bc28573a59686d3f8684adff08fdccf1574b0c8232de942dd6",
+    "tests/test_control_bindings.gd": "bffa1dcf08f99612edeb93ef7e9047ac0b4e1dd119ea3f60c0e0582bd0f3d4fe",
+    "tests/test_control_bindings.gd.uid": "24620901e6ece73b628d4ccae064b125fdca40129ac0322b43e1cb3dba930a18",
+    "tests/test_controls_flow.gd": "a521e9649ed60fa65362479cc6d6369400ac0483bcc75e2a7ee28cc1d820d4ea",
+    "tests/test_controls_flow.gd.uid": "dc8c107a4eb5461cdab5963ff739c2e615f4fde69d6283895ae687532ead1f53",
+    "tests/test_controls_ui.gd": "9f9e812b7686d300ef2d0a10e113796c8b542e31db9053e9fd073997266b86ac",
+    "tests/test_controls_ui.gd.uid": "713838049268f50cc94424edf0d342ffacdc6b9f22a06f331cb83794ecf3bc5c",
+    "tests/test_gamepad_backpack.gd": "6384cc4ceef311dcbec2cd31a0fb058b3a64b89b0361890944b68ffbc8fc6c09",
+    "tests/test_gamepad_backpack.gd.uid": "9ba6964eff914d5e2af532c04a7ac6119629dea805acf6a665486e8fb5925c7d",
+    "tools/benchmark_dash.gd": "1f0024a7985aff7eddd6b6f27ad47faf7a3e8f245f0ad933cd38190cf3672f30",
+    "tools/preview_controls.gd": "74521e42b5ea2f7a24eb8ea6bfb621368959c80301e93d5bea0fe5f6b3735b0e",
+    "tools/preview_controls.gd.uid": "227a6f0a98336f682a9461f46edc58cfaad0ed93aaeb8eab8bbd72a1f6522e08",
+    "tools/test.ps1": "fae6f10d7ef433c433f5f7fcefac96e9a106e35c8f94a18464bb80c7e93a6cd6",
+    "tools/test.sh": "e8540ed5c1e992cce72ecd8078dd95c03d4a691941cf3646c0b1516919665100"
+  },
+  "evidence_sha256": {
+    "import.log": "8cb7584dbdc5df6f467203ec48db0489d37142f19b84dd3e4db977231e6d1338",
+    "regression.log": "8e86362f6e20f441f4f6685dca18ef6f2704602afdc2685eb86b44d08894e8d3",
+    "performance.log": "f9a3d878cc430dbb5b26b93e81a30fdeb1aa285482ebf2918fd5fc77960bc043",
+    "performance-raw.json": "bc4b52e42c155cb9ef4775676295e628ca1ce8cca2b072f878883c1eb8260dd5",
+    "performance-start-raw.json": "80f37eb5ec8efb9b8ff3346663afae764f5b5be9c09270886418c29d9df5e91a",
+    "default-policy.jsonl": "53b4aadd440abb00c113d9c3aa4c18d085aca3eebf45dcff7cebf5880650b9bb",
+    "pulse-policy.jsonl": "20f5dd3bf27b89563494a1d057a60cd0d95189ee16cfc9b05177fbc1473c187e",
+    "build.log": "6d9f9aa0c90ec71ccd587709a070c289a237cb7162d782ce2eda99c1613242ab",
+    "export-smoke.log": "993c948c0aa861da083dd81054838cdad47ebb9b47e3c463b505e7ffa5e813f3",
+    "pack-interactive.log": "66fe06fa332434294c4ade328527d0fbf266e22f59fd34a6f69557114eac6644",
+    "control_bindings-native.log": "26c49071228149c40f7b92e3d6ac7b99fdf1255a64201ddfd51fb1f3a372cbfd",
+    "controls_flow-native.log": "b81acf48e80c4ae86947948631ae854d39d1bb052ce5e340d729f490f4c810b9",
+    "controls_ui-native.log": "fbb7a797c60fd30bbf04df7852937317ffaefea06c5f3ecf2100ee0ae8324e0f",
+    "gamepad_backpack-native.log": "e7799b224fe1e0ffe53aed01322268cbcc6e5945bd310144aa07595e7a14e2e6",
+    "dash_flow-native.log": "c3c6771b330f73578fef87439c6c9d2a89eb1006013684c2731fee504fd1f62d",
+    "pulse_flow-native.log": "a564da268cd098161337ebbd4a03919fc63c6f6941f3d41865b87ace6fde2dc1",
+    "profile_modes-native.log": "90644cfb63bde22da44dc67adb6cd74ca9588e3d587ad68580f8690a98b439fb",
+    "modal-native.log": "61a2ac8cb080a9c09f18f7262d2dd999990c4eac3668e77bcedacc778dfb6512",
+    "backpack_ui-native.log": "a101317ef6ded799e368a0c099aa2d05491520650de4cc8523e01e0c3ec1163a",
+    "backpack_targets-native.log": "58d4d678610b5525483bcb39cb4691d6291463642b49a94e321104ee0d45eba7",
+    "settings.log": "9da57d0d8ff9b7059902c8e365ecaae7356f0891773c887e7e54142d9c0bb8ba",
+    "capture.log": "c206ab99f1ce82186f7ebc997fd6042b781d047255bcc51663ff9e017a8bbfb1",
+    "conflict.log": "97cf0312a6033c78fcd2213c1b5c276bbce35be1b6851aeeab2a91f9310a07ba",
+    "remapped.log": "dbe75bd979676a8ad6c0b2a584437e8fa609fda582233b7828e803440b54213b",
+    "gamepad.log": "4952e9a112c246852cb77321ca51ebce86967e22c0b897ca0cd6b3bb7db6d400",
+    "backpack.log": "db93a0301fb4dbd2c33581ea6975482eee9febff1d6dea298a9c71ae9f4e805e",
+    "pack-settings.log": "9da57d0d8ff9b7059902c8e365ecaae7356f0891773c887e7e54142d9c0bb8ba",
+    "pack-gamepad.log": "4952e9a112c246852cb77321ca51ebce86967e22c0b897ca0cd6b3bb7db6d400",
+    "pack-remapped.log": "dbe75bd979676a8ad6c0b2a584437e8fa609fda582233b7828e803440b54213b",
+    "pack-backpack.log": "db93a0301fb4dbd2c33581ea6975482eee9febff1d6dea298a9c71ae9f4e805e"
+  },
+  "limits": [
+    "No physical gamepad connected during validation; buttons/axes are parsed synthetic events",
+    "System input tool reported unexpected Pause identity for requested letter/function keys; no keyboard hardware identity claim",
+    "No macOS rebuild on Windows",
+    "60-second native pressure, no repeated 300-second sample",
+    "No long human controller balance trial"
+  ]
+}

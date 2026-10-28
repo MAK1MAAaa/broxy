@@ -74,3 +74,9 @@ reports/skill-relics/*.jsonl
 reports/skill-relics/*.png
 reports/skill-relics/*.import
 reports/skill-relics/*-raw.json
+reports/controls/*.log
+reports/controls/*.jsonl
+reports/controls/*.png
+reports/controls/*.import
+reports/controls/*.cfg
+reports/controls/*-raw.json

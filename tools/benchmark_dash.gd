@@ -163,16 +163,13 @@ func _make_caption() -> void:
 func _update_caption(now: int) -> void:
 	var elapsed: float = float(now - (_sample_started_usec if _sampling else _started_usec)) / 1000000.0
 	var phase: String = "采样 %d / %.0f秒" % [int(elapsed), _seconds] if _sampling else "预热 %d / 5秒" % int(elapsed)
-	var text: String = "冲刺压力夹具 · 非自然对局 · 不保存档案\n%s · 300敌人 / 600弹体 / 200掉落 · 保持移动键松开" % phase
+	var text: String = "冲刺压力夹具 · 非自然对局 · 不保存档案\n%s · 300敌人 / 600弹体 / 200掉落 · 松开移动输入并保持摇杆回中" % phase
 	if text != _last_caption_text:
 		_caption.text = text
 		_last_caption_text = text
 
 func _movement_keys_held() -> bool:
-	for key: Key in [KEY_W, KEY_A, KEY_S, KEY_D, KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT]:
-		if Input.is_physical_key_pressed(key):
-			return true
-	return false
+	return ControlBindings.movement().length_squared() > 0.0
 
 func _before_world_physics() -> void:
 	if not _running or _finished:
@@ -182,7 +179,7 @@ func _before_world_physics() -> void:
 		_abort("The pressure fixture unexpectedly paused or ended")
 		return
 	if _movement_keys_held():
-		_abort("Movement keys must stay released in this facing-only pressure fixture")
+		_abort("Movement keys must stay released and sticks centered in this facing-only pressure fixture")
 		return
 	world.sim.run.health = world.sim.run.stat("max_health")
 	world._maintain_stress()
@@ -296,7 +293,7 @@ func _finish_report(now: int) -> void:
 	var evasion_valid: bool = not _evasion_probes or (sim.dash_evades - _sample_evades_start >= minimum_dashes and _sample_evasion_feedback_peak == 1)
 	var minimum_pulses: int = maxi(1, floori(_seconds / sim.run.stat("pulse_cooldown")) - 1)
 	var pulse_valid: bool = not _pulse_cycles or (sim.pulses_used - _sample_pulses_start >= minimum_pulses and sim.pulse_affected > _sample_affected_start and _sample_pulse_feedback_peak == 1)
-	var defaults_valid: bool = _app.store.settings == {"volume": 0.65, "shake": true, "flash": true} and not _app.store.persistent
+	var defaults_valid: bool = _app.store.settings == {"volume": 0.65, "shake": true, "flash": true} and _app.store.controls == ControlBindings.defaults() and not _app.store.persistent
 	var source: Dictionary = _source_fingerprint()
 	var report: Dictionary = {
 		"scenario": "dash-content-pressure", "natural_run": false,
@@ -323,6 +320,7 @@ func _finish_report(now: int) -> void:
 		"minimum_pre_step_counts": _counts(_pre_step_minimum),
 		"after_step_counts_at_end": _counts(Vector3i(sim.enemy_count, sim.shot_count, sim.soul_count)),
 		"settings": _app.store.settings.duplicate(true), "persistent_profile": _app.store.persistent,
+		"controls": _app.store.controls.duplicate(true), "connected_gamepads": Array(Input.get_connected_joypads()),
 		"main_process_enabled": _app.is_processing(), "main_benchmark_upgrade_suppression": _app._benchmark,
 		"world_stress_mode": _app.world.stress_mode, "world_autopilot": _app.world.autopilot,
 		"seed": SEED, "run_seed": sim.run.summary()["seed"], "arena_id": sim.run.arena_id,

@@ -21,7 +21,8 @@ try {
         'dash_rules', 'dash_world', 'dash_flow', 'dash_ui',
         'dash_evasion', 'dash_evasion_world', 'dash_evasion_audio',
         'pulse_rules', 'pulse_world', 'pulse_flow', 'pulse_ui',
-        'skill_relics', 'skill_relic_combat', 'skill_relic_ui'
+        'skill_relics', 'skill_relic_combat', 'skill_relic_ui',
+        'control_bindings', 'controls_flow', 'controls_ui', 'gamepad_backpack'
     )
     foreach ($suite in $suites) {
         & $runner --headless --script "res://tests/test_$suite.gd"
