@@ -527,6 +527,10 @@ func _update_dash_hud(snapshot: Dictionary) -> void:
 	total = maxf(0.0, total) if is_finite(total) else 0.0
 	var active: bool = bool(dash.get("active", false))
 	var ready: bool = bool(dash.get("ready", false))
+	var next_total: float = _skill_tooltip_value(dash.get("next_cooldown_total", total), DashRules.COOLDOWN)
+	indicator.tooltip_text = "空格：向当前移动方向冲刺；静止时沿面向。\n短冲距离约132，冷却%s秒；起始短暂闪避，可冲离减速地形。" % _skill_number(next_total)
+	if remaining > 0.0 and total > 0.0 and not is_equal_approx(total, next_total):
+		indicator.tooltip_text += "\n本次冷却总长%s秒；改装仅影响下次施放。" % _skill_number(total)
 	indicator.show()
 	if active:
 		label.text = "冲刺中"
@@ -555,6 +559,12 @@ func _update_pulse_hud(snapshot: Dictionary) -> void:
 	var total: float = float(pulse.get("cooldown_total", 0.0))
 	remaining = maxf(0.0, remaining) if is_finite(remaining) else 0.0
 	total = maxf(0.0, total) if is_finite(total) else 0.0
+	var next_total: float = _skill_tooltip_value(pulse.get("next_cooldown_total", total), PulseRules.COOLDOWN)
+	var radius: float = _skill_tooltip_value(pulse.get("radius", PulseRules.RADIUS), PulseRules.RADIUS)
+	var cast_radius: float = _skill_tooltip_value(pulse.get("last_cast_radius", radius), radius)
+	indicator.tooltip_text = "Q：击退周围%s范围内的普通敌人70，并减速35%%持续1秒。\n冷却%s秒；首领和追猎者免疫，不能挡弹。" % [_skill_number(radius), _skill_number(next_total)]
+	if remaining > 0.0 and ((total > 0.0 and not is_equal_approx(total, next_total)) or not is_equal_approx(cast_radius, radius)):
+		indicator.tooltip_text += "\n本次已施放范围%s，冷却%s秒；改装仅影响下次施放。" % [_skill_number(cast_radius), _skill_number(total)]
 	indicator.show()
 	if bool(pulse.get("ready", false)):
 		label.text = "脉冲 · Q"
@@ -564,6 +574,15 @@ func _update_pulse_hud(snapshot: Dictionary) -> void:
 		label.text = "脉冲 %.1f秒" % (ceilf(remaining * 10.0) / 10.0) if remaining > 0.0 else "脉冲"
 		label.add_theme_color_override("font_color", MUTED)
 		meter.value = clampf(1.0 - remaining / total, 0.0, 1.0) if remaining > 0.0 and total > 0.0 else 0.0
+
+
+static func _skill_tooltip_value(value: Variant, fallback: float) -> float:
+	var number: float = float(value) if value is float or value is int else fallback
+	return number if is_finite(number) and number > 0.0 else fallback
+
+
+static func _skill_number(value: float) -> String:
+	return ("%.1f" % value).trim_suffix(".0")
 
 
 func show_shop() -> void:
@@ -1172,6 +1191,12 @@ func _build_backpack_details() -> void:
 			explanation += "\n合成后按目标位置重算共鸣。"
 		elif str(item["kind"]) == "rune":
 			explanation = _rune_rank_text(str(item["id"]), rank + 1)
+		elif str(item["kind"]) == "relic" and str(item["id"]) in ["fold_clasp", "echo_stone"]:
+			var effects: PackedStringArray = []
+			for change: Dictionary in sample.get("stat_changes", []):
+				var key: String = str(change["key"])
+				effects.append("%s %s → %s" % [_relic_stat_name(key), _relic_amount_text(key, float(change["before"])), _relic_amount_text(key, float(change["after"]))])
+			explanation += "\n目标单件：" + "；".join(effects)
 		var merge_preview := _wrap(explanation, 12, GOLD)
 		merge_preview.name = "BackpackMergePreview"
 		_bag_details.add_child(merge_preview)
@@ -1350,13 +1375,27 @@ func _backpack_effect_text(item: Dictionary) -> String:
 				if str(pair[0]).is_empty():
 					continue
 				var amount: float = float(pair[1]) * BackpackInventory.rank_multiplier(rank)
-				var names: Dictionary = {"damage": "伤害", "attack_speed": "攻速", "move_speed": "移速", "max_health": "生命上限", "armor": "护甲", "pickup_radius": "拾取范围"}
-				result.append("%s %+.0f%%" % [names.get(pair[0], pair[0]), amount * 100.0] if str(pair[0]) in ["damage", "attack_speed"] else "%s %+.0f" % [names.get(pair[0], pair[0]), amount])
+				result.append("%s %s" % [_relic_stat_name(str(pair[0])), _relic_amount_text(str(pair[0]), amount)])
 			var text: String = "\n".join(result)
 			if definition.id == "grave_candle":
 				text += "\n正上方边缘相接的法器优先攻击残血目标；不叠加。\n当前连接：" + _candle_link_names(item)
+			elif definition.id == "fold_clasp":
+				text += "\n当前构筑：冲刺冷却%s秒，最低%s秒。" % [_skill_number(run.stat("dash_cooldown")), _skill_number(DashRules.MIN_COOLDOWN)]
+			elif definition.id == "echo_stone":
+				text += "\n当前构筑：脉冲半径%s，冷却%s秒。\n半径上限%s，冷却上限%s秒。" % [_skill_number(run.stat("pulse_radius")), _skill_number(run.stat("pulse_cooldown")), _skill_number(PulseRules.MAX_RADIUS), _skill_number(PulseRules.MAX_COOLDOWN)]
 			return text
 	return definition.description
+
+
+static func _relic_stat_name(key: String) -> String:
+	var names: Dictionary = {"damage": "伤害", "attack_speed": "攻速", "move_speed": "移速", "max_health": "生命上限", "armor": "护甲", "pickup_radius": "拾取范围", "dash_cooldown": "冲刺冷却", "pulse_radius": "脉冲半径", "pulse_cooldown": "脉冲冷却"}
+	return str(names.get(key, key))
+
+
+static func _relic_amount_text(key: String, value: float) -> String:
+	if key in ["damage", "attack_speed"]:
+		return "%+.0f%%" % (value * 100.0)
+	return "%+.1f秒" % value if key in ["dash_cooldown", "pulse_cooldown"] else "%+.0f" % value
 
 
 static func _rank_name(rank: int) -> String:
@@ -1576,14 +1615,15 @@ func _build_relic_stat_comparison(parent: Control, preview: Dictionary) -> void:
 	parent.add_child(grid)
 	for heading: Array in [["属性", 170], ["当前", 150], ["购后", 150], ["变化", 260]]:
 		_comparison_cell(grid, str(heading[0]), GOLD, float(heading[1]))
-	var names: Dictionary = {"max_health": "生命上限", "damage": "伤害倍率", "attack_speed": "攻击速度倍率", "move_speed": "移动速度", "armor": "护甲", "pickup_radius": "拾取范围"}
+	var names: Dictionary = {"max_health": "生命上限", "damage": "伤害倍率", "attack_speed": "攻击速度倍率", "move_speed": "移动速度", "armor": "护甲", "pickup_radius": "拾取范围", "dash_cooldown": "冲刺冷却", "pulse_radius": "脉冲半径", "pulse_cooldown": "脉冲冷却"}
 	for change: Dictionary in preview["stat_changes"]:
 		var key: String = str(change["key"])
 		var delta: float = float(change["delta"])
 		_comparison_cell(grid, str(names.get(key, key)), BONE, 170)
 		_comparison_cell(grid, _comparison_stat_value(key, float(change["before"])), MUTED, 150)
 		_comparison_cell(grid, _comparison_stat_value(key, float(change["after"])), BONE, 150)
-		var variation := _comparison_cell(grid, _comparison_delta(delta, "倍" if key in ["damage", "attack_speed"] else "", 2 if key in ["damage", "attack_speed"] else 0), _comparison_change_color(delta), 260)
+		var cooldown: bool = key in ["dash_cooldown", "pulse_cooldown"]
+		var variation := _comparison_cell(grid, _comparison_delta(delta, "秒" if cooldown else "倍" if key in ["damage", "attack_speed"] else "", 1 if cooldown else 2 if key in ["damage", "attack_speed"] else 0), _comparison_change_color(-delta if cooldown else delta), 260)
 		variation.name = "ComparisonStat_" + key
 	var health_gain: float = float(preview["health_after"]) - float(preview["health_before"])
 	_comparison_cell(grid, "当前生命", BONE, 170)
@@ -1624,6 +1664,8 @@ func _comparison_cell(parent: Control, text: String, color: Color, width: float)
 
 
 static func _comparison_stat_value(key: String, value: float) -> String:
+	if key in ["dash_cooldown", "pulse_cooldown"]:
+		return "%.1f秒" % value
 	return "×%.2f" % value if key in ["damage", "attack_speed"] else "%.0f" % value
 
 

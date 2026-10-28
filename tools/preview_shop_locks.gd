@@ -59,7 +59,7 @@ func _preview() -> void:
 	var before: Array[Dictionary] = state.offers.duplicate(true)
 	var wallet: int = state.gold
 	var random_state: int = state.rng.state
-	passed = passed and state.locked_offer_count() == 2 and state.loadout.size() == 3 and state.rune_bag.size() == 3 and state.relic_counts.size() == GameCatalog.relics().size() and state.backpack_snapshot()["used_cells"] == 34
+	passed = passed and state.locked_offer_count() == 2 and state.loadout.size() == 3 and state.rune_bag.size() == 3 and state.relic_counts.size() == GameCatalog.relics().size() and state.backpack_snapshot()["used_cells"] == 36
 	if case_name in ["repriced", "bought"]:
 		state.next_wave()
 		state.generate_shop()
@@ -69,6 +69,14 @@ func _preview() -> void:
 		for slot: int in [0, 2]:
 			passed = passed and state.is_offer_locked(slot) and state.offers[slot]["id"] == before[slot]["id"] and int(state.offers[slot]["price"]) > int(before[slot]["price"])
 	if case_name == "bought":
+		var sold: int = 0
+		for item: Dictionary in state.backpack_snapshot()["items"]:
+			if str(item["kind"]) == "relic" and str(item["id"]) in ["fold_clasp", "echo_stone"]:
+				passed = state.sell_item(int(item["uid"])) and passed
+				sold += 1
+		passed = sold == 2 and int(state.backpack_snapshot()["used_cells"]) == 34 and state.purchase_error(2).is_empty() and passed
+		await _settle()
+		wallet = state.gold
 		var price: int = int(state.offers[2]["price"])
 		passed = await _activate(app.ui, "buy:2") and passed
 		passed = passed and state.offers[2]["sold"] and not state.is_offer_locked(2) and state.is_offer_locked(0) and state.gold == wallet - price and int(state.relic_counts["hourglass"]) == 2 and state.backpack_snapshot()["used_cells"] == 36

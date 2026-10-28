@@ -21,7 +21,7 @@ static func make_state(case_name: String) -> RunState:
 		purchases.append({"kind": "rune", "definition": GameCatalog.rune(id)})
 	for definition: ContentDef in GameCatalog.relics():
 		purchases.append({"kind": "relic", "definition": definition})
-	var fillers: int = 4 if case_name == "capped" else 0
+	var fillers: int = 2 if case_name == "capped" else 0
 	var budget: int = (7 if case_name == "poor" else 120) + 80 + fillers * GameCatalog.rune("pierce").price
 	for purchase: Dictionary in purchases:
 		var definition: ContentDef = purchase["definition"]

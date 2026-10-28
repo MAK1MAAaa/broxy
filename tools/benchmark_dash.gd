@@ -38,6 +38,7 @@ var _next_right: bool = true
 var _evasion_probes: bool = false
 var _evasion_probes_spawned: int = 0
 var _pulse_cycles: bool = false
+var _skill_relics: bool = false
 var _sample_pulses_start: int = 0
 var _sample_affected_start: int = 0
 var _pulse_feedback_peak: int = 0
@@ -66,8 +67,10 @@ func _parse_arguments() -> bool:
 			_evasion_probes = true
 		elif argument == "--pulse-cycles":
 			_pulse_cycles = true
+		elif argument == "--skill-relics":
+			_skill_relics = true
 		else:
-			push_error("Supported arguments: --seconds=<at least 5> --output=<report.json> [--evasion-probes] [--pulse-cycles]")
+			push_error("Supported arguments: --seconds=<at least 5> --output=<report.json> [--evasion-probes] [--pulse-cycles] [--skill-relics]")
 			return false
 	return true
 
@@ -94,6 +97,9 @@ func _start() -> void:
 	_app._benchmark = true
 	_app.ui.set_selected_arena("mire")
 	_app._begin_run("bone", SEED)
+	if _skill_relics and not _equip_skill_relics():
+		_abort("Could not purchase and merge the pressure fixture's skill relics")
+		return
 	_app.run.core_id = "bone_chorus"
 	_app.world.autopilot = false
 	_app.world.stress_mode = false
@@ -119,7 +125,25 @@ func _start() -> void:
 		"persistent_profile": _app.store.persistent, "output": _output,
 		"evasion_probes": _evasion_probes,
 		"pulse_cycles": _pulse_cycles,
+		"skill_relics": _skill_relics,
 	}))
+
+func _equip_skill_relics() -> bool:
+	# Fixture-only money and stock; every item, merge and occupied cell is real.
+	_app.run.gold = 1000
+	for id: String in ["fold_clasp", "echo_stone"]:
+		var uids: Array[int] = []
+		for copy: int in 4:
+			var definition: ContentDef = GameCatalog.relic(id)
+			_app.run.offers.assign([{"kind": "relic", "id": id, "price": definition.price, "sold": false}])
+			if not _app.run.buy_offer(0):
+				return false
+			var items: Array = _app.run.backpack_snapshot()["items"]
+			uids.append(int(items.back()["uid"]))
+		if not _app.run.merge_items(uids[1], uids[0]) or not _app.run.merge_items(uids[3], uids[2]) or not _app.run.merge_items(uids[2], uids[0]):
+			return false
+	_app.run.offers.clear()
+	return is_equal_approx(_app.run.stat("dash_cooldown"), 1.2) and is_equal_approx(_app.run.stat("pulse_radius"), 216.0) and is_equal_approx(_app.run.stat("pulse_cooldown"), 11.2)
 
 func _make_caption() -> void:
 	var layer := CanvasLayer.new()
@@ -266,11 +290,11 @@ func _finish_report(now: int) -> void:
 	var fps: float = 1000.0 * float(sorted.size()) / total_ms if total_ms > 0.0 else 0.0
 	var sim: CombatSim = _app.world.sim
 	var sampled_dashes: int = sim.dashes_used - _sample_dash_start_count
-	var minimum_dashes: int = 11 if _seconds >= 60.0 else maxi(2, ceili(11.0 * _seconds / 60.0))
+	var minimum_dashes: int = maxi(2, floori(_seconds / sim.run.stat("dash_cooldown")) - 1)
 	var load_valid: bool = _sample_physics_steps > 0 and _pre_step_minimum.x >= TARGET_ENEMIES and _pre_step_minimum.y >= TARGET_PROJECTILES and _pre_step_minimum.z >= TARGET_PICKUPS
 	var feedback_valid: bool = sampled_dashes >= minimum_dashes and _sample_afterimage_peak > 0 and _afterimage_peak <= CombatWorld.DASH_AFTERIMAGE_LIMIT
 	var evasion_valid: bool = not _evasion_probes or (sim.dash_evades - _sample_evades_start >= minimum_dashes and _sample_evasion_feedback_peak == 1)
-	var minimum_pulses: int = maxi(1, floori(_seconds / PulseRules.COOLDOWN) - 1)
+	var minimum_pulses: int = maxi(1, floori(_seconds / sim.run.stat("pulse_cooldown")) - 1)
 	var pulse_valid: bool = not _pulse_cycles or (sim.pulses_used - _sample_pulses_start >= minimum_pulses and sim.pulse_affected > _sample_affected_start and _sample_pulse_feedback_peak == 1)
 	var defaults_valid: bool = _app.store.settings == {"volume": 0.65, "shake": true, "flash": true} and not _app.store.persistent
 	var source: Dictionary = _source_fingerprint()
@@ -287,6 +311,8 @@ func _finish_report(now: int) -> void:
 		"evasion_feedback_peak": _evasion_feedback_peak, "sample_evasion_feedback_peak": _sample_evasion_feedback_peak,
 		"evasion_probes": _evasion_probes, "evasion_probes_spawned": _evasion_probes_spawned,
 		"pulse_cycles": _pulse_cycles, "pulses_used": sim.pulses_used, "sample_pulses_used": sim.pulses_used - _sample_pulses_start,
+		"skill_relics": _skill_relics,
+		"skill_stats": {"dash_cooldown": sim.run.stat("dash_cooldown"), "pulse_radius": sim.run.stat("pulse_radius"), "pulse_cooldown": sim.run.stat("pulse_cooldown"), "move_speed": sim.run.stat("move_speed")},
 		"pulse_affected": sim.pulse_affected, "sample_pulse_affected": sim.pulse_affected - _sample_affected_start,
 		"pulse_feedback_peak": _pulse_feedback_peak, "sample_pulse_feedback_peak": _sample_pulse_feedback_peak,
 		"pre_step_counts_exclude_one_optional_probe_shot": _evasion_probes,
@@ -319,6 +345,8 @@ func _finish_report(now: int) -> void:
 	}
 	if _pulse_cycles:
 		report["fixture_overrides"].append("real Q requests at readiness; pulse control occurs before the normal World fixed step movement, while synthetic pressure positions are replenished each frame")
+	if _skill_relics:
+		report["fixture_overrides"].append("fixture grants money and explicit stock, then actually purchases eight skill relics and merges them into one rank-III item of each kind in the real backpack")
 	if _evasion_probes:
 		report["fixture_overrides"].append("each accepted dash clears old received-hit immunity and adds one stationary, positive-damage hostile projectile at its next-step position; normal collision and dash immunity decide the result")
 	var absolute: String = ProjectSettings.globalize_path(_output)

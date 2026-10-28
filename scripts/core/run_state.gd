@@ -14,6 +14,9 @@ const BASE_STATS: Dictionary = {
 	"move_speed": 220.0,
 	"armor": 0.0,
 	"pickup_radius": 76.0,
+	"dash_cooldown": DashRules.COOLDOWN,
+	"pulse_radius": PulseRules.RADIUS,
+	"pulse_cooldown": PulseRules.COOLDOWN,
 }
 const UPGRADE_POOL: Array[Dictionary] = [
 	{"id": "damage", "name": "秘术精通", "description": "伤害 +12%", "stat": "damage", "amount": 0.12},
@@ -228,6 +231,9 @@ static func _clamp_stat(key: String, value: float) -> float:
 		"max_health": return maxf(1.0, value)
 		"pickup_radius": return maxf(16.0, value)
 		"armor": return maxf(0.0, value)
+		"dash_cooldown": return DashRules.clamp_cooldown(value)
+		"pulse_radius": return PulseRules.clamp_radius(value)
+		"pulse_cooldown": return PulseRules.clamp_cooldown(value)
 	return value
 
 func backpack_snapshot() -> Dictionary:

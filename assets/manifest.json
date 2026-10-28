@@ -4,6 +4,7 @@
   "art_revision": "engraved-07",
   "projectile_visual_revision": "arsenal-atlas-v5",
   "terrain_revision": "biomes-01",
+  "skill_icon_revision": "skill-relics-01",
   "license": "CC0-1.0",
   "generator": "python3 tools/generate_assets.py",
   "external_sources": [],
@@ -579,6 +580,42 @@
         0.5
       ],
       "role": "engraved occult grave_candle icon; transparent; readable at 24–48px",
+      "source": "tools/art_icons.py",
+      "creator": "Project original procedural vector artwork",
+      "license": "CC0-1.0",
+      "status": "authored; engine visual QA pending"
+    },
+    {
+      "id": "icons_fold_clasp",
+      "path": "assets/icons/fold_clasp.svg",
+      "type": "vector",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "engraved occult fold_clasp icon; transparent; readable at 24–48px",
+      "source": "tools/art_icons.py",
+      "creator": "Project original procedural vector artwork",
+      "license": "CC0-1.0",
+      "status": "authored; engine visual QA pending"
+    },
+    {
+      "id": "icons_echo_stone",
+      "path": "assets/icons/echo_stone.svg",
+      "type": "vector",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "engraved occult echo_stone icon; transparent; readable at 24–48px",
       "source": "tools/art_icons.py",
       "creator": "Project original procedural vector artwork",
       "license": "CC0-1.0",

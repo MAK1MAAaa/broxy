@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="ContentDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/content_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "fold_clasp"
+kind = "relic"
+display_name = "折影扣"
+subtitle = "冲刺取舍 · 背包合成升阶"
+description = "冲刺冷却 -0.3秒，移动速度 -6。Ⅰ／Ⅱ／Ⅲ阶属性权重为1／2／4；冲刺冷却最低1.2秒，移速代价持续累计。冲刺距离与闪避时间不变。"
+shop_summary = "冲刺冷却 -0.3秒，移速 -6；冷却最低1.2秒。"
+icon = "fold_clasp"
+color = Color(0.58, 0.78, 0.76, 1)
+price = 22
+stat = "dash_cooldown"
+amount = -0.3
+bonus_stat = "move_speed"
+bonus_amount = -6.0
+inventory_size = Vector2i(1, 1)

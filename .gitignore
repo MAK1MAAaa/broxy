@@ -69,3 +69,8 @@ reports/pulse/*.jsonl
 reports/pulse/*.png
 reports/pulse/*.import
 reports/pulse/*-raw.json
+reports/skill-relics/*.log
+reports/skill-relics/*.jsonl
+reports/skill-relics/*.png
+reports/skill-relics/*.import
+reports/skill-relics/*-raw.json

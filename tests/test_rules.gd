@@ -32,7 +32,7 @@ func _buy(state: RunState, kind: String, id: String, price: int = 20) -> bool:
 func _test_catalog() -> void:
 	_check(GameCatalog.weapons().size() == 8, "Catalog has eight weapons")
 	_check(GameCatalog.runes().size() == 3, "Catalog has three runes")
-	_check(GameCatalog.relics().size() == 12, "Catalog has twelve relics")
+	_check(GameCatalog.relics().size() == 14, "Catalog has fourteen relics including both active-skill tradeoffs")
 	_check(GameCatalog.enemies().size() == 5, "Catalog has four enemies and one boss")
 	_check(GameCatalog.waves().size() == 8, "Catalog has eight waves")
 	var groups: Array = [GameCatalog.weapons(), GameCatalog.runes(), GameCatalog.relics(), GameCatalog.enemies(), GameCatalog.waves()]

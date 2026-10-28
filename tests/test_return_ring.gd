@@ -58,7 +58,7 @@ func _until_return(sim: CombatSim, shot: CombatSim.Shot) -> void:
 
 func _test_definition() -> void:
 	var definition: ContentDef = GameCatalog.weapon("return_ring")
-	_check(GameCatalog.weapons().size() == 8 and GameCatalog.relics().size() == 12, "The formal catalog includes the returning weapon and both tradeoff relics")
+	_check(GameCatalog.weapons().size() == 8 and GameCatalog.relics().size() == 14, "The formal catalog includes the returning weapon and active-skill tradeoff relics")
 	_check(definition.price == 28 and definition.damage == 16.0 and definition.cooldown == 0.95 and definition.projectile_speed == 360.0 and definition.range == 230.0 and definition.innate_pierce == 1, "The return ring uses the agreed affordable base values")
 	_check(definition.return_delay == 0.6 and definition.return_speed == 460.0 and definition.return_lifetime == 2.4, "The ring explicitly defines total flight lifetime and return timing")
 	for id: String in OLD_WEAPONS:

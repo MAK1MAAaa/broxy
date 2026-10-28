@@ -261,7 +261,7 @@ func _on_pulse_cast(origin: Vector2, affected: int) -> void:
 	if not active or sim == null or sim.complete or not origin.is_finite():
 		return
 	var pulse: Dictionary = sim.snapshot().get("pulse", {})
-	var radius: float = float(pulse.get("radius", 0.0))
+	var radius: float = float(pulse.get("last_cast_radius", 0.0))
 	var uses: int = int(pulse.get("uses", 0))
 	if uses <= 0 or uses == _pulse_feedback_use or not is_finite(radius) or radius <= 0.0:
 		return

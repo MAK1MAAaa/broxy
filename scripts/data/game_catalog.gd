@@ -29,6 +29,8 @@ const RELIC_DEFS: Array[ContentDef] = [
 	preload("res://data/relics/hourglass.tres"),
 	preload("res://data/relics/blood_pact.tres"),
 	preload("res://data/relics/grave_candle.tres"),
+	preload("res://data/relics/fold_clasp.tres"),
+	preload("res://data/relics/echo_stone.tres"),
 ]
 const ENEMY_DEFS: Array[ContentDef] = [
 	preload("res://data/enemies/chaser.tres"),

@@ -103,12 +103,15 @@ var player_direction: Vector2 = Vector2.RIGHT
 var invulnerability: float = 0.0
 var dash_time_left: float = 0.0
 var dash_cooldown_left: float = 0.0
+var dash_cooldown_total: float = DashRules.COOLDOWN
 var dash_direction: Vector2 = Vector2.RIGHT
 var dash_invulnerability_left: float = 0.0
 var dashes_used: int = 0
 var dash_evaded_current: bool = false
 var dash_evades: int = 0
 var pulse_cooldown_left: float = 0.0
+var pulse_cooldown_total: float = PulseRules.COOLDOWN
+var last_pulse_radius: float = PulseRules.RADIUS
 var pulses_used: int = 0
 var pulse_affected: int = 0
 var last_pulse_affected: int = 0
@@ -179,12 +182,15 @@ func begin(state: RunState) -> void:
 	player_position = ARENA.get_center()
 	dash_time_left = 0.0
 	dash_cooldown_left = 0.0
+	dash_cooldown_total = _current_dash_cooldown()
 	dash_direction = Vector2.RIGHT
 	dash_invulnerability_left = 0.0
 	dashes_used = 0
 	dash_evaded_current = false
 	dash_evades = 0
 	pulse_cooldown_left = 0.0
+	pulse_cooldown_total = _current_pulse_cooldown()
+	last_pulse_radius = _current_pulse_radius()
 	pulses_used = 0
 	pulse_affected = 0
 	last_pulse_affected = 0
@@ -277,7 +283,8 @@ func _try_start_dash(movement: Vector2) -> void:
 		direction = Vector2.RIGHT
 	dash_direction = direction.normalized()
 	dash_time_left = DashRules.DURATION
-	dash_cooldown_left = DashRules.COOLDOWN
+	dash_cooldown_total = _current_dash_cooldown()
+	dash_cooldown_left = dash_cooldown_total
 	dash_invulnerability_left = DashRules.INVULNERABILITY
 	dashes_used += 1
 	dash_evaded_current = false
@@ -287,13 +294,23 @@ static func _skill_timer_after(remaining: float, delta: float) -> float:
 	var result: float = maxf(0.0, remaining - delta)
 	return 0.0 if result < 0.0000001 else result
 
+func _current_dash_cooldown() -> float:
+	return DashRules.clamp_cooldown(run.stat("dash_cooldown")) if run != null else DashRules.COOLDOWN
+
+func _current_pulse_cooldown() -> float:
+	return PulseRules.clamp_cooldown(run.stat("pulse_cooldown")) if run != null else PulseRules.COOLDOWN
+
+func _current_pulse_radius() -> float:
+	return PulseRules.clamp_radius(run.stat("pulse_radius")) if run != null else PulseRules.RADIUS
+
 func dash_snapshot() -> Dictionary:
 	return {
 		"ready": not complete and run != null and run.health > 0.0 and dash_time_left <= 0.0 and dash_cooldown_left <= 0.0,
 		"active": dash_time_left > 0.0,
 		"remaining": dash_time_left,
 		"cooldown_left": dash_cooldown_left,
-		"cooldown_total": DashRules.COOLDOWN,
+		"cooldown_total": dash_cooldown_total if dash_cooldown_left > 0.0 or dash_time_left > 0.0 else _current_dash_cooldown(),
+		"next_cooldown_total": _current_dash_cooldown(),
 		"direction": dash_direction,
 		"uses": dashes_used,
 		"evaded": dash_evaded_current,
@@ -314,18 +331,20 @@ func _try_cast_pulse() -> void:
 	var fallback: Vector2 = player_direction.normalized() if player_direction.is_finite() and player_direction.length_squared() > 0.0 else Vector2.RIGHT
 	if not fallback.is_finite() or fallback.length_squared() == 0.0:
 		fallback = Vector2.RIGHT
+	last_pulse_radius = _current_pulse_radius()
+	pulse_cooldown_total = _current_pulse_cooldown()
 	last_pulse_affected = 0
 	for enemy: Enemy in enemies:
 		if not enemy.active or not (enemy.health > 0.0) or enemy.hunter or enemy.definition.id == "boss":
 			continue
 		var offset: Vector2 = enemy.position - origin
-		if not offset.is_finite() or offset.length_squared() > PulseRules.RADIUS * PulseRules.RADIUS:
+		if not offset.is_finite() or offset.length_squared() > last_pulse_radius * last_pulse_radius:
 			continue
 		var direction: Vector2 = offset.normalized() if offset.length_squared() > 0.0 else fallback
 		enemy.position = clamp_point(enemy.position + direction * PulseRules.PUSH_DISTANCE)
 		enemy.pulse_hinder_timer = PulseRules.HINDER_SECONDS
 		last_pulse_affected += 1
-	pulse_cooldown_left = PulseRules.COOLDOWN
+	pulse_cooldown_left = pulse_cooldown_total
 	pulses_used += 1
 	pulse_affected += last_pulse_affected
 	pulse_cast.emit(origin, last_pulse_affected)
@@ -334,8 +353,10 @@ func pulse_snapshot() -> Dictionary:
 	return {
 		"ready": not complete and run != null and run.health > 0.0 and pulse_cooldown_left <= 0.0,
 		"cooldown_left": pulse_cooldown_left,
-		"cooldown_total": PulseRules.COOLDOWN,
-		"radius": PulseRules.RADIUS,
+		"cooldown_total": pulse_cooldown_total if pulse_cooldown_left > 0.0 else _current_pulse_cooldown(),
+		"next_cooldown_total": _current_pulse_cooldown(),
+		"radius": _current_pulse_radius(),
+		"last_cast_radius": last_pulse_radius,
 		"uses": pulses_used,
 		"affected": pulse_affected,
 		"last_affected": last_pulse_affected,

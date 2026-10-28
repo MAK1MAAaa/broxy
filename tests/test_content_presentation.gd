@@ -204,7 +204,7 @@ func _test_full_shop() -> void:
 		var id: String = ["pierce", "bounce", "blast"][index]
 		_check(_purchase(state, "rune", GameCatalog.rune(id)) and state.equip_rune(0, index), "The fixture formally sockets its purchased rune: " + id)
 	for definition: ContentDef in GameCatalog.relics():
-		_check(_purchase(state, "relic", definition), "All twelve original relic kinds can be represented by real occupied boxes: " + definition.id)
+		_check(_purchase(state, "relic", definition), "All fourteen catalog relic kinds can be represented by real occupied boxes: " + definition.id)
 	for id: String in ["bounce", "blast"]:
 		_check(_purchase(state, "rune", GameCatalog.rune(id)), "A loose rune occupies its own physical cell: " + id)
 	while state.backpack.can_add("relic", "armor"):
