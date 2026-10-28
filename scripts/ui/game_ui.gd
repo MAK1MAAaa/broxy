@@ -363,9 +363,7 @@ func show_title(best: Dictionary) -> void:
 		card.button_pressed = _starter == id
 		card.tooltip_text = definition.description if _unlocked_starters.has(id) else _starter_unlock_text(id)
 		card.add_theme_font_size_override("font_size", 17)
-		card.add_theme_color_override("font_pressed_color", BONE)
-		card.add_theme_stylebox_override("normal", _box(Color("f7f1df"), Color(GOLD, 0.3)))
-		card.add_theme_stylebox_override("pressed", _box(Color("d4eddf"), GOLD))
+		ButtonSkin.apply(card, "choice")
 		_set_button_icon(card, definition)
 		option.add_child(card)
 		var role := _label(definition.subtitle.get_slice(" · ", 1) if _unlocked_starters.has(id) else _starter_unlock_text(id), 11, GOLD if _starter == id else MUTED)
@@ -451,8 +449,7 @@ func _build_arena_selection(parent: Control) -> void:
 		option.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		option.clip_contents = true
 		option.tooltip_text = "%s\n%s" % [str(definition["subtitle"]), "你和敌人进入地形均减速，离开即恢复；可自由穿过，弹体速度不变。" if float(definition["move_multiplier"]) < 1.0 else "开阔石地，移动速度不变。"]
-		option.add_theme_stylebox_override("normal", _box(Color("fff9e8"), Color(GOLD, 0.22)))
-		option.add_theme_stylebox_override("pressed", _box(Color("d9edde"), GOLD))
+		ButtonSkin.apply(option, "choice")
 		grid.add_child(option)
 		var inset := MarginContainer.new()
 		inset.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -1702,13 +1699,7 @@ func _offer_card(parent: Control, index: int) -> void:
 		var lock_error: String = run.shop_lock_error(index)
 		if not lock_error.is_empty():
 			lock_button.tooltip_text += "\n" + lock_error
-	for state: String in ["normal", "hover", "pressed", "disabled", "focus"]:
-		var style := _box(Color(0, 0, 0, 0) if state == "focus" else Color("f5e4ba") if locked else PANEL_LIGHT, CYAN if state == "focus" else GOLD if locked else Color(GOLD, 0.45))
-		style.content_margin_left = 6
-		style.content_margin_right = 6
-		style.content_margin_top = 2
-		style.content_margin_bottom = 2
-		lock_button.add_theme_stylebox_override(state, style)
+	ButtonSkin.apply(lock_button, "primary" if locked else "quiet", true)
 	title_row.add_child(lock_button)
 	var dimensions: Vector2i = definition.inventory_size
 	names.add_child(_label("Ⅰ阶 · %s · 占格%d×%d" % [{"weapon": "法器", "rune": "符文", "relic": "遗物"}.get(kind, kind), dimensions.x, dimensions.y], 11, category))
@@ -1741,8 +1732,7 @@ func _offer_card(parent: Control, index: int) -> void:
 		buy_text = "%s · %d魂屑" % [reason, price]
 	var buy := _shop_button(buy_text, _buy.bind(index), "buy:%d" % index, Vector2(0, 35))
 	buy.add_theme_font_size_override("font_size", 14)
-	buy.add_theme_color_override("font_color", MUTED if blocked else GOLD)
-	buy.add_theme_stylebox_override("normal", _box(Color("e4e5dd") if blocked else Color("e3f0e5"), Color(MUTED, 0.3) if blocked else Color(category, 0.48)))
+	ButtonSkin.apply(buy, "blocked" if blocked else "primary", true)
 	buy.tooltip_text = error
 	if error == "魂屑不足。":
 		buy.tooltip_text += "还差%d魂屑。" % (price - run.gold)
@@ -2187,11 +2177,13 @@ func _show_settings(from_pause: bool) -> void:
 	body.add_child(volume)
 	var shake := CheckButton.new()
 	shake.text = "镜头震动"
+	ButtonSkin.apply(shake)
 	shake.button_pressed = bool(_settings["shake"])
 	shake.toggled.connect(_change_toggle.bind("shake"))
 	body.add_child(shake)
 	var flash := CheckButton.new()
 	flash.text = "受击闪光"
+	ButtonSkin.apply(flash)
 	flash.button_pressed = bool(_settings["flash"])
 	flash.toggled.connect(_change_toggle.bind("flash"))
 	body.add_child(flash)
@@ -2907,6 +2899,7 @@ func _button(text: String, action: Callable, minimum: Vector2 = Vector2(0, 40)) 
 	button.focus_mode = Control.FOCUS_ALL
 	button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	button.pressed.connect(action)
+	ButtonSkin.apply(button, "secondary", minimum.y > 0.0 and minimum.y <= 35.0)
 	return button
 
 
@@ -2925,10 +2918,7 @@ func _focus_later(control: Control) -> void:
 
 
 func _accent(button: Button) -> void:
-	button.add_theme_stylebox_override("normal", _box(Color("8bdbc0"), Color(GOLD, 0.9)))
-	button.add_theme_stylebox_override("hover", _box(Color("b5ead3"), GOLD))
-	button.add_theme_color_override("font_color", BONE)
-	_decorate(button, GOLD, true)
+	ButtonSkin.apply(button, "primary")
 
 
 func _spacer(parent: Control, height: float) -> void:

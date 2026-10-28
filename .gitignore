@@ -106,3 +106,7 @@ reports/starfall/*.log
 reports/starfall/*.png
 reports/starfall/*.import
 reports/starfall/*-raw.json
+reports/buttons/*.log
+reports/buttons/*.png
+reports/buttons/*.import
+reports/buttons/*-raw.json
