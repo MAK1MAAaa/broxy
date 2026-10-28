@@ -64,3 +64,8 @@ reports/evasion/*.jsonl
 reports/evasion/*.png
 reports/evasion/*.import
 reports/evasion/*-raw.json
+reports/pulse/*.log
+reports/pulse/*.jsonl
+reports/pulse/*.png
+reports/pulse/*.import
+reports/pulse/*-raw.json

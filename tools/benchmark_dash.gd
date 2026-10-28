@@ -37,6 +37,11 @@ var _last_caption_text: String = ""
 var _next_right: bool = true
 var _evasion_probes: bool = false
 var _evasion_probes_spawned: int = 0
+var _pulse_cycles: bool = false
+var _sample_pulses_start: int = 0
+var _sample_affected_start: int = 0
+var _pulse_feedback_peak: int = 0
+var _sample_pulse_feedback_peak: int = 0
 
 func _initialize() -> void:
 	_start.call_deferred()
@@ -59,8 +64,10 @@ func _parse_arguments() -> bool:
 				return false
 		elif argument == "--evasion-probes":
 			_evasion_probes = true
+		elif argument == "--pulse-cycles":
+			_pulse_cycles = true
 		else:
-			push_error("Supported arguments: --seconds=<at least 5> --output=<report.json> [--evasion-probes]")
+			push_error("Supported arguments: --seconds=<at least 5> --output=<report.json> [--evasion-probes] [--pulse-cycles]")
 			return false
 	return true
 
@@ -111,6 +118,7 @@ func _start() -> void:
 		"settings": _app.store.settings.duplicate(true),
 		"persistent_profile": _app.store.persistent, "output": _output,
 		"evasion_probes": _evasion_probes,
+		"pulse_cycles": _pulse_cycles,
 	}))
 
 func _make_caption() -> void:
@@ -161,6 +169,10 @@ func _before_world_physics() -> void:
 		_sample_physics_steps += 1
 		_pre_step_minimum = Vector3i(mini(_pre_step_minimum.x, counts.x), mini(_pre_step_minimum.y, counts.y), mini(_pre_step_minimum.z, counts.z))
 	_observe_feedback()
+	if _pulse_cycles and bool(world.sim.pulse_snapshot()["ready"]):
+		if not world.request_pulse():
+			_abort("A ready real World rejected the explicit pressure pulse request")
+			return
 	if bool(world.sim.dash_snapshot()["ready"]):
 		world.sim.player_direction = Vector2.RIGHT if _next_right else Vector2.LEFT
 		if not world.request_dash():
@@ -181,12 +193,15 @@ func _before_world_physics() -> void:
 func _observe_feedback() -> void:
 	var count: int = _app.world.dash_afterimage_count()
 	var evasion_active: int = 1 if bool(_app.world.dash_evasion_feedback_snapshot()["active"]) else 0
+	var pulse_active: int = 1 if bool(_app.world.pulse_feedback_snapshot()["active"]) else 0
+	_pulse_feedback_peak = maxi(_pulse_feedback_peak, pulse_active)
 	_evasion_feedback_peak = maxi(_evasion_feedback_peak, evasion_active)
 	_afterimage_peak = maxi(_afterimage_peak, count)
 	_rune_peak = maxi(_rune_peak, _app.world._rune_flashes.size())
 	if _sampling:
 		_sample_afterimage_peak = maxi(_sample_afterimage_peak, count)
 		_sample_evasion_feedback_peak = maxi(_sample_evasion_feedback_peak, evasion_active)
+		_sample_pulse_feedback_peak = maxi(_sample_pulse_feedback_peak, pulse_active)
 
 func _process(_delta: float) -> bool:
 	if not _running or _finished:
@@ -199,6 +214,8 @@ func _process(_delta: float) -> bool:
 		_last_frame_usec = now
 		_sample_dash_start_count = _app.world.sim.dashes_used
 		_sample_evades_start = _app.world.sim.dash_evades
+		_sample_pulses_start = _app.world.sim.pulses_used
+		_sample_affected_start = _app.world.sim.pulse_affected
 	elif _sampling:
 		_frame_samples.append(float(now - _last_frame_usec) / 1000.0)
 		_last_frame_usec = now
@@ -253,6 +270,8 @@ func _finish_report(now: int) -> void:
 	var load_valid: bool = _sample_physics_steps > 0 and _pre_step_minimum.x >= TARGET_ENEMIES and _pre_step_minimum.y >= TARGET_PROJECTILES and _pre_step_minimum.z >= TARGET_PICKUPS
 	var feedback_valid: bool = sampled_dashes >= minimum_dashes and _sample_afterimage_peak > 0 and _afterimage_peak <= CombatWorld.DASH_AFTERIMAGE_LIMIT
 	var evasion_valid: bool = not _evasion_probes or (sim.dash_evades - _sample_evades_start >= minimum_dashes and _sample_evasion_feedback_peak == 1)
+	var minimum_pulses: int = maxi(1, floori(_seconds / PulseRules.COOLDOWN) - 1)
+	var pulse_valid: bool = not _pulse_cycles or (sim.pulses_used - _sample_pulses_start >= minimum_pulses and sim.pulse_affected > _sample_affected_start and _sample_pulse_feedback_peak == 1)
 	var defaults_valid: bool = _app.store.settings == {"volume": 0.65, "shake": true, "flash": true} and not _app.store.persistent
 	var source: Dictionary = _source_fingerprint()
 	var report: Dictionary = {
@@ -267,6 +286,9 @@ func _finish_report(now: int) -> void:
 		"evades": sim.dash_evades, "sample_evades": sim.dash_evades - _sample_evades_start,
 		"evasion_feedback_peak": _evasion_feedback_peak, "sample_evasion_feedback_peak": _sample_evasion_feedback_peak,
 		"evasion_probes": _evasion_probes, "evasion_probes_spawned": _evasion_probes_spawned,
+		"pulse_cycles": _pulse_cycles, "pulses_used": sim.pulses_used, "sample_pulses_used": sim.pulses_used - _sample_pulses_start,
+		"pulse_affected": sim.pulse_affected, "sample_pulse_affected": sim.pulse_affected - _sample_affected_start,
+		"pulse_feedback_peak": _pulse_feedback_peak, "sample_pulse_feedback_peak": _sample_pulse_feedback_peak,
 		"pre_step_counts_exclude_one_optional_probe_shot": _evasion_probes,
 		"physics_steps": _physics_steps, "sample_physics_steps": _sample_physics_steps,
 		"load_targets": _counts(Vector3i(TARGET_ENEMIES, TARGET_PROJECTILES, TARGET_PICKUPS)),
@@ -292,9 +314,11 @@ func _finish_report(now: int) -> void:
 		"physics_ticks_per_second": Engine.physics_ticks_per_second,
 		"fixture_overrides": ["300 enemies with synthetic high health", "600 real content/rune projectiles replenished before each World step", "200 synthetic pickups replenished before each World step", "full player health restored before each World step", "bone_chorus core assigned directly", "earned-upgrade modals suppressed by Main._benchmark while Main._process is disabled", "facing alternates right/left on real dash readiness; no synthetic movement input", "autoplay argument only prevents focus-loss pause; World autopilot remains disabled"],
 		"thresholds": {"minimum_fps": MIN_FPS, "maximum_p99_frame_ms": MAX_P99_MS, "minimum_sample_dashes": minimum_dashes, "minimum_afterimage_peak": 1},
-		"checks": {"performance": fps >= MIN_FPS and p99 <= MAX_P99_MS, "load": load_valid, "dash_feedback": feedback_valid, "evasion_feedback": evasion_valid, "default_settings_and_no_profile": defaults_valid},
-		"passed": fps >= MIN_FPS and p99 <= MAX_P99_MS and load_valid and feedback_valid and evasion_valid and defaults_valid,
+		"checks": {"performance": fps >= MIN_FPS and p99 <= MAX_P99_MS, "load": load_valid, "dash_feedback": feedback_valid, "evasion_feedback": evasion_valid, "pulse_control": pulse_valid, "default_settings_and_no_profile": defaults_valid},
+		"passed": fps >= MIN_FPS and p99 <= MAX_P99_MS and load_valid and feedback_valid and evasion_valid and pulse_valid and defaults_valid,
 	}
+	if _pulse_cycles:
+		report["fixture_overrides"].append("real Q requests at readiness; pulse control occurs before the normal World fixed step movement, while synthetic pressure positions are replenished each frame")
 	if _evasion_probes:
 		report["fixture_overrides"].append("each accepted dash clears old received-hit immunity and adds one stationary, positive-damage hostile projectile at its next-step position; normal collision and dash immunity decide the result")
 	var absolute: String = ProjectSettings.globalize_path(_output)

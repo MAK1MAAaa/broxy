@@ -12,6 +12,7 @@ signal rune_activated(rune_id: String, origin: Vector2, incoming_direction: Vect
 signal core_activated(core_id: String, origin: Vector2)
 signal dash_started(origin: Vector2, direction: Vector2)
 signal dash_evaded(position: Vector2, origin: Vector2, source_id: String, kind: String)
+signal pulse_cast(origin: Vector2, affected: int)
 signal ended(victory: bool, reason: String)
 
 const ARENA: Rect2 = Rect2(66, 140, 1148, 450)
@@ -35,6 +36,7 @@ class Enemy:
 	var action_timer: float = 0.0
 	var slow_timer: float = 0.0
 	var slow_factor: float = 1.0
+	var pulse_hinder_timer: float = 0.0
 	var hurt_timer: float = 0.0
 	var charge_direction: Vector2 = Vector2.ZERO
 	var mode: int = 0
@@ -106,6 +108,10 @@ var dash_invulnerability_left: float = 0.0
 var dashes_used: int = 0
 var dash_evaded_current: bool = false
 var dash_evades: int = 0
+var pulse_cooldown_left: float = 0.0
+var pulses_used: int = 0
+var pulse_affected: int = 0
+var last_pulse_affected: int = 0
 var elapsed: float = 0.0
 var duration: float = 45.0
 var complete: bool = false
@@ -178,6 +184,12 @@ func begin(state: RunState) -> void:
 	dashes_used = 0
 	dash_evaded_current = false
 	dash_evades = 0
+	pulse_cooldown_left = 0.0
+	pulses_used = 0
+	pulse_affected = 0
+	last_pulse_affected = 0
+	for enemy: Enemy in enemies:
+		enemy.pulse_hinder_timer = 0.0
 	_cooldowns.clear()
 	for index: int in run.loadout.size():
 		_cooldowns.append(float(index) * 0.14)
@@ -192,13 +204,14 @@ func begin(state: RunState) -> void:
 			hunter.health = hunter.max_health
 	_spawn_timer = 0.6
 
-func step(delta: float, movement: Vector2, dash_pressed: bool = false) -> void:
+func step(delta: float, movement: Vector2, dash_pressed: bool = false, pulse_pressed: bool = false) -> void:
 	_explosion_grid_active = false
 	if complete:
 		return
 	elapsed += delta
 	run.elapsed += delta
 	invulnerability = maxf(0.0, invulnerability - delta)
+	_update_pulse(delta, pulse_pressed)
 	_move_player(delta, movement, dash_pressed)
 	_update_enemies(delta)
 	if run.health <= 0.0:
@@ -238,15 +251,15 @@ func _move_player(delta: float, movement: Vector2, dash_pressed: bool) -> void:
 	if advances_time:
 		if dash_pressed:
 			_try_start_dash(movement)
-		dash_cooldown_left = _dash_timer_after(dash_cooldown_left, delta)
-		dash_invulnerability_left = _dash_timer_after(dash_invulnerability_left, delta)
+		dash_cooldown_left = _skill_timer_after(dash_cooldown_left, delta)
+		dash_invulnerability_left = _skill_timer_after(dash_invulnerability_left, delta)
 	var movement_delta: float = delta
 	if advances_time and dash_time_left > 0.0:
 		var dash_delta: float = minf(delta, dash_time_left)
 		player_velocity = dash_direction * DashRules.SPEED
 		player_position = clamp_point(player_position + player_velocity * dash_delta, 16.0)
 		player_direction = dash_direction
-		dash_time_left = _dash_timer_after(dash_time_left, dash_delta)
+		dash_time_left = _skill_timer_after(dash_time_left, dash_delta)
 		movement_delta = delta - dash_delta
 		if movement_delta <= 0.0:
 			return
@@ -270,7 +283,7 @@ func _try_start_dash(movement: Vector2) -> void:
 	dash_evaded_current = false
 	dash_started.emit(player_position, dash_direction)
 
-static func _dash_timer_after(remaining: float, delta: float) -> float:
+static func _skill_timer_after(remaining: float, delta: float) -> float:
 	var result: float = maxf(0.0, remaining - delta)
 	return 0.0 if result < 0.0000001 else result
 
@@ -285,6 +298,47 @@ func dash_snapshot() -> Dictionary:
 		"uses": dashes_used,
 		"evaded": dash_evaded_current,
 		"evades": dash_evades,
+	}
+
+func _update_pulse(delta: float, pulse_pressed: bool) -> void:
+	if not is_finite(delta) or delta <= 0.0:
+		return
+	if pulse_pressed:
+		_try_cast_pulse()
+	pulse_cooldown_left = _skill_timer_after(pulse_cooldown_left, delta)
+
+func _try_cast_pulse() -> void:
+	if complete or run == null or run.health <= 0.0 or pulse_cooldown_left > 0.0 or not player_position.is_finite():
+		return
+	var origin: Vector2 = player_position
+	var fallback: Vector2 = player_direction.normalized() if player_direction.is_finite() and player_direction.length_squared() > 0.0 else Vector2.RIGHT
+	if not fallback.is_finite() or fallback.length_squared() == 0.0:
+		fallback = Vector2.RIGHT
+	last_pulse_affected = 0
+	for enemy: Enemy in enemies:
+		if not enemy.active or not (enemy.health > 0.0) or enemy.hunter or enemy.definition.id == "boss":
+			continue
+		var offset: Vector2 = enemy.position - origin
+		if not offset.is_finite() or offset.length_squared() > PulseRules.RADIUS * PulseRules.RADIUS:
+			continue
+		var direction: Vector2 = offset.normalized() if offset.length_squared() > 0.0 else fallback
+		enemy.position = clamp_point(enemy.position + direction * PulseRules.PUSH_DISTANCE)
+		enemy.pulse_hinder_timer = PulseRules.HINDER_SECONDS
+		last_pulse_affected += 1
+	pulse_cooldown_left = PulseRules.COOLDOWN
+	pulses_used += 1
+	pulse_affected += last_pulse_affected
+	pulse_cast.emit(origin, last_pulse_affected)
+
+func pulse_snapshot() -> Dictionary:
+	return {
+		"ready": not complete and run != null and run.health > 0.0 and pulse_cooldown_left <= 0.0,
+		"cooldown_left": pulse_cooldown_left,
+		"cooldown_total": PulseRules.COOLDOWN,
+		"radius": PulseRules.RADIUS,
+		"uses": pulses_used,
+		"affected": pulse_affected,
+		"last_affected": last_pulse_affected,
 	}
 
 func spawn_enemy(id: String, position: Vector2 = Vector2.INF) -> Enemy:
@@ -307,6 +361,7 @@ func spawn_enemy(id: String, position: Vector2 = Vector2.INF) -> Enemy:
 	enemy.mode = 0
 	enemy.slow_timer = 0.0
 	enemy.slow_factor = 1.0
+	enemy.pulse_hinder_timer = 0.0
 	enemy.hurt_timer = 0.0
 	enemy.hunter = false
 	enemy_count += 1
@@ -354,6 +409,8 @@ func _update_enemies(delta: float) -> void:
 		enemy.action_timer -= delta
 		enemy.hurt_timer = maxf(0.0, enemy.hurt_timer - delta)
 		enemy.slow_timer = maxf(0.0, enemy.slow_timer - delta)
+		if is_finite(delta) and delta > 0.0:
+			enemy.pulse_hinder_timer = _skill_timer_after(enemy.pulse_hinder_timer, delta)
 		var direction: Vector2 = (player_position - enemy.position).normalized()
 		var speed: float = enemy.definition.speed
 		var distance: float = enemy.position.distance_to(player_position)
@@ -392,7 +449,10 @@ func _update_enemies(delta: float) -> void:
 		if id != "boss":
 			if enemy.hunter:
 				speed *= RogueRules.HUNTER_SPEED_FACTOR
-			if enemy.slow_timer > 0.0:
+			if enemy.pulse_hinder_timer > 0.0 and not enemy.hunter:
+				var hinder_factor: float = minf(enemy.slow_factor, PulseRules.HINDER_FACTOR) if enemy.slow_timer > 0.0 else PulseRules.HINDER_FACTOR
+				speed *= hinder_factor
+			elif enemy.slow_timer > 0.0:
 				speed *= enemy.slow_factor
 			speed *= ArenaCatalog.movement_multiplier(run.arena_id, enemy.position)
 			# A small deterministic orbit separates packs without an O(n²) rigid-body solver.
@@ -1015,6 +1075,7 @@ func snapshot() -> Dictionary:
 		"xp": run.xp, "xp_needed": run.xp_to_next_level(), "kills": run.kills, "loadout": run.loadout,
 		"backpack": run.backpack_snapshot(),
 		"dash": dash_snapshot(),
+		"pulse": pulse_snapshot(),
 		"boss_health": boss.health if boss != null and boss.active else 0.0,
 		"boss_max_health": boss.max_health if boss != null else 0.0,
 	}

@@ -43,6 +43,8 @@ const DASH_AFTERIMAGE_INTERVAL: float = 0.03
 const DASH_EVASION_LIFE: float = 0.32
 const DASH_EVASION_TEXT: String = "闪避"
 const DASH_EVASION_FONT_SIZE: int = 14
+const PULSE_FEEDBACK_LIFE: float = 0.30
+const PULSE_HINDER_TINT: Color = Color("c1b2d8")
 
 class DashAfterimage:
 	var position: Vector2 = Vector2.ZERO
@@ -50,6 +52,13 @@ class DashAfterimage:
 	var life: float = 0.0
 
 var _dash_pending: bool = false
+var _pulse_pending: bool = false
+var _pulse_remaining: float = 0.0
+var _pulse_origin: Vector2 = Vector2.ZERO
+var _pulse_radius: float = 0.0
+var _pulse_affected: int = 0
+var _pulse_animated: bool = false
+var _pulse_feedback_use: int = -1
 var _dash_afterimages: Array[DashAfterimage] = []
 var _dash_afterimage_next: int = 0
 var _dash_afterimage_clock: float = 0.0
@@ -141,6 +150,7 @@ func apply_visual_settings(value: Dictionary) -> void:
 		_impact_painter.clear()
 		_clear_dash_afterimages()
 		_dash_evasion_pulse_remaining = 0.0
+		_pulse_animated = false
 	queue_redraw()
 
 func begin(state: RunState) -> void:
@@ -164,6 +174,7 @@ func begin(state: RunState) -> void:
 	sim.rune_activated.connect(_on_rune_activated)
 	sim.dash_started.connect(_on_dash_started)
 	sim.dash_evaded.connect(_on_dash_evaded)
+	sim.pulse_cast.connect(_on_pulse_cast)
 	_reset_feedback()
 	active = true
 	_last_kills = state.kills
@@ -189,12 +200,14 @@ func _physics_process(delta: float) -> void:
 	_advance_feedback(delta)
 	_advance_dash_afterimages(delta)
 	_advance_dash_evasion_feedback(delta)
+	_advance_pulse_feedback(delta)
 	var movement: Vector2 = _movement()
 	if autopilot:
 		movement = BotPolicy.movement(sim)
 	var dash_pressed: bool = _dash_pending and not stress_mode and not autopilot
+	var pulse_pressed: bool = _pulse_pending and not stress_mode and not autopilot
 	clear_pending_actions()
-	sim.step(delta, movement, dash_pressed)
+	sim.step(delta, movement, dash_pressed, pulse_pressed)
 	_record_dash_motion(delta)
 	if stress_mode:
 		_maintain_stress()
@@ -221,6 +234,61 @@ func request_dash() -> bool:
 
 func clear_pending_actions() -> void:
 	_dash_pending = false
+	_pulse_pending = false
+
+func request_pulse() -> bool:
+	if not active or sim == null or sim.complete or _pulse_pending or stress_mode or autopilot:
+		return false
+	if (is_inside_tree() and get_tree().paused) or sim.run == null or sim.run.health <= 0.0:
+		return false
+	var pulse: Dictionary = sim.snapshot().get("pulse", {})
+	if not bool(pulse.get("ready", false)):
+		return false
+	_pulse_pending = true
+	return true
+
+func pulse_feedback_snapshot() -> Dictionary:
+	return {
+		"active": _pulse_remaining > 0.0,
+		"remaining": _pulse_remaining,
+		"origin": _pulse_origin,
+		"radius": _pulse_radius,
+		"affected": _pulse_affected,
+		"animated": _pulse_remaining > 0.0 and _pulse_animated and bool(settings.get("flash", true)),
+	}
+
+func _on_pulse_cast(origin: Vector2, affected: int) -> void:
+	if not active or sim == null or sim.complete or not origin.is_finite():
+		return
+	var pulse: Dictionary = sim.snapshot().get("pulse", {})
+	var radius: float = float(pulse.get("radius", 0.0))
+	var uses: int = int(pulse.get("uses", 0))
+	if uses <= 0 or uses == _pulse_feedback_use or not is_finite(radius) or radius <= 0.0:
+		return
+	_pulse_feedback_use = uses
+	_pulse_origin = origin
+	_pulse_radius = radius
+	_pulse_affected = maxi(0, affected)
+	_pulse_remaining = PULSE_FEEDBACK_LIFE
+	_pulse_animated = bool(settings.get("flash", true))
+	if sound != null:
+		sound.play_cue("rune", -20.0, "pulse")
+	hud_changed.emit(hud_snapshot())
+	queue_redraw()
+
+func _advance_pulse_feedback(delta: float) -> void:
+	_pulse_remaining = maxf(0.0, _pulse_remaining - delta)
+	if _pulse_remaining < 0.0000001:
+		_pulse_remaining = 0.0
+		_pulse_animated = false
+
+func _clear_pulse_feedback() -> void:
+	_pulse_remaining = 0.0
+	_pulse_origin = Vector2.ZERO
+	_pulse_radius = 0.0
+	_pulse_affected = 0
+	_pulse_animated = false
+	_pulse_feedback_use = -1
 
 func dash_afterimage_count() -> int:
 	var count: int = 0
@@ -333,6 +401,7 @@ func _reset_feedback() -> void:
 	clear_pending_actions()
 	_clear_dash_afterimages()
 	_clear_dash_evasion_feedback()
+	_clear_pulse_feedback()
 	_enemy_telegraphs.clear()
 	_impact_painter.clear()
 	_numbers.clear()
@@ -433,6 +502,7 @@ func _on_ended(victory: bool, reason: String) -> void:
 	clear_pending_actions()
 	_clear_dash_afterimages()
 	_clear_dash_evasion_feedback()
+	_clear_pulse_feedback()
 	_enemy_telegraphs.clear()
 	_impact_painter.clear()
 	hud_changed.emit(hud_snapshot())
@@ -460,6 +530,7 @@ func _draw() -> void:
 	if sim == null:
 		return
 	_draw_atmosphere()
+	_draw_pulse_feedback()
 	_draw_souls()
 	_draw_enemies()
 	_draw_friendly_shots()
@@ -473,6 +544,24 @@ func _draw() -> void:
 	_draw_feedback()
 	# Hostile projectiles and telegraphs stay above all friendly spell effects.
 	_draw_danger()
+
+func _draw_pulse_feedback() -> void:
+	if _pulse_remaining <= 0.0 or _pulse_radius <= 1.0:
+		return
+	_draw_pulse_range(_pulse_origin, _pulse_radius)
+	if _pulse_animated and bool(settings.get("flash", true)):
+		var progress: float = clampf(1.0 - _pulse_remaining / PULSE_FEEDBACK_LIFE, 0.0, 1.0)
+		_draw_pulse_animation(_pulse_origin, _pulse_radius * (0.20 + progress * 0.72), progress)
+
+func _draw_pulse_range(origin: Vector2, radius: float) -> void:
+	draw_arc(origin, radius - 1.0, 0.0, TAU, 72, Color(0.72, 0.65, 0.84, 0.24), 1.0, true)
+
+func _draw_pulse_animation(origin: Vector2, radius: float, progress: float) -> void:
+	var tint: Color = Color(0.72, 0.65, 0.84, (1.0 - progress) * 0.14)
+	draw_arc(origin, radius, 0.0, TAU, 48, tint, 1.0, true)
+	for index: int in 6:
+		var direction: Vector2 = Vector2.from_angle(float(index) * TAU / 6.0)
+		draw_line(origin + direction * maxf(0.0, _pulse_radius - 7.0), origin + direction * maxf(0.0, _pulse_radius - 2.0), tint, 1.0, true)
 
 func _draw_impact_feedback() -> void:
 	_impact_painter.rebuild(bool(settings.get("flash", true)))
@@ -648,7 +737,11 @@ func _draw_hunter_mark(enemy: CombatSim.Enemy, size: float) -> void:
 	draw_line(origin, origin + Vector2(40 * clampf(enemy.health / enemy.max_health, 0.0, 1.0), 0), Color("d79b78"), 2.0)
 
 func _enemy_tint(enemy: CombatSim.Enemy) -> Color:
-	var base: Color = Color("b4e9ed") if enemy.slow_timer > 0.0 else Color.WHITE
+	var base: Color = Color.WHITE
+	if enemy.slow_timer > 0.0:
+		base = Color("b4e9ed")
+	elif enemy.pulse_hinder_timer > 0.0 and not enemy.hunter and enemy.definition.id != "boss":
+		base = PULSE_HINDER_TINT
 	if not bool(settings.get("flash", true)) or not is_finite(enemy.hurt_timer) or enemy.hurt_timer <= ENEMY_HIT_TIMER_CUTOFF:
 		return base
 	# The simulation retains its 100ms receipt; only the first 60ms brighten the art.

@@ -19,7 +19,8 @@ try {
         'rogue_resonance_state', 'rogue_resonance_combat', 'rogue_resonance_ui',
         'arena_rules', 'arena_flow', 'concise_ui',
         'dash_rules', 'dash_world', 'dash_flow', 'dash_ui',
-        'dash_evasion', 'dash_evasion_world', 'dash_evasion_audio'
+        'dash_evasion', 'dash_evasion_world', 'dash_evasion_audio',
+        'pulse_rules', 'pulse_world', 'pulse_flow', 'pulse_ui'
     )
     foreach ($suite in $suites) {
         & $runner --headless --script "res://tests/test_$suite.gd"

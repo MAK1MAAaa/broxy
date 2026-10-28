@@ -285,14 +285,18 @@ func _unhandled_key_input(event: InputEvent) -> void:
 				_pause()
 			get_viewport().set_input_as_handled()
 		elif event.keycode == KEY_SPACE or event.physical_keycode == KEY_SPACE:
-			if not event.alt_pressed and not event.ctrl_pressed and not event.meta_pressed and _can_request_dash():
+			if not event.alt_pressed and not event.ctrl_pressed and not event.meta_pressed and _can_request_combat_skill():
 				world.request_dash()
+				get_viewport().set_input_as_handled()
+		elif event.keycode == KEY_Q or event.physical_keycode == KEY_Q:
+			if not event.alt_pressed and not event.ctrl_pressed and not event.meta_pressed and _can_request_combat_skill():
+				world.request_pulse()
 				get_viewport().set_input_as_handled()
 		elif event.keycode == KEY_F11 or (event.keycode == KEY_F and event.alt_pressed):
 			var fullscreen: bool = DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN
 			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED if fullscreen else DisplayServer.WINDOW_MODE_FULLSCREEN)
 
-func _can_request_dash() -> bool:
+func _can_request_combat_skill() -> bool:
 	return (
 		screen == Screen.COMBAT and not paused and not get_tree().paused and not _benchmark
 		and world != null and world.active and world.sim != null and not world.sim.complete

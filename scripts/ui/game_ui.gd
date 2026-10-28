@@ -369,33 +369,8 @@ func show_hud() -> void:
 		item.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		row.add_child(item)
 		_hud[str(entry[0])] = item
-	var dash := VBoxContainer.new()
-	dash.name = "DashSkill"
-	dash.custom_minimum_size.x = 106
-	dash.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
-	dash.add_theme_constant_override("separation", 3)
-	dash.mouse_filter = Control.MOUSE_FILTER_PASS
-	dash.focus_mode = Control.FOCUS_NONE
-	dash.tooltip_text = "空格：向当前移动方向冲刺；静止时沿面向。\n短冲距离约132，冷却2.4秒；起始短暂闪避，可冲离减速地形。"
-	row.add_child(dash)
-	var dash_label := _label("", 14, CYAN)
-	dash_label.name = "DashStatus"
-	dash_label.focus_mode = Control.FOCUS_NONE
-	dash.add_child(dash_label)
-	var dash_bar := ProgressBar.new()
-	dash_bar.name = "DashCooldown"
-	dash_bar.custom_minimum_size.y = 5
-	dash_bar.max_value = 1.0
-	dash_bar.show_percentage = false
-	dash_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	dash_bar.focus_mode = Control.FOCUS_NONE
-	dash_bar.add_theme_stylebox_override("fill", _bar_style(CYAN))
-	dash_bar.add_theme_stylebox_override("background", _bar_style(Color("292334")))
-	dash.add_child(dash_bar)
-	dash.hide()
-	_hud["dash"] = dash
-	_hud["dash_label"] = dash_label
-	_hud["dash_bar"] = dash_bar
+	_add_hud_skill(row, "dash", "Dash", "空格：向当前移动方向冲刺；静止时沿面向。\n短冲距离约132，冷却2.4秒；起始短暂闪避，可冲离减速地形。")
+	_add_hud_skill(row, "pulse", "Pulse", "Q：击退周围144范围内的普通敌人70，并减速35%持续1秒。\n冷却8秒；首领和追猎者免疫，不能挡弹。")
 	var xp := ProgressBar.new()
 	xp.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
 	xp.offset_left = 26
@@ -492,11 +467,49 @@ func update_hud(snapshot: Dictionary) -> void:
 	_hud["boss_bar"].max_value = maxf(1, boss_max)
 	_hud["boss_bar"].value = boss_health
 	_update_dash_hud(snapshot)
+	_update_pulse_hud(snapshot)
 	var loadout: Array = snapshot.get("loadout", [])
 	var key := str(loadout)
 	if key != _hud_loadout_key:
 		_hud_loadout_key = key
 		_update_hud_slots(loadout)
+
+
+func _add_hud_skill(row: HBoxContainer, key: String, prefix: String, tooltip: String) -> void:
+	var indicator := VBoxContainer.new()
+	indicator.name = prefix + "Skill"
+	indicator.custom_minimum_size.x = 106
+	indicator.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+	indicator.add_theme_constant_override("separation", 3)
+	indicator.mouse_filter = Control.MOUSE_FILTER_PASS
+	indicator.focus_mode = Control.FOCUS_NONE
+	indicator.tooltip_text = tooltip
+	row.add_child(indicator)
+	var label := _label("", 14, CYAN)
+	label.name = prefix + "Status"
+	label.focus_mode = Control.FOCUS_NONE
+	indicator.add_child(label)
+	var meter := ProgressBar.new()
+	meter.name = prefix + "Cooldown"
+	meter.custom_minimum_size.y = 5
+	meter.max_value = 1.0
+	meter.step = 0.0
+	meter.show_percentage = false
+	meter.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	meter.focus_mode = Control.FOCUS_NONE
+	meter.add_theme_stylebox_override("fill", _bar_style(CYAN))
+	meter.add_theme_stylebox_override("background", _bar_style(Color("292334")))
+	indicator.add_child(meter)
+	indicator.hide()
+	_hud[key] = indicator
+	_hud[key + "_label"] = label
+	_hud[key + "_bar"] = meter
+
+
+func _clear_hud_skill(key: String) -> void:
+	_hud[key].hide()
+	_hud[key + "_label"].text = ""
+	_hud[key + "_bar"].value = 0.0
 
 
 func _update_dash_hud(snapshot: Dictionary) -> void:
@@ -505,9 +518,7 @@ func _update_dash_hud(snapshot: Dictionary) -> void:
 	var meter: ProgressBar = _hud["dash_bar"]
 	var value: Variant = snapshot.get("dash", {})
 	if bool(snapshot.get("benchmark", false)) or not value is Dictionary or value.is_empty() or float(snapshot.get("health", 0.0)) <= 0.0:
-		indicator.hide()
-		label.text = ""
-		meter.value = 0.0
+		_clear_hud_skill("dash")
 		return
 	var dash: Dictionary = value
 	var remaining: float = float(dash.get("cooldown_left", 0.0))
@@ -527,6 +538,30 @@ func _update_dash_hud(snapshot: Dictionary) -> void:
 		meter.value = 1.0
 	else:
 		label.text = "冲刺 %.1f秒" % (ceilf(remaining * 10.0) / 10.0) if remaining > 0.0 else "冲刺"
+		label.add_theme_color_override("font_color", MUTED)
+		meter.value = clampf(1.0 - remaining / total, 0.0, 1.0) if remaining > 0.0 and total > 0.0 else 0.0
+
+
+func _update_pulse_hud(snapshot: Dictionary) -> void:
+	var indicator: Control = _hud["pulse"]
+	var label: Label = _hud["pulse_label"]
+	var meter: ProgressBar = _hud["pulse_bar"]
+	var value: Variant = snapshot.get("pulse", {})
+	if bool(snapshot.get("benchmark", false)) or not value is Dictionary or value.is_empty() or float(snapshot.get("health", 0.0)) <= 0.0:
+		_clear_hud_skill("pulse")
+		return
+	var pulse: Dictionary = value
+	var remaining: float = float(pulse.get("cooldown_left", 0.0))
+	var total: float = float(pulse.get("cooldown_total", 0.0))
+	remaining = maxf(0.0, remaining) if is_finite(remaining) else 0.0
+	total = maxf(0.0, total) if is_finite(total) else 0.0
+	indicator.show()
+	if bool(pulse.get("ready", false)):
+		label.text = "脉冲 · Q"
+		label.add_theme_color_override("font_color", CYAN)
+		meter.value = 1.0
+	else:
+		label.text = "脉冲 %.1f秒" % (ceilf(remaining * 10.0) / 10.0) if remaining > 0.0 else "脉冲"
 		label.add_theme_color_override("font_color", MUTED)
 		meter.value = clampf(1.0 - remaining / total, 0.0, 1.0) if remaining > 0.0 and total > 0.0 else 0.0
 
