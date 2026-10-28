@@ -2,6 +2,7 @@ extends SceneTree
 ## Real fixed-step control, independent status clocks and unchanged damage paths.
 
 const STEP: float = 1.0 / 60.0
+const SKILL_FIXTURE = preload("res://tests/skill_fixture.gd")
 var _checks: int = 0
 var _failures: int = 0
 
@@ -28,6 +29,7 @@ func _check(condition: bool, message: String) -> void:
 func _sim(arena: String = "reliquary") -> CombatSim:
 	var state := RunState.new()
 	state.begin(20261028, "bone", arena)
+	_check(SKILL_FIXTURE.equip_pulse(state), "The pulse rule fixture stores an actual skill box")
 	var sim := CombatSim.new()
 	sim.begin(state)
 	sim.sandbox = true
@@ -183,6 +185,7 @@ func _test_independent_slows() -> void:
 func _test_frostfire_and_priority() -> void:
 	var state := RunState.new()
 	state.begin(20261028, "ember")
+	_check(SKILL_FIXTURE.equip_pulse(state), "The core interaction fixture stores an actual pulse box")
 	state.finish_wave()
 	_check(state.choose_core("frostfire"), "The core fixture obtains frostfire through its real transaction")
 	var sim := CombatSim.new()
@@ -222,7 +225,7 @@ func _test_dual_skills_and_cooldown() -> void:
 	sim.dash_started.connect(func(_point: Vector2, _direction: Vector2) -> void: order.append("dash"))
 	sim.step(STEP, Vector2.RIGHT, true, true)
 	_check(order == ["pulse", "dash"] and events == [{"origin": origin, "affected": 2}], "Simultaneous skills cast pulse at the step-start position before dash moves")
-	_check(_near(left.position, origin - Vector2(214, 0)) and right.position == origin + Vector2(150, 0) and coincident.position == origin + Vector2(0, -70), "The pre-dash radius and facing decide eligible and coincident push directions")
+	_check(_near(left.position, origin - Vector2(214, 0)) and right.position == origin + Vector2(150, 0) and coincident.position == origin + Vector2(70, 0), "The pre-dash radius and current-frame facing decide eligible and coincident push directions")
 	_check(_near(sim.player_position, origin + Vector2(11, 0)) and sim.dash_direction == Vector2.RIGHT and is_equal_approx(sim.pulse_cooldown_left, 8.0 - STEP) and is_equal_approx(sim.dash_cooldown_left, 2.4 - STEP), "Both independent skills consume their original physical time in the same step")
 	sim = _sim()
 	events = _events(sim)
@@ -307,5 +310,6 @@ func _test_invalid_and_lifecycle() -> void:
 	inactive.pulse_hinder_timer = 0.25
 	var state := RunState.new()
 	state.begin(20261029, "ember", "glacier")
+	_check(SKILL_FIXTURE.equip_pulse(state), "The reused simulation receives an explicitly equipped pulse")
 	sim.begin(state)
 	_check(sim.pulse_cooldown_left == 0.0 and sim.pulses_used == 0 and sim.pulse_affected == 0 and sim.last_pulse_affected == 0 and sim.pulse_snapshot()["ready"] and sim.enemies.all(func(item: CombatSim.Enemy) -> bool: return item.pulse_hinder_timer == 0.0), "Begin resets all pulse counters, cooldown and active or inactive reused enemy status")

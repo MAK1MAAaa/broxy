@@ -62,7 +62,7 @@ func _test_heads() -> void:
 	impact.add_hit(Vector2(450, 300), "return_ring", 71)
 	impact.add_hit(Vector2(450, 300), "return_ring", 71)
 	impact.rebuild()
-	_check(impact.active_count() == 1 and impact.get_stats()["draw_commands"] == 1, "The new weapon reuses one source-aware ordinary impact mark without duplicate feedback")
+	_check(impact.active_count() == 1 and impact.get_stats()["draw_commands"] == 2, "The new weapon reuses one outlined ordinary impact mark without duplicate feedback")
 
 
 func _test_hollow_atlas() -> void:

@@ -143,7 +143,7 @@ func _show_shop() -> void:
 	_app.world.stop()
 	_app.ui.show_shop()
 	await _settle()
-	_check(float(_app.world.sim.dash_snapshot()["cooldown_left"]) > 0.0 and float(_app.world.sim.pulse_snapshot()["cooldown_left"]) > 0.0, "Reading invariants include real already-started positive skill cooldowns")
+	_check(float(_app.world.sim.dash_snapshot()["cooldown_left"]) > 0.0 and not bool(_app.world.sim.active_skill_snapshot(0)["available"]) and float(_app.world.sim.pulse_snapshot()["cooldown_left"]) == 0.0, "Reading invariants preserve the real dash cooldown while the build's empty backpack skill slot cannot start a pulse")
 
 func _exercise(scroll: ScrollContainer, require_overflow: bool, lower: ScrollContainer = null) -> void:
 	_check(scroll != null and scroll.is_visible_in_tree(), "The active page exposes its real reading viewport")

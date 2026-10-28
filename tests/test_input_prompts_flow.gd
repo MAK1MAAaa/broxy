@@ -58,10 +58,14 @@ func _joy(button: JoyButton, device: int = 0) -> void:
 	_send(_joy_event(button, false, device))
 	await _settle()
 
-func _start() -> CombatSim:
+func _start(with_pulse: bool = true) -> CombatSim:
 	_app._begin_run("bone", 20261028)
 	_app.world.set_physics_process(false)
 	var sim: CombatSim = _app.world.sim
+	if with_pulse:
+		sim.run.backpack.add("skill", "pulse")
+		sim.run._sync_backpack_projection()
+		_app.ui.update_hud(_app.world.hud_snapshot())
 	sim.sandbox = true
 	sim._cooldowns.fill(9999.0)
 	var focused: Control = root.gui_get_focus_owner()
@@ -92,7 +96,7 @@ func _grid_state(grid: BackpackGrid) -> Array:
 		grid._native_dragging, grid.resonance_contacts(), _node_ids(grid), focused.get_instance_id() if focused != null else 0]
 
 func _shop() -> void:
-	var sim: CombatSim = _start()
+	var sim: CombatSim = _start(false)
 	sim.sandbox = false
 	sim.elapsed = sim.duration - STEP * 0.5
 	_tick()
@@ -142,8 +146,8 @@ func _run() -> void:
 	_app.set_process(false)
 	_app.args = PackedStringArray(["--autoplay"])
 	var controls: Dictionary = ControlBindings.defaults()
-	controls["dash"] = KEY_E
-	controls["pulse"] = KEY_R
+	controls["dash"] = KEY_R
+	controls["pulse"] = KEY_F
 	_app.ui.controls_changed.emit(controls)
 	await _settle()
 	_check(_app.ui.get_child(-1).name == "InputDeviceTracker", "The observer remains the UI's final child so it sees events before GUI and B handlers")
@@ -163,20 +167,20 @@ func _test_skill_order_and_axes() -> void:
 	var sim: CombatSim = _start()
 	_app.ui._input_device_tracker.reset()
 	_send(_joy_event(JOY_BUTTON_A))
-	_check(_app.ui.input_device_snapshot() == {"kind": "gamepad", "gamepad_id": 0} and _app.ui._hud["dash_label"].text == "冲刺 · A" and _app.ui._hud["pulse_label"].text == "脉冲 · X", "A updates both ready labels synchronously before the pending skill is consumed")
+	_check(_app.ui.input_device_snapshot() == {"kind": "gamepad", "gamepad_id": 0} and _app.ui._hud["dash_label"].text == "冲刺 · A" and _app.ui._hud["pulse_label"].text == GameCatalog.skill("pulse").display_name and _app.ui._hud["pulse_key"].text == "X" and _app.ui._hud["secondary_key"].text == "Y", "A updates both active-slot key badges synchronously before the pending dash is consumed")
 	_check(_app.world._dash_pending and sim.dashes_used == 0, "The hint observer neither consumes A nor executes the dash outside its physics step")
 	_send(_joy_event(JOY_BUTTON_A, false))
 	_send(_joy_event(JOY_BUTTON_X))
 	_send(_joy_event(JOY_BUTTON_X, false))
 	_tick()
 	_check(sim.dashes_used == 1 and sim.pulses_used == 1, "The same observed A and X events activate each real skill exactly once")
-	_check(_app.ui._hud["dash"].tooltip_text.begins_with("A：") and _app.ui._hud["pulse"].tooltip_text.begins_with("X："), "Gamepad labels and full tooltips share the active device")
+	_check(_app.ui._hud["dash"].tooltip_text.begins_with("A：") and _app.ui._hud["pulse"].tooltip_text.contains("\nX ·") and _app.ui._hud["pulse_icon"].texture != null, "Gamepad badges, the equipped icon and skill tooltip share the active device")
 	sim = _start()
-	_send(_key_event(KEY_E))
-	_check(_app.ui.input_device_snapshot()["kind"] == "keyboard" and _app.ui._hud["dash_label"].text == "冲刺 · E" and _app.ui._hud["pulse_label"].text == "脉冲 · R", "A real rebound E press restores the actual E and R labels in the same event")
-	_send(_key_event(KEY_E, false))
 	_send(_key_event(KEY_R))
+	_check(_app.ui.input_device_snapshot()["kind"] == "keyboard" and _app.ui._hud["dash_label"].text == "冲刺 · R" and _app.ui._hud["pulse_key"].text == "F" and _app.ui._hud["secondary_key"].text == "E", "A real rebound R press restores actual R, F and E badges in the same event")
 	_send(_key_event(KEY_R, false))
+	_send(_key_event(KEY_F))
+	_send(_key_event(KEY_F, false))
 	_tick()
 	_check(sim.dashes_used == 1 and sim.pulses_used == 1, "Prompt switching preserves the actual rebound keyboard actions without double execution")
 	_send(_axis_event(0.1))
@@ -217,7 +221,7 @@ func _test_pause_modal_and_disconnect() -> void:
 	_app._resume()
 	Input.joy_connection_changed.emit(7, false)
 	_check(paused and _app.ui.input_device_snapshot() == {"kind": "keyboard", "gamepad_id": -1} and ready == [sim.dash_snapshot(), sim.pulse_snapshot()], "Disconnecting the selected pad falls back to keyboard hints without clearing available skills or resetting cooldowns")
-	_check(_app.ui._hud["dash_label"].text == "冲刺 · E" and _app.ui._hud["pulse_label"].text == "脉冲 · R", "Disconnect fallback keeps the player's actual rebound keys while the game stays safely paused")
+	_check(_app.ui._hud["dash_label"].text == "冲刺 · R" and _app.ui._hud["pulse_key"].text == "F" and _app.ui._hud["secondary_key"].text == "E", "Disconnect fallback keeps the player's actual rebound keys while the game stays safely paused")
 	_app._resume()
 	await _joy(JOY_BUTTON_Y)
 	_app.args = PackedStringArray()

@@ -16,6 +16,11 @@ const RUNE_DEFS: Array[ContentDef] = [
 	preload("res://data/runes/bounce.tres"),
 	preload("res://data/runes/blast.tres"),
 ]
+const SKILL_DEFS: Array[ContentDef] = [
+	preload("res://data/skills/pulse.tres"),
+	preload("res://data/skills/starfall.tres"),
+	preload("res://data/skills/arc_slash.tres"),
+]
 const RELIC_DEFS: Array[ContentDef] = [
 	preload("res://data/relics/damage.tres"),
 	preload("res://data/relics/haste.tres"),
@@ -59,6 +64,9 @@ static func rune(id: String) -> ContentDef:
 static func relic(id: String) -> ContentDef:
 	return _find(RELIC_DEFS, id)
 
+static func skill(id: String) -> ContentDef:
+	return _find(SKILL_DEFS, id)
+
 static func enemy(id: String) -> ContentDef:
 	return _find(ENEMY_DEFS, id)
 
@@ -75,6 +83,9 @@ static func runes() -> Array[ContentDef]:
 
 static func relics() -> Array[ContentDef]:
 	return RELIC_DEFS.duplicate()
+
+static func skills() -> Array[ContentDef]:
+	return SKILL_DEFS.duplicate()
 
 static func enemies() -> Array[ContentDef]:
 	return ENEMY_DEFS.duplicate()

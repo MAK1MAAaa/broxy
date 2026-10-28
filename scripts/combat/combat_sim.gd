@@ -13,6 +13,7 @@ signal core_activated(core_id: String, origin: Vector2)
 signal dash_started(origin: Vector2, direction: Vector2)
 signal dash_evaded(position: Vector2, origin: Vector2, source_id: String, kind: String)
 signal pulse_cast(origin: Vector2, affected: int)
+signal active_skill_cast(skill_id: String, uid: int, origin: Vector2, direction: Vector2, affected: int, rank: int)
 signal ended(victory: bool, reason: String)
 
 const ARENA: Rect2 = Rect2(66, 140, 1148, 450)
@@ -132,6 +133,9 @@ var boss: Enemy
 var primary_hits: int = 0
 var secondary_hits: int = 0
 var damage_by_weapon: Dictionary = {}
+var damage_by_skill: Dictionary = {}
+var skill_hits: int = 0
+var _active_skill_clocks: Dictionary = {}
 var _enemy_free: Array[int] = []
 var _shot_free: Array[int] = []
 var _soul_free: Array[int] = []
@@ -189,6 +193,9 @@ func begin(state: RunState) -> void:
 	dash_evaded_current = false
 	dash_evades = 0
 	pulse_cooldown_left = 0.0
+	_active_skill_clocks.clear()
+	damage_by_skill.clear()
+	skill_hits = 0
 	pulse_cooldown_total = _current_pulse_cooldown()
 	last_pulse_radius = _current_pulse_radius()
 	pulses_used = 0
@@ -210,14 +217,21 @@ func begin(state: RunState) -> void:
 			hunter.health = hunter.max_health
 	_spawn_timer = 0.6
 
-func step(delta: float, movement: Vector2, dash_pressed: bool = false, pulse_pressed: bool = false) -> void:
+func step(delta: float, movement: Vector2, dash_pressed: bool = false, pulse_pressed: bool = false, skill_requests: Array[Dictionary] = []) -> void:
 	_explosion_grid_active = false
-	if complete:
+	if complete or run == null or not is_finite(delta) or delta <= 0.0:
+		return
+	if run.health <= 0.0:
+		_finish(false, _death_reason())
 		return
 	elapsed += delta
 	run.elapsed += delta
 	invulnerability = maxf(0.0, invulnerability - delta)
-	_update_pulse(delta, pulse_pressed)
+	if _has_movement_direction(movement):
+		player_direction = movement.normalized()
+	_update_pulse(delta, pulse_pressed, skill_requests)
+	if complete:
+		return
 	_move_player(delta, movement, dash_pressed)
 	_update_enemies(delta)
 	if run.health <= 0.0:
@@ -301,10 +315,12 @@ func _current_dash_cooldown() -> float:
 	return DashRules.clamp_cooldown(run.stat("dash_cooldown")) if run != null else DashRules.COOLDOWN
 
 func _current_pulse_cooldown() -> float:
-	return PulseRules.clamp_cooldown(run.stat("pulse_cooldown")) if run != null else PulseRules.COOLDOWN
+	var slot: int = _pulse_slot()
+	return float(run.active_skill_parameters(_skill_item(slot))["cooldown"]) if slot >= 0 else PulseRules.COOLDOWN
 
 func _current_pulse_radius() -> float:
-	return PulseRules.clamp_radius(run.stat("pulse_radius")) if run != null else PulseRules.RADIUS
+	var slot: int = _pulse_slot()
+	return float(run.active_skill_parameters(_skill_item(slot))["radius"]) if slot >= 0 else PulseRules.RADIUS
 
 func dash_snapshot() -> Dictionary:
 	return {
@@ -320,22 +336,88 @@ func dash_snapshot() -> Dictionary:
 		"evades": dash_evades,
 	}
 
-func _update_pulse(delta: float, pulse_pressed: bool) -> void:
+func _update_pulse(delta: float, pulse_pressed: bool, skill_requests: Array[Dictionary] = []) -> void:
 	if not is_finite(delta) or delta <= 0.0:
 		return
 	if pulse_pressed:
-		_try_cast_pulse()
-	pulse_cooldown_left = _skill_timer_after(pulse_cooldown_left, delta)
+		try_pulse()
+	for request: Dictionary in skill_requests:
+		if not request.has("slot") or not request.has("uid") or int(request["uid"]) < 0:
+			continue
+		try_active_skill(int(request["slot"]), int(request["uid"]))
+	for uid: int in _active_skill_clocks:
+		var clock: Dictionary = _active_skill_clocks[uid]
+		clock["remaining"] = _skill_timer_after(float(clock["remaining"]), delta)
+	_sync_legacy_pulse_clock()
 
 func _try_cast_pulse() -> void:
-	if complete or run == null or run.health <= 0.0 or pulse_cooldown_left > 0.0 or not player_position.is_finite():
-		return
-	var origin: Vector2 = player_position
-	var fallback: Vector2 = player_direction.normalized() if player_direction.is_finite() and player_direction.length_squared() > 0.0 else Vector2.RIGHT
-	if not fallback.is_finite() or fallback.length_squared() == 0.0:
-		fallback = Vector2.RIGHT
-	last_pulse_radius = _current_pulse_radius()
-	pulse_cooldown_total = _current_pulse_cooldown()
+	try_pulse()
+
+func try_pulse() -> bool:
+	var slot: int = _pulse_slot()
+	return try_active_skill(slot) if slot >= 0 else false
+
+func _pulse_slot() -> int:
+	if run != null:
+		for slot: int in mini(ActiveSkillRules.LIMIT, run.active_skills.size()):
+			var item: Dictionary = _skill_item(slot)
+			if not item.is_empty() and item.get("id", "") == "pulse":
+				return slot
+	return -1
+
+func _skill_item(slot: int) -> Dictionary:
+	if run == null or slot < 0 or slot >= mini(ActiveSkillRules.LIMIT, run.active_skills.size()):
+		return {}
+	var projected: Dictionary = run.active_skills[slot]
+	var owned: Dictionary = run.backpack_item(int(projected.get("uid", -1)))
+	if owned.is_empty() or owned.get("kind", "") != "skill" or owned.get("id", "") != projected.get("id", ""):
+		return {}
+	return owned
+
+func try_active_skill(slot: int, expected_uid: int = -1) -> bool:
+	var item: Dictionary = _skill_item(slot)
+	if item.is_empty() or (expected_uid >= 0 and int(item["uid"]) != expected_uid):
+		return false
+	if complete or run.health <= 0.0 or not player_position.is_finite():
+		return false
+	var uid: int = int(item["uid"])
+	var clock: Dictionary = _active_skill_clocks.get(uid, {})
+	if float(clock.get("remaining", 0.0)) > 0.0:
+		return false
+	var parameters: Dictionary = run.active_skill_parameters(item).duplicate(true)
+	if parameters.is_empty():
+		return false
+	var direction: Vector2 = _skill_direction()
+	var origin: Vector2 = _starfall_origin(direction) if item["id"] == "starfall" else player_position
+	_active_skill_clocks[uid] = {"remaining": parameters["cooldown"], "duration": parameters["cooldown"],
+		"uses": int(clock.get("uses", 0)) + 1, "parameters": parameters}
+	var affected: int = 0
+	if item["id"] == "pulse":
+		affected = _cast_pulse(origin, direction, parameters)
+	else:
+		affected = _cast_damage_skill(origin, direction, parameters)
+	_sync_legacy_pulse_clock()
+	active_skill_cast.emit(str(item["id"]), uid, origin, direction, affected, int(parameters["rank"]))
+	return true
+
+func _skill_direction() -> Vector2:
+	return player_direction.normalized() if player_direction.is_finite() and player_direction.length_squared() > 0.0 else Vector2.RIGHT
+
+func _starfall_origin(direction: Vector2) -> Vector2:
+	var closest: Enemy
+	var distance_squared: float = 320.0 * 320.0
+	for enemy: Enemy in enemies:
+		if not enemy.active or enemy.health <= 0.0 or not enemy.position.is_finite():
+			continue
+		var candidate: float = enemy.position.distance_squared_to(player_position)
+		if candidate <= distance_squared and (closest == null or candidate < distance_squared):
+			closest = enemy
+			distance_squared = candidate
+	return closest.position if closest != null else clamp_point(player_position + direction * 140.0)
+
+func _cast_pulse(origin: Vector2, fallback: Vector2, parameters: Dictionary) -> int:
+	last_pulse_radius = float(parameters["radius"])
+	pulse_cooldown_total = float(parameters["cooldown"])
 	last_pulse_affected = 0
 	for enemy: Enemy in enemies:
 		if not enemy.active or not (enemy.health > 0.0) or enemy.hunter or enemy.definition.id == "boss":
@@ -344,19 +426,80 @@ func _try_cast_pulse() -> void:
 		if not offset.is_finite() or offset.length_squared() > last_pulse_radius * last_pulse_radius:
 			continue
 		var direction: Vector2 = offset.normalized() if offset.length_squared() > 0.0 else fallback
-		enemy.position = clamp_point(enemy.position + direction * PulseRules.PUSH_DISTANCE)
-		enemy.pulse_hinder_timer = PulseRules.HINDER_SECONDS
+		enemy.position = clamp_point(enemy.position + direction * float(parameters["push_distance"]))
+		enemy.pulse_hinder_timer = float(parameters["hinder_seconds"])
 		last_pulse_affected += 1
-	pulse_cooldown_left = pulse_cooldown_total
 	pulses_used += 1
 	pulse_affected += last_pulse_affected
 	pulse_cast.emit(origin, last_pulse_affected)
+	return last_pulse_affected
+
+func _cast_damage_skill(origin: Vector2, direction: Vector2, parameters: Dictionary) -> int:
+	var affected: int = 0
+	var radius_squared: float = pow(float(parameters["radius"]), 2)
+	var cone: bool = parameters["id"] == "arc_slash"
+	var minimum_dot: float = cos(float(parameters.get("half_angle_radians", 0.0)))
+	for enemy: Enemy in enemies:
+		if complete:
+			break
+		if not enemy.active or enemy.health <= 0.0:
+			continue
+		var offset: Vector2 = enemy.position - origin
+		if not offset.is_finite() or offset.length_squared() > radius_squared + 0.01:
+			continue
+		if cone and offset.length_squared() > 0.0 and direction.dot(offset.normalized()) + 0.000001 < minimum_dot:
+			continue
+		var before: float = enemy.health
+		apply_damage(enemy, float(parameters["damage"]), "skill:" + str(parameters["id"]))
+		if enemy.health < before:
+			affected += 1
+	return affected
+
+func _sync_legacy_pulse_clock() -> void:
+	var slot: int = _pulse_slot()
+	if slot < 0:
+		pulse_cooldown_left = 0.0
+		return
+	var uid: int = int(run.active_skills[slot]["uid"])
+	var clock: Dictionary = _active_skill_clocks.get(uid, {})
+	pulse_cooldown_left = float(clock.get("remaining", 0.0))
+	if not clock.is_empty():
+		pulse_cooldown_total = float(clock["duration"])
+
+func active_skill_snapshot(slot: int) -> Dictionary:
+	var result: Dictionary = {"slot": slot, "uid": -1, "id": "", "rank": 0, "available": false,
+		"ready": false, "cooldown_remaining": 0.0, "cooldown_duration": 0.0, "uses": 0,
+		"radius": 0.0, "damage": 0.0, "name": ""}
+	var item: Dictionary = _skill_item(slot)
+	if item.is_empty():
+		return result
+	var next_parameters: Dictionary = run.active_skill_parameters(item)
+	if next_parameters.is_empty():
+		return result
+	var uid: int = int(item["uid"])
+	var clock: Dictionary = _active_skill_clocks.get(uid, {})
+	var remaining: float = float(clock.get("remaining", 0.0))
+	var parameters: Dictionary = clock["parameters"] if remaining > 0.0 else next_parameters
+	result.merge({"uid": uid, "id": item["id"], "rank": parameters["rank"], "available": true,
+		"ready": not complete and run.health > 0.0 and remaining <= 0.0,
+		"cooldown_remaining": remaining, "cooldown_duration": float(clock["duration"]) if remaining > 0.0 else float(parameters["cooldown"]),
+		"uses": int(clock.get("uses", 0)), "radius": parameters["radius"], "damage": parameters["damage"], "name": parameters["name"]}, true)
+	return result
+
+func active_skill_snapshots() -> Array:
+	var result: Array[Dictionary] = []
+	for slot: int in ActiveSkillRules.LIMIT:
+		result.append(active_skill_snapshot(slot))
+	return result
 
 func pulse_snapshot() -> Dictionary:
+	var slot: int = _pulse_slot()
+	var current: Dictionary = active_skill_snapshot(slot)
 	return {
-		"ready": not complete and run != null and run.health > 0.0 and pulse_cooldown_left <= 0.0,
-		"cooldown_left": pulse_cooldown_left,
-		"cooldown_total": pulse_cooldown_total if pulse_cooldown_left > 0.0 else _current_pulse_cooldown(),
+		"available": current["available"],
+		"ready": current["ready"],
+		"cooldown_left": current["cooldown_remaining"],
+		"cooldown_total": current["cooldown_duration"] if bool(current["available"]) else PulseRules.COOLDOWN,
 		"next_cooldown_total": _current_pulse_cooldown(),
 		"radius": _current_pulse_radius(),
 		"last_cast_radius": last_pulse_radius,
@@ -912,12 +1055,17 @@ func apply_damage(enemy: Enemy, amount: float, source: String, secondary: bool =
 	if slow > 0.0:
 		enemy.slow_timer = 1.5
 		enemy.slow_factor = 1.0 - slow
-	damage_by_weapon[source] = float(damage_by_weapon.get(source, 0.0)) + actual
-	run.damage_dealt_by_weapon[source] = float(run.damage_dealt_by_weapon.get(source, 0.0)) + actual
-	if secondary:
-		secondary_hits += 1
+	if source.begins_with("skill:"):
+		var skill_id: String = source.trim_prefix("skill:")
+		damage_by_skill[skill_id] = float(damage_by_skill.get(skill_id, 0.0)) + actual
+		skill_hits += 1
 	else:
-		primary_hits += 1
+		damage_by_weapon[source] = float(damage_by_weapon.get(source, 0.0)) + actual
+		run.damage_dealt_by_weapon[source] = float(run.damage_dealt_by_weapon.get(source, 0.0)) + actual
+		if secondary:
+			secondary_hits += 1
+		else:
+			primary_hits += 1
 	damage_dealt.emit(enemy.position, actual, source, secondary, enemy.uid)
 	enemy_hit.emit()
 	if enemy.health <= 0.0:
@@ -1100,6 +1248,7 @@ func snapshot() -> Dictionary:
 		"backpack": run.backpack_snapshot(),
 		"dash": dash_snapshot(),
 		"pulse": pulse_snapshot(),
+		"skills": active_skill_snapshots(),
 		"boss_health": boss.health if boss != null and boss.active else 0.0,
 		"boss_max_health": boss.max_health if boss != null else 0.0,
 	}

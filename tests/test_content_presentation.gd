@@ -71,14 +71,14 @@ func _test_impact_aliases() -> void:
 		painter.add_hit(Vector2(500, 300), source, 15)
 	_check(painter.active_count() == 6, "Shared impact shapes retain distinct weapon sources while merging repeat hits from the same source and target")
 	painter.rebuild()
-	_check(painter.get_stats()["draw_commands"] == 3, "Six weapon sources share three compatible shape batches")
+	_check(painter.get_stats()["draw_commands"] == 6, "Six weapon sources share three compatible outlined shape batches")
 	for phase: int in 2:
 		painter.advance(0.045)
 		for source: String in ["bone", "crescent", "frost", "storm", "ember", "scatter", "comet"]:
 			painter.add_hit(Vector2(500, 300), source, 16 + phase)
 	painter.rebuild()
 	_check(painter.active_count() == 20, "Impact aliases retain marks independently at all three fade stages")
-	_check(painter.get_stats()["draw_commands"] <= 12, "All seven weapons remain within the existing twelve impact draw commands")
+	_check(painter.get_stats()["draw_commands"] <= 24, "All seven weapons remain within twenty-four outlined impact draw commands")
 	painter.clear()
 	_check(painter.get_stats()["free_marks"] == 32 and painter.active_count() == 0, "Impact aliases reuse the original bounded pool")
 

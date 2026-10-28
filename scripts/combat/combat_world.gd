@@ -55,6 +55,9 @@ class DashAfterimage:
 
 var _dash_pending: bool = false
 var _pulse_pending: bool = false
+var _secondary_skill_pending: bool = false
+var _pulse_pending_uid: int = -1
+var _secondary_pending_uid: int = -1
 var _pulse_remaining: float = 0.0
 var _pulse_origin: Vector2 = Vector2.ZERO
 var _pulse_radius: float = 0.0
@@ -121,6 +124,8 @@ const ENEMY_TELEGRAPH_SCRIPT = preload("res://scripts/combat/enemy_telegraph_pai
 var _enemy_telegraphs: ENEMY_TELEGRAPH_SCRIPT = ENEMY_TELEGRAPH_SCRIPT.new()
 const IMPACT_PAINTER_SCRIPT = preload("res://scripts/combat/impact_painter.gd")
 var _impact_painter: IMPACT_PAINTER_SCRIPT = IMPACT_PAINTER_SCRIPT.new()
+const ACTIVE_SKILL_PAINTER_SCRIPT = preload("res://scripts/combat/active_skill_painter.gd")
+var _active_skill_painter: ACTIVE_SKILL_PAINTER_SCRIPT = ACTIVE_SKILL_PAINTER_SCRIPT.new()
 
 func _init() -> void:
 	for index: int in DASH_AFTERIMAGE_LIMIT:
@@ -161,6 +166,7 @@ func apply_visual_settings(value: Dictionary) -> void:
 		_clear_dash_afterimages()
 		_dash_evasion_pulse_remaining = 0.0
 		_pulse_animated = false
+		_active_skill_painter.disable_animation()
 	queue_redraw()
 
 func begin(state: RunState) -> void:
@@ -185,6 +191,7 @@ func begin(state: RunState) -> void:
 	sim.dash_started.connect(_on_dash_started)
 	sim.dash_evaded.connect(_on_dash_evaded)
 	sim.pulse_cast.connect(_on_pulse_cast)
+	sim.active_skill_cast.connect(_on_active_skill_cast)
 	_reset_feedback()
 	active = true
 	_last_kills = state.kills
@@ -206,18 +213,26 @@ func _physics_process(delta: float) -> void:
 	if is_inside_tree() and get_tree().paused:
 		clear_pending_actions()
 		return
+	if not is_finite(delta) or delta <= 0.0:
+		return
 	_visual_time += delta
 	_advance_feedback(delta)
 	_advance_dash_afterimages(delta)
 	_advance_dash_evasion_feedback(delta)
 	_advance_pulse_feedback(delta)
+	_active_skill_painter.advance(delta)
 	var movement: Vector2 = _movement()
 	if autopilot:
 		movement = BotPolicy.movement(sim)
 	var dash_pressed: bool = _dash_pending and not stress_mode and not autopilot
-	var pulse_pressed: bool = _pulse_pending and not stress_mode and not autopilot
+	var skill_requests: Array[Dictionary] = []
+	if not stress_mode and not autopilot:
+		if _pulse_pending:
+			skill_requests.append({"slot": 0, "uid": _pulse_pending_uid})
+		if _secondary_skill_pending:
+			skill_requests.append({"slot": 1, "uid": _secondary_pending_uid})
 	clear_pending_actions()
-	sim.step(delta, movement, dash_pressed, pulse_pressed)
+	sim.step(delta, movement, dash_pressed, false, skill_requests)
 	_record_dash_motion(delta)
 	if stress_mode:
 		_maintain_stress()
@@ -245,17 +260,45 @@ func request_dash() -> bool:
 func clear_pending_actions() -> void:
 	_dash_pending = false
 	_pulse_pending = false
+	_secondary_skill_pending = false
+	_pulse_pending_uid = -1
+	_secondary_pending_uid = -1
 
 func request_pulse() -> bool:
-	if not active or sim == null or sim.complete or _pulse_pending or stress_mode or autopilot:
+	return request_skill(0)
+
+func request_skill(slot: int) -> bool:
+	if slot < 0 or slot >= ActiveSkillRules.LIMIT:
+		return false
+	if not active or sim == null or sim.complete or stress_mode or autopilot:
+		return false
+	if (slot == 0 and _pulse_pending) or (slot == 1 and _secondary_skill_pending):
 		return false
 	if (is_inside_tree() and get_tree().paused) or sim.run == null or sim.run.health <= 0.0:
 		return false
-	var pulse: Dictionary = sim.snapshot().get("pulse", {})
-	if not bool(pulse.get("ready", false)):
+	var skill: Dictionary = sim.active_skill_snapshot(slot)
+	if not bool(skill.get("available", false)) or not bool(skill.get("ready", false)):
 		return false
-	_pulse_pending = true
+	if slot == 0:
+		_pulse_pending = true
+		_pulse_pending_uid = int(skill["uid"])
+	else:
+		_secondary_skill_pending = true
+		_secondary_pending_uid = int(skill["uid"])
 	return true
+
+func _on_active_skill_cast(id: String, uid: int, origin: Vector2, direction: Vector2, affected: int, rank: int) -> void:
+	if id == "pulse" or not active or sim == null or sim.complete:
+		return
+	var parameters: Dictionary = ActiveSkillRules.parameters(id, rank, {})
+	if parameters.is_empty() or uid < 0:
+		return
+	_active_skill_painter.add_cast(id, origin, direction, float(parameters["radius"]), bool(settings.get("flash", true)))
+	if affected > 0:
+		_shake = maxf(_shake, 1.4 if id == "starfall" else 0.8)
+	if sound != null:
+		sound.play_cue("pulse_hit" if affected > 0 else "pulse", -22.0, "active_skill:%d" % uid)
+	hud_changed.emit(hud_snapshot())
 
 func pulse_feedback_snapshot() -> Dictionary:
 	return {
@@ -414,7 +457,8 @@ func _on_player_hurt() -> void:
 func _on_damage_dealt(point: Vector2, amount: float, source: String, secondary: bool, target_uid: int = -1) -> void:
 	if not point.is_finite() or not is_finite(amount) or amount <= 0.0:
 		return
-	_spawn_number(point + Vector2(0, -22), amount, source, false, secondary, target_uid)
+	var height: float = -38.0 if source == "skill:starfall" else -22.0
+	_spawn_number(point + Vector2(0, height), amount, source, false, secondary, target_uid)
 	# Damage events identify the enemy center, not an impact normal or contact point.
 	if active and sim != null and not sim.complete and not secondary and bool(settings.get("flash", true)):
 		_impact_painter.add_hit(point, source, target_uid)
@@ -449,6 +493,7 @@ func _reset_feedback() -> void:
 	_clear_pulse_feedback()
 	_enemy_telegraphs.clear()
 	_impact_painter.clear()
+	_active_skill_painter.clear()
 	_numbers.clear()
 	_number_lookup.clear()
 	_number_free.clear()
@@ -552,6 +597,7 @@ func _on_ended(victory: bool, reason: String) -> void:
 	_clear_pulse_feedback()
 	_enemy_telegraphs.clear()
 	_impact_painter.clear()
+	_active_skill_painter.clear()
 	hud_changed.emit(hud_snapshot())
 	wave_ended.emit(victory, reason)
 
@@ -583,6 +629,7 @@ func _draw() -> void:
 	_draw_friendly_shots()
 	_draw_player_ground()
 	_draw_effects()
+	_active_skill_painter.draw(self)
 	_draw_impact_feedback()
 	_draw_rune_feedback()
 	_draw_outgoing_feedback()
@@ -776,11 +823,10 @@ func _draw_enemies() -> void:
 			var stride: float = sin(enemy.age * (9.0 if id == "rusher" else 4.0) + float(enemy.uid))
 			var bob: float = stride * (1.0 if id == "tank" else 2.0)
 			var breathing: float = sin(enemy.age * 2.0 + float(enemy.uid)) * 0.015
-			var width: float = size * (1.0 + breathing)
 			var tint: Color = _enemy_tint(enemy)
 			if enemy.hunter:
 				draw_arc(enemy.position + Vector2(0, 5), enemy.radius + 8.0, 0, TAU, 28, Color("c87866"), 2.0, true)
-			draw_texture_rect(texture, Rect2(enemy.position + Vector2(-width * 0.5, -size * 0.66 + bob), Vector2(width, size)), false, tint)
+			draw_texture_rect(texture, enemy_draw_rect(enemy, bob, breathing), false, tint)
 			if enemy.hunter:
 				_draw_hunter_mark(enemy, size)
 			if id == "tank" and enemy.health < enemy.max_health:
@@ -794,6 +840,17 @@ func _draw_hunter_mark(enemy: CombatSim.Enemy, size: float) -> void:
 	var origin: Vector2 = crest + Vector2(-20, 11)
 	draw_line(origin, origin + Vector2(40, 0), Color("292131"), 4.0)
 	draw_line(origin, origin + Vector2(40 * clampf(enemy.health / enemy.max_health, 0.0, 1.0), 0), Color("d79b78"), 2.0)
+
+func enemy_draw_rect(enemy: CombatSim.Enemy, bob: float, breathing: float) -> Rect2:
+	var size: float = enemy.radius * 3.0 + 15.0
+	var impact: float = 0.0
+	if bool(settings.get("flash", true)) and is_finite(enemy.hurt_timer):
+		impact = clampf((enemy.hurt_timer - ENEMY_HIT_TIMER_CUTOFF) / ENEMY_HIT_PULSE_SECONDS, 0.0, 1.0)
+		impact *= impact * (0.5 if enemy.definition.id == "boss" else 1.0)
+	var width: float = size * (1.0 + breathing) * (1.0 + impact * 0.04)
+	var height: float = size * (1.0 - impact * 0.05)
+	var bottom: float = enemy.position.y + size * 0.34 + bob
+	return Rect2(Vector2(enemy.position.x - width * 0.5, bottom - height), Vector2(width, height))
 
 func _enemy_tint(enemy: CombatSim.Enemy) -> Color:
 	var base: Color = Color.WHITE

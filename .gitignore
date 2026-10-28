@@ -118,3 +118,7 @@ reports/title-cover/*-raw.json
 reports/title-cover/frames/
 reports/title-cover/ui-frames/
 reports/title-cover/*/
+reports/active-skills/*.log
+reports/active-skills/*.png
+reports/active-skills/*.import
+reports/active-skills/*-raw.json

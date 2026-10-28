@@ -2,6 +2,7 @@ extends SceneTree
 ## Real casts and hostile projectiles exercise the bounded, static result slot.
 
 const STEP: float = 1.0 / 60.0
+const SKILL_FIXTURE = preload("res://tests/skill_fixture.gd")
 var _checks: int = 0
 var _failures: int = 0
 
@@ -92,6 +93,7 @@ func _check(condition: bool, message: String) -> void:
 func _begin(world: CombatWorld) -> void:
 	var state := RunState.new()
 	state.begin(20261028, "bone", "mire")
+	_check(SKILL_FIXTURE.equip_pulse(state), "The feedback fixture owns a physical pulse box")
 	world.begin(state)
 	world.sim.sandbox = true
 	world.sim._cooldowns.fill(9999.0)

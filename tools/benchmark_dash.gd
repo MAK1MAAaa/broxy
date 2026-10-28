@@ -9,6 +9,8 @@ const TARGET_PROJECTILES: int = 600
 const TARGET_PICKUPS: int = 200
 const MIN_FPS: float = 58.0
 const MAX_P99_MS: float = 33.0
+const BACKPACK_SKILL_IDS: Array[String] = ["starfall", "arc_slash"]
+const BACKPACK_SKILL_FX_LIMIT: int = 8
 
 var _seconds: float = 60.0
 var _output: String = "res://reports/dash/performance.json"
@@ -59,6 +61,25 @@ var _sample_positive_pulse_start: int = 0
 var _sample_zero_pulse_start: int = 0
 var _skill_audio_playing_peak: int = 0
 var _skill_audio_streams_observed: Dictionary = {}
+var _backpack_skills: bool = false
+var _backpack_skill_uids: Dictionary = {}
+var _backpack_skill_purchases: Array[Dictionary] = []
+var _backpack_skill_requests: Dictionary = {}
+var _backpack_skill_casts: Dictionary = {}
+var _backpack_skill_positive_casts: Dictionary = {}
+var _backpack_skill_affected: Dictionary = {}
+var _backpack_skill_cast_log: Array[Dictionary] = []
+var _backpack_skill_invalid_events: int = 0
+var _sample_skill_uses_start: Dictionary = {}
+var _sample_skill_requests_start: Dictionary = {}
+var _sample_skill_casts_start: Dictionary = {}
+var _sample_skill_positive_start: Dictionary = {}
+var _sample_skill_affected_start: Dictionary = {}
+var _sample_skill_damage_start: Dictionary = {}
+var _backpack_skill_fx_peak: int = 0
+var _sample_backpack_skill_fx_peak: int = 0
+var _backpack_skill_fx_capacity: int = 0
+var _backpack_skill_fx_invalid: bool = false
 
 func _initialize() -> void:
 	_start.call_deferred()
@@ -89,9 +110,14 @@ func _parse_arguments() -> bool:
 			_input_prompts = true
 		elif argument == "--skill-feedback":
 			_skill_feedback = true
+		elif argument == "--backpack-skills":
+			_backpack_skills = true
 		else:
-			push_error("Supported arguments: --seconds=<at least 5> --output=<report.json> [--evasion-probes] [--pulse-cycles] [--skill-relics] [--input-prompts] [--skill-feedback]")
+			push_error("Supported arguments: --seconds=<at least 5> --output=<report.json> [--evasion-probes] [--pulse-cycles] [--skill-relics] [--input-prompts] [--skill-feedback] [--backpack-skills]")
 			return false
+	if _backpack_skills and (_pulse_cycles or _skill_feedback or _skill_relics or _input_prompts):
+		push_error("--backpack-skills cannot be combined with --pulse-cycles, --skill-feedback, --skill-relics, or --input-prompts")
+		return false
 	return true
 
 func _start() -> void:
@@ -117,6 +143,18 @@ func _start() -> void:
 	_app._benchmark = true
 	_app.ui.set_selected_arena("mire")
 	_app._begin_run("bone", SEED)
+	if (_pulse_cycles or _skill_feedback or _skill_relics) and not _equip_pulse_skill():
+		_abort("Could not purchase the pressure fixture's pulse skill box")
+		return
+	if _backpack_skills:
+		for path: String in _backpack_skill_source_paths():
+			if not FileAccess.file_exists(path):
+				_abort("Missing backpack-skill fingerprint input: " + path)
+				return
+		if not _equip_backpack_skills():
+			_abort("Could not purchase the pressure fixture's two backpack skills")
+			return
+		_app.world.sim.active_skill_cast.connect(_observe_backpack_skill_cast)
 	if _input_prompts:
 		_app.ui.get_node("InputDeviceTracker").device_changed.connect(func(_kind: String, _device: int) -> void: _prompt_switches += 1)
 	if _skill_relics and not _equip_skill_relics():
@@ -145,7 +183,7 @@ func _start() -> void:
 	_running = true
 	_update_caption(_started_usec)
 	var start_report: Dictionary = {
-		"scenario": "dash-content-pressure", "natural_run": false,
+		"scenario": "backpack-skill-content-pressure" if _backpack_skills else "dash-content-pressure", "natural_run": false,
 		"warmup_seconds": WARMUP_SECONDS, "duration_seconds": _seconds,
 		"seed": SEED, "arena_id": "mire", "core_id": "bone_chorus",
 		"load_targets": _counts(Vector3i(TARGET_ENEMIES, TARGET_PROJECTILES, TARGET_PICKUPS)),
@@ -153,14 +191,50 @@ func _start() -> void:
 		"persistent_profile": _app.store.persistent, "output": _output,
 		"evasion_probes": _evasion_probes,
 		"pulse_cycles": _pulse_cycles,
+		"active_skills": _app.run.active_skills.duplicate(true),
 		"skill_relics": _skill_relics,
 		"input_prompts": _input_prompts,
+		"backpack_skills": _backpack_skills,
 	}
+	if _backpack_skills:
+		start_report["backpack_skill_purchases"] = _backpack_skill_purchases.duplicate(true)
+		start_report["active_skill_fx_capacity"] = _app.world._active_skill_painter.snapshot()["capacity"]
+		start_report["source_files"] = _source_fingerprint()["files"]
 	if _skill_feedback:
 		start_report["skill_feedback"] = true
 		start_report["source_files"] = _source_fingerprint()["files"]
 		start_report["audio_source_files"] = _audio_source_fingerprint()["files"]
 	print("DASH_BENCHMARK_START ", JSON.stringify(start_report))
+
+func _equip_pulse_skill() -> bool:
+	var definition: ContentDef = GameCatalog.skill("pulse")
+	_app.run.gold += definition.price
+	_app.run.offers.assign([{"kind": "skill", "id": definition.id, "rank": 1, "price": definition.price, "sold": false}])
+	if not _app.run.buy_offer(0):
+		return false
+	_app.run.offers.clear()
+	return _app.run.active_skills.size() == 1 and _app.run.active_skills[0]["id"] == "pulse"
+
+func _equip_backpack_skills() -> bool:
+	for id: String in BACKPACK_SKILL_IDS:
+		var definition: ContentDef = GameCatalog.skill(id)
+		var uid: int = int(_app.run.backpack_snapshot()["next_uid"])
+		_app.run.gold += definition.price
+		_app.run.offers.assign([{"kind": "skill", "id": id, "rank": 1, "price": definition.price, "sold": false}])
+		if not _app.run.buy_offer(0):
+			return false
+		var item: Dictionary = _app.run.backpack_item(uid)
+		if item.is_empty() or item["id"] != id or int(item["rank"]) != 1 or int(item["paid"]) != definition.price:
+			return false
+		_backpack_skill_uids[id] = uid
+		_backpack_skill_purchases.append(item)
+	_app.run.offers.clear()
+	if _app.run.active_skills.size() != BACKPACK_SKILL_IDS.size():
+		return false
+	for slot: int in BACKPACK_SKILL_IDS.size():
+		if str(_app.run.active_skills[slot]["id"]) != BACKPACK_SKILL_IDS[slot]:
+			return false
+	return true
 
 func _equip_skill_relics() -> bool:
 	# Fixture-only money and stock; every item, merge and occupied cell is real.
@@ -226,6 +300,8 @@ func _before_world_physics() -> void:
 		_sample_physics_steps += 1
 		_pre_step_minimum = Vector3i(mini(_pre_step_minimum.x, counts.x), mini(_pre_step_minimum.y, counts.y), mini(_pre_step_minimum.z, counts.z))
 	_observe_feedback()
+	if _backpack_skills and not _request_ready_backpack_skills(world):
+		return
 	if _pulse_cycles and bool(world.sim.pulse_snapshot()["ready"]):
 		if not world.request_pulse():
 			_abort("A ready real World rejected the explicit pressure pulse request")
@@ -246,6 +322,20 @@ func _before_world_physics() -> void:
 				return
 			_evasion_probes_spawned += 1
 		_next_right = not _next_right
+
+func _request_ready_backpack_skills(world: CombatWorld) -> bool:
+	for slot: int in BACKPACK_SKILL_IDS.size():
+		var id: String = BACKPACK_SKILL_IDS[slot]
+		var skill: Dictionary = world.sim.active_skill_snapshot(slot)
+		if not bool(skill.get("available", false)) or str(skill.get("id", "")) != id or int(skill.get("uid", -1)) != int(_backpack_skill_uids[id]):
+			_abort("The pressure fixture lost its purchased backpack skill: " + id)
+			return false
+		if bool(skill.get("ready", false)):
+			if not world.request_skill(slot):
+				_abort("A ready real World rejected the backpack skill request: " + id)
+				return false
+			_backpack_skill_requests[id] = int(_backpack_skill_requests.get(id, 0)) + 1
+	return true
 
 func _exercise_input_prompts() -> void:
 	var before: Dictionary = _app.ui.input_device_snapshot()
@@ -282,6 +372,8 @@ func _observe_feedback() -> void:
 	_evasion_feedback_peak = maxi(_evasion_feedback_peak, evasion_active)
 	_afterimage_peak = maxi(_afterimage_peak, count)
 	_rune_peak = maxi(_rune_peak, _app.world._rune_flashes.size())
+	if _backpack_skills:
+		_observe_backpack_skill_fx()
 	if _skill_feedback:
 		var active: int = 1 if bool(_app.world.skill_feedback_snapshot().get("active", false)) else 0
 		_skill_feedback_peak = maxi(_skill_feedback_peak, active)
@@ -306,6 +398,40 @@ func _observe_pulse_cast(_origin: Vector2, affected: int) -> void:
 	else:
 		_zero_pulse_casts += 1
 
+func _observe_backpack_skill_fx() -> void:
+	var effects: Dictionary = _app.world._active_skill_painter.snapshot()
+	var active: int = int(effects["active"])
+	_backpack_skill_fx_capacity = int(effects["capacity"])
+	_backpack_skill_fx_peak = maxi(_backpack_skill_fx_peak, active)
+	_backpack_skill_fx_invalid = _backpack_skill_fx_invalid or active < 0 or active > BACKPACK_SKILL_FX_LIMIT or _backpack_skill_fx_capacity != BACKPACK_SKILL_FX_LIMIT
+	if _sampling:
+		_sample_backpack_skill_fx_peak = maxi(_sample_backpack_skill_fx_peak, active)
+
+func _observe_backpack_skill_cast(id: String, uid: int, origin: Vector2, direction: Vector2, affected: int, rank: int) -> void:
+	if not _backpack_skills:
+		return
+	if not BACKPACK_SKILL_IDS.has(id) or uid != int(_backpack_skill_uids.get(id, -1)) or rank != 1 or affected < 0 or not origin.is_finite() or not direction.is_finite():
+		_backpack_skill_invalid_events += 1
+		return
+	_backpack_skill_casts[id] = int(_backpack_skill_casts.get(id, 0)) + 1
+	_backpack_skill_affected[id] = int(_backpack_skill_affected.get(id, 0)) + affected
+	if affected > 0:
+		_backpack_skill_positive_casts[id] = int(_backpack_skill_positive_casts.get(id, 0)) + 1
+	_backpack_skill_cast_log.append({"id": id, "uid": uid, "rank": rank, "affected": affected,
+		"origin": [origin.x, origin.y], "direction": [direction.x, direction.y],
+		"elapsed": _app.world.sim.elapsed, "sample": _sampling})
+	_observe_backpack_skill_fx()
+
+func _begin_backpack_skill_sample() -> void:
+	for slot: int in BACKPACK_SKILL_IDS.size():
+		var id: String = BACKPACK_SKILL_IDS[slot]
+		_sample_skill_uses_start[id] = int(_app.world.sim.active_skill_snapshot(slot)["uses"])
+		_sample_skill_requests_start[id] = int(_backpack_skill_requests.get(id, 0))
+		_sample_skill_casts_start[id] = int(_backpack_skill_casts.get(id, 0))
+		_sample_skill_positive_start[id] = int(_backpack_skill_positive_casts.get(id, 0))
+		_sample_skill_affected_start[id] = int(_backpack_skill_affected.get(id, 0))
+		_sample_skill_damage_start[id] = float(_app.world.sim.damage_by_skill.get(id, 0.0))
+
 func _process(_delta: float) -> bool:
 	if not _running or _finished:
 		return false
@@ -322,6 +448,8 @@ func _process(_delta: float) -> bool:
 		_sample_prompt_switches_start = _prompt_switches
 		_sample_positive_pulse_start = _positive_pulse_casts
 		_sample_zero_pulse_start = _zero_pulse_casts
+		if _backpack_skills:
+			_begin_backpack_skill_sample()
 	elif _sampling:
 		_frame_samples.append(float(now - _last_frame_usec) / 1000.0)
 		_last_frame_usec = now
@@ -346,6 +474,10 @@ func _source_fingerprint() -> Dictionary:
 		_collect_sources(directory, paths)
 	if _skill_feedback:
 		paths.append_array(_audio_input_paths())
+	if _backpack_skills:
+		for path: String in _backpack_skill_source_paths():
+			if not paths.has(path):
+				paths.append(path)
 	paths.sort()
 	var manifest := PackedStringArray()
 	var files: Dictionary = {}
@@ -354,6 +486,12 @@ func _source_fingerprint() -> Dictionary:
 		files[path] = digest
 		manifest.append(path + ":" + digest)
 	return {"hash": "\n".join(manifest).sha256_text(), "algorithm": "sha256-path-and-content-manifest", "files": files}
+
+func _backpack_skill_source_paths() -> Array[String]:
+	return ["res://scripts/data/active_skill_rules.gd", "res://scripts/combat/active_skill_painter.gd",
+		"res://data/skills/pulse.tres", "res://data/skills/starfall.tres", "res://data/skills/arc_slash.tres",
+		"res://assets/starfall/icons/skill_pulse.svg", "res://assets/starfall/icons/skill_starfall.svg",
+		"res://assets/starfall/icons/skill_arc_slash.svg", "res://assets/starfall/manifest.json"]
 
 func _audio_input_paths() -> Array[String]:
 	var paths: Array[String] = ["res://assets/manifest.json", "res://tools/audio_skills.py", "res://tools/generate_assets.py"]
@@ -385,6 +523,44 @@ func _stop_updates() -> void:
 		neutral.axis = JOY_AXIS_LEFT_X
 		Input.parse_input_event(neutral)
 
+func _backpack_skill_results(sim: CombatSim) -> Dictionary:
+	var skills: Dictionary = {}
+	var uses: Dictionary = {}
+	var sampled_uses: Dictionary = {}
+	var minimum_uses: Dictionary = {}
+	var valid: bool = sim.run.active_skills.size() == BACKPACK_SKILL_IDS.size() and _backpack_skill_invalid_events == 0
+	for slot: int in BACKPACK_SKILL_IDS.size():
+		var id: String = BACKPACK_SKILL_IDS[slot]
+		var current: Dictionary = sim.active_skill_snapshot(slot)
+		var total_uses: int = int(current["uses"])
+		var sample_uses: int = total_uses - int(_sample_skill_uses_start.get(id, 0))
+		var requests: int = int(_backpack_skill_requests.get(id, 0))
+		var sample_requests: int = requests - int(_sample_skill_requests_start.get(id, 0))
+		var casts: int = int(_backpack_skill_casts.get(id, 0))
+		var sample_casts: int = casts - int(_sample_skill_casts_start.get(id, 0))
+		var positives: int = int(_backpack_skill_positive_casts.get(id, 0))
+		var sample_positives: int = positives - int(_sample_skill_positive_start.get(id, 0))
+		var affected: int = int(_backpack_skill_affected.get(id, 0))
+		var damage: float = float(sim.damage_by_skill.get(id, 0.0))
+		var sample_damage: float = damage - float(_sample_skill_damage_start.get(id, 0.0))
+		var parameters: Dictionary = ActiveSkillRules.parameters(id, 1, {})
+		var required: int = maxi(1, floori(_seconds / float(parameters["cooldown"])) - 1)
+		var ownership_valid: bool = bool(current["available"]) and str(current["id"]) == id and int(current["uid"]) == int(_backpack_skill_uids[id])
+		var casts_valid: bool = ownership_valid and total_uses == requests and total_uses == casts and sample_uses >= required and sample_requests == sample_uses and sample_casts == sample_uses and sample_positives > 0 and sample_damage > 0.0
+		valid = valid and casts_valid
+		uses[id] = total_uses
+		sampled_uses[id] = sample_uses
+		minimum_uses[id] = required
+		skills[id] = {"slot": slot, "uid": current["uid"], "rank": current["rank"], "uses": total_uses,
+			"sample_uses": sample_uses, "requests": requests, "sample_requests": sample_requests,
+			"cast_events": casts, "sample_cast_events": sample_casts, "positive_casts": positives,
+			"sample_positive_casts": sample_positives, "affected": affected,
+			"sample_affected": affected - int(_sample_skill_affected_start.get(id, 0)),
+			"damage": damage, "sample_damage": sample_damage, "minimum_sample_uses": required,
+			"cooldown_duration": current["cooldown_duration"], "cooldown_remaining": current["cooldown_remaining"],
+			"ownership_and_real_casts_valid": casts_valid}
+	return {"valid": valid, "skills": skills, "uses": uses, "sample_uses": sampled_uses, "minimum_uses": minimum_uses}
+
 func _finish_report(now: int) -> void:
 	_stop_updates()
 	var sorted: Array[float] = _frame_samples.duplicate()
@@ -406,7 +582,7 @@ func _finish_report(now: int) -> void:
 	var prompt_valid: bool = not _input_prompts or (_prompt_switches - _sample_prompt_switches_start >= floori(_seconds * 1.8) and _prompt_drift_events > 0 and not _prompt_drift_changed_kind)
 	var source: Dictionary = _source_fingerprint()
 	var report: Dictionary = {
-		"scenario": "dash-content-pressure", "natural_run": false,
+		"scenario": "backpack-skill-content-pressure" if _backpack_skills else "dash-content-pressure", "natural_run": false,
 		"duration_seconds": _seconds, "actual_duration_seconds": float(now - _sample_started_usec) / 1000000.0,
 		"warmup_seconds": WARMUP_SECONDS, "actual_warmup_seconds": float(_sample_started_usec - _started_usec) / 1000000.0,
 		"samples": sorted.size(), "average_fps": fps, "p99_frame_ms": p99,
@@ -419,6 +595,7 @@ func _finish_report(now: int) -> void:
 		"evasion_probes": _evasion_probes, "evasion_probes_spawned": _evasion_probes_spawned,
 		"pulse_cycles": _pulse_cycles, "pulses_used": sim.pulses_used, "sample_pulses_used": sim.pulses_used - _sample_pulses_start,
 		"skill_relics": _skill_relics,
+		"backpack_skills": _backpack_skills,
 		"skill_stats": {"dash_cooldown": sim.run.stat("dash_cooldown"), "pulse_radius": sim.run.stat("pulse_radius"), "pulse_cooldown": sim.run.stat("pulse_cooldown"), "move_speed": sim.run.stat("move_speed")},
 		"pulse_affected": sim.pulse_affected, "sample_pulse_affected": sim.pulse_affected - _sample_affected_start,
 		"pulse_feedback_peak": _pulse_feedback_peak, "sample_pulse_feedback_peak": _sample_pulse_feedback_peak,
@@ -454,8 +631,42 @@ func _finish_report(now: int) -> void:
 		"checks": {"performance": fps >= MIN_FPS and p99 <= MAX_P99_MS, "load": load_valid, "dash_feedback": feedback_valid, "evasion_feedback": evasion_valid, "pulse_control": pulse_valid, "default_settings_and_no_profile": defaults_valid},
 		"passed": fps >= MIN_FPS and p99 <= MAX_P99_MS and load_valid and feedback_valid and evasion_valid and pulse_valid and defaults_valid and prompt_valid,
 	}
+	if _backpack_skills:
+		var results: Dictionary = _backpack_skill_results(sim)
+		var fx_valid: bool = not _backpack_skill_fx_invalid and _backpack_skill_fx_capacity == BACKPACK_SKILL_FX_LIMIT and _backpack_skill_fx_peak <= BACKPACK_SKILL_FX_LIMIT and _sample_backpack_skill_fx_peak > 0 and _sample_backpack_skill_fx_peak <= BACKPACK_SKILL_FX_LIMIT
+		var skill_sources: Dictionary = {}
+		var source_valid: bool = true
+		for path: String in _backpack_skill_source_paths():
+			if not (source["files"] as Dictionary).has(path):
+				source_valid = false
+			else:
+				skill_sources[path] = source["files"][path]
+		report["active_skills"] = sim.run.active_skills.duplicate(true)
+		report["backpack_skill_purchases"] = _backpack_skill_purchases.duplicate(true)
+		report["backpack_skill_results"] = results["skills"]
+		report["active_skill_uses"] = results["uses"]
+		report["sample_active_skill_uses"] = results["sample_uses"]
+		report["backpack_skill_cast_events"] = _backpack_skill_cast_log.duplicate(true)
+		report["backpack_skill_invalid_events"] = _backpack_skill_invalid_events
+		report["active_skill_fx_peak"] = _backpack_skill_fx_peak
+		report["sample_active_skill_fx_peak"] = _sample_backpack_skill_fx_peak
+		report["active_skill_fx_capacity"] = _backpack_skill_fx_capacity
+		report["active_skill_fx_invalid"] = _backpack_skill_fx_invalid
+		report["damage_by_skill"] = sim.damage_by_skill.duplicate(true)
+		report["skill_hits"] = sim.skill_hits
+		report["backpack_skill_source_files"] = skill_sources
+		report["thresholds"]["minimum_sample_skill_uses"] = results["minimum_uses"]
+		report["thresholds"]["maximum_active_skill_fx"] = BACKPACK_SKILL_FX_LIMIT
+		report["checks"]["backpack_skill_inventory_and_real_casts"] = results["valid"]
+		report["checks"]["backpack_skill_fx_pool"] = fx_valid
+		report["checks"]["backpack_skill_source_coverage"] = source_valid
+		report["passed"] = bool(report["passed"]) and bool(results["valid"]) and fx_valid and source_valid
+		report["fixture_overrides"].append("fixture grants exact prices and explicit stock, then purchases one rank-I starfall and one rank-I arc_slash through RunState.buy_offer, occupying two real skill slots and six backpack cells")
+		report["fixture_overrides"].append("each ready purchased UID is queued only through World.request_skill(slot); normal fixed steps produce the recorded uses, active_skill_cast events, actual skill damage and bounded painter effects; the existing enemy, projectile and pickup pressure layout is unchanged")
 	if _pulse_cycles:
 		report["fixture_overrides"].append("real Q requests at readiness; pulse control occurs before the normal World fixed step movement, while synthetic pressure positions are replenished each frame")
+	if _pulse_cycles or _skill_feedback or _skill_relics:
+		report["fixture_overrides"].append("fixture grants the pulse price and explicit stock, then purchases one rank-I pulse box occupying two real backpack cells before any pulse request")
 	if _skill_relics:
 		report["fixture_overrides"].append("fixture grants money and explicit stock, then actually purchases eight skill relics and merges them into one rank-III item of each kind in the real backpack")
 	if _input_prompts:

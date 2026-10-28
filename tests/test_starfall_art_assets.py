@@ -29,6 +29,7 @@ class StarfallArtTests(unittest.TestCase):
                     for row in legacy["assets"] if row["path"].endswith(".svg")}
         expected.remove("assets/starfall/menu_art.svg")
         expected.add("assets/starfall/menu_art.png")
+        expected.update(f"assets/starfall/icons/skill_{name}.svg" for name in ("pulse", "starfall", "arc_slash"))
         actual = [row["path"] for row in self.manifest["assets"]]
         self.assertEqual(set(actual), expected)
         self.assertEqual(len(actual), len(expected))

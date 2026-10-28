@@ -2,6 +2,7 @@ extends SceneTree
 ## Purchased, merged and sold relics drive real skills without rewriting an active cast.
 
 const STEP: float = 1.0 / 60.0
+const SKILL_FIXTURE = preload("res://tests/skill_fixture.gd")
 var _checks: int = 0
 var _failures: int = 0
 
@@ -44,6 +45,7 @@ func _state(arena: String = "reliquary") -> RunState:
 	state.begin(20261028, "bone", arena)
 	state.gold = 10000
 	_check(state.expand_backpack() and state.expand_backpack(), "The purchase fixture expands through the real paid inventory transaction")
+	_check(SKILL_FIXTURE.equip_pulse(state), "Relic combat exercises a pulse box physically stored in the backpack")
 	return state
 
 func _buy(state: RunState, id: String) -> int:

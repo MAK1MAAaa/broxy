@@ -607,6 +607,51 @@
       "sha256": "62ecc622a41a9a4c755ed8b2b8c7b10efcc7cf5f9e878acf52f6c9c3b4fc4ec2"
     },
     {
+      "path": "assets/starfall/icons/skill_pulse.svg",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "Hand-drawn pixel skill book: pulse",
+      "source": "assets/starfall/PROVENANCE.md",
+      "license": "CC0-1.0",
+      "sha256": "748f83c7502fb4447db0c3074c1c9c83c8e48103641bb912af9c3f736885f20c"
+    },
+    {
+      "path": "assets/starfall/icons/skill_starfall.svg",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "Hand-drawn pixel skill book: starfall",
+      "source": "assets/starfall/PROVENANCE.md",
+      "license": "CC0-1.0",
+      "sha256": "234506b3e122c2e61652a85a34adf1136e9d9dbe91dff6b4887da29d0883be5b"
+    },
+    {
+      "path": "assets/starfall/icons/skill_arc_slash.svg",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "Hand-drawn pixel skill book: arc_slash",
+      "source": "assets/starfall/PROVENANCE.md",
+      "license": "CC0-1.0",
+      "sha256": "cc0aa1d41e99732a41174a1abc38b42fe9589a7d4375c7385b9bf1f078ebfe6b"
+    },
+    {
       "path": "assets/starfall/menu_art.png",
       "size": [
         1182,

@@ -57,7 +57,7 @@ func _preview() -> void:
 			if not _press_button("Bind_dash"):
 				return
 			await _settle()
-			await _key(KEY_E)
+			await _key(KEY_F)
 			if not _press_button("Bind_pulse"):
 				return
 			await _settle()
@@ -71,7 +71,7 @@ func _preview() -> void:
 			if _app.world.sim.dashes_used != 0 or _app.world.sim.pulses_used != 0:
 				_fail("Old skill keys still work after a real settings remap")
 				return
-			await _key(KEY_E)
+			await _key(KEY_F)
 			await _key(KEY_R)
 			_app.world._physics_process(STEP)
 	elif _case == "gamepad":
@@ -138,6 +138,10 @@ func _log_live_skills(snapshot: Dictionary) -> void:
 
 func _start_combat() -> void:
 	_app._begin_run("bone", 20261028)
+	if _app.run.backpack.add("skill", "pulse").is_empty():
+		_fail("The input preview could not place its pulse skill box")
+		return
+	_app.run._sync_backpack_projection()
 	_app.world.set_physics_process(false)
 	_app.world.sim.sandbox = true
 	_app.world.sim._cooldowns.fill(9999.0)

@@ -6,6 +6,7 @@ signal changed
 const WEAPON_CAP: int = BackpackInventory.WIDTH * BackpackInventory.MAX_HEIGHT
 const RUNE_BAG_CAP: int = BackpackInventory.WIDTH * BackpackInventory.MAX_HEIGHT
 const RELIC_CAP: int = 3
+const ACTIVE_SKILL_LIMIT: int = ActiveSkillRules.LIMIT
 const SHOP_LOCK_CAP: int = 2
 const BASE_STATS: Dictionary = {
 	"max_health": 100.0,
@@ -42,6 +43,7 @@ var hits_taken: int = 0
 var last_hit: Dictionary = {}
 var backpack: BackpackInventory = BackpackInventory.new()
 var loadout: Array[Dictionary] = []
+var active_skills: Array[Dictionary] = []
 var rune_bag: Array[Dictionary] = []
 var relic_counts: Dictionary = {}
 var offers: Array[Dictionary] = []
@@ -82,6 +84,7 @@ func begin(seed_value: int, starter: String, selected_arena: String = "reliquary
 	hits_taken = 0
 	last_hit.clear()
 	loadout.clear()
+	active_skills.clear()
 	rune_bag.clear()
 	relic_counts.clear()
 	offers.clear()
@@ -108,6 +111,10 @@ func begin(seed_value: int, starter: String, selected_arena: String = "reliquary
 
 func stat(key: String) -> float:
 	return _stat_with_projected_relic(key)
+
+func active_skill_parameters(item: Dictionary) -> Dictionary:
+	return ActiveSkillRules.parameters(str(item.get("id", "")), int(item.get("rank", 1)),
+		{"damage": stat("damage"), "pulse_radius": stat("pulse_radius"), "pulse_cooldown": stat("pulse_cooldown")})
 
 func choose_core(id: String) -> bool:
 	if not _wave_finished or wave < 1 or wave >= GameCatalog.WAVE_DEFS.size() or not core_id.is_empty():
@@ -328,6 +335,16 @@ func merge_preview(source_uid: int, target_uid: int) -> Dictionary:
 		result["blast_radius_after"] = RuneRules.blast_radius(result_rank)
 		result["blast_multiplier_before"] = RuneRules.blast_factor(int(target["rank"]))
 		result["blast_multiplier_after"] = RuneRules.blast_factor(result_rank)
+	elif definition.kind == "skill":
+		var merged_skill: Dictionary = target.duplicate(true)
+		merged_skill["rank"] = result_rank
+		var before: Dictionary = active_skill_parameters(target)
+		var after: Dictionary = active_skill_parameters(merged_skill)
+		result["skill_before"] = before
+		result["skill_after"] = after
+		for key: String in ["damage", "radius", "cooldown"]:
+			result[key + "_before"] = before.get(key, 0.0)
+			result[key + "_after"] = after.get(key, 0.0)
 	return result
 
 func merge_items(source_uid: int, target_uid: int) -> bool:
@@ -371,6 +388,7 @@ func expand_backpack() -> bool:
 
 func _sync_backpack_projection() -> void:
 	loadout.clear()
+	active_skills.clear()
 	rune_bag.clear()
 	relic_counts.clear()
 	var entries: Array = backpack.snapshot()["items"]
@@ -383,6 +401,7 @@ func _sync_backpack_projection() -> void:
 				loadout.append({"uid": entry["uid"], "id": entry["id"], "rank": entry["rank"], "paid": entry["paid"], "rune": (entry["rune"] as Dictionary).duplicate(true), "resonance_bonus": float(resonance.get("bonus", 0.0)), "resonance_sources": (resonance.get("source_uids", []) as Array).duplicate()})
 			"rune": rune_bag.append({"uid": entry["uid"], "id": entry["id"], "rank": entry["rank"], "paid": entry["paid"]})
 			"relic": relic_counts[entry["id"]] = int(relic_counts.get(entry["id"], 0)) + int(BackpackInventory.rank_multiplier(int(entry["rank"])))
+			"skill": active_skills.append(entry.duplicate(true))
 	_next_rune_uid = int(backpack.snapshot()["next_uid"])
 
 static func _item_area(entry: Dictionary) -> int:
@@ -452,13 +471,16 @@ func generate_shop() -> void:
 	offers.clear()
 	var guaranteed_kind: String = "weapon" if wave == 1 else "rune" if wave == 2 else ""
 	var guarantee_satisfied: bool = false
+	var pulse_satisfied: bool = wave != 1
 	for locked: Dictionary in _locked_offers.values():
 		if str(locked.get("kind", "")) == guaranteed_kind:
 			guarantee_satisfied = true
+		if str(locked.get("kind", "")) == "skill" and str(locked.get("id", "")) == "pulse":
+			pulse_satisfied = true
 	for index: int in range(4):
 		if _locked_offers.has(index):
 			var retained: Dictionary = (_locked_offers[index] as Dictionary).duplicate(true)
-			retained["price"] = shop_price(_offer_definition(retained))
+			retained["price"] = _shop_offer_price(retained)
 			offers.append(retained)
 			_locked_offers[index] = retained.duplicate(true)
 			continue
@@ -466,6 +488,11 @@ func generate_shop() -> void:
 		if not guaranteed_kind.is_empty() and not guarantee_satisfied:
 			kind = guaranteed_kind
 			guarantee_satisfied = true
+		elif not pulse_satisfied:
+			var pulse: ContentDef = GameCatalog.skill("pulse")
+			offers.append({"id": pulse.id, "kind": "skill", "rank": 1, "price": shop_price(pulse), "sold": false})
+			pulse_satisfied = true
+			continue
 		offers.append(_make_offer(kind))
 	last_error = ""
 	changed.emit()
@@ -491,6 +518,9 @@ func shop_lock_error(index: int) -> String:
 		return "已售商品无法锁定。"
 	if _offer_definition(offer) == null:
 		return "商品不存在，无法锁定。"
+	var rank_error: String = _skill_offer_rank_error(offer)
+	if not rank_error.is_empty():
+		return rank_error
 	if not is_offer_locked(index) and locked_offer_count() >= SHOP_LOCK_CAP:
 		return "最多锁定2件商品，请先解锁一件。"
 	return ""
@@ -523,15 +553,30 @@ func _offer_definition(offer: Dictionary) -> ContentDef:
 			return GameCatalog.rune(id)
 		"relic":
 			return GameCatalog.relic(id)
+		"skill":
+			return GameCatalog.skill(id)
 	return null
 
 func _valid_locked_offer(offer: Dictionary) -> bool:
 	if bool(offer.get("sold", false)) or _offer_definition(offer) == null:
 		return false
-	return true
+	return _skill_offer_rank_error(offer).is_empty()
 
 static func _same_offer(first: Dictionary, second: Dictionary) -> bool:
-	return str(first.get("kind", "")) == str(second.get("kind", "")) and str(first.get("id", "")) == str(second.get("id", "")) and int(first.get("price", 0)) == int(second.get("price", 0))
+	return str(first.get("kind", "")) == str(second.get("kind", "")) and str(first.get("id", "")) == str(second.get("id", "")) and int(first.get("price", 0)) == int(second.get("price", 0)) and (str(first.get("kind", "")) != "skill" or first.get("rank", 1) == second.get("rank", 1))
+
+static func _skill_offer_rank_error(offer: Dictionary) -> String:
+	if str(offer.get("kind", "")) != "skill":
+		return ""
+	var rank: Variant = offer.get("rank", 1)
+	if not rank is int or int(rank) < 1 or int(rank) > 2:
+		return "无效的主动技能阶级。"
+	return ""
+
+func _shop_offer_price(offer: Dictionary) -> int:
+	var definition: ContentDef = _offer_definition(offer)
+	var rank: int = int(offer.get("rank", 1)) if str(offer.get("kind", "")) == "skill" else 1
+	return shop_price(definition) * rank
 
 func _prune_locked_offers() -> void:
 	for index: int in _locked_offers.keys():
@@ -565,11 +610,35 @@ func purchase_error(index: int) -> String:
 	elif kind == "relic":
 		if GameCatalog.relic(item_id) == null:
 			return "遗物不存在。"
+	elif kind == "skill":
+		if GameCatalog.skill(item_id) == null:
+			return "主动技能不存在。"
+		var rank_error: String = _skill_offer_rank_error(offer)
+		if not rank_error.is_empty():
+			return rank_error
 	else:
 		return "未知的商品类型。"
-	if not backpack.can_add(kind, item_id):
-		return "背包空间不足。"
-	return ""
+	return backpack.addition_error(kind, item_id)
+
+func skill_purchase_preview(index: int) -> Dictionary:
+	if index < 0 or index >= offers.size():
+		return {}
+	var offer: Dictionary = offers[index]
+	if str(offer.get("kind", "")) != "skill" or GameCatalog.skill(str(offer.get("id", ""))) == null:
+		return {}
+	var error: String = purchase_error(index)
+	var price: int = int(offer.get("price", 0))
+	var placement: Dictionary = {} if bool(offer.get("sold", false)) else backpack.find_space("skill", str(offer["id"]))
+	var offered_rank: Variant = offer.get("rank", 1)
+	var rank: int = int(offered_rank) if offered_rank is int else 1
+	var parameters: Dictionary = active_skill_parameters({"id": offer["id"], "rank": rank})
+	var result: Dictionary = parameters.duplicate(true)
+	result.merge({"parameters": parameters, "can_buy": error.is_empty(), "error": error,
+		"price": price, "gold_before": gold, "gold_after": gold - price if error.is_empty() else gold,
+		"shortfall": maxi(0, price - gold), "has_projection": not placement.is_empty(),
+		"placement_available": not placement.is_empty(), "placement": placement.duplicate(true),
+		"count_before": active_skills.size(), "count_after": active_skills.size() + 1 if not placement.is_empty() else active_skills.size()})
+	return result
 
 func weapon_purchase_preview(index: int) -> Dictionary:
 	if index < 0 or index >= offers.size():
@@ -680,7 +749,8 @@ func buy_offer(index: int) -> bool:
 	var item_id: String = str(offer.get("id", ""))
 	var kind: String = str(offer.get("kind", ""))
 	var previous_max: float = stat("max_health")
-	if backpack.add(kind, item_id, price).is_empty():
+	var rank: int = int(offer.get("rank", 1)) if kind == "skill" else 1
+	if backpack.add(kind, item_id, price, rank).is_empty():
 		return _fail(backpack.last_error)
 	gold -= price
 	_sync_backpack_projection()
@@ -838,6 +908,7 @@ func summary() -> Dictionary:
 		"hits_taken": hits_taken,
 		"last_hit": last_hit.duplicate(true),
 		"loadout": loadout.duplicate(true),
+		"active_skills": active_skills.duplicate(true),
 		"rune_bag": rune_bag.duplicate(true),
 		"relic_counts": relic_counts.duplicate(true),
 		"backpack": backpack_snapshot(),
@@ -846,11 +917,13 @@ func summary() -> Dictionary:
 
 func _random_offer_kind() -> String:
 	var roll: float = rng.randf()
-	if roll < 0.4:
+	if roll < 0.35:
 		return "weapon"
-	if roll < 0.65:
+	if roll < 0.55:
 		return "rune"
-	return "relic"
+	if roll < 0.8:
+		return "relic"
+	return "skill"
 
 func _make_offer(kind: String) -> Dictionary:
 	var pool: Array[ContentDef] = []
@@ -858,11 +931,18 @@ func _make_offer(kind: String) -> Dictionary:
 		pool = GameCatalog.weapons()
 	elif kind == "rune":
 		pool = GameCatalog.runes()
-	else:
+	elif kind == "relic":
 		pool = GameCatalog.relics()
+	elif kind == "skill":
+		pool = GameCatalog.skills()
+	else:
+		return {}
 	var definition: ContentDef = pool[rng.randi_range(0, pool.size() - 1)]
-	var price: int = shop_price(definition)
-	return {"id": definition.id, "kind": kind, "price": price, "sold": false}
+	var offer: Dictionary = {"id": definition.id, "kind": kind, "price": shop_price(definition), "sold": false}
+	if kind == "skill":
+		offer["rank"] = 2 if wave >= 4 and rng.randf() < 0.35 else 1
+		offer["price"] = _shop_offer_price(offer)
+	return offer
 
 func _fail(message: String) -> bool:
 	last_error = message

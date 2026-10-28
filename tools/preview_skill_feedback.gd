@@ -36,6 +36,10 @@ func _preview() -> void:
 	_app.sound.set_volume(0.0)
 	_app.ui.set_selected_arena("mire")
 	_app._begin_run("bone", 20261028)
+	if _app.run.backpack.add("skill", "pulse").is_empty():
+		_fail("The preview could not place its pulse skill box")
+		return
+	_app.run._sync_backpack_projection()
 	_app.world.set_physics_process(false)
 	var sim: CombatSim = _app.world.sim
 	sim.sandbox = true

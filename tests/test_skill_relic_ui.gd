@@ -130,6 +130,9 @@ func _test_hud_and_input() -> void:
 	var state: RunState = _state()
 	var clasp: int = _buy(state, "fold_clasp")
 	var stone: int = _buy(state, "echo_stone")
+	state.offers = [{"kind": "skill", "id": "pulse", "price": 0}]
+	_check(state.buy_offer(0), "The skill-lifetime fixture equips an actual backpack pulse")
+	var skill_item: Dictionary = state.active_skills[0]
 	var sim := CombatSim.new()
 	sim.begin(state)
 	sim.sandbox = true
@@ -139,7 +142,7 @@ func _test_hud_and_input() -> void:
 	_ui.update_hud(sim.snapshot())
 	await _settle()
 	_check((_ui._hud["dash"] as Control).tooltip_text.contains("冷却2.1秒"), "The ready dash tooltip reads its actual relic-modified cooldown")
-	_check((_ui._hud["pulse"] as Control).tooltip_text.contains("162范围") and (_ui._hud["pulse"] as Control).tooltip_text.contains("冷却8.8秒"), "The ready pulse tooltip exposes both the range benefit and cooldown cost")
+	_check((_ui._hud["pulse"] as Control).tooltip_text.contains("范围162") and (_ui._hud["pulse"] as Control).tooltip_text.contains("冷却8.8秒") and (_ui._hud["pulse_label"] as Label).text == "秘术脉冲" and (_ui._hud["pulse_key"] as Label).text == "Q", "The equipped pulse tooltip exposes both the range benefit and cooldown cost")
 	sim.step(1.0 / 60.0, Vector2.RIGHT, true, true)
 	for frame: int in 15:
 		sim.step(1.0 / 60.0, Vector2.ZERO)
@@ -154,7 +157,8 @@ func _test_hud_and_input() -> void:
 	var dash_tip: String = (_ui._hud["dash"] as Control).tooltip_text
 	var pulse_tip: String = (_ui._hud["pulse"] as Control).tooltip_text
 	_check(dash_tip.contains("冷却2.4秒") and dash_tip.contains("本次冷却总长2.1秒"), "The dash hover separates the next build's cooldown from the active cast")
-	_check(pulse_tip.contains("144范围") and pulse_tip.contains("冷却8秒") and pulse_tip.contains("本次已施放范围162，冷却8.8秒"), "The pulse hover separates next-cast range and cooldown from the completed cast")
+	var next_skill: Dictionary = state.active_skill_parameters(skill_item)
+	_check(pulse_tip.contains("范围162") and pulse_tip.contains("冷却8.8秒") and is_equal_approx(float(next_skill["radius"]), 144.0) and is_equal_approx(float(next_skill["cooldown"]), 8.0), "The active skill HUD preserves the completed cast's parameters while the build projects the next cast independently")
 	var frozen: Array = [dash_bar.value, pulse_bar.value, dash_tip, pulse_tip]
 	paused = true
 	await _settle()
@@ -197,3 +201,7 @@ func _test_hud_and_input() -> void:
 	_check(root.gui_get_focus_owner() == focus, "The skill growth HUD never steals keyboard focus")
 	probe.queue_free()
 	await _settle()
+	for frame: int in 100:
+		sim.step(0.1, Vector2.ZERO)
+	_ui.update_hud(sim.snapshot())
+	_check((_ui._hud["pulse_time"] as Label).text == "就绪" and (_ui._hud["pulse"] as Control).tooltip_text.contains("范围144") and (_ui._hud["pulse"] as Control).tooltip_text.contains("冷却8秒"), "After recovery the ready skill displays the current build's next-cast parameters")

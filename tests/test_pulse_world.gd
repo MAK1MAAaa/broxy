@@ -70,6 +70,7 @@ func _initialize() -> void:
 func _run() -> void:
 	root.size = Vector2i(1280, 720)
 	await _test_queue_and_cooldown()
+	await _test_equipment_slot_lifecycle()
 	await _test_dual_skill_control()
 	await _test_gates_and_lifecycle()
 	await _test_pause_and_flash()
@@ -86,6 +87,8 @@ func _check(condition: bool, message: String) -> void:
 func _begin(world: CombatWorld) -> void:
 	var state := RunState.new()
 	state.begin(20261028, "bone")
+	state.backpack.add("skill", "pulse")
+	state._sync_backpack_projection()
 	world.begin(state)
 	world.sim.sandbox = true
 	world.sim._cooldowns.fill(9999.0)
@@ -175,6 +178,40 @@ func _test_dual_skill_control() -> void:
 	_check(sound.cues == ["pulse", "dash"] and sound.names == ["pulse_hit", "dash"], "The controlled pulse and dash activation cues follow their actual simulation order")
 	world._physics_process(STEP)
 	_check(int(_pulse(world)["uses"]) == 1 and world.sim.dashes_used == 1 and world.pulse_feedback_snapshot()["origin"] == origin, "Later ticks cannot replay either queued skill or move the stored pulse origin")
+	await _dispose(world)
+
+func _test_equipment_slot_lifecycle() -> void:
+	var world: ProbeWorld = _world()
+	var state := RunState.new()
+	state.begin(20261028, "bone")
+	world.begin(state)
+	world.sim.sandbox = true
+	world.sim._cooldowns.fill(9999.0)
+	_check(not world.request_pulse() and not world.request_skill(0) and not world.request_skill(1), "An empty real backpack cannot queue either active slot through compatibility or generic input")
+	var pulse: Dictionary = state.backpack.add("skill", "pulse")
+	var slash: Dictionary = state.backpack.add("skill", "arc_slash")
+	state._sync_backpack_projection()
+	_check(world.request_skill(0) and world.request_skill(1) and world._pulse_pending and world._secondary_skill_pending, "Each equipped box queues its own UID exactly once")
+	_check(not world.request_skill(0) and not world.request_skill(1), "Repeated input cannot duplicate either pending slot")
+	world.clear_pending_actions()
+	world._physics_process(STEP)
+	_check(world.sim.active_skill_snapshot(0)["uses"] == 0 and world.sim.active_skill_snapshot(1)["uses"] == 0, "Clearing pending actions cancels both UID requests")
+	_check(world.request_skill(1) and state.sell_item(int(pulse["uid"])), "The second skill is queued before a real sale shifts it to the first slot")
+	world._physics_process(STEP)
+	_check(world.sim.active_skill_snapshot(0)["uid"] == slash["uid"] and world.sim.active_skill_snapshot(0)["uses"] == 0, "A queued old slot cannot consume its skill after that UID changes slots")
+	_check(world.request_pulse(), "The compatibility request deliberately addresses equipped slot one even when it contains a slash")
+	world._physics_process(STEP)
+	_check(world.sim.active_skill_snapshot(0)["uses"] == 1 and world.sim.pulses_used == 0 and not world.sim.pulse_snapshot()["available"], "A slash in slot one casts as a slash without enabling the unequipped pulse API")
+	state.backpack.add("skill", "pulse")
+	state._sync_backpack_projection()
+	_check(world.request_skill(1) and world._secondary_skill_pending, "The newly equipped second-slot pulse queues through the generic slot API")
+	paused = true
+	world._physics_process(STEP)
+	_check(not world._pulse_pending and not world._secondary_skill_pending and world.sim.pulses_used == 0, "Pause discards both pending UID slots without casting the second-slot pulse")
+	paused = false
+	_check(world.request_skill(1), "The canceled second slot remains ready after resume")
+	world.stop()
+	_check(not world._secondary_skill_pending and not world.request_skill(1), "Stopping clears and rejects the secondary skill queue")
 	await _dispose(world)
 
 func _test_gates_and_lifecycle() -> void:

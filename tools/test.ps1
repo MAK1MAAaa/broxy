@@ -24,7 +24,8 @@ try {
         'skill_relics', 'skill_relic_combat', 'skill_relic_ui',
         'control_bindings', 'controls_flow', 'controls_ui', 'gamepad_backpack',
         'input_devices', 'input_prompts_ui', 'input_prompts_flow', 'analog_dash', 'gamepad_reading', 'backpack_focus',
-        'skill_audio', 'skill_feedback', 'adventure_art', 'title_cover'
+        'skill_audio', 'skill_feedback', 'adventure_art', 'title_cover',
+        'active_skill_inventory', 'active_skill_combat', 'active_skill_world'
     )
     foreach ($suite in $suites) {
         & $runner --headless --script "res://tests/test_$suite.gd"

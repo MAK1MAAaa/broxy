@@ -61,6 +61,13 @@ def main() -> None:
         entries.append({"path": target.relative_to(ROOT).as_posix(), "size": [asset.width, asset.height],
                         "pivot": [0.5, 0.5], "role": asset.role, "source": "tools/" + source,
                         "license": "CC0-1.0", "sha256": hashlib.sha256(content).hexdigest()})
+    for name in ("pulse", "starfall", "arc_slash"):
+        target = DESTINATION / "icons" / f"skill_{name}.svg"
+        content = target.read_bytes()
+        ElementTree.fromstring(content)
+        entries.append({"path": target.relative_to(ROOT).as_posix(), "size": [64, 64], "pivot": [0.5, 0.5],
+                        "role": f"Hand-drawn pixel skill book: {name}", "source": "assets/starfall/PROVENANCE.md",
+                        "license": "CC0-1.0", "sha256": hashlib.sha256(content).hexdigest()})
     menu = DESTINATION / "menu_art.png"
     content = menu.read_bytes()
     if content[:8] != b"\x89PNG\r\n\x1a\n":
@@ -73,7 +80,7 @@ def main() -> None:
                 "generator": "python tools/generate_starfall_art.py", "filter": "nearest for art; existing antialiased UI font",
                 "legacy_manifest": "assets/manifest.json", "assets": entries}
     (DESTINATION / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
-    print(f"Generated {len(entries) - 1} pixel SVGs; registered one menu PNG; legacy assets/audio untouched")
+    print(f"Registered {len(entries) - 1} pixel SVGs including three preserved hand-drawn skill icons; one menu PNG; legacy assets/audio untouched")
 
 
 if __name__ == "__main__":

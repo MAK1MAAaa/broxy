@@ -59,6 +59,9 @@ func _start() -> CombatSim:
 	_app._begin_run("bone", 20261028)
 	_app.world.set_physics_process(false)
 	var sim: CombatSim = _app.world.sim
+	sim.run.backpack.add("skill", "pulse")
+	sim.run._sync_backpack_projection()
+	_app.ui.update_hud(_app.world.hud_snapshot())
 	sim.sandbox = true
 	sim._cooldowns.fill(9999.0)
 	var focused: Control = root.gui_get_focus_owner()
@@ -103,7 +106,7 @@ func _test_rebinding() -> void:
 	_check(sim.dashes_used == 1 and sim.dash_time_left > 0.0, "The default binding still reaches the original fixed-step dash")
 	var bindings: Dictionary = ControlBindings.defaults()
 	bindings["move_up"] = KEY_I
-	bindings["dash"] = KEY_E
+	bindings["dash"] = KEY_R
 	bindings["pulse"] = KEY_F
 	_app.ui.controls_changed.emit(bindings)
 	_check(_app.store.controls == ControlBindings.normalize(bindings) and not _app.world._dash_pending and not _app.world._pulse_pending, "The real controls signal installs and stores normalized bindings while clearing pending actions")
@@ -112,7 +115,7 @@ func _test_rebinding() -> void:
 	await _key(KEY_Q)
 	_tick()
 	_check(sim.dashes_used == 0 and sim.pulses_used == 0, "Old keyboard skill keys no longer trigger after their bindings change")
-	await _key(KEY_E)
+	await _key(KEY_R)
 	await _key(KEY_F)
 	_check(sim.dashes_used == 0 and sim.pulses_used == 0 and _app.world._dash_pending and _app.world._pulse_pending, "Both new keyboard bindings queue once without advancing the simulation")
 	_tick()
@@ -120,12 +123,12 @@ func _test_rebinding() -> void:
 	_tick(10)
 	_check(sim.dashes_used == 1 and sim.pulses_used == 1, "Holding no new event cannot automatically repeat either skill")
 	sim = _start()
-	await _key(KEY_E, true)
-	await _key(KEY_E, false, true)
+	await _key(KEY_R, true)
+	await _key(KEY_R, false, true)
 	await _key(KEY_F, false, true)
 	_tick()
 	_check(sim.dashes_used == 0 and sim.pulses_used == 0, "Keyboard echo and Ctrl shortcuts cannot become rebound combat skills")
-	await _key(KEY_E)
+	await _key(KEY_R)
 	_app.ui.controls_changed.emit(ControlBindings.defaults())
 	_tick()
 	_check(sim.dashes_used == 0 and not _app.world._dash_pending, "Changing bindings cancels an already queued old-map request")
@@ -164,19 +167,24 @@ func _test_movement() -> void:
 
 func _test_gamepad_skills() -> void:
 	var sim: CombatSim = _start()
+	var slash: Dictionary = sim.run.backpack.add("skill", "arc_slash")
+	sim.run._sync_backpack_projection()
 	await _button(JOY_BUTTON_A)
 	await _button(JOY_BUTTON_X)
-	_check(_app.world._dash_pending and _app.world._pulse_pending and sim.dashes_used == 0 and sim.pulses_used == 0, "Parsed A and X queue the two real skills even after keyboard rebinding")
+	await _button(JOY_BUTTON_Y)
+	_check(_app.world._dash_pending and _app.world._pulse_pending and _app.world._secondary_skill_pending and sim.dashes_used == 0 and sim.pulses_used == 0, "Parsed A, X and Y queue dash and both equipped skills after keyboard rebinding")
 	_tick()
-	_check(sim.dashes_used == 1 and sim.pulses_used == 1, "One fixed step consumes each gamepad skill once without keyboard callback duplication")
+	_check(sim.dashes_used == 1 and sim.pulses_used == 1 and sim.active_skill_snapshot(1)["uid"] == slash["uid"] and sim.active_skill_snapshot(1)["uses"] == 1, "One fixed step consumes each gamepad skill once without keyboard callback duplication")
 	await _button(JOY_BUTTON_A)
 	await _button(JOY_BUTTON_X)
+	await _button(JOY_BUTTON_Y)
 	_tick(500)
-	_check(sim.dashes_used == 1 and sim.pulses_used == 1 and sim.dash_snapshot()["ready"] and sim.pulse_snapshot()["ready"], "Cooldown button presses are dropped and never replayed when readiness returns")
+	_check(sim.dashes_used == 1 and sim.pulses_used == 1 and sim.active_skill_snapshot(1)["uses"] == 1 and sim.dash_snapshot()["ready"] and sim.pulse_snapshot()["ready"] and sim.active_skill_snapshot(1)["ready"], "Cooldown button presses are dropped and never replayed when readiness returns")
 	await _button(JOY_BUTTON_A)
 	await _button(JOY_BUTTON_X)
+	await _button(JOY_BUTTON_Y)
 	_tick()
-	_check(sim.dashes_used == 2 and sim.pulses_used == 2, "A fresh gamepad press works after the cooldown finishes")
+	_check(sim.dashes_used == 2 and sim.pulses_used == 2 and sim.active_skill_snapshot(1)["uses"] == 2, "A fresh gamepad press works for each equipped slot after cooldown")
 
 func _test_light_stick_dash() -> void:
 	for stick: Vector2 in [Vector2(0.0, -0.24), Vector2(0.17, -0.17)]:
@@ -242,7 +250,7 @@ func _test_screen_isolation() -> void:
 	var sim: CombatSim = _start()
 	_app.run.health = 0.0
 	await _button(JOY_BUTTON_X)
-	await _key(KEY_E)
+	await _key(KEY_R)
 	_check(not _app.world._pulse_pending and not _app.world._dash_pending and sim.pulses_used == 0, "A dead player cannot queue either device's skills")
 	sim = _start()
 	_app.run.collect_souls(42)

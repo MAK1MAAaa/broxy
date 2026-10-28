@@ -67,6 +67,9 @@ func _test_imported_family() -> void:
 		var expected: String = ART_ROOT + icon_source.trim_prefix("assets/")
 		_expect_texture(load(expected) as Texture2D, expected, Vector2(64, 64), icon_source)
 	_check(icons == 26, "The replacement family covers every one of the 26 existing inventory and pickup icons")
+	for definition: ContentDef in GameCatalog.skills():
+		var path: String = ART_ROOT + "icons/%s.svg" % definition.icon
+		_expect_texture(load(path) as Texture2D, path, Vector2(64, 64), definition.id)
 	for id: String in ArenaCatalog.IDS:
 		var map_source: String = str(ArenaCatalog.definition(id)["texture"])
 		_check(map_source.begins_with("res://assets/") and not map_source.begins_with(ART_ROOT), "The actual map catalog retains its original resource identity: " + id)

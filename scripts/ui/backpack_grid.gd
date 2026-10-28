@@ -65,12 +65,39 @@ var _joy_axis_x: int = 0
 var _joy_axis_y: int = 0
 var _input_device: String = "keyboard"
 var _native_preview_label: Label
+var _skill_keys: PackedStringArray = ["Q", "E"]
+
+func set_skill_bindings(bindings: Dictionary) -> void:
+	_skill_keys = [ControlBindings.key_label(int(bindings.get("pulse", KEY_Q))), ControlBindings.key_label(int(bindings.get("skill_secondary", KEY_E)))]
+	_refresh_skill_badges()
+
+func _skill_slot(uid: int) -> int:
+	var uids: Array[int] = []
+	for item: Dictionary in _snapshot.get("items", []):
+		if str(item.get("kind", "")) == "skill":
+			uids.append(int(item["uid"]))
+	uids.sort()
+	return uids.find(uid)
+
+func _skill_key(uid: int) -> String:
+	var slot: int = _skill_slot(uid)
+	if slot < 0 or slot >= 2:
+		return ""
+	return ("X" if slot == 0 else "Y") if _input_device == "gamepad" else _skill_keys[slot]
+
+func _refresh_skill_badges() -> void:
+	for child: Node in get_children():
+		if child is ItemButton:
+			var badge := child.get_node_or_null("SkillKeyBadge") as Label
+			if badge != null:
+				badge.text = _skill_key(child.uid)
 
 func set_input_device(kind: String) -> void:
 	var next: String = "gamepad" if kind == "gamepad" else "keyboard"
 	if next == _input_device:
 		return
 	_input_device = next
+	_refresh_skill_badges()
 	for child: Node in get_children():
 		if child is ItemButton and _items.has(child.uid):
 			child.tooltip_text = _item_tooltip(_items[child.uid])
@@ -446,6 +473,19 @@ func _make_item(item: Dictionary) -> void:
 	rank.add_theme_color_override("font_color", CYAN if int(item.get("rank", 1)) == 2 else Color("765093") if int(item.get("rank", 1)) == 3 else GOLD)
 	rank.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	button.add_child(rank)
+	if str(item["kind"]) == "skill":
+		var badge := Label.new()
+		badge.name = "SkillKeyBadge"
+		badge.text = _skill_key(uid)
+		badge.clip_text = true
+		badge.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		badge.position = Vector2(button.size.x - 24, 1)
+		badge.size = Vector2(20, 16)
+		badge.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		badge.add_theme_font_size_override("font_size", 13)
+		badge.add_theme_color_override("font_color", CYAN)
+		badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		button.add_child(badge)
 	if button.size.y > 60 or button.size.x > 70:
 		var label := Label.new()
 		label.text = definition.display_name
@@ -660,6 +700,11 @@ func draw_item_material(canvas: Control, item: Dictionary) -> void:
 	elif kind == "relic":
 		for row: int in range(20, int(extent.y) - 8, 10):
 			canvas.draw_rect(Rect2(Vector2(5, row), Vector2(2, 3)), Color(tint, 0.35))
+	elif kind == "skill":
+		canvas.draw_rect(Rect2(Vector2(5, 17), extent - Vector2(10, 22)), Color(CYAN, 0.28), false, 1.0)
+		for offset: int in 3:
+			var point := Vector2(extent.x - 8 - offset * 5, extent.y - 7)
+			canvas.draw_line(point, point + Vector2(3, -3), Color(CYAN, 0.45), 1.0)
 	else:
 		canvas.draw_rect(Rect2(Vector2(6, 6), extent - Vector2.ONE * 12), Color(PURPLE, 0.16), false, 1.0)
 	for corner: Vector2 in [Vector2(4, 4), Vector2(extent.x - 6, 4), Vector2(4, extent.y - 6), extent - Vector2.ONE * 6]:
@@ -681,12 +726,14 @@ static func _material_color(kind: String) -> Color:
 	match kind:
 		"weapon": return Color("dceef0")
 		"relic": return Color("f6e6bd")
+		"skill": return Color("d7eee7")
 	return Color("e9e0f2")
 
 static func _definition(item: Dictionary) -> ContentDef:
 	match str(item["kind"]):
 		"rune": return GameCatalog.rune(str(item["id"]))
 		"relic": return GameCatalog.relic(str(item["id"]))
+		"skill": return GameCatalog.skill(str(item["id"]))
 	return GameCatalog.weapon(str(item["id"]))
 
 static func _item_size(item: Dictionary, rotated: bool) -> Vector2i:

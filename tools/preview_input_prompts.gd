@@ -37,10 +37,14 @@ func _preview() -> void:
 	_app.sound.set_volume(0.0)
 	_app.ui.set_selected_arena("mire")
 	var bindings: Dictionary = ControlBindings.defaults()
-	bindings["dash"] = KEY_E
+	bindings["dash"] = KEY_F
 	bindings["pulse"] = KEY_R
 	_app._controls_changed(bindings)
 	_app._begin_run("bone", 20261028)
+	if _app.run.backpack.add("skill", "pulse").is_empty():
+		_fail("The input preview could not place its pulse skill box")
+		return
+	_app.run._sync_backpack_projection()
 	_app.world.set_physics_process(false)
 	_app.world.sim.sandbox = true
 	_app.world.sim._cooldowns.fill(9999.0)

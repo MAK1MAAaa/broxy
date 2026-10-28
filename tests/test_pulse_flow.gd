@@ -4,6 +4,7 @@ extends SceneTree
 const MAIN: PackedScene = preload("res://scenes/main.tscn")
 const MAIN_SCRIPT = preload("res://scripts/main.gd")
 const STEP: float = 1.0 / 60.0
+const SKILL_FIXTURE = preload("res://tests/skill_fixture.gd")
 var _checks: int = 0
 var _failures: int = 0
 var _app: Node
@@ -38,6 +39,7 @@ func _key(code: Key, echo: bool = false, control: bool = false) -> void:
 
 func _start() -> CombatSim:
 	_app._begin_run("bone", 20261028)
+	_check(SKILL_FIXTURE.equip_pulse(_app.run), "The input fixture explicitly equips a pulse in the current run")
 	_app.world.set_physics_process(false)
 	var sim: CombatSim = _app.world.sim
 	sim.sandbox = true

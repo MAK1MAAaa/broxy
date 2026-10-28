@@ -206,6 +206,7 @@ func _refresh_input_prompts() -> void:
 		_update_dash_hud(_hud_skill_snapshot)
 		_update_pulse_hud(_hud_skill_snapshot)
 	if is_instance_valid(_bag_grid):
+		_bag_grid.set_skill_bindings(_controls)
 		_bag_grid.set_input_device(_input_kind)
 	if is_instance_valid(_bag_status) and _bag_hint_is_default:
 		_bag_status.text = _backpack_default_hint()
@@ -217,6 +218,13 @@ func _refresh_input_prompts() -> void:
 		if rotate != null:
 			rotate.text = _backpack_rotate_text()
 			rotate.tooltip_text = _backpack_rotate_tooltip()
+		var skill_slot := _page.find_child("BackpackSkillSlot", true, false) as Label
+		if skill_slot != null and run != null:
+			var slot_index: int = _active_skill_index(_bag_selected_uid)
+			if slot_index >= 0:
+				var action: String = "pulse" if slot_index == 0 else "skill_secondary"
+				var input_key: String = ("X" if slot_index == 0 else "Y") if _input_kind == "gamepad" else ControlBindings.key_label(int(_controls[action]))
+				skill_slot.text = "技能%d · %s" % [slot_index + 1, input_key]
 	_refresh_reading_guides()
 
 
@@ -535,7 +543,6 @@ func show_hud() -> void:
 		row.add_child(item)
 		_hud[str(entry[0])] = item
 	_add_hud_skill(row, "dash", "Dash", "空格：向当前移动方向冲刺；静止时沿面向。\n短冲距离约132，冷却2.4秒；起始短暂闪避，可冲离减速地形。")
-	_add_hud_skill(row, "pulse", "Pulse", "Q：击退周围144范围内的普通敌人70，并减速35%持续1秒。\n冷却8秒；首领和追猎者免疫，不能挡弹。")
 	var xp := ProgressBar.new()
 	xp.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
 	xp.offset_left = 26
@@ -594,6 +601,13 @@ func show_hud() -> void:
 	slots.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	bottom_row.add_child(slots)
 	_hud["slots"] = slots
+	var active_slots := HBoxContainer.new()
+	active_slots.name = "ActiveSkillSlots"
+	active_slots.add_theme_constant_override("separation", 10)
+	active_slots.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	bottom_row.add_child(active_slots)
+	_add_active_skill_slot(active_slots, "pulse", "Pulse")
+	_add_active_skill_slot(active_slots, "secondary", "Secondary")
 
 
 
@@ -601,9 +615,9 @@ func update_hud(snapshot: Dictionary) -> void:
 	if _screen != "hud" or _hud.is_empty():
 		return
 	_hud_skill_snapshot = {"health": snapshot.get("health", 0.0), "benchmark": snapshot.get("benchmark", false)}
-	for key: String in ["dash", "pulse"]:
+	for key: String in ["dash", "skills"]:
 		var skill: Variant = snapshot.get(key, {})
-		_hud_skill_snapshot[key] = skill.duplicate(true) if skill is Dictionary else skill
+		_hud_skill_snapshot[key] = skill.duplicate(true) if skill is Dictionary or skill is Array else skill
 	var hp := float(snapshot.get("health", 0.0))
 	var maximum := maxf(1.0, float(snapshot.get("max_health", 1.0)))
 	_hud["health"].text = "生命  %d / %d" % [ceili(hp), ceili(maximum)]
@@ -721,35 +735,125 @@ func _update_dash_hud(snapshot: Dictionary) -> void:
 		meter.value = clampf(1.0 - remaining / total, 0.0, 1.0) if remaining > 0.0 and total > 0.0 else 0.0
 
 
+func _add_active_skill_slot(parent: HBoxContainer, key: String, prefix: String) -> void:
+	var card := PanelContainer.new()
+	card.name = prefix + "Skill"
+	card.custom_minimum_size = Vector2(104, 64)
+	card.mouse_filter = Control.MOUSE_FILTER_PASS
+	card.focus_mode = Control.FOCUS_NONE
+	var style := _box(Color("e5efe9"), Color(CYAN, 0.45))
+	style.content_margin_left = 8
+	style.content_margin_right = 8
+	style.content_margin_top = 3
+	style.content_margin_bottom = 3
+	card.add_theme_stylebox_override("panel", style)
+	parent.add_child(card)
+	var box := VBoxContainer.new()
+	box.add_theme_constant_override("separation", 1)
+	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(box)
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 4)
+	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	box.add_child(row)
+	var badge := _label("", 14, CYAN)
+	badge.name = prefix + "Key"
+	badge.custom_minimum_size.x = 18
+	badge.clip_text = true
+	badge.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	row.add_child(badge)
+	var icon := TextureRect.new()
+	icon.name = prefix + "Icon"
+	icon.custom_minimum_size = Vector2(26, 26)
+	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	row.add_child(icon)
+	var clock := _label("", 12, CYAN)
+	clock.name = prefix + "Time"
+	clock.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	clock.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	row.add_child(clock)
+	var label := _label("空槽", 12, MUTED)
+	label.name = prefix + "Status"
+	label.clip_text = true
+	label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	box.add_child(label)
+	var meter := ProgressBar.new()
+	meter.name = prefix + "Cooldown"
+	meter.custom_minimum_size.y = 5
+	meter.max_value = 1.0
+	meter.step = 0.0
+	meter.show_percentage = false
+	meter.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	meter.add_theme_stylebox_override("fill", _bar_style(CYAN))
+	meter.add_theme_stylebox_override("background", _bar_style(Color("c9d9d2")))
+	box.add_child(meter)
+	_hud[key] = card
+	_hud[key + "_label"] = label
+	_hud[key + "_bar"] = meter
+	_hud[key + "_key"] = badge
+	_hud[key + "_icon"] = icon
+	_hud[key + "_time"] = clock
+	card.hide()
+
+
 func _update_pulse_hud(snapshot: Dictionary) -> void:
-	var indicator: Control = _hud["pulse"]
-	var label: Label = _hud["pulse_label"]
-	var meter: ProgressBar = _hud["pulse_bar"]
-	var value: Variant = snapshot.get("pulse", {})
-	if bool(snapshot.get("benchmark", false)) or not value is Dictionary or value.is_empty() or float(snapshot.get("health", 0.0)) <= 0.0:
-		_clear_hud_skill("pulse")
-		return
-	var pulse: Dictionary = value
-	var remaining: float = float(pulse.get("cooldown_left", 0.0))
-	var total: float = float(pulse.get("cooldown_total", 0.0))
-	remaining = maxf(0.0, remaining) if is_finite(remaining) else 0.0
-	total = maxf(0.0, total) if is_finite(total) else 0.0
-	var next_total: float = _skill_tooltip_value(pulse.get("next_cooldown_total", total), PulseRules.COOLDOWN)
-	var radius: float = _skill_tooltip_value(pulse.get("radius", PulseRules.RADIUS), PulseRules.RADIUS)
-	var cast_radius: float = _skill_tooltip_value(pulse.get("last_cast_radius", radius), radius)
-	var key: String = "X" if _input_kind == "gamepad" else ControlBindings.key_label(int(_controls["pulse"]))
-	indicator.tooltip_text = "%s：击退周围%s范围内的普通敌人70，并减速35%%持续1秒。\n冷却%s秒；首领和追猎者免疫，不能挡弹。" % [key, _skill_number(radius), _skill_number(next_total)]
-	if remaining > 0.0 and ((total > 0.0 and not is_equal_approx(total, next_total)) or not is_equal_approx(cast_radius, radius)):
-		indicator.tooltip_text += "\n本次已施放范围%s，冷却%s秒；改装仅影响下次施放。" % [_skill_number(cast_radius), _skill_number(total)]
-	indicator.show()
-	if bool(pulse.get("ready", false)):
-		label.text = "脉冲 · " + key
-		label.add_theme_color_override("font_color", CYAN)
-		meter.value = 1.0
-	else:
-		label.text = "脉冲 %.1f秒" % (ceilf(remaining * 10.0) / 10.0) if remaining > 0.0 else "脉冲"
-		label.add_theme_color_override("font_color", MUTED)
-		meter.value = clampf(1.0 - remaining / total, 0.0, 1.0) if remaining > 0.0 and total > 0.0 else 0.0
+	var values: Variant = snapshot.get("skills", [])
+	for index: int in 2:
+		var key: String = "pulse" if index == 0 else "secondary"
+		var indicator: Control = _hud[key]
+		var label: Label = _hud[key + "_label"]
+		var meter: ProgressBar = _hud[key + "_bar"]
+		var badge: Label = _hud[key + "_key"]
+		var icon: TextureRect = _hud[key + "_icon"]
+		var clock: Label = _hud[key + "_time"]
+		if bool(snapshot.get("benchmark", false)) or float(snapshot.get("health", 0.0)) <= 0.0:
+			_clear_hud_skill(key)
+			badge.text = ""
+			clock.text = ""
+			icon.texture = null
+			continue
+		var skill: Dictionary = {}
+		if values is Array and index < values.size() and values[index] is Dictionary:
+			skill = values[index]
+		var action: String = "pulse" if index == 0 else "skill_secondary"
+		var input_key: String = ("X" if index == 0 else "Y") if _input_kind == "gamepad" else ControlBindings.key_label(int(_controls[action]))
+		badge.text = input_key
+		indicator.show()
+		var id: String = str(skill.get("id", ""))
+		var available: bool = bool(skill.get("available", false)) and int(skill.get("uid", -1)) >= 0 and not id.is_empty()
+		var definition: ContentDef = GameCatalog.skill(id) if available else null
+		if definition == null:
+			label.text = "空槽"
+			label.add_theme_color_override("font_color", MUTED)
+			clock.text = "—"
+			clock.add_theme_color_override("font_color", MUTED)
+			icon.texture = null
+			meter.value = 0.0
+			indicator.tooltip_text = input_key + " · 空槽"
+			indicator.set_meta("skill_uid", -1)
+			continue
+		var remaining: float = float(skill.get("cooldown_remaining", 0.0))
+		var total: float = float(skill.get("cooldown_duration", 0.0))
+		remaining = maxf(0.0, remaining) if is_finite(remaining) else 0.0
+		total = maxf(0.0, total) if is_finite(total) else 0.0
+		var ready: bool = bool(skill.get("ready", false)) and remaining <= 0.0
+		label.text = definition.display_name
+		label.add_theme_color_override("font_color", CYAN if ready else MUTED)
+		clock.text = "就绪" if ready else "%.1f" % (ceilf(remaining * 10.0) / 10.0) if remaining > 0.0 else "—"
+		clock.add_theme_color_override("font_color", CYAN if ready else MUTED)
+		var icon_id: String = definition.icon
+		if str(icon.get_meta("skill_icon", "")) != icon_id or icon.texture == null:
+			icon.texture = load(AdventureArt.path("res://assets/icons/%s.svg" % icon_id))
+			icon.set_meta("skill_icon", icon_id)
+		icon.modulate = Color.WHITE if ready else Color(0.65, 0.72, 0.70)
+		meter.value = 1.0 if ready else clampf(1.0 - remaining / total, 0.0, 1.0) if remaining > 0.0 and total > 0.0 else 0.0
+		indicator.tooltip_text = "%s · %s阶\n%s · 伤害%s · 范围%s · 冷却%s秒" % [definition.display_name, _rank_name(int(skill.get("rank", 1))), input_key, _skill_number(float(skill.get("damage", 0.0))), _skill_number(float(skill.get("radius", 0.0))), _skill_number(total)]
+		if id == "pulse":
+			indicator.tooltip_text = "%s · %s阶\n%s · 击退%s · 减速%s%%\n范围%s · 冷却%s秒" % [definition.display_name, _rank_name(int(skill.get("rank", 1))), input_key, _skill_number(PulseRules.PUSH_DISTANCE), _skill_number((1.0 - PulseRules.HINDER_FACTOR) * 100.0), _skill_number(float(skill.get("radius", 0.0))), _skill_number(total)]
+		indicator.set_meta("skill_uid", int(skill["uid"]))
 
 
 static func _skill_tooltip_value(value: Variant, fallback: float) -> float:
@@ -1298,7 +1402,7 @@ func _build_backpack(parent: Control) -> void:
 	var title := _label("秘术行囊", 20, GOLD)
 	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	heading.add_child(title)
-	var capacity := _label("占格 %d / %d · 法器 %d" % [int(snapshot["used_cells"]), int(snapshot["total_cells"]), run.loadout.size()], 14, CYAN)
+	var capacity := _label("占格 %d / %d · 法器 %d · 技能 %d/2" % [int(snapshot["used_cells"]), int(snapshot["total_cells"]), run.loadout.size(), run.active_skills.size()], 14, CYAN)
 	capacity.name = "BackpackCapacity"
 	heading.add_child(capacity)
 	var columns := HBoxContainer.new()
@@ -1307,6 +1411,7 @@ func _build_backpack(parent: Control) -> void:
 	body.add_child(columns)
 	_bag_grid = BACKPACK_GRID.new()
 	_bag_grid.name = "BackpackGrid"
+	_bag_grid.set_skill_bindings(_controls)
 	_bag_grid.configure(snapshot, _shop_epoch, _bag_selected_uid)
 	_bag_grid.set_input_device(_input_kind)
 	_bag_grid.item_selected.connect(_bp_select.bind(_shop_epoch))
@@ -1385,6 +1490,17 @@ func _build_backpack_details() -> void:
 		resonance_summary.name = "BackpackResonanceSummary"
 		_enable_tooltip(resonance_summary, _resonance_details(item))
 		_bag_details.add_child(resonance_summary)
+	elif str(item["kind"]) == "skill":
+		var skill_stats := _wrap(_active_skill_stats_text(run.active_skill_parameters(item)), 14, CYAN)
+		skill_stats.name = "BackpackSkillStats"
+		_bag_details.add_child(skill_stats)
+		var slot_index: int = _active_skill_index(uid)
+		if slot_index >= 0:
+			var action: String = "pulse" if slot_index == 0 else "skill_secondary"
+			var input_key: String = ("X" if slot_index == 0 else "Y") if _input_kind == "gamepad" else ControlBindings.key_label(int(_controls[action]))
+			var slot_status := _label("技能%d · %s" % [slot_index + 1, input_key], 14, CYAN)
+			slot_status.name = "BackpackSkillSlot"
+			_bag_details.add_child(slot_status)
 	var partners: Array[Dictionary] = []
 	for other: Dictionary in run.backpack_snapshot()["items"]:
 		var preview: Dictionary = run.merge_preview(uid, int(other["uid"]))
@@ -1399,6 +1515,10 @@ func _build_backpack_details() -> void:
 			explanation += "\n合成后按目标位置重算共鸣。"
 		elif str(item["kind"]) == "rune":
 			explanation = _rune_rank_text(str(item["id"]), rank + 1)
+		elif str(item["kind"]) == "skill":
+			explanation = "伤害 %s → %s\n范围 %s → %s · 冷却 %s → %s秒" % [_skill_number(float(sample.get("damage_before", 0.0))), _skill_number(float(sample.get("damage_after", 0.0))), _skill_number(float(sample.get("radius_before", 0.0))), _skill_number(float(sample.get("radius_after", 0.0))), _skill_number(float(sample.get("cooldown_before", 0.0))), _skill_number(float(sample.get("cooldown_after", 0.0)))]
+			if str(item["id"]) == "pulse":
+				explanation = "范围 %s → %s\n冷却 %s → %s秒" % [_skill_number(float(sample.get("radius_before", 0.0))), _skill_number(float(sample.get("radius_after", 0.0))), _skill_number(float(sample.get("cooldown_before", 0.0))), _skill_number(float(sample.get("cooldown_after", 0.0)))]
 		elif str(item["kind"]) == "relic" and str(item["id"]) in ["fold_clasp", "echo_stone"]:
 			var effects: PackedStringArray = []
 			for change: Dictionary in sample.get("stat_changes", []):
@@ -1425,7 +1545,7 @@ func _build_backpack_details() -> void:
 	var sale := _shop_button("出售 · %d魂屑" % int(floorf(float(item.get("paid", 0)) * 0.5)), _bp_sell.bind(uid), "bag_sell:%d" % uid, Vector2(0, 32))
 	sale.name = "SellBackpackItem"
 	sale.add_theme_font_size_override("font_size", 13)
-	sale.tooltip_text = "出售不可撤回；必须保留至少一件法器。法器上的符文退回背包空格。"
+	sale.tooltip_text = "出售不可撤回。" if str(item["kind"]) == "skill" else "出售不可撤回；必须保留至少一件法器。法器上的符文退回背包空格。"
 	_bag_details.add_child(sale)
 	var rune: Dictionary = item.get("rune", {})
 	if str(item["kind"]) == "weapon" and not rune.is_empty():
@@ -1457,9 +1577,10 @@ func _build_backpack_details() -> void:
 		_section_heading(_bag_details, "其他合成目标", GOLD, 14)
 		for index: int in range(1, partners.size()):
 			_add_backpack_merge_target(uid, partners[index])
-	var description := _wrap(_backpack_effect_text(item), 13, CYAN)
-	description.name = "BackpackItemEffect"
-	_bag_details.add_child(description)
+	if str(item["kind"]) != "skill":
+		var description := _wrap(_backpack_effect_text(item), 13, CYAN)
+		description.name = "BackpackItemEffect"
+		_bag_details.add_child(description)
 
 
 func _add_backpack_merge_target(source: int, partner: Dictionary) -> void:
@@ -1474,6 +1595,8 @@ func _add_backpack_merge_target(source: int, partner: Dictionary) -> void:
 		merge.tooltip_text += "\n当前两件单枚伤害合计 %.1f；合成后 %.1f，共鸣 %s → %s。" % [float(preview.get("combined_damage_before", 0.0)), float(preview.get("damage_after", 0.0)), _rune_percent(float(preview.get("resonance_before", 0.0))), _rune_percent(float(preview.get("resonance_after", 0.0)))]
 	elif str(other["kind"]) == "relic":
 		merge.tooltip_text += "\n遗物总属性保留，周边法器按目标位置重新计算共鸣。"
+	elif str(other["kind"]) == "skill":
+		merge.tooltip_text += "\n" + _active_skill_stats_text(preview.get("skill_after", {}))
 	_bag_details.add_child(merge)
 
 
@@ -1593,6 +1716,7 @@ func _backpack_effect_text(item: Dictionary) -> String:
 	var rank: int = int(item.get("rank", 1))
 	var definition: ContentDef = _definition(str(item["kind"]), str(item["id"]))
 	match str(item["kind"]):
+		"skill": return definition.description
 		"weapon":
 			var text: String = definition.description
 			var rune: Dictionary = item.get("rune", {})
@@ -1618,6 +1742,19 @@ func _backpack_effect_text(item: Dictionary) -> String:
 				text += "\n当前构筑：脉冲半径%s，冷却%s秒。\n半径上限%s，冷却上限%s秒。" % [_skill_number(run.stat("pulse_radius")), _skill_number(run.stat("pulse_cooldown")), _skill_number(PulseRules.MAX_RADIUS), _skill_number(PulseRules.MAX_COOLDOWN)]
 			return text
 	return definition.description
+
+
+func _active_skill_index(uid: int) -> int:
+	for index: int in run.active_skills.size():
+		if int(run.active_skills[index]["uid"]) == uid:
+			return index
+	return -1
+
+
+static func _active_skill_stats_text(parameters: Dictionary) -> String:
+	if str(parameters.get("id", "")) == "pulse":
+		return "范围 %s · 冷却 %s秒\n击退 %s · 减速 %s%%" % [_skill_number(float(parameters.get("radius", 0.0))), _skill_number(float(parameters.get("cooldown", 0.0))), _skill_number(float(parameters.get("push_distance", PulseRules.PUSH_DISTANCE))), _skill_number((1.0 - float(parameters.get("hinder_factor", PulseRules.HINDER_FACTOR))) * 100.0)]
+	return "伤害 %s · 范围 %s\n冷却 %s秒" % [_skill_number(float(parameters.get("damage", 0.0))), _skill_number(float(parameters.get("radius", 0.0))), _skill_number(float(parameters.get("cooldown", 0.0)))]
 
 
 static func _relic_stat_name(key: String) -> String:
@@ -1649,7 +1786,7 @@ func _offer_card(parent: Control, index: int) -> void:
 	var definition = _definition(kind, str(offer.get("id", "")))
 	var card := _panel(parent, Vector2(252, 180))
 	card.name = "Offer%d" % (index + 1)
-	var category: Color = {"weapon": GOLD, "rune": PURPLE, "relic": CYAN}.get(kind, GOLD)
+	var category: Color = {"weapon": GOLD, "rune": PURPLE, "relic": CYAN, "skill": Color("287eb5")}.get(kind, GOLD)
 	var locked: bool = run.is_offer_locked(index)
 	var sold: bool = bool(offer.get("sold", false))
 	var border := _box(Color("fffbed"), Color(GOLD, 0.74) if locked else Color(category, 0.48))
@@ -1692,8 +1829,9 @@ func _offer_card(parent: Control, index: int) -> void:
 	ButtonSkin.apply(lock_button, "primary" if locked else "quiet", true)
 	title_row.add_child(lock_button)
 	var dimensions: Vector2i = definition.inventory_size
-	names.add_child(_label("Ⅰ阶 · %s · 占格%d×%d" % [{"weapon": "法器", "rune": "符文", "relic": "遗物"}.get(kind, kind), dimensions.x, dimensions.y], 11, category))
-	var summary: String = _shop_description(definition)
+	var offer_rank: int = int(offer.get("rank", 1)) if kind == "skill" else 1
+	names.add_child(_label("%s阶 · %s · 占格%d×%d" % [_rank_name(offer_rank), {"weapon": "法器", "rune": "符文", "relic": "遗物", "skill": "技能"}.get(kind, kind), dimensions.x, dimensions.y], 11, category))
+	var summary: String = _shop_description(definition) if kind != "skill" else ""
 	var description := _wrap(summary, 13, MUTED)
 	description.name = "OfferDescription"
 	description.max_lines_visible = 2
@@ -1701,6 +1839,7 @@ func _offer_card(parent: Control, index: int) -> void:
 	_enable_tooltip(description, definition.description)
 	description.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	body.add_child(description)
+	description.visible = kind != "skill"
 	if kind == "weapon":
 		var projection: Dictionary = run.weapon_purchase_preview(index)
 		var has_placement: bool = bool(projection.get("has_projection", false))
@@ -1710,6 +1849,11 @@ func _offer_card(parent: Control, index: int) -> void:
 		stats.name = "WeaponStats"
 		_enable_tooltip(stats, ("按购买时自动落点预计，共鸣 +%s。\n" % _rune_percent(predicted_bonus) if has_placement else "当前没有可用于购买预估的实际落点。\n") + _weapon_stats_note())
 		body.add_child(stats)
+	elif kind == "skill":
+		var projection: Dictionary = run.skill_purchase_preview(index)
+		var stats := _wrap(_active_skill_stats_text(projection.get("parameters", projection)), 13, category)
+		stats.name = "SkillStats"
+		body.add_child(stats)
 	var price: int = int(offer.get("price", 0))
 	var error: String = run.purchase_error(index)
 	var blocked: bool = not sold and not error.is_empty()
@@ -1718,6 +1862,7 @@ func _offer_card(parent: Control, index: int) -> void:
 		var reason: String = {
 			"魂屑不足。": "魂屑不足",
 			"背包空间不足。": "背包无空位",
+			"主动技能已达上限（2）。": "技能已满 2/2",
 		}.get(error, "暂不可购")
 		buy_text = "%s · %d魂屑" % [reason, price]
 	var buy := _shop_button(buy_text, _buy.bind(index), "buy:%d" % index, Vector2(0, 35))
@@ -2198,7 +2343,7 @@ func _show_controls(from_pause: bool) -> void:
 	grid.add_theme_constant_override("h_separation", 24)
 	grid.add_theme_constant_override("v_separation", 6)
 	body.add_child(grid)
-	for action: String in ["move_up", "move_down", "move_left", "move_right", "dash", "pulse"]:
+	for action: String in ControlBindings.ACTIONS:
 		var label := _label(ControlBindings.action_label(action), 16, BONE)
 		label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
@@ -2216,7 +2361,7 @@ func _show_controls(from_pause: bool) -> void:
 	_controls_notice.name = "BindingStatus"
 	_controls_notice.custom_minimum_size.y = 34
 	body.add_child(_controls_notice)
-	var guide := _wrap("键盘：方向键始终可用；Esc、Enter、Tab、F11及修饰键保留。\n手柄：左杆 / 十字移动，A冲刺，X脉冲，Start暂停。\n菜单A确定、B返回；背包持物时X旋转。", 13, MUTED)
+	var guide := _wrap("键盘：方向键始终可用；Esc、Enter、Tab、F11及修饰键保留。\n手柄：左杆 / 十字移动，A冲刺，X / Y技能，Start暂停。\n菜单A确定、B返回；背包持物时X旋转。", 13, MUTED)
 	guide.name = "ControllerGuide"
 	body.add_child(guide)
 	var actions := HBoxContainer.new()
@@ -2558,6 +2703,8 @@ func _definition(kind: String, id: String) -> ContentDef:
 			return GameCatalog.rune(id)
 		"relic":
 			return GameCatalog.relic(id)
+		"skill":
+			return GameCatalog.skill(id)
 	return GameCatalog.weapon(id)
 
 

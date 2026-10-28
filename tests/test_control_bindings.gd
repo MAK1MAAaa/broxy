@@ -24,7 +24,10 @@ func _check(condition: bool, message: String) -> void:
 		push_error(message)
 
 func _custom() -> Dictionary:
-	return {"move_up": KEY_I, "move_down": KEY_K, "move_left": KEY_J, "move_right": KEY_L, "dash": KEY_E, "pulse": KEY_R}
+	return {"move_up": KEY_I, "move_down": KEY_K, "move_left": KEY_J, "move_right": KEY_L, "dash": KEY_R, "pulse": KEY_F, "skill_secondary": KEY_E}
+
+func _legacy_custom() -> Dictionary:
+	return {"move_up": KEY_I, "move_down": KEY_K, "move_left": KEY_J, "move_right": KEY_L, "dash": KEY_E, "pulse": KEY_Q}
 
 func _key(code: int, down: bool = true) -> InputEventKey:
 	var event := InputEventKey.new()
@@ -53,15 +56,23 @@ func _parse(event: InputEvent) -> void:
 
 func _test_validation() -> void:
 	var defaults: Dictionary = ControlBindings.defaults()
-	_check(defaults == {"move_up": KEY_W, "move_down": KEY_S, "move_left": KEY_A, "move_right": KEY_D, "dash": KEY_SPACE, "pulse": KEY_Q}, "Defaults retain WASD, Space and Q physical keys")
+	_check(defaults == {"move_up": KEY_W, "move_down": KEY_S, "move_left": KEY_A, "move_right": KEY_D, "dash": KEY_SPACE, "pulse": KEY_Q, "skill_secondary": KEY_E}, "Defaults retain WASD and Space while the two active slots use Q and E")
 	defaults["dash"] = KEY_E
 	_check(int(ControlBindings.defaults()["dash"]) == KEY_SPACE, "Returned defaults cannot mutate the next caller's bindings")
-	_check(ControlBindings.normalize(_custom()) == _custom(), "Six distinct custom physical keys remain valid")
+	_check(ControlBindings.normalize(_custom()) == _custom(), "Seven distinct custom physical keys remain valid")
+	var legacy: Dictionary = _legacy_custom()
+	var migrated: Dictionary = legacy.duplicate(true)
+	migrated["skill_secondary"] = KEY_R
+	_check(ControlBindings.normalize(legacy) == migrated and legacy == _legacy_custom(), "A legacy six-key map keeps its E dash and gains a free R secondary binding without mutating input")
+	for secondary: Variant in [true, null, KEY_E, KEY_ESCAPE, NAN]:
+		var repaired: Dictionary = legacy.duplicate(true)
+		repaired["skill_secondary"] = secondary
+		_check(ControlBindings.normalize(repaired) == migrated, "An invalid or occupied secondary binding preserves all six legacy keys and selects the first free key")
 	for invalid: Variant in [null, true, 7, "bad", [], Vector2.ONE, {}]:
 		_check(ControlBindings.normalize(invalid) == ControlBindings.defaults(), "Malformed or incomplete configuration falls back as one complete binding set")
 	var extra: Dictionary = _custom()
 	extra["unknown_future_action"] = {"invalid": true}
-	_check(ControlBindings.normalize(extra) == _custom(), "Unknown extra fields do not pollute or invalidate the six recognized keys")
+	_check(ControlBindings.normalize(extra) == _custom(), "Unknown extra fields do not pollute or invalidate the seven recognized keys")
 	for bad: Variant in [true, 42.0, "E", null, -1, KEY_NONE, MOUSE_BUTTON_LEFT, 999999999, KEY_E | KEY_MASK_SHIFT]:
 		var value: Dictionary = _custom()
 		value["dash"] = bad
@@ -73,8 +84,8 @@ func _test_validation() -> void:
 	var duplicate: Dictionary = _custom()
 	duplicate["dash"] = duplicate["pulse"]
 	_check(ControlBindings.normalize(duplicate) == ControlBindings.defaults(), "Duplicate primary keys reject the complete saved set")
-	_check(ControlBindings.binding_error(_custom(), "dash", KEY_R).contains("脉冲"), "A conflict identifies the action already using the key")
-	_check(ControlBindings.binding_error(_custom(), "dash", KEY_E).is_empty() and ControlBindings.binding_error(_custom(), "dash", KEY_F).is_empty(), "Keeping a key or choosing a free valid key is allowed")
+	_check(ControlBindings.binding_error(_custom(), "dash", KEY_F).contains("技能1") and ControlBindings.binding_error(_custom(), "dash", KEY_E).contains("技能2"), "A conflict identifies the active slot already using the key")
+	_check(ControlBindings.binding_error(_custom(), "dash", KEY_R).is_empty() and ControlBindings.binding_error(_custom(), "dash", KEY_G).is_empty(), "Keeping a key or choosing a free valid key is allowed")
 	_check(not ControlBindings.binding_error(_custom(), "unknown", KEY_E).is_empty() and not ControlBindings.binding_error(_custom(), "dash", 1).is_empty(), "Unknown actions and mouse button integers are rejected")
 	_check(ControlBindings.key_label(KEY_SPACE) == "空格" and ControlBindings.key_label(KEY_E) == OS.get_keycode_string(KEY_E), "Key labels use Chinese Space and the operating-system key names")
 	for action: String in ControlBindings.ACTIONS:
@@ -128,19 +139,20 @@ func _test_installed_events() -> void:
 			var arrow: int = int({"move_up": KEY_UP, "move_down": KEY_DOWN, "move_left": KEY_LEFT, "move_right": KEY_RIGHT}[action])
 			_check(physical.size() == 2 and arrow in physical and buttons.size() == 1 and axes.size() == 1, "Movement keeps one primary key, a fixed arrow, a D-pad direction and a left-stick half axis")
 		else:
-			var expected: int = int({"dash": JOY_BUTTON_A, "pulse": JOY_BUTTON_X, "pause": JOY_BUTTON_START}[action])
-			_check(physical.size() == 1 and buttons == [expected] and axes.is_empty(), "Skills and pause have exactly their fixed A/X/Start controller mapping")
+			var expected: int = int({"dash": JOY_BUTTON_A, "pulse": JOY_BUTTON_X, "skill_secondary": JOY_BUTTON_Y, "pause": JOY_BUTTON_START}[action])
+			_check(physical.size() == 1 and buttons == [expected] and axes.is_empty(), "Skills and pause have exactly their fixed A/X/Y/Start controller mapping")
 	_check(not InputMap.event_is_action(_key(KEY_SPACE), "broxy_dash") and not InputMap.event_is_action(_key(KEY_W), "broxy_move_up"), "Rebinding removes the previous primary keys from the real InputMap")
 	InputMap.erase_action("broxy_pulse")
 	ControlBindings.ensure_installed()
-	_check(InputMap.has_action("broxy_pulse") and ControlBindings.pressed(_key(KEY_R), "pulse"), "Ensuring a missing action restores the installed custom configuration")
+	_check(InputMap.has_action("broxy_pulse") and ControlBindings.pressed(_key(KEY_F), "pulse"), "Ensuring a missing action restores the installed custom configuration")
 	ControlBindings.install(_custom())
 	_check(InputMap.action_get_events("broxy_move_up").size() == 4 and InputMap.action_get_events("broxy_dash").size() == 2 and _menu_signature() == menu_before, "Repeated installation replaces gameplay events without duplicates or menu changes")
 
 func _test_pressed_edges() -> void:
 	ControlBindings.install(_custom())
-	var key: InputEventKey = _key(KEY_E)
+	var key: InputEventKey = _key(KEY_R)
 	_check(ControlBindings.pressed(key, "dash") and not ControlBindings.pressed(key, "pulse"), "A keyboard press triggers only its exact configured action")
+	_check(ControlBindings.pressed(_key(KEY_E), "skill_secondary") and not ControlBindings.pressed(_key(KEY_E), "dash") and not ControlBindings.pressed(_key(KEY_E), "pulse"), "The second active-slot key remains distinct from both dash and slot one")
 	key.echo = true
 	_check(not ControlBindings.pressed(key, "dash"), "Keyboard autorepeat cannot retrigger a skill")
 	key.echo = false
@@ -157,10 +169,10 @@ func _test_pressed_edges() -> void:
 	key.keycode = KEY_Q
 	_check(ControlBindings.pressed(key, "dash") and not ControlBindings.pressed(key, "pulse"), "Physical key identity takes priority over the current keyboard layout")
 	key.physical_keycode = KEY_NONE
-	key.keycode = KEY_E
+	key.keycode = KEY_R
 	_check(ControlBindings.pressed(key, "dash"), "Logical fallback supports existing synthesized keyboard events without a physical code")
 	_check(not ControlBindings.pressed(_key(KEY_SPACE), "dash") and not ControlBindings.pressed(_key(KEY_Q), "pulse"), "The old skill keys stop requesting actions after a custom rebind")
-	for pair: Array in [[JOY_BUTTON_A, "dash"], [JOY_BUTTON_X, "pulse"], [JOY_BUTTON_START, "pause"], [JOY_BUTTON_DPAD_UP, "move_up"]]:
+	for pair: Array in [[JOY_BUTTON_A, "dash"], [JOY_BUTTON_X, "pulse"], [JOY_BUTTON_Y, "skill_secondary"], [JOY_BUTTON_START, "pause"], [JOY_BUTTON_DPAD_UP, "move_up"]]:
 		var event: InputEventJoypadButton = _button(int(pair[0]))
 		_check(ControlBindings.pressed(event, str(pair[1])) and not ControlBindings.pressed(_button(int(pair[0]), false), str(pair[1])), "Only pressed controller-button edges request their matching action")
 	_check(not ControlBindings.pressed(_button(JOY_BUTTON_B), "dash") and not ControlBindings.pressed(_button(JOY_BUTTON_B), "pulse"), "The controller cancel button does not request either skill")
@@ -216,7 +228,7 @@ func _test_profile_roundtrip() -> void:
 	store.best["wave"] = 5
 	_check(store.save_profile() == OK, "An isolated ConfigFile saves custom controls and existing profile sections")
 	var config := ConfigFile.new()
-	_check(config.load(path) == OK and config.get_section_keys("settings").size() == 3 and config.get_section_keys("controls").size() == 6, "Controls use their own six-key section while settings retains only its original three keys")
+	_check(config.load(path) == OK and config.get_section_keys("settings").size() == 3 and config.get_section_keys("controls").size() == 7, "Controls use their own seven-key section while settings retains only its original three keys")
 	var loaded := GameStore.new(path)
 	loaded.load_profile()
 	_check(loaded.controls == _custom() and loaded.settings == {"volume": 0.25, "shake": false, "flash": true} and int(loaded.best["wave"]) == 5, "Custom controls, settings and records survive a real independent profile reload")
@@ -225,9 +237,21 @@ func _test_profile_roundtrip() -> void:
 	loaded = GameStore.new(path)
 	loaded.load_profile()
 	_check(loaded.controls == ControlBindings.defaults() and int(loaded.best["wave"]) == 5, "Old profiles gain default controls without losing existing records")
+	for action: String in ControlBindings.LEGACY_ACTIONS:
+		config.set_value("controls", action, _legacy_custom()[action])
+	_check(config.save(path) == OK, "A legacy six-field configuration is serialized without a secondary action")
+	loaded = GameStore.new(path)
+	loaded.load_profile()
+	var expected_legacy: Dictionary = _legacy_custom()
+	expected_legacy["skill_secondary"] = KEY_R
+	_check(loaded.controls == expected_legacy and loaded.best["wave"] == 5, "Loading a real legacy profile preserves its E dash, all other original keys and records while choosing R for slot two")
+	_check(loaded.save_profile() == OK, "The migrated profile saves its expanded binding set")
+	var reloaded := GameStore.new(path)
+	reloaded.load_profile()
+	_check(reloaded.controls == expected_legacy, "Saving and reloading does not remap the migrated player's controls again")
 	for action: String in ControlBindings.ACTIONS:
 		config.set_value("controls", action, _custom()[action])
-	config.set_value("controls", "dash", KEY_R)
+	config.set_value("controls", "dash", KEY_F)
 	_check(config.save(path) == OK, "A malformed saved configuration can be tested independently")
 	loaded = GameStore.new(path)
 	loaded.load_profile()

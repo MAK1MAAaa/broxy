@@ -327,6 +327,9 @@ func _handle_control_input(event: InputEvent) -> void:
 	elif ControlBindings.pressed(event, "pulse"):
 		world.request_pulse()
 		get_viewport().set_input_as_handled()
+	elif ControlBindings.pressed(event, "skill_secondary"):
+		world.request_skill(1)
+		get_viewport().set_input_as_handled()
 
 func _handle_back_input(allow_pause: bool) -> void:
 	if ui.handle_back():
