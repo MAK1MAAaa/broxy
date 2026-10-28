@@ -1,0 +1,24 @@
+{
+  "seed": 20261028,
+  "arena": "mire",
+  "core": "bone_chorus",
+  "route": "balanced",
+  "altar": "accept",
+  "policies": [
+    {
+      "mode": "default-policy",
+      "runs": 3,
+      "wins": 3,
+      "every_result_field_identical_to_07e9b53": true,
+      "log_sha256": "53b4aadd440abb00c113d9c3aa4c18d085aca3eebf45dcff7cebf5880650b9bb"
+    },
+    {
+      "mode": "pulse-policy",
+      "runs": 3,
+      "wins": 3,
+      "every_result_field_identical_to_07e9b53": true,
+      "log_sha256": "20f5dd3bf27b89563494a1d057a60cd0d95189ee16cfc9b05177fbc1473c187e"
+    }
+  ],
+  "comparison_scope": "All result fields, including metadata, equal the keyboard/gamepad build. These headless policies do not construct the UI tracker; prompt and GUI behavior is covered separately by native input/transaction tests and compiled-pack fixtures."
+}

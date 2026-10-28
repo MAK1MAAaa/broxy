@@ -84,6 +84,8 @@ var _capture_label: Label
 var _capture_action: String = ""
 var _controls_epoch: int = 0
 var _hud_skill_snapshot: Dictionary = {}
+var _input_device_tracker: InputDeviceTracker
+var _input_kind: String = "keyboard"
 var _hud: Dictionary = {}
 var _hud_loadout_key := ""
 var _best: Dictionary = {}
@@ -101,6 +103,7 @@ var _bag_cursor: Vector2i = Vector2i.ZERO
 var _bag_grid: Control
 var _bag_details: VBoxContainer
 var _bag_status: Label
+var _bag_hint_is_default: bool = true
 var _unlocked_starters: Array[String] = ["bone", "ember"]
 var _rogue_epoch: int = 0
 var _rogue_notice: String = ""
@@ -138,6 +141,10 @@ func _ready() -> void:
 	_toast_timer.one_shot = true
 	_toast_timer.timeout.connect(_toast.hide)
 	add_child(_toast_timer)
+	_input_device_tracker = InputDeviceTracker.new()
+	_input_device_tracker.name = "InputDeviceTracker"
+	_input_device_tracker.device_changed.connect(_on_input_device_changed)
+	add_child(_input_device_tracker)
 
 
 func bind(state: RunState) -> void:
@@ -157,6 +164,19 @@ func set_settings(values: Dictionary) -> void:
 func set_controls(bindings: Dictionary) -> void:
 	_controls = ControlBindings.normalize(bindings)
 	_refresh_control_buttons()
+	_refresh_input_prompts()
+
+
+func input_device_snapshot() -> Dictionary:
+	return _input_device_tracker.snapshot() if is_instance_valid(_input_device_tracker) else {"kind": "keyboard", "gamepad_id": -1}
+
+
+func _on_input_device_changed(kind: String, _device: int) -> void:
+	_input_kind = "gamepad" if kind == "gamepad" else "keyboard"
+	_refresh_input_prompts()
+
+
+func _refresh_input_prompts() -> void:
 	if _page != null:
 		var title_controls := _page.find_child("TitleControls", true, false) as Label
 		if title_controls != null:
@@ -164,6 +184,18 @@ func set_controls(bindings: Dictionary) -> void:
 	if _screen == "hud" and not _hud.is_empty() and not _hud_skill_snapshot.is_empty():
 		_update_dash_hud(_hud_skill_snapshot)
 		_update_pulse_hud(_hud_skill_snapshot)
+	if is_instance_valid(_bag_grid):
+		_bag_grid.set_input_device(_input_kind)
+	if is_instance_valid(_bag_status) and _bag_hint_is_default:
+		_bag_status.text = _backpack_default_hint()
+	if _page != null:
+		var move := _page.find_child("MoveBackpackItem", true, false) as Button
+		if move != null:
+			move.tooltip_text = _backpack_move_tooltip()
+		var rotate := _page.find_child("RotateBackpackItem", true, false) as Button
+		if rotate != null:
+			rotate.text = _backpack_rotate_text()
+			rotate.tooltip_text = _backpack_rotate_tooltip()
 
 
 func _input(event: InputEvent) -> void:
@@ -305,6 +337,8 @@ func show_title(best: Dictionary) -> void:
 
 
 func _title_controls_text() -> String:
+	if _input_kind == "gamepad":
+		return "左杆 / 十字移动 · 冲刺A · 脉冲X · Start暂停"
 	var movement: PackedStringArray = []
 	for action: String in ["move_up", "move_left", "move_down", "move_right"]:
 		movement.append(ControlBindings.key_label(int(_controls[action])))
@@ -603,7 +637,7 @@ func _update_dash_hud(snapshot: Dictionary) -> void:
 	var active: bool = bool(dash.get("active", false))
 	var ready: bool = bool(dash.get("ready", false))
 	var next_total: float = _skill_tooltip_value(dash.get("next_cooldown_total", total), DashRules.COOLDOWN)
-	var key: String = ControlBindings.key_label(int(_controls["dash"]))
+	var key: String = "A" if _input_kind == "gamepad" else ControlBindings.key_label(int(_controls["dash"]))
 	indicator.tooltip_text = "%s：向当前移动方向冲刺；静止时沿面向。\n短冲距离约132，冷却%s秒；起始短暂闪避，可冲离减速地形。" % [key, _skill_number(next_total)]
 	if remaining > 0.0 and total > 0.0 and not is_equal_approx(total, next_total):
 		indicator.tooltip_text += "\n本次冷却总长%s秒；改装仅影响下次施放。" % _skill_number(total)
@@ -638,7 +672,7 @@ func _update_pulse_hud(snapshot: Dictionary) -> void:
 	var next_total: float = _skill_tooltip_value(pulse.get("next_cooldown_total", total), PulseRules.COOLDOWN)
 	var radius: float = _skill_tooltip_value(pulse.get("radius", PulseRules.RADIUS), PulseRules.RADIUS)
 	var cast_radius: float = _skill_tooltip_value(pulse.get("last_cast_radius", radius), radius)
-	var key: String = ControlBindings.key_label(int(_controls["pulse"]))
+	var key: String = "X" if _input_kind == "gamepad" else ControlBindings.key_label(int(_controls["pulse"]))
 	indicator.tooltip_text = "%s：击退周围%s范围内的普通敌人70，并减速35%%持续1秒。\n冷却%s秒；首领和追猎者免疫，不能挡弹。" % [key, _skill_number(radius), _skill_number(next_total)]
 	if remaining > 0.0 and ((total > 0.0 and not is_equal_approx(total, next_total)) or not is_equal_approx(cast_radius, radius)):
 		indicator.tooltip_text += "\n本次已施放范围%s，冷却%s秒；改装仅影响下次施放。" % [_skill_number(cast_radius), _skill_number(total)]
@@ -1162,6 +1196,22 @@ func _rogue_scroll_input(event: InputEvent, scroll: ScrollContainer, epoch: int)
 	scroll.accept_event()
 
 
+func _backpack_default_hint() -> String:
+	return "在「拿起」按A；持物用左杆 / 十字移动，A放置、X旋转、B取消" if _input_kind == "gamepad" else "拖拽整理 · R旋转 · Esc取消"
+
+
+func _backpack_move_tooltip() -> String:
+	return "A拿起后，用左杆 / 十字键移动、A放置、X旋转、B取消。" if _input_kind == "gamepad" else "拿起后用方向键移动、Enter放置、R旋转、Esc取消；也可直接拖拽。"
+
+
+func _backpack_rotate_text() -> String:
+	return "旋转 X" if _input_kind == "gamepad" else "旋转 R"
+
+
+func _backpack_rotate_tooltip() -> String:
+	return "A确定旋转按钮；持物时X旋转、A放置、B取消。" if _input_kind == "gamepad" else "旋转选中物品；整理时也可按R，Enter放置、Esc取消。"
+
+
 func _build_backpack(parent: Control) -> void:
 	var snapshot: Dictionary = run.backpack_snapshot()
 	var items: Array = snapshot["items"]
@@ -1189,6 +1239,7 @@ func _build_backpack(parent: Control) -> void:
 	_bag_grid = BACKPACK_GRID.new()
 	_bag_grid.name = "BackpackGrid"
 	_bag_grid.configure(snapshot, _shop_epoch, _bag_selected_uid)
+	_bag_grid.set_input_device(_input_kind)
 	_bag_grid.item_selected.connect(_bp_select.bind(_shop_epoch))
 	_bag_grid.move_requested.connect(_bp_move.bind(_shop_epoch))
 	_bag_grid.merge_requested.connect(_bp_merge.bind(_shop_epoch))
@@ -1211,7 +1262,8 @@ func _build_backpack(parent: Control) -> void:
 	_bag_details.add_theme_constant_override("separation", 6)
 	scroll.add_child(_bag_details)
 	_build_backpack_details()
-	_bag_status = _wrap("拖拽整理 · R旋转 · Esc取消", 13, MUTED)
+	_bag_status = _wrap(_backpack_default_hint(), 13, MUTED)
+	_bag_hint_is_default = true
 	_bag_status.name = "BackpackHint"
 	_bag_status.custom_minimum_size.y = 32
 	body.add_child(_bag_status)
@@ -1292,11 +1344,12 @@ func _build_backpack_details() -> void:
 	var move := _shop_button("拿起 / 移动", _bp_pick_up.bind(uid), "bag_move:%d" % uid, Vector2(110, 32))
 	move.name = "MoveBackpackItem"
 	move.add_theme_font_size_override("font_size", 13)
-	move.tooltip_text = "拿起后用方向键移动、Enter放置、R旋转、Esc取消；也可直接拖拽。"
+	move.tooltip_text = _backpack_move_tooltip()
 	actions.add_child(move)
-	var rotate := _shop_button("旋转 R", _bp_rotate.bind(uid), "bag_rotate:%d" % uid, Vector2(76, 32))
+	var rotate := _shop_button(_backpack_rotate_text(), _bp_rotate.bind(uid), "bag_rotate:%d" % uid, Vector2(76, 32))
 	rotate.name = "RotateBackpackItem"
 	rotate.add_theme_font_size_override("font_size", 13)
+	rotate.tooltip_text = _backpack_rotate_tooltip()
 	actions.add_child(rotate)
 	var sale := _shop_button("出售 · %d魂屑" % int(floorf(float(item.get("paid", 0)) * 0.5)), _bp_sell.bind(uid), "bag_sell:%d" % uid, Vector2(0, 32))
 	sale.name = "SellBackpackItem"
@@ -1382,6 +1435,7 @@ func _bp_holding(uid: int, rotated: bool, cell: Vector2i, epoch: int) -> void:
 
 func _bp_hint(text: String, epoch: int) -> void:
 	if epoch == _shop_epoch and is_instance_valid(_bag_status):
+		_bag_hint_is_default = false
 		_bag_status.text = text
 
 

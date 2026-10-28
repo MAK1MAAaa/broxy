@@ -80,3 +80,8 @@ reports/controls/*.png
 reports/controls/*.import
 reports/controls/*.cfg
 reports/controls/*-raw.json
+reports/input-prompts/*.log
+reports/input-prompts/*.jsonl
+reports/input-prompts/*.png
+reports/input-prompts/*.import
+reports/input-prompts/*-raw.json

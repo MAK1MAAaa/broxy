@@ -46,11 +46,13 @@ Q释放秘术脉冲：半径144内的普通敌人径向击退70像素，独立�
 
 ## 直接游玩
 
-Windows x86_64入口为 `build/Embers-windows-x86_64/Embers.exe`，分发包为 `build/Embers-windows-x86_64.zip`。解压后保留同目录的 `Embers.pck` 与 `licenses/`。当前包基于最新 `main` 的四地图、秘术抉择、邻接共鸣与精简HUD，加入空格冲刺、成功闪避确认、Q脉冲、技能遗物及键位／手柄操作，共51项资源。前一版包另存 `build/Embers-windows-before-controls-fbb1a07.zip`，更早版本继续保留。Windows使用微软雅黑；本轮验收见[键位与手柄](docs/controls.md)，macOS包保留此前版本。
+Windows x86_64入口为 `build/Embers-windows-x86_64/Embers.exe`，分发包为 `build/Embers-windows-x86_64.zip`。解压后保留同目录的 `Embers.pck` 与 `licenses/`。当前包基于最新 `main` 的四地图、秘术抉择、邻接共鸣与精简HUD，加入空格冲刺、成功闪避确认、Q脉冲、技能遗物、键位／手柄操作及设备提示，共51项资源。前一版包另存 `build/Embers-windows-before-input-prompts-07e9b53.zip`，更早版本继续保留。Windows使用微软雅黑；本轮验收见[输入设备提示](docs/input-prompts.md)，macOS包保留此前版本。
 
 最新macOS应用为 `build/Embers-minimal-hud-macos.app`，分发包为 `build/Embers-minimal-hud-macos-arm64.zip`，包含四地图选择、实际地形与精简界面，以及此前完整背包／共鸣／秘术抉择内容。适用于Apple Silicon、macOS 13及以上，使用本地ad-hoc签名。本轮界面验证见 `reports/minimal-hud-validation.json`，地图与性能历史见 `reports/terrain-validation.json`；旧包保留。
 
 主菜单或暂停菜单的“设置 → 操作设置”可重绑四个移动主键、冲刺与脉冲；支持冲突校验、取消和恢复默认，方向键固定保留。手柄左杆／十字移动，A冲刺、X脉冲、Start暂停；菜单A确认／B返回，背包持物时X旋转、A放置、B取消，左杆或十字逐格移动。配置独立保存，诊断模式不读写个人档案。操作边界与验证见[键位与手柄](docs/controls.md)。下表为默认键盘操作。
+
+标题、HUD和背包现在按最近有效输入切换键鼠／手柄提示；鼠标移动、释放事件和左杆漂移不会抢提示，返回键鼠后保留自定义键位。整理时显示对应A／X／B，原生拖拽仍提示松手确认；切换保留焦点、持物和冷却。规则及新验收见[输入设备提示](docs/input-prompts.md)。
 
 | 操作 | 按键 |
 | --- | --- |
@@ -140,6 +142,8 @@ BROXY_APP_PATH="$PWD/build/Embers-minimal-hud-macos.app" ./tools/build_macos.sh
 构建从官方 Universal 模板提取 arm64，生成 `build/Embers.app` 并执行 ad-hoc 签名验证。引擎许可在应用的 `Contents/Resources/licenses/` 中直接可读。对外发布前应使用自己的 Developer ID 配置签名与公证。
 
 ## 验证
+
+设备提示版Windows通过 `./tools/test.sh` 的77套Godot加5个档案入口，共29056条断言、32项Python测试；新增原生设备／UI／流程专项81／60／80条通过。修复背包事务信号后续监听收到−1的问题，验证真实放置、合成、装符及监听参数稳定。60秒原生压力完成117次提示切换、3906次小幅轴输入未抢提示，平均114.685 FPS、P99 16.998毫秒；65项源码指纹一致。六局全部结果与键位版相同；新Windows包、编译资源及系统鼠标回切通过，实体手柄范围仍未覆盖。规则与证据见[输入设备提示](docs/input-prompts.md)和 `reports/input-prompts/validation.json`。
 
 键位／手柄版Windows通过 `./tools/test.sh` 的74套Godot加5个档案诊断入口，共28835条断言、32项Python测试；四套新增原生专项146／38／113／42条通过，包含真实GUI焦点、菜单方向导航与背包库存事务。六局自动流程除版本元数据外与技能遗物版完全一致。60秒原生压力平均113.645 FPS、P99 17.319毫秒，64项源码指纹一致；Windows已重新导出并启动EXE，另验证包内配置、改键及合成手柄路径。未连接实体手柄；系统工具对字母／功能键注入出现Pause识别差异，未据此宣称硬件键码一致性。范围与证据见[键位与手柄](docs/controls.md)和 `reports/controls/validation.json`。
 

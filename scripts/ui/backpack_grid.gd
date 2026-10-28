@@ -62,6 +62,21 @@ var _drop_target_cell: Vector2i = Vector2i.ZERO
 var _resonance_contacts: Array[Dictionary] = []
 var _joy_axis_x: int = 0
 var _joy_axis_y: int = 0
+var _input_device: String = "keyboard"
+var _native_preview_label: Label
+
+func set_input_device(kind: String) -> void:
+	var next: String = "gamepad" if kind == "gamepad" else "keyboard"
+	if next == _input_device:
+		return
+	_input_device = next
+	for child: Node in get_children():
+		if child is ItemButton and _items.has(child.uid):
+			child.tooltip_text = _item_tooltip(_items[child.uid])
+	if _native_dragging and is_instance_valid(_native_preview_label) and _items.has(held_uid):
+		_native_preview_label.text = _native_preview_text(_items[held_uid])
+	if held_uid >= 0 and _items.has(held_uid):
+		hint_changed.emit(str(placement_at(cursor).get("error", "")))
 
 func configure(snapshot: Dictionary, epoch: int, selected: int = -1) -> void:
 	_snapshot = snapshot.duplicate(true)
@@ -172,17 +187,20 @@ func placement_at(cell: Vector2i) -> Dictionary:
 		var target_name: String = _definition(other).display_name
 		if str(candidate["kind"]) == "rune":
 			var replacing: bool = bool(candidate["replacing"])
-			var hint: String = "松手或Enter装入：%s · %d阶 → %s。" % [item_name, int(candidate["result_rank"]), target_name]
+			var hint: String = "%s：%s · %d阶 → %s。" % [_placement_confirm("装入"), item_name, int(candidate["result_rank"]), target_name]
 			if replacing:
 				var old_rune: Dictionary = other["rune"]
-				hint = "松手或Enter换符：%s · %d阶 → %s；%s退回腾出的格子。" % [item_name, int(candidate["result_rank"]), target_name, GameCatalog.rune(str(old_rune["id"])).display_name]
-			return {"valid": true, "kind": "rune", "target": int(other["uid"]), "result_rank": int(candidate["result_rank"]), "replacing": replacing, "error": hint + candidate_hint}
-		return {"valid": true, "kind": "merge", "target": int(other["uid"]), "result_rank": int(candidate["result_rank"]), "error": "松手或Enter合成%s：%d阶 + %d阶 → %d阶。%s" % [target_name, int(item.get("rank", 1)), int(other.get("rank", 1)), int(candidate["result_rank"]), candidate_hint]}
+				hint = "%s：%s · %d阶 → %s；%s退回腾出的格子。" % [_placement_confirm("换符"), item_name, int(candidate["result_rank"]), target_name, GameCatalog.rune(str(old_rune["id"])).display_name]
+			return {"valid": true, "kind": "rune", "target": int(other["uid"]), "result_rank": int(candidate["result_rank"]), "replacing": replacing, "error": hint + _placement_actions() + candidate_hint}
+		return {"valid": true, "kind": "merge", "target": int(other["uid"]), "result_rank": int(candidate["result_rank"]), "error": "%s%s：%d阶 + %d阶 → %d阶。%s%s" % [_placement_confirm("合成"), target_name, int(item.get("rank", 1)), int(other.get("rank", 1)), int(candidate["result_rank"]), _placement_actions(), candidate_hint]}
 	var dimensions: Vector2i = _item_size(item, held_rotated)
 	var area := Rect2i(cell, dimensions)
 	var bounds := Rect2i(Vector2i.ZERO, Vector2i(int(_snapshot.get("width", 6)), int(_snapshot.get("height", 4))))
 	if not bounds.encloses(area):
-		return {"valid": false, "error": "%s超出已解锁背包，R可旋转。%s" % [item_name, candidate_hint]}
+		var rotation_hint: String = "R可旋转。"
+		if _input_device == "gamepad":
+			rotation_hint = "请拖回背包范围后松手。" if _native_dragging else "X可旋转，B取消。"
+		return {"valid": false, "error": "%s超出已解锁背包，%s%s" % [item_name, rotation_hint, candidate_hint]}
 	var overlaps: Array[Dictionary] = []
 	for other: Dictionary in _snapshot.get("items", []):
 		if int(other["uid"]) == held_uid:
@@ -191,8 +209,31 @@ func placement_at(cell: Vector2i) -> Dictionary:
 		if area.intersects(other_area):
 			overlaps.append(other)
 	if overlaps.is_empty():
+		if _input_device == "gamepad":
+			var instruction: String = "松手放置%s。%s" % [item_name, candidate_hint] if _native_dragging else "A放置%s；X旋转，B取消。%s" % [item_name, candidate_hint]
+			return {"valid": true, "kind": "move", "error": instruction}
 		return {"valid": true, "kind": "move", "error": "点击或Enter放置%s；R旋转，Esc取消。%s" % [item_name, candidate_hint]}
-	return {"valid": false, "error": "格子已被占用；%s需移至空格，或与同名同阶物品合成。%s" % [item_name, candidate_hint]}
+	return {"valid": false, "error": "格子已被占用；%s需移至空格，或与同名同阶物品合成。%s%s" % [item_name, _placement_actions(), candidate_hint]}
+
+func _placement_confirm(action: String) -> String:
+	if _input_device != "gamepad":
+		return "松手或Enter" + action
+	return ("松手" if _native_dragging else "A") + action
+
+func _placement_actions() -> String:
+	return "X旋转，B取消。" if _input_device == "gamepad" and not _native_dragging else ""
+
+func _item_tooltip(item: Dictionary) -> String:
+	var definition: ContentDef = _definition(item)
+	var dimensions: Vector2i = _item_size(item, bool(item.get("rotated", false)))
+	var instructions: String = "拖拽移动，R旋转。" if _input_device != "gamepad" else "选择后在「拿起」按钮按A拿起；持物时X旋转、B取消。"
+	var text: String = "%s · %d阶\n占格 %d×%d；%s\n%s" % [definition.display_name, int(item.get("rank", 1)), dimensions.x, dimensions.y, instructions, definition.description]
+	if int(item.get("uid", -1)) in _snapshot.get("linked_weapons", []):
+		text += "\n烛引生效：正下方引魂烛使其优先攻击生命比例最低的敌人。"
+	return text
+
+func _native_preview_text(item: Dictionary) -> String:
+	return _definition(item).display_name + ("  松手确认" if _input_device == "gamepad" else "  R旋转")
 
 func commit_placement() -> void:
 	if held_uid < 0 or not interaction_enabled:
@@ -202,10 +243,14 @@ func commit_placement() -> void:
 	if not bool(placement.get("valid", false)):
 		hint_changed.emit(str(placement["error"]))
 		return
+	var source_uid: int = held_uid
+	var destination: Vector2i = cursor
+	var rotated: bool = held_rotated
+	var target_uid: int = int(placement.get("target", -1))
 	match str(placement["kind"]):
-		"merge": merge_requested.emit(held_uid, int(placement["target"]))
-		"rune": rune_requested.emit(held_uid, int(placement["target"]))
-		_: move_requested.emit(held_uid, cursor, held_rotated)
+		"merge": merge_requested.emit(source_uid, target_uid)
+		"rune": rune_requested.emit(source_uid, target_uid)
+		_: move_requested.emit(source_uid, destination, rotated)
 
 func native_drag(uid: int, offset: Vector2) -> Variant:
 	if not interaction_enabled or not _items.has(uid):
@@ -216,10 +261,13 @@ func native_drag(uid: int, offset: Vector2) -> Variant:
 	_native_dragging = true
 	_native_committed = false
 	var preview := Label.new()
-	preview.text = _definition(_items[uid]).display_name + "  R旋转"
+	preview.text = _native_preview_text(_items[uid])
 	preview.add_theme_font_size_override("font_size", 16)
 	preview.add_theme_color_override("font_color", BONE)
+	_native_preview_label = preview
 	set_drag_preview(preview)
+	if _input_device == "gamepad":
+		hint_changed.emit(str(placement_at(cursor).get("error", "")))
 	return {"type": "embers_backpack", "uid": uid, "epoch": session_epoch}
 
 func accept_drop(point: Vector2, data: Variant) -> bool:
@@ -360,7 +408,7 @@ func _make_item(item: Dictionary) -> void:
 	button.focus_entered.connect(func() -> void:
 		if held_uid < 0:
 			select_item(uid))
-	button.tooltip_text = "%s · %d阶\n占格 %d×%d；拖拽移动，R旋转。\n%s" % [definition.display_name, int(item.get("rank", 1)), _item_size(item, bool(item.get("rotated", false))).x, _item_size(item, bool(item.get("rotated", false))).y, definition.description]
+	button.tooltip_text = _item_tooltip(item)
 	add_child(button)
 	_style_item(button, item)
 	var artwork := ItemArtwork.new()
@@ -425,7 +473,6 @@ func _make_item(item: Dictionary) -> void:
 		link.add_theme_color_override("font_color", Color("b7c892"))
 		link.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		button.add_child(link)
-		button.tooltip_text += "\n烛引生效：正下方引魂烛使其优先攻击生命比例最低的敌人。"
 
 func _style_item(button: Button, item: Dictionary) -> void:
 	var definition: ContentDef = _definition(item)

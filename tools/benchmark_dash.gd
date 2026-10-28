@@ -39,6 +39,13 @@ var _evasion_probes: bool = false
 var _evasion_probes_spawned: int = 0
 var _pulse_cycles: bool = false
 var _skill_relics: bool = false
+var _input_prompts: bool = false
+var _prompt_next_switch: float = 0.0
+var _prompt_wants_gamepad: bool = true
+var _prompt_switches: int = 0
+var _sample_prompt_switches_start: int = 0
+var _prompt_drift_events: int = 0
+var _prompt_drift_changed_kind: bool = false
 var _sample_pulses_start: int = 0
 var _sample_affected_start: int = 0
 var _pulse_feedback_peak: int = 0
@@ -69,8 +76,10 @@ func _parse_arguments() -> bool:
 			_pulse_cycles = true
 		elif argument == "--skill-relics":
 			_skill_relics = true
+		elif argument == "--input-prompts":
+			_input_prompts = true
 		else:
-			push_error("Supported arguments: --seconds=<at least 5> --output=<report.json> [--evasion-probes] [--pulse-cycles] [--skill-relics]")
+			push_error("Supported arguments: --seconds=<at least 5> --output=<report.json> [--evasion-probes] [--pulse-cycles] [--skill-relics] [--input-prompts]")
 			return false
 	return true
 
@@ -97,6 +106,8 @@ func _start() -> void:
 	_app._benchmark = true
 	_app.ui.set_selected_arena("mire")
 	_app._begin_run("bone", SEED)
+	if _input_prompts:
+		_app.ui.get_node("InputDeviceTracker").device_changed.connect(func(_kind: String, _device: int) -> void: _prompt_switches += 1)
 	if _skill_relics and not _equip_skill_relics():
 		_abort("Could not purchase and merge the pressure fixture's skill relics")
 		return
@@ -126,6 +137,7 @@ func _start() -> void:
 		"evasion_probes": _evasion_probes,
 		"pulse_cycles": _pulse_cycles,
 		"skill_relics": _skill_relics,
+		"input_prompts": _input_prompts,
 	}))
 
 func _equip_skill_relics() -> bool:
@@ -181,6 +193,8 @@ func _before_world_physics() -> void:
 	if _movement_keys_held():
 		_abort("Movement keys must stay released and sticks centered in this facing-only pressure fixture")
 		return
+	if _input_prompts:
+		_exercise_input_prompts()
 	world.sim.run.health = world.sim.run.stat("max_health")
 	world._maintain_stress()
 	var counts := Vector3i(world.sim.enemy_count, world.sim.shot_count, world.sim.soul_count)
@@ -211,6 +225,33 @@ func _before_world_physics() -> void:
 			_evasion_probes_spawned += 1
 		_next_right = not _next_right
 
+func _exercise_input_prompts() -> void:
+	var before: Dictionary = _app.ui.input_device_snapshot()
+	var drift := InputEventJoypadMotion.new()
+	drift.device = 0
+	drift.axis = JOY_AXIS_LEFT_X
+	drift.axis_value = 0.10 if _physics_steps % 2 == 0 else 0.18
+	Input.parse_input_event(drift)
+	_prompt_drift_events += 1
+	_prompt_drift_changed_kind = _prompt_drift_changed_kind or _app.ui.input_device_snapshot() != before
+	if _app.world.sim.elapsed < _prompt_next_switch:
+		return
+	_prompt_next_switch = _app.world.sim.elapsed + 0.5
+	for pressed: bool in [true, false]:
+		if _prompt_wants_gamepad:
+			var pad := InputEventJoypadButton.new()
+			pad.device = 0
+			pad.button_index = JOY_BUTTON_Y
+			pad.pressed = pressed
+			Input.parse_input_event(pad)
+		else:
+			var key := InputEventKey.new()
+			key.keycode = KEY_F6
+			key.physical_keycode = KEY_F6
+			key.pressed = pressed
+			Input.parse_input_event(key)
+	_prompt_wants_gamepad = not _prompt_wants_gamepad
+
 func _observe_feedback() -> void:
 	var count: int = _app.world.dash_afterimage_count()
 	var evasion_active: int = 1 if bool(_app.world.dash_evasion_feedback_snapshot()["active"]) else 0
@@ -237,6 +278,7 @@ func _process(_delta: float) -> bool:
 		_sample_evades_start = _app.world.sim.dash_evades
 		_sample_pulses_start = _app.world.sim.pulses_used
 		_sample_affected_start = _app.world.sim.pulse_affected
+		_sample_prompt_switches_start = _prompt_switches
 	elif _sampling:
 		_frame_samples.append(float(now - _last_frame_usec) / 1000.0)
 		_last_frame_usec = now
@@ -275,6 +317,11 @@ func _stop_updates() -> void:
 		physics_frame.disconnect(_before_world_physics)
 	_app.world.set_physics_process(false)
 	_app.world.clear_pending_actions()
+	if _input_prompts:
+		var neutral := InputEventJoypadMotion.new()
+		neutral.device = 0
+		neutral.axis = JOY_AXIS_LEFT_X
+		Input.parse_input_event(neutral)
 
 func _finish_report(now: int) -> void:
 	_stop_updates()
@@ -294,6 +341,7 @@ func _finish_report(now: int) -> void:
 	var minimum_pulses: int = maxi(1, floori(_seconds / sim.run.stat("pulse_cooldown")) - 1)
 	var pulse_valid: bool = not _pulse_cycles or (sim.pulses_used - _sample_pulses_start >= minimum_pulses and sim.pulse_affected > _sample_affected_start and _sample_pulse_feedback_peak == 1)
 	var defaults_valid: bool = _app.store.settings == {"volume": 0.65, "shake": true, "flash": true} and _app.store.controls == ControlBindings.defaults() and not _app.store.persistent
+	var prompt_valid: bool = not _input_prompts or (_prompt_switches - _sample_prompt_switches_start >= floori(_seconds * 1.8) and _prompt_drift_events > 0 and not _prompt_drift_changed_kind)
 	var source: Dictionary = _source_fingerprint()
 	var report: Dictionary = {
 		"scenario": "dash-content-pressure", "natural_run": false,
@@ -321,6 +369,9 @@ func _finish_report(now: int) -> void:
 		"after_step_counts_at_end": _counts(Vector3i(sim.enemy_count, sim.shot_count, sim.soul_count)),
 		"settings": _app.store.settings.duplicate(true), "persistent_profile": _app.store.persistent,
 		"controls": _app.store.controls.duplicate(true), "connected_gamepads": Array(Input.get_connected_joypads()),
+		"input_prompts": _input_prompts, "prompt_switches": _prompt_switches,
+		"sample_prompt_switches": _prompt_switches - _sample_prompt_switches_start,
+		"prompt_drift_events": _prompt_drift_events, "prompt_drift_changed_device": _prompt_drift_changed_kind,
 		"main_process_enabled": _app.is_processing(), "main_benchmark_upgrade_suppression": _app._benchmark,
 		"world_stress_mode": _app.world.stress_mode, "world_autopilot": _app.world.autopilot,
 		"seed": SEED, "run_seed": sim.run.summary()["seed"], "arena_id": sim.run.arena_id,
@@ -339,12 +390,15 @@ func _finish_report(now: int) -> void:
 		"fixture_overrides": ["300 enemies with synthetic high health", "600 real content/rune projectiles replenished before each World step", "200 synthetic pickups replenished before each World step", "full player health restored before each World step", "bone_chorus core assigned directly", "earned-upgrade modals suppressed by Main._benchmark while Main._process is disabled", "facing alternates right/left on real dash readiness; no synthetic movement input", "autoplay argument only prevents focus-loss pause; World autopilot remains disabled"],
 		"thresholds": {"minimum_fps": MIN_FPS, "maximum_p99_frame_ms": MAX_P99_MS, "minimum_sample_dashes": minimum_dashes, "minimum_afterimage_peak": 1},
 		"checks": {"performance": fps >= MIN_FPS and p99 <= MAX_P99_MS, "load": load_valid, "dash_feedback": feedback_valid, "evasion_feedback": evasion_valid, "pulse_control": pulse_valid, "default_settings_and_no_profile": defaults_valid},
-		"passed": fps >= MIN_FPS and p99 <= MAX_P99_MS and load_valid and feedback_valid and evasion_valid and pulse_valid and defaults_valid,
+		"passed": fps >= MIN_FPS and p99 <= MAX_P99_MS and load_valid and feedback_valid and evasion_valid and pulse_valid and defaults_valid and prompt_valid,
 	}
 	if _pulse_cycles:
 		report["fixture_overrides"].append("real Q requests at readiness; pulse control occurs before the normal World fixed step movement, while synthetic pressure positions are replenished each frame")
 	if _skill_relics:
 		report["fixture_overrides"].append("fixture grants money and explicit stock, then actually purchases eight skill relics and merges them into one rank-III item of each kind in the real backpack")
+	if _input_prompts:
+		report["fixture_overrides"].append("parsed Y and unbound F6 alternate input prompts every half-second; each physics step injects sub-deadzone left-stick drift; these events do not request combat skills")
+		report["checks"]["input_prompt_switching_and_drift"] = prompt_valid
 	if _evasion_probes:
 		report["fixture_overrides"].append("each accepted dash clears old received-hit immunity and adds one stationary, positive-damage hostile projectile at its next-step position; normal collision and dash immunity decide the result")
 	var absolute: String = ProjectSettings.globalize_path(_output)

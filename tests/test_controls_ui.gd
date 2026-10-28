@@ -283,6 +283,7 @@ func _test_paused_joypad_navigation() -> void:
 	await _settle()
 
 func _test_mapped_hud() -> void:
+	await _key(KEY_F6)
 	var sim := CombatSim.new()
 	sim.begin(_state)
 	_ui.set_controls(ControlBindings.defaults())
@@ -313,6 +314,7 @@ func _test_mapped_hud() -> void:
 	_ui.set_controls(ControlBindings.defaults())
 
 func _test_long_title_bindings() -> void:
+	await _key(KEY_F6)
 	var bindings: Dictionary = {"move_up": KEY_SCROLLLOCK, "move_down": KEY_BACKSPACE, "move_left": KEY_KP_MULTIPLY, "move_right": KEY_KP_SUBTRACT, "dash": KEY_PAGEDOWN, "pulse": KEY_CAPSLOCK}
 	_check(ControlBindings.normalize(bindings) == bindings, "The title-width fixture uses six distinct formally valid long key names")
 	_ui.set_controls(bindings)
