@@ -59,3 +59,8 @@ reports/dash/*.jsonl
 reports/dash/*.png
 reports/dash/*.import
 reports/dash/*-raw.json
+reports/evasion/*.log
+reports/evasion/*.jsonl
+reports/evasion/*.png
+reports/evasion/*.import
+reports/evasion/*-raw.json

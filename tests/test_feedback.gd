@@ -86,9 +86,11 @@ func _test() -> void:
 	_test_number_lookup(world)
 	await _test_enemy_warning_lifecycle(world)
 	print("Feedback: %d assertions, %d failures" % [_checks, _failures])
+	sound.shutdown()
 	world.queue_free()
 	sound.queue_free()
 	await process_frame
+	await create_timer(0.10, true).timeout
 	quit(0 if _failures == 0 else 1)
 
 func _test_rune_feedback(world: CombatWorld) -> void:

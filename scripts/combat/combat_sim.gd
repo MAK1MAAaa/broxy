@@ -11,6 +11,7 @@ signal player_damaged(amount: float, source_id: String, kind: String, origin: Ve
 signal rune_activated(rune_id: String, origin: Vector2, incoming_direction: Vector2, outgoing_direction: Vector2)
 signal core_activated(core_id: String, origin: Vector2)
 signal dash_started(origin: Vector2, direction: Vector2)
+signal dash_evaded(position: Vector2, origin: Vector2, source_id: String, kind: String)
 signal ended(victory: bool, reason: String)
 
 const ARENA: Rect2 = Rect2(66, 140, 1148, 450)
@@ -103,6 +104,8 @@ var dash_cooldown_left: float = 0.0
 var dash_direction: Vector2 = Vector2.RIGHT
 var dash_invulnerability_left: float = 0.0
 var dashes_used: int = 0
+var dash_evaded_current: bool = false
+var dash_evades: int = 0
 var elapsed: float = 0.0
 var duration: float = 45.0
 var complete: bool = false
@@ -173,6 +176,8 @@ func begin(state: RunState) -> void:
 	dash_direction = Vector2.RIGHT
 	dash_invulnerability_left = 0.0
 	dashes_used = 0
+	dash_evaded_current = false
+	dash_evades = 0
 	_cooldowns.clear()
 	for index: int in run.loadout.size():
 		_cooldowns.append(float(index) * 0.14)
@@ -262,6 +267,7 @@ func _try_start_dash(movement: Vector2) -> void:
 	dash_cooldown_left = DashRules.COOLDOWN
 	dash_invulnerability_left = DashRules.INVULNERABILITY
 	dashes_used += 1
+	dash_evaded_current = false
 	dash_started.emit(player_position, dash_direction)
 
 static func _dash_timer_after(remaining: float, delta: float) -> float:
@@ -277,6 +283,8 @@ func dash_snapshot() -> Dictionary:
 		"cooldown_total": DashRules.COOLDOWN,
 		"direction": dash_direction,
 		"uses": dashes_used,
+		"evaded": dash_evaded_current,
+		"evades": dash_evades,
 	}
 
 func spawn_enemy(id: String, position: Vector2 = Vector2.INF) -> Enemy:
@@ -391,11 +399,12 @@ func _update_enemies(delta: float) -> void:
 			var side: float = sin(float(enemy.uid) * 2.39996 + enemy.age * 0.35) * 0.24
 			enemy.velocity = direction.rotated(side) * speed
 			enemy.position = clamp_point(enemy.position + enemy.velocity * delta)
-		if distance < enemy.radius + 13.0 and invulnerability <= 0.0 and dash_invulnerability_left <= 0.0:
+		if distance < enemy.radius + 13.0 and invulnerability <= 0.0:
 			var contact_origin: Vector2 = enemy.position
-			# Retreat/charge movement can point away from the player; recoil is radial.
-			var recoil_direction: Vector2 = (contact_origin - player_position).normalized()
-			enemy.position = clamp_point(contact_origin + recoil_direction * 18.0)
+			if dash_invulnerability_left <= 0.0:
+				# Retreat/charge movement can point away from the player; recoil is radial.
+				var recoil_direction: Vector2 = (contact_origin - player_position).normalized()
+				enemy.position = clamp_point(contact_origin + recoil_direction * 18.0)
 			_hurt_player(enemy.definition.damage * (1.0 + 0.09 * float(run.wave - 1)), id, "contact", contact_origin)
 
 func _update_boss(enemy: Enemy, direction: Vector2, delta: float) -> void:
@@ -932,7 +941,13 @@ func _update_zones(delta: float) -> void:
 			zones.remove_at(index)
 
 func _hurt_player(amount: float, source_id: String = "enemy", kind: String = "contact", origin: Vector2 = Vector2.INF) -> void:
-	if complete or invulnerability > 0.0 or dash_invulnerability_left > 0.0 or run.health <= 0.0:
+	if complete or invulnerability > 0.0 or run.health <= 0.0:
+		return
+	if dash_invulnerability_left > 0.0:
+		if not dash_evaded_current and is_finite(amount) and amount > 0.0:
+			dash_evaded_current = true
+			dash_evades += 1
+			dash_evaded.emit(player_position, origin if origin.is_finite() else player_position, source_id, kind)
 		return
 	var actual: float = run.take_damage(amount, source_id, kind)
 	if actual <= 0.0:

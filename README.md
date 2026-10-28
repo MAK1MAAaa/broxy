@@ -18,6 +18,8 @@ Godot 4.7.2 普通版、带类型标注的 GDScript 开发的 macOS / Windows �
 
 战斗新增空格冲刺：向当前移动方向短冲0.20秒，静止时沿面向，距离约132像素，冷却2.4秒。起始0.12秒短暂闪避，可冲离减速地形；冲刺末段仍可受伤。顶栏显示冷却，冷却期间按键不缓存，按住不连发；暂停、升级和失焦会清除未消费输入。数值、残影与验证范围见[短冲技能](docs/dash.md)。
 
+实际用冲刺保护挡住接触、敌方弹体或祭仪攻击时，玩家附近短暂显示一次“闪避”确认；原有受击无敌生效或没有实际命中时不提示。同次冲刺最多一次，不改变伤害、奖励、冷却或保护时长。关闭受击闪光仍保留文字，暂停冻结提示，敌方预警继续置顶。规则和本轮验收见[成功闪避确认](docs/dash-evasion.md)。
+
 战斗现在显示实际伤害与承伤浮字，并提示受击方向。普通主命中新增四类短暂刻痕，持续0.12秒；贯穿显示淡绿双轨，弹射显示真实转向的冷蓝折角，爆破显示暖金放射纹，敌方预警始终位于最上层。刻痕采用32对象固定池与最多12批次绘制，次级溅射不再叠痕；暂停时关闭闪光会立即清除，重新开启不重播。弹体圆点、弹射环和拖尾采用批量绘制。结算新增最后受击来源和各法器实际伤害贡献。购买符文后会自动选中，并把键盘焦点移到法器的“装入”按钮，便于完成改装。
 
 冲锋蓄力显示短双轨方向箭头，施法蓄力显示闭合刻环；它们表示攻击意图，不代表完整碰撞范围或术士锁定瞄准。Boss战明确显示“击败首领”和“限时”，最后10秒使用静态暖色提醒。波末结算会清理暂停状态，避免下一波留下不可见的暂停。
@@ -40,7 +42,7 @@ Godot 4.7.2 普通版、带类型标注的 GDScript 开发的 macOS / Windows �
 
 ## 直接游玩
 
-Windows x86_64入口为 `build/Embers-windows-x86_64/Embers.exe`，分发包为 `build/Embers-windows-x86_64.zip`。解压后保留同目录的 `Embers.pck` 与 `licenses/`。当前包基于最新 `main` 的四地图、秘术抉择、邻接共鸣与精简HUD，加入空格冲刺和冷却反馈，使用49项既有资源。冲刺前的最新主线包另存 `build/Embers-windows-latest-main-b15ad72.zip`，旧Windows共鸣包另存 `build/Embers-windows-before-dash-632cd06.zip`。Windows使用微软雅黑；本轮Windows验收见[短冲技能](docs/dash.md)，macOS包保留此前版本。
+Windows x86_64入口为 `build/Embers-windows-x86_64/Embers.exe`，分发包为 `build/Embers-windows-x86_64.zip`。解压后保留同目录的 `Embers.pck` 与 `licenses/`。当前包基于最新 `main` 的四地图、秘术抉择、邻接共鸣与精简HUD，加入空格冲刺、冷却与成功闪避确认，使用49项既有资源。冲刺首版包另存 `build/Embers-windows-before-evasion-6a2fe12.zip`，更早的主线和共鸣包继续保留。Windows使用微软雅黑；本轮验收见[成功闪避确认](docs/dash-evasion.md)，macOS包保留此前版本。
 
 最新macOS应用为 `build/Embers-minimal-hud-macos.app`，分发包为 `build/Embers-minimal-hud-macos-arm64.zip`，包含四地图选择、实际地形与精简界面，以及此前完整背包／共鸣／秘术抉择内容。适用于Apple Silicon、macOS 13及以上，使用本地ad-hoc签名。本轮界面验证见 `reports/minimal-hud-validation.json`，地图与性能历史见 `reports/terrain-validation.json`；旧包保留。
 
@@ -132,7 +134,7 @@ BROXY_APP_PATH="$PWD/build/Embers-minimal-hud-macos.app" ./tools/build_macos.sh
 
 ## 验证
 
-冲刺版Windows本轮通过 `./tools/test.sh` 的60套Godot加5个档案诊断入口，共26135条断言和32项Python测试；四套新增冲刺专项、原生画面、实际EXE空格输入与菜单切换通过，12局四地图普通模拟均通关。实际反复冲刺的八法器压力场景预热5秒、采样60秒，平均111.831 FPS、P99 18.300毫秒；该夹具不代表真人难度，未重复300秒。规则、复跑命令及范围见[短冲技能](docs/dash.md)和 `reports/dash/validation.json`。下列历史数值保留原范围。
+成功闪避版Windows本轮通过 `./tools/test.sh` 的63套Godot加5个档案诊断入口，共26318条断言和32项Python测试；真实判定、呈现及声音池调度三套专项原生通过。明确加入实际挡伤的八法器压力场景预热5秒、采样60秒：25次采样冲刺均确认挡伤，平均109.773 FPS、P99 18.276毫秒；该合成夹具会补血、清旧受击保护并加入固定敌弹，不代表真人难度。规则、范围与指纹见[成功闪避确认](docs/dash-evasion.md)和 `reports/evasion/validation.json`。首版冲刺的12局四地图普通模拟和历史结果保留在[短冲技能](docs/dash.md)，本轮未重跑完整模拟或300秒采样。下列历史数值保留原范围。
 
 地图版460ccea已通过25913条Godot断言、32项Python与18局自动构筑。解锁后补做沉沼／白骨八法器原生压力：5秒预热＋300秒，平均88.428 FPS、P99帧间隔18.597毫秒，末尾300敌人／600弹体／200掉落，达到门槛。五次CUA观察确认窗口可见，源码／素材／已交付Mac包指纹保持；初次锁屏143历史保留。仅覆盖这一压力场景，没有重跑全套、18局或打包。范围见 `reports/terrain-performance-validation.json`。
 

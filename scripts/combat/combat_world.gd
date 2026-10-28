@@ -40,6 +40,9 @@ const PLAYER_FOREGROUND_VISUAL_REVISION: String = "foreground-player-v1"
 const DASH_AFTERIMAGE_LIMIT: int = 6
 const DASH_AFTERIMAGE_LIFE: float = 0.16
 const DASH_AFTERIMAGE_INTERVAL: float = 0.03
+const DASH_EVASION_LIFE: float = 0.32
+const DASH_EVASION_TEXT: String = "闪避"
+const DASH_EVASION_FONT_SIZE: int = 14
 
 class DashAfterimage:
 	var position: Vector2 = Vector2.ZERO
@@ -50,6 +53,11 @@ var _dash_pending: bool = false
 var _dash_afterimages: Array[DashAfterimage] = []
 var _dash_afterimage_next: int = 0
 var _dash_afterimage_clock: float = 0.0
+var _dash_evasion_remaining: float = 0.0
+var _dash_evasion_pulse_remaining: float = 0.0
+var _dash_evasion_dash: int = -1
+var _dash_evasion_font: Font
+var _dash_evasion_text_width: float = 32.0
 
 class RuneFlash:
 	var kind: int = 0
@@ -114,6 +122,8 @@ func _init() -> void:
 
 func _ready() -> void:
 	_number_font = ThemeDB.fallback_font
+	_dash_evasion_font = GameUI.create_ui_font()
+	_dash_evasion_text_width = _dash_evasion_font.get_string_size(DASH_EVASION_TEXT, HORIZONTAL_ALIGNMENT_LEFT, -1, DASH_EVASION_FONT_SIZE).x
 	arena_texture = load(str(ArenaCatalog.definition(_arena_id)["texture"])) as Texture2D
 	soul_texture = load("res://assets/icons/soul.svg")
 	glow_texture = load("res://assets/fx/glow.svg")
@@ -130,6 +140,7 @@ func apply_visual_settings(value: Dictionary) -> void:
 	if not bool(settings.get("flash", true)):
 		_impact_painter.clear()
 		_clear_dash_afterimages()
+		_dash_evasion_pulse_remaining = 0.0
 	queue_redraw()
 
 func begin(state: RunState) -> void:
@@ -152,6 +163,7 @@ func begin(state: RunState) -> void:
 	sim.player_damaged.connect(_on_player_damaged)
 	sim.rune_activated.connect(_on_rune_activated)
 	sim.dash_started.connect(_on_dash_started)
+	sim.dash_evaded.connect(_on_dash_evaded)
 	_reset_feedback()
 	active = true
 	_last_kills = state.kills
@@ -176,6 +188,7 @@ func _physics_process(delta: float) -> void:
 	_visual_time += delta
 	_advance_feedback(delta)
 	_advance_dash_afterimages(delta)
+	_advance_dash_evasion_feedback(delta)
 	var movement: Vector2 = _movement()
 	if autopilot:
 		movement = BotPolicy.movement(sim)
@@ -216,11 +229,40 @@ func dash_afterimage_count() -> int:
 	return count
 
 func _on_dash_started(origin: Vector2, direction: Vector2) -> void:
+	_clear_dash_evasion_feedback()
 	_dash_afterimage_clock = 0.0
 	_add_dash_afterimage(origin, direction)
 	if sound != null:
 		sound.play("rune", -20.0)
 	hud_changed.emit(hud_snapshot())
+
+func dash_evasion_feedback_snapshot() -> Dictionary:
+	return {
+		"active": _dash_evasion_remaining > 0.0,
+		"remaining": _dash_evasion_remaining,
+		"pulse_remaining": _dash_evasion_pulse_remaining,
+		"text": DASH_EVASION_TEXT if _dash_evasion_remaining > 0.0 else "",
+	}
+
+func _on_dash_evaded(point: Vector2, _origin: Vector2, _source_id: String, _kind: String) -> void:
+	if not active or sim == null or sim.complete or not point.is_finite() or sim.dashes_used <= 0 or _dash_evasion_dash == sim.dashes_used:
+		return
+	_dash_evasion_dash = sim.dashes_used
+	_dash_evasion_remaining = DASH_EVASION_LIFE
+	_dash_evasion_pulse_remaining = DASH_EVASION_LIFE if bool(settings.get("flash", true)) else 0.0
+	if sound != null:
+		sound.play_cue("rune", -22.0, "dash_evasion")
+	hud_changed.emit(hud_snapshot())
+	queue_redraw()
+
+func _advance_dash_evasion_feedback(delta: float) -> void:
+	_dash_evasion_remaining = maxf(0.0, _dash_evasion_remaining - delta)
+	_dash_evasion_pulse_remaining = maxf(0.0, _dash_evasion_pulse_remaining - delta)
+
+func _clear_dash_evasion_feedback() -> void:
+	_dash_evasion_remaining = 0.0
+	_dash_evasion_pulse_remaining = 0.0
+	_dash_evasion_dash = -1
 
 func _add_dash_afterimage(point: Vector2, direction: Vector2) -> void:
 	if not bool(settings.get("flash", true)) or not point.is_finite() or not direction.is_finite():
@@ -270,6 +312,8 @@ func _on_damage_dealt(point: Vector2, amount: float, source: String, secondary: 
 		_impact_painter.add_hit(point, source, target_uid)
 
 func _on_player_damaged(amount: float, _source_id: String, _kind: String, origin: Vector2) -> void:
+	_dash_evasion_remaining = 0.0
+	_dash_evasion_pulse_remaining = 0.0
 	_spawn_number(sim.player_position + Vector2(0, -40), amount, "player", true, false)
 	_damage_flash = 0.22
 	_damage_direction = (origin - sim.player_position).normalized() if origin.is_finite() else Vector2.ZERO
@@ -288,6 +332,7 @@ func _on_rune_activated(rune_id: String, origin: Vector2, incoming: Vector2, out
 func _reset_feedback() -> void:
 	clear_pending_actions()
 	_clear_dash_afterimages()
+	_clear_dash_evasion_feedback()
 	_enemy_telegraphs.clear()
 	_impact_painter.clear()
 	_numbers.clear()
@@ -387,6 +432,7 @@ func _on_ended(victory: bool, reason: String) -> void:
 	active = false
 	clear_pending_actions()
 	_clear_dash_afterimages()
+	_clear_dash_evasion_feedback()
 	_enemy_telegraphs.clear()
 	_impact_painter.clear()
 	hud_changed.emit(hud_snapshot())
@@ -423,6 +469,7 @@ func _draw() -> void:
 	_draw_rune_feedback()
 	_draw_outgoing_feedback()
 	_draw_player()
+	_draw_dash_evasion_feedback()
 	_draw_feedback()
 	# Hostile projectiles and telegraphs stay above all friendly spell effects.
 	_draw_danger()
@@ -510,6 +557,33 @@ func _draw_number(number: FloatingNumber) -> void:
 func _draw_feedback() -> void:
 	_draw_numbers(true)
 	_draw_player_damage_direction()
+
+func _draw_dash_evasion_feedback() -> void:
+	if _dash_evasion_remaining <= 0.0 or sim == null:
+		return
+	if _dash_evasion_pulse_remaining > 0.0 and bool(settings.get("flash", true)):
+		_draw_dash_evasion_pulse(sim.player_position + Vector2(0, 6))
+	_draw_dash_evasion_text(_dash_evasion_text_anchor())
+
+func _dash_evasion_text_anchor() -> Vector2:
+	var anchor: Vector2 = sim.player_position + Vector2(0, -62)
+	if anchor.y - 16.0 < 110.0:
+		anchor.y = sim.player_position.y + 72.0
+	var half_width: float = _dash_evasion_text_width * 0.5
+	anchor.x = clampf(anchor.x, half_width + 8.0, 1280.0 - half_width - 8.0)
+	return anchor
+
+func _draw_dash_evasion_pulse(center: Vector2) -> void:
+	var strength: float = clampf(_dash_evasion_pulse_remaining / DASH_EVASION_LIFE, 0.0, 1.0)
+	var radius: float = 17.0 + (1.0 - strength) * 2.0
+	draw_arc(center, radius, PI * 0.12, PI * 0.88, 12, Color(0.68, 0.88, 0.90, strength * 0.24), 1.25, true)
+
+func _draw_dash_evasion_text(anchor: Vector2) -> void:
+	if _dash_evasion_font == null:
+		return
+	var point: Vector2 = anchor - Vector2(_dash_evasion_text_width * 0.5, 0)
+	draw_string_outline(_dash_evasion_font, point, DASH_EVASION_TEXT, HORIZONTAL_ALIGNMENT_LEFT, -1, DASH_EVASION_FONT_SIZE, 3, Color("0c121a"))
+	draw_string(_dash_evasion_font, point, DASH_EVASION_TEXT, HORIZONTAL_ALIGNMENT_LEFT, -1, DASH_EVASION_FONT_SIZE, Color("d0e6df"))
 
 func _draw_player_damage_direction() -> void:
 	if _damage_flash > 0.0 and bool(settings.get("flash", true)):

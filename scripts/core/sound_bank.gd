@@ -48,13 +48,19 @@ func set_volume(value: float) -> void:
 	AudioServer.set_bus_mute(0, value < 0.001)
 
 func play(sound: String, loudness: float = -10.0) -> void:
+	_play(sound, loudness, sound)
+
+func play_cue(sound: String, loudness: float, cue_id: String) -> void:
+	_play(sound, loudness, "cue:%s:%s" % [cue_id, sound])
+
+func _play(sound: String, loudness: float, throttle_key: String) -> void:
 	if not streams.has(sound) or voices.is_empty():
 		return
 	var now: int = Time.get_ticks_msec()
 	var interval: int = 100 if sound == "shoot" or sound == "hit" or sound == "death" else 35
-	if now - int(last_played.get(sound, -1000)) < interval:
+	if now - int(last_played.get(throttle_key, -1000)) < interval:
 		return
-	last_played[sound] = now
+	last_played[throttle_key] = now
 	var voice: AudioStreamPlayer = voices[cursor]
 	cursor = (cursor + 1) % voices.size()
 	voice.stream = streams[sound]
