@@ -67,9 +67,9 @@ func _test_details_and_forecast() -> void:
 	var stats: Label = _label("BackpackWeaponStats")
 	_check(stats != null and stats.text.contains("%.1f伤害" % state.weapon_damage(state.loadout[0])), "Selected-weapon details display the actual UID's effective damage")
 	var resonance: Label = _label("BackpackResonance")
-	_check(resonance != null and resonance.text.contains("+9%") and resonance.text.contains("18%") and resonance.text.contains("3/6/12%"), "Details expose current local contribution and its rank/cap rules")
+	_check(resonance != null and resonance.text.contains("+9%") and resonance.tooltip_text.contains("18%") and resonance.tooltip_text.contains("3/6/12%"), "The compact contribution retains its actual rank and cap rules in the tooltip")
 	for uid: int in [4, 5, 6]:
-		_check(resonance.text.contains("#%d" % uid), "A contributing relic is identifiable by stable UID: %d" % uid)
+		_check(resonance.tooltip_text.contains("#%d" % uid), "A contributing relic remains identifiable by stable UID in the tooltip: %d" % uid)
 	var merge: Button = _ui.find_child("MergeBackpackItem2", true, false) as Button
 	var scroll: ScrollContainer = _ui.find_child("BackpackDetailsScroll", true, false) as ScrollContainer
 	var summary: Label = _label("BackpackResonanceSummary")
@@ -82,7 +82,7 @@ func _test_details_and_forecast() -> void:
 	_check(preview["has_projection"] and forecast.text == _ui._weapon_stats_text(GameCatalog.weapon("bone"), 1, float(preview["resonance_bonus"])) and forecast.text.contains("%.1f伤害" % float(preview["damage"])), "Weapon offers retain the compact weapon-stat format while using real automatic-placement damage")
 	_check(forecast.tooltip_text.contains("自动落点") and forecast.tooltip_text.contains(_ui._rune_percent(float(preview["resonance_bonus"]))), "Forecast scope and its local bonus are inspectable")
 	_ui._bag_grid.select_item(4)
-	_check(_label("BackpackResonance").text.contains("骨针 #1") and _label("BackpackResonance").text.contains("合成或出售"), "Selecting a relic identifies its affected weapon and layout-changing actions")
+	_check(_label("BackpackResonance").tooltip_text.contains("骨针 #1") and _label("BackpackResonance").tooltip_text.contains("合成或出售"), "The selected relic's tooltip identifies its affected weapon and layout-changing actions")
 	_ui.show_hud()
 	_ui.update_hud({"health": state.health, "max_health": state.stat("max_health"), "wave": 4, "time_left": 45.0, "loadout": state.loadout})
 	await _settle()
@@ -134,14 +134,14 @@ func _test_full_and_unlinked() -> void:
 	_check(state.backpack_snapshot()["used_cells"] == 36 and _label("BackpackResonance").text.contains("+18%"), "The legal full-grid fixture exposes capped resonance")
 	var offer: Node = _ui.find_child("Offer1", true, false)
 	var forecast: Label = offer.find_child("WeaponStats", true, false) as Label
-	_check(not state.weapon_purchase_preview(0)["has_projection"] and forecast.text.contains("无完整空位"), "A full grid never invents an incoming weapon's contact bonus or damage")
+	_check(not state.weapon_purchase_preview(0)["has_projection"] and forecast.text.contains("背包无空位"), "A full grid never invents an incoming weapon's contact bonus or damage")
 	_ui._shop_focus_button("compare:2").pressed.emit()
 	await _settle()
 	_check(_label("ComparisonStatus").text.contains("不新增邻接共鸣"), "A blocked relic's global-only hypothesis explicitly excludes a fabricated contact")
 	await _key(KEY_ESCAPE)
 	state = FIXTURE.make_fixture("unlinked")
 	await _show(state)
-	_check(_label("BackpackResonance").text.contains("+0%") and _label("BackpackResonance").text.contains("尚无共边遗物"), "A non-adjacent arrangement states the absence of local sources")
+	_check(_label("BackpackResonance").text.contains("+0%") and _label("BackpackResonance").tooltip_text.contains("尚无共边遗物"), "A non-adjacent arrangement retains its zero contribution and explains the absence of sources in its tooltip")
 	var grid: Control = _ui.find_child("BackpackGrid", true, false) as Control
 	var details: ScrollContainer = _ui.find_child("BackpackDetailsScroll", true, false) as ScrollContainer
 	_check(root.get_visible_rect().encloses(grid.get_global_rect()) and root.get_visible_rect().encloses(details.get_global_rect()), "The complete grid and independent details viewport remain within 720p")

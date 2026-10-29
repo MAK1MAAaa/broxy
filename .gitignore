@@ -134,3 +134,7 @@ reports/ui-refinement/*.log
 reports/ui-refinement/*.png
 reports/ui-refinement/*.import
 reports/ui-refinement/*-raw.json
+reports/shop-workbench/*.log
+reports/shop-workbench/*.png
+reports/shop-workbench/*.import
+reports/shop-workbench/*-raw.json

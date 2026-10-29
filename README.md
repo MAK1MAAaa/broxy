@@ -8,7 +8,7 @@ Godot 4.7.2 普通版、带类型标注的 GDScript 开发的 macOS / Windows �
 
 操作按钮统一为有高光、底边与轻投影的圆角样式：主操作使用深青绿珐琅和奶油白文字，次操作使用奶油色；法器／地图选择、购买、锁定及设置开关同步适配。按下文字轻移，键盘／手柄焦点使用描边与菱形标记；受阻商品仍可聚焦查看原因，背包物品格继续使用装备盒。实现与原生预览见[按钮美化](docs/button-style.md)。
 
-UI 优化分支 `codex/ui-refinement` 先细化商店与背包：商品图标增加淡色托底，纸卡增加内高光与底边，背包使用浅绿面板和内凹格；空格纹理降低对比，锁格显示锁形。选中物品的青色边框与键盘／手柄焦点的金色四角分别呈现。相关 Skills 已按选型清单补齐，具体范围、来源与验证见[界面细化](docs/ui-refinement.md)。
+UI 优化分支 `codex/ui-refinement` 将商店重新组织成装备整理台：左侧四件商品货架、中间皮革行囊、右侧独立装备检视，顶部集中波次与魂屑，底部保留构筑属性和下一波。木质边框、深青皮革、黄铜卡扣与48像素商品图标强化游戏感；小占格图显示形状，青色选中与金色焦点分开。完整规则通过商品／物品的“详情”按需展开，支持键盘与手柄，移除常驻说明段落。实现与验收见[商店与背包装备台](docs/shop-workbench.md)，此前 Skills 来源保留在[界面细化](docs/ui-refinement.md)。
 
 封面改为全屏连贯横幅：鸟喙面具角色与月环仪器居右，法器、地图与开始入口集中左侧，以缩略图、对勾和锁形状态表达选择，不再堆放定位标签、介绍、空记录与底部说明。星尘、环光、烛火和符印组成24帧循环；`assets/title/cover.gif`为1280×720、每帧120毫秒的实际动图，游戏复用同一组离散绘制状态。新增项目约定要求用直观UI解决信息问题，拒绝用解释小字补救。制作、来源和验收见[全屏动画封面](docs/title-cover.md)。
 
@@ -60,7 +60,7 @@ UI 优化分支 `codex/ui-refinement` 先细化商店与背包：商品图标增
 
 ## 直接游玩
 
-Windows x86_64入口为 `build/Embers-windows-x86_64/Embers.exe`，分发包为 `build/Embers-windows-x86_64.zip`。解压后保留同目录的 `Embers.pck` 与 `licenses/`。当前内容包含商店与背包界面细化、四地图与六角色材质、贴地阴影、连续大地图、角落小地图、双背包技能和增强命中反馈，并保留立体按钮及全屏动画封面。UI 更新前包备份为 `build/Embers-windows-before-ui-refinement-9663b6e.zip`，更早版本继续保留。Windows使用微软雅黑；本轮验收见[界面细化](docs/ui-refinement.md)，此前美术与地图记录见[材质与贴地层次](docs/art-polish.md)及[大地图与小地图](docs/expanded-map.md)，macOS包保留此前版本。
+Windows x86_64入口为 `build/Embers-windows-x86_64/Embers.exe`，分发包为 `build/Embers-windows-x86_64.zip`。解压后保留同目录的 `Embers.pck` 与 `licenses/`。当前内容包含重新设计的商店与背包装备台、按需物品详情、四地图与六角色材质、贴地阴影、连续大地图、角落小地图、双背包技能和增强命中反馈，并保留立体按钮及全屏动画封面。装备台更新前包备份为 `build/Embers-windows-before-shop-workbench-5fd030a.zip`，更早版本继续保留。Windows使用微软雅黑；本轮验收见[商店与背包装备台](docs/shop-workbench.md)，此前美术与地图记录见[材质与贴地层次](docs/art-polish.md)及[大地图与小地图](docs/expanded-map.md)，macOS包保留此前版本。
 
 最新macOS应用为 `build/Embers-minimal-hud-macos.app`，分发包为 `build/Embers-minimal-hud-macos-arm64.zip`，包含四地图选择、实际地形与精简界面，以及此前完整背包／共鸣／秘术抉择内容。适用于Apple Silicon、macOS 13及以上，使用本地ad-hoc签名。本轮界面验证见 `reports/minimal-hud-validation.json`，地图与性能历史见 `reports/terrain-validation.json`；旧包保留。
 

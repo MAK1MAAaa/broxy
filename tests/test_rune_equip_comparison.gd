@@ -115,7 +115,7 @@ func _test_crescent_blast(ui: GameUI) -> void:
 		_check(equip != null and preview != null and equip.get_parent() == preview.get_parent() and preview.get_parent().size.y <= 44.1, "Direct equip and preview share a compact row inside backpack details: %d" % slot)
 	_check(_buttons_inside(ui._page), "All full-build shop buttons remain inside 1280x720 with rune preview actions")
 	var guide: Label = ui.find_child("RuneGuide", true, false)
-	_check(guide != null and guide.text.contains(GameCatalog.rune("blast").display_name) and guide.text.contains(ui._rune_rank_text("blast", 1)), "The selected loose rune guide reports its current-rank rules before choosing a weapon")
+	_check(guide != null and guide.text.contains(GameCatalog.rune("blast").display_name) and guide.tooltip_text.contains(ui._rune_rank_text("blast", 1)), "The selected loose rune shows its identity and preserves current-rank rules in its contextual tooltip")
 	var before: String = _signature(state)
 	var inventory: String = _inventory_signature(state)
 	var incoming: Dictionary = state.rune_bag[0].duplicate(true)

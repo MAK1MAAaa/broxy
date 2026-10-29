@@ -1,0 +1,546 @@
+{
+  "date": "2026-10-29",
+  "branch": "codex/ui-refinement",
+  "base_commit": "5fd030a",
+  "gate": {
+    "path": "reports/shop-workbench/test.log",
+    "sha256": "fe851931dfc4e4d4a282cee23caf3b7c08d77bec28b676f1cbef64eadb556f86",
+    "suite_entries": 98,
+    "assertions": 32158,
+    "godot_suites": 93,
+    "diagnostic_entries": 5,
+    "python_tests": 49
+  },
+  "native": [
+    {
+      "path": "reports/shop-workbench/native-ui.log",
+      "sha256": "00e669d1da680a57ddb372bc5e7d824497a97c852888cc52307d8344cfd41a72",
+      "suite_entries": 1,
+      "assertions": 223
+    },
+    {
+      "path": "reports/shop-workbench/native-backpack_focus.log",
+      "sha256": "2ba909ba29ed04718405a6f4aca07f4bed8ccb70dc09dac082e7317ac347579b",
+      "suite_entries": 1,
+      "assertions": 126
+    },
+    {
+      "path": "reports/shop-workbench/native-gamepad_backpack.log",
+      "sha256": "af3ca1a9c31845ee31746868e7a123537c367a8bd4d2c983da715e3c99a24988",
+      "suite_entries": 1,
+      "assertions": 42
+    },
+    {
+      "path": "reports/shop-workbench/native-shop_lock_ui.log",
+      "sha256": "b273aabf86a71d77e8c90e4a3182d056cfb49f5160204e6b231be1daf0a50f75",
+      "suite_entries": 1,
+      "assertions": 63
+    },
+    {
+      "path": "reports/shop-workbench/native-content_presentation.log",
+      "sha256": "b4b562e19f1982e3a4ea6f9b53355bcb1be58b1910ed7cefdff69b5e18581684",
+      "suite_entries": 1,
+      "assertions": 565
+    },
+    {
+      "path": "reports/shop-workbench/native-shop_workbench.log",
+      "sha256": "21271353df29d41e0943a5c8380a53f9ac457a746326e561c148100358f6b654",
+      "suite_entries": 1,
+      "assertions": 259
+    },
+    {
+      "path": "reports/shop-workbench/native-input_prompts_ui.log",
+      "sha256": "520017d7cd63f8492d9bb21fb14d2d737fe6264528a615a8bf014b8b616cce2d",
+      "suite_entries": 1,
+      "assertions": 67
+    },
+    {
+      "path": "reports/shop-workbench/native-gamepad_reading.log",
+      "sha256": "2c90a597d25701ab5c5be05637a42950fbf30fe9659d922f71e4e15c250492b8",
+      "suite_entries": 1,
+      "assertions": 227
+    },
+    {
+      "path": "reports/shop-workbench/native-resonance_ui.log",
+      "sha256": "8d9120e0d15d3290c4d36403708121a91999b644798774bdc5e4e28589182599",
+      "suite_entries": 1,
+      "assertions": 32
+    }
+  ],
+  "packaged": [
+    {
+      "path": "reports/shop-workbench/pack-check-ui.log",
+      "sha256": "00e669d1da680a57ddb372bc5e7d824497a97c852888cc52307d8344cfd41a72",
+      "suite_entries": 1,
+      "assertions": 223
+    },
+    {
+      "path": "reports/shop-workbench/pack-check-backpack_focus.log",
+      "sha256": "950e953d9e3068d45e38110ae24d5def8b6101c233dc85c68168db1e265cdde5",
+      "suite_entries": 1,
+      "assertions": 126
+    },
+    {
+      "path": "reports/shop-workbench/pack-check-gamepad_backpack.log",
+      "sha256": "af3ca1a9c31845ee31746868e7a123537c367a8bd4d2c983da715e3c99a24988",
+      "suite_entries": 1,
+      "assertions": 42
+    },
+    {
+      "path": "reports/shop-workbench/pack-check-shop_lock_ui.log",
+      "sha256": "b273aabf86a71d77e8c90e4a3182d056cfb49f5160204e6b231be1daf0a50f75",
+      "suite_entries": 1,
+      "assertions": 63
+    },
+    {
+      "path": "reports/shop-workbench/pack-check-content_presentation.log",
+      "sha256": "b4b562e19f1982e3a4ea6f9b53355bcb1be58b1910ed7cefdff69b5e18581684",
+      "suite_entries": 1,
+      "assertions": 565
+    },
+    {
+      "path": "reports/shop-workbench/pack-check-shop_workbench.log",
+      "sha256": "21271353df29d41e0943a5c8380a53f9ac457a746326e561c148100358f6b654",
+      "suite_entries": 1,
+      "assertions": 259
+    },
+    {
+      "path": "reports/shop-workbench/pack-check-input_prompts_ui.log",
+      "sha256": "520017d7cd63f8492d9bb21fb14d2d737fe6264528a615a8bf014b8b616cce2d",
+      "suite_entries": 1,
+      "assertions": 67
+    },
+    {
+      "path": "reports/shop-workbench/pack-check-gamepad_reading.log",
+      "sha256": "2c90a597d25701ab5c5be05637a42950fbf30fe9659d922f71e4e15c250492b8",
+      "suite_entries": 1,
+      "assertions": 227
+    },
+    {
+      "path": "reports/shop-workbench/pack-check-resonance_ui.log",
+      "sha256": "8d9120e0d15d3290c4d36403708121a91999b644798774bdc5e4e28589182599",
+      "suite_entries": 1,
+      "assertions": 32
+    }
+  ],
+  "preview_pairs": [
+    {
+      "view": "shop",
+      "source_sha256": "eb76fa9ad7f193bf5743a319cf1392f3e77e8a4ec1941e6ed4de21969330ab35",
+      "pack_sha256": "eb76fa9ad7f193bf5743a319cf1392f3e77e8a4ec1941e6ed4de21969330ab35",
+      "pixel_equal": true,
+      "fixture": {
+        "view": "shop",
+        "window_size": [
+          1280,
+          720
+        ],
+        "viewport_capture_size": [
+          1280,
+          720
+        ],
+        "bag_state": {},
+        "state_unchanged_while_drawing": true,
+        "fixed_fixture": true,
+        "personal_profile_io": false
+      }
+    },
+    {
+      "view": "poor",
+      "source_sha256": "29374edd4400066093f7718b08afbfcffca81a2f34596003c8666dd3b8872987",
+      "pack_sha256": "29374edd4400066093f7718b08afbfcffca81a2f34596003c8666dd3b8872987",
+      "pixel_equal": true,
+      "fixture": {
+        "view": "poor",
+        "window_size": [
+          1280,
+          720
+        ],
+        "viewport_capture_size": [
+          1280,
+          720
+        ],
+        "bag_state": {},
+        "state_unchanged_while_drawing": true,
+        "fixed_fixture": true,
+        "personal_profile_io": false
+      }
+    },
+    {
+      "view": "locked",
+      "source_sha256": "5d9ae988f9f36cf6affade439f3ca97a251011b079de04eb3f9d0280a657f518",
+      "pack_sha256": "5d9ae988f9f36cf6affade439f3ca97a251011b079de04eb3f9d0280a657f518",
+      "pixel_equal": true,
+      "fixture": {
+        "view": "locked",
+        "window_size": [
+          1280,
+          720
+        ],
+        "viewport_capture_size": [
+          1280,
+          720
+        ],
+        "bag_state": {},
+        "state_unchanged_while_drawing": true,
+        "fixed_fixture": true,
+        "personal_profile_io": false
+      }
+    },
+    {
+      "view": "sold",
+      "source_sha256": "1f1bf05981c51c06b223ec9527fbef97d7358007663ae52471589981b8ce167c",
+      "pack_sha256": "1f1bf05981c51c06b223ec9527fbef97d7358007663ae52471589981b8ce167c",
+      "pixel_equal": true,
+      "fixture": {
+        "view": "sold",
+        "window_size": [
+          1280,
+          720
+        ],
+        "viewport_capture_size": [
+          1280,
+          720
+        ],
+        "bag_state": {},
+        "state_unchanged_while_drawing": true,
+        "fixed_fixture": true,
+        "personal_profile_io": false
+      }
+    },
+    {
+      "view": "bag_focus",
+      "source_sha256": "63bb4e103f3700ff9cbb64807e1252e9889aa27c34c4915d626b95ed6d545763",
+      "pack_sha256": "63bb4e103f3700ff9cbb64807e1252e9889aa27c34c4915d626b95ed6d545763",
+      "pixel_equal": true,
+      "fixture": {
+        "view": "bag_focus",
+        "window_size": [
+          1280,
+          720
+        ],
+        "viewport_capture_size": [
+          1280,
+          720
+        ],
+        "bag_state": {
+          "focus": "BackpackItem1",
+          "held_uid": -1,
+          "placement": {},
+          "selected_uid": 1
+        },
+        "state_unchanged_while_drawing": true,
+        "fixed_fixture": true,
+        "personal_profile_io": false
+      }
+    },
+    {
+      "view": "bag_selected",
+      "source_sha256": "565387494522843849525646974ec8a90707a7c5baf3edd9d016f321ac19f698",
+      "pack_sha256": "565387494522843849525646974ec8a90707a7c5baf3edd9d016f321ac19f698",
+      "pixel_equal": true,
+      "fixture": {
+        "view": "bag_selected",
+        "window_size": [
+          1280,
+          720
+        ],
+        "viewport_capture_size": [
+          1280,
+          720
+        ],
+        "bag_state": {
+          "focus": "",
+          "held_uid": -1,
+          "placement": {},
+          "selected_uid": 1
+        },
+        "state_unchanged_while_drawing": true,
+        "fixed_fixture": true,
+        "personal_profile_io": false
+      }
+    },
+    {
+      "view": "bag_valid",
+      "source_sha256": "7d6fbd28f19209d272765cf2d707a3933990bae39a0b2eb9a4f02120ed472383",
+      "pack_sha256": "7d6fbd28f19209d272765cf2d707a3933990bae39a0b2eb9a4f02120ed472383",
+      "pixel_equal": true,
+      "fixture": {
+        "view": "bag_valid",
+        "window_size": [
+          1280,
+          720
+        ],
+        "viewport_capture_size": [
+          1280,
+          720
+        ],
+        "bag_state": {
+          "focus": "BackpackGrid",
+          "held_uid": 1,
+          "placement": {
+            "error": "点击或Enter放置骨针；R旋转，Esc取消。暂无合成或装符候选。",
+            "kind": "move",
+            "valid": true
+          },
+          "selected_uid": 1
+        },
+        "state_unchanged_while_drawing": true,
+        "fixed_fixture": true,
+        "personal_profile_io": false
+      }
+    },
+    {
+      "view": "bag_invalid",
+      "source_sha256": "a035856dc608ddc74a2cb2d3bc706c4b1956b618cbb6a1b32544d813c8de1166",
+      "pack_sha256": "a035856dc608ddc74a2cb2d3bc706c4b1956b618cbb6a1b32544d813c8de1166",
+      "pixel_equal": true,
+      "fixture": {
+        "view": "bag_invalid",
+        "window_size": [
+          1280,
+          720
+        ],
+        "viewport_capture_size": [
+          1280,
+          720
+        ],
+        "bag_state": {
+          "focus": "BackpackGrid",
+          "held_uid": 1,
+          "placement": {
+            "error": "骨针超出已解锁背包，R可旋转。暂无合成或装符候选。",
+            "valid": false
+          },
+          "selected_uid": 1
+        },
+        "state_unchanged_while_drawing": true,
+        "fixed_fixture": true,
+        "personal_profile_io": false
+      }
+    },
+    {
+      "view": "small",
+      "source_sha256": "eb76fa9ad7f193bf5743a319cf1392f3e77e8a4ec1941e6ed4de21969330ab35",
+      "pack_sha256": "eb76fa9ad7f193bf5743a319cf1392f3e77e8a4ec1941e6ed4de21969330ab35",
+      "pixel_equal": true,
+      "fixture": {
+        "view": "shop",
+        "window_size": [
+          960,
+          540
+        ],
+        "viewport_capture_size": [
+          1280,
+          720
+        ],
+        "bag_state": {},
+        "state_unchanged_while_drawing": true,
+        "fixed_fixture": true,
+        "personal_profile_io": false
+      }
+    },
+    {
+      "view": "bag_gamepad",
+      "source_sha256": "c848d639675702db57c1901322132fe88f131b8a54124ae47dbc287fa86146f9",
+      "pack_sha256": "c848d639675702db57c1901322132fe88f131b8a54124ae47dbc287fa86146f9",
+      "pixel_equal": true,
+      "fixture": {
+        "view": "bag_gamepad",
+        "window_size": [
+          1280,
+          720
+        ],
+        "viewport_capture_size": [
+          1280,
+          720
+        ],
+        "bag_state": {
+          "focus": "BackpackItem1",
+          "held_uid": -1,
+          "placement": {},
+          "selected_uid": 1
+        },
+        "state_unchanged_while_drawing": true,
+        "fixed_fixture": true,
+        "personal_profile_io": false
+      }
+    },
+    {
+      "view": "bag_merge",
+      "source_sha256": "cf70a481ca01eba08f34e475b5684a359622c7437b6697c872a1ae4ee7a692d6",
+      "pack_sha256": "cf70a481ca01eba08f34e475b5684a359622c7437b6697c872a1ae4ee7a692d6",
+      "pixel_equal": true,
+      "fixture": {
+        "view": "bag_merge",
+        "window_size": [
+          1280,
+          720
+        ],
+        "viewport_capture_size": [
+          1280,
+          720
+        ],
+        "bag_state": {
+          "focus": "@Button@30",
+          "held_uid": -1,
+          "placement": {},
+          "selected_uid": 1
+        },
+        "state_unchanged_while_drawing": true,
+        "fixed_fixture": true,
+        "personal_profile_io": false
+      }
+    },
+    {
+      "view": "bag_rune",
+      "source_sha256": "332ffaaf49c01b8d7a4147cb21c20414938f7637f40128db90fd523a32f2f56e",
+      "pack_sha256": "332ffaaf49c01b8d7a4147cb21c20414938f7637f40128db90fd523a32f2f56e",
+      "pixel_equal": true,
+      "fixture": {
+        "view": "bag_rune",
+        "window_size": [
+          1280,
+          720
+        ],
+        "viewport_capture_size": [
+          1280,
+          720
+        ],
+        "bag_state": {
+          "focus": "@Button@30",
+          "held_uid": -1,
+          "placement": {},
+          "selected_uid": 4
+        },
+        "state_unchanged_while_drawing": true,
+        "fixed_fixture": true,
+        "personal_profile_io": false
+      }
+    },
+    {
+      "view": "bag_record",
+      "source_sha256": "2afffdfaeb13f37232e00172ff57e100ac87a98d47e775ef50bbd57e8c75f815",
+      "pack_sha256": "2afffdfaeb13f37232e00172ff57e100ac87a98d47e775ef50bbd57e8c75f815",
+      "pixel_equal": true,
+      "fixture": {
+        "view": "bag_record",
+        "window_size": [
+          1280,
+          720
+        ],
+        "viewport_capture_size": [
+          1280,
+          720
+        ],
+        "bag_state": {
+          "focus": "CloseItemRecord",
+          "held_uid": -1,
+          "placement": {},
+          "selected_uid": 1
+        },
+        "state_unchanged_while_drawing": true,
+        "fixed_fixture": true,
+        "personal_profile_io": false
+      }
+    },
+    {
+      "view": "offer_record",
+      "source_sha256": "a9f64c990e8e134f36e8bf74b1edfc47332b3761fb0328bd68c26fa6ff1ce1f2",
+      "pack_sha256": "a9f64c990e8e134f36e8bf74b1edfc47332b3761fb0328bd68c26fa6ff1ce1f2",
+      "pixel_equal": true,
+      "fixture": {
+        "view": "offer_record",
+        "window_size": [
+          1280,
+          720
+        ],
+        "viewport_capture_size": [
+          1280,
+          720
+        ],
+        "bag_state": {},
+        "state_unchanged_while_drawing": true,
+        "fixed_fixture": true,
+        "personal_profile_io": false
+      }
+    },
+    {
+      "view": "filled",
+      "source_sha256": "6e530a1a047c851737a76df840b76e6d05d2060ef804970fc99ac6f7b4dea91e",
+      "pack_sha256": "6e530a1a047c851737a76df840b76e6d05d2060ef804970fc99ac6f7b4dea91e",
+      "pixel_equal": true,
+      "fixture": {
+        "case": "filled",
+        "fixed_fixture": true,
+        "persistent_profile": false,
+        "fixture_passed": true
+      }
+    },
+    {
+      "view": "full",
+      "source_sha256": "3b540178fdc9a6ae15e4effa788586a73ea20f58413798e3e12867e23b047228",
+      "pack_sha256": "3b540178fdc9a6ae15e4effa788586a73ea20f58413798e3e12867e23b047228",
+      "pixel_equal": true,
+      "fixture": {
+        "case": "full",
+        "fixed_fixture": true,
+        "persistent_profile": false,
+        "fixture_passed": true
+      }
+    },
+    {
+      "view": "skills",
+      "source_sha256": "fcb847cf048acc3ee9a77924b10da4e6e6b96df6764ccb3cd59ed7101286f846",
+      "pack_sha256": "fcb847cf048acc3ee9a77924b10da4e6e6b96df6764ccb3cd59ed7101286f846",
+      "pixel_equal": true,
+      "fixture": {
+        "view": "shop",
+        "window_size": [
+          1280,
+          720
+        ],
+        "fixed_fixture": true,
+        "persistent_profile": false
+      }
+    }
+  ],
+  "source_sha256": {
+    "scripts/ui/game_ui.gd": "d1791075bd6493efa321fef96ce02553e2563bfc6c78c6740030290055eeffb8",
+    "scripts/ui/shop_workbench_art.gd": "36c89ec39f4335d6f7584cfb6b2c2418d2972af90a017b82575a3f49bea12a1c",
+    "tests/test_shop_workbench.gd": "17d2f316f6423ad5b07e16ebd80c669b5cfeada1f17637ce121351476cae5ea2",
+    "tools/preview_button_polish.gd": "fa9a113c4a4c6ba57cc45e2e25534d8750a2048e0ebc1125c532483317dc58b5"
+  },
+  "combat_rules_data_and_assets_unchanged": true,
+  "native_mouse_retry": {
+    "first_attempt": "Software mouse warping did not agree with the requested desktop coordinates; 16 assertions failed.",
+    "same_code_rerun": "Passed 126 assertions without modifying product or test code.",
+    "physical_input_claim": false
+  },
+  "windows": {
+    "build": {
+      "path": "reports/shop-workbench/build.log",
+      "sha256": "d82e59fe37388f2add070eb05c93ceb376ab9db363b5370169b4e3e13b1a27d4",
+      "suite_entries": 0,
+      "assertions": 0
+    },
+    "smoke": {
+      "path": "reports/shop-workbench/exe-smoke.log",
+      "sha256": "2a29b1518a455a64b9b357917c3260fab603bb1387cd9f5e7b0c530f801d3133",
+      "suite_entries": 0,
+      "assertions": 0
+    },
+    "zip_sha256": "30d71b94579046d76afeafc3d993aace9d96724fc2be7d96962d71bc1bd7a5ad",
+    "zip_crc_ok": true,
+    "member_bytes_match": true,
+    "file_count": 5,
+    "backup": "build/Embers-windows-before-shop-workbench-5fd030a.zip",
+    "backup_sha256": "44671c4059d09057c03276f267c27f42483a496f3b3a1de71ab7749691c6e347"
+  },
+  "not_run": [
+    "macOS export",
+    "combat stress benchmark",
+    "hardware gamepad",
+    "hardware audio"
+  ]
+}

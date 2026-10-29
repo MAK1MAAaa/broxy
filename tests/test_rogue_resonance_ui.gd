@@ -81,7 +81,7 @@ func _test_combined_inventory() -> void:
 	_check(is_equal_approx(float(state.loadout[0]["resonance_bonus"]), 0.03) and is_equal_approx(float(state.loadout[1]["resonance_bonus"]), 0.06), "Shared-edge damage reflects each UID's actual source relics")
 	_check(_label("BackpackWeaponStats").text.contains("%.1f伤害" % state.weapon_damage(state.loadout[0])), "Actual effective damage, including resonance, reaches the selected core weapon's UI")
 	_check(_label("BackpackResonanceSummary").text == "共鸣+3% · 1件遗物", "The compact resonance summary remains visible beside rogue/candle data")
-	_check(_label("BackpackItemEffect").text.contains("引魂烛联动"), "The selected weapon still explains the candle targeting effect")
+	_check(_label("BackpackItemEffect").text.contains("烛引") and _label("BackpackItemEffect").tooltip_text.contains("引魂烛联动"), "The selected weapon shows candle targeting and retains its detailed effect")
 	var box: Control = _grid().find_child("BackpackItem%d" % first, false, false)
 	var material: Control = box.find_child("BoxMaterial", false, false)
 	var badge: TextureRect = box.find_child("SocketRuneBadge", false, false)

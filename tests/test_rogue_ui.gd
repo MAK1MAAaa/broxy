@@ -234,7 +234,8 @@ func _test_full_reward_and_candle() -> void:
 	await _show(lamp)
 	var weapon: int = int(lamp.loadout[0]["uid"])
 	_ui._bp_select(weapon, _ui._shop_epoch)
-	_check((_ui.find_child("BackpackItemEffect", true, false) as Label).text.contains("引魂烛联动"), "A linked weapon explains its targeting behavior in the live detail panel")
+	var linked_effect := _ui.find_child("BackpackItemEffect", true, false) as Label
+	_check(linked_effect.text.contains("烛引") and linked_effect.tooltip_text.contains("引魂烛联动"), "A linked weapon shows its targeting status and preserves the full behavior in its details")
 	_ui._bp_select(candle, _ui._shop_epoch)
-	var effect: String = (_ui.find_child("BackpackItemEffect", true, false) as Label).text
+	var effect: String = (_ui.find_child("BackpackItemEffect", true, false) as Label).tooltip_text
 	_check(effect.contains("正上方") and effect.contains("骨针 #") and effect.contains("不叠加"), "The candle names its actual linked weapon and states direction and non-stacking behavior")

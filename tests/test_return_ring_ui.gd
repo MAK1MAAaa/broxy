@@ -108,7 +108,7 @@ func _test_shop_and_tooltips(ui: GameUI) -> void:
 	var offer: Control = ui.find_child("Offer1", true, false)
 	var description: Label = offer.find_child("OfferDescription", true, false)
 	var definition: ContentDef = GameCatalog.weapon("return_ring")
-	_check(description.text == definition.shop_summary and description.tooltip_text == definition.description, "The return weapon uses its short shop summary while retaining the full behavior tooltip")
+	_check(description.text.contains("法器") and description.text.contains("往返穿透") and description.tooltip_text == definition.description and description.tooltip_text.contains("%.2f秒" % definition.return_delay) and description.tooltip_text.contains("第二个直接命中") and description.tooltip_text.contains("成功弹射"), "The compact return-flight trait retains definition-driven return timing and second-hit rules in its full tooltip")
 	_check(root.get_visible_rect().encloses(offer.get_global_rect()), "The concise return card remains inside the native two-row stock grid")
 	for id: String in ["return_ring", "blood_pact", "grave_candle"]:
 		var content: ContentDef = GameCatalog.weapon(id) if id == "return_ring" else GameCatalog.relic(id)
@@ -118,7 +118,7 @@ func _test_shop_and_tooltips(ui: GameUI) -> void:
 	_check(tooltip.contains("当前玩家") and tooltip.contains("不等待回收") and tooltip.contains("第2次直接命中") and tooltip.contains("爆破后弹体消失"), "Equipped return-ring tooltips explain real return tracking, timing and blast consumption")
 	await _accept(ui, "bag:%d" % int(state.rune_bag[0]["uid"]))
 	var guide: Label = ui.find_child("RuneGuide", true, false)
-	_check(guide != null and guide.text.contains(GameCatalog.rune("bounce").display_name) and guide.text.contains("Ⅰ阶") and guide.text.contains("最多追加%d跳" % RuneRules.extra_hits(1)) and not guide.text.contains("月镰"), "The backpack guide describes the selected rune's actual tier while weapon-specific return rules remain in the preview")
+	_check(guide != null and guide.text.contains(GameCatalog.rune("bounce").display_name) and guide.text.contains("+%d跳" % RuneRules.extra_hits(1)) and guide.tooltip_text.contains("最多追加%d跳" % RuneRules.extra_hits(1)) and not guide.text.contains("月镰"), "The selected rune shows its real extra jumps and retains full ranked rules in its tooltip")
 
 
 func _test_rune_preview(ui: GameUI, rune: String) -> void:

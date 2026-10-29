@@ -279,7 +279,7 @@ func _test_backpack_prompts() -> void:
 	var focus: Control = root.gui_get_focus_owner()
 	var identity: int = grid.get_instance_id()
 	await _joy()
-	_check(hint.text.contains("「拿起」按A") and hint.text.contains("X旋转") and hint.text.contains("B取消") and rotate.text == "旋转 X" and move.tooltip_text.contains("A放置"), "An idle backpack changes only the actual controller instructions and rotation label")
+	_check(hint.text == "A拿起 · X旋转 · B取消" and rotate.text == "旋转 X" and move.tooltip_text.contains("A放置"), "An idle backpack shows concise controller actions and the matching rotation label")
 	_check(_ui._bag_grid.get_instance_id() == identity and grid.held_uid < 0 and _state_signature(_state) == before and root.gui_get_focus_owner() == focus, "Idle prompt switching neither begins fake placement nor rebuilds inventory controls or moves focus")
 	for physical_size: Vector2i in [Vector2i(1280, 720), Vector2i(960, 540)]:
 		root.size = physical_size

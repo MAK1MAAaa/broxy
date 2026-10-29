@@ -235,10 +235,9 @@ func _test_backpack_skills() -> void:
 	var buy: Button = _ui._shop_focus_button("buy:0")
 	_check(buy != null and buy.text.contains("技能已满 2/2") and not buy.disabled and buy.focus_mode == Control.FOCUS_ALL, "The skill cap is visible while the blocked offer remains keyboard accessible")
 	var offer := _ui.find_child("Offer1", true, false) as Control
-	var rank_visible: bool = false
-	for child: Node in offer.find_children("*", "Label", true, false):
-		rank_visible = rank_visible or (child as Label).text.contains("Ⅱ阶 · 技能")
-	_check(rank_visible, "A second-rank skill offer displays its actual rank")
+	var rank_badge := offer.find_child("OfferRank", true, false) as Label
+	var category := offer.find_child("OfferDescription", true, false) as Label
+	_check(rank_badge != null and rank_badge.is_visible_in_tree() and rank_badge.text == "Ⅱ阶" and category != null and category.text == "主动技能", "A second-rank skill offer displays its actual rank independently of its category")
 
 func _test_lifecycle() -> void:
 	_ui.show_result(false, "试炼结束", {})
