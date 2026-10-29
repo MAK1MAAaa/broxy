@@ -39,7 +39,8 @@ func _run() -> void:
 		app.world.sim.sandbox = true
 		app.world.sim._cooldowns.fill(9999.0)
 		await _settle()
-		_check(app.world.arena_texture.resource_path == ArenaCatalog.texture_path(id) and app.world.arena_texture.get_size() == ArenaCatalog.art_rect().size, "The real selected map uses its full-size continuous background: " + id)
+		_check(ArenaCatalog.art_rect() == Rect2(-1146, -767, 3780, 2192) and app.world.arena_texture.resource_path == ArenaCatalog.texture_path(id) and app.world.arena_texture.get_size() == Vector2(3780, 2192), "The real selected map imports the exact enlarged continuous background: " + id)
+		_check(app.world.camera_view() == Rect2(0, 5, 1280, 720) and app.world.camera_view().position - ArenaCatalog.art_rect().position == Vector2(1146, 772), "The production start camera selects the exact new preview crop: " + id)
 		_check(app.world._camera.is_current() and app.world._camera.top_level and app.world._camera.zoom == Vector2.ONE, "A separate unscaled camera follows the world without scaling the actors")
 		var map: MinimapView = app.ui._hud["minimap"]
 		var hud_rect: Rect2 = map.get_global_rect()

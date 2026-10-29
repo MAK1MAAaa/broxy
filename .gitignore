@@ -171,3 +171,9 @@ reports/world-flipper-party/*.png
 reports/world-flipper-party/*.import
 reports/world-flipper-party/*-raw.json
 reports/world-flipper-party/*/
+reports/world-flipper-pinball/*.log
+reports/world-flipper-pinball/*.png
+reports/world-flipper-pinball/*.import
+reports/world-flipper-pinball/*-raw.json
+reports/world-flipper-pinball/*-native-phases.json
+reports/world-flipper-pinball/*/

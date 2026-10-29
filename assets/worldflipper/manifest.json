@@ -1,5 +1,5 @@
 {
-  "revision": "world-flipper-fan-05",
+  "revision": "world-flipper-fan-06",
   "original_copyright": "© Cygames, Inc. / Citail Inc.",
   "license_status": "Original game assets; no open asset license found. Unofficial fan-work use is not a claim of authorization.",
   "copyright_source": "https://worldflipper.jp/copyright/",
@@ -417,10 +417,10 @@
         738
       ],
       "crop": [
-        82,
-        432,
-        64,
-        64
+        65,
+        91,
+        144,
+        128
       ],
       "scale": 2,
       "border_crops": {
@@ -443,7 +443,7 @@
           48
         ]
       },
-      "normalization": "Mirror-tiled native lower-room sigil floor at 2x nearest; original scene walls confined to non-walkable art margins."
+      "normalization": "Large original native floor patch, mirror tiled at integer2x. Existing slow-zone geometry uses a same-source floor variation. Upright landmarks stay entirely outside the walkable rectangle. This is an authored adaptation, not an intact original map."
     },
     {
       "id": "arena_mire",
@@ -459,10 +459,10 @@
         738
       ],
       "crop": [
-        104,
-        100,
-        64,
-        64
+        74,
+        92,
+        126,
+        128
       ],
       "zone_crop": [
         80,
@@ -491,7 +491,7 @@
           48
         ]
       },
-      "normalization": "Mirror-tiled native shrine flagstones at 2x nearest; lower-courtyard brick texture marks the existing slow zones."
+      "normalization": "Large original native floor patch, mirror tiled at integer2x. Existing slow-zone geometry uses a same-source floor variation. Upright landmarks stay entirely outside the walkable rectangle. This is an authored adaptation, not an intact original map."
     },
     {
       "id": "arena_glacier",
@@ -507,10 +507,10 @@
         752
       ],
       "crop": [
-        104,
-        110,
-        64,
-        32
+        78,
+        92,
+        118,
+        132
       ],
       "zone_crop": [
         104,
@@ -539,7 +539,7 @@
           48
         ]
       },
-      "normalization": "Mirror-tiled clean native tower brick floor at 2x nearest; cooler native tower bricks mark the existing slow zones."
+      "normalization": "Large original native floor patch, mirror tiled at integer2x. Existing slow-zone geometry uses a same-source floor variation. Upright landmarks stay entirely outside the walkable rectangle. This is an authored adaptation, not an intact original map."
     },
     {
       "id": "arena_ashland",
@@ -555,10 +555,10 @@
         1002
       ],
       "crop": [
+        80,
+        215,
         112,
-        555,
-        32,
-        16
+        128
       ],
       "zone_crop": [
         112,
@@ -587,7 +587,7 @@
           48
         ]
       },
-      "normalization": "Mirror-tiled native ship planks at 2x nearest; shaded native deck planks mark the existing slow zones."
+      "normalization": "Large original native floor patch, mirror tiled at integer2x. Existing slow-zone geometry uses a same-source floor variation. Upright landmarks stay entirely outside the walkable rectangle. This is an authored adaptation, not an intact original map."
     },
     {
       "id": "prop_monument",
@@ -654,6 +654,202 @@
       ],
       "scale": 3,
       "normalization": "Original atlas a frame, unmodified source colors and transparency; 3x nearest; centered on a 96x96 canvas with the foot at y84."
+    },
+    {
+      "id": "landmark_reliquary",
+      "kind": "arena_landmark",
+      "name": "World Flipper / sand original foreground",
+      "filename": "landmark-sand-foreground.png",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field/world_sand/sand_ruins/foreground/foreground.png",
+      "source_page": "https://worldflipper.jp/demo/",
+      "sha256": "86096d489fea876807177d0b210d92305d2a001be2bb21dd8a933e043b3840eb",
+      "source_size": [
+        168,
+        566
+      ],
+      "game_id": "reliquary",
+      "scale": 2,
+      "variants": {
+        "arch": [
+          61,
+          279,
+          46,
+          30
+        ]
+      },
+      "placements": [
+        {
+          "variant": "arch",
+          "position": [
+            420,
+            112
+          ]
+        },
+        {
+          "variant": "arch",
+          "position": [
+            1720,
+            112
+          ]
+        },
+        {
+          "variant": "arch",
+          "position": [
+            2980,
+            112
+          ]
+        },
+        {
+          "variant": "arch",
+          "position": [
+            1720,
+            2060
+          ]
+        }
+      ],
+      "normalization": "Original foreground pixels cropped and quarter-turned when declared; alpha preserved. Geometry clipped exclusively to the art margin, never baked as a fake walkable obstacle."
+    },
+    {
+      "id": "landmark_mire",
+      "kind": "arena_landmark",
+      "name": "World Flipper / shrine original foreground",
+      "filename": "landmark-shrine-foreground.png",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field/world_japan/japan_shrine/foreground/foreground.png",
+      "source_page": "https://worldflipper.jp/demo/",
+      "sha256": "c61a08cd1fe58b07579c82cf27e80bded3aa3f3439b2dc0991dbeff4312deea5",
+      "source_size": [
+        274,
+        632
+      ],
+      "game_id": "mire",
+      "scale": 2,
+      "variants": {
+        "gate_skyline": [
+          64,
+          296,
+          146,
+          116
+        ]
+      },
+      "placements": [
+        {
+          "variant": "gate_skyline",
+          "position": [
+            630,
+            0
+          ]
+        },
+        {
+          "variant": "gate_skyline",
+          "position": [
+            1770,
+            0
+          ]
+        },
+        {
+          "variant": "gate_skyline",
+          "position": [
+            2890,
+            0
+          ]
+        }
+      ],
+      "normalization": "Original foreground pixels cropped and quarter-turned when declared; alpha preserved. Geometry clipped exclusively to the art margin, never baked as a fake walkable obstacle."
+    },
+    {
+      "id": "landmark_glacier",
+      "kind": "arena_landmark",
+      "name": "World Flipper / tower original foreground",
+      "filename": "landmark-tower-foreground.png",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field/world_evil/evil_tower/foreground/foreground.png",
+      "source_page": "https://worldflipper.jp/demo/",
+      "sha256": "544248a821b6825bd5d24cef87c6f2f53b162d4a71b75c2057a864bfb1aa3236",
+      "source_size": [
+        274,
+        556
+      ],
+      "game_id": "glacier",
+      "scale": 2,
+      "variants": {
+        "balcony_left": [
+          1,
+          1,
+          89,
+          67
+        ],
+        "balcony_right": [
+          184,
+          1,
+          89,
+          67
+        ]
+      },
+      "placements": [
+        {
+          "variant": "balcony_left",
+          "position": [
+            420,
+            70
+          ]
+        },
+        {
+          "variant": "balcony_right",
+          "position": [
+            2980,
+            70
+          ]
+        },
+        {
+          "variant": "balcony_left",
+          "position": [
+            420,
+            2044
+          ]
+        },
+        {
+          "variant": "balcony_right",
+          "position": [
+            2980,
+            2044
+          ]
+        }
+      ],
+      "normalization": "Original foreground pixels cropped and quarter-turned when declared; alpha preserved. Geometry clipped exclusively to the art margin, never baked as a fake walkable obstacle."
+    },
+    {
+      "id": "landmark_ashland",
+      "kind": "arena_landmark",
+      "name": "World Flipper / ship original foreground",
+      "filename": "landmark-ship-foreground.png",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field/world_sea/sea_ship_boss/foreground/foreground.png",
+      "source_page": "https://worldflipper.jp/demo/",
+      "sha256": "c49c5cb51c3b3a3c231d9022b9f9d79c37e5e8d2b9da4ca8240a215c86b0dacb",
+      "source_size": [
+        274,
+        539
+      ],
+      "game_id": "ashland",
+      "scale": 2,
+      "variants": {
+        "mast": [
+          1,
+          361,
+          272,
+          125
+        ]
+      },
+      "placements": [
+        {
+          "variant": "mast",
+          "position": [
+            3518,
+            800
+          ],
+          "rotation_degrees": 90,
+          "largest_component": true
+        }
+      ],
+      "normalization": "Original foreground pixels cropped and quarter-turned when declared; alpha preserved. Geometry clipped exclusively to the art margin, never baked as a fake walkable obstacle."
     },
     {
       "id": "item_damage",
@@ -1387,6 +1583,474 @@
       "durations_ms": [
         0
       ]
+    },
+    {
+      "id": "interaction_ball",
+      "kind": "interaction_art",
+      "name": "World Flipper / original thunder orb",
+      "filename": "interaction-ball.png",
+      "url": "https://worldflipper.jp/demo/src/assets/production/character/magic_boy_thunderball/pixelart/sprite_sheet.png",
+      "source_page": "https://worldflipper.jp/demo/",
+      "sha256": "87e664f2c8476d38933260b2c585ce6325af018b589bd24721b377690b709e9e",
+      "source_size": [
+        164,
+        24
+      ],
+      "game_id": "ball",
+      "atlas": {
+        "url": "https://worldflipper.jp/demo/src/assets/production/character/magic_boy_thunderball/pixelart/sprite_sheet.atlas.json",
+        "sha256": "9592474b55607c5cc378467b32e18ca86f4bdd5e3603ce0282d1527cf2267c9d"
+      },
+      "frames": [
+        {
+          "n": "character/magic_boy_thunderball/pixelart/pixelart0002",
+          "w": 21,
+          "h": 21,
+          "x": 121,
+          "y": 0,
+          "fx": -22,
+          "fy": -13,
+          "fw": 64,
+          "fh": 64
+        },
+        {
+          "n": "character/magic_boy_thunderball/pixelart/pixelart0004",
+          "w": 21,
+          "h": 21,
+          "x": 143,
+          "y": 0,
+          "fx": -22,
+          "fy": -13,
+          "fw": 64,
+          "fh": 64
+        },
+        {
+          "n": "character/magic_boy_thunderball/pixelart/pixelart0005",
+          "w": 21,
+          "h": 23,
+          "x": 99,
+          "y": 0,
+          "fx": -22,
+          "fy": -13,
+          "fw": 64,
+          "fh": 64
+        },
+        {
+          "n": "character/magic_boy_thunderball/pixelart/pixelart0006",
+          "w": 25,
+          "h": 24,
+          "x": 0,
+          "y": 0,
+          "fx": -19,
+          "fy": -12,
+          "fw": 64,
+          "fh": 64
+        },
+        {
+          "n": "character/magic_boy_thunderball/pixelart/pixelart0007",
+          "w": 25,
+          "h": 24,
+          "x": 26,
+          "y": 0,
+          "r": true,
+          "fx": -20,
+          "fy": -12,
+          "fw": 64,
+          "fh": 64
+        },
+        {
+          "n": "character/magic_boy_thunderball/pixelart/pixelart0008",
+          "w": 23,
+          "h": 24,
+          "x": 52,
+          "y": 0,
+          "fx": -21,
+          "fy": -12,
+          "fw": 64,
+          "fh": 64
+        },
+        {
+          "n": "character/magic_boy_thunderball/pixelart/pixelart0009",
+          "w": 22,
+          "h": 23,
+          "x": 76,
+          "y": 0,
+          "fx": -22,
+          "fy": -11,
+          "fw": 64,
+          "fh": 64
+        }
+      ],
+      "scale": 2,
+      "original_canvas": [
+        64,
+        64
+      ],
+      "canvas_crop": [
+        16,
+        8,
+        32,
+        32
+      ],
+      "cell_size": [
+        64,
+        64
+      ],
+      "columns": 7,
+      "frame_ends_seconds": [
+        0.12,
+        0.18,
+        0.24,
+        0.3,
+        0.36,
+        0.42,
+        0.48
+      ],
+      "center_anchor": [
+        32,
+        32
+      ],
+      "timing_note": "Project adaptation: .12s then six .06s frames, .48s cycle. Original FPS and exact game timing are not asserted.",
+      "timeline": {
+        "url": "https://worldflipper.jp/demo/src/assets/production/character/magic_boy_thunderball/pixelart/pixelart.timeline.json",
+        "sha256": "7355f47a81f339dc825ba10b02acb19b89eea2eab2047ffbdf9138542cc18552"
+      }
+    },
+    {
+      "id": "interaction_barrel",
+      "kind": "interaction_art",
+      "name": "World Flipper / original ship barrel",
+      "filename": "interaction-barrel.png",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field_object/world_sea/sea_ship_boss/yakumono/breakable_decoration/barrel/barrel.png",
+      "source_page": "https://worldflipper.jp/demo/",
+      "sha256": "07bda8f1ce2a95aee81e201b2110b4ae1ae0ef216152df0d04a647680752dfca",
+      "source_size": [
+        122,
+        73
+      ],
+      "game_id": "barrel",
+      "atlas": {
+        "url": "https://worldflipper.jp/demo/src/assets/production/battle/field_object/world_sea/sea_ship_boss/yakumono/breakable_decoration/barrel/barrel.atlas.json",
+        "sha256": "e64013c148495f9d9e0c800322d1a047d70a5f0177c42532cf799ebde03c56cd"
+      },
+      "frames": [
+        {
+          "n": "battle/field_object/world_sea/sea_ship_boss/yakumono/breakable_decoration/barrel/.gen/barrel/f0022",
+          "w": 1,
+          "h": 1,
+          "x": 74,
+          "y": 47,
+          "fx": 0,
+          "fy": 0,
+          "fw": 53,
+          "fh": 36
+        },
+        {
+          "n": "battle/field_object/world_sea/sea_ship_boss/yakumono/breakable_decoration/barrel/.gen/barrel/f0032",
+          "w": 16,
+          "h": 12,
+          "x": 104,
+          "y": 26,
+          "r": true,
+          "fx": -19,
+          "fy": -14,
+          "fw": 53,
+          "fh": 36
+        },
+        {
+          "n": "battle/field_object/world_sea/sea_ship_boss/yakumono/breakable_decoration/barrel/.gen/barrel/f0035",
+          "w": 28,
+          "h": 19,
+          "x": 74,
+          "y": 26,
+          "fx": -13,
+          "fy": -7,
+          "fw": 53,
+          "fh": 36
+        },
+        {
+          "n": "battle/field_object/world_sea/sea_ship_boss/yakumono/breakable_decoration/barrel/.gen/barrel/f0038",
+          "w": 32,
+          "h": 20,
+          "x": 1,
+          "y": 52,
+          "fx": -12,
+          "fy": -4,
+          "fw": 53,
+          "fh": 36
+        },
+        {
+          "n": "battle/field_object/world_sea/sea_ship_boss/yakumono/breakable_decoration/barrel/.gen/barrel/f0041",
+          "w": 38,
+          "h": 21,
+          "x": 35,
+          "y": 50,
+          "fx": -9,
+          "fy": -3,
+          "fw": 53,
+          "fh": 36
+        },
+        {
+          "n": "battle/field_object/world_sea/sea_ship_boss/yakumono/breakable_decoration/barrel/.gen/barrel/f0044",
+          "w": 43,
+          "h": 24,
+          "x": 77,
+          "y": 47,
+          "fx": -6,
+          "fy": -2,
+          "fw": 53,
+          "fh": 36
+        },
+        {
+          "n": "battle/field_object/world_sea/sea_ship_boss/yakumono/breakable_decoration/barrel/.gen/barrel/f0047",
+          "w": 26,
+          "h": 49,
+          "x": 1,
+          "y": 1,
+          "r": true,
+          "fx": -2,
+          "fy": -4,
+          "fw": 53,
+          "fh": 36
+        },
+        {
+          "n": "battle/field_object/world_sea/sea_ship_boss/yakumono/breakable_decoration/barrel/.gen/barrel/f0050",
+          "w": 25,
+          "h": 47,
+          "x": 29,
+          "y": 1,
+          "r": true,
+          "fx": -3,
+          "fy": -8,
+          "fw": 53,
+          "fh": 36
+        },
+        {
+          "n": "battle/field_object/world_sea/sea_ship_boss/yakumono/breakable_decoration/barrel/.gen/barrel/f0053",
+          "w": 46,
+          "h": 23,
+          "x": 75,
+          "y": 1,
+          "fx": -4,
+          "fy": -12,
+          "fw": 53,
+          "fh": 36
+        },
+        {
+          "n": "battle/field_object/world_sea/sea_ship_boss/yakumono/breakable_decoration/barrel/.gen/barrel/f0056",
+          "w": 16,
+          "h": 47,
+          "x": 56,
+          "y": 1,
+          "r": true,
+          "fx": -4,
+          "fy": -16,
+          "fw": 53,
+          "fh": 36
+        },
+        {
+          "n": "battle/field_object/world_sea/sea_ship_boss/yakumono/breakable_decoration/barrel/.gen/barrel/f0087",
+          "w": 1,
+          "h": 1,
+          "x": 74,
+          "y": 47,
+          "fx": 0,
+          "fy": 0,
+          "fw": 53,
+          "fh": 36
+        }
+      ],
+      "scale": 2,
+      "original_canvas": [
+        53,
+        36
+      ],
+      "cell_size": [
+        128,
+        128
+      ],
+      "columns": 4,
+      "canvas_offset": [
+        14,
+        52
+      ],
+      "foot_anchor": [
+        64,
+        112
+      ],
+      "idle_frame": 1,
+      "break_first_frame": 2,
+      "break_last_frame": 9,
+      "break_frame_duration": 0.04,
+      "timing_note": "Project adaptation: frames2..9 at .04s each (.32s), not original barrel timeline or frame timing. Frames0/10 are empty.",
+      "timeline": {
+        "url": "https://worldflipper.jp/demo/src/assets/production/battle/field_object/world_sea/sea_ship_boss/yakumono/breakable_decoration/barrel/barrel.timeline.json",
+        "sha256": "e83941b959b68014dfbefa10d26f6462bbcfca6c5d4d8a57a7d3004b5d4091b3"
+      }
+    },
+    {
+      "id": "interaction_chest",
+      "kind": "interaction_art",
+      "name": "World Flipper / original treasure chest",
+      "filename": "interaction-chest.png",
+      "url": "https://worldflipper.jp/demo/src/assets/production/scene/quest_result/sprite_sheet.png",
+      "source_page": "https://worldflipper.jp/demo/",
+      "sha256": "6b2e44bf4a1c5a0f4c339f262297ff1caf2efc0e2160fc5b2f79a98d089f5d0f",
+      "source_size": [
+        1148,
+        1017
+      ],
+      "game_id": "chest",
+      "atlas": {
+        "url": "https://worldflipper.jp/demo/src/assets/production/scene/quest_result/sprite_sheet.atlas.json",
+        "sha256": "d813e3e083479a87f4e6da851b846d8094a967d5d3b12a357d4abecb4308922c"
+      },
+      "frames": [
+        {
+          "n": "scene/quest_result/.gen/quest_result_treasure_box/d",
+          "w": 22,
+          "h": 20,
+          "x": 1125,
+          "y": 722,
+          "fx": -21,
+          "fy": -8,
+          "fw": 64,
+          "fh": 64
+        }
+      ],
+      "scale": 3,
+      "cell_size": [
+        96,
+        96
+      ],
+      "columns": 1,
+      "foot_anchor": [
+        48,
+        88
+      ],
+      "normalization": "Complete original22x20 chest at3x nearest, centered horizontally and aligned at footy88. Shared barrel fragments may provide project-specific break feedback; these are not claimed as the original chest animation."
+    },
+    {
+      "id": "interaction_health",
+      "kind": "interaction_art",
+      "name": "World Flipper / HP recovery item",
+      "filename": "interaction-health.png",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field_object/common/yakumono/instant_item/hp_recovery_middle/hp_recovery_middle.png",
+      "source_page": "https://worldflipper.jp/demo/",
+      "sha256": "39c1c64483d60d78033a6a0a059cc6ea9ca5897ceed1c059b08c81966620e6d2",
+      "source_size": [
+        15,
+        21
+      ],
+      "game_id": "health",
+      "atlas": {
+        "url": "https://worldflipper.jp/demo/src/assets/production/battle/field_object/common/yakumono/instant_item/hp_recovery_middle/hp_recovery_middle.atlas.json",
+        "sha256": "ea64ceafdcf6435906da90b53c851ac084b251ba26b37e0982bdc6784ba66b4e"
+      },
+      "frames": [
+        {
+          "n": "battle/field_object/common/yakumono/instant_item/hp_recovery_middle/.gen/hp_recovery_middle/a",
+          "w": 13,
+          "h": 19,
+          "x": 1,
+          "y": 1,
+          "fx": -9,
+          "fy": -6,
+          "fw": 32,
+          "fh": 32
+        }
+      ],
+      "scale": 2,
+      "cell_size": [
+        64,
+        64
+      ],
+      "columns": 1,
+      "foot_anchor": [
+        32,
+        61
+      ],
+      "normalization": "Complete original native atlas face, integer2x nearest, centered horizontally at footy61; no atlas border or recoloring."
+    },
+    {
+      "id": "interaction_charge",
+      "kind": "interaction_art",
+      "name": "World Flipper / skill charge item",
+      "filename": "interaction-charge.png",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field_object/common/yakumono/instant_item/skill_charge_middle/skill_charge_middle.png",
+      "source_page": "https://worldflipper.jp/demo/",
+      "sha256": "093198088b8db310d6de1cc8612437afbaeac0b5104a3bb3b791cb02e7a36b7b",
+      "source_size": [
+        15,
+        21
+      ],
+      "game_id": "charge",
+      "atlas": {
+        "url": "https://worldflipper.jp/demo/src/assets/production/battle/field_object/common/yakumono/instant_item/skill_charge_middle/skill_charge_middle.atlas.json",
+        "sha256": "9ef5bf3b2bbbe17b2021efeb0197382c89617bd610539e3cc758b889101f4eff"
+      },
+      "frames": [
+        {
+          "n": "battle/field_object/common/yakumono/instant_item/skill_charge_middle/.gen/skill_charge_middle/a",
+          "w": 13,
+          "h": 19,
+          "x": 1,
+          "y": 1,
+          "fx": -9,
+          "fy": -6,
+          "fw": 32,
+          "fh": 32
+        }
+      ],
+      "scale": 2,
+      "cell_size": [
+        64,
+        64
+      ],
+      "columns": 1,
+      "foot_anchor": [
+        32,
+        61
+      ],
+      "normalization": "Complete original native atlas face, integer2x nearest, centered horizontally at footy61; no atlas border or recoloring."
+    },
+    {
+      "id": "interaction_mana",
+      "kind": "interaction_art",
+      "name": "World Flipper / mana pickup",
+      "filename": "interaction-mana.png",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field_object/common/yakumono/instant_item/obtainable_mana/obtainable_mana.png",
+      "source_page": "https://worldflipper.jp/demo/",
+      "sha256": "d33eba83c17983e767198b2386d9dc4cf23743b7e1772bf642f6c5cb8fbad28c",
+      "source_size": [
+        32,
+        32
+      ],
+      "game_id": "mana",
+      "atlas": {
+        "url": "https://worldflipper.jp/demo/src/assets/production/battle/field_object/common/yakumono/instant_item/obtainable_mana/obtainable_mana.atlas.json",
+        "sha256": "98a6849b00a2cead49bb5e227b3a86388ee5bbcf2979ae7bc9e6ff28fd6a4d88"
+      },
+      "frames": [
+        {
+          "n": "battle/field_object/common/yakumono/instant_item/obtainable_mana/.gen/obtainable_mana/a",
+          "w": 12,
+          "h": 12,
+          "x": 1,
+          "y": 7
+        }
+      ],
+      "scale": 2,
+      "cell_size": [
+        64,
+        64
+      ],
+      "columns": 1,
+      "foot_anchor": [
+        32,
+        61
+      ],
+      "normalization": "One complete native atlas face, integer2x nearest, centered horizontally at footy61; original colors and transparent silhouette retained. Mana is a static face in this adaptation, not the original five-frame pickup animation."
     }
   ],
   "references_cached_only": [
@@ -1835,38 +2499,39 @@
     {
       "id": "arena_reliquary",
       "path": "assets/worldflipper/maps/reliquary.png",
-      "sha256": "ac014b8a8814836089e7f3243af6fc197903ac32fb61e19885367bfb07103598",
+      "sha256": "282d7d839ba3a9a0d64f244d96d5d2655973607f33737fb71899d951ceeb9fa6",
       "size": [
         3780,
-        2104
+        2192
       ],
       "alpha_bounds": [
         0,
         0,
         3780,
-        2104
+        2192
       ],
       "filter": "nearest",
       "source_ids": [
-        "arena_reliquary"
+        "arena_reliquary",
+        "landmark_reliquary"
       ],
       "source_crop": [
-        82,
-        432,
-        64,
-        64
+        65,
+        91,
+        144,
+        128
       ],
       "source_scale": 2,
-      "normalization": "Mirror-tiled native lower-room sigil floor at 2x nearest; original scene walls confined to non-walkable art margins.",
+      "normalization": "Large original native floor patch, mirror tiled at integer2x. Existing slow-zone geometry uses a same-source floor variation. Upright landmarks stay entirely outside the walkable rectangle. This is an authored adaptation, not an intact original map.",
       "world_origin": [
         -1146,
-        -679
+        -767
       ],
       "walkable_art_rect": [
         64,
-        144,
+        232,
         3508,
-        1944
+        2032
       ],
       "zone_count": 0,
       "zone_normalization": "Same-source floor texture through a low-contrast dithered mask; geometry read from data/arenas.json without changing movement values or coordinates",
@@ -1889,12 +2554,94 @@
           176,
           48
         ]
-      }
+      },
+      "landmarks": [
+        {
+          "source_id": "landmark_reliquary",
+          "source_crop": [
+            61,
+            279,
+            46,
+            30
+          ],
+          "rotation_degrees": 0,
+          "scale": 2,
+          "art_rect": [
+            420,
+            112,
+            92,
+            60
+          ],
+          "alpha_selection": "complete cropped original alpha",
+          "placement": "Strictly outside walkable_art_rect; does not imply a gameplay collider"
+        },
+        {
+          "source_id": "landmark_reliquary",
+          "source_crop": [
+            61,
+            279,
+            46,
+            30
+          ],
+          "rotation_degrees": 0,
+          "scale": 2,
+          "art_rect": [
+            1720,
+            112,
+            92,
+            60
+          ],
+          "alpha_selection": "complete cropped original alpha",
+          "placement": "Strictly outside walkable_art_rect; does not imply a gameplay collider"
+        },
+        {
+          "source_id": "landmark_reliquary",
+          "source_crop": [
+            61,
+            279,
+            46,
+            30
+          ],
+          "rotation_degrees": 0,
+          "scale": 2,
+          "art_rect": [
+            2980,
+            112,
+            92,
+            60
+          ],
+          "alpha_selection": "complete cropped original alpha",
+          "placement": "Strictly outside walkable_art_rect; does not imply a gameplay collider"
+        },
+        {
+          "source_id": "landmark_reliquary",
+          "source_crop": [
+            61,
+            279,
+            46,
+            30
+          ],
+          "rotation_degrees": 0,
+          "scale": 2,
+          "art_rect": [
+            1720,
+            2060,
+            92,
+            60
+          ],
+          "alpha_selection": "complete cropped original alpha",
+          "placement": "Strictly outside walkable_art_rect; does not imply a gameplay collider"
+        }
+      ],
+      "normalized_repeat_size": [
+        576,
+        512
+      ]
     },
     {
       "id": "arena_reliquary_preview",
       "path": "assets/worldflipper/maps/previews/reliquary.png",
-      "sha256": "cafb068763b15cbb1a36dc3665862c1447532b23bcc28d3b775df4e4bf1c6a61",
+      "sha256": "610ad702b55114dfa9f4e7c1b5eb36d1a587472ddbfa3ff770b9d9e6cb72b4b2",
       "size": [
         1280,
         720
@@ -1907,19 +2654,20 @@
       ],
       "filter": "nearest",
       "source_ids": [
-        "arena_reliquary"
+        "arena_reliquary",
+        "landmark_reliquary"
       ],
       "source_crop": [
-        82,
-        432,
-        64,
-        64
+        65,
+        91,
+        144,
+        128
       ],
       "source_scale": 2,
       "normalization": "Unscaled 1280x720 crop of the current start camera from the normalized arena",
       "arena_crop": [
         1146,
-        684,
+        772,
         1280,
         720
       ]
@@ -1927,38 +2675,39 @@
     {
       "id": "arena_mire",
       "path": "assets/worldflipper/maps/mire.png",
-      "sha256": "3dd39effc68df6bba8b56951f107ba905614b6786d5083db3b111e38531e3c6b",
+      "sha256": "32c96a592826bcac0f59b72a41905b353e6f1e67f4a6731c41624b350d852961",
       "size": [
         3780,
-        2104
+        2192
       ],
       "alpha_bounds": [
         0,
         0,
         3780,
-        2104
+        2192
       ],
       "filter": "nearest",
       "source_ids": [
-        "arena_mire"
+        "arena_mire",
+        "landmark_mire"
       ],
       "source_crop": [
-        104,
-        100,
-        64,
-        64
+        74,
+        92,
+        126,
+        128
       ],
       "source_scale": 2,
-      "normalization": "Mirror-tiled native shrine flagstones at 2x nearest; lower-courtyard brick texture marks the existing slow zones.",
+      "normalization": "Large original native floor patch, mirror tiled at integer2x. Existing slow-zone geometry uses a same-source floor variation. Upright landmarks stay entirely outside the walkable rectangle. This is an authored adaptation, not an intact original map.",
       "world_origin": [
         -1146,
-        -679
+        -767
       ],
       "walkable_art_rect": [
         64,
-        144,
+        232,
         3508,
-        1944
+        2032
       ],
       "zone_count": 11,
       "zone_normalization": "Same-source floor texture through a low-contrast dithered mask; geometry read from data/arenas.json without changing movement values or coordinates",
@@ -1982,6 +2731,69 @@
           48
         ]
       },
+      "landmarks": [
+        {
+          "source_id": "landmark_mire",
+          "source_crop": [
+            64,
+            296,
+            146,
+            116
+          ],
+          "rotation_degrees": 0,
+          "scale": 2,
+          "art_rect": [
+            630,
+            0,
+            292,
+            232
+          ],
+          "alpha_selection": "complete cropped original alpha",
+          "placement": "Strictly outside walkable_art_rect; does not imply a gameplay collider"
+        },
+        {
+          "source_id": "landmark_mire",
+          "source_crop": [
+            64,
+            296,
+            146,
+            116
+          ],
+          "rotation_degrees": 0,
+          "scale": 2,
+          "art_rect": [
+            1770,
+            0,
+            292,
+            232
+          ],
+          "alpha_selection": "complete cropped original alpha",
+          "placement": "Strictly outside walkable_art_rect; does not imply a gameplay collider"
+        },
+        {
+          "source_id": "landmark_mire",
+          "source_crop": [
+            64,
+            296,
+            146,
+            116
+          ],
+          "rotation_degrees": 0,
+          "scale": 2,
+          "art_rect": [
+            2890,
+            0,
+            292,
+            232
+          ],
+          "alpha_selection": "complete cropped original alpha",
+          "placement": "Strictly outside walkable_art_rect; does not imply a gameplay collider"
+        }
+      ],
+      "normalized_repeat_size": [
+        504,
+        512
+      ],
       "zone_source_crop": [
         80,
         450,
@@ -1992,7 +2804,7 @@
     {
       "id": "arena_mire_preview",
       "path": "assets/worldflipper/maps/previews/mire.png",
-      "sha256": "8681f53ea613d0e20426471c57e221a5b79972b83c753d769e65f863b4422d40",
+      "sha256": "f43b62a9ee8de400d8c69f14f1013118bc6d5d9158aff979091ec93fedf85221",
       "size": [
         1280,
         720
@@ -2005,19 +2817,20 @@
       ],
       "filter": "nearest",
       "source_ids": [
-        "arena_mire"
+        "arena_mire",
+        "landmark_mire"
       ],
       "source_crop": [
-        104,
-        100,
-        64,
-        64
+        74,
+        92,
+        126,
+        128
       ],
       "source_scale": 2,
       "normalization": "Unscaled 1280x720 crop of the current start camera from the normalized arena",
       "arena_crop": [
         1146,
-        684,
+        772,
         1280,
         720
       ]
@@ -2025,38 +2838,39 @@
     {
       "id": "arena_glacier",
       "path": "assets/worldflipper/maps/glacier.png",
-      "sha256": "db029fa823459093116913cdf09fac60fb7e86c40d121e2b832aec8cc3b693b9",
+      "sha256": "fe6debeac881d85c261c5d047751decd4c6f7c4dd757c45962ce196deef01beb",
       "size": [
         3780,
-        2104
+        2192
       ],
       "alpha_bounds": [
         0,
         0,
         3780,
-        2104
+        2192
       ],
       "filter": "nearest",
       "source_ids": [
-        "arena_glacier"
+        "arena_glacier",
+        "landmark_glacier"
       ],
       "source_crop": [
-        104,
-        110,
-        64,
-        32
+        78,
+        92,
+        118,
+        132
       ],
       "source_scale": 2,
-      "normalization": "Mirror-tiled clean native tower brick floor at 2x nearest; cooler native tower bricks mark the existing slow zones.",
+      "normalization": "Large original native floor patch, mirror tiled at integer2x. Existing slow-zone geometry uses a same-source floor variation. Upright landmarks stay entirely outside the walkable rectangle. This is an authored adaptation, not an intact original map.",
       "world_origin": [
         -1146,
-        -679
+        -767
       ],
       "walkable_art_rect": [
         64,
-        144,
+        232,
         3508,
-        1944
+        2032
       ],
       "zone_count": 11,
       "zone_normalization": "Same-source floor texture through a low-contrast dithered mask; geometry read from data/arenas.json without changing movement values or coordinates",
@@ -2080,6 +2894,88 @@
           48
         ]
       },
+      "landmarks": [
+        {
+          "source_id": "landmark_glacier",
+          "source_crop": [
+            1,
+            1,
+            89,
+            67
+          ],
+          "rotation_degrees": 0,
+          "scale": 2,
+          "art_rect": [
+            420,
+            70,
+            178,
+            134
+          ],
+          "alpha_selection": "complete cropped original alpha",
+          "placement": "Strictly outside walkable_art_rect; does not imply a gameplay collider"
+        },
+        {
+          "source_id": "landmark_glacier",
+          "source_crop": [
+            184,
+            1,
+            89,
+            67
+          ],
+          "rotation_degrees": 0,
+          "scale": 2,
+          "art_rect": [
+            2980,
+            70,
+            178,
+            134
+          ],
+          "alpha_selection": "complete cropped original alpha",
+          "placement": "Strictly outside walkable_art_rect; does not imply a gameplay collider"
+        },
+        {
+          "source_id": "landmark_glacier",
+          "source_crop": [
+            1,
+            1,
+            89,
+            67
+          ],
+          "rotation_degrees": 0,
+          "scale": 2,
+          "art_rect": [
+            420,
+            2044,
+            178,
+            134
+          ],
+          "alpha_selection": "complete cropped original alpha",
+          "placement": "Strictly outside walkable_art_rect; does not imply a gameplay collider"
+        },
+        {
+          "source_id": "landmark_glacier",
+          "source_crop": [
+            184,
+            1,
+            89,
+            67
+          ],
+          "rotation_degrees": 0,
+          "scale": 2,
+          "art_rect": [
+            2980,
+            2044,
+            178,
+            134
+          ],
+          "alpha_selection": "complete cropped original alpha",
+          "placement": "Strictly outside walkable_art_rect; does not imply a gameplay collider"
+        }
+      ],
+      "normalized_repeat_size": [
+        472,
+        528
+      ],
       "zone_source_crop": [
         104,
         180,
@@ -2090,7 +2986,7 @@
     {
       "id": "arena_glacier_preview",
       "path": "assets/worldflipper/maps/previews/glacier.png",
-      "sha256": "e3edd6088b0bcd6d7146327496f213fcfbe76758d6a168f06325da5e34f3be13",
+      "sha256": "d5488ebb4b71ca11c378a395cb3d4d78cd1babfc93142cee993692975f2b4003",
       "size": [
         1280,
         720
@@ -2103,19 +2999,20 @@
       ],
       "filter": "nearest",
       "source_ids": [
-        "arena_glacier"
+        "arena_glacier",
+        "landmark_glacier"
       ],
       "source_crop": [
-        104,
-        110,
-        64,
-        32
+        78,
+        92,
+        118,
+        132
       ],
       "source_scale": 2,
       "normalization": "Unscaled 1280x720 crop of the current start camera from the normalized arena",
       "arena_crop": [
         1146,
-        684,
+        772,
         1280,
         720
       ]
@@ -2123,38 +3020,39 @@
     {
       "id": "arena_ashland",
       "path": "assets/worldflipper/maps/ashland.png",
-      "sha256": "bc228b64fb98e856ab1c9098b94249c40f83688ff203627d7fffe0fb7429899b",
+      "sha256": "d2ce8ccb401952637d4a1912cf43438788b64aac24ba24dc1135dddd0c2615e8",
       "size": [
         3780,
-        2104
+        2192
       ],
       "alpha_bounds": [
         0,
         0,
         3780,
-        2104
+        2192
       ],
       "filter": "nearest",
       "source_ids": [
-        "arena_ashland"
+        "arena_ashland",
+        "landmark_ashland"
       ],
       "source_crop": [
+        80,
+        215,
         112,
-        555,
-        32,
-        16
+        128
       ],
       "source_scale": 2,
-      "normalization": "Mirror-tiled native ship planks at 2x nearest; shaded native deck planks mark the existing slow zones.",
+      "normalization": "Large original native floor patch, mirror tiled at integer2x. Existing slow-zone geometry uses a same-source floor variation. Upright landmarks stay entirely outside the walkable rectangle. This is an authored adaptation, not an intact original map.",
       "world_origin": [
         -1146,
-        -679
+        -767
       ],
       "walkable_art_rect": [
         64,
-        144,
+        232,
         3508,
-        1944
+        2032
       ],
       "zone_count": 12,
       "zone_normalization": "Same-source floor texture through a low-contrast dithered mask; geometry read from data/arenas.json without changing movement values or coordinates",
@@ -2178,6 +3076,31 @@
           48
         ]
       },
+      "landmarks": [
+        {
+          "source_id": "landmark_ashland",
+          "source_crop": [
+            1,
+            361,
+            272,
+            125
+          ],
+          "rotation_degrees": 90,
+          "scale": 2,
+          "art_rect": [
+            3518,
+            800,
+            250,
+            544
+          ],
+          "alpha_selection": "largest original alpha component",
+          "placement": "Strictly outside walkable_art_rect; does not imply a gameplay collider"
+        }
+      ],
+      "normalized_repeat_size": [
+        448,
+        512
+      ],
       "zone_source_crop": [
         112,
         585,
@@ -2188,7 +3111,7 @@
     {
       "id": "arena_ashland_preview",
       "path": "assets/worldflipper/maps/previews/ashland.png",
-      "sha256": "4ba70a28303d0a378df8bd216ec22ffbcf8c229ff0249dba63c15f9bba334740",
+      "sha256": "dd6c150d7443b0826efb4b24f9eb4097954f3a65b5b1bd1c584f193d0e76a2b8",
       "size": [
         1280,
         720
@@ -2201,19 +3124,20 @@
       ],
       "filter": "nearest",
       "source_ids": [
-        "arena_ashland"
+        "arena_ashland",
+        "landmark_ashland"
       ],
       "source_crop": [
+        80,
+        215,
         112,
-        555,
-        32,
-        16
+        128
       ],
       "source_scale": 2,
       "normalization": "Unscaled 1280x720 crop of the current start camera from the normalized arena",
       "arena_crop": [
         1146,
-        684,
+        772,
         1280,
         720
       ]
@@ -3405,7 +4329,470 @@
         "portrait_hanabi"
       ],
       "normalization": "Original source bytes copied without alteration"
+    },
+    {
+      "id": "interaction_ball",
+      "path": "assets/worldflipper/interactions/ball-atlas.png",
+      "sha256": "2c98ac128cb4c30e30dcc52fa4766a4e094d5caac1e812d5f1e9099f71a41996",
+      "size": [
+        448,
+        64
+      ],
+      "alpha_bounds": [
+        12,
+        6,
+        440,
+        58
+      ],
+      "filter": "nearest",
+      "source_ids": [
+        "interaction_ball"
+      ],
+      "source_scale": 2,
+      "atlas_frames": [
+        {
+          "n": "character/magic_boy_thunderball/pixelart/pixelart0002",
+          "w": 21,
+          "h": 21,
+          "x": 121,
+          "y": 0,
+          "fx": -22,
+          "fy": -13,
+          "fw": 64,
+          "fh": 64
+        },
+        {
+          "n": "character/magic_boy_thunderball/pixelart/pixelart0004",
+          "w": 21,
+          "h": 21,
+          "x": 143,
+          "y": 0,
+          "fx": -22,
+          "fy": -13,
+          "fw": 64,
+          "fh": 64
+        },
+        {
+          "n": "character/magic_boy_thunderball/pixelart/pixelart0005",
+          "w": 21,
+          "h": 23,
+          "x": 99,
+          "y": 0,
+          "fx": -22,
+          "fy": -13,
+          "fw": 64,
+          "fh": 64
+        },
+        {
+          "n": "character/magic_boy_thunderball/pixelart/pixelart0006",
+          "w": 25,
+          "h": 24,
+          "x": 0,
+          "y": 0,
+          "fx": -19,
+          "fy": -12,
+          "fw": 64,
+          "fh": 64
+        },
+        {
+          "n": "character/magic_boy_thunderball/pixelart/pixelart0007",
+          "w": 25,
+          "h": 24,
+          "x": 26,
+          "y": 0,
+          "r": true,
+          "fx": -20,
+          "fy": -12,
+          "fw": 64,
+          "fh": 64
+        },
+        {
+          "n": "character/magic_boy_thunderball/pixelart/pixelart0008",
+          "w": 23,
+          "h": 24,
+          "x": 52,
+          "y": 0,
+          "fx": -21,
+          "fy": -12,
+          "fw": 64,
+          "fh": 64
+        },
+        {
+          "n": "character/magic_boy_thunderball/pixelart/pixelart0009",
+          "w": 22,
+          "h": 23,
+          "x": 76,
+          "y": 0,
+          "fx": -22,
+          "fy": -11,
+          "fw": 64,
+          "fh": 64
+        }
+      ],
+      "normalization": "Original cropped and untrimmed atlas pixels at2x nearest; stable shared canvas. Animation timing is this project's explicit adaptation.",
+      "frame_size": [
+        64,
+        64
+      ],
+      "columns": 7,
+      "frame_count": 7,
+      "frame_ends_seconds": [
+        0.12,
+        0.18,
+        0.24,
+        0.3,
+        0.36,
+        0.42,
+        0.48
+      ],
+      "center_anchor": [
+        32,
+        32
+      ],
+      "timing_note": "Project adaptation: .12s then six .06s frames, .48s cycle. Original FPS and exact game timing are not asserted."
+    },
+    {
+      "id": "interaction_barrel",
+      "path": "assets/worldflipper/interactions/barrel-atlas.png",
+      "sha256": "fd6df4f16c893eba8c79e747483fc8a4cccbef5199f56d4f4dd3cadee0ce523f",
+      "size": [
+        512,
+        384
+      ],
+      "alpha_bounds": [
+        22,
+        60,
+        498,
+        378
+      ],
+      "filter": "nearest",
+      "source_ids": [
+        "interaction_barrel"
+      ],
+      "source_scale": 2,
+      "atlas_frames": [
+        {
+          "n": "battle/field_object/world_sea/sea_ship_boss/yakumono/breakable_decoration/barrel/.gen/barrel/f0022",
+          "w": 1,
+          "h": 1,
+          "x": 74,
+          "y": 47,
+          "fx": 0,
+          "fy": 0,
+          "fw": 53,
+          "fh": 36
+        },
+        {
+          "n": "battle/field_object/world_sea/sea_ship_boss/yakumono/breakable_decoration/barrel/.gen/barrel/f0032",
+          "w": 16,
+          "h": 12,
+          "x": 104,
+          "y": 26,
+          "r": true,
+          "fx": -19,
+          "fy": -14,
+          "fw": 53,
+          "fh": 36
+        },
+        {
+          "n": "battle/field_object/world_sea/sea_ship_boss/yakumono/breakable_decoration/barrel/.gen/barrel/f0035",
+          "w": 28,
+          "h": 19,
+          "x": 74,
+          "y": 26,
+          "fx": -13,
+          "fy": -7,
+          "fw": 53,
+          "fh": 36
+        },
+        {
+          "n": "battle/field_object/world_sea/sea_ship_boss/yakumono/breakable_decoration/barrel/.gen/barrel/f0038",
+          "w": 32,
+          "h": 20,
+          "x": 1,
+          "y": 52,
+          "fx": -12,
+          "fy": -4,
+          "fw": 53,
+          "fh": 36
+        },
+        {
+          "n": "battle/field_object/world_sea/sea_ship_boss/yakumono/breakable_decoration/barrel/.gen/barrel/f0041",
+          "w": 38,
+          "h": 21,
+          "x": 35,
+          "y": 50,
+          "fx": -9,
+          "fy": -3,
+          "fw": 53,
+          "fh": 36
+        },
+        {
+          "n": "battle/field_object/world_sea/sea_ship_boss/yakumono/breakable_decoration/barrel/.gen/barrel/f0044",
+          "w": 43,
+          "h": 24,
+          "x": 77,
+          "y": 47,
+          "fx": -6,
+          "fy": -2,
+          "fw": 53,
+          "fh": 36
+        },
+        {
+          "n": "battle/field_object/world_sea/sea_ship_boss/yakumono/breakable_decoration/barrel/.gen/barrel/f0047",
+          "w": 26,
+          "h": 49,
+          "x": 1,
+          "y": 1,
+          "r": true,
+          "fx": -2,
+          "fy": -4,
+          "fw": 53,
+          "fh": 36
+        },
+        {
+          "n": "battle/field_object/world_sea/sea_ship_boss/yakumono/breakable_decoration/barrel/.gen/barrel/f0050",
+          "w": 25,
+          "h": 47,
+          "x": 29,
+          "y": 1,
+          "r": true,
+          "fx": -3,
+          "fy": -8,
+          "fw": 53,
+          "fh": 36
+        },
+        {
+          "n": "battle/field_object/world_sea/sea_ship_boss/yakumono/breakable_decoration/barrel/.gen/barrel/f0053",
+          "w": 46,
+          "h": 23,
+          "x": 75,
+          "y": 1,
+          "fx": -4,
+          "fy": -12,
+          "fw": 53,
+          "fh": 36
+        },
+        {
+          "n": "battle/field_object/world_sea/sea_ship_boss/yakumono/breakable_decoration/barrel/.gen/barrel/f0056",
+          "w": 16,
+          "h": 47,
+          "x": 56,
+          "y": 1,
+          "r": true,
+          "fx": -4,
+          "fy": -16,
+          "fw": 53,
+          "fh": 36
+        },
+        {
+          "n": "battle/field_object/world_sea/sea_ship_boss/yakumono/breakable_decoration/barrel/.gen/barrel/f0087",
+          "w": 1,
+          "h": 1,
+          "x": 74,
+          "y": 47,
+          "fx": 0,
+          "fy": 0,
+          "fw": 53,
+          "fh": 36
+        }
+      ],
+      "normalization": "Original cropped and untrimmed atlas pixels at2x nearest; stable shared canvas. Animation timing is this project's explicit adaptation.",
+      "frame_size": [
+        128,
+        128
+      ],
+      "columns": 4,
+      "frame_count": 11,
+      "foot_anchor": [
+        64,
+        112
+      ],
+      "idle_frame": 1,
+      "break_first_frame": 2,
+      "break_last_frame": 9,
+      "break_frame_duration": 0.04,
+      "timing_note": "Project adaptation: frames2..9 at .04s each (.32s), not original barrel timeline or frame timing. Frames0/10 are empty."
+    },
+    {
+      "id": "interaction_chest",
+      "path": "assets/worldflipper/interactions/chest.png",
+      "sha256": "050e511a281f9a69901173d8b600d9bd180b28eea8d1d7c722c97f5756895f1f",
+      "size": [
+        96,
+        96
+      ],
+      "alpha_bounds": [
+        15,
+        28,
+        81,
+        88
+      ],
+      "filter": "nearest",
+      "source_ids": [
+        "interaction_chest"
+      ],
+      "source_scale": 3,
+      "atlas_frames": [
+        {
+          "n": "scene/quest_result/.gen/quest_result_treasure_box/d",
+          "w": 22,
+          "h": 20,
+          "x": 1125,
+          "y": 722,
+          "fx": -21,
+          "fy": -8,
+          "fw": 64,
+          "fh": 64
+        }
+      ],
+      "normalization": "Complete original22x20 chest at3x nearest, centered horizontally and aligned at footy88. Shared barrel fragments may provide project-specific break feedback; these are not claimed as the original chest animation.",
+      "frame_size": [
+        96,
+        96
+      ],
+      "columns": 1,
+      "frame_count": 1,
+      "foot_anchor": [
+        48,
+        88
+      ]
+    },
+    {
+      "id": "interaction_health",
+      "path": "assets/worldflipper/interactions/health.png",
+      "sha256": "e4b195cd806f955af9bf1bcb589316da8cc479208cad7c015d20183f8df687a1",
+      "size": [
+        64,
+        64
+      ],
+      "alpha_bounds": [
+        19,
+        23,
+        45,
+        61
+      ],
+      "filter": "nearest",
+      "source_ids": [
+        "interaction_health"
+      ],
+      "source_scale": 2,
+      "atlas_frames": [
+        {
+          "n": "battle/field_object/common/yakumono/instant_item/hp_recovery_middle/.gen/hp_recovery_middle/a",
+          "w": 13,
+          "h": 19,
+          "x": 1,
+          "y": 1,
+          "fx": -9,
+          "fy": -6,
+          "fw": 32,
+          "fh": 32
+        }
+      ],
+      "normalization": "Complete original native atlas face, integer2x nearest, centered horizontally at footy61; no atlas border or recoloring.",
+      "frame_size": [
+        64,
+        64
+      ],
+      "columns": 1,
+      "frame_count": 1,
+      "foot_anchor": [
+        32,
+        61
+      ]
+    },
+    {
+      "id": "interaction_charge",
+      "path": "assets/worldflipper/interactions/charge.png",
+      "sha256": "f6a89c0676e1eeb9f5cdcf40e8d0b4098ded519e311e22b8b319e190904fb70a",
+      "size": [
+        64,
+        64
+      ],
+      "alpha_bounds": [
+        19,
+        23,
+        45,
+        61
+      ],
+      "filter": "nearest",
+      "source_ids": [
+        "interaction_charge"
+      ],
+      "source_scale": 2,
+      "atlas_frames": [
+        {
+          "n": "battle/field_object/common/yakumono/instant_item/skill_charge_middle/.gen/skill_charge_middle/a",
+          "w": 13,
+          "h": 19,
+          "x": 1,
+          "y": 1,
+          "fx": -9,
+          "fy": -6,
+          "fw": 32,
+          "fh": 32
+        }
+      ],
+      "normalization": "Complete original native atlas face, integer2x nearest, centered horizontally at footy61; no atlas border or recoloring.",
+      "frame_size": [
+        64,
+        64
+      ],
+      "columns": 1,
+      "frame_count": 1,
+      "foot_anchor": [
+        32,
+        61
+      ]
+    },
+    {
+      "id": "interaction_mana",
+      "path": "assets/worldflipper/interactions/mana.png",
+      "sha256": "8febff6aac65fae9322b9500e88e69771844bbab7a0fd61964ee0a3efe09b827",
+      "size": [
+        64,
+        64
+      ],
+      "alpha_bounds": [
+        20,
+        37,
+        44,
+        61
+      ],
+      "filter": "nearest",
+      "source_ids": [
+        "interaction_mana"
+      ],
+      "source_scale": 2,
+      "atlas_frames": [
+        {
+          "n": "battle/field_object/common/yakumono/instant_item/obtainable_mana/.gen/obtainable_mana/a",
+          "w": 12,
+          "h": 12,
+          "x": 1,
+          "y": 7
+        }
+      ],
+      "normalization": "One complete native atlas face, integer2x nearest, centered horizontally at footy61; original colors and transparent silhouette retained. Mana is a static face in this adaptation, not the original five-frame pickup animation.",
+      "frame_size": [
+        64,
+        64
+      ],
+      "columns": 1,
+      "frame_count": 1,
+      "foot_anchor": [
+        32,
+        61
+      ]
     }
   ],
-  "gameplay": "Alk and three independently normalized original hero sets use the current game's party and skill rules rather than the original game's statistics. Arena IDs, terrain zones and multipliers remain stable. Authored low props block ground movement, dash and knockback; flying projectiles pass over them."
+  "metadata_files": [
+    {
+      "path": "assets/worldflipper/interactions/interaction-art.json",
+      "sha256": "d0449a40378e1e168c26a9b170831ed592c4964675c44d557ecf83829589df5c",
+      "purpose": "Runtime frame layout, anchors and explicitly adapted ball/break timing"
+    }
+  ],
+  "gameplay": "Alk and three independently normalized original hero sets use the current game's party and skill rules rather than the original game's statistics. Arena IDs, terrain zones and multipliers remain stable. Fixed low props block ground movement, dash and knockback while flying attacks pass over them. Separate breakable crates intercept friendly projectiles; dash contact with a bumper activates the protagonist's adapted pinball form. Crate drops and interaction animation timing follow this project's independent rules."
 }

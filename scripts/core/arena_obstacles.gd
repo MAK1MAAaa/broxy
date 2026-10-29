@@ -10,24 +10,39 @@ const MAX_OBSTACLES: int = 32
 const INDEX_CELL: float = 128.0
 const INDEX_BODY_RADIUS: float = 64.0
 const SEGMENT_CACHE_LIMIT: int = 4096
+const LOCAL_ROUTE_CANDIDATES: int = 16
+const LOCAL_ROUTE_LINKS: int = 6
 
 class ProjectedGoal:
 	var source: Vector2 = Vector2.INF
 	var position: Vector2 = Vector2.ZERO
 	var cell: Vector2i = Vector2i.ZERO
 	var open_sources: Dictionary = {}
+	var checked_corridors: Dictionary = {}
 
 var bounds: Rect2 = ArenaCatalog.WORLD_BOUNDS
 var _items: Array[Dictionary] = []
 var _centers: PackedVector2Array = PackedVector2Array()
 var _radii: PackedFloat64Array = PackedFloat64Array()
 var _all_ids: PackedInt32Array = PackedInt32Array()
+var _active: PackedByteArray = PackedByteArray()
+var _indices_by_id: Dictionary = {}
 var _empty_ids: PackedInt32Array = PackedInt32Array()
 var _cells: Dictionary = {}
 var _segment_cells: Dictionary = {}
 var _projected_goals: Dictionary = {}
 var _graphs: Dictionary = {}
+var _graph_point_ids: Dictionary = {}
+var _graph_goals: Dictionary = {}
 var _routes: Dictionary = {}
+var _navigation_graphs_built: int = 0
+var _navigation_graph_checks: int = 0
+var _navigation_route_builds: int = 0
+var _navigation_goal_refreshes: int = 0
+var _navigation_goal_checks: int = 0
+var _navigation_start_checks: int = 0
+var _navigation_fallbacks: int = 0
+var _navigation_tail_retargets: int = 0
 
 
 func _init(rows: Array = []) -> void:
@@ -39,12 +54,17 @@ func configure(rows: Array) -> void:
 	_centers.clear()
 	_radii.clear()
 	_all_ids.clear()
+	_active.clear()
+	_indices_by_id.clear()
 	_empty_ids = PackedInt32Array()
 	_cells.clear()
 	_segment_cells.clear()
 	_projected_goals.clear()
 	_graphs.clear()
+	_graph_point_ids.clear()
+	_graph_goals.clear()
 	_routes.clear()
+	reset_navigation_stats()
 	for value: Variant in rows:
 		if _items.size() >= MAX_OBSTACLES:
 			break
@@ -59,12 +79,17 @@ func configure(rows: Array) -> void:
 			continue
 		if not bounds.encloses(Rect2(center - Vector2.ONE * radius, Vector2.ONE * radius * 2.0)):
 			continue
-		_items.append({"id": str(value.get("id", "obstacle_%d" % _items.size())),
+		var id: String = str(value.get("id", "obstacle_%d" % _items.size()))
+		if _indices_by_id.has(id):
+			continue
+		_indices_by_id[id] = _items.size()
+		_items.append({"id": id,
 			"center": center, "radius": radius, "art_id": str(value.get("art_id", "monument"))})
 		var index: int = _centers.size()
 		_centers.append(center)
 		_radii.append(radius)
 		_all_ids.append(index)
+		_active.append(1)
 		var extent: Vector2 = Vector2.ONE * (radius + INDEX_BODY_RADIUS + SKIN)
 		var first: Vector2i = _cell(center - extent)
 		var last: Vector2i = _cell(center + extent)
@@ -85,7 +110,28 @@ static func _read_point(value: Variant) -> Vector2:
 
 
 func snapshot() -> Array[Dictionary]:
-	return _items.duplicate(true)
+	var result: Array[Dictionary] = []
+	for index: int in _items.size():
+		if _active[index] != 0:
+			result.append(_items[index].duplicate(true))
+	return result
+
+
+func set_active(id: String, active: bool) -> bool:
+	if not _indices_by_id.has(id):
+		return false
+	var index: int = int(_indices_by_id[id])
+	if bool(_active[index]) == active:
+		return true
+	_active[index] = 1 if active else 0
+	_graphs.clear()
+	_graph_point_ids.clear()
+	_graph_goals.clear()
+	_routes.clear()
+	for projection: ProjectedGoal in _projected_goals.values():
+		projection.open_sources.clear()
+	_projected_goals.clear()
+	return true
 
 
 static func _cell(point: Vector2) -> Vector2i:
@@ -127,6 +173,8 @@ func is_free(point: Vector2, body_radius: float = 0.0, inset: float = 0.0) -> bo
 	if point.x < area.position.x or point.y < area.position.y or point.x > area.end.x or point.y > area.end.y:
 		return false
 	for index: int in _point_candidates(point, body_radius):
+		if _active[index] == 0:
+			continue
 		var clearance: float = _radii[index] + body_radius
 		var offset: Vector2 = point - _centers[index]
 		if absf(offset.x) < clearance and absf(offset.y) < clearance and offset.length_squared() < clearance * clearance - 0.0001:
@@ -151,6 +199,8 @@ func free_point(point: Vector2, body_radius: float = 0.0, inset: float = 0.0) ->
 			return result
 		var changed: bool = false
 		for index: int in candidates:
+			if _active[index] == 0:
+				continue
 			var center: Vector2 = _centers[index]
 			var clearance: float = _radii[index] + radius
 			var offset: Vector2 = result - center
@@ -180,6 +230,58 @@ static func _entry_t(start: Vector2, movement: Vector2, center: Vector2, radius:
 		return INF
 	var entry: float = (-projection - sqrt(discriminant)) / squared
 	return entry if entry >= 0.0 and entry <= 1.0 else INF
+
+
+func first_hit(start: Vector2, movement: Vector2, body_radius: float, inset: float = 0.0, filter_prefix: String = "", include_bounds: bool = true) -> Dictionary:
+	if not start.is_finite() or not movement.is_finite() or not is_finite(body_radius) or body_radius < 0.0 or not is_finite(inset):
+		return {}
+	var area: Rect2 = bounds.grow(-maxf(0.0, inset))
+	if area.size.x <= 0.0 or area.size.y <= 0.0 or movement.length_squared() <= 0.000001:
+		return {}
+	var result: Dictionary = _boundary_hit(start, movement, area) if include_bounds else {}
+	var nearest: float = float(result.get("t", INF))
+	for index: int in _segment_candidates(start, start + movement, body_radius):
+		if _active[index] == 0:
+			continue
+		if not filter_prefix.is_empty() and not str(_items[index]["id"]).begins_with(filter_prefix):
+			continue
+		var center: Vector2 = _centers[index]
+		var entry: float = _entry_t(start, movement, center, _radii[index] + body_radius)
+		if not is_finite(entry) or entry >= nearest:
+			continue
+		var normal: Vector2 = start + movement * entry - center
+		normal = normal.normalized() if not normal.is_zero_approx() else -movement.normalized()
+		result = {"t": entry, "normal": normal, "id": _items[index]["id"], "center": center,
+			"art_id": _items[index]["art_id"], "index": index}
+		nearest = entry
+	return result
+
+
+static func _boundary_hit(start: Vector2, movement: Vector2, area: Rect2) -> Dictionary:
+	var nearest: float = INF
+	var normal: Vector2 = Vector2.ZERO
+	for axis: int in 2:
+		var speed: float = movement[axis]
+		if is_zero_approx(speed):
+			continue
+		var edge: float = area.end[axis] if speed > 0.0 else area.position[axis]
+		var entry: float = (edge - start[axis]) / speed
+		var outward: bool = start[axis] >= edge if speed > 0.0 else start[axis] <= edge
+		if outward:
+			entry = 0.0
+		if entry < 0.0 or entry > 1.0:
+			continue
+		var candidate_normal: Vector2 = Vector2.ZERO
+		candidate_normal[axis] = -1.0 if speed > 0.0 else 1.0
+		if absf(entry - nearest) < 0.000001:
+			normal += candidate_normal
+		elif entry < nearest:
+			nearest = entry
+			normal = candidate_normal
+	if not is_finite(nearest):
+		return {}
+	return {"t": nearest, "normal": normal.normalized(), "id": "boundary", "center": start + movement * nearest,
+		"art_id": "wall", "index": -1}
 
 
 func move_body(start: Vector2, movement: Vector2, body_radius: float, inset: float = 0.0, slide: bool = true) -> Vector2:
@@ -212,6 +314,8 @@ func move_body(start: Vector2, movement: Vector2, body_radius: float, inset: flo
 		var low: Vector2 = position.min(end)
 		var high: Vector2 = position.max(end)
 		for index: int in candidates:
+			if _active[index] == 0:
+				continue
 			var center: Vector2 = _centers[index]
 			var radius: float = _radii[index] + body_radius
 			if center.x < low.x - radius or center.x > high.x + radius or center.y < low.y - radius or center.y > high.y + radius:
@@ -254,6 +358,8 @@ func _clear_candidates(start: Vector2, end: Vector2, body_radius: float, candida
 	var low: Vector2 = start.min(end)
 	var high: Vector2 = start.max(end)
 	for index: int in candidates:
+		if _active[index] == 0:
+			continue
 		var center: Vector2 = _centers[index]
 		var radius: float = _radii[index] + body_radius
 		if center.x < low.x - radius or center.x > high.x + radius or center.y < low.y - radius or center.y > high.y + radius:
@@ -274,6 +380,24 @@ func forget_agent(agent_id: int) -> void:
 	_routes.erase(agent_id)
 
 
+func navigation_stats() -> Dictionary:
+	return {"graphs_built": _navigation_graphs_built, "graph_visibility_checks": _navigation_graph_checks,
+		"route_builds": _navigation_route_builds, "goal_refreshes": _navigation_goal_refreshes,
+		"goal_visibility_checks": _navigation_goal_checks, "start_visibility_checks": _navigation_start_checks,
+		"full_scan_fallbacks": _navigation_fallbacks, "tail_retargets": _navigation_tail_retargets}
+
+
+func reset_navigation_stats() -> void:
+	_navigation_graphs_built = 0
+	_navigation_graph_checks = 0
+	_navigation_route_builds = 0
+	_navigation_goal_refreshes = 0
+	_navigation_goal_checks = 0
+	_navigation_start_checks = 0
+	_navigation_fallbacks = 0
+	_navigation_tail_retargets = 0
+
+
 func next_target(start: Vector2, target: Vector2, body_radius: float, agent_id: int) -> Vector2:
 	var projection: ProjectedGoal = _projected_goals.get(body_radius) as ProjectedGoal
 	if projection == null:
@@ -289,6 +413,7 @@ func next_target(start: Vector2, target: Vector2, body_radius: float, agent_id: 
 		if cell != projection.cell:
 			projection.cell = cell
 			projection.open_sources.clear()
+			projection.checked_corridors.clear()
 	var goal: Vector2 = projection.position
 	var direct: bool = false
 	if start.is_finite() and bounds.has_point(start):
@@ -302,6 +427,12 @@ func next_target(start: Vector2, target: Vector2, body_radius: float, agent_id: 
 			if bounds.encloses(Rect2(Vector2(source_cell) * INDEX_CELL, Vector2.ONE * INDEX_CELL)):
 				projection.open_sources[source_cell] = true
 		else:
+			if not projection.checked_corridors.has(source_cell):
+				projection.checked_corridors[source_cell] = true
+				if _cell_corridor_clear(source_cell, projection.cell, body_radius, candidates):
+					projection.open_sources[source_cell] = true
+					_routes.erase(agent_id)
+					return goal
 			direct = _clear_candidates(start, goal, body_radius, candidates)
 	else:
 		direct = segment_clear(start, goal, body_radius)
@@ -314,19 +445,60 @@ func next_target(start: Vector2, target: Vector2, body_radius: float, agent_id: 
 	var old_goal: Vector2 = route.get("goal", Vector2.INF)
 	while index < path.size() and start.distance_squared_to(path[index]) <= 64.0:
 		index += 1
-	if index >= path.size() or old_goal.distance_squared_to(goal) > 48.0 * 48.0 or not segment_clear(start, path[index], body_radius):
+	var rebuild: bool = index >= path.size()
+	if not rebuild:
+		rebuild = not segment_clear(start, path[index], body_radius)
+	if not rebuild and old_goal.distance_squared_to(goal) > 48.0 * 48.0:
+		var next: Vector2 = goal if index == path.size() - 1 else path[index]
+		if path.size() >= 2 and segment_clear(start, next, body_radius) and segment_clear(path[path.size() - 2], goal, body_radius):
+			path[path.size() - 1] = goal
+			old_goal = goal
+			_navigation_tail_retargets += 1
+		else:
+			rebuild = true
+	if rebuild:
 		path = _build_route(start, goal, body_radius)
 		index = 1 if path.size() > 1 else 0
 		old_goal = goal
 	_routes[agent_id] = {"path": path, "index": index, "goal": old_goal}
 	return path[index] if index < path.size() else start
 
+func _cell_corridor_clear(source: Vector2i, target: Vector2i, body_radius: float, candidates: PackedInt32Array) -> bool:
+	var first := Rect2(Vector2(source) * INDEX_CELL, Vector2.ONE * INDEX_CELL)
+	var last := Rect2(Vector2(target) * INDEX_CELL, Vector2.ONE * INDEX_CELL)
+	if not bounds.encloses(first) or not bounds.encloses(last):
+		return false
+	var corners := PackedVector2Array()
+	for area: Rect2 in [first, last]:
+		corners.append(area.position)
+		corners.append(Vector2(area.end.x, area.position.y))
+		corners.append(area.end)
+		corners.append(Vector2(area.position.x, area.end.y))
+	var corridor: PackedVector2Array = Geometry2D.convex_hull(corners)
+	for index: int in candidates:
+		if _active[index] == 0:
+			continue
+		var center: Vector2 = _centers[index]
+		var radius_squared: float = pow(_radii[index] + body_radius + SKIN, 2)
+		if Geometry2D.is_point_in_polygon(center, corridor):
+			return false
+		for edge_index: int in corridor.size():
+			var start: Vector2 = corridor[edge_index]
+			var edge: Vector2 = corridor[(edge_index + 1) % corridor.size()] - start
+			var fraction: float = clampf((center - start).dot(edge) / edge.length_squared(), 0.0, 1.0) if not edge.is_zero_approx() else 0.0
+			if center.distance_squared_to(start + edge * fraction) < radius_squared:
+				return false
+	return true
+
 
 func _graph(body_radius: float) -> AStar2D:
 	if _graphs.has(body_radius):
 		return _graphs[body_radius] as AStar2D
 	var graph := AStar2D.new()
-	for item: Dictionary in _items:
+	for item_index: int in _items.size():
+		if _active[item_index] == 0:
+			continue
+		var item: Dictionary = _items[item_index]
 		var center: Vector2 = item["center"]
 		var radius: float = (float(item["radius"]) + body_radius + ROUTE_CLEARANCE) / cos(PI / float(ROUTE_SIDES))
 		for index: int in ROUTE_SIDES:
@@ -334,31 +506,85 @@ func _graph(body_radius: float) -> AStar2D:
 			if is_free(point, body_radius):
 				graph.add_point(graph.get_point_count(), point)
 	var ids: PackedInt64Array = graph.get_point_ids()
+	_graph_point_ids[body_radius] = ids
 	for first: int in ids.size():
 		for second: int in range(first + 1, ids.size()):
+			_navigation_graph_checks += 1
 			if segment_clear(graph.get_point_position(ids[first]), graph.get_point_position(ids[second]), body_radius):
 				graph.connect_points(ids[first], ids[second])
 	_graphs[body_radius] = graph
+	_navigation_graphs_built += 1
 	return graph
 
 
 func _build_route(start: Vector2, goal: Vector2, body_radius: float) -> PackedVector2Array:
 	var graph: AStar2D = _graph(body_radius)
-	var ids: PackedInt64Array = graph.get_point_ids()
-	var start_id: int = graph.get_point_count()
-	var goal_id: int = start_id + 1
+	var ids: PackedInt64Array = _graph_point_ids[body_radius]
+	var goal_id: int = _shared_graph_goal(graph, ids, goal, body_radius)
+	var start_id: int = goal_id + 1
 	graph.add_point(start_id, start)
-	graph.add_point(goal_id, goal)
-	for id: int in ids:
-		var point: Vector2 = graph.get_point_position(id)
-		if segment_clear(start, point, body_radius):
+	_navigation_route_builds += 1
+	var candidates: PackedInt64Array = _local_start_candidates(start, graph, ids)
+	var links: int = 0
+	var tested: PackedInt64Array = PackedInt64Array()
+	for id: int in candidates:
+		tested.append(id)
+		_navigation_start_checks += 1
+		if segment_clear(start, graph.get_point_position(id), body_radius):
 			graph.connect_points(start_id, id)
-		if segment_clear(goal, point, body_radius):
-			graph.connect_points(goal_id, id)
+			links += 1
+			if links >= LOCAL_ROUTE_LINKS:
+				break
 	var path: PackedVector2Array = graph.get_point_path(start_id, goal_id)
-	graph.remove_point(goal_id)
+	if path.is_empty():
+		_navigation_fallbacks += 1
+		for id: int in ids:
+			if tested.has(id):
+				continue
+			_navigation_start_checks += 1
+			if segment_clear(start, graph.get_point_position(id), body_radius):
+				graph.connect_points(start_id, id)
+		path = graph.get_point_path(start_id, goal_id)
 	graph.remove_point(start_id)
 	return path
+
+
+func _shared_graph_goal(graph: AStar2D, ids: PackedInt64Array, goal: Vector2, body_radius: float) -> int:
+	var cached: Dictionary = _graph_goals.get(body_radius, {})
+	var goal_id: int = ids.size()
+	if cached.is_empty():
+		graph.add_point(goal_id, goal)
+	elif cached["position"] == goal:
+		return goal_id
+	else:
+		for id: int in graph.get_point_connections(goal_id):
+			graph.disconnect_points(goal_id, id)
+		graph.set_point_position(goal_id, goal)
+	for id: int in ids:
+		_navigation_goal_checks += 1
+		if segment_clear(goal, graph.get_point_position(id), body_radius):
+			graph.connect_points(goal_id, id)
+	_graph_goals[body_radius] = {"position": goal, "id": goal_id}
+	_navigation_goal_refreshes += 1
+	return goal_id
+
+
+func _local_start_candidates(start: Vector2, graph: AStar2D, ids: PackedInt64Array) -> PackedInt64Array:
+	var nearest: PackedInt64Array = PackedInt64Array()
+	var distances: PackedFloat64Array = PackedFloat64Array()
+	for id: int in ids:
+		var distance: float = start.distance_squared_to(graph.get_point_position(id))
+		var index: int = distances.size()
+		while index > 0 and distance < distances[index - 1]:
+			index -= 1
+		if index >= LOCAL_ROUTE_CANDIDATES:
+			continue
+		nearest.insert(index, id)
+		distances.insert(index, distance)
+		if nearest.size() > LOCAL_ROUTE_CANDIDATES:
+			nearest.resize(LOCAL_ROUTE_CANDIDATES)
+			distances.resize(LOCAL_ROUTE_CANDIDATES)
+	return nearest
 
 
 func clear_spawn_segments(segments: Array[Rect2], body_radius: float) -> Array[Rect2]:
@@ -369,7 +595,10 @@ func clear_spawn_segments(segments: Array[Rect2], body_radius: float) -> Array[R
 			continue
 		var direction: Vector2 = segment.size / length
 		var intervals: Array[Vector2] = [Vector2(0.0, length)]
-		for item: Dictionary in _items:
+		for item_index: int in _items.size():
+			if _active[item_index] == 0:
+				continue
+			var item: Dictionary = _items[item_index]
 			var offset: Vector2 = (item["center"] as Vector2) - segment.position
 			var along: float = offset.dot(direction)
 			var perpendicular_squared: float = maxf(0.0, offset.length_squared() - along * along)

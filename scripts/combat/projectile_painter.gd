@@ -69,7 +69,7 @@ func _init() -> void:
 		_head_base_radii[source] = GameCatalog.weapon(source).projectile_radius
 		_head_meshes[source] = _head_mesh(frame)
 
-func rebuild(shots: Array[CombatSim.Shot]) -> void:
+func rebuild(shots: Array[CombatSim.Shot], view: Rect2 = Rect2()) -> void:
 	friendly_count = 0
 	ember_count = 0
 	bounce_count = 0
@@ -123,16 +123,19 @@ func rebuild(shots: Array[CombatSim.Shot]) -> void:
 			trail.width = shot.radius * 0.25
 		elif shot.source == "crescent" or shot.source == "comet":
 			trail.width = shot.radius * 0.55
-		trail.points.append(shot.position - direction * 16.0 if shot.source == "return_ring" else tail - direction * 6.0 if shot.source == "ember" else tail)
-		trail.points.append(shot.position - direction * 10.0 if shot.source == "return_ring" else shot.position)
-		if shot.rune == "pierce" or shot.source == "frost":
-			var wing: Vector2 = direction.orthogonal() * 3.0
-			var wing_tail: Vector2 = shot.position - direction * 16.0 if shot.source == "return_ring" else tail
-			var wing_head: Vector2 = shot.position - direction * 10.0 if shot.source == "return_ring" else shot.position + direction * 5.0
-			trail.wings.append(wing_tail + wing)
-			trail.wings.append(wing_head + wing if shot.source == "return_ring" else wing_head)
-			trail.wings.append(wing_tail - wing)
-			trail.wings.append(wing_head - wing if shot.source == "return_ring" else wing_head)
+		var start: Vector2 = shot.position - direction * 16.0 if shot.source == "return_ring" else tail - direction * 6.0 if shot.source == "ember" else tail
+		var end: Vector2 = shot.position - direction * 10.0 if shot.source == "return_ring" else shot.position
+		if not view.has_area() or trail_draw_bounds(start, end, trail.width).intersects(view):
+			trail.points.append(start)
+			trail.points.append(end)
+			if shot.rune == "pierce" or shot.source == "frost":
+				var wing: Vector2 = direction.orthogonal() * 3.0
+				var wing_tail: Vector2 = shot.position - direction * 16.0 if shot.source == "return_ring" else tail
+				var wing_head: Vector2 = shot.position - direction * 10.0 if shot.source == "return_ring" else shot.position + direction * 5.0
+				trail.wings.append(wing_tail + wing)
+				trail.wings.append(wing_head + wing if shot.source == "return_ring" else wing_head)
+				trail.wings.append(wing_tail - wing)
+				trail.wings.append(wing_head - wing if shot.source == "return_ring" else wing_head)
 		if shot.source == "ember":
 			_write_instance(_body_buffer, ember_count, shot.position, shot.radius, color)
 			ember_count += 1
@@ -227,6 +230,12 @@ static func _style_trail(trail: TrailBatch) -> void:
 	style.halo_color = Color(trail.color, TRAIL_HALO_ALPHA) if style.has_halo else Color.TRANSPARENT
 	style.halo_width = trail.width * TRAIL_HALO_WIDTH_SCALE if style.has_halo else 0.0
 
+static func trail_draw_bounds(start: Vector2, end: Vector2, width: float) -> Rect2:
+	var minimum := Vector2(minf(start.x, end.x), minf(start.y, end.y))
+	var maximum := Vector2(maxf(start.x, end.x), maxf(start.y, end.y))
+	# Wing tips extend five pixels ahead and three sideways; include halo and AA.
+	return Rect2(minimum, maximum - minimum).grow(absf(width) * TRAIL_HALO_WIDTH_SCALE * 0.5 + 8.0)
+
 func draw(canvas: CanvasItem) -> void:
 	# Each family head follows its trails; all commands precede the danger pass.
 	if ember_count > 0:
@@ -237,9 +246,10 @@ func draw(canvas: CanvasItem) -> void:
 	for key: String in trails:
 		var trail: TrailBatch = trails[key]
 		var style: TrailStyle = trail.style
-		if style.has_halo:
-			canvas.draw_multiline(trail.points, style.halo_color, style.halo_width, true)
-		canvas.draw_multiline(trail.points, style.main_color, style.main_width, true)
+		if not trail.points.is_empty():
+			if style.has_halo:
+				canvas.draw_multiline(trail.points, style.halo_color, style.halo_width, true)
+			canvas.draw_multiline(trail.points, style.main_color, style.main_width, true)
 		if not trail.wings.is_empty():
 			canvas.draw_multiline(trail.wings, Color(trail.color, 0.65), 1.0, true)
 		var head: HeadBatch = heads[key]

@@ -69,12 +69,14 @@ func _test_manifest_provenance() -> void:
 	_check(parsed is Dictionary and parsed.get("assets") is Array and parsed.get("sources") is Array, "The shipped original-game resources have a readable source manifest")
 	if not parsed is Dictionary or not parsed.get("assets") is Array or not parsed.get("sources") is Array:
 		return
+	_check(parsed.get("revision") == "world-flipper-fan-06" and AdventureArt.REVISION == parsed["revision"] and (parsed["sources"] as Array).size() == 67 and (parsed["assets"] as Array).size() == 64, "The running art revision matches all sixty-seven sources and sixty-four normalized outputs")
 	var sources: Dictionary = {}
 	for source: Dictionary in parsed["sources"]:
 		sources[str(source["id"])] = source
 	var assets: Dictionary = {}
 	for asset: Dictionary in parsed["assets"]:
 		assets[str(asset["id"])] = asset
+	_test_current_map_geometry(assets, sources)
 	var expected_ids: PackedStringArray = ["player"]
 	expected_ids.append_array(WEAPONS)
 	for id: String in expected_ids:
@@ -84,6 +86,35 @@ func _test_manifest_provenance() -> void:
 		var source: Dictionary = sources.get(source_id, {})
 		_check(str(asset.get("path", "")) == expected_path and asset.get("source_ids", []) == [source_id] and FileAccess.get_sha256("res://" + expected_path) == str(asset.get("sha256", "")), "The exact runtime replacement is tied to its complete checked-in source-derived bytes: " + id)
 		_check(str(source.get("sha256", "")).length() == 64 and str(source.get("url", "")).begins_with("https://") and str(source.get("source_page", "")).begins_with("https://") and (str(source.get("pose", "")) == "neutral" if id == "player" else str(source.get("game_id", "")) == id and str(source.get("name", "")) == str(SOURCE_WEAPONS[id])), "Each replacement records the intended original character or weapon source: " + id)
+
+
+func _test_current_map_geometry(assets: Dictionary, sources: Dictionary) -> void:
+	var expected_crop := Rect2i(1146, 772, 1280, 720)
+	_check(ArenaCatalog.WORLD_BOUNDS == Rect2(-1082, -535, 3444, 1800) and ArenaCatalog.art_rect() == Rect2(-1146, -767, 3780, 2192), "Runtime map art extends its top border without changing the playable world")
+	for id: String in ArenaCatalog.IDS:
+		var asset: Dictionary = assets.get("arena_" + id, {})
+		var preview: Dictionary = assets.get("arena_" + id + "_preview", {})
+		var path: String = "assets/worldflipper/maps/%s.png" % id
+		var preview_path: String = "assets/worldflipper/maps/previews/%s.png" % id
+		_check(asset.get("path") == path and _numeric_array_equals(asset.get("size"), [3780, 2192]) and _numeric_array_equals(asset.get("world_origin"), [-1146, -767]) and _numeric_array_equals(asset.get("walkable_art_rect"), [64, 232, 3508, 2032]), "The normalized map metadata matches the exact production canvas and walkable rectangle: " + id)
+		_check(asset.get("source_ids") == ["arena_" + id, "landmark_" + id] and sources.has("arena_" + id) and sources.has("landmark_" + id) and asset.get("zone_count") == ArenaCatalog.definition(id)["zones"].size(), "Floor, distant landmarks and unchanged terrain geometry retain their actual source identities: " + id)
+		_check(preview.get("path") == preview_path and _numeric_array_equals(preview.get("size"), [1280, 720]) and _numeric_array_equals(preview.get("arena_crop"), [1146, 772, 1280, 720]), "The title preview records the exact current start-camera crop: " + id)
+		_check(FileAccess.get_sha256("res://" + path) == asset.get("sha256") and FileAccess.get_sha256("res://" + preview_path) == preview.get("sha256"), "Map and preview manifest records describe their actual shipped PNG bytes: " + id)
+		var map_texture := load("res://" + path) as Texture2D
+		var preview_texture := load("res://" + preview_path) as Texture2D
+		_check(map_texture != null and preview_texture != null and map_texture.get_size() == Vector2(3780, 2192) and preview_texture.get_size() == Vector2(1280, 720), "Imported map and preview textures preserve both exact runtime dimensions: " + id)
+		if map_texture != null and preview_texture != null:
+			_check(map_texture.get_image().get_region(expected_crop).get_data() == preview_texture.get_image().get_data(), "The imported preview contains the unscaled current camera crop from the actual map pixels: " + id)
+
+
+func _numeric_array_equals(value: Variant, expected: Array) -> bool:
+	if not value is Array or value.size() != expected.size():
+		return false
+	for index: int in expected.size():
+		var number: Variant = value[index]
+		if not (number is int or number is float) or not is_finite(float(number)) or float(number) != float(expected[index]):
+			return false
+	return true
 
 
 func _test_imported_animation() -> void:

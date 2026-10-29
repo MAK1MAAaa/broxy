@@ -619,7 +619,7 @@ func show_hud() -> void:
 		item.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		row.add_child(item)
 		_hud[str(entry[0])] = item
-	_add_hud_skill(row, "dash", "Dash", "空格：向当前移动方向冲刺；静止时沿面向。\n短冲距离约132，冷却2.4秒；起始短暂闪避，可冲离减速地形。")
+	_add_hud_skill(row, "dash", "Dash", "空格：向当前移动方向冲刺；静止时沿面向。\n短冲距离约132，冷却2.4秒；起始短暂闪避，可冲离减速地形。\n冲刺撞击弹板触发球化。")
 	var xp := ProgressBar.new()
 	xp.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
 	xp.offset_left = 26
@@ -704,7 +704,7 @@ func update_hud(snapshot: Dictionary) -> void:
 	if _screen != "hud" or _hud.is_empty():
 		return
 	_hud_skill_snapshot = {"health": snapshot.get("health", 0.0), "benchmark": snapshot.get("benchmark", false)}
-	for key: String in ["dash", "skills", "hero_skill"]:
+	for key: String in ["dash", "skills", "hero_skill", "pinball"]:
 		var skill: Variant = snapshot.get(key, {})
 		_hud_skill_snapshot[key] = skill.duplicate(true) if skill is Dictionary or skill is Array else skill
 	var hp := float(snapshot.get("health", 0.0))
@@ -808,11 +808,17 @@ func _update_dash_hud(snapshot: Dictionary) -> void:
 	var ready: bool = bool(dash.get("ready", false))
 	var next_total: float = _skill_tooltip_value(dash.get("next_cooldown_total", total), DashRules.COOLDOWN)
 	var key: String = "A" if _input_kind == "gamepad" else ControlBindings.key_label(int(_controls["dash"]))
-	indicator.tooltip_text = "%s：向当前移动方向冲刺；静止时沿面向。\n短冲距离约132，冷却%s秒；起始短暂闪避，可冲离减速地形。" % [key, _skill_number(next_total)]
+	indicator.tooltip_text = "%s：向当前移动方向冲刺；静止时沿面向。\n短冲距离约132，冷却%s秒；起始短暂闪避，可冲离减速地形。\n冲刺撞击弹板触发球化。" % [key, _skill_number(next_total)]
 	if remaining > 0.0 and total > 0.0 and not is_equal_approx(total, next_total):
 		indicator.tooltip_text += "\n本次冷却总长%s秒；改装仅影响下次施放。" % _skill_number(total)
 	indicator.show()
-	if active:
+	var pinball_value: Variant = snapshot.get("pinball", {})
+	var pinball: Dictionary = pinball_value if pinball_value is Dictionary else {}
+	if bool(pinball.get("active", false)):
+		label.text = "弹射×%d" % maxi(0, int(pinball.get("combo", 0)))
+		label.add_theme_color_override("font_color", GOLD)
+		meter.value = clampf(1.0 - remaining / total, 0.0, 1.0) if remaining > 0.0 and total > 0.0 else 1.0 if ready else 0.0
+	elif active:
 		label.text = "冲刺中"
 		label.add_theme_color_override("font_color", GOLD)
 		meter.value = 0.0

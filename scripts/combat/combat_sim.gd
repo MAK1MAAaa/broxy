@@ -15,6 +15,9 @@ signal dash_evaded(position: Vector2, origin: Vector2, source_id: String, kind: 
 signal pulse_cast(origin: Vector2, affected: int)
 signal active_skill_cast(skill_id: String, uid: int, origin: Vector2, direction: Vector2, affected: int, rank: int)
 signal hero_skill_cast(hero_id: String, parameters: Dictionary, origin: Vector2, direction: Vector2, affected: int)
+signal pinball_bounced(position: Vector2, normal: Vector2, boosted: bool, combo: int)
+signal crate_hit(position: Vector2, broke: bool)
+signal world_pickup_collected(kind: String, position: Vector2, value: float)
 signal ended(victory: bool, reason: String)
 
 const ARENA: Rect2 = ArenaCatalog.WORLD_BOUNDS
@@ -27,6 +30,14 @@ const SHOT_LIMIT: int = 1600
 const DROP_LIMIT: int = 420
 const RUSHER_WINDUP: float = 0.65
 const CASTER_WINDUP: float = 0.45
+const PINBALL_LIFE: float = 1.1
+const PINBALL_MAX_LIFE: float = 1.6
+const PINBALL_SPEED: float = 650.0
+const PINBALL_MAX_SPEED: float = 900.0
+const PINBALL_DAMAGE: float = 28.0
+const PINBALL_HIT_INTERVAL: float = 0.15
+const PINBALL_BOUNCE_LIMIT: int = 12
+const PINBALL_STEP_LIMIT: int = 8
 
 class Enemy:
 	var active: bool = false
@@ -142,10 +153,21 @@ var damage_by_skill: Dictionary = {}
 var skill_hits: int = 0
 var _active_skill_clocks: Dictionary = {}
 var _hero_skill_clock: Dictionary = {}
+var interactions: ArenaInteractions = ArenaInteractions.new()
+var _crate_indices: Dictionary = {}
+var _pinball_time_left: float = 0.0
+var _pinball_age: float = 0.0
+var _pinball_velocity: Vector2 = Vector2.ZERO
+var _pinball_bounces: int = 0
+var _pinball_combo: int = 0
+var _pinball_hits: Dictionary = {}
+var _pinball_grid_active: bool = false
 var _enemy_free: Array[int] = []
 var _shot_free: Array[int] = []
 var _soul_free: Array[int] = []
 var _grid: Dictionary = {}
+var _shot_region_candidates: Dictionary = {}
+var _target_points: AStar2D = AStar2D.new()
 var _largest_enemy_radius: float = 0.0
 var _explosion_grid_active: bool = false
 var _cooldowns: Array[float] = []
@@ -179,7 +201,16 @@ func _init() -> void:
 
 func begin(state: RunState) -> void:
 	run = state
-	obstacles.configure(ArenaCatalog.definition(run.arena_id).get("obstacles", []))
+	interactions.configure(ArenaCatalog.definition(run.arena_id), run.rng.seed, run.wave, obstacles)
+	_crate_indices.clear()
+	for crate: Dictionary in interactions.snapshot()["crates"]:
+		_crate_indices["crate:" + str(crate["id"])] = int(crate["index"])
+	_pinball_time_left = 0.0
+	_pinball_age = 0.0
+	_pinball_velocity = Vector2.ZERO
+	_pinball_bounces = 0
+	_pinball_combo = 0
+	_pinball_hits.clear()
 	rng.seed = int(run.rng.randi())
 	_wave = GameCatalog.wave(run.wave)
 	duration = _wave.duration
@@ -227,6 +258,7 @@ func begin(state: RunState) -> void:
 
 func step(delta: float, movement: Vector2, dash_pressed: bool = false, pulse_pressed: bool = false, skill_requests: Array[Dictionary] = [], hero_skill_pressed: bool = false) -> void:
 	_explosion_grid_active = false
+	_pinball_grid_active = false
 	if complete or run == null or not is_finite(delta) or delta <= 0.0:
 		return
 	if run.health <= 0.0:
@@ -235,6 +267,7 @@ func step(delta: float, movement: Vector2, dash_pressed: bool = false, pulse_pre
 	elapsed += delta
 	run.elapsed += delta
 	invulnerability = maxf(0.0, invulnerability - delta)
+	interactions.advance(delta)
 	if _has_movement_direction(movement):
 		player_direction = movement.normalized()
 	_update_pulse(delta, pulse_pressed, skill_requests)
@@ -245,7 +278,13 @@ func step(delta: float, movement: Vector2, dash_pressed: bool = false, pulse_pre
 			_hero_skill_clock["remaining"] = _skill_timer_after(float(_hero_skill_clock["remaining"]), delta)
 	if complete:
 		return
+	if _pinball_time_left > 0.0 or dash_pressed:
+		_rebuild_grid()
+		_pinball_grid_active = true
 	_move_player(delta, movement, dash_pressed)
+	_pinball_grid_active = false
+	if complete:
+		return
 	_update_enemies(delta)
 	if run.health <= 0.0:
 		_finish(false, _death_reason())
@@ -258,6 +297,7 @@ func step(delta: float, movement: Vector2, dash_pressed: bool = false, pulse_pre
 	if complete:
 		return
 	_update_souls(delta)
+	_collect_world_pickups()
 	_update_zones(delta)
 	if complete:
 		return
@@ -287,20 +327,196 @@ func _move_player(delta: float, movement: Vector2, dash_pressed: bool) -> void:
 		dash_cooldown_left = _skill_timer_after(dash_cooldown_left, delta)
 		dash_invulnerability_left = _skill_timer_after(dash_invulnerability_left, delta)
 	var movement_delta: float = delta
+	if advances_time and _pinball_time_left > 0.0:
+		dash_time_left = _skill_timer_after(dash_time_left, delta)
+		var consumed: float = _move_pinball(delta, movement)
+		if complete or _pinball_time_left > 0.0:
+			return
+		dash_time_left = 0.0
+		movement_delta = maxf(0.0, delta - consumed)
+		if movement_delta <= 0.0:
+			return
 	if advances_time and dash_time_left > 0.0:
 		var dash_delta: float = minf(delta, dash_time_left)
 		player_velocity = dash_direction * DashRules.SPEED
+		var impact: Dictionary = obstacles.first_hit(player_position, player_velocity * dash_delta, 16.0, 16.0)
+		if not impact.is_empty() and str(impact.get("art_id", "")) == "bumper":
+			var used: float = dash_delta * clampf(float(impact["t"]), 0.0, 1.0)
+			var normal: Vector2 = impact["normal"]
+			player_position += player_velocity * used + normal * 0.1
+			dash_time_left = _skill_timer_after(dash_time_left, delta)
+			_begin_pinball(player_velocity, normal)
+			var consumed: float = _move_pinball(delta - used, movement)
+			if not complete and _pinball_time_left <= 0.0:
+				dash_time_left = 0.0
+				_move_ground(maxf(0.0, delta - used - consumed), movement)
+			return
 		player_position = obstacles.move_body(player_position, player_velocity * dash_delta, 16.0, 16.0)
 		player_direction = dash_direction
 		dash_time_left = _skill_timer_after(dash_time_left, dash_delta)
 		movement_delta = delta - dash_delta
 		if movement_delta <= 0.0:
 			return
+	_move_ground(movement_delta, movement)
+
+func _move_ground(delta: float, movement: Vector2) -> void:
 	player_velocity = movement.limit_length() * run.stat("move_speed")
 	player_velocity *= ArenaCatalog.movement_multiplier(run.arena_id, player_position)
-	player_position = obstacles.move_body(player_position, player_velocity * movement_delta, 16.0, 16.0)
+	player_position = obstacles.move_body(player_position, player_velocity * delta, 16.0, 16.0)
 	if _has_movement_direction(movement):
 		player_direction = movement.normalized()
+
+func _begin_pinball(velocity: Vector2, normal: Vector2) -> void:
+	_pinball_time_left = PINBALL_LIFE
+	_pinball_age = 0.0
+	_pinball_bounces = 1
+	_pinball_combo = 0
+	_pinball_hits.clear()
+	_pinball_velocity = velocity.bounce(normal).normalized() * PINBALL_SPEED
+	player_velocity = _pinball_velocity
+	player_direction = _pinball_velocity.normalized()
+	pinball_bounced.emit(player_position, normal, true, _pinball_combo)
+
+func pinball_snapshot() -> Dictionary:
+	return {"active": _pinball_time_left > 0.0 and not complete, "remaining": _pinball_time_left,
+		"velocity": _pinball_velocity, "bounces": _pinball_bounces, "combo": _pinball_combo, "age": _pinball_age}
+
+func _pinball_first_hit(start: Vector2, movement: Vector2) -> Dictionary:
+	var result: Dictionary = obstacles.first_hit(start, movement, 16.0, 16.0)
+	var nearest: float = float(result.get("t", INF))
+	for enemy: Enemy in _pinball_candidates(start, start + movement):
+		if not enemy.active or enemy.health <= 0.0 or not enemy.position.is_finite():
+			continue
+		var offset: Vector2 = start - enemy.position
+		var radius: float = 16.0 + enemy.radius
+		if offset.length_squared() <= radius * radius and offset.dot(movement) >= 0.0:
+			continue
+		var fraction: float = _swept_circle_entry_t(start, start + movement, enemy.position, radius)
+		var current: Enemy = result.get("enemy")
+		if fraction < nearest or (is_finite(fraction) and fraction == nearest and current != null and enemy.uid < current.uid):
+			var normal: Vector2 = (start + movement * fraction - enemy.position).normalized()
+			if normal.is_zero_approx():
+				normal = -movement.normalized()
+			nearest = fraction
+			result = {"t": fraction, "normal": normal, "enemy": enemy,
+				"penetration": maxf(0.0, radius - offset.length())}
+	return result
+
+func _pinball_candidates(start: Vector2, end: Vector2) -> Array[Enemy]:
+	if not _pinball_grid_active:
+		return enemies
+	var result: Array[Enemy] = []
+	var padding: Vector2 = Vector2.ONE * (16.0 + _largest_enemy_radius)
+	var first := Vector2i(((start.min(end) - padding) / CELL).floor())
+	var last := Vector2i(((start.max(end) + padding) / CELL).floor())
+	for x: int in range(first.x, last.x + 1):
+		for y: int in range(first.y, last.y + 1):
+			var bucket: Array = _grid.get(Vector2i(x, y), [])
+			for enemy: Enemy in bucket:
+				result.append(enemy)
+	return result
+
+func _move_pinball(delta: float, movement: Vector2) -> float:
+	if delta <= 0.0 or not is_finite(delta):
+		return 0.0
+	var duration: float = minf(delta, _pinball_time_left)
+	_pinball_age += duration
+	_pinball_time_left = _skill_timer_after(_pinball_time_left, duration)
+	if _has_movement_direction(movement):
+		var steering: float = clampf(_pinball_velocity.angle_to(movement), -2.4 * duration, 2.4 * duration)
+		_pinball_velocity = _pinball_velocity.rotated(steering)
+	var remaining: float = duration
+	for iteration: int in PINBALL_STEP_LIMIT:
+		if remaining <= 0.000001 or complete:
+			break
+		var travel: Vector2 = _pinball_velocity * remaining
+		var impact: Dictionary = _pinball_first_hit(player_position, travel)
+		if impact.is_empty():
+			player_position += travel
+			remaining = 0.0
+			break
+		var fraction: float = clampf(float(impact["t"]), 0.0, 1.0)
+		var normal: Vector2 = impact["normal"]
+		player_position += travel * fraction
+		var enemy: Enemy = impact.get("enemy")
+		var collider_id: String = str(impact.get("id", ""))
+		var boosted: bool = str(impact.get("art_id", "")) == "bumper"
+		var target_id: String = "enemy:%d" % enemy.uid if enemy != null else collider_id
+		if elapsed - float(_pinball_hits.get(target_id, -INF)) >= PINBALL_HIT_INTERVAL:
+			var damage: float = PINBALL_DAMAGE * run.stat("damage") * (1.0 + minf(float(_pinball_combo), 5.0) * 0.1)
+			if enemy != null:
+				var before: float = enemy.health
+				apply_damage(enemy, damage, "skill:pinball")
+				if enemy.health < before:
+					_pinball_combo += 1
+			elif _crate_indices.has(collider_id):
+				var outcome: Dictionary = _damage_crate(int(_crate_indices[collider_id]), damage)
+				_pinball_combo += int(bool(outcome.get("broke", false)))
+			_pinball_hits[target_id] = elapsed
+		_pinball_bounces += 1
+		_pinball_velocity = _pinball_velocity.bounce(normal)
+		if boosted:
+			_pinball_velocity = _pinball_velocity.normalized() * minf(PINBALL_MAX_SPEED, _pinball_velocity.length() * 1.15)
+			_pinball_time_left = minf(maxf(0.0, PINBALL_MAX_LIFE - _pinball_age), _pinball_time_left + 0.15)
+		player_position += normal * (0.1 + float(impact.get("penetration", 0.0)))
+		pinball_bounced.emit(player_position, normal, boosted, _pinball_combo)
+		remaining *= 1.0 - fraction
+		if _pinball_bounces >= PINBALL_BOUNCE_LIMIT:
+			_pinball_time_left = 0.0
+			break
+	player_position = obstacles.free_point(player_position, 16.0, 16.0)
+	player_velocity = _pinball_velocity
+	if not _pinball_velocity.is_zero_approx():
+		player_direction = _pinball_velocity.normalized()
+	if _pinball_time_left <= 0.0:
+		_pinball_velocity = Vector2.ZERO
+	if _pinball_bounces >= PINBALL_BOUNCE_LIMIT or complete:
+		_pinball_age -= remaining
+		return duration - remaining
+	return duration
+
+func _damage_crate(index: int, amount: float) -> Dictionary:
+	var result: Dictionary = interactions.damage_crate(index, amount)
+	if bool(result.get("hit", false)):
+		crate_hit.emit(result["position"], bool(result.get("broke", false)))
+	return result
+
+func _collect_world_pickups() -> void:
+	for pickup: Dictionary in interactions.pickup_candidates(player_position, run.stat("pickup_radius")):
+		var kind: String = str(pickup["kind"])
+		var value: float = float(pickup["value"])
+		var actual: float = 0.0
+		match kind:
+			"gold":
+				actual = float(maxi(0, int(value)))
+				run.gold += int(actual)
+			"health":
+				actual = maxf(0.0, minf(value, run.stat("max_health") - run.health))
+				run.health += actual
+			"charge": actual = _charge_owned_skills(value)
+		if actual <= 0.0:
+			continue
+		if interactions.consume_pickup(int(pickup["uid"])):
+			run.changed.emit()
+			world_pickup_collected.emit(kind, pickup["position"], actual)
+
+func _charge_owned_skills(seconds: float) -> float:
+	var actual: float = 0.0
+	if not is_finite(seconds) or seconds <= 0.0:
+		return actual
+	for item: Dictionary in run.active_skills:
+		var clock: Dictionary = _active_skill_clocks.get(int(item["uid"]), {})
+		if clock.is_empty():
+			continue
+		var before: float = float(clock["remaining"])
+		clock["remaining"] = _skill_timer_after(before, seconds)
+		actual = maxf(actual, before - float(clock["remaining"]))
+	if not _hero_skill_clock.is_empty():
+		var before: float = float(_hero_skill_clock["remaining"])
+		_hero_skill_clock["remaining"] = _skill_timer_after(before, seconds)
+		actual = maxf(actual, before - float(_hero_skill_clock["remaining"]))
+	_sync_legacy_pulse_clock()
+	return actual
 
 static func _has_movement_direction(movement: Vector2) -> bool:
 	return movement.is_finite() and movement.length_squared() > 0.0
@@ -493,7 +709,20 @@ func _cast_damage_skill(origin: Vector2, direction: Vector2, parameters: Diction
 		apply_damage(enemy, float(parameters["damage"]), "skill:" + str(parameters["id"]))
 		if enemy.health < before:
 			affected += 1
+	if not complete:
+		_damage_crates_in_skill(origin, direction, parameters)
 	return affected
+
+func _damage_crates_in_skill(origin: Vector2, direction: Vector2, parameters: Dictionary) -> void:
+	var amount: float = float(parameters.get("damage", 0.0))
+	if amount <= 0.0 or not interactions.has_active_crates():
+		return
+	var reach: float = float(parameters.get("radius", 0.0))
+	if parameters.get("shape", "") == "line":
+		reach += float(parameters.get("width", 70.0)) * 0.5
+	for crate: Dictionary in interactions.damage_candidates(origin, reach):
+		if skill_contains(parameters, origin, direction, crate["position"]):
+			_damage_crate(int(crate["index"]), amount)
 
 static func skill_contains(parameters: Dictionary, origin: Vector2, direction: Vector2, point: Vector2) -> bool:
 	if not origin.is_finite() or not direction.is_finite() or direction.is_zero_approx() or not point.is_finite():
@@ -765,6 +994,8 @@ func _update_boss(enemy: Enemy, direction: Vector2, delta: float) -> void:
 	enemy.action_timer = 1.8 if phase_two else 2.6
 
 func _rebuild_grid() -> void:
+	_shot_region_candidates.clear()
+	_target_points.clear()
 	_largest_enemy_radius = 0.0
 	for key: Vector2i in _grid:
 		(_grid[key] as Array).clear()
@@ -772,53 +1003,32 @@ func _rebuild_grid() -> void:
 		if not enemy.active:
 			continue
 		_largest_enemy_radius = maxf(_largest_enemy_radius, enemy.radius)
+		_target_points.add_point(enemy.slot, enemy.position)
 		var cell: Vector2i = Vector2i((enemy.position / CELL).floor())
 		if not _grid.has(cell):
 			_grid[cell] = []
 		(_grid[cell] as Array).append(enemy)
 
 func _nearest(position: Vector2, distance: float, excluded: Dictionary = {}) -> Enemy:
-	# Outside the stable shot-phase window, keep direct/stale-grid calls unchanged.
-	# Very wide or non-finite diagnostic queries also favor the bounded pool scan.
-	if not _explosion_grid_active or not position.is_finite() or not is_finite(distance) or absf(distance) > CELL * 16.0:
+	if not _explosion_grid_active or not position.is_finite() or not is_finite(distance) or absf(distance) > CELL * 16.0 or excluded.size() > 16:
 		return _nearest_linear(position, distance, excluded)
-	if distance == 0.0:
-		return null
+	# Native point lookup uses pool-slot IDs, preserving the earliest slot on ties.
+	var disabled: PackedInt64Array = PackedInt64Array()
 	var result: Enemy
-	var best: float = distance * distance
-	var center: Vector2i = Vector2i((position / CELL).floor())
-	var max_ring: int = int(floorf(absf(distance) / CELL)) + 1
-	for ring: int in range(max_ring + 1):
-		var side: int = ring * 2
-		var count: int = 1 if ring == 0 else ring * 8
-		for index: int in count:
-			var cell: Vector2i = center
-			if ring > 0:
-				var offset: int = index % side
-				match int(index / side):
-					0: cell += Vector2i(-ring + offset, -ring)
-					1: cell += Vector2i(ring, -ring + offset)
-					2: cell += Vector2i(ring - offset, ring)
-					3: cell += Vector2i(-ring, ring - offset)
-			if not _grid.has(cell):
-				continue
-			for enemy: Enemy in _grid[cell]:
-				if not enemy.active or excluded.has(enemy.uid):
-					continue
-				var squared: float = enemy.position.distance_squared_to(position)
-				if squared < best or (result != null and squared == best and enemy.slot < result.slot):
-					best = squared
-					result = enemy
-		var left: float = float(center.x - ring) * CELL
-		var top: float = float(center.y - ring) * CELL
-		var right: float = float(center.x + ring + 1) * CELL
-		var bottom: float = float(center.y + ring + 1) * CELL
-		var edge: float = maxf(0.0, minf(minf(position.x - left, right - position.x), minf(position.y - top, bottom - position.y)))
-		# Match Vector2's distance precision, and only prune conservatively. Selection
-		# ties above stay exact; a next-ring equal-distance lower slot must still win.
-		var lower_bound: float = Vector2(edge, 0.0).length_squared()
-		if lower_bound > best and not is_equal_approx(lower_bound, best):
+	var slot: int = _target_points.get_closest_point(position)
+	while slot >= 0:
+		var enemy: Enemy = enemies[slot]
+		if enemy.position.distance_squared_to(position) >= distance * distance:
 			break
+		if enemy.active and not excluded.has(enemy.uid):
+			result = enemy
+			break
+		_target_points.set_point_disabled(slot, true)
+		if enemy.active:
+			disabled.append(slot)
+		slot = _target_points.get_closest_point(position)
+	for id: int in disabled:
+		_target_points.set_point_disabled(id, false)
 	return result
 
 func _nearest_linear(position: Vector2, distance: float, excluded: Dictionary) -> Enemy:
@@ -1021,7 +1231,15 @@ func _update_shots(delta: float) -> void:
 		var impact: Enemy = _first_collision(shot)
 		var hit_count: int = 0
 		var hit_limit: int = 1 + shot.innate_remaining + shot.remaining
-		while impact != null and shot.active and hit_count < hit_limit:
+		while shot.active and hit_count < hit_limit:
+			var crate: Dictionary = interactions.first_crate_hit(shot.previous, shot.position, shot.radius)
+			var enemy_t: float = _swept_circle_entry_t(shot.previous, shot.position, impact.position, shot.radius + impact.radius) if impact != null else INF
+			if not crate.is_empty() and float(crate["t"]) <= enemy_t:
+				_damage_crate(int(crate["index"]), shot.damage)
+				_release_shot(shot)
+				break
+			if impact == null:
+				break
 			hit_count += 1
 			shot.hit_ids[impact.uid] = true
 			var impact_position: Vector2 = impact.position
@@ -1090,27 +1308,60 @@ func _frostfire_burst(point: Vector2, damage: float, source: String, excluded: D
 		var enemy: Enemy = enemies[slot]
 		if enemy.active and not excluded.has(enemy.uid) and enemy.position.distance_squared_to(point) < pow(RogueRules.FROSTFIRE_RADIUS + enemy.radius, 2):
 			apply_damage(enemy, damage * RogueRules.FROSTFIRE_FACTOR, source, true)
+	if not complete:
+		_damage_crates_in_skill(point, Vector2.RIGHT, {"shape": "circle", "radius": RogueRules.FROSTFIRE_RADIUS, "damage": damage * RogueRules.FROSTFIRE_FACTOR})
 
 func _first_collision(shot: Shot) -> Enemy:
 	var result: Enemy
 	var nearest_t: float = INF
+	var movement: Vector2 = shot.position - shot.previous
+	var length_squared: float = movement.length_squared()
+	var low: Vector2 = shot.previous.min(shot.position)
+	var high: Vector2 = shot.previous.max(shot.position)
 	var padding: float = shot.radius + _largest_enemy_radius
-	var start: Vector2i = Vector2i(((shot.previous.min(shot.position) - Vector2.ONE * padding) / CELL).floor())
-	var end: Vector2i = Vector2i(((shot.previous.max(shot.position) + Vector2.ONE * padding) / CELL).floor())
-	for x: int in range(start.x, end.x + 1):
-		for y: int in range(start.y, end.y + 1):
-			var key: Vector2i = Vector2i(x, y)
-			if not _grid.has(key):
+	var start: Vector2i = Vector2i(((low - Vector2.ONE * padding) / CELL).floor())
+	var end: Vector2i = Vector2i(((high + Vector2.ONE * padding) / CELL).floor())
+	for enemy: Enemy in _shot_candidates(start, end):
+		if not enemy.active or shot.hit_ids.has(enemy.uid):
+			continue
+		var radius: float = enemy.radius + shot.radius
+		var center: Vector2 = enemy.position
+		if center.x < low.x - radius or center.x > high.x + radius or center.y < low.y - radius or center.y > high.y + radius:
+			continue
+		var offset: Vector2 = shot.previous - center
+		var outside: float = offset.length_squared() - radius * radius
+		var t: float = 0.0
+		if outside > 0.0:
+			if length_squared <= 0.000001:
 				continue
-			var bucket: Array = _grid[key]
-			for enemy: Enemy in bucket:
-				if not enemy.active or shot.hit_ids.has(enemy.uid):
-					continue
-				var radius: float = enemy.radius + shot.radius
-				var t: float = _swept_circle_entry_t(shot.previous, shot.position, enemy.position, radius)
-				if t < nearest_t:
-					nearest_t = t
-					result = enemy
+			var projection: float = offset.dot(movement)
+			if projection >= 0.0:
+				continue
+			var discriminant: float = projection * projection - length_squared * outside
+			if discriminant < 0.0:
+				continue
+			t = (-projection - sqrt(discriminant)) / length_squared
+			if t < 0.0 or t > 1.0:
+				continue
+		if t < nearest_t:
+			nearest_t = t
+			result = enemy
+	return result
+
+func _shot_candidates(first: Vector2i, last: Vector2i) -> Array:
+	if first == last:
+		return _grid.get(first, [])
+	var key := Vector4i(first.x, first.y, last.x, last.y)
+	if _explosion_grid_active and _shot_region_candidates.has(key):
+		return _shot_region_candidates[key]
+	var result: Array = []
+	for x: int in range(first.x, last.x + 1):
+		for y: int in range(first.y, last.y + 1):
+			var cell := Vector2i(x, y)
+			if _grid.has(cell):
+				result.append_array(_grid[cell])
+	if _explosion_grid_active:
+		_shot_region_candidates[key] = result
 	return result
 
 static func _swept_circle_entry_t(start: Vector2, end: Vector2, center: Vector2, radius: float) -> float:
@@ -1179,6 +1430,8 @@ func _explode(position: Vector2, amount: float, source: String, excluded: Dictio
 		if enemy.position.distance_squared_to(position) < pow(radius + enemy.radius, 2):
 			# Secondary damage deliberately never enters the rune dispatch path.
 			apply_damage(enemy, amount, source, true)
+	if not complete:
+		_damage_crates_in_skill(position, Vector2.RIGHT, {"shape": "circle", "radius": radius, "damage": amount})
 
 func _explosion_slots(position: Vector2, radius: float = RuneRules.BLAST_RADIUS) -> PackedInt32Array:
 	var slots: PackedInt32Array = PackedInt32Array()
@@ -1348,6 +1601,7 @@ func snapshot() -> Dictionary:
 		"pulse": pulse_snapshot(),
 		"skills": active_skill_snapshots(),
 		"hero_skill": hero_skill_snapshot(),
+		"pinball": pinball_snapshot(),
 		"boss_health": boss.health if boss != null and boss.active else 0.0,
 		"boss_max_health": boss.max_health if boss != null else 0.0,
 	}

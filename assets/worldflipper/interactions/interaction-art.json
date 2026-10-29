@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "revision": "world-flipper-fan-06",
+  "original_copyright": "© Cygames, Inc. / Citail Inc.",
+  "adaptation": "Original pixels; project-specific ball and break timing, not an exact reproduction of the original game's motion or mechanics.",
+  "assets": {
+    "ball": {
+      "path": "res://assets/worldflipper/interactions/ball-atlas.png",
+      "frame_size": [
+        64,
+        64
+      ],
+      "columns": 7,
+      "frame_count": 7,
+      "filter": "nearest",
+      "frame_ends_seconds": [
+        0.12,
+        0.18,
+        0.24,
+        0.3,
+        0.36,
+        0.42,
+        0.48
+      ],
+      "center_anchor": [
+        32,
+        32
+      ],
+      "timing_note": "Project adaptation: .12s then six .06s frames, .48s cycle. Original FPS and exact game timing are not asserted."
+    },
+    "barrel": {
+      "path": "res://assets/worldflipper/interactions/barrel-atlas.png",
+      "frame_size": [
+        128,
+        128
+      ],
+      "columns": 4,
+      "frame_count": 11,
+      "filter": "nearest",
+      "foot_anchor": [
+        64,
+        112
+      ],
+      "idle_frame": 1,
+      "break_first_frame": 2,
+      "break_last_frame": 9,
+      "break_frame_duration": 0.04,
+      "timing_note": "Project adaptation: frames2..9 at .04s each (.32s), not original barrel timeline or frame timing. Frames0/10 are empty."
+    },
+    "chest": {
+      "path": "res://assets/worldflipper/interactions/chest.png",
+      "frame_size": [
+        96,
+        96
+      ],
+      "columns": 1,
+      "frame_count": 1,
+      "filter": "nearest",
+      "foot_anchor": [
+        48,
+        88
+      ]
+    },
+    "health": {
+      "path": "res://assets/worldflipper/interactions/health.png",
+      "frame_size": [
+        64,
+        64
+      ],
+      "columns": 1,
+      "frame_count": 1,
+      "filter": "nearest",
+      "foot_anchor": [
+        32,
+        61
+      ]
+    },
+    "charge": {
+      "path": "res://assets/worldflipper/interactions/charge.png",
+      "frame_size": [
+        64,
+        64
+      ],
+      "columns": 1,
+      "frame_count": 1,
+      "filter": "nearest",
+      "foot_anchor": [
+        32,
+        61
+      ]
+    },
+    "mana": {
+      "path": "res://assets/worldflipper/interactions/mana.png",
+      "frame_size": [
+        64,
+        64
+      ],
+      "columns": 1,
+      "frame_count": 1,
+      "filter": "nearest",
+      "foot_anchor": [
+        32,
+        61
+      ]
+    }
+  }
+}

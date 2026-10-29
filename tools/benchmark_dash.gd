@@ -67,6 +67,11 @@ var _skill_audio_streams_observed: Dictionary = {}
 var _backpack_skills: bool = false
 var _hero_skills: bool = false
 var _sample_hero_uses_start: int = 0
+var _pinball_probes: bool = false
+var _pinball_cycles: int = 0
+var _pinball_bounces: int = 0
+var _sample_pinball_cycles_start: int = 0
+var _sample_pinball_bounces_start: int = 0
 var _backpack_skill_uids: Dictionary = {}
 var _backpack_skill_purchases: Array[Dictionary] = []
 var _backpack_skill_requests: Dictionary = {}
@@ -119,8 +124,10 @@ func _parse_arguments() -> bool:
 			_backpack_skills = true
 		elif argument == "--hero-skills":
 			_hero_skills = true
+		elif argument == "--pinball-probes":
+			_pinball_probes = true
 		else:
-			push_error("Supported arguments: --seconds=<at least 5> --output=<report.json> [--evasion-probes] [--pulse-cycles] [--skill-relics] [--input-prompts] [--skill-feedback] [--backpack-skills] [--hero-skills]")
+			push_error("Supported arguments: --seconds=<at least 5> --output=<report.json> [--evasion-probes] [--pulse-cycles] [--skill-relics] [--input-prompts] [--skill-feedback] [--backpack-skills] [--hero-skills] [--pinball-probes]")
 			return false
 	if _backpack_skills and (_pulse_cycles or _skill_feedback or _skill_relics or _input_prompts):
 		push_error("--backpack-skills cannot be combined with --pulse-cycles, --skill-feedback, --skill-relics, or --input-prompts")
@@ -187,6 +194,8 @@ func _start() -> void:
 	# SceneTree emits this signal before every Node._physics_process callback.
 	# World retains its own normal fixed-step callback and consumes the real queue.
 	physics_frame.connect(_before_world_physics)
+	if _pinball_probes:
+		_app.world.sim.pinball_bounced.connect(_observe_pinball_bounce)
 	_running = true
 	_update_caption(_started_usec)
 	var start_report: Dictionary = {
@@ -298,8 +307,24 @@ func _before_world_physics() -> void:
 		return
 	if _input_prompts:
 		_exercise_input_prompts()
+	if _pinball_probes and bool(world.sim.dash_snapshot()["ready"]):
+		var arena: Dictionary = ArenaCatalog.definition(world.sim.run.arena_id)
+		for obstacle: Dictionary in arena["obstacles"]:
+			if str(obstacle["id"]) == "east_bumper":
+				var center := Vector2(float(obstacle["center"][0]), float(obstacle["center"][1]))
+				world.sim.player_position = world.sim.obstacles.free_point(center - Vector2(float(obstacle["radius"]) + 48.0, 0), 16.0, 16.0)
+				_next_right = true
+				break
 	world.sim.run.health = world.sim.run.stat("max_health")
 	world._maintain_stress()
+	if _pinball_probes:
+		while world.sim.enemy_count < TARGET_ENEMIES:
+			var enemy: CombatSim.Enemy = world.sim.spawn_enemy("chaser", Vector2(world.sim.rng.randf_range(100, 1180), world.sim.rng.randf_range(175, 553)))
+			if enemy == null:
+				_abort("The pressure fixture cannot replenish its required enemy count")
+				return
+			enemy.health = 1000000000.0
+			enemy.max_health = enemy.health
 	var counts := Vector3i(world.sim.enemy_count, world.sim.shot_count, world.sim.soul_count)
 	_last_pre_step_counts = counts
 	_physics_steps += 1
@@ -347,6 +372,12 @@ func _request_ready_backpack_skills(world: CombatWorld) -> bool:
 				return false
 			_backpack_skill_requests[id] = int(_backpack_skill_requests.get(id, 0)) + 1
 	return true
+
+func _observe_pinball_bounce(_point: Vector2, _normal: Vector2, boosted: bool, _combo: int) -> void:
+	_pinball_bounces += 1
+	var ball: Dictionary = _app.world.sim.pinball_snapshot()
+	if boosted and int(ball["bounces"]) == 1 and float(ball["age"]) == 0.0:
+		_pinball_cycles += 1
 
 func _exercise_input_prompts() -> void:
 	var before: Dictionary = _app.ui.input_device_snapshot()
@@ -467,6 +498,8 @@ func _process(_delta: float) -> bool:
 		if _backpack_skills:
 			_begin_backpack_skill_sample()
 		_sample_hero_uses_start = int(_app.world.sim.hero_skill_snapshot()["uses"])
+		_sample_pinball_cycles_start = _pinball_cycles
+		_sample_pinball_bounces_start = _pinball_bounces
 	elif _sampling:
 		_frame_samples.append(float(now - _last_frame_usec) / 1000.0)
 		_last_frame_usec = now
@@ -735,6 +768,17 @@ func _finish_report(now: int) -> void:
 		report["checks"]["real_main_character_casts"] = uses >= minimum_uses
 		report["passed"] = bool(report["passed"]) and uses >= minimum_uses
 		report["fixture_overrides"].append("main-character option repeatedly requests the real independent R skill; its cooldown, damage and shared fixed effect pool remain production rules")
+	if _pinball_probes:
+		var cycles: int = _pinball_cycles - _sample_pinball_cycles_start
+		var bounces: int = _pinball_bounces - _sample_pinball_bounces_start
+		var minimum_cycles: int = maxi(1, floori(_seconds / DashRules.COOLDOWN) - 1)
+		report["pinball_probes"] = true
+		report["sample_pinball_cycles"] = cycles
+		report["sample_pinball_bounces"] = bounces
+		report["thresholds"]["minimum_sample_pinball_cycles"] = minimum_cycles
+		report["checks"]["real_pinball_cycles_and_reflections"] = cycles >= minimum_cycles and bounces > cycles
+		report["passed"] = bool(report["passed"]) and bool(report["checks"]["real_pinball_cycles_and_reflections"])
+		report["fixture_overrides"].append("before each ready dash, the fixture positions the player before the authored east bumper; the real dash triggers ball mode and normal collision resolves its flight, enemy damage and reflections; enemies retired by the wider movement are replenished to keep all 300 simulation agents active")
 	var absolute: String = ProjectSettings.globalize_path(_output)
 	var directory_error: Error = DirAccess.make_dir_recursive_absolute(absolute.get_base_dir())
 	if directory_error != OK:
