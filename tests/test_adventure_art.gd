@@ -277,8 +277,8 @@ func _test_real_inventory_presentation() -> void:
 	ui.show_title({})
 	await _settle()
 	_check(_count_texture(ui._page, TitleCover.BASE_PATH) == 1, "The real title displays its full-screen animated cover's actual base texture")
-	var starter := ui.find_child("Starter_bone", true, false) as Button
-	_check(starter != null and starter.icon != null and starter.icon.resource_path == _expected_icon("bone") and starter.texture_filter == CanvasItem.TEXTURE_FILTER_NEAREST, "The actual starter choice loads its new icon without changing its identity")
+	var starter := ui.find_child("Character_alk", true, false) as Button
+	_check(starter != null and _count_texture(starter, _expected_icon("bone")) == 1 and _count_texture(starter, HeroCatalog.definition("alk").idle_path) == 1, "The actual character choice shows original character and initial weapon art")
 	for id: String in ArenaCatalog.IDS:
 		var map_source: String = str(ArenaCatalog.definition(id)["texture"])
 		_check(_count_texture(ui._page, AdventureArt.path(map_source)) == 1, "The title's real map thumbnail uses the replacement: " + id)
@@ -330,7 +330,8 @@ func _test_real_inventory_presentation() -> void:
 	ui.show_hud()
 	ui.update_hud({"health": state.health, "max_health": state.stat("max_health"), "wave": state.wave, "time_left": 45.0, "gold": state.gold, "level": state.level, "loadout": state.loadout})
 	await _settle()
-	_check(_count_texture(ui._page, _expected_icon("bone")) == 1 and _has_text(ui._page, GameCatalog.rune("pierce").display_name + " Ⅰ"), "Actual HUD equipment retains its replacement texture and explicit attached-rune identity")
+	var equipment := ui.find_child("EquipmentSlot1", true, false) as Control
+	_check(_count_texture(ui._page, _expected_icon("bone")) == 1 and _count_texture(equipment, _expected_icon("pierce")) == 1 and equipment != null and equipment.tooltip_text.contains(GameCatalog.weapon("bone").display_name) and equipment.tooltip_text.contains(GameCatalog.rune("pierce").display_name + " Ⅰ阶"), "The compact HUD preserves original weapon and rune art plus full ranked identities in its tooltip")
 	ui.show_title({})
 	await _settle()
 	ui.show_shop()

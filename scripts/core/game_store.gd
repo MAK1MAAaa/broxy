@@ -9,6 +9,7 @@ var best: Dictionary = {"wave": 0, "kills": 0, "wins": 0, "runs": 0}
 var unlocked_starters: Array[String] = ["bone", "ember"]
 var last_unlocks: Array[String] = []
 var persistent: bool = true
+var selected_hero: String = "alk"
 var _profile_path: String
 
 func _init(profile_path: String = PATH) -> void:
@@ -26,6 +27,8 @@ func load_profile() -> void:
 		if config.has_section_key("controls", action):
 			saved_controls[action] = config.get_value("controls", action)
 	controls = ControlBindings.normalize(saved_controls)
+	var hero: Variant = config.get_value("progress", "hero", "alk")
+	selected_hero = HeroCatalog.normalize_id(hero) if hero is String else "alk"
 	for key: String in best:
 		best[key] = maxi(0, int(config.get_value("best", key, 0)))
 	var saved: Variant = config.get_value("progress", "starters", [])
@@ -58,6 +61,7 @@ func save_profile() -> Error:
 		if starter_unlocked(id) or id in ["bone", "ember"]:
 			safe_starters.append(id)
 	config.set_value("progress", "starters", safe_starters)
+	config.set_value("progress", "hero", HeroCatalog.normalize_id(selected_hero))
 	return config.save(_profile_path)
 
 static func _normalize_settings(value: Dictionary) -> Dictionary:

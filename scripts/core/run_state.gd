@@ -30,6 +30,7 @@ const UPGRADE_POOL: Array[Dictionary] = [
 
 var wave: int = 1
 var arena_id: String = "reliquary"
+var hero_id: String = "alk"
 var gold: int = 0
 var xp: int = 0
 var level: int = 1
@@ -66,12 +67,14 @@ var _upgrade_bonuses: Dictionary = {}
 var _upgrade_options: Array[Dictionary] = []
 var _locked_offers: Dictionary = {}
 var _resonance: Dictionary = {}
+var _rear_bonuses: Dictionary = {}
 
-func begin(seed_value: int, starter: String, selected_arena: String = "reliquary") -> void:
+func begin(seed_value: int, starter: String, selected_arena: String = "reliquary", selected_hero: String = "alk") -> void:
 	_run_seed = seed_value
 	rng.seed = seed_value
 	wave = 1
 	arena_id = ArenaCatalog.normalize_id(selected_arena)
+	hero_id = HeroCatalog.normalize_id(selected_hero)
 	gold = 0
 	xp = 0
 	level = 1
@@ -104,9 +107,10 @@ func begin(seed_value: int, starter: String, selected_arena: String = "reliquary
 	_upgrade_options.clear()
 	_locked_offers.clear()
 	backpack.reset()
-	var starting_weapon: String = starter if GameCatalog.weapon(starter) != null else "bone"
+	var starting_weapon: String = starter if GameCatalog.weapon(starter) != null else HeroCatalog.definition(hero_id).starter_weapon
 	backpack.add("weapon", starting_weapon)
 	_sync_backpack_projection()
+	health = stat("max_health")
 	changed.emit()
 
 func stat(key: String) -> float:
@@ -115,6 +119,9 @@ func stat(key: String) -> float:
 func active_skill_parameters(item: Dictionary) -> Dictionary:
 	return ActiveSkillRules.parameters(str(item.get("id", "")), int(item.get("rank", 1)),
 		{"damage": stat("damage"), "pulse_radius": stat("pulse_radius"), "pulse_cooldown": stat("pulse_cooldown")})
+
+func hero_skill_parameters() -> Dictionary:
+	return HeroCatalog.hero_skill_parameters(hero_id, {"damage": stat("damage")})
 
 func choose_core(id: String) -> bool:
 	if not _wave_finished or wave < 1 or wave >= GameCatalog.WAVE_DEFS.size() or not core_id.is_empty():
@@ -212,24 +219,57 @@ func projected_upgrade_stat(key: String, amount: float) -> float:
 	return _stat_with_projected_relic(key, null, amount)
 
 func _stat_with_projected_relic(key: String, additional: ContentDef = null, upgrade_delta: float = 0.0) -> float:
+	return _stat_with_bonuses(key, relic_counts, _rear_bonuses, additional, upgrade_delta)
+
+func _stat_with_bonuses(key: String, counts: Dictionary, rear_bonuses: Dictionary, additional: ContentDef = null, upgrade_delta: float = 0.0) -> float:
+	var hero: HeroDef = HeroCatalog.definition(hero_id)
 	var value: float = float(BASE_STATS.get(key, 0.0)) + float(_upgrade_bonuses.get(key, 0.0)) + upgrade_delta
-	for relic_id: String in relic_counts:
+	value += float(hero.base_bonuses.get(key, 0.0)) + float(rear_bonuses.get(key, 0.0))
+	for relic_id: String in counts:
 		var definition: ContentDef = GameCatalog.relic(relic_id)
 		if definition == null:
 			continue
-		var count: int = int(relic_counts[relic_id])
+		var count: int = int(counts[relic_id])
 		if additional != null and additional.id == relic_id:
 			count += 1
 		if definition.stat == key:
 			value += definition.amount * count
 		if definition.bonus_stat == key:
 			value += definition.bonus_amount * count
-	if additional != null and not relic_counts.has(additional.id):
+	if additional != null and not counts.has(additional.id):
 		if additional.stat == key:
 			value += additional.amount
 		if additional.bonus_stat == key:
 			value += additional.bonus_amount
 	return _clamp_stat(key, value)
+
+func _stat_for_items(key: String, entries: Array) -> float:
+	var counts: Dictionary = {}
+	var rear_bonuses: Dictionary = {}
+	for entry: Dictionary in entries:
+		if str(entry.get("kind", "")) == "relic":
+			var id: String = str(entry["id"])
+			counts[id] = int(counts.get(id, 0)) + int(BackpackInventory.rank_multiplier(int(entry.get("rank", 1))))
+		elif str(entry.get("kind", "")) == "skill":
+			_add_bonuses(rear_bonuses, HeroCatalog.rear_bonuses(str(entry["id"]), int(entry.get("rank", 1))))
+	return _stat_with_bonuses(key, counts, rear_bonuses)
+
+func _skill_parameters_for_items(item: Dictionary, entries: Array) -> Dictionary:
+	return ActiveSkillRules.parameters(str(item.get("id", "")), int(item.get("rank", 1)),
+		{"damage": _stat_for_items("damage", entries), "pulse_radius": _stat_for_items("pulse_radius", entries),
+		"pulse_cooldown": _stat_for_items("pulse_cooldown", entries)})
+
+func _stat_changes_for_items(entries: Array, keys: Array) -> Array[Dictionary]:
+	var changes: Array[Dictionary] = []
+	for key: String in keys:
+		var before: float = stat(key)
+		var after: float = _stat_for_items(key, entries)
+		changes.append({"key": key, "before": before, "after": after, "delta": after - before})
+	return changes
+
+static func _add_bonuses(target: Dictionary, bonuses: Dictionary) -> void:
+	for key: String in bonuses:
+		target[key] = float(target.get(key, 0.0)) + float(bonuses[key])
 
 static func _clamp_stat(key: String, value: float) -> float:
 	match key:
@@ -303,7 +343,7 @@ func merge_preview(source_uid: int, target_uid: int) -> Dictionary:
 	result["cells_freed"] = _item_area(source) if error.is_empty() else 0
 	var projected_items: Array[Dictionary] = backpack.merged_snapshot(source_uid, target_uid)
 	if error.is_empty():
-		result["weapon_changes"] = _projected_weapon_changes(projected_items, stat("damage"), stat("attack_speed"))
+		result["weapon_changes"] = _projected_weapon_changes(projected_items, _stat_for_items("damage", projected_items), _stat_for_items("attack_speed", projected_items))
 	if not (source.get("rune", {}) as Dictionary).is_empty() and not (target.get("rune", {}) as Dictionary).is_empty():
 		result["returned_rune"] = (source["rune"] as Dictionary).duplicate(true)
 		var returned_size: Vector2i = BackpackInventory.size_for("rune", str(source["rune"]["id"]))
@@ -339,9 +379,12 @@ func merge_preview(source_uid: int, target_uid: int) -> Dictionary:
 		var merged_skill: Dictionary = target.duplicate(true)
 		merged_skill["rank"] = result_rank
 		var before: Dictionary = active_skill_parameters(target)
-		var after: Dictionary = active_skill_parameters(merged_skill)
+		var after: Dictionary = _skill_parameters_for_items(merged_skill, projected_items) if error.is_empty() else before.duplicate(true)
 		result["skill_before"] = before
 		result["skill_after"] = after
+		result["stat_changes"] = _stat_changes_for_items(projected_items, HeroCatalog.rear_bonuses(str(target["id"]), result_rank).keys()) if error.is_empty() else []
+		result["health_before"] = health
+		result["health_after"] = minf(health, _stat_for_items("max_health", projected_items)) if error.is_empty() else health
 		for key: String in ["damage", "radius", "cooldown"]:
 			result[key + "_before"] = before.get(key, 0.0)
 			result[key + "_after"] = after.get(key, 0.0)
@@ -391,6 +434,7 @@ func _sync_backpack_projection() -> void:
 	active_skills.clear()
 	rune_bag.clear()
 	relic_counts.clear()
+	_rear_bonuses.clear()
 	var entries: Array = backpack.snapshot()["items"]
 	_resonance = BackpackResonance.evaluate(entries)
 	entries.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return int(a["uid"]) < int(b["uid"]))
@@ -401,7 +445,9 @@ func _sync_backpack_projection() -> void:
 				loadout.append({"uid": entry["uid"], "id": entry["id"], "rank": entry["rank"], "paid": entry["paid"], "rune": (entry["rune"] as Dictionary).duplicate(true), "resonance_bonus": float(resonance.get("bonus", 0.0)), "resonance_sources": (resonance.get("source_uids", []) as Array).duplicate()})
 			"rune": rune_bag.append({"uid": entry["uid"], "id": entry["id"], "rank": entry["rank"], "paid": entry["paid"]})
 			"relic": relic_counts[entry["id"]] = int(relic_counts.get(entry["id"], 0)) + int(BackpackInventory.rank_multiplier(int(entry["rank"])))
-			"skill": active_skills.append(entry.duplicate(true))
+			"skill":
+				active_skills.append(entry.duplicate(true))
+				_add_bonuses(_rear_bonuses, HeroCatalog.rear_bonuses(str(entry["id"]), int(entry["rank"])))
 	_next_rune_uid = int(backpack.snapshot()["next_uid"])
 
 static func _item_area(entry: Dictionary) -> int:
@@ -471,11 +517,12 @@ func generate_shop() -> void:
 	offers.clear()
 	var guaranteed_kind: String = "weapon" if wave == 1 else "rune" if wave == 2 else ""
 	var guarantee_satisfied: bool = false
+	var guaranteed_rear: String = "starfall" if hero_id == "clarisse" else "pulse"
 	var pulse_satisfied: bool = wave != 1
 	for locked: Dictionary in _locked_offers.values():
 		if str(locked.get("kind", "")) == guaranteed_kind:
 			guarantee_satisfied = true
-		if str(locked.get("kind", "")) == "skill" and str(locked.get("id", "")) == "pulse":
+		if str(locked.get("kind", "")) == "skill" and str(locked.get("id", "")) == guaranteed_rear:
 			pulse_satisfied = true
 	for index: int in range(4):
 		if _locked_offers.has(index):
@@ -489,7 +536,7 @@ func generate_shop() -> void:
 			kind = guaranteed_kind
 			guarantee_satisfied = true
 		elif not pulse_satisfied:
-			var pulse: ContentDef = GameCatalog.skill("pulse")
+			var pulse: ContentDef = GameCatalog.skill(guaranteed_rear)
 			offers.append({"id": pulse.id, "kind": "skill", "rank": 1, "price": shop_price(pulse), "sold": false})
 			pulse_satisfied = true
 			continue
@@ -518,6 +565,8 @@ func shop_lock_error(index: int) -> String:
 		return "已售商品无法锁定。"
 	if _offer_definition(offer) == null:
 		return "商品不存在，无法锁定。"
+	if _rear_matches_hero(offer):
+		return "主角不能同时作为后排。"
 	var rank_error: String = _skill_offer_rank_error(offer)
 	if not rank_error.is_empty():
 		return rank_error
@@ -558,9 +607,15 @@ func _offer_definition(offer: Dictionary) -> ContentDef:
 	return null
 
 func _valid_locked_offer(offer: Dictionary) -> bool:
-	if bool(offer.get("sold", false)) or _offer_definition(offer) == null:
+	if bool(offer.get("sold", false)) or _offer_definition(offer) == null or _rear_matches_hero(offer):
 		return false
 	return _skill_offer_rank_error(offer).is_empty()
+
+func _rear_matches_hero(offer: Dictionary) -> bool:
+	if str(offer.get("kind", "")) != "skill":
+		return false
+	var rear: HeroDef = HeroCatalog.rear_for_skill(str(offer.get("id", "")))
+	return rear != null and rear.id == hero_id
 
 static func _same_offer(first: Dictionary, second: Dictionary) -> bool:
 	return str(first.get("kind", "")) == str(second.get("kind", "")) and str(first.get("id", "")) == str(second.get("id", "")) and int(first.get("price", 0)) == int(second.get("price", 0)) and (str(first.get("kind", "")) != "skill" or first.get("rank", 1) == second.get("rank", 1))
@@ -613,6 +668,8 @@ func purchase_error(index: int) -> String:
 	elif kind == "skill":
 		if GameCatalog.skill(item_id) == null:
 			return "主动技能不存在。"
+		if _rear_matches_hero(offer):
+			return "主角不能同时作为后排。"
 		var rank_error: String = _skill_offer_rank_error(offer)
 		if not rank_error.is_empty():
 			return rank_error
@@ -628,16 +685,23 @@ func skill_purchase_preview(index: int) -> Dictionary:
 		return {}
 	var error: String = purchase_error(index)
 	var price: int = int(offer.get("price", 0))
-	var placement: Dictionary = {} if bool(offer.get("sold", false)) else backpack.find_space("skill", str(offer["id"]))
+	var placement: Dictionary = {} if bool(offer.get("sold", false)) or _rear_matches_hero(offer) else backpack.find_space("skill", str(offer["id"]))
 	var offered_rank: Variant = offer.get("rank", 1)
 	var rank: int = int(offered_rank) if offered_rank is int else 1
-	var parameters: Dictionary = active_skill_parameters({"id": offer["id"], "rank": rank})
+	var snapshot: Dictionary = backpack.snapshot()
+	var projected: Array = snapshot["items"]
+	if not placement.is_empty():
+		projected.append(_projected_purchase_item(snapshot, "skill", str(offer["id"]), placement, clampi(rank, 1, ActiveSkillRules.MAX_RANK)))
+	var parameters: Dictionary = _skill_parameters_for_items({"id": offer["id"], "rank": rank}, projected)
 	var result: Dictionary = parameters.duplicate(true)
 	result.merge({"parameters": parameters, "can_buy": error.is_empty(), "error": error,
 		"price": price, "gold_before": gold, "gold_after": gold - price if error.is_empty() else gold,
 		"shortfall": maxi(0, price - gold), "has_projection": not placement.is_empty(),
 		"placement_available": not placement.is_empty(), "placement": placement.duplicate(true),
-		"count_before": active_skills.size(), "count_after": active_skills.size() + 1 if not placement.is_empty() else active_skills.size()})
+		"count_before": active_skills.size(), "count_after": active_skills.size() + 1 if not placement.is_empty() else active_skills.size(),
+		"stat_changes": _stat_changes_for_items(projected, HeroCatalog.rear_bonuses(str(offer["id"]), rank).keys()) if not placement.is_empty() else [],
+		"weapon_changes": _projected_weapon_changes(projected, _stat_for_items("damage", projected), _stat_for_items("attack_speed", projected)) if not placement.is_empty() else [],
+		"health_before": health, "health_after": minf(health, _stat_for_items("max_health", projected))})
 	return result
 
 func weapon_purchase_preview(index: int) -> Dictionary:
@@ -668,8 +732,8 @@ func weapon_purchase_preview(index: int) -> Dictionary:
 	result["resonance_sources"] = (resonance.get("source_uids", []) as Array).duplicate()
 	return result
 
-static func _projected_purchase_item(snapshot: Dictionary, kind: String, id: String, placement: Dictionary) -> Dictionary:
-	return {"uid": int(snapshot["next_uid"]), "kind": kind, "id": id, "rank": 1,
+static func _projected_purchase_item(snapshot: Dictionary, kind: String, id: String, placement: Dictionary, rank: int = 1) -> Dictionary:
+	return {"uid": int(snapshot["next_uid"]), "kind": kind, "id": id, "rank": rank,
 		"x": placement["cell"].x, "y": placement["cell"].y, "rotated": placement["rotated"], "paid": 0, "rune": {}}
 
 func _projected_weapon_changes(entries: Array, damage_multiplier: float, attack_speed: float) -> Array[Dictionary]:
@@ -756,6 +820,8 @@ func buy_offer(index: int) -> bool:
 	_sync_backpack_projection()
 	if kind == "relic":
 		health = _health_after_relic_purchase(health, previous_max, stat("max_health"))
+	else:
+		health = minf(health, stat("max_health"))
 	offer["sold"] = true
 	_locked_offers.erase(index)
 	_prune_locked_offers()
@@ -894,6 +960,9 @@ func summary() -> Dictionary:
 	return {
 		"seed": _run_seed,
 		"arena_id": arena_id,
+		"hero_id": hero_id,
+		"hero": {"id": hero_id, "name": HeroCatalog.definition(hero_id).display_name, "starter_weapon": HeroCatalog.definition(hero_id).starter_weapon},
+		"hero_skill": hero_skill_parameters(),
 		"wave": wave,
 		"gold": gold,
 		"xp": xp,
@@ -934,7 +1003,9 @@ func _make_offer(kind: String) -> Dictionary:
 	elif kind == "relic":
 		pool = GameCatalog.relics()
 	elif kind == "skill":
-		pool = GameCatalog.skills()
+		for skill: ContentDef in GameCatalog.skills():
+			if not _rear_matches_hero({"kind": "skill", "id": skill.id}):
+				pool.append(skill)
 	else:
 		return {}
 	var definition: ContentDef = pool[rng.randi_range(0, pool.size() - 1)]

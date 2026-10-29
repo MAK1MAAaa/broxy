@@ -462,6 +462,10 @@ func _make_item(item: Dictionary) -> void:
 	button.focus_exited.connect(artwork.queue_redraw)
 	var icon := TextureRect.new()
 	icon.name = "ItemIcon"
+	icon.set_meta("content_kind", str(item["kind"]))
+	icon.set_meta("content_id", str(item["id"]))
+	if str(item["kind"]) == "skill":
+		icon.set_meta("hero_id", HeroCatalog.rear_for_skill(str(item["id"])).id)
 	icon.texture = load(AdventureArt.path("res://assets/icons/%s.svg" % definition.icon))
 	icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	_icons[uid] = icon.texture

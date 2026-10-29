@@ -201,10 +201,11 @@ func _test_frostfire_and_priority() -> void:
 	neighbor.max_health = 10000.0
 	sim._try_cast_pulse()
 	_check(target.slow_timer == 0.0 and target.slow_factor == 1.0 and target.pulse_hinder_timer == 1.0, "A pulse-only target never acquires the frost classification")
+	var expected_ember_damage: float = GameCatalog.weapon("ember").damage * state.stat("damage")
 	sim.fire_weapon("ember", "", target.position - Vector2(40, 0), Vector2.RIGHT)
 	for frame: int in 6:
 		sim.step(STEP, Vector2.ZERO)
-	_check(target.health == 10000.0 - GameCatalog.weapon("ember").damage and neighbor.health == 10000.0 and sim.core_activations["frostfire"] == 0, "A real ember hit on a pulse-only target does not activate frostfire or secondary splash")
+	_check(is_equal_approx(10000.0 - target.health, expected_ember_damage) and neighbor.health == 10000.0 and sim.core_activations["frostfire"] == 0, "A real ember hit uses the party damage stat without activating frostfire or secondary splash on a pulse-only target")
 	sim = _sim()
 	target = _enemy(sim, "chaser", sim.player_position + Vector2(50, 0))
 	var frosted: CombatSim.Enemy = _enemy(sim, "chaser", sim.player_position + Vector2(130, 0))

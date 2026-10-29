@@ -1,5 +1,5 @@
 {
-  "revision": "world-flipper-fan-04",
+  "revision": "world-flipper-fan-05",
   "original_copyright": "© Cygames, Inc. / Citail Inc.",
   "license_status": "Original game assets; no open asset license found. Unofficial fan-work use is not a claim of authorization.",
   "copyright_source": "https://worldflipper.jp/copyright/",
@@ -1132,6 +1132,261 @@
         "frame": "item/equipment/general/ability_sphere_15",
         "rotated": false
       }
+    },
+    {
+      "id": "hero_clarisse_neutral",
+      "kind": "hero_animation",
+      "character_id": "clarisse",
+      "pose": "neutral",
+      "name": "Clarisse / 克拉莉丝",
+      "filename": "hero-clarisse-neutral.gif",
+      "url": "https://vivaldi6352.github.io/assets/rarity5/clarisse/neutral.gif",
+      "source_page": "https://wiki.biligame.com/worldflipper/克拉莉丝",
+      "mirror_page": "https://vivaldi6352.github.io/",
+      "sha256": "2cd1d553ed0b1cbd7d10f4c4440b8e60cf53cb6a02218e03076acae717357857",
+      "source_size": [
+        30,
+        32
+      ],
+      "frame_count": 1,
+      "durations_ms": [
+        20
+      ]
+    },
+    {
+      "id": "hero_clarisse_walk_front",
+      "kind": "hero_animation",
+      "character_id": "clarisse",
+      "pose": "walk_front",
+      "name": "Clarisse / 克拉莉丝",
+      "filename": "hero-clarisse-walk_front.gif",
+      "url": "https://vivaldi6352.github.io/assets/rarity5/clarisse/walk_front.gif",
+      "source_page": "https://wiki.biligame.com/worldflipper/克拉莉丝",
+      "mirror_page": "https://vivaldi6352.github.io/",
+      "sha256": "9fda49135f569635fcb713c09f96b4bb648ac36d4ce741af749cdd00e5306a92",
+      "source_size": [
+        30,
+        34
+      ],
+      "frame_count": 4,
+      "durations_ms": [
+        80,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "id": "hero_clarisse_walk_back",
+      "kind": "hero_animation",
+      "character_id": "clarisse",
+      "pose": "walk_back",
+      "name": "Clarisse / 克拉莉丝",
+      "filename": "hero-clarisse-walk_back.gif",
+      "url": "https://vivaldi6352.github.io/assets/rarity5/clarisse/walk_back.gif",
+      "source_page": "https://wiki.biligame.com/worldflipper/克拉莉丝",
+      "mirror_page": "https://vivaldi6352.github.io/",
+      "sha256": "a5ae622d50463a9553657b089ddbc9026cac516e05a12eed6a45b9f9b9b4f182",
+      "source_size": [
+        30,
+        36
+      ],
+      "frame_count": 4,
+      "durations_ms": [
+        80,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "id": "portrait_clarisse",
+      "kind": "hero_portrait",
+      "character_id": "clarisse",
+      "pose": "portrait",
+      "name": "Clarisse / 克拉莉丝",
+      "filename": "hero-clarisse-portrait.png",
+      "url": "https://patchwiki.biligame.com/images/worldflipper/d/d3/fr4crd3jty36p4uq83kbpfjjcjot5rp.png",
+      "source_page": "https://wiki.biligame.com/worldflipper/克拉莉丝",
+      "sha256": "d46b2fdf911f56e2f9af8be1afaf95061589eb3c64a33228fc389ac02d4a3c89",
+      "source_size": [
+        1778,
+        1951
+      ],
+      "frame_count": 1,
+      "durations_ms": [
+        0
+      ]
+    },
+    {
+      "id": "hero_celtie_neutral",
+      "kind": "hero_animation",
+      "character_id": "celtie",
+      "pose": "neutral",
+      "name": "Celtie / 希尔媞",
+      "filename": "hero-celtie-neutral.gif",
+      "url": "https://vivaldi6352.github.io/assets/rarity5/wind_spgirl/neutral.gif",
+      "source_page": "https://wiki.biligame.com/worldflipper/希尔媞",
+      "mirror_page": "https://vivaldi6352.github.io/",
+      "sha256": "2a267fd82094e923ea0cd89d5a832075b7947c0d339414fdc11c4e46ade058a4",
+      "source_size": [
+        30,
+        30
+      ],
+      "frame_count": 1,
+      "durations_ms": [
+        20
+      ]
+    },
+    {
+      "id": "hero_celtie_walk_front",
+      "kind": "hero_animation",
+      "character_id": "celtie",
+      "pose": "walk_front",
+      "name": "Celtie / 希尔媞",
+      "filename": "hero-celtie-walk_front.gif",
+      "url": "https://vivaldi6352.github.io/assets/rarity5/wind_spgirl/walk_front.gif",
+      "source_page": "https://wiki.biligame.com/worldflipper/希尔媞",
+      "mirror_page": "https://vivaldi6352.github.io/",
+      "sha256": "2a8435cc8fb2b723d64aed598fdbae430060a4809f261b4bd5e3a6f68ce61d27",
+      "source_size": [
+        30,
+        32
+      ],
+      "frame_count": 4,
+      "durations_ms": [
+        80,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "id": "hero_celtie_walk_back",
+      "kind": "hero_animation",
+      "character_id": "celtie",
+      "pose": "walk_back",
+      "name": "Celtie / 希尔媞",
+      "filename": "hero-celtie-walk_back.gif",
+      "url": "https://vivaldi6352.github.io/assets/rarity5/wind_spgirl/walk_back.gif",
+      "source_page": "https://wiki.biligame.com/worldflipper/希尔媞",
+      "mirror_page": "https://vivaldi6352.github.io/",
+      "sha256": "3fa1fcfcb9aa62edcfc5ff8ef9705aae6e9dacfc5191c0899f94a22f9d97d578",
+      "source_size": [
+        30,
+        32
+      ],
+      "frame_count": 4,
+      "durations_ms": [
+        80,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "id": "portrait_celtie",
+      "kind": "hero_portrait",
+      "character_id": "celtie",
+      "pose": "portrait",
+      "name": "Celtie / 希尔媞",
+      "filename": "hero-celtie-portrait.png",
+      "url": "https://patchwiki.biligame.com/images/worldflipper/8/88/86tu1o8u8jc2m06rtphz9dazy05p0k0.png",
+      "source_page": "https://wiki.biligame.com/worldflipper/希尔媞",
+      "sha256": "c6c716649e460c9e79ea0937a64d4c8d2c1971d4e6487413c7e1c3aabf23df63",
+      "source_size": [
+        1562,
+        1841
+      ],
+      "frame_count": 1,
+      "durations_ms": [
+        0
+      ]
+    },
+    {
+      "id": "hero_hanabi_neutral",
+      "kind": "hero_animation",
+      "character_id": "hanabi",
+      "pose": "neutral",
+      "name": "Hanabi / 花火",
+      "filename": "hero-hanabi-neutral.gif",
+      "url": "https://vivaldi6352.github.io/assets/rarity4/kunoichi/neutral.gif",
+      "source_page": "https://wiki.biligame.com/worldflipper/花火",
+      "mirror_page": "https://vivaldi6352.github.io/",
+      "sha256": "3f669c85fe4bcbc1013a7f9b5c88d3873a32e3ff4c8c151afa0f4e87a9763ca0",
+      "source_size": [
+        22,
+        32
+      ],
+      "frame_count": 1,
+      "durations_ms": [
+        0
+      ]
+    },
+    {
+      "id": "hero_hanabi_walk_front",
+      "kind": "hero_animation",
+      "character_id": "hanabi",
+      "pose": "walk_front",
+      "name": "Hanabi / 花火",
+      "filename": "hero-hanabi-walk_front.gif",
+      "url": "https://vivaldi6352.github.io/assets/rarity4/kunoichi/walk_front.gif",
+      "source_page": "https://wiki.biligame.com/worldflipper/花火",
+      "mirror_page": "https://vivaldi6352.github.io/",
+      "sha256": "681e67541e8b765e430dee2f303fa66f82fb44316df52b848ff9a158d5766fb9",
+      "source_size": [
+        22,
+        34
+      ],
+      "frame_count": 4,
+      "durations_ms": [
+        80,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "id": "hero_hanabi_walk_back",
+      "kind": "hero_animation",
+      "character_id": "hanabi",
+      "pose": "walk_back",
+      "name": "Hanabi / 花火",
+      "filename": "hero-hanabi-walk_back.gif",
+      "url": "https://vivaldi6352.github.io/assets/rarity4/kunoichi/walk_back.gif",
+      "source_page": "https://wiki.biligame.com/worldflipper/花火",
+      "mirror_page": "https://vivaldi6352.github.io/",
+      "sha256": "9b98b20e5aff3d0e4abca7200f0ee58873804565e0bd8b5dad37f731623c29aa",
+      "source_size": [
+        22,
+        34
+      ],
+      "frame_count": 4,
+      "durations_ms": [
+        80,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "id": "portrait_hanabi",
+      "kind": "hero_portrait",
+      "character_id": "hanabi",
+      "pose": "portrait",
+      "name": "Hanabi / 花火",
+      "filename": "hero-hanabi-portrait.png",
+      "url": "https://patchwiki.biligame.com/images/worldflipper/f/fc/40tox4t2sll6t1sc12z2a8t4zujsizy.png",
+      "source_page": "https://wiki.biligame.com/worldflipper/花火",
+      "sha256": "fd42a33bf998e96fdcd1585e47c25140bdba9c57d768809e23db5d3c8f44bc21",
+      "source_size": [
+        1227,
+        1679
+      ],
+      "frame_count": 1,
+      "durations_ms": [
+        0
+      ]
     }
   ],
   "references_cached_only": [
@@ -2787,7 +3042,370 @@
         "weapon_return_ring"
       ],
       "normalization": "Eight unmodified normalized weapon icons in the existing projectile-frame order; original transparent pixels retained; combat geometry unchanged"
+    },
+    {
+      "path": "assets/worldflipper/characters/clarisse/idle.png",
+      "sha256": "613f839669c13805af11a7b5498cebf4fdf8dc81cc48b9e0cfec0e11058f5c80",
+      "size": [
+        128,
+        128
+      ],
+      "alpha_bounds": [
+        19,
+        29,
+        109,
+        125
+      ],
+      "character_id": "clarisse",
+      "cell_size": [
+        128,
+        128
+      ],
+      "foot_anchor": [
+        64,
+        125
+      ],
+      "feet_y": 125,
+      "scale": 3,
+      "filter": "nearest",
+      "normalization": "3x nearest; center the complete source canvas horizontally and align its bottom at 125; do not crop or recenter individual frames",
+      "id": "hero_clarisse_idle",
+      "kind": "hero_idle",
+      "columns": 1,
+      "source_ids": [
+        "hero_clarisse_neutral"
+      ],
+      "frame_count": 1
+    },
+    {
+      "path": "assets/worldflipper/characters/clarisse/atlas.png",
+      "sha256": "0f269e154bc221f3985fc372953a0a07bf5933df640f2a097016c1b7759dd718",
+      "size": [
+        512,
+        384
+      ],
+      "alpha_bounds": [
+        19,
+        23,
+        493,
+        381
+      ],
+      "character_id": "clarisse",
+      "cell_size": [
+        128,
+        128
+      ],
+      "foot_anchor": [
+        64,
+        125
+      ],
+      "feet_y": 125,
+      "scale": 3,
+      "filter": "nearest",
+      "normalization": "3x nearest; center the complete source canvas horizontally and align its bottom at 125; do not crop or recenter individual frames",
+      "id": "hero_clarisse_atlas",
+      "kind": "hero_atlas",
+      "columns": 4,
+      "source_ids": [
+        "hero_clarisse_neutral",
+        "hero_clarisse_walk_front",
+        "hero_clarisse_walk_back"
+      ],
+      "frame_count": 9,
+      "animations": {
+        "neutral": {
+          "first_frame": 0,
+          "frame_count": 1,
+          "durations_ms": [
+            20
+          ]
+        },
+        "walk_front": {
+          "first_frame": 1,
+          "frame_count": 4,
+          "durations_ms": [
+            80,
+            100,
+            100,
+            100
+          ]
+        },
+        "walk_back": {
+          "first_frame": 5,
+          "frame_count": 4,
+          "durations_ms": [
+            80,
+            100,
+            100,
+            100
+          ]
+        }
+      }
+    },
+    {
+      "path": "assets/worldflipper/portraits/clarisse.png",
+      "sha256": "d46b2fdf911f56e2f9af8be1afaf95061589eb3c64a33228fc389ac02d4a3c89",
+      "size": [
+        1778,
+        1951
+      ],
+      "alpha_bounds": [
+        0,
+        0,
+        1778,
+        1951
+      ],
+      "id": "portrait_clarisse",
+      "kind": "hero_portrait",
+      "character_id": "clarisse",
+      "filter": "linear",
+      "source_ids": [
+        "portrait_clarisse"
+      ],
+      "normalization": "Original source bytes copied without alteration"
+    },
+    {
+      "path": "assets/worldflipper/characters/celtie/idle.png",
+      "sha256": "d2ba5a249b51c0df5bd74e30c822393db21374318e9a7eb5268bb71a5db29fa2",
+      "size": [
+        128,
+        128
+      ],
+      "alpha_bounds": [
+        19,
+        35,
+        109,
+        125
+      ],
+      "character_id": "celtie",
+      "cell_size": [
+        128,
+        128
+      ],
+      "foot_anchor": [
+        64,
+        125
+      ],
+      "feet_y": 125,
+      "scale": 3,
+      "filter": "nearest",
+      "normalization": "3x nearest; center the complete source canvas horizontally and align its bottom at 125; do not crop or recenter individual frames",
+      "id": "hero_celtie_idle",
+      "kind": "hero_idle",
+      "columns": 1,
+      "source_ids": [
+        "hero_celtie_neutral"
+      ],
+      "frame_count": 1
+    },
+    {
+      "path": "assets/worldflipper/characters/celtie/atlas.png",
+      "sha256": "d3905f8017533f5592faa511d844d1d2f88802d6b8fe8cdf21f817672223935b",
+      "size": [
+        512,
+        384
+      ],
+      "alpha_bounds": [
+        19,
+        29,
+        493,
+        381
+      ],
+      "character_id": "celtie",
+      "cell_size": [
+        128,
+        128
+      ],
+      "foot_anchor": [
+        64,
+        125
+      ],
+      "feet_y": 125,
+      "scale": 3,
+      "filter": "nearest",
+      "normalization": "3x nearest; center the complete source canvas horizontally and align its bottom at 125; do not crop or recenter individual frames",
+      "id": "hero_celtie_atlas",
+      "kind": "hero_atlas",
+      "columns": 4,
+      "source_ids": [
+        "hero_celtie_neutral",
+        "hero_celtie_walk_front",
+        "hero_celtie_walk_back"
+      ],
+      "frame_count": 9,
+      "animations": {
+        "neutral": {
+          "first_frame": 0,
+          "frame_count": 1,
+          "durations_ms": [
+            20
+          ]
+        },
+        "walk_front": {
+          "first_frame": 1,
+          "frame_count": 4,
+          "durations_ms": [
+            80,
+            100,
+            100,
+            100
+          ]
+        },
+        "walk_back": {
+          "first_frame": 5,
+          "frame_count": 4,
+          "durations_ms": [
+            80,
+            100,
+            100,
+            100
+          ]
+        }
+      }
+    },
+    {
+      "path": "assets/worldflipper/portraits/celtie.png",
+      "sha256": "c6c716649e460c9e79ea0937a64d4c8d2c1971d4e6487413c7e1c3aabf23df63",
+      "size": [
+        1562,
+        1841
+      ],
+      "alpha_bounds": [
+        0,
+        0,
+        1562,
+        1841
+      ],
+      "id": "portrait_celtie",
+      "kind": "hero_portrait",
+      "character_id": "celtie",
+      "filter": "linear",
+      "source_ids": [
+        "portrait_celtie"
+      ],
+      "normalization": "Original source bytes copied without alteration"
+    },
+    {
+      "path": "assets/worldflipper/characters/hanabi/idle.png",
+      "sha256": "ef21a79538ece64b707de8a75ccd4de7dc1c68b5b7034e0722c24e5995c49511",
+      "size": [
+        128,
+        128
+      ],
+      "alpha_bounds": [
+        31,
+        29,
+        97,
+        125
+      ],
+      "character_id": "hanabi",
+      "cell_size": [
+        128,
+        128
+      ],
+      "foot_anchor": [
+        64,
+        125
+      ],
+      "feet_y": 125,
+      "scale": 3,
+      "filter": "nearest",
+      "normalization": "3x nearest; center the complete source canvas horizontally and align its bottom at 125; do not crop or recenter individual frames",
+      "id": "hero_hanabi_idle",
+      "kind": "hero_idle",
+      "columns": 1,
+      "source_ids": [
+        "hero_hanabi_neutral"
+      ],
+      "frame_count": 1
+    },
+    {
+      "path": "assets/worldflipper/characters/hanabi/atlas.png",
+      "sha256": "0f5c4d815a1a2dc56c7ccbdf27c47345afc447b628a19216986dbeb9f0e1da30",
+      "size": [
+        512,
+        384
+      ],
+      "alpha_bounds": [
+        31,
+        23,
+        481,
+        381
+      ],
+      "character_id": "hanabi",
+      "cell_size": [
+        128,
+        128
+      ],
+      "foot_anchor": [
+        64,
+        125
+      ],
+      "feet_y": 125,
+      "scale": 3,
+      "filter": "nearest",
+      "normalization": "3x nearest; center the complete source canvas horizontally and align its bottom at 125; do not crop or recenter individual frames",
+      "id": "hero_hanabi_atlas",
+      "kind": "hero_atlas",
+      "columns": 4,
+      "source_ids": [
+        "hero_hanabi_neutral",
+        "hero_hanabi_walk_front",
+        "hero_hanabi_walk_back"
+      ],
+      "frame_count": 9,
+      "animations": {
+        "neutral": {
+          "first_frame": 0,
+          "frame_count": 1,
+          "durations_ms": [
+            0
+          ]
+        },
+        "walk_front": {
+          "first_frame": 1,
+          "frame_count": 4,
+          "durations_ms": [
+            80,
+            100,
+            100,
+            100
+          ]
+        },
+        "walk_back": {
+          "first_frame": 5,
+          "frame_count": 4,
+          "durations_ms": [
+            80,
+            100,
+            100,
+            100
+          ]
+        }
+      }
+    },
+    {
+      "path": "assets/worldflipper/portraits/hanabi.png",
+      "sha256": "fd42a33bf998e96fdcd1585e47c25140bdba9c57d768809e23db5d3c8f44bc21",
+      "size": [
+        1227,
+        1679
+      ],
+      "alpha_bounds": [
+        0,
+        0,
+        1227,
+        1679
+      ],
+      "id": "portrait_hanabi",
+      "kind": "hero_portrait",
+      "character_id": "hanabi",
+      "filter": "linear",
+      "source_ids": [
+        "portrait_hanabi"
+      ],
+      "normalization": "Original source bytes copied without alteration"
     }
   ],
-  "gameplay": "Alk remains the only hero; recruitment is deferred. Arena IDs, terrain zones and multipliers remain stable. Authored low props block ground movement, dash and knockback; flying projectiles pass over them."
+  "gameplay": "Alk and three independently normalized original hero sets use the current game's party and skill rules rather than the original game's statistics. Arena IDs, terrain zones and multipliers remain stable. Authored low props block ground movement, dash and knockback; flying projectiles pass over them."
 }

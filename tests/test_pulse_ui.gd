@@ -89,15 +89,15 @@ func _test_states() -> void:
 	_ui.update_hud(legacy)
 	_check(_label().text == "空槽", "Legacy free-pulse data cannot unlock a backpack skill")
 	_update(_equipped(), _equipped("arc_slash", 11, 3.0, 6.0))
-	_check(_label().text == "秘术脉冲" and _bar().value == 1.0 and _time().text == "就绪", "The first equipped skill displays its actual identity and readiness")
-	_check(_label("secondary").text == "月弧" and _time("secondary").text == "3.0" and is_equal_approx(_bar("secondary").value, 0.5), "The second equipped skill has an independent identity and cooldown")
+	_check(_label().text == GameCatalog.skill("pulse").display_name and _bar().value == 1.0 and _time().text == "就绪", "The first equipped rear character displays its actual identity and readiness")
+	_check(_label("secondary").text == GameCatalog.skill("arc_slash").display_name and _time("secondary").text == "3.0" and is_equal_approx(_bar("secondary").value, 0.5), "The second rear character has an independent identity and cooldown")
 	_check(_skill().name == "PulseSkill" and _label().name == "PulseStatus" and _bar().name == "PulseCooldown", "The first slot retains stable legacy node names")
 	_check((_ui._hud["pulse_key"] as Label).text == "Q" and (_ui._hud["secondary_key"] as Label).text == "E", "Both keyboard skill bindings are visible")
 	_check((_ui._hud["pulse_icon"] as TextureRect).texture != null and (_ui._hud["secondary_icon"] as TextureRect).texture != null, "Both equipped skills have real icon resources")
 	var source: Dictionary = _equipped("starfall", 12, 7.9, 8.0)
 	var before: Dictionary = source.duplicate(true)
 	_update(source)
-	_check(_label().text == "落星" and _time().text == "7.9" and is_equal_approx(_bar().value, 0.0125) and source == before, "HUD reads authoritative cooldowns without changing the snapshot")
+	_check(_label().text == GameCatalog.skill("starfall").display_name and _time().text == "7.9" and is_equal_approx(_bar().value, 0.0125) and source == before, "HUD reads authoritative cooldowns without changing the snapshot")
 	var frozen: Array = [_time().text, _bar().value]
 	paused = true
 	await _settle()
@@ -121,7 +121,7 @@ func _test_states() -> void:
 		_ui.update_hud(value)
 		_check(not _skill().visible and not _skill("secondary").visible and not _skill("dash").visible, "Dead-player and benchmark states hide all combat skill controls")
 	_update(_equipped())
-	_check(_skill().visible and _label().text == "秘术脉冲" and _skill("dash").visible, "Fresh combat state restores equipped skill feedback")
+	_check(_skill().visible and _label().text == GameCatalog.skill("pulse").display_name and _skill("dash").visible, "Fresh combat state restores equipped rear character feedback")
 
 func _key(code: Key) -> void:
 	var event := InputEventKey.new()
@@ -202,7 +202,7 @@ func _test_backpack_skills() -> void:
 	_ui.show_shop()
 	await _settle()
 	var capacity := _ui.find_child("BackpackCapacity", true, false) as Label
-	_check(capacity != null and capacity.text.contains("技能 2/2"), "The backpack exposes the two-skill capacity through a compact value")
+	_check(capacity != null and capacity.text.contains("后排 2/2"), "The backpack exposes the two-character rear capacity through a compact value")
 	for index: int in 2:
 		var uid: int = int(_state.active_skills[index]["uid"])
 		var button := _ui.find_child("BackpackItem%d" % uid, true, false) as Control
@@ -233,11 +233,11 @@ func _test_backpack_skills() -> void:
 	_ui.show_shop()
 	await _settle()
 	var buy: Button = _ui._shop_focus_button("buy:0")
-	_check(buy != null and buy.text.contains("技能已满 2/2") and not buy.disabled and buy.focus_mode == Control.FOCUS_ALL, "The skill cap is visible while the blocked offer remains keyboard accessible")
+	_check(buy != null and buy.text.contains("后排已满 2/2") and not buy.disabled and buy.focus_mode == Control.FOCUS_ALL, "The rear character cap is visible while the blocked offer remains keyboard accessible")
 	var offer := _ui.find_child("Offer1", true, false) as Control
 	var rank_badge := offer.find_child("OfferRank", true, false) as Label
 	var category := offer.find_child("OfferDescription", true, false) as Label
-	_check(rank_badge != null and rank_badge.is_visible_in_tree() and rank_badge.text == "Ⅱ阶" and category != null and category.text == "主动技能", "A second-rank skill offer displays its actual rank independently of its category")
+	_check(rank_badge != null and rank_badge.is_visible_in_tree() and rank_badge.text == "Ⅱ阶" and category != null and category.text == GameUI._rear_skill_name("arc_slash"), "A second-rank rear offer displays its actual rank and skill name")
 
 func _test_lifecycle() -> void:
 	_ui.show_result(false, "试炼结束", {})
@@ -248,4 +248,4 @@ func _test_lifecycle() -> void:
 	_ui.show_hud()
 	_update(_equipped())
 	await _settle()
-	_check(_label().text == "秘术脉冲" and _bar().value == 1.0 and _label("secondary").text == "空槽", "A fresh HUD has no stale second skill or cooldown state")
+	_check(_label().text == GameCatalog.skill("pulse").display_name and _bar().value == 1.0 and _label("secondary").text == "空槽", "A fresh HUD has no stale second rear character or cooldown state")

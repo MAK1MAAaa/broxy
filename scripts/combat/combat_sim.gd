@@ -14,6 +14,7 @@ signal dash_started(origin: Vector2, direction: Vector2)
 signal dash_evaded(position: Vector2, origin: Vector2, source_id: String, kind: String)
 signal pulse_cast(origin: Vector2, affected: int)
 signal active_skill_cast(skill_id: String, uid: int, origin: Vector2, direction: Vector2, affected: int, rank: int)
+signal hero_skill_cast(hero_id: String, parameters: Dictionary, origin: Vector2, direction: Vector2, affected: int)
 signal ended(victory: bool, reason: String)
 
 const ARENA: Rect2 = ArenaCatalog.WORLD_BOUNDS
@@ -140,6 +141,7 @@ var damage_by_weapon: Dictionary = {}
 var damage_by_skill: Dictionary = {}
 var skill_hits: int = 0
 var _active_skill_clocks: Dictionary = {}
+var _hero_skill_clock: Dictionary = {}
 var _enemy_free: Array[int] = []
 var _shot_free: Array[int] = []
 var _soul_free: Array[int] = []
@@ -199,6 +201,7 @@ func begin(state: RunState) -> void:
 	dash_evades = 0
 	pulse_cooldown_left = 0.0
 	_active_skill_clocks.clear()
+	_hero_skill_clock.clear()
 	damage_by_skill.clear()
 	skill_hits = 0
 	pulse_cooldown_total = _current_pulse_cooldown()
@@ -222,7 +225,7 @@ func begin(state: RunState) -> void:
 			hunter.health = hunter.max_health
 	_spawn_timer = 0.6
 
-func step(delta: float, movement: Vector2, dash_pressed: bool = false, pulse_pressed: bool = false, skill_requests: Array[Dictionary] = []) -> void:
+func step(delta: float, movement: Vector2, dash_pressed: bool = false, pulse_pressed: bool = false, skill_requests: Array[Dictionary] = [], hero_skill_pressed: bool = false) -> void:
 	_explosion_grid_active = false
 	if complete or run == null or not is_finite(delta) or delta <= 0.0:
 		return
@@ -235,6 +238,11 @@ func step(delta: float, movement: Vector2, dash_pressed: bool = false, pulse_pre
 	if _has_movement_direction(movement):
 		player_direction = movement.normalized()
 	_update_pulse(delta, pulse_pressed, skill_requests)
+	if not complete:
+		if hero_skill_pressed:
+			try_hero_skill()
+		if not _hero_skill_clock.is_empty():
+			_hero_skill_clock["remaining"] = _skill_timer_after(float(_hero_skill_clock["remaining"]), delta)
 	if complete:
 		return
 	_move_player(delta, movement, dash_pressed)
@@ -408,9 +416,42 @@ func try_active_skill(slot: int, expected_uid: int = -1) -> bool:
 func _skill_direction() -> Vector2:
 	return player_direction.normalized() if player_direction.is_finite() and player_direction.length_squared() > 0.0 else Vector2.RIGHT
 
+func try_hero_skill(expected_hero: String = "") -> bool:
+	if run == null or complete or run.health <= 0.0 or not player_position.is_finite():
+		return false
+	if not expected_hero.is_empty() and run.hero_id != expected_hero:
+		return false
+	if float(_hero_skill_clock.get("remaining", 0.0)) > 0.0:
+		return false
+	var parameters: Dictionary = run.hero_skill_parameters().duplicate(true)
+	if parameters.is_empty():
+		return false
+	var direction: Vector2 = _skill_direction()
+	var origin: Vector2 = _nearest_skill_origin(direction, float(parameters.get("target_range", 400.0))) if parameters.get("origin_mode", "player") == "nearest" else player_position
+	_hero_skill_clock = {"hero_id": run.hero_id, "remaining": parameters["cooldown"], "duration": parameters["cooldown"],
+		"uses": int(_hero_skill_clock.get("uses", 0)) + 1, "parameters": parameters}
+	var affected: int = _cast_damage_skill(origin, direction, parameters)
+	hero_skill_cast.emit(run.hero_id, parameters.duplicate(true), origin, direction, affected)
+	return true
+
+func hero_skill_snapshot() -> Dictionary:
+	if run == null:
+		return {"available": false, "ready": false}
+	var next_parameters: Dictionary = run.hero_skill_parameters()
+	var remaining: float = float(_hero_skill_clock.get("remaining", 0.0))
+	var parameters: Dictionary = _hero_skill_clock.get("parameters", next_parameters) if remaining > 0.0 else next_parameters
+	var result: Dictionary = parameters.duplicate(true)
+	result.merge({"hero_id": run.hero_id, "available": not parameters.is_empty(), "ready": not complete and run.health > 0.0 and remaining <= 0.0,
+		"cooldown_remaining": remaining, "cooldown_duration": float(_hero_skill_clock.get("duration", parameters.get("cooldown", 0.0))) if remaining > 0.0 else float(parameters.get("cooldown", 0.0)),
+		"uses": int(_hero_skill_clock.get("uses", 0)), "skill_name": str(parameters.get("name", ""))}, true)
+	return result
+
 func _starfall_origin(direction: Vector2) -> Vector2:
+	return _nearest_skill_origin(direction, 320.0)
+
+func _nearest_skill_origin(direction: Vector2, target_range: float) -> Vector2:
 	var closest: Enemy
-	var distance_squared: float = 320.0 * 320.0
+	var distance_squared: float = target_range * target_range
 	for enemy: Enemy in enemies:
 		if not enemy.active or enemy.health <= 0.0 or not enemy.position.is_finite():
 			continue
@@ -441,24 +482,32 @@ func _cast_pulse(origin: Vector2, fallback: Vector2, parameters: Dictionary) -> 
 
 func _cast_damage_skill(origin: Vector2, direction: Vector2, parameters: Dictionary) -> int:
 	var affected: int = 0
-	var radius_squared: float = pow(float(parameters["radius"]), 2)
-	var cone: bool = parameters["id"] == "arc_slash"
-	var minimum_dot: float = cos(float(parameters.get("half_angle_radians", 0.0)))
 	for enemy: Enemy in enemies:
 		if complete:
 			break
 		if not enemy.active or enemy.health <= 0.0:
 			continue
-		var offset: Vector2 = enemy.position - origin
-		if not offset.is_finite() or offset.length_squared() > radius_squared + 0.01:
-			continue
-		if cone and offset.length_squared() > 0.0 and direction.dot(offset.normalized()) + 0.000001 < minimum_dot:
+		if not skill_contains(parameters, origin, direction, enemy.position):
 			continue
 		var before: float = enemy.health
 		apply_damage(enemy, float(parameters["damage"]), "skill:" + str(parameters["id"]))
 		if enemy.health < before:
 			affected += 1
 	return affected
+
+static func skill_contains(parameters: Dictionary, origin: Vector2, direction: Vector2, point: Vector2) -> bool:
+	if not origin.is_finite() or not direction.is_finite() or direction.is_zero_approx() or not point.is_finite():
+		return false
+	direction = direction.normalized()
+	var offset: Vector2 = point - origin
+	var radius: float = float(parameters.get("radius", 0.0))
+	var shape: String = str(parameters.get("shape", "arc" if parameters.get("id", "") == "arc_slash" else "circle"))
+	if shape == "line":
+		var along: float = direction.dot(offset)
+		return along >= 0.0 and along <= radius and absf(direction.cross(offset)) <= float(parameters.get("width", 70.0)) * 0.5
+	if offset.length_squared() > radius * radius + 0.01:
+		return false
+	return shape != "arc" or offset.is_zero_approx() or direction.dot(offset.normalized()) + 0.000001 >= cos(float(parameters.get("half_angle_radians", 0.0)))
 
 func _sync_legacy_pulse_clock() -> void:
 	var slot: int = _pulse_slot()
@@ -488,7 +537,8 @@ func active_skill_snapshot(slot: int) -> Dictionary:
 	result.merge({"uid": uid, "id": item["id"], "rank": parameters["rank"], "available": true,
 		"ready": not complete and run.health > 0.0 and remaining <= 0.0,
 		"cooldown_remaining": remaining, "cooldown_duration": float(clock["duration"]) if remaining > 0.0 else float(parameters["cooldown"]),
-		"uses": int(clock.get("uses", 0)), "radius": parameters["radius"], "damage": parameters["damage"], "name": parameters["name"]}, true)
+		"uses": int(clock.get("uses", 0)), "radius": parameters["radius"], "damage": parameters["damage"], "name": parameters["name"],
+		"hero_id": parameters.get("hero_id", ""), "skill_name": parameters.get("skill_name", ""), "rear_bonuses": (parameters.get("rear_bonuses", {}) as Dictionary).duplicate(true)}, true)
 	return result
 
 func active_skill_snapshots() -> Array:
@@ -1297,6 +1347,7 @@ func snapshot() -> Dictionary:
 		"dash": dash_snapshot(),
 		"pulse": pulse_snapshot(),
 		"skills": active_skill_snapshots(),
+		"hero_skill": hero_skill_snapshot(),
 		"boss_health": boss.health if boss != null and boss.active else 0.0,
 		"boss_max_health": boss.max_health if boss != null else 0.0,
 	}

@@ -173,8 +173,8 @@ func _test_starter_refresh_preserves_settings() -> void:
 	ui.bind(_state())
 	ui.show_title({})
 	await _settle()
-	var ember: Button = _find_button(ui._page, GameCatalog.weapon("ember").display_name)
-	_check(ember != null, "The title offers the alternate ember starter")
+	var ember := ui._page.find_child("Character_clarisse", true, false) as Button
+	_check(ember != null, "The title offers the actual Clarisse character choice")
 	if ember == null:
 		await _dispose(ui)
 		return
@@ -195,9 +195,9 @@ func _test_starter_refresh_preserves_settings() -> void:
 	_check(_overlay_owns_focus(ui) and ui._page.focus_behavior_recursive == Control.FOCUS_BEHAVIOR_DISABLED, "Settings retain modal keyboard focus through the delayed starter update")
 	_check(ui.handle_back(), "The preserved settings layer still consumes Back normally")
 	await _settle()
-	ember = _find_button(ui._page, GameCatalog.weapon("ember").display_name)
-	var bone: Button = _find_button(ui._page, GameCatalog.weapon("bone").display_name)
-	_check(ui._overlay_mode.is_empty() and ui._starter == "ember" and ember != null and ember.button_pressed and bone != null and not bone.button_pressed, "Closing settings reveals the selected starter with coherent toggle states")
+	ember = ui._page.find_child("Character_clarisse", true, false) as Button
+	var bone := ui._page.find_child("Character_alk", true, false) as Button
+	_check(ui._overlay_mode.is_empty() and ui.selected_hero() == "clarisse" and ui._starter == "ember" and ember != null and ember.button_pressed and bone != null and not bone.button_pressed, "Closing settings reveals the selected character and weapon with coherent toggle states")
 	var owner: Control = root.gui_get_focus_owner()
 	_check(owner is Button and owner.text == "设置", "Closing settings after a starter update restores its settings source focus")
 	await _dispose(ui)

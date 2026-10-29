@@ -80,17 +80,17 @@ func _test_title() -> void:
 	ui.set_progress(["bone", "ember", "frost", "scatter"])
 	ui.show_title({})
 	await _settle()
-	var grid := ui.find_child("StarterChoices", true, false) as GridContainer
-	_check(grid != null and grid.columns == 2, "The title lays out complete weapon identities in two columns")
+	var grid := ui.find_child("CharacterChoices", true, false) as GridContainer
+	_check(grid != null and grid.columns == 2, "The title lays out character and initial weapon identities in two columns")
 	var area := Rect2(Vector2.ZERO, Vector2(1280, 720))
-	for id: String in ["bone", "ember", "frost", "scatter"]:
-		var button := ui.find_child("Starter_" + id, true, false) as Button
-		var definition: ContentDef = GameCatalog.weapon(id)
-		_check(button != null and button.text == definition.display_name and button.icon != null and button.icon.resource_path == AdventureArt.path("res://assets/icons/%s.svg" % id), "Starter cards use the complete name and original icon: " + id)
+	for id: String in HeroCatalog.IDS:
+		var hero: HeroDef = HeroCatalog.definition(id)
+		var button := ui.find_child("Character_" + id, true, false) as Button
+		var definition: ContentDef = GameCatalog.weapon(hero.starter_weapon)
+		var name_label := ui.find_child("CharacterWeapon_" + id, true, false) as Label
+		_check(button != null and _has_text(button, hero.display_name) and _has_text(button, definition.display_name) and _count_icon(button, definition) == 1, "Character cards use their name and original initial weapon identity: " + id)
 		if button != null:
-			var font: Font = button.get_theme_font("font")
-			var text_width: float = font.get_string_size(button.text, HORIZONTAL_ALIGNMENT_LEFT, -1, button.get_theme_font_size("font_size")).x
-			_check(area.encloses(button.get_global_rect()) and button.size.x >= text_width + 36.0 + 28.0, "The full starter name and icon fit without trimming: " + id)
+			_check(area.encloses(button.get_global_rect()) and name_label != null and button.get_global_rect().grow(0.1).encloses(name_label.get_global_rect()) and name_label.text_overrun_behavior != TextServer.OVERRUN_TRIM_ELLIPSIS, "The full original weapon name remains readable inside its character card: " + id)
 	ui.queue_free()
 	await _settle()
 
@@ -135,6 +135,17 @@ func _test_transactions() -> void:
 		ui._bag_grid.queue_redraw()
 		await _settle()
 		_check(_signature(state) == before, "Inspecting and redrawing item identity does not mutate inventory or randomness: " + definition.id)
+		if definition.kind == "weapon":
+			ui.show_hud()
+			ui.update_hud({"health": state.health, "max_health": state.stat("max_health"), "loadout": state.loadout})
+			await _settle()
+			var slot := ui.find_child("EquipmentSlot%d" % (state.weapon_index_for_uid(uid) + 1), true, false) as Control
+			_check(slot != null and int(slot.get_meta("backpack_uid", -1)) == uid and str(slot.get_meta("content_id", "")) == definition.id and _count_icon(slot, definition) == 1 and slot.tooltip_text.contains(definition.display_name + " Ⅰ阶"), "The actual compact HUD preserves this purchased weapon's UID, art, complete name and tier: " + definition.id)
+			_check(_signature(state) == before, "Reading the compact HUD preserves inventory, economy and RNG: " + definition.id)
+			ui.show_shop()
+			await _settle()
+			ui._bag_grid.select_item(uid)
+			await _settle()
 		var sell: Button = ui._shop_focus_button("bag_sell:%d" % uid)
 		_check(sell != null and not sell.disabled, "The identity fixture releases the actual purchased item through the shop")
 		if sell != null and not sell.disabled:

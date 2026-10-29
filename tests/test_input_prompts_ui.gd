@@ -144,7 +144,7 @@ func _test_observation_and_title() -> void:
 	await _pointer(Vector2(15, 15), true)
 	_check(_kind() == "keyboard" and root.gui_get_focus_owner() == focus and _ui._overlay_mode == "settings_title", "A real mouse click restores keyboard hints without changing the existing modal focus")
 	_ui.hide_pause()
-	var long_bindings: Dictionary = {"move_up": KEY_SCROLLLOCK, "move_down": KEY_BACKSPACE, "move_left": KEY_KP_MULTIPLY, "move_right": KEY_KP_SUBTRACT, "dash": KEY_PAGEDOWN, "pulse": KEY_CAPSLOCK, "skill_secondary": KEY_PAGEUP}
+	var long_bindings: Dictionary = {"move_up": KEY_SCROLLLOCK, "move_down": KEY_BACKSPACE, "move_left": KEY_KP_MULTIPLY, "move_right": KEY_KP_SUBTRACT, "dash": KEY_PAGEDOWN, "pulse": KEY_CAPSLOCK, "skill_secondary": KEY_PAGEUP, "hero_skill": KEY_NUMLOCK}
 	_ui.set_controls(long_bindings)
 	_ui._show_settings(false)
 	_ui._show_controls(false)
@@ -181,9 +181,10 @@ func _test_hud_and_pause() -> void:
 	var pulse_label: Label = _ui._hud["pulse_label"]
 	var pulse_key: Label = _ui._hud["pulse_key"]
 	var secondary_key: Label = _ui._hud["secondary_key"]
+	var hero_key: Label = _ui._hud["hero_key"]
 	var focus: Control = root.gui_get_focus_owner()
 	await _joy()
-	_check(dash_label.text == "冲刺 · A" and pulse_label.text == "秘术脉冲" and pulse_key.text == "X" and secondary_key.text == "Y" and root.gui_get_focus_owner() == focus, "Gamepad input changes every equipped key without creating or focusing gameplay controls")
+	_check(dash_label.text == "冲刺 · A" and pulse_label.text == GameCatalog.skill("pulse").display_name and pulse_key.text == "X" and secondary_key.text == "Y" and hero_key.text == "RB" and root.gui_get_focus_owner() == focus, "Gamepad input changes every equipped rear and main skill key without creating or focusing gameplay controls")
 	var dash_tip: String = (_ui._hud["dash"] as Control).tooltip_text
 	var pulse_tip: String = (_ui._hud["pulse"] as Control).tooltip_text
 	_check(dash_tip.begins_with("A：") and dash_tip.contains("冷却2.1秒") and pulse_tip.contains("X ·") and pulse_tip.contains("范围162") and pulse_tip.contains("冷却8.8秒"), "Gamepad tooltips preserve actual relic-modified skill parameters")
@@ -191,19 +192,21 @@ func _test_hud_and_pause() -> void:
 	custom["dash"] = KEY_SCROLLLOCK
 	custom["pulse"] = KEY_CAPSLOCK
 	custom["skill_secondary"] = KEY_PAGEUP
+	custom["hero_skill"] = KEY_NUMLOCK
 	_ui.set_controls(custom)
-	_check(dash_label.text == "冲刺 · A" and pulse_label.text == "秘术脉冲" and pulse_key.text == "X" and secondary_key.text == "Y", "Loading keyboard rebinds never replaces the active gamepad's fixed skill labels")
+	_check(dash_label.text == "冲刺 · A" and pulse_label.text == GameCatalog.skill("pulse").display_name and pulse_key.text == "X" and secondary_key.text == "Y" and hero_key.text == "RB", "Loading keyboard rebinds never replaces the active gamepad's fixed skill labels")
 	await _key(KEY_F13)
-	_check(dash_label.text == "冲刺 · " + ControlBindings.key_label(KEY_SCROLLLOCK) and pulse_label.text == "秘术脉冲" and pulse_key.text == ControlBindings.key_label(KEY_CAPSLOCK) and secondary_key.text == ControlBindings.key_label(KEY_PAGEUP), "Keyboard activity restores every complete configured key name")
+	_check(dash_label.text == "冲刺 · " + ControlBindings.key_label(KEY_SCROLLLOCK) and pulse_label.text == GameCatalog.skill("pulse").display_name and pulse_key.text == ControlBindings.key_label(KEY_CAPSLOCK) and secondary_key.text == ControlBindings.key_label(KEY_PAGEUP) and hero_key.text == ControlBindings.key_label(KEY_NUMLOCK), "Keyboard activity restores every complete configured rear and main skill key name")
 	sim.step(1.0 / 60.0, Vector2.ZERO, true, true)
 	for frame: int in 15:
 		sim.step(1.0 / 60.0, Vector2.ZERO)
+	_check(sim.try_hero_skill(), "The prompt fixture starts the real independent main-character cooldown")
 	_ui.update_hud(sim.snapshot())
-	var clocks: Array = [sim.dash_snapshot(), sim.active_skill_snapshots(), (_ui._hud["dash_bar"] as ProgressBar).value, (_ui._hud["pulse_bar"] as ProgressBar).value, (_ui._hud["secondary_bar"] as ProgressBar).value]
+	var clocks: Array = [sim.dash_snapshot(), sim.active_skill_snapshots(), sim.hero_skill_snapshot(), (_ui._hud["dash_bar"] as ProgressBar).value, (_ui._hud["pulse_bar"] as ProgressBar).value, (_ui._hud["secondary_bar"] as ProgressBar).value, (_ui._hud["hero_bar"] as ProgressBar).value]
 	var before: String = _state_signature(_state)
 	await _joy()
 	await _key(KEY_F13)
-	_check(clocks == [sim.dash_snapshot(), sim.active_skill_snapshots(), (_ui._hud["dash_bar"] as ProgressBar).value, (_ui._hud["pulse_bar"] as ProgressBar).value, (_ui._hud["secondary_bar"] as ProgressBar).value] and _state_signature(_state) == before, "Two prompt switches cannot advance either active skill cooldown, rescale their bars or alter the build")
+	_check(clocks == [sim.dash_snapshot(), sim.active_skill_snapshots(), sim.hero_skill_snapshot(), (_ui._hud["dash_bar"] as ProgressBar).value, (_ui._hud["pulse_bar"] as ProgressBar).value, (_ui._hud["secondary_bar"] as ProgressBar).value, (_ui._hud["hero_bar"] as ProgressBar).value] and _state_signature(_state) == before, "Two prompt switches cannot advance Q/E/R cooldowns, rescale their bars or alter the build")
 	_ui.show_pause()
 	paused = true
 	await _settle()
@@ -211,7 +214,7 @@ func _test_hud_and_pause() -> void:
 	await _joy()
 	_check(_kind() == "gamepad" and paused and _ui._overlay_mode == "pause" and root.gui_get_focus_owner() == focus, "Device observation remains active during pause without changing its menu or focus")
 	await _key(KEY_F13)
-	_check(_kind() == "keyboard" and paused and root.gui_get_focus_owner() == focus and clocks == [sim.dash_snapshot(), sim.active_skill_snapshots(), (_ui._hud["dash_bar"] as ProgressBar).value, (_ui._hud["pulse_bar"] as ProgressBar).value, (_ui._hud["secondary_bar"] as ProgressBar).value], "Keyboard hints return during pause without progressing any authoritative skill clock")
+	_check(_kind() == "keyboard" and paused and root.gui_get_focus_owner() == focus and clocks == [sim.dash_snapshot(), sim.active_skill_snapshots(), sim.hero_skill_snapshot(), (_ui._hud["dash_bar"] as ProgressBar).value, (_ui._hud["pulse_bar"] as ProgressBar).value, (_ui._hud["secondary_bar"] as ProgressBar).value, (_ui._hud["hero_bar"] as ProgressBar).value], "Keyboard hints return during pause without progressing dash or Q/E/R authoritative skill clocks")
 	_ui.hide_pause()
 	paused = false
 	_ui.set_controls(ControlBindings.defaults())
@@ -225,9 +228,10 @@ func _test_hud_and_pause() -> void:
 			await _joy()
 			await _settle()
 			var boss: Control = _ui._hud["boss"]
-			for key: String in ["dash", "pulse", "secondary"]:
+			for key: String in ["dash", "pulse", "secondary", "hero"]:
 				var skill: Control = _ui._hud[key]
-				_check(root.get_visible_rect().encloses(skill.get_global_rect()) and skill.size.x >= 100.0 and skill.size.x <= 108.0 and skill.focus_mode == Control.FOCUS_NONE and (not boss_alive or not boss.get_global_rect().intersects(skill.get_global_rect())), "Device prompts retain the compact skill and Boss layout in the actual scaled window")
+				var expected_width: float = 106.0 if key == "dash" else 112.0
+				_check(root.get_visible_rect().encloses(skill.get_global_rect()) and absf(skill.size.x - expected_width) <= 0.1 and skill.focus_mode == Control.FOCUS_NONE and (not boss_alive or not boss.get_global_rect().intersects(skill.get_global_rect())), "Device prompts retain the actual compact dash/Q/E/R widths and non-overlapping Boss layout in the scaled window")
 			_ui.notify("设备提示不恢复战斗通知")
 			_check(not _ui._toast.visible and not _ui._hud.has("bag_info") and _ui.find_child("HUDMapInfo", true, false) == null, "Device prompts leave the removed combat notification and lower-right descriptions absent")
 	await _key(KEY_F13)

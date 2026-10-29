@@ -112,10 +112,11 @@ func _test_composition(cover: TitleCover) -> void:
 	_check(breathing != null and breathing.size.x >= 400.0 and breathing.size.y >= 260.0 and breathing.get_global_rect().position.x >= 600.0, "The right-side character keeps a substantial unobstructed area")
 	for name: String in ["StarterDescription", "TitleControls"]:
 		_check(_ui.find_child(name, true, false) == null, "Removed explanatory cover copy is not retained as a hidden node: " + name)
-	for id: String in ["bone", "ember", "frost", "scatter"]:
-		_check(_ui.find_child("StarterRole_" + id, true, false) == null, "Starter cards do not append explanatory sublabels: " + id)
-		var starter: Button = _button("Starter_" + id)
-		_check(starter != null and starter.toggle_mode and viewport.encloses(starter.get_global_rect()) and starter.text == GameCatalog.weapon(id).display_name, "The actual starter choice retains its necessary name and hit region: " + id)
+	for id: String in HeroCatalog.IDS:
+		_check(_ui.find_child("StarterRole_" + id, true, false) == null, "Character cards do not append explanatory sublabels: " + id)
+		var starter: Button = _button("Character_" + id)
+		var identity := _ui.find_child("CharacterName_" + id, true, false) as Label
+		_check(starter != null and starter.toggle_mode and viewport.encloses(starter.get_global_rect()) and identity != null and identity.text == HeroCatalog.definition(id).display_name, "The actual character choice retains its necessary name and hit region: " + id)
 	for id: String in ArenaCatalog.IDS:
 		_check(_ui.find_child("ArenaEffect_" + id, true, false) == null, "Map cards do not append explanatory terrain lines: " + id)
 		var option: Button = _button("Arena_" + id)
@@ -250,8 +251,8 @@ func _click(button: Button) -> void:
 
 func _test_selection_and_modal(cover: TitleCover) -> void:
 	cover.set_frame(0)
-	var ember: Button = _button("Starter_ember")
-	var bone: Button = _button("Starter_bone")
+	var ember: Button = _button("Character_clarisse")
+	var bone: Button = _button("Character_alk")
 	var glacier: Button = _button("Arena_glacier")
 	var settings: Button = _button_with_text(_ui._page, "设置")
 	var start: Button = _button_with_text(_ui._page, "进入试炼")
@@ -260,7 +261,7 @@ func _test_selection_and_modal(cover: TitleCover) -> void:
 		return
 	ember.grab_focus()
 	await _key_enter()
-	_check(_ui._starter == "ember" and ember.button_pressed and not bone.button_pressed, "Actual Enter selects the starter and leaves one selected state")
+	_check(_ui.selected_hero() == "clarisse" and _ui._starter == "ember" and ember.button_pressed and not bone.button_pressed, "Actual Enter selects the character and its initial weapon with one selected state")
 	await _click(glacier)
 	_check(_ui.selected_arena() == "glacier" and glacier.button_pressed, "An actual GUI click reaches the map through the full-screen decorative artwork")
 	settings.grab_focus()

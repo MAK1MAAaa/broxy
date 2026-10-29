@@ -25,8 +25,8 @@ static func flip_for(motion: Vector2) -> bool:
 	return motion.is_finite() and not motion.is_zero_approx() and motion.y >= 0.0 and motion.x < 0.0
 
 
-static func frame_rect(index: int) -> Rect2:
+static func frame_rect(index: int, frame_size: int = FRAME_SIZE) -> Rect2:
 	var frame: int = clampi(index, 0, LAST_FRAME)
 	var column: int = frame % ATLAS_COLUMNS
 	var row: int = floori(float(frame) / float(ATLAS_COLUMNS))
-	return Rect2(Vector2(column * FRAME_SIZE, row * FRAME_SIZE), Vector2.ONE * FRAME_SIZE)
+	return Rect2(Vector2(column * frame_size, row * frame_size), Vector2.ONE * frame_size)

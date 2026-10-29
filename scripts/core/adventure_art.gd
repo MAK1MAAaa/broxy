@@ -2,7 +2,7 @@ class_name AdventureArt
 extends RefCounted
 ## Presentation-only resource routing. Catalog IDs and simulation data stay stable.
 
-const REVISION: String = "world-flipper-fan-04"
+const REVISION: String = "world-flipper-fan-05"
 const ROOT: String = "res://assets/starfall/"
 const FAN_ROOT: String = "res://assets/worldflipper/"
 const FAN_OVERRIDES: Dictionary = {
@@ -24,9 +24,9 @@ const FAN_OVERRIDES: Dictionary = {
 	"res://assets/icons/pierce.svg": "icons/pierce.png",
 	"res://assets/icons/bounce.svg": "icons/bounce.png",
 	"res://assets/icons/blast.svg": "icons/blast.png",
-	"res://assets/icons/skill_pulse.svg": "icons/skill_pulse.png",
-	"res://assets/icons/skill_starfall.svg": "icons/skill_starfall.png",
-	"res://assets/icons/skill_arc_slash.svg": "icons/skill_arc_slash.png",
+	"res://assets/icons/skill_pulse.svg": "characters/clarisse/idle.png",
+	"res://assets/icons/skill_starfall.svg": "characters/hanabi/idle.png",
+	"res://assets/icons/skill_arc_slash.svg": "characters/celtie/idle.png",
 	"res://assets/arena.svg": "maps/previews/reliquary.png",
 	"res://assets/maps/reliquary.svg": "maps/previews/reliquary.png",
 	"res://assets/maps/mire.svg": "maps/previews/mire.png",
@@ -49,10 +49,13 @@ const FAN_OVERRIDES: Dictionary = {
 }
 
 static func path(source: String) -> String:
+	var original_source: String = source
+	if source.begins_with(ROOT + "icons/skill_"):
+		original_source = "res://assets/" + source.trim_prefix(ROOT)
+	if FAN_OVERRIDES.has(original_source):
+		return FAN_ROOT + str(FAN_OVERRIDES[original_source])
 	if source.begins_with(ROOT) or source.begins_with(FAN_ROOT):
 		return source
-	if FAN_OVERRIDES.has(source):
-		return FAN_ROOT + str(FAN_OVERRIDES[source])
 	if source == "res://assets/menu_art.svg":
 		return ROOT + "menu_art.png"
 	if source.begins_with("res://assets/") and source.ends_with(".svg"):

@@ -213,14 +213,14 @@ func _test_layout_restore_and_stale_callbacks() -> void:
 		await _settle()
 		var panel := _ui.find_child("ControlsPanel", true, false) as Control
 		_check(panel != null and root.get_visible_rect().encloses(panel.get_global_rect()), "The complete controls modal fits the actual reference-scaled window: %s (mode=%s, panel=%s, viewport=%s)" % [physical_size, _ui._overlay_mode, panel.get_global_rect() if panel != null else Rect2(), root.get_visible_rect()])
-		for name: String in ["Bind_move_up", "Bind_move_down", "Bind_move_left", "Bind_move_right", "Bind_dash", "Bind_pulse", "Bind_skill_secondary", "RestoreControls", "CloseControls"]:
+		for name: String in ["Bind_move_up", "Bind_move_down", "Bind_move_left", "Bind_move_right", "Bind_dash", "Bind_pulse", "Bind_skill_secondary", "Bind_hero_skill", "RestoreControls", "CloseControls"]:
 			var button: Button = _button(name)
 			_check(panel != null and button != null and panel.get_global_rect().encloses(button.get_global_rect()) and button.size.x + 0.1 >= button.get_minimum_size().x, "Every rebind and return action remains visible without clipping: %s (mode=%s)" % [name, _ui._overlay_mode])
 		for step: int in 10:
 			await _key(KEY_TAB)
 			_check(_overlay_owns_focus(), "Tab navigation remains inside the child modal after wrapping")
 	var guide := _ui.find_child("ControllerGuide", true, false) as Label
-	_check(guide != null and guide.text.contains("A冲刺") and guide.text.contains("X / Y技能") and guide.text.contains("Start暂停") and guide.text.contains("B返回") and guide.text.contains("X旋转"), "Only the controls page documents fixed controller gameplay and menu bindings")
+	_check(guide != null and guide.text.contains("A 冲刺") and guide.text.contains("X / Y 后排") and guide.text.contains("RB 主角") and guide.text.contains("Start 暂停") and guide.text.contains("B 返回") and guide.text.contains("X 旋转"), "The controls page shows the actual rear, main-character, movement and menu button mappings")
 	var count: int = _emissions.size()
 	var restore: Button = _button("RestoreControls")
 	_check(restore != null, "The measured controls page retains its default-restore action")
@@ -304,14 +304,14 @@ func _test_mapped_hud() -> void:
 	var pulse_label: Label = _ui._hud["pulse_label"]
 	var pulse_key: Label = _ui._hud["pulse_key"]
 	var secondary_key: Label = _ui._hud["secondary_key"]
-	_check(dash_label.text == "冲刺 · 空格" and pulse_label.text == "秘术脉冲" and pulse_key.text == "Q" and secondary_key.text == "E", "Default controls expose independent dash and both equipped skill keys")
+	_check(dash_label.text == "冲刺 · 空格" and pulse_label.text == GameCatalog.skill("pulse").display_name and pulse_key.text == "Q" and secondary_key.text == "E", "Default controls expose independent dash and both equipped skill keys")
 	_check((_ui._hud["dash"] as Control).tooltip_text == "空格：向当前移动方向冲刺；静止时沿面向。\n短冲距离约132，冷却2.4秒；起始短暂闪避，可冲离减速地形。", "Default controls preserve the exact existing dash tooltip")
 	var custom: Dictionary = ControlBindings.defaults()
 	custom["dash"] = KEY_F
 	custom["pulse"] = KEY_G
 	custom["skill_secondary"] = KEY_H
 	_ui.set_controls(custom)
-	_check(dash_label.text == "冲刺 · F" and pulse_label.text == "秘术脉冲" and pulse_key.text == "G" and secondary_key.text == "H" and (_ui._hud["dash"] as Control).tooltip_text.begins_with("F：") and (_ui._hud["pulse"] as Control).tooltip_text.contains("G ·"), "An event-driven mapping update immediately refreshes all keys and tooltips without another simulation tick")
+	_check(dash_label.text == "冲刺 · F" and pulse_label.text == GameCatalog.skill("pulse").display_name and pulse_key.text == "G" and secondary_key.text == "H" and (_ui._hud["dash"] as Control).tooltip_text.begins_with("F：") and (_ui._hud["pulse"] as Control).tooltip_text.contains("G ·"), "An event-driven mapping update immediately refreshes all keys and tooltips without another simulation tick")
 	var progress: Array = [(_ui._hud["dash_bar"] as ProgressBar).value, (_ui._hud["pulse_bar"] as ProgressBar).value, (_ui._hud["secondary_bar"] as ProgressBar).value]
 	custom["dash"] = KEY_SCROLLLOCK
 	_ui.set_controls(custom)
@@ -320,7 +320,8 @@ func _test_mapped_hud() -> void:
 		await _settle()
 		for key: String in ["dash", "pulse", "secondary"]:
 			var skill: Control = _ui._hud[key]
-			_check(skill.size.x >= 100.0 and skill.size.x <= 108.0 and root.get_visible_rect().encloses(skill.get_global_rect()) and skill.focus_mode == Control.FOCUS_NONE, "Even a long valid key name respects the compact HUD width and input behavior")
+			var maximum_width: float = 108.0 if skill == _ui._hud["dash"] else 112.0
+			_check(skill.size.x >= 100.0 and skill.size.x <= maximum_width + 0.1 and root.get_visible_rect().encloses(skill.get_global_rect()) and skill.focus_mode == Control.FOCUS_NONE, "Even a long valid key name respects the compact HUD width and input behavior")
 	_check((_ui._hud["dash"] as Control).tooltip_text.begins_with(ControlBindings.key_label(KEY_SCROLLLOCK) + "：") and progress == [(_ui._hud["dash_bar"] as ProgressBar).value, (_ui._hud["pulse_bar"] as ProgressBar).value, (_ui._hud["secondary_bar"] as ProgressBar).value], "The full long key remains available in the tooltip without changing skill timing")
 	_ui.notify("键位提示不应恢复战斗通知")
 	_check(not _ui._toast.visible and not _ui._hud.has("bag_info") and _ui.find_child("HUDMapInfo", true, false) == null, "Control hints do not restore removed battle notifications or lower-right descriptions")
@@ -328,8 +329,8 @@ func _test_mapped_hud() -> void:
 
 func _test_long_bindings_in_settings() -> void:
 	await _key(KEY_F6)
-	var bindings: Dictionary = {"move_up": KEY_SCROLLLOCK, "move_down": KEY_BACKSPACE, "move_left": KEY_KP_MULTIPLY, "move_right": KEY_KP_SUBTRACT, "dash": KEY_PAGEDOWN, "pulse": KEY_CAPSLOCK, "skill_secondary": KEY_PAGEUP}
-	_check(ControlBindings.normalize(bindings) == bindings, "The settings-width fixture uses seven distinct formally valid long key names")
+	var bindings: Dictionary = {"move_up": KEY_SCROLLLOCK, "move_down": KEY_BACKSPACE, "move_left": KEY_KP_MULTIPLY, "move_right": KEY_KP_SUBTRACT, "dash": KEY_PAGEDOWN, "pulse": KEY_CAPSLOCK, "skill_secondary": KEY_PAGEUP, "hero_skill": KEY_NUMLOCK}
+	_check(ControlBindings.normalize(bindings) == bindings, "The settings-width fixture uses eight distinct formally valid long key names")
 	_ui.set_controls(bindings)
 	_ui.show_title({})
 	await _settle()

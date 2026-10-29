@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="HeroDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/hero_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "celtie"
+display_name = "希尔媞"
+starter_weapon = "frost"
+idle_path = "res://assets/worldflipper/characters/celtie/idle.png"
+atlas_path = "res://assets/worldflipper/characters/celtie/atlas.png"
+portrait_path = "res://assets/worldflipper/portraits/celtie.png"
+frame_size = 128
+foot_anchor = Vector2(64, 125)
+base_bonuses = {"attack_speed": 0.04}
+main_skill = {"id": "hero_celtie", "name": "风之狂舞", "shape": "circle", "origin_mode": "player", "radius": 180.0, "damage": 35.0, "cooldown": 7.0}

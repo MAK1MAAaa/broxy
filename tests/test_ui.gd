@@ -51,10 +51,13 @@ func _run_tests() -> void:
 	var illustration_space: Control = ui.find_child("IllustrationBreathingSpace", true, false)
 	_check(illustration_space != null and illustration_space.size.x >= 400 and illustration_space.size.y >= 260, "Title reserves an unobstructed right-hand illustration area beside its compact selectors")
 	_check(_decorations_ignore_input(ui), "Title ornamentation never intercepts input or runs per-frame processing")
-	_press(ui, GameCatalog.weapon("ember").display_name)
-	await _settle()
+	var character := ui.find_child("Character_clarisse", true, false) as Button
+	_check(character != null, "The title exposes the actual Clarisse character selection")
+	if character != null:
+		character.grab_focus()
+		await _accept_focus()
 	_press(ui, "进入试炼")
-	_check(_started == "ember", "Selected starter is emitted when starting a run")
+	_check(_started == "ember" and ui.selected_hero() == "clarisse", "The selected character's initial weapon is emitted when starting a run")
 
 	ui.show_hud()
 	ui.update_hud({"health": 100, "max_health": 100, "wave": 1, "time_left": 305.0, "benchmark": true, "enemies": 300, "projectiles": 600, "loadout": state.loadout})
@@ -111,7 +114,7 @@ func _run_tests() -> void:
 	await _settle()
 	_started = ""
 	_press(ui, "再次试炼")
-	_check(_started == "ember", "Result restart preserves the chosen starting weapon")
+	_check(_started == "ember" and ui.selected_hero() == "clarisse", "Result restart preserves the selected character and its starting weapon")
 	_check(_buttons_inside(ui), "Result buttons fit in 1280 by 720")
 
 	state.gold = 1000

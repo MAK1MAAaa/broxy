@@ -90,9 +90,10 @@ func _test_fixed_step_requests() -> void:
 	var events: Array[Dictionary] = _events(sim)
 	var first: int = int(sim.active_skill_snapshot(0)["uid"])
 	var second: int = int(sim.active_skill_snapshot(1)["uid"])
+	var expected_slash_damage: float = GameCatalog.skill("arc_slash").damage * sim.run.stat("damage")
 	sim.step(STEP, Vector2.UP * 0.01, true, false, [{"slot": 0, "uid": first}, {"slot": 1, "uid": second}])
 	_check(events.size() == 2 and events[0]["origin"] == origin and events[1]["origin"] == origin and events[0]["direction"].is_equal_approx(Vector2.UP), "Both skills cast at the pre-dash origin using the current light-stick direction")
-	_check(upper.health == 976.0 and left.health == 1000.0 and sim.dashes_used == 1 and sim.player_position.y < origin.y, "The current-frame cone lands before the innate dash moves the player")
+	_check(is_equal_approx(1000.0 - upper.health, expected_slash_damage) and left.health == 1000.0 and sim.dashes_used == 1 and sim.player_position.y < origin.y, "The current-frame cone uses the party damage stat and lands before the innate dash moves the player")
 	_check(is_equal_approx(float(sim.active_skill_snapshot(0)["cooldown_remaining"]), 6.0 - STEP) and is_equal_approx(float(sim.active_skill_snapshot(1)["cooldown_remaining"]), 8.0 - STEP), "Both UID cooldown clocks consume the physical casting frame once")
 	sim = _sim(["pulse"])
 	var pulse_events: Array[int] = [0]

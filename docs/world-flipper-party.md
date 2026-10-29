@@ -1,0 +1,60 @@
+# 任务2：主角与后排队伍
+
+## 选角与技能
+
+标题直接选择四名主角，当前全部开放；选择同时设定初始武器。每位主角的R技能独立于背包，Q/E继续绑定背包中按UID排序的两位后排，移动和旋转不换键。手柄分别使用RB、X、Y，冲刺仍为A。重绑界面共8项操作，R在商店中继续用于旋转物品，按界面状态区分。
+
+| 主角 | 初始武器 | 基础加成 | R技能 | 基础伤害／范围／冷却 |
+| --- | --- | --- | --- | --- |
+| 阿尔克 | 野营刀 | 无 | 勇者斩击 | 50／180、120度扇区／8秒 |
+| 克拉莉丝 | 怨嗟之杖 | 伤害+6% | 炼金爆破 | 60／半径140、最近400内敌人／12秒 |
+| 希尔媞 | 月之舞 | 攻速+4% | 风之狂舞 | 35／自身半径180／7秒 |
+| 花火 | 海伯利安之弓 | 生命上限+8 | 忍法花火 | 45／长280、宽70直线／9秒 |
+
+R伤害乘当前整队伤害属性。克拉莉丝无目标时在面向前方140像素施放，其余R沿当前面向或以自身为中心。命中采用实际扇区、圆形或矩形，伤害进入技能统计和受击反馈；不触发武器符文链。技能参数在施放时锁定，改装只影响下次施放；暂停冻结计时，失焦、模态、停止及换波清理输入。效果沿用8对象池，关闭闪光保留短暂范围轮廓。
+
+后排仍是真实占格物品：购买自动寻找空位，可移动、旋转、出售和同名同阶合成。克拉莉丝提供秘术脉冲与伤害+8%，花火提供落星与生命上限+12，希尔媞提供月弧与攻速+6%；Ⅱ／Ⅲ阶属性加成为Ⅰ阶的2／4倍，技能数值与升阶规则沿用原先三技能。两名同阶合成后的整队属性总量保持，释放一个后排槽；购买、合成、遗物对照及强化预览全部使用相同的真实属性函数。增加生命上限不自动回复生命，出售或降上限会夹紧当前生命。主角不能同时放入后排，商店生成、锁定和购买均执行此规则。
+
+旧七动作配置保留全部原键，新R动作优先选择空闲R，再依次找F/C等可用键；六动作配置同时补齐E和R动作。旧记录与武器解锁保持，旧档默认主角为阿尔克；载入不自动回写，正常开始或保存设置时才保存选择。诊断、预览及测试不读写个人档案。标题不再单独选择旧起始武器，旧源码调用仍可传指定武器，供原有验证及工具使用。
+
+商店与背包直接显示后排人物、技能和实际属性，HUD分为Q/E后排与金色R主角槽；武器栏以图标、阶级和附装符文呈现，完整名称与数值可按需查看。四角色卡使用显式两列焦点路径，设置模态打开期间不改变背景选角。
+
+## 原作角色素材
+
+本轮素材层为 `world-flipper-fan-05`，在原有阿尔克素材之外接入克拉莉丝、希尔媞和花火。主清单现包含57条锁定来源、58张规范化PNG；新增来源固定为12条，运行资源新增9张，没有额外生成头像或改写历史能力球图片。
+
+| ID | 原作名称与来源 | 动画来源目录 | 技能外观映射 |
+| --- | --- | --- | --- |
+| `clarisse` | [克拉莉丝](https://wiki.biligame.com/worldflipper/克拉莉丝) | [rarity5/clarisse](https://vivaldi6352.github.io/assets/rarity5/clarisse/neutral.gif) | `pulse` |
+| `celtie` | [希尔媞](https://wiki.biligame.com/worldflipper/希尔媞) | [rarity5/wind_spgirl](https://vivaldi6352.github.io/assets/rarity5/wind_spgirl/neutral.gif) | `arc_slash` |
+| `hanabi` | [花火](https://wiki.biligame.com/worldflipper/花火) | [rarity4/kunoichi](https://vivaldi6352.github.io/assets/rarity4/kunoichi/neutral.gif) | `starfall` |
+
+每名角色使用原作待机、正面步行和背面步行GIF，以及BWIKI的透明完整立绘。源URL、SHA-256、尺寸、帧数与时长逐条保存在 [world_flipper_heroes.json](../tools/world_flipper_heroes.json)，输出SHA和对应来源在 [manifest.json](../assets/worldflipper/manifest.json)。原图版权与同人使用说明沿用 [PROVENANCE](../assets/worldflipper/PROVENANCE.md)，不是开放素材授权，也不将本游戏角色数值声明为原作数值。
+
+三名新角色的像素图使用128×128单元，原始完整画布最近邻放大3倍并水平居中，画布底端固定为 `(64,125)`。这个锚点以完整源画布为准，保留走路时身体原有的上下起伏；不逐帧裁剪或重新对齐可见脚底。图集为512×384、每行4格，依次放待机帧0、正面步行帧1至4、背面步行帧5至8，末尾3格完全透明。两组步行时长均为80／100／100／100毫秒，循环0.38秒；待机保持静态，花火源待机的0毫秒不作为循环长度。阿尔克继续使用原96×96单元及384×288图集。
+
+运行路径为 `assets/worldflipper/characters/{id}/idle.png`、`atlas.png` 和 `assets/worldflipper/portraits/{id}.png`。三张立绘分别保持原1778×1951、1562×1841、1227×1679尺寸，直接复制原PNG字节；像素图使用nearest，立绘使用linear。`AdventureArt` 把三枚技能的原SVG身份映射到对应角色的待机图；已转换到旧 `assets/starfall/icons/skill_*.svg` 的路径也得到相同结果，新的PNG路径保持幂等。任务1能力球PNG及其20条物品来源继续保留，技能定义的稳定ID不因外观改变。
+
+## 素材重建与检查
+
+```sh
+python tools/fetch_world_flipper_art.py --offline --references
+python tools/world_flipper_heroes.py --offline
+python -m unittest discover -s tests -p 'test_world_flipper_hero_assets.py'
+```
+
+主入口重建完整素材并更新主清单；独立角色入口仅重建这9张PNG与本地联系图。首次下载可去掉 `--offline`，下载后按清单核对原始SHA。角色处理器先校验完整12源及全部图像，再写任何角色输出，末尾角色的坏源不会覆写先前有效文件。原始GIF、候选联系图及105项离线候选检查数据保留在 `.tools/worldflipper/`，不纳入源码。
+
+独立Python专项覆盖固定资源身份、透明帧、原生脚底起伏、立绘字节、合成GIF的画布位置与帧序、输入顺序幂等、坏源整族保护和两平台raw PNG包含规则。导入配置由Godot按正式资源路径生成，不复制缓存候选的旧UID或导入目标。引擎、玩法、原生画面和发行包的实际验证由任务验收记录补充，历史任务结果不作为本轮结论。
+
+## 验收
+
+`./tools/test.sh` 完整通过：101套Godot测试及5个诊断入口，共35571条断言；67项Python测试通过。原生窗口与导出PCK各8套专项通过，四名主角、标题、商店及960×540小窗口共7组截图逐像素一致。Windows已重建并启动，ZIP内10文件与发行目录逐字节一致；macOS未在本Windows主机重建。实际键鼠／手柄输入通过解析事件验证，未开展实体手柄或硬件音频验收。
+
+新增压力选项 `--hero-skills` 会按真实冷却请求R，沿用真实伤害、固定效果池和Q/E操作链。300敌人／600弹体／200掉落场景预热5秒、采样60秒，平均62.706 FPS、P99 30.345毫秒，采样期实际施放R八次，达到既定58 FPS／33毫秒门槛。这是合成负载结果，不代表人工平衡或所有硬件表现。
+
+```powershell
+./tools/run.ps1 --script res://tools/benchmark_dash.gd -- --seconds=60 --backpack-skills --hero-skills --evasion-probes --output=res://reports/world-flipper-party/performance.json
+```
+
+完整数据、各日志与发行文件指纹见[验收记录](../reports/world-flipper-party/validation.json)。原始日志、预览图和上一版构建备份留在本地；不将引擎、缓存或Windows包纳入源码。

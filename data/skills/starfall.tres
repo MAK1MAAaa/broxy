@@ -6,8 +6,8 @@
 script = ExtResource("1")
 id = "starfall"
 kind = "skill"
-display_name = "落星"
-description = "星辉轰击敌群。升阶提高伤害与范围。"
+display_name = "花火"
+description = "落星：轰击敌群。生命上限 +12／24／48。"
 icon = "skill_starfall"
 color = Color(0.98, 0.79, 0.47, 1)
 price = 26
