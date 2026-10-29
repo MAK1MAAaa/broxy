@@ -58,7 +58,7 @@ func _test_world_and_camera() -> void:
 	_check(ArenaCatalog.visible_rect(Vector2.ZERO, Vector2.INF).size == ArenaCatalog.MAX_VIEW_SIZE and ArenaCatalog.visible_rect(Vector2.ZERO, Vector2(4096, 2160)).size == ArenaCatalog.MAX_VIEW_SIZE, "Invalid and oversized logical view sizes remain within the supported camera envelope")
 	_check(ArenaCatalog.visible_rect(Vector2.ZERO, Vector2(960, 540)).size == Vector2(960, 540), "Smaller logical views retain valid centered bounds")
 	for id: String in ArenaCatalog.IDS:
-		_check(ArenaCatalog.texture_path(id) == "res://assets/starfall/maps/expanded/%s.svg" % id, "The expanded texture path preserves the selected map identity: " + id)
+		_check(ArenaCatalog.texture_path(id) == "res://assets/worldflipper/maps/%s.png" % id, "The expanded source-art texture preserves the selected map identity: " + id)
 	_check(ArenaCatalog.texture_path("unknown") == ArenaCatalog.texture_path("reliquary"), "Unknown map art follows the same catalog fallback")
 
 func _test_authored_terrain() -> void:

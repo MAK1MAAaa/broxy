@@ -31,6 +31,8 @@ class DrawSpy extends ProbeWorld:
 	var pulse_centers: Array[Vector2] = []
 	func _draw_atmosphere() -> void:
 		pass
+	func _draw_obstacles() -> void:
+		passes.append("obstacles")
 	func _draw_ground_contacts() -> void:
 		pass
 	func _draw_souls() -> void:

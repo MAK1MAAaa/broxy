@@ -2,10 +2,15 @@ class_name AdventureArt
 extends RefCounted
 ## Presentation-only resource routing. Catalog IDs and simulation data stay stable.
 
-const REVISION: String = "world-flipper-fan-02"
+const REVISION: String = "world-flipper-fan-03"
 const ROOT: String = "res://assets/starfall/"
 const FAN_ROOT: String = "res://assets/worldflipper/"
 const FAN_OVERRIDES: Dictionary = {
+	"res://assets/arena.svg": "maps/previews/reliquary.png",
+	"res://assets/maps/reliquary.svg": "maps/previews/reliquary.png",
+	"res://assets/maps/mire.svg": "maps/previews/mire.png",
+	"res://assets/maps/glacier.svg": "maps/previews/glacier.png",
+	"res://assets/maps/ashland.svg": "maps/previews/ashland.png",
 	"res://assets/sprites/player.svg": "sprites/player.png",
 	"res://assets/sprites/chaser.svg": "sprites/chaser.png",
 	"res://assets/sprites/rusher.svg": "sprites/rusher.png",

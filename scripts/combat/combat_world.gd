@@ -11,9 +11,11 @@ var settings: Dictionary = {"shake": true, "flash": true}
 var textures: Dictionary = {}
 var _player_atlas: Texture2D
 var arena_texture: Texture2D
+var _obstacle_textures: Dictionary = {}
+var _arena_obstacles: Array[Dictionary] = []
 var _camera: Camera2D
 var _arena_id: String = "reliquary"
-var _arena_name: String = "秘仪祭坛"
+var _arena_name: String = "沙漠遗迹"
 var _arena_color: Color = Color(0.78, 0.67, 0.50)
 var soul_texture: Texture2D
 var glow_texture: Texture2D
@@ -49,6 +51,7 @@ const PULSE_FEEDBACK_LIFE: float = 0.30
 const SKILL_FEEDBACK_LIFE: float = 0.45
 const SKILL_FEEDBACK_FONT_SIZE: int = 12
 const PULSE_HINDER_TINT: Color = Color("c1b2d8")
+const OBSTACLE_ART_WIDTHS: Dictionary = {"monument": 44.0, "planter": 54.0, "bumper": 69.0}
 
 class DashAfterimage:
 	var position: Vector2 = Vector2.ZERO
@@ -155,6 +158,8 @@ func _ready() -> void:
 	_dash_evasion_font = GameTypography.font()
 	_dash_evasion_text_width = _dash_evasion_font.get_string_size(DASH_EVASION_TEXT, HORIZONTAL_ALIGNMENT_LEFT, -1, DASH_EVASION_FONT_SIZE).x
 	arena_texture = load(ArenaCatalog.texture_path(_arena_id)) as Texture2D
+	for id: String in ["monument", "planter", "bumper"]:
+		_obstacle_textures[id] = load("res://assets/worldflipper/props/%s.png" % id) as Texture2D
 	_camera = Camera2D.new()
 	_camera.name = "ExplorationCamera"
 	_camera.top_level = true
@@ -194,6 +199,7 @@ func begin(state: RunState) -> void:
 	_arena_color = Color(str(arena["preview_color"])) if _arena_id != "reliquary" else Color(0.78, 0.67, 0.50)
 	sim = CombatSim.new()
 	sim.begin(state)
+	_arena_obstacles = sim.obstacles.snapshot()
 	sim.ended.connect(_on_ended)
 	sim.shot_fired.connect(func() -> void: sound.play("shoot", -24.0))
 	sim.enemy_hit.connect(func() -> void: sound.play("hit", -24.0))
@@ -672,7 +678,8 @@ func minimap_snapshot() -> Dictionary:
 		zones.append({"center": Vector2(float(zone["center"][0]), float(zone["center"][1])),
 			"radius": Vector2(float(zone["radius"][0]), float(zone["radius"][1]))})
 	return {"bounds": CombatSim.ARENA, "player": sim.player_position, "facing": sim.player_direction,
-		"view": camera_view(), "enemies": enemies, "zones": zones, "arena_id": _arena_id}
+		"view": camera_view(), "enemies": enemies, "zones": zones, "arena_id": _arena_id,
+		"obstacles": _arena_obstacles.duplicate(true)}
 
 func _draw() -> void:
 	if arena_texture != null:
@@ -682,6 +689,7 @@ func _draw() -> void:
 	_draw_atmosphere()
 	_draw_pulse_feedback()
 	_draw_ground_contacts()
+	_draw_obstacles()
 	_draw_player_ground()
 	_draw_souls()
 	_draw_enemies()
@@ -704,6 +712,23 @@ func _draw_ground_contacts() -> void:
 		return
 	_grounding_painter.rebuild(sim, camera_view())
 	_grounding_painter.draw(self)
+
+func _draw_obstacles() -> void:
+	var visible: Rect2 = camera_view()
+	for obstacle: Dictionary in _arena_obstacles:
+		var center: Vector2 = obstacle["center"]
+		var radius: float = obstacle["radius"]
+		var art_id: String = obstacle["art_id"]
+		var texture: Texture2D = _obstacle_textures.get(art_id) as Texture2D
+		if texture == null:
+			continue
+		# All normalized props share a foot anchor; their opaque width fills the collider.
+		var source_width: float = OBSTACLE_ART_WIDTHS.get(art_id, 69.0)
+		var scale: float = radius * 2.0 / source_width
+		var extent := Vector2.ONE * 96.0 * scale
+		var target := Rect2(center - Vector2(48, 84) * scale, extent)
+		if target.intersects(visible):
+			draw_texture_rect(texture, target, false)
 
 func _draw_skill_feedback() -> void:
 	if _skill_feedback_remaining <= 0.0 or _dash_evasion_font == null:
@@ -1073,6 +1098,7 @@ func _maintain_stress() -> void:
 		if enemy.active:
 			enemy.position.x = wrapf(enemy.position.x + 0.9, 100.0, 1180.0)
 			enemy.position.y = 175.0 + float(enemy.slot % 15) * 27.0
+			enemy.position = sim.obstacles.free_point(enemy.position, enemy.radius)
 	for shot: CombatSim.Shot in sim.shots:
 		if shot.active:
 			shot.position = Vector2(wrapf(shot.position.x, 85.0, 1195.0), wrapf(shot.position.y, 135.0, 620.0))

@@ -1,5 +1,5 @@
 {
-  "revision": "world-flipper-fan-02",
+  "revision": "world-flipper-fan-03",
   "original_copyright": "© Cygames, Inc. / Citail Inc.",
   "license_status": "Original game assets; no open asset license found. Unofficial fan-work use is not a claim of authorization.",
   "copyright_source": "https://worldflipper.jp/copyright/",
@@ -286,7 +286,25 @@
       "scale": 2,
       "offset": [
         14,
-        10
+        14
+      ],
+      "alpha_cleanup": [
+        {
+          "rect": [
+            2,
+            24,
+            18,
+            4
+          ],
+          "rgba": [
+            196,
+            196,
+            196,
+            255
+          ],
+          "expected_pixels": 48,
+          "reason": "Remove the original opaque ground shadow; runtime supplies the shared contact shadow"
+        }
       ]
     },
     {
@@ -313,7 +331,25 @@
       "scale": 4,
       "offset": [
         20,
-        2
+        10
+      ],
+      "alpha_cleanup": [
+        {
+          "rect": [
+            4,
+            32,
+            22,
+            4
+          ],
+          "rgba": [
+            196,
+            196,
+            196,
+            255
+          ],
+          "expected_pixels": 64,
+          "reason": "Remove the original opaque ground shadow; runtime supplies the shared contact shadow"
+        }
       ]
     },
     {
@@ -342,6 +378,258 @@
         939,
         1727
       ]
+    },
+    {
+      "id": "arena_reliquary",
+      "kind": "arena_map",
+      "game_id": "reliquary",
+      "name": "World Flipper / Sand Ruins",
+      "filename": "map-sand-ruins-background.png",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field/world_sand/sand_ruins/background/background.png",
+      "source_page": "https://worldflipper.jp/demo/",
+      "sha256": "1a9a875cf22db4cce19a053e914725ef715dc3f9eeb0ed4d6dc63c996591a98f",
+      "source_size": [
+        274,
+        738
+      ],
+      "crop": [
+        82,
+        432,
+        64,
+        64
+      ],
+      "scale": 2,
+      "border_crops": {
+        "left": [
+          38,
+          88,
+          24,
+          128
+        ],
+        "right": [
+          212,
+          88,
+          24,
+          128
+        ],
+        "top": [
+          49,
+          11,
+          176,
+          48
+        ]
+      },
+      "normalization": "Mirror-tiled native lower-room sigil floor at 2x nearest; original scene walls confined to non-walkable art margins."
+    },
+    {
+      "id": "arena_mire",
+      "kind": "arena_map",
+      "game_id": "mire",
+      "name": "World Flipper / Japan Shrine",
+      "filename": "map-japan-shrine-background.png",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field/world_japan/japan_shrine/background/background.png",
+      "source_page": "https://worldflipper.jp/demo/",
+      "sha256": "61e23df1ec118aba1ada9e97c19c790eb30e09ef7180e3757ee8f0d546569f32",
+      "source_size": [
+        274,
+        738
+      ],
+      "crop": [
+        104,
+        100,
+        64,
+        64
+      ],
+      "zone_crop": [
+        80,
+        450,
+        64,
+        64
+      ],
+      "scale": 2,
+      "border_crops": {
+        "left": [
+          9,
+          452,
+          24,
+          128
+        ],
+        "right": [
+          241,
+          452,
+          24,
+          128
+        ],
+        "top": [
+          49,
+          4,
+          176,
+          48
+        ]
+      },
+      "normalization": "Mirror-tiled native shrine flagstones at 2x nearest; lower-courtyard brick texture marks the existing slow zones."
+    },
+    {
+      "id": "arena_glacier",
+      "kind": "arena_map",
+      "game_id": "glacier",
+      "name": "World Flipper / Evil Tower",
+      "filename": "map-evil-tower-background.png",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field/world_evil/evil_tower/background/background.png",
+      "source_page": "https://worldflipper.jp/demo/",
+      "sha256": "b318b4867364f892dea4de757f57b603690fb3bc7a9e9879c2c1c2170a30dbca",
+      "source_size": [
+        274,
+        752
+      ],
+      "crop": [
+        104,
+        110,
+        64,
+        32
+      ],
+      "zone_crop": [
+        104,
+        180,
+        64,
+        32
+      ],
+      "scale": 2,
+      "border_crops": {
+        "left": [
+          24,
+          94,
+          24,
+          128
+        ],
+        "right": [
+          226,
+          94,
+          24,
+          128
+        ],
+        "top": [
+          49,
+          1,
+          176,
+          48
+        ]
+      },
+      "normalization": "Mirror-tiled clean native tower brick floor at 2x nearest; cooler native tower bricks mark the existing slow zones."
+    },
+    {
+      "id": "arena_ashland",
+      "kind": "arena_map",
+      "game_id": "ashland",
+      "name": "World Flipper / Sea Ship Boss",
+      "filename": "map-sea-ship-background.png",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field/world_sea/sea_ship_boss/background/background.png",
+      "source_page": "https://worldflipper.jp/demo/",
+      "sha256": "d46b919f710220018302d9ce12b2db18069ac068bfe514a6cc8c042f2979af4a",
+      "source_size": [
+        274,
+        1002
+      ],
+      "crop": [
+        112,
+        555,
+        32,
+        16
+      ],
+      "zone_crop": [
+        112,
+        585,
+        32,
+        16
+      ],
+      "scale": 2,
+      "border_crops": {
+        "left": [
+          28,
+          244,
+          24,
+          128
+        ],
+        "right": [
+          222,
+          244,
+          24,
+          128
+        ],
+        "top": [
+          49,
+          112,
+          176,
+          48
+        ]
+      },
+      "normalization": "Mirror-tiled native ship planks at 2x nearest; shaded native deck planks mark the existing slow zones."
+    },
+    {
+      "id": "prop_monument",
+      "kind": "arena_prop",
+      "game_id": "monument",
+      "name": "World Flipper / Evil Tower Monument",
+      "filename": "prop-monument.png",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field_object/world_evil/evil_tower/yakumono/block/monument_a/monument_a.png",
+      "source_page": "https://worldflipper.jp/demo/",
+      "sha256": "25e92ebcd91a6bbb79f1c9ce85f9c2107cc5d3b3a45288040545d8efc0f8becd",
+      "source_size": [
+        13,
+        19
+      ],
+      "crop": [
+        1,
+        1,
+        11,
+        17
+      ],
+      "scale": 4,
+      "normalization": "Original atlas frame, unmodified source colors and transparency; 4x nearest; centered on a 96x96 canvas with the foot at y84."
+    },
+    {
+      "id": "prop_planter",
+      "kind": "arena_prop",
+      "game_id": "planter",
+      "name": "World Flipper / Town Street Planter",
+      "filename": "prop-planter.png",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field_object/world_town/town_street/yakumono/decoration/planter_a/planter_a.png",
+      "source_page": "https://worldflipper.jp/demo/",
+      "sha256": "9c1652b2952dc1ec0ea66f3e2a918dbdaeaad34bbe03ad039190732dda01ae44",
+      "source_size": [
+        20,
+        24
+      ],
+      "crop": [
+        1,
+        1,
+        18,
+        22
+      ],
+      "scale": 3,
+      "normalization": "Original atlas frame, unmodified source colors and transparency; 3x nearest; centered on a 96x96 canvas with the foot at y84."
+    },
+    {
+      "id": "prop_bumper",
+      "kind": "arena_prop",
+      "game_id": "bumper",
+      "name": "World Flipper / Common Bumper A",
+      "filename": "prop-bumper.png",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field_object/common/yakumono/bumper/bumper_big/bumper_big.png",
+      "source_page": "https://worldflipper.jp/demo/",
+      "sha256": "35cb5cdc632465d02ee684d0e1ccd5ef159ae4df9e513ac5a22648c153a70dee",
+      "source_size": [
+        50,
+        28
+      ],
+      "crop": [
+        1,
+        1,
+        23,
+        26
+      ],
+      "scale": 3,
+      "normalization": "Original atlas a frame, unmodified source colors and transparency; 3x nearest; centered on a 96x96 canvas with the foot at y84."
     }
   ],
   "references_cached_only": [
@@ -621,7 +909,9 @@
       "source_ids": [
         "enemy_chaser"
       ],
-      "normalization": "2x nearest at (2, 26); complete original pose retained without recoloring inside 64x64"
+      "alpha_cleanup": [],
+      "cleaned_source_pixels": 0,
+      "normalization": "Exact source-coordinate ground-shadow alpha cleanup; 2x nearest at (2, 26); body colors and black outlines retained inside 64x64"
     },
     {
       "id": "enemy_rusher",
@@ -641,7 +931,9 @@
       "source_ids": [
         "enemy_rusher"
       ],
-      "normalization": "2x nearest at (2, 6); complete original pose retained without recoloring inside 64x64"
+      "alpha_cleanup": [],
+      "cleaned_source_pixels": 0,
+      "normalization": "Exact source-coordinate ground-shadow alpha cleanup; 2x nearest at (2, 6); body colors and black outlines retained inside 64x64"
     },
     {
       "id": "enemy_tank",
@@ -661,19 +953,21 @@
       "source_ids": [
         "enemy_tank"
       ],
-      "normalization": "2x nearest at (6, 17); complete original pose retained without recoloring inside 80x80"
+      "alpha_cleanup": [],
+      "cleaned_source_pixels": 0,
+      "normalization": "Exact source-coordinate ground-shadow alpha cleanup; 2x nearest at (6, 17); body colors and black outlines retained inside 80x80"
     },
     {
       "id": "enemy_caster",
       "path": "assets/worldflipper/sprites/caster.png",
-      "sha256": "41d068a27248183ee523a035d20ad513803aa7b9373ab4db5077d5e25cd956ea",
+      "sha256": "6d7ab229bc34d4bbdcbe5b0f0ec8a80309cb7a4545481511fc2527221f1a565b",
       "size": [
         72,
         72
       ],
       "alpha_bounds": [
         14,
-        10,
+        14,
         58,
         66
       ],
@@ -681,19 +975,38 @@
       "source_ids": [
         "enemy_caster"
       ],
-      "normalization": "2x nearest at (14, 10); complete original pose retained without recoloring inside 72x72"
+      "alpha_cleanup": [
+        {
+          "rect": [
+            2,
+            24,
+            18,
+            4
+          ],
+          "rgba": [
+            196,
+            196,
+            196,
+            255
+          ],
+          "expected_pixels": 48,
+          "reason": "Remove the original opaque ground shadow; runtime supplies the shared contact shadow"
+        }
+      ],
+      "cleaned_source_pixels": 48,
+      "normalization": "Exact source-coordinate ground-shadow alpha cleanup; 2x nearest at (14, 14); body colors and black outlines retained inside 72x72"
     },
     {
       "id": "enemy_boss",
       "path": "assets/worldflipper/sprites/boss.png",
-      "sha256": "55c82cd66698ef25e2b662861f2b838d49f245d830972b5cf5c5123c517912d7",
+      "sha256": "747fdfaa65b1049e0086ccf4e86244208163f065e93b50cb6ece35d8f9953432",
       "size": [
         160,
         160
       ],
       "alpha_bounds": [
         20,
-        2,
+        10,
         140,
         146
       ],
@@ -701,7 +1014,26 @@
       "source_ids": [
         "enemy_boss"
       ],
-      "normalization": "4x nearest at (20, 2); complete original pose retained without recoloring inside 160x160"
+      "alpha_cleanup": [
+        {
+          "rect": [
+            4,
+            32,
+            22,
+            4
+          ],
+          "rgba": [
+            196,
+            196,
+            196,
+            255
+          ],
+          "expected_pixels": 64,
+          "reason": "Remove the original opaque ground shadow; runtime supplies the shared contact shadow"
+        }
+      ],
+      "cleaned_source_pixels": 64,
+      "normalization": "Exact source-coordinate ground-shadow alpha cleanup; 4x nearest at (20, 10); body colors and black outlines retained inside 160x160"
     },
     {
       "id": "cover_background",
@@ -742,7 +1074,498 @@
         "portrait_alk"
       ],
       "normalization": "Original source bytes preserved; runtime keeps the full aspect ratio inside a separate right-side portrait layer"
+    },
+    {
+      "id": "arena_reliquary",
+      "path": "assets/worldflipper/maps/reliquary.png",
+      "sha256": "ac014b8a8814836089e7f3243af6fc197903ac32fb61e19885367bfb07103598",
+      "size": [
+        3780,
+        2104
+      ],
+      "alpha_bounds": [
+        0,
+        0,
+        3780,
+        2104
+      ],
+      "filter": "nearest",
+      "source_ids": [
+        "arena_reliquary"
+      ],
+      "source_crop": [
+        82,
+        432,
+        64,
+        64
+      ],
+      "source_scale": 2,
+      "normalization": "Mirror-tiled native lower-room sigil floor at 2x nearest; original scene walls confined to non-walkable art margins.",
+      "world_origin": [
+        -1146,
+        -679
+      ],
+      "walkable_art_rect": [
+        64,
+        144,
+        3508,
+        1944
+      ],
+      "zone_count": 0,
+      "zone_normalization": "Same-source floor texture through a low-contrast dithered mask; geometry read from data/arenas.json without changing movement values or coordinates",
+      "border_crops": {
+        "left": [
+          38,
+          88,
+          24,
+          128
+        ],
+        "right": [
+          212,
+          88,
+          24,
+          128
+        ],
+        "top": [
+          49,
+          11,
+          176,
+          48
+        ]
+      }
+    },
+    {
+      "id": "arena_reliquary_preview",
+      "path": "assets/worldflipper/maps/previews/reliquary.png",
+      "sha256": "cafb068763b15cbb1a36dc3665862c1447532b23bcc28d3b775df4e4bf1c6a61",
+      "size": [
+        1280,
+        720
+      ],
+      "alpha_bounds": [
+        0,
+        0,
+        1280,
+        720
+      ],
+      "filter": "nearest",
+      "source_ids": [
+        "arena_reliquary"
+      ],
+      "source_crop": [
+        82,
+        432,
+        64,
+        64
+      ],
+      "source_scale": 2,
+      "normalization": "Unscaled 1280x720 crop of the current start camera from the normalized arena",
+      "arena_crop": [
+        1146,
+        684,
+        1280,
+        720
+      ]
+    },
+    {
+      "id": "arena_mire",
+      "path": "assets/worldflipper/maps/mire.png",
+      "sha256": "3dd39effc68df6bba8b56951f107ba905614b6786d5083db3b111e38531e3c6b",
+      "size": [
+        3780,
+        2104
+      ],
+      "alpha_bounds": [
+        0,
+        0,
+        3780,
+        2104
+      ],
+      "filter": "nearest",
+      "source_ids": [
+        "arena_mire"
+      ],
+      "source_crop": [
+        104,
+        100,
+        64,
+        64
+      ],
+      "source_scale": 2,
+      "normalization": "Mirror-tiled native shrine flagstones at 2x nearest; lower-courtyard brick texture marks the existing slow zones.",
+      "world_origin": [
+        -1146,
+        -679
+      ],
+      "walkable_art_rect": [
+        64,
+        144,
+        3508,
+        1944
+      ],
+      "zone_count": 11,
+      "zone_normalization": "Same-source floor texture through a low-contrast dithered mask; geometry read from data/arenas.json without changing movement values or coordinates",
+      "border_crops": {
+        "left": [
+          9,
+          452,
+          24,
+          128
+        ],
+        "right": [
+          241,
+          452,
+          24,
+          128
+        ],
+        "top": [
+          49,
+          4,
+          176,
+          48
+        ]
+      },
+      "zone_source_crop": [
+        80,
+        450,
+        64,
+        64
+      ]
+    },
+    {
+      "id": "arena_mire_preview",
+      "path": "assets/worldflipper/maps/previews/mire.png",
+      "sha256": "8681f53ea613d0e20426471c57e221a5b79972b83c753d769e65f863b4422d40",
+      "size": [
+        1280,
+        720
+      ],
+      "alpha_bounds": [
+        0,
+        0,
+        1280,
+        720
+      ],
+      "filter": "nearest",
+      "source_ids": [
+        "arena_mire"
+      ],
+      "source_crop": [
+        104,
+        100,
+        64,
+        64
+      ],
+      "source_scale": 2,
+      "normalization": "Unscaled 1280x720 crop of the current start camera from the normalized arena",
+      "arena_crop": [
+        1146,
+        684,
+        1280,
+        720
+      ]
+    },
+    {
+      "id": "arena_glacier",
+      "path": "assets/worldflipper/maps/glacier.png",
+      "sha256": "db029fa823459093116913cdf09fac60fb7e86c40d121e2b832aec8cc3b693b9",
+      "size": [
+        3780,
+        2104
+      ],
+      "alpha_bounds": [
+        0,
+        0,
+        3780,
+        2104
+      ],
+      "filter": "nearest",
+      "source_ids": [
+        "arena_glacier"
+      ],
+      "source_crop": [
+        104,
+        110,
+        64,
+        32
+      ],
+      "source_scale": 2,
+      "normalization": "Mirror-tiled clean native tower brick floor at 2x nearest; cooler native tower bricks mark the existing slow zones.",
+      "world_origin": [
+        -1146,
+        -679
+      ],
+      "walkable_art_rect": [
+        64,
+        144,
+        3508,
+        1944
+      ],
+      "zone_count": 11,
+      "zone_normalization": "Same-source floor texture through a low-contrast dithered mask; geometry read from data/arenas.json without changing movement values or coordinates",
+      "border_crops": {
+        "left": [
+          24,
+          94,
+          24,
+          128
+        ],
+        "right": [
+          226,
+          94,
+          24,
+          128
+        ],
+        "top": [
+          49,
+          1,
+          176,
+          48
+        ]
+      },
+      "zone_source_crop": [
+        104,
+        180,
+        64,
+        32
+      ]
+    },
+    {
+      "id": "arena_glacier_preview",
+      "path": "assets/worldflipper/maps/previews/glacier.png",
+      "sha256": "e3edd6088b0bcd6d7146327496f213fcfbe76758d6a168f06325da5e34f3be13",
+      "size": [
+        1280,
+        720
+      ],
+      "alpha_bounds": [
+        0,
+        0,
+        1280,
+        720
+      ],
+      "filter": "nearest",
+      "source_ids": [
+        "arena_glacier"
+      ],
+      "source_crop": [
+        104,
+        110,
+        64,
+        32
+      ],
+      "source_scale": 2,
+      "normalization": "Unscaled 1280x720 crop of the current start camera from the normalized arena",
+      "arena_crop": [
+        1146,
+        684,
+        1280,
+        720
+      ]
+    },
+    {
+      "id": "arena_ashland",
+      "path": "assets/worldflipper/maps/ashland.png",
+      "sha256": "bc228b64fb98e856ab1c9098b94249c40f83688ff203627d7fffe0fb7429899b",
+      "size": [
+        3780,
+        2104
+      ],
+      "alpha_bounds": [
+        0,
+        0,
+        3780,
+        2104
+      ],
+      "filter": "nearest",
+      "source_ids": [
+        "arena_ashland"
+      ],
+      "source_crop": [
+        112,
+        555,
+        32,
+        16
+      ],
+      "source_scale": 2,
+      "normalization": "Mirror-tiled native ship planks at 2x nearest; shaded native deck planks mark the existing slow zones.",
+      "world_origin": [
+        -1146,
+        -679
+      ],
+      "walkable_art_rect": [
+        64,
+        144,
+        3508,
+        1944
+      ],
+      "zone_count": 12,
+      "zone_normalization": "Same-source floor texture through a low-contrast dithered mask; geometry read from data/arenas.json without changing movement values or coordinates",
+      "border_crops": {
+        "left": [
+          28,
+          244,
+          24,
+          128
+        ],
+        "right": [
+          222,
+          244,
+          24,
+          128
+        ],
+        "top": [
+          49,
+          112,
+          176,
+          48
+        ]
+      },
+      "zone_source_crop": [
+        112,
+        585,
+        32,
+        16
+      ]
+    },
+    {
+      "id": "arena_ashland_preview",
+      "path": "assets/worldflipper/maps/previews/ashland.png",
+      "sha256": "4ba70a28303d0a378df8bd216ec22ffbcf8c229ff0249dba63c15f9bba334740",
+      "size": [
+        1280,
+        720
+      ],
+      "alpha_bounds": [
+        0,
+        0,
+        1280,
+        720
+      ],
+      "filter": "nearest",
+      "source_ids": [
+        "arena_ashland"
+      ],
+      "source_crop": [
+        112,
+        555,
+        32,
+        16
+      ],
+      "source_scale": 2,
+      "normalization": "Unscaled 1280x720 crop of the current start camera from the normalized arena",
+      "arena_crop": [
+        1146,
+        684,
+        1280,
+        720
+      ]
+    },
+    {
+      "id": "prop_monument",
+      "path": "assets/worldflipper/props/monument.png",
+      "sha256": "2161982a519956f335e4bd130cf6e2cb1453ff3cbb15f8bf93df4ddce76641b9",
+      "size": [
+        96,
+        96
+      ],
+      "alpha_bounds": [
+        26,
+        16,
+        70,
+        84
+      ],
+      "filter": "nearest",
+      "source_ids": [
+        "prop_monument"
+      ],
+      "source_crop": [
+        1,
+        1,
+        11,
+        17
+      ],
+      "source_scale": 4,
+      "normalization": "Original atlas frame, unmodified source colors and transparency; 4x nearest; centered on a 96x96 canvas with the foot at y84.",
+      "offset": [
+        26,
+        16
+      ],
+      "foot_anchor": [
+        48,
+        84
+      ]
+    },
+    {
+      "id": "prop_planter",
+      "path": "assets/worldflipper/props/planter.png",
+      "sha256": "f93558f126fbfcba3cd47bb3724457b106db1ffcce3746551d5d84b566177a70",
+      "size": [
+        96,
+        96
+      ],
+      "alpha_bounds": [
+        21,
+        18,
+        75,
+        84
+      ],
+      "filter": "nearest",
+      "source_ids": [
+        "prop_planter"
+      ],
+      "source_crop": [
+        1,
+        1,
+        18,
+        22
+      ],
+      "source_scale": 3,
+      "normalization": "Original atlas frame, unmodified source colors and transparency; 3x nearest; centered on a 96x96 canvas with the foot at y84.",
+      "offset": [
+        21,
+        18
+      ],
+      "foot_anchor": [
+        48,
+        84
+      ]
+    },
+    {
+      "id": "prop_bumper",
+      "path": "assets/worldflipper/props/bumper.png",
+      "sha256": "a619c6111532e9b720b48e68c4f50a4f49cec8746761e89fc8ff500dea9051c6",
+      "size": [
+        96,
+        96
+      ],
+      "alpha_bounds": [
+        13,
+        6,
+        82,
+        84
+      ],
+      "filter": "nearest",
+      "source_ids": [
+        "prop_bumper"
+      ],
+      "source_crop": [
+        1,
+        1,
+        23,
+        26
+      ],
+      "source_scale": 3,
+      "normalization": "Original atlas a frame, unmodified source colors and transparency; 3x nearest; centered on a 96x96 canvas with the foot at y84.",
+      "offset": [
+        13,
+        6
+      ],
+      "foot_anchor": [
+        48,
+        84
+      ]
     }
   ],
-  "gameplay": "Presentation only; current hero remains Alk and recruitment rules are not implemented. Existing catalog IDs, names, combat rules and collisions remain in force."
+  "gameplay": "Alk remains the only hero; recruitment is deferred. Arena IDs, terrain zones and multipliers remain stable. Authored low props block ground movement, dash and knockback; flying projectiles pass over them."
 }

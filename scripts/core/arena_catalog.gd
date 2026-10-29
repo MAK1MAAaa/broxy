@@ -1,6 +1,6 @@
 class_name ArenaCatalog
 extends RefCounted
-## Artwork generation and combat both read the same authored ellipse boundaries.
+## Shared world geometry, authored terrain and source-art resource paths.
 
 const IDS: Array[String] = ["reliquary", "mire", "glacier", "ashland"]
 const SOURCE_PATH: String = "res://data/arenas.json"
@@ -31,7 +31,7 @@ static func art_rect() -> Rect2:
 
 
 static func texture_path(id: String) -> String:
-	return "res://assets/starfall/maps/expanded/%s.svg" % normalize_id(id)
+	return "res://assets/worldflipper/maps/%s.png" % normalize_id(id)
 
 
 static func camera_center(point: Vector2, view_size: Vector2 = MAX_VIEW_SIZE) -> Vector2:

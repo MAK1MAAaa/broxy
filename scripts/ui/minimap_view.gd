@@ -5,6 +5,7 @@ extends Control
 const ENEMY_LIMIT: int = 128
 const ENEMY_SCAN_LIMIT: int = 1024
 const ZONE_LIMIT: int = 32
+const OBSTACLE_LIMIT: int = 64
 const INSET: float = 8.0
 const PAPER: Color = Color("fff9e8")
 const INK: Color = Color("253d54")
@@ -20,6 +21,7 @@ var _view: Rect2 = Rect2()
 var _arena_id: String = ""
 var _enemies: Array[Dictionary] = []
 var _zones: Array[Dictionary] = []
+var _obstacles: Array[Dictionary] = []
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -50,6 +52,7 @@ func update_snapshot(value: Variant) -> void:
 	_arena_id = str(value.get("arena_id", ""))
 	_read_enemies(value.get("enemies", []))
 	_read_zones(value.get("zones", []))
+	_read_obstacles(value.get("obstacles", []))
 	_valid = true
 	_finish_update()
 
@@ -62,6 +65,7 @@ func _clear() -> void:
 	_arena_id = ""
 	_enemies.clear()
 	_zones.clear()
+	_obstacles.clear()
 
 func _finish_update() -> void:
 	visible = _valid
@@ -117,6 +121,25 @@ func _read_zones(value: Variant) -> void:
 			continue
 		_zones.append({"center": center, "radius": radius})
 
+func _read_obstacles(value: Variant) -> void:
+	if not value is Array:
+		return
+	for index: int in mini(value.size(), OBSTACLE_LIMIT):
+		var entry: Variant = value[index]
+		if not entry is Dictionary:
+			continue
+		var center: Variant = entry.get("center")
+		var radius: Variant = entry.get("radius")
+		if not center is Vector2 or not center.is_finite() or not _contains(center):
+			continue
+		if not (radius is float or radius is int) or not is_finite(float(radius)):
+			continue
+		if radius <= 0.0 or radius > minf(_bounds.size.x, _bounds.size.y) * 0.5:
+			continue
+		if not _bounds.encloses(Rect2(center - Vector2.ONE * radius, Vector2.ONE * radius * 2.0)):
+			continue
+		_obstacles.append({"center": center, "radius": float(radius)})
+
 func map_rect() -> Rect2:
 	if not _valid or size.x <= INSET * 2.0 or size.y <= INSET * 2.0:
 		return Rect2()
@@ -134,6 +157,7 @@ func world_to_map(point: Vector2) -> Vector2:
 func presentation_snapshot() -> Dictionary:
 	return {"valid": _valid, "bounds": _bounds, "player": _player, "facing": _facing, "view": _view,
 		"arena_id": _arena_id, "enemies": _enemies.duplicate(true), "zones": _zones.duplicate(true),
+		"obstacles": _obstacles.duplicate(true), "obstacle_count": _obstacles.size(),
 		"enemy_count": _enemies.size(), "zone_count": _zones.size(), "enemy_limit": ENEMY_LIMIT}
 
 func _draw() -> void:
@@ -147,6 +171,7 @@ func _draw() -> void:
 		return
 	draw_rect(area, Color("d4e3d7"))
 	_draw_zones(area)
+	_draw_obstacles(area)
 	draw_rect(area, Color(CYAN, 0.65), false, 1.0)
 	_draw_view(area)
 	_draw_enemies(area)
@@ -174,6 +199,14 @@ func _draw_zones(area: Rect2) -> void:
 			signed_area += points[index].cross(points[(index + 1) % points.size()])
 		if points.size() >= 3 and absf(signed_area) > 0.1:
 			draw_colored_polygon(points, color)
+
+func _draw_obstacles(area: Rect2) -> void:
+	var scale: float = area.size.x / _bounds.size.x
+	for obstacle: Dictionary in _obstacles:
+		var point: Vector2 = world_to_map(obstacle["center"])
+		var radius: float = maxf(1.5, obstacle["radius"] * scale)
+		draw_circle(point, radius, Color(INK, 0.66))
+		draw_arc(point, radius, 0.0, TAU, 8, Color(PAPER, 0.66), 1.0)
 
 func _draw_view(area: Rect2) -> void:
 	if not _view.has_area():

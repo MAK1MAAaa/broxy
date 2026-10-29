@@ -156,3 +156,8 @@ reports/world-flipper-unified/*.png
 reports/world-flipper-unified/*.import
 reports/world-flipper-unified/*-raw.json
 reports/world-flipper-unified/*/
+reports/world-flipper-environment/*.log
+reports/world-flipper-environment/*.png
+reports/world-flipper-environment/*.import
+reports/world-flipper-environment/*-raw.json
+reports/world-flipper-environment/*/

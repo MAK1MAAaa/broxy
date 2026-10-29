@@ -1,22 +1,34 @@
 [
   {
     "id": "reliquary",
-    "name": "秘仪祭坛",
-    "subtitle": "古石回廊 · 平坦地面",
+    "name": "沙漠遗迹",
+    "subtitle": "古代石庭",
     "texture": "res://assets/arena.svg",
     "preview_color": "8c819c",
     "terrain_name": "石板",
     "move_multiplier": 1.0,
     "legacy_zone_count": 0,
-    "zones": []
+    "zones": [],
+    "obstacles": [
+      {"id": "southwest", "center": [200, 560], "radius": 30, "art_id": "monument"},
+      {"id": "southeast", "center": [1120, 560], "radius": 30, "art_id": "bumper"},
+      {"id": "northwest", "center": [-650, -230], "radius": 42, "art_id": "monument"},
+      {"id": "north", "center": [-80, -280], "radius": 36, "art_id": "planter"},
+      {"id": "northeast", "center": [1330, -240], "radius": 44, "art_id": "monument"},
+      {"id": "east_north", "center": [2030, -180], "radius": 36, "art_id": "bumper"},
+      {"id": "east", "center": [2050, 650], "radius": 40, "art_id": "monument"},
+      {"id": "east_south", "center": [1510, 1000], "radius": 38, "art_id": "planter"},
+      {"id": "south", "center": [510, 1000], "radius": 44, "art_id": "bumper"},
+      {"id": "west_south", "center": [-500, 900], "radius": 42, "art_id": "monument"}
+    ]
   },
   {
     "id": "mire",
-    "name": "沉沼遗庭",
-    "subtitle": "苔石与泥潭 · 泥潭移速 −28%",
+    "name": "和风神社",
+    "subtitle": "苔石参道",
     "texture": "res://assets/maps/mire.svg",
     "preview_color": "83a894",
-    "terrain_name": "泥潭",
+    "terrain_name": "湿苔",
     "move_multiplier": 0.72,
     "legacy_zone_count": 3,
     "zones": [
@@ -31,15 +43,27 @@
       {"center": [90, 1000], "radius": [240, 125]},
       {"center": [1110, 1010], "radius": [225, 120]},
       {"center": [2010, 940], "radius": [190, 140]}
+    ],
+    "obstacles": [
+      {"id": "southwest", "center": [200, 560], "radius": 30, "art_id": "planter"},
+      {"id": "southeast", "center": [1120, 560], "radius": 30, "art_id": "monument"},
+      {"id": "northwest", "center": [-650, -220], "radius": 36, "art_id": "planter"},
+      {"id": "north", "center": [-80, -270], "radius": 40, "art_id": "monument"},
+      {"id": "northeast", "center": [1380, -230], "radius": 38, "art_id": "planter"},
+      {"id": "east_north", "center": [2040, -170], "radius": 42, "art_id": "bumper"},
+      {"id": "east", "center": [2010, 650], "radius": 36, "art_id": "planter"},
+      {"id": "east_south", "center": [1520, 1000], "radius": 44, "art_id": "monument"},
+      {"id": "south", "center": [530, 1000], "radius": 38, "art_id": "planter"},
+      {"id": "west_south", "center": [-510, 900], "radius": 40, "art_id": "bumper"}
     ]
   },
   {
     "id": "glacier",
-    "name": "苍霜圣庭",
-    "subtitle": "霜裂石台 · 霜砂移速 −16%",
+    "name": "魔界高塔",
+    "subtitle": "秘纹回廊",
     "texture": "res://assets/maps/glacier.svg",
     "preview_color": "8ab4c7",
-    "terrain_name": "霜砂",
+    "terrain_name": "秘纹",
     "move_multiplier": 0.84,
     "legacy_zone_count": 3,
     "zones": [
@@ -54,15 +78,27 @@
       {"center": [230, 1020], "radius": [240, 110]},
       {"center": [1240, 1030], "radius": [220, 100]},
       {"center": [2060, 980], "radius": [170, 130]}
+    ],
+    "obstacles": [
+      {"id": "southwest", "center": [200, 560], "radius": 30, "art_id": "bumper"},
+      {"id": "southeast", "center": [1120, 560], "radius": 30, "art_id": "monument"},
+      {"id": "northwest", "center": [-640, -230], "radius": 44, "art_id": "monument"},
+      {"id": "north", "center": [-60, -280], "radius": 36, "art_id": "bumper"},
+      {"id": "northeast", "center": [1350, -220], "radius": 42, "art_id": "monument"},
+      {"id": "east_north", "center": [2040, -150], "radius": 38, "art_id": "planter"},
+      {"id": "east", "center": [2030, 650], "radius": 44, "art_id": "monument"},
+      {"id": "east_south", "center": [1510, 1000], "radius": 36, "art_id": "bumper"},
+      {"id": "south", "center": [530, 1000], "radius": 42, "art_id": "monument"},
+      {"id": "west_south", "center": [-490, 900], "radius": 38, "art_id": "planter"}
     ]
   },
   {
     "id": "ashland",
-    "name": "余烬荒原",
-    "subtitle": "玄武岩与松灰 · 松灰移速 −12%",
+    "name": "海盗船",
+    "subtitle": "破浪甲板",
     "texture": "res://assets/maps/ashland.svg",
     "preview_color": "ba9172",
-    "terrain_name": "松灰",
+    "terrain_name": "碎木",
     "move_multiplier": 0.88,
     "legacy_zone_count": 4,
     "zones": [
@@ -78,6 +114,18 @@
       {"center": [210, 1010], "radius": [220, 120]},
       {"center": [1160, 1030], "radius": [230, 100]},
       {"center": [2020, 990], "radius": [190, 130]}
+    ],
+    "obstacles": [
+      {"id": "southwest", "center": [200, 560], "radius": 30, "art_id": "bumper"},
+      {"id": "southeast", "center": [1120, 560], "radius": 30, "art_id": "planter"},
+      {"id": "northwest", "center": [-660, -230], "radius": 38, "art_id": "monument"},
+      {"id": "north", "center": [-70, -270], "radius": 42, "art_id": "bumper"},
+      {"id": "northeast", "center": [1360, -230], "radius": 36, "art_id": "planter"},
+      {"id": "east_north", "center": [2050, -160], "radius": 44, "art_id": "bumper"},
+      {"id": "east", "center": [2040, 660], "radius": 38, "art_id": "monument"},
+      {"id": "east_south", "center": [1520, 1010], "radius": 42, "art_id": "planter"},
+      {"id": "south", "center": [520, 1000], "radius": 36, "art_id": "bumper"},
+      {"id": "west_south", "center": [-500, 890], "radius": 44, "art_id": "monument"}
     ]
   }
 ]

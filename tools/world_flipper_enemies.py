@@ -10,6 +10,34 @@ from PIL import Image
 ENEMY_IDS = frozenset({"chaser", "rusher", "tank", "caster", "boss"})
 
 
+def _clean_alpha(source: dict, pose: Image.Image) -> Image.Image:
+    result = pose.copy()
+    for rule in source.get("alpha_cleanup", []):
+        rect = rule["rect"]
+        color = rule["rgba"]
+        expected = rule["expected_pixels"]
+        if len(rect) != 4 or any(type(value) is not int for value in rect):
+            raise ValueError(f"Invalid source-coordinate alpha mask: {source['id']}")
+        x, y, width, height = rect
+        if x < 0 or y < 0 or width < 1 or height < 1 or x + width > pose.width or y + height > pose.height:
+            raise ValueError(f"Alpha mask escapes its original source: {source['id']}")
+        if len(color) != 4 or any(type(value) is not int or value < 0 or value > 255 for value in color):
+            raise ValueError(f"Invalid exact alpha-mask color: {source['id']}")
+        if type(expected) is not int or expected < 1:
+            raise ValueError(f"Invalid alpha-mask pixel count: {source['id']}")
+        removed = 0
+        for row in range(y, y + height):
+            for column in range(x, x + width):
+                if result.getpixel((column, row)) == tuple(color):
+                    result.putpixel((column, row), (0, 0, 0, 0))
+                    removed += 1
+        if removed != expected:
+            raise ValueError(f"Original ground-shadow mask changed: {source['id']}; expected {expected}, found {removed}")
+    if result.getchannel("A").getbbox() is None:
+        raise ValueError(f"Alpha cleanup removed the complete enemy: {source['id']}")
+    return result
+
+
 def _pose(source: dict, path: Path) -> Image.Image:
     source_id = str(source["id"])
     if hashlib.sha256(path.read_bytes()).hexdigest() != source["sha256"]:
@@ -26,7 +54,7 @@ def _pose(source: dict, path: Path) -> Image.Image:
     alpha = pose.getchannel("A")
     if alpha.getextrema() != (0, 255) or any(value not in (0, 255) for value in alpha.tobytes()):
         raise ValueError(f"The enemy pose must retain crisp transparent source pixels: {source_id}")
-    return pose
+    return _clean_alpha(source, pose)
 
 
 def _normalize(source: dict, pose: Image.Image) -> Image.Image:
@@ -74,6 +102,8 @@ def enemy_assets(sources: list[dict], paths: dict[str, Path], output: Path) -> l
             "alpha_bounds": list(image.getchannel("A").getbbox()),
             "filter": "nearest",
             "source_ids": [str(source["id"])],
-            "normalization": f"{source['scale']}x nearest at {tuple(source['offset'])}; complete original pose retained without recoloring inside {image.width}x{image.height}",
+            "alpha_cleanup": source.get("alpha_cleanup", []),
+            "cleaned_source_pixels": sum(rule["expected_pixels"] for rule in source.get("alpha_cleanup", [])),
+            "normalization": f"Exact source-coordinate ground-shadow alpha cleanup; {source['scale']}x nearest at {tuple(source['offset'])}; body colors and black outlines retained inside {image.width}x{image.height}",
         })
     return records

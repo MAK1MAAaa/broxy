@@ -9,6 +9,11 @@ const SPRITE_SIZES: Dictionary = {
 const ART_ROOT: String = "res://assets/starfall/"
 const FAN_ROOT: String = "res://assets/worldflipper/"
 const FAN_OVERRIDES: Dictionary = {
+	"res://assets/arena.svg": FAN_ROOT + "maps/previews/reliquary.png",
+	"res://assets/maps/reliquary.svg": FAN_ROOT + "maps/previews/reliquary.png",
+	"res://assets/maps/mire.svg": FAN_ROOT + "maps/previews/mire.png",
+	"res://assets/maps/glacier.svg": FAN_ROOT + "maps/previews/glacier.png",
+	"res://assets/maps/ashland.svg": FAN_ROOT + "maps/previews/ashland.png",
 	"res://assets/sprites/player.svg": FAN_ROOT + "sprites/player.png",
 	"res://assets/sprites/chaser.svg": FAN_ROOT + "sprites/chaser.png",
 	"res://assets/sprites/rusher.svg": FAN_ROOT + "sprites/rusher.png",
@@ -63,7 +68,7 @@ func _test_path_contract() -> void:
 		var expected: String = str(FAN_OVERRIDES[source])
 		_check(AdventureArt.path(source) == expected and AdventureArt.path(expected) == expected, "The original-game override has an exact stable route: " + source)
 	_check(AdventureArt.path(ART_ROOT + "sprites/chaser.svg") == ART_ROOT + "sprites/chaser.svg", "The preserved previous enemy artwork remains available through its explicit path")
-	_check(AdventureArt.path("res://assets/maps/mire.svg") == ART_ROOT + "maps/mire.svg", "An original map selects its replacement without changing catalog data")
+	_check(AdventureArt.path("res://assets/maps/mire.svg") == FAN_ROOT + "maps/previews/mire.png", "An original map selects its source-art preview without changing its stable catalog ID")
 	_check(AdventureArt.path("res://assets/menu_art.svg") == ART_ROOT + "menu_art.png", "Legacy menu references retain their preserved static illustration")
 	for source: String in ["res://assets/audio/dash.wav", "res://assets/icons/example.png", "res://other/example.svg", "https://example.test/example.svg", ""]:
 		_check(AdventureArt.path(source) == source, "Audio, non-SVG and external resources keep their original path: " + source)
@@ -101,7 +106,7 @@ func _test_imported_family() -> void:
 	for id: String in ArenaCatalog.IDS:
 		var map_source: String = str(ArenaCatalog.definition(id)["texture"])
 		_check(map_source.begins_with("res://assets/") and not map_source.begins_with(ART_ROOT), "The actual map catalog retains its original resource identity: " + id)
-		var expected: String = ART_ROOT + map_source.trim_prefix("res://assets/")
+		var expected: String = AdventureArt.path(map_source)
 		_expect_texture(load(expected) as Texture2D, expected, Vector2(1280, 720), id)
 	_expect_texture(load(ART_ROOT + "fx/projectile_heads.svg") as Texture2D, ART_ROOT + "fx/projectile_heads.svg", Vector2(512, 64), "eight-frame projectile atlas")
 	for name: String in ["glow", "seal"]:
@@ -140,6 +145,12 @@ func _test_world_resources_and_redraws() -> void:
 		world.begin(state)
 		world.set_physics_process(false)
 		_expect_texture(world.arena_texture, ArenaCatalog.texture_path(id), ArenaCatalog.art_rect().size, "expanded world arena " + id)
+		_check(world._arena_obstacles.size() == 10 and world.minimap_snapshot()["obstacles"] == world._arena_obstacles, "Rendered props and minimap use the actual selected collision layout: " + id)
+		var minimap_copy: Dictionary = world.minimap_snapshot()
+		minimap_copy["obstacles"].clear()
+		_check(world._arena_obstacles.size() == 10 and world.sim.obstacles.snapshot().size() == 10, "HUD snapshots cannot mutate rendering or collision obstacles: " + id)
+		for prop: String in ["monument", "planter", "bumper"]:
+			_expect_texture(world._obstacle_textures.get(prop) as Texture2D, FAN_ROOT + "props/%s.png" % prop, Vector2(96, 96), "ground prop " + prop)
 		_check(world.texture_filter == CanvasItem.TEXTURE_FILTER_NEAREST, "The actual world uses local nearest filtering: " + id)
 		for sprite: String in SPRITE_SIZES:
 			_expect_texture(world.textures.get(sprite) as Texture2D, _expected_sprite(sprite), SPRITE_SIZES[sprite], "world " + sprite)
@@ -170,7 +181,7 @@ func _count_texture(node: Node, expected: String) -> int:
 	var result: int = 0
 	if node is TextureRect and node.texture != null and node.texture.resource_path == expected:
 		result += 1
-		var expected_filter: CanvasItem.TextureFilter = CanvasItem.TEXTURE_FILTER_LINEAR if expected in [TitleCover.BASE_PATH, TitleCover.DEFAULT_PORTRAIT_PATH] else CanvasItem.TEXTURE_FILTER_NEAREST
+		var expected_filter: CanvasItem.TextureFilter = CanvasItem.TEXTURE_FILTER_NEAREST
 		_check(node.texture_filter == expected_filter, "A rendered UI texture uses filtering appropriate to its pixel art or illustration: " + expected)
 	for child: Node in node.get_children():
 		result += _count_texture(child, expected)
@@ -262,7 +273,7 @@ func _test_real_inventory_presentation() -> void:
 	_check(starter != null and starter.icon != null and starter.icon.resource_path == _expected_icon("bone") and starter.texture_filter == CanvasItem.TEXTURE_FILTER_NEAREST, "The actual starter choice loads its new icon without changing its identity")
 	for id: String in ArenaCatalog.IDS:
 		var map_source: String = str(ArenaCatalog.definition(id)["texture"])
-		_check(_count_texture(ui._page, ART_ROOT + map_source.trim_prefix("res://assets/")) == 1, "The title's real map thumbnail uses the replacement: " + id)
+		_check(_count_texture(ui._page, AdventureArt.path(map_source)) == 1, "The title's real map thumbnail uses the replacement: " + id)
 	_check(_run_signature(state) == before, "Opening and drawing the title leaves inventory and RNG unchanged")
 	await _test_visible_volume_theme(ui)
 	_check(_run_signature(state) == before, "Opening and closing the actual settings preview changes no inventory or RNG state")

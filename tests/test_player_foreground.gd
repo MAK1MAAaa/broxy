@@ -15,6 +15,8 @@ class PassSpy extends CombatWorld:
 	var number_ids: Array[int] = []
 	func _draw_atmosphere() -> void:
 		passes.append("atmosphere")
+	func _draw_obstacles() -> void:
+		passes.append("obstacles")
 	func _draw_ground_contacts() -> void:
 		passes.append("contacts")
 	func _draw_souls() -> void:
@@ -181,7 +183,7 @@ func _test_real_passes(case_name: String) -> void:
 		world.number_ids.clear()
 		world._draw()
 		var passes: Array[String] = world.passes
-		_check(passes.find("contacts") < passes.find("ground") and passes.find("ground") < passes.find("enemies")
+		_check(passes.find("contacts") < passes.find("obstacles") and passes.find("obstacles") < passes.find("ground") and passes.find("ground") < passes.find("enemies")
 			and passes.find("enemies") < passes.find("effects") and passes.find("effects") < passes.find("impact")
 			and passes.find("impact") < passes.find("rune") and passes.find("rune") < passes.find("outgoing")
 			and passes.find("outgoing") < passes.find("player") and passes.find("player") < passes.find("incoming")

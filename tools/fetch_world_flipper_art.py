@@ -12,6 +12,7 @@ from PIL import Image, ImageDraw
 
 from world_flipper_cover import cover_assets
 from world_flipper_enemies import enemy_assets
+from world_flipper_maps import map_assets
 
 ROOT = Path(__file__).resolve().parents[1]
 CACHE = ROOT / ".tools/worldflipper/source"
@@ -20,6 +21,7 @@ REGISTRY = Path(__file__).with_name("world_flipper_sources.json")
 EXTRA_REGISTRIES = (
     "world_flipper_enemies.json",
     "world_flipper_cover_sources.json",
+    "world_flipper_maps_sources.json",
 )
 CELL = (96, 96)
 MAX_DOWNLOAD_BYTES = 8 * 1024 * 1024
@@ -163,9 +165,10 @@ def main() -> None:
     weapons, icons = weapon_assets(sources, paths)
     enemies = enemy_assets(sources, paths, OUTPUT)
     cover = cover_assets(sources, paths, OUTPUT)
-    assets = player + weapons + enemies + cover
+    maps = map_assets(sources, paths, OUTPUT)
+    assets = player + weapons + enemies + cover + maps
     manifest = {
-        "revision": "world-flipper-fan-02",
+        "revision": "world-flipper-fan-03",
         "original_copyright": "© Cygames, Inc. / Citail Inc.",
         "license_status": "Original game assets; no open asset license found. Unofficial fan-work use is not a claim of authorization.",
         "copyright_source": "https://worldflipper.jp/copyright/",
@@ -174,7 +177,7 @@ def main() -> None:
         "sources": sources,
         "references_cached_only": registry["references"],
         "assets": assets,
-        "gameplay": "Presentation only; current hero remains Alk and recruitment rules are not implemented. Existing catalog IDs, names, combat rules and collisions remain in force.",
+        "gameplay": "Alk remains the only hero; recruitment is deferred. Arena IDs, terrain zones and multipliers remain stable. Authored low props block ground movement, dash and knockback; flying projectiles pass over them.",
     }
     (OUTPUT / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
     print(json.dumps({"assets": len(assets), "preview": str(preview(frames, icons)), "offline": args.offline}, ensure_ascii=False))

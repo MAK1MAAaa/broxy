@@ -6,7 +6,11 @@ Godot 4.7.2 普通版、带类型标注的 GDScript 开发的 macOS / Windows �
 
 本轮按用户指定改用《弹射世界》原作素材制作同人外观：战斗主角换为阿尔克，接入原作待机与前后步行帧；八件武器使用Wiki透明像素图，统一出现在起始选择、商店、背包、装备详情、HUD和环绕法器。角色仍沿用原绘制大小，动画随暂停冻结，冲刺残影保留采样姿态。素材来源、外观映射与原版权说明见[同人素材](assets/worldflipper/PROVENANCE.md)，实现和验收见[阿尔克与武器换装](docs/world-flipper-art.md)。这些原图未发现开放资产许可，不属于旧程序素材的CC0声明。
 
-本轮进一步将五类敌人换为原作蓝波露、帕拉鼠、魔像、火精与瑞西塔尔，并把当前封面改为官方无角色背景和阿尔克原作立绘。肖像独立分层、等比显示并留出上下边距，星芒保持24帧循环，完整GIF随游戏发行。原有敌人招式、碰撞、状态反馈和输入流程保持。用户已确定先完成敌人与封面，多主角、抽取以及皮肤／独立角色机制留待后续讨论。实现与验收见[敌人与封面换装](docs/world-flipper-unified-art.md)。
+五类敌人使用原作蓝波露、帕拉鼠、魔像、火精与瑞西塔尔。本轮精确去除火精和首领原图底部自带的灰色阴影，保留身体轮廓并对齐游戏接触影。封面恢复原来的天空遗迹、金色天球环和右侧平台构图，通过图像编辑将鸟喙巫师替换为阿尔克；不再叠加独立立绘。保留24帧循环与完整GIF。多主角、抽取及皮肤／独立角色机制继续留待讨论。此前记录见[敌人与封面换装](docs/world-flipper-unified-art.md)，本轮实现与验收见[原作场景与障碍](docs/world-flipper-environment.md)。
+
+四张宽地图改用官方试玩中沙漠遗迹、和风神社、魔界高塔、海盗船的原作地面与边栏片段，按原像素整数倍拼接，保持3444×1800活动范围和原有34处减速区域。每图增加10处低矮障碍，采用原作石碑、花坛和弹板素材；地面移动、冲刺与击退会被阻挡，敌人可绕行，飞行弹体仍可越过。出生、首领召唤与掉落避开障碍，小地图同步显示占地；障碍查询不消耗战斗随机数。来源与适配说明见[同人素材](assets/worldflipper/PROVENANCE.md)。
+
+障碍采用保守空间索引减少每帧查询，跨格冲刺和大体型保留完整扫掠。新增移动／绕行专项与六项离线素材回归，覆盖透明边缘、原像素比例、预览裁剪与最终素材校验；完整入口仍为 `./tools/test.sh`。
 
 当前材质迭代细化六角色的面具、披风、护甲、法杖和金冠，统一左上光与右下暗面，保留原透明轮廓。四张连续大地图使用变长石板、湿苔、冰裂和玄武岩碎屑，外缘分别采用石柱、苔冠、冰晶与岩块。人物、敌人及魂屑增加静止贴地阴影；脚下法阵和Boss光斑压低，并置于实体下方，敌方预警继续置顶。规则与验收见[材质与贴地层次](docs/art-polish.md)。
 
@@ -18,9 +22,9 @@ UI 优化分支 `codex/ui-refinement` 将商店重新组织成装备整理台：
 
 游戏字体更换为 A「缝合像素 / Fusion Pixel」12px 简体中文比例版，完整字库随游戏打包。标题、按钮、商店、背包、HUD 与战斗浮字共用本地字体；密集信息用12px，常规大按钮与物品详情用24px，大标题用36／48px。禁用抗锯齿与系统字体回退，按原生像素整数倍显示；详情继续按需打开并可滚动。字体来源、许可与验收见[像素字体](docs/pixel-font.md)。
 
-封面改为全屏连贯横幅：鸟喙面具角色与月环仪器居右，法器、地图与开始入口集中左侧，以缩略图、对勾和锁形状态表达选择，不再堆放定位标签、介绍、空记录与底部说明。星尘、环光、烛火和符印组成24帧循环；`assets/title/cover.gif`为1280×720、每帧120毫秒的实际动图，游戏复用同一组离散绘制状态。新增项目约定要求用直观UI解决信息问题，拒绝用解释小字补救。制作、来源和验收见[全屏动画封面](docs/title-cover.md)。
+此前全屏封面迭代将鸟喙面具角色与月环仪器置右，法器、地图与开始入口集中左侧，以缩略图、对勾和锁形状态表达选择，不再堆放定位标签、介绍、空记录与底部说明。原24帧动图 `assets/title/cover.gif` 保留；当前使用恢复同一场景并替换阿尔克的 `cover-alk.gif`，仍为1280×720、每帧120毫秒。项目约定要求用直观UI解决信息问题，拒绝用解释小字补救。原制作记录见[全屏动画封面](docs/title-cover.md)，本轮见[原作场景与障碍](docs/world-flipper-environment.md)。
 
-主菜单新增四地图选择：秘仪祭坛、沉沼遗庭、苍霜圣庭、余烬荒原。三张新图具有不同地貌和减速区域，同时影响玩家与敌人，离开恢复；本局八波沿用所选地图。界面移除重复小字，战斗中取消生命条下方的通知及右下角说明；关键数值与风险保留，低频操作改为按钮提示。规则与验证见[地图与地形](docs/maps.md)。
+主菜单提供沙漠遗迹、和风神社、魔界高塔、海盗船四张地图；稳定ID仍为reliquary／mire／glacier／ashland。后三张保留原减速区域与倍率，同时影响玩家和敌人，离开恢复；本局八波沿用所选地图。界面移除重复小字，战斗中取消生命条下方的通知及右下角说明；关键数值与风险保留，低频操作改为按钮提示。原地形设计记录见[地图与地形](docs/maps.md)，当前场景见[原作场景与障碍](docs/world-flipper-environment.md)。
 
 四张战场现拓宽为3444×1800，可活动面积为原来的12倍，镜头跟随角色并在边缘留出HUD空间；角色、武器和像素纹理保持原比例。右上小地图显示场地、地形、视窗、玩家朝向、敌人及首领，不增加文字图例。三张减速地图各新增8处远区地形，共34处；敌人在玩家视野外刷入，Boss跟随玩家所在区域，普通远敌无奖励回收以释放敌人池。连续背景与具体规则见[大地图与小地图](docs/expanded-map.md)。
 
@@ -68,7 +72,7 @@ UI 优化分支 `codex/ui-refinement` 将商店重新组织成装备整理台：
 
 ## 直接游玩
 
-Windows x86_64入口为 `build/Embers-windows-x86_64/Embers.exe`，分发包为 `build/Embers-windows-x86_64.zip`。解压后保留同目录的 `Embers.pck` 与 `licenses/`。当前内容包含原作阿尔克主角、五类敌人与八件武器外观，封面使用原作立绘；另保留缝合像素字体、背包装备台、四地图、贴地阴影、连续大地图、小地图、双背包技能和命中反馈。敌人与封面更新前包备份为 `build/Embers-windows-before-unified-art-0931fcf.zip`，更早版本继续保留。本轮验收见[敌人与封面换装](docs/world-flipper-unified-art.md)，此前记录见[阿尔克与武器换装](docs/world-flipper-art.md)、[像素字体](docs/pixel-font.md)及[大地图与小地图](docs/expanded-map.md)。macOS包保留此前版本。
+Windows x86_64入口为 `build/Embers-windows-x86_64/Embers.exe`，分发包为 `build/Embers-windows-x86_64.zip`。解压后保留同目录的 `Embers.pck` 与 `licenses/`。当前内容包含阿尔克主角、五类敌人与八件武器外观、四张原作素材地图、地面障碍和恢复原构图的新封面；另保留缝合像素字体、背包装备台、贴地阴影、小地图、双背包技能和命中反馈。场景更新前包备份为 `build/Embers-windows-before-environment-8e99f1c.zip`，更早版本继续保留。本轮验收见[原作场景与障碍](docs/world-flipper-environment.md)。macOS包保留此前版本。
 
 最新macOS应用为 `build/Embers-minimal-hud-macos.app`，分发包为 `build/Embers-minimal-hud-macos-arm64.zip`，包含四地图选择、实际地形与精简界面，以及此前完整背包／共鸣／秘术抉择内容。适用于Apple Silicon、macOS 13及以上，使用本地ad-hoc签名。本轮界面验证见 `reports/minimal-hud-validation.json`，地图与性能历史见 `reports/terrain-validation.json`；旧包保留。
 
@@ -171,6 +175,8 @@ BROXY_APP_PATH="$PWD/build/Embers-minimal-hud-macos.app" ./tools/build_macos.sh
 
 ## 验证
 
+原作场景与障碍版Windows通过96套Godot及5个档案诊断入口，共34159条断言、56项Python测试。10套源码原生专项与10套导出包专项通过，12组源码／PCK预览逐像素一致；新包CRC、资源和原作素材声明校验通过。300敌人／600弹体／200掉落的60秒原生压力平均66.305 FPS、P99 19.924毫秒，所有负载与技能检查通过；未重跑300秒历史压力或macOS构建。证据见[验收记录](reports/world-flipper-environment/validation.json)和[场景实现](docs/world-flipper-environment.md)。
+
 材质与贴地版Windows通过 `./tools/test.sh` 的92套Godot与5个档案诊断入口，共31899条断言、49项Python测试；新增阴影投影／World集成33／20条，9套原生与9套编译PCK专项通过。15组源代码与包内画面像素一致，另检查危险与闪光关闭画面；六角色透明轮廓逐点保持。60秒中央合成压力平均83.841 FPS、P99 18.427毫秒，501个接触影峰值保持一次绘制，90项源码／资源指纹一致。六局完整对局除版本标识外与大地图版全部字段一致。Windows已重建并启动EXE；证据见[材质与贴地层次](docs/art-polish.md)及 `reports/art-polish/validation.json`。
 
 大地图版Windows通过 `./tools/test.sh` 的90套Godot与5个档案诊断入口，共31846条断言、48项Python测试；地图／镜头／小地图新增181／189／47条，9套原生与9套编译PCK专项通过。11组原生及11组包内画面覆盖四图、远区、边缘、Boss和960×540窗口，像素一致。中央300敌人／600弹体／200掉落的60秒合成压力平均91.083 FPS、P99 18.598毫秒，83项源码与资源指纹一致。三条符文路线的默认／购入脉冲策略共6局均完成8波。Windows包已重新导出并启动EXE；macOS保留历史包。完整范围及证据见[大地图与小地图](docs/expanded-map.md)及 `reports/expanded-map/validation.json`。
@@ -260,7 +266,7 @@ Windows共鸣版本另跑60秒内容场景：平均116.694FPS、P99 18.183ms，�
 
 普通命中陈列使用 `./tools/run.sh --script res://tools/preview_impacts.gd -- --output=res://reports/impacts-after.png`，可追加`--age-shift=0.05`或`0.12`检查淡出。12只高生命幽魂通过正式碰撞产生18次主命中；年龄偏移仅推进反馈，不能代表完整自然时间线，也不替代动态战斗或真人试玩。
 
-Windows适配、内容扩充与背包初版已合入 `main`；本轮共鸣与材质改进位于 `codex/backpack-resonance`。每轮修改验证后创建本地 commit；引擎、缓存、构建与大型原始报告由 `.gitignore` 排除，不自动推送远程。
+Windows适配、内容扩充与背包初版已合入 `main`；当前界面与原作素材迭代位于 `codex/ui-refinement`。每轮修改验证后创建本地 commit；引擎、缓存、构建与大型原始报告由 `.gitignore` 排除，不自动推送远程。
 
 强化排版使用 `./tools/run.sh --script res://tools/preview_upgrades.gd -- --view=base` 检查，也支持 `boosted` 与 `sequence --hold`。base种子2、boosted种子7覆盖六类强化；固定预算通过正式购买获得遗物，102魂屑结算两次升级，不读写个人档案。当前回归、原生操作与构建指纹见 `reports/choices-validation.json`。
 

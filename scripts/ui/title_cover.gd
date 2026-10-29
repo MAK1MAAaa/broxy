@@ -2,12 +2,10 @@ class_name TitleCover
 extends TextureRect
 ## A fixed 24-frame cosmetic loop shared by the live cover and GIF capture.
 
-const BASE_PATH: String = "res://assets/worldflipper/title/cover.png"
-const GIF_PATH: String = "res://assets/worldflipper/title/cover.gif"
-const METADATA_PATH: String = "res://assets/worldflipper/title/animation.json"
-const DEFAULT_CHARACTER_ID: String = "alk"
-const DEFAULT_PORTRAIT_PATH: String = "res://assets/worldflipper/portraits/alk.png"
-const PORTRAIT_SLOT := Rect2(660, 16, 600, 688)
+const BASE_PATH: String = "res://assets/title/cover-alk.png"
+const GIF_PATH: String = "res://assets/title/cover-alk.gif"
+const METADATA_PATH: String = "res://assets/title/cover-alk.animation.json"
+const IMAGE_GENERATION_PATH: String = "res://assets/title/cover-alk.image-generation.json"
 const FRAME_COUNT: int = 24
 const FRAME_SECONDS: float = 0.12
 const REFERENCE_SIZE := Vector2(1280, 720)
@@ -17,15 +15,16 @@ class MotionLayer:
 	extends Control
 	const MOTES: Array[Vector2] = [
 		Vector2(720, 190), Vector2(760, 400), Vector2(790, 285),
-		Vector2(820, 470), Vector2(850, 610), Vector2(1080, 375),
+		Vector2(850, 610), Vector2(1080, 375),
 		Vector2(1140, 445), Vector2(1180, 545), Vector2(1220, 340),
 		Vector2(1210, 640), Vector2(980, 675),
 	]
-	const LIGHT_POINTS: Array[Vector2] = [
-		Vector2(760, 150), Vector2(1195, 210), Vector2(1220, 560),
-		Vector2(750, 590), Vector2(1090, 80),
+	const FLAMES: Array[Vector2] = [
+		Vector2(797, 400), Vector2(797, 473), Vector2(817, 483),
+		Vector2(837, 465), Vector2(1265, 374), Vector2(1259, 480),
+		Vector2(1110, 648),
 	]
-	const BRIGHT_STARS: Array[Vector2] = [Vector2(700, 75), Vector2(1240, 410), Vector2(800, 670)]
+	const RING_ANGLES: Array[float] = [-2.3, -0.5, 1.2]
 	var frame_number: int = 0
 
 	func _ready() -> void:
@@ -46,40 +45,40 @@ class MotionLayer:
 		draw_set_transform((size - drawn_extent) * 0.5, 0.0, drawn_extent / TitleCover.REFERENCE_SIZE)
 		var phase: float = float(frame_number) * TAU / float(TitleCover.FRAME_COUNT)
 		_draw_motes(phase)
-		_draw_bright_stars(phase)
-		_draw_light_points(phase)
-		_draw_light_tracks(phase)
+		_draw_ring_lights(phase)
+		_draw_flames(phase)
+		_draw_ground_breath(phase)
 
 	func _draw_motes(phase: float) -> void:
 		for index: int in MOTES.size():
 			var offset: float = float(index) * 0.73
 			var drift := Vector2(sin(phase + offset) * (8.0 + float(index % 3) * 3.0), cos(phase + offset) * 11.0)
 			var alpha: float = 0.36 + 0.12 * sin(phase + offset + 0.8)
-			var color := Color("f9d585") if index % 3 else Color("8cded2")
-			_draw_star(_pixel(MOTES[index] + drift), 2.0, Color(color, alpha))
+			_draw_star(_pixel(MOTES[index] + drift), 2.0, Color(Color("f9d585"), alpha))
 
-	func _draw_bright_stars(phase: float) -> void:
-		for index: int in BRIGHT_STARS.size():
+	func _draw_ring_lights(phase: float) -> void:
+		for index: int in RING_ANGLES.size():
 			var offset: float = phase + float(index) * 1.4
-			var point := BRIGHT_STARS[index] + Vector2(sin(offset) * 8.0, cos(offset) * 6.0)
-			var alpha: float = 0.48 + 0.10 * cos(offset)
-			_draw_star(_pixel(point), 3.0, Color(Color("69bdc3"), alpha))
+			var angle: float = RING_ANGLES[index] + sin(offset) * 0.16
+			var point := Vector2(1105, 168) + Vector2(cos(angle) * 145.0, sin(angle) * 141.0)
+			_draw_star(_pixel(point), 3.0, Color(1.0, 0.86, 0.44, 0.42 + 0.12 * cos(offset)))
 
-	func _draw_light_points(phase: float) -> void:
-		for index: int in LIGHT_POINTS.size():
+	func _draw_flames(phase: float) -> void:
+		for index: int in FLAMES.size():
 			var wave: float = sin(phase + float(index) * 1.1)
-			var point: Vector2 = _pixel(LIGHT_POINTS[index] + Vector2(wave * 8.0, cos(phase + float(index) * 1.1) * 9.0))
-			draw_rect(Rect2(point - Vector2(3, 3), Vector2(7, 7)), Color(0.45, 0.72, 0.83, 0.09 + wave * 0.025))
-			draw_rect(Rect2(point - Vector2.ONE, Vector2(3, 3)), Color(0.94, 0.78, 0.36, 0.35 + wave * 0.06))
+			var point: Vector2 = _pixel(FLAMES[index] + Vector2(wave, cos(phase + float(index) * 1.1)))
+			draw_rect(Rect2(point - Vector2(3, 4), Vector2(7, 9)), Color(1.0, 0.65, 0.20, 0.08 + wave * 0.025))
+			draw_rect(Rect2(point - Vector2.ONE, Vector2(3, 4)), Color(1.0, 0.76, 0.30, 0.30 + wave * 0.06))
 			draw_rect(Rect2(point, Vector2.ONE), Color(1.0, 0.97, 0.75, 0.58 + wave * 0.06))
 
-	func _draw_light_tracks(phase: float) -> void:
+	func _draw_ground_breath(phase: float) -> void:
 		for index: int in 8:
-			var drift := Vector2(sin(phase + float(index) * 0.4) * 9.0, cos(phase + float(index) * 0.4) * 5.0)
-			var begin := Vector2(700.0 + float(index % 4) * 170.0, 250.0 + float(index / 4) * 320.0) + drift
-			var end := begin + Vector2(5.0, -6.0)
-			var alpha: float = 0.16 + 0.06 * sin(phase + float(index) * 0.4)
-			draw_line(_pixel(begin), _pixel(end), Color(0.32, 0.66, 0.73, alpha), 2.0)
+			var angle: float = float(index) * TAU / 8.0
+			var center := Vector2(1005, 590)
+			var begin := center + Vector2(cos(angle) * 118.0, sin(angle) * 26.0)
+			var end := center + Vector2(cos(angle + 0.10) * 118.0, sin(angle + 0.10) * 26.0)
+			var alpha: float = 0.12 + 0.05 * sin(phase + angle)
+			draw_line(_pixel(begin), _pixel(end), Color(1.0, 0.86, 0.44, alpha), 2.0)
 
 	func _draw_star(center: Vector2, radius: float, color: Color) -> void:
 		draw_rect(Rect2(center - Vector2.ONE * (radius + 2.0), Vector2.ONE * (radius * 2.0 + 5.0)), Color(color, color.a * 0.12))
@@ -94,10 +93,6 @@ var _frame: int = 0
 var _playing: bool = true
 var _clock: Timer
 var _motion: MotionLayer
-var _portrait: TextureRect
-var _portrait_id: String = DEFAULT_CHARACTER_ID
-var _portrait_path: String = DEFAULT_PORTRAIT_PATH
-var _portrait_texture: Texture2D
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -105,22 +100,10 @@ func _ready() -> void:
 	set_process(false)
 	expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-	texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
+	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	clip_contents = true
 	if texture == null and ResourceLoader.exists(BASE_PATH):
 		texture = load(BASE_PATH) as Texture2D
-	_portrait = TextureRect.new()
-	_portrait.name = "PortraitLayer"
-	_portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	_portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	_portrait.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
-	_portrait.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_portrait.focus_mode = Control.FOCUS_NONE
-	_portrait.set_process(false)
-	add_child(_portrait)
-	set_character(_portrait_id, _portrait_path)
-	resized.connect(_layout_portrait)
-	_layout_portrait()
 	_motion = MotionLayer.new()
 	_motion.name = "MotionLayer"
 	_motion.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -139,28 +122,6 @@ func _ready() -> void:
 	draw.connect(_redraw_motion)
 	_sync_playback()
 
-func set_character(id: String, portrait_path: String) -> void:
-	var candidate: Texture2D
-	if not portrait_path.is_empty() and ResourceLoader.exists(portrait_path, "Texture2D"):
-		candidate = load(portrait_path) as Texture2D
-	if candidate == null:
-		_portrait_id = DEFAULT_CHARACTER_ID
-		_portrait_path = DEFAULT_PORTRAIT_PATH
-		_portrait_texture = load(DEFAULT_PORTRAIT_PATH) as Texture2D if ResourceLoader.exists(DEFAULT_PORTRAIT_PATH, "Texture2D") else null
-	else:
-		_portrait_id = id.strip_edges() if not id.strip_edges().is_empty() else DEFAULT_CHARACTER_ID
-		_portrait_path = portrait_path
-		_portrait_texture = candidate
-	if is_instance_valid(_portrait):
-		_portrait.texture = _portrait_texture
-
-func _layout_portrait() -> void:
-	if not is_instance_valid(_portrait):
-		return
-	var ratio: Vector2 = size / REFERENCE_SIZE
-	_portrait.position = PORTRAIT_SLOT.position * ratio
-	_portrait.size = PORTRAIT_SLOT.size * ratio
-
 func set_frame(index: int) -> void:
 	set_playing(false)
 	_frame = posmod(index, FRAME_COUNT)
@@ -176,8 +137,7 @@ func snapshot() -> Dictionary:
 		"playing": _playing, "timer_active": is_instance_valid(_clock) and not _clock.is_stopped(),
 		"visible": is_visible_in_tree(), "texture_size": texture.get_size() if texture != null else Vector2.ZERO,
 		"rect": get_rect(), "overlay_rect": _motion.get_rect() if is_instance_valid(_motion) else Rect2(),
-		"portrait_id": _portrait_id, "portrait_path": _portrait_path,
-		"portrait_rect": _portrait.get_rect() if is_instance_valid(_portrait) else Rect2(),
+		"base_path": BASE_PATH, "image_generation_path": IMAGE_GENERATION_PATH,
 		"draw_commands_budget": DRAW_COMMANDS_BUDGET,
 	}
 

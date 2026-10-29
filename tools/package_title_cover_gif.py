@@ -10,10 +10,9 @@ from pathlib import Path
 from PIL import Image, ImageChops, ImageSequence, __version__ as PILLOW_VERSION
 
 ROOT = Path(__file__).resolve().parents[1]
-ART = ROOT / "assets/worldflipper/title"
-DEFAULT_PORTRAIT = ROOT / "assets/worldflipper/portraits/alk.png"
-SOURCE_REGISTRY = ROOT / "tools/world_flipper_cover_sources.json"
-DEFAULT_CHARACTER_ID = "alk"
+ART = ROOT / "assets/title"
+BASE = ART / "cover-alk.png"
+GENERATION_RECORD = ART / "cover-alk.image-generation.json"
 FRAME_COUNT = 24
 DURATION_MS = 120
 
@@ -22,7 +21,20 @@ def sha(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def verify_composite() -> None:
+    record = json.loads(GENERATION_RECORD.read_text(encoding="utf-8"))
+    normalized = record["normalized_output"]
+    if normalized["path"] != BASE.relative_to(ROOT).as_posix() or normalized["sha256"] != sha(BASE):
+        raise ValueError("The composite cover must match its image-generation record")
+    if normalized["size"] != [1280, 720] or record["character_id"] != "alk":
+        raise ValueError("The composite must contain Alk on the logical 1280x720 canvas")
+    for reference in record["references"] + record["preserved_assets"]:
+        if sha(ROOT / reference["path"]) != reference["sha256"]:
+            raise ValueError(f"A recorded cover reference or legacy asset changed: {reference['path']}")
+
+
 def package(frames: Path, output: Path, metadata: Path) -> None:
+    verify_composite()
     sources = [frames / f"frame_{index:02d}.png" for index in range(FRAME_COUNT)]
     images: list[Image.Image] = []
     for source in sources:
@@ -30,6 +42,11 @@ def package(frames: Path, output: Path, metadata: Path) -> None:
             if image.size != (1280, 720):
                 raise ValueError(f"Unexpected native frame size: {source}")
             images.append(image.convert("RGB"))
+    with Image.open(BASE) as base:
+        quiet_region = base.convert("RGB").crop((0, 0, 600, 720))
+    for index, image in enumerate(images):
+        if ImageChops.difference(image.crop((0, 0, 600, 720)), quiet_region).getbbox() is not None:
+            raise ValueError(f"Native frame {index} does not contain the recorded composite base without UI")
     palette = images[0].quantize(colors=255, method=Image.Quantize.MEDIANCUT, dither=Image.Dither.NONE)
     colors = palette.getpalette()[:765]
     palette.putpalette(colors + colors[:3])
@@ -79,13 +96,12 @@ def package(frames: Path, output: Path, metadata: Path) -> None:
         "loop_forever": True, "encoder": f"Pillow {PILLOW_VERSION}; fixed shared palette; explicit transparent deltas; no reindex optimization",
         "decoded_frames_equal_global_palette_source": True,
         "stationary_source_pixels_preserved": True,
-        "gif_sha256": sha(output), "base_png_sha256": sha(ART / "cover.png"),
-        "base_png_path": (ART / "cover.png").relative_to(ROOT).as_posix(),
-        "default_character_id": DEFAULT_CHARACTER_ID,
-        "portrait_path": DEFAULT_PORTRAIT.relative_to(ROOT).as_posix(),
-        "portrait_sha256": sha(DEFAULT_PORTRAIT),
-        "source_registry": SOURCE_REGISTRY.relative_to(ROOT).as_posix(),
-        "source_registry_sha256": sha(SOURCE_REGISTRY),
+        "gif_sha256": sha(output), "base_png_sha256": sha(BASE),
+        "base_png_path": BASE.relative_to(ROOT).as_posix(),
+        "composition": "Alk is embedded in the panoramic sky-ruins base; gold motes and candlelight are native ornaments",
+        "image_generation_path": GENERATION_RECORD.relative_to(ROOT).as_posix(),
+        "image_generation_sha256": sha(GENERATION_RECORD),
+        "native_frames_match_composite_quiet_region": True,
         "renderer": "scripts/ui/title_cover.gd", "renderer_sha256": sha(ROOT / "scripts/ui/title_cover.gd"),
         "runtime": "The native cover player renders these same 24 states; no GIF decoder/plugin is required",
         "source_frame_sha256": [sha(source) for source in sources], "decoded_gif_frame_sha256": decoded,
@@ -99,8 +115,8 @@ def package(frames: Path, output: Path, metadata: Path) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--frames", type=Path, default=ROOT / "reports/title-cover/frames")
-    parser.add_argument("--output", type=Path, default=ART / "cover.gif")
-    parser.add_argument("--metadata", type=Path, default=ART / "animation.json")
+    parser.add_argument("--output", type=Path, default=ART / "cover-alk.gif")
+    parser.add_argument("--metadata", type=Path, default=ART / "cover-alk.animation.json")
     args = parser.parse_args()
     package(args.frames, args.output, args.metadata)
 
