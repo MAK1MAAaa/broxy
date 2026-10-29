@@ -570,7 +570,7 @@ func _inside_scroll(node: Node) -> bool:
 
 
 func _decorations_ignore_input(node: Node) -> bool:
-	if node.name == "RitualFrame" or node.name == "PageOrnament":
+	if node.name in ["RitualFrame", "PageOrnament", "ShopPanelFinish"]:
 		if not node is Control or node.mouse_filter != Control.MOUSE_FILTER_IGNORE or node.focus_mode != Control.FOCUS_NONE or node.is_processing():
 			return false
 	for child: Node in node.get_children():

@@ -453,6 +453,8 @@ func _make_item(item: Dictionary) -> void:
 	artwork.focus_mode = Control.FOCUS_NONE
 	artwork.size = button.size
 	button.add_child(artwork)
+	button.focus_entered.connect(artwork.queue_redraw)
+	button.focus_exited.connect(artwork.queue_redraw)
 	var icon := TextureRect.new()
 	icon.name = "ItemIcon"
 	icon.texture = load(AdventureArt.path("res://assets/icons/%s.svg" % definition.icon))
@@ -525,18 +527,20 @@ func _make_item(item: Dictionary) -> void:
 
 func _style_item(button: Button, item: Dictionary) -> void:
 	var definition: ContentDef = _definition(item)
-	for state: String in ["normal", "hover", "pressed", "focus"]:
+	for state: String in ["normal", "hover", "pressed", "hover_pressed"]:
 		var style := StyleBoxFlat.new()
 		style.bg_color = _material_color(str(item["kind"]))
-		if state == "pressed":
+		if state in ["pressed", "hover_pressed"]:
 			style.bg_color = style.bg_color.lightened(0.12)
 		elif state == "hover":
 			style.bg_color = style.bg_color.lightened(0.05)
-		style.border_color = CYAN if int(item["uid"]) == selected_uid or state == "focus" else definition.color.lerp(GOLD, 0.5)
-		style.set_border_width_all(2 if int(item["uid"]) == selected_uid or state == "focus" else 1)
+		style.border_color = CYAN if int(item["uid"]) == selected_uid else definition.color.lerp(GOLD, 0.5)
+		style.set_border_width_all(2 if int(item["uid"]) == selected_uid else 1)
 		style.set_corner_radius_all(0)
 		style.anti_aliasing = false
 		button.add_theme_stylebox_override(state, style)
+	var focus := StyleBoxEmpty.new()
+	button.add_theme_stylebox_override("focus", focus)
 
 func _refresh_selection() -> void:
 	for child: Node in get_children():
@@ -557,16 +561,20 @@ func _draw() -> void:
 		for x: int in int(_snapshot.get("width", 6)):
 			var active: bool = y < int(_snapshot.get("height", 4))
 			var rect := Rect2(Vector2(x, y) * CELL + Vector2.ONE, Vector2.ONE * (CELL - 2.0))
-			draw_rect(rect, Color("e7dabb") if active else Color("d3ddd6"))
-			draw_rect(rect, Color("a58654") if active else Color("acb8b0"), false, 1.0)
+			draw_rect(rect, Color("e5d9bc") if active else Color("cbd6d0"))
+			draw_rect(rect, Color("b4a487") if active else Color("a6b5ab"), false, 1.0)
+			draw_line(rect.position + Vector2.ONE, rect.position + Vector2(rect.size.x - 1, 1), Color("d0c3a5") if active else Color("bdcbc3"), 1.0)
+			draw_line(rect.position + Vector2.ONE, rect.position + Vector2(1, rect.size.y - 1), Color("d0c3a5") if active else Color("bdcbc3"), 1.0)
+			draw_line(rect.position + Vector2(1, rect.size.y - 2), rect.end - Vector2.ONE * 2.0, Color("f7eed8") if active else Color("e2e9e1"), 1.0)
 			if active:
-				draw_line(rect.position + Vector2(4, 5), rect.position + Vector2(43, 5), Color("f7edcf"), 1.0)
-				draw_line(rect.position + Vector2(5, 43), rect.position + Vector2(43, 43), Color("b9aa86"), 1.0)
-				for stitch: int in 3:
-					var stitch_y: float = float(12 + stitch * 11)
-					draw_line(rect.position + Vector2(4, stitch_y), rect.position + Vector2(6, stitch_y + 3), Color("b29465"), 1.0)
-			if not active:
-				draw_line(rect.position + Vector2(16, 24), rect.position + Vector2(32, 24), Color("8c9b91"), 1.0)
+				for stitch_y: int in [14, 32]:
+					draw_line(rect.position + Vector2(5, stitch_y), rect.position + Vector2(7, stitch_y + 2), Color("ccbea0"), 1.0)
+			else:
+				var center: Vector2 = rect.get_center().floor()
+				var lock_tint := Color("8c9f95")
+				draw_rect(Rect2(center + Vector2(-5, -1), Vector2(10, 8)), lock_tint)
+				draw_polyline(PackedVector2Array([center + Vector2(-3, -1), center + Vector2(-3, -5), center + Vector2(3, -5), center + Vector2(3, -1)]), lock_tint, 2.0)
+				draw_rect(Rect2(center + Vector2(-1, 1), Vector2(2, 3)), Color("dce5dc"))
 
 func draw_preview(canvas: Control) -> void:
 	for contact: Dictionary in _resonance_contacts:
@@ -721,6 +729,22 @@ func draw_item_material(canvas: Control, item: Dictionary) -> void:
 		for mark: int in clampi(int(rune.get("rank", 1)), 1, 3):
 			var mark_x: float = extent.x - 17 + float(mark * 4)
 			canvas.draw_rect(Rect2(Vector2(mark_x, 21), Vector2(2, 1)), PURPLE)
+	var button := canvas.get_parent() as Button
+	if button != null and button.has_focus():
+		_draw_item_focus(canvas)
+
+func _draw_item_focus(canvas: Control) -> void:
+	var extent: Vector2 = canvas.size
+	var focus_tint := Color("edbc65")
+	for corner: Vector2 in [Vector2.ZERO, Vector2(extent.x, 0), Vector2(0, extent.y), extent]:
+		var left: bool = corner.x == 0.0
+		var top: bool = corner.y == 0.0
+		var horizontal := Rect2(corner + Vector2(0 if left else -7, 0 if top else -2), Vector2(7, 2))
+		var vertical := Rect2(corner + Vector2(0 if left else -2, 0 if top else -7), Vector2(2, 7))
+		canvas.draw_rect(horizontal.grow(1.0).intersection(Rect2(Vector2.ZERO, extent)), BONE)
+		canvas.draw_rect(vertical.grow(1.0).intersection(Rect2(Vector2.ZERO, extent)), BONE)
+		canvas.draw_rect(horizontal, focus_tint)
+		canvas.draw_rect(vertical, focus_tint)
 
 static func _material_color(kind: String) -> Color:
 	match kind:

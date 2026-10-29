@@ -130,3 +130,7 @@ reports/art-polish/*.log
 reports/art-polish/*.png
 reports/art-polish/*.import
 reports/art-polish/*-raw.json
+reports/ui-refinement/*.log
+reports/ui-refinement/*.png
+reports/ui-refinement/*.import
+reports/ui-refinement/*-raw.json

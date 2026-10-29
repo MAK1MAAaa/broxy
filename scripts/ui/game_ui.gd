@@ -23,6 +23,7 @@ const RED := Color("b83c50")
 const CORAL := Color("ed9a86")
 const BACKPACK_GRID = preload("res://scripts/ui/backpack_grid.gd")
 const MINIMAP_VIEW = preload("res://scripts/ui/minimap_view.gd")
+const SHOP_PANEL_SKIN = preload("res://scripts/ui/shop_panel_skin.gd")
 
 ## Paper-and-brass ornaments draw only on construction/resize and never intercept input.
 class RitualFrame:
@@ -1408,6 +1409,7 @@ func _build_backpack(parent: Control) -> void:
 	_selected_rune = run.rune_index_for_uid(_bag_selected_uid)
 	var card := _panel(parent, Vector2(650, 0))
 	card.name = "BackpackPanel"
+	SHOP_PANEL_SKIN.apply(card, CYAN, true)
 	var body := _inside(card, 14)
 	body.add_theme_constant_override("separation", 6)
 	var heading := HBoxContainer.new()
@@ -1802,16 +1804,26 @@ func _offer_card(parent: Control, index: int) -> void:
 	var category: Color = {"weapon": GOLD, "rune": PURPLE, "relic": CYAN, "skill": Color("287eb5")}.get(kind, GOLD)
 	var locked: bool = run.is_offer_locked(index)
 	var sold: bool = bool(offer.get("sold", false))
-	var border := _box(Color("fffbed"), Color(GOLD, 0.74) if locked else Color(category, 0.48))
-	border.border_width_left = 3
-	card.add_theme_stylebox_override("panel", border)
+	SHOP_PANEL_SKIN.apply(card, category, false, locked, sold)
 	card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	card.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	var body := _inside(card, 12)
 	body.add_theme_constant_override("separation", 5)
 	var name_row := HBoxContainer.new()
 	body.add_child(name_row)
-	_add_icon(name_row, definition, 34)
+	var icon_well := PanelContainer.new()
+	icon_well.name = "OfferIconWell"
+	icon_well.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	icon_well.custom_minimum_size = Vector2(42, 42)
+	var icon_surface := _box(category.lerp(PANEL, 0.92), category.lerp(PANEL_LIGHT, 0.70), 3)
+	icon_surface.content_margin_left = 4
+	icon_surface.content_margin_right = 4
+	icon_surface.content_margin_top = 4
+	icon_surface.content_margin_bottom = 4
+	icon_surface.border_width_bottom = 2
+	icon_well.add_theme_stylebox_override("panel", icon_surface)
+	name_row.add_child(icon_well)
+	_add_icon(icon_well, definition, 34)
 	var names := VBoxContainer.new()
 	names.add_theme_constant_override("separation", 2)
 	names.size_flags_horizontal = Control.SIZE_EXPAND_FILL
