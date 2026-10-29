@@ -15,6 +15,7 @@ from world_flipper_enemies import enemy_assets
 from world_flipper_maps import map_assets
 from world_flipper_items import item_assets
 from world_flipper_heroes import hero_assets
+from world_flipper_interactions import interaction_assets
 
 ROOT = Path(__file__).resolve().parents[1]
 CACHE = ROOT / ".tools/worldflipper/source"
@@ -26,6 +27,7 @@ EXTRA_REGISTRIES = (
     "world_flipper_maps_sources.json",
     "world_flipper_items_sources.json",
     "world_flipper_heroes.json",
+    "world_flipper_interactions_sources.json",
 )
 CELL = (96, 96)
 MAX_DOWNLOAD_BYTES = 8 * 1024 * 1024
@@ -189,9 +191,11 @@ def main() -> None:
     maps = map_assets(sources, paths, OUTPUT)
     items = item_assets(sources, paths, OUTPUT)
     heroes = hero_assets(sources, paths, OUTPUT)
-    assets = player + weapons + enemies + cover + maps + items + projectile_assets(weapons) + heroes
+    interactions = interaction_assets(sources, paths, OUTPUT)
+    assets = player + weapons + enemies + cover + maps + items + projectile_assets(weapons) + heroes + interactions
+    metadata_path = OUTPUT / "interactions/interaction-art.json"
     manifest = {
-        "revision": "world-flipper-fan-05",
+        "revision": "world-flipper-fan-06",
         "original_copyright": "© Cygames, Inc. / Citail Inc.",
         "license_status": "Original game assets; no open asset license found. Unofficial fan-work use is not a claim of authorization.",
         "copyright_source": "https://worldflipper.jp/copyright/",
@@ -200,7 +204,9 @@ def main() -> None:
         "sources": sources,
         "references_cached_only": registry["references"],
         "assets": assets,
-        "gameplay": "Alk and three independently normalized original hero sets use the current game's party and skill rules rather than the original game's statistics. Arena IDs, terrain zones and multipliers remain stable. Authored low props block ground movement, dash and knockback; flying projectiles pass over them.",
+        "metadata_files": [{"path": "assets/worldflipper/interactions/interaction-art.json", "sha256": sha256(metadata_path.read_bytes()),
+                            "purpose": "Runtime frame layout, anchors and explicitly adapted ball/break timing"}],
+        "gameplay": "Alk and three independently normalized original hero sets use the current game's party and skill rules rather than the original game's statistics. Arena IDs, terrain zones and multipliers remain stable. Fixed low props block ground movement, dash and knockback while flying attacks pass over them. Separate breakable crates intercept friendly projectiles; dash contact with a bumper activates the protagonist's adapted pinball form. Crate drops and interaction animation timing follow this project's independent rules.",
     }
     (OUTPUT / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
     print(json.dumps({"assets": len(assets), "preview": str(preview(frames, icons)), "offline": args.offline}, ensure_ascii=False))

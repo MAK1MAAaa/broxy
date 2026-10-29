@@ -85,6 +85,7 @@ func _initialize() -> void:
 	_test_terminal_damage_freeze()
 	_test_slow_states()
 	_test_swept_collision_order()
+	_test_projectile_broadphase_equivalence()
 	_test_soul_accounting()
 	_test_wave_outcomes()
 	_test_outcome_ordering()
@@ -648,21 +649,39 @@ func _test_contact_recoil() -> void:
 			_check(is_equal_approx(recoil.length(), 18.0) and recoil.normalized().dot((origin - sim.player_position).normalized()) > 0.9999, "Contact recoil moves radially away, independently of pursuit/retreat/charge: " + behavior)
 			_check(enemy.position.distance_to(sim.player_position) > origin.distance_to(sim.player_position), "Contact recoil increases separation from the player: " + behavior)
 			_check(hits[0]["source"] == id and hits[0]["kind"] == "contact" and is_equal_approx(float(hits[0]["amount"]), enemy.definition.damage * 1.18), "Contact feedback keeps source, origin and scaled damage: " + behavior)
+	var arena_bounds: Rect2 = CombatSim.ARENA
+	var arena_center: Vector2 = arena_bounds.get_center()
 	var edge_cases: Array[Dictionary] = [
-		{"player": Vector2(82, 365), "enemy": Vector2(67, 365)},
-		{"player": Vector2(1198, 365), "enemy": Vector2(1213, 365)},
-		{"player": Vector2(640, 156), "enemy": Vector2(640, 141)},
-		{"player": Vector2(640, 574), "enemy": Vector2(640, 589)},
+		{"edge": Vector2(arena_bounds.position.x, arena_center.y), "outward": Vector2.LEFT},
+		{"edge": Vector2(arena_bounds.end.x, arena_center.y), "outward": Vector2.RIGHT},
+		{"edge": Vector2(arena_center.x, arena_bounds.position.y), "outward": Vector2.UP},
+		{"edge": Vector2(arena_center.x, arena_bounds.end.y), "outward": Vector2.DOWN},
 	]
 	for fixture: Dictionary in edge_cases:
 		var sim: CombatSim = _simulation()
-		sim.player_position = fixture["player"]
-		var enemy: CombatSim.Enemy = sim.spawn_enemy("chaser", fixture["enemy"])
+		var edge: Vector2 = fixture["edge"]
+		var outward: Vector2 = fixture["outward"]
+		sim.player_position = edge - outward * 42.0
+		var enemy_origin: Vector2 = edge - outward * 27.0
+		var enemy: CombatSim.Enemy = sim.spawn_enemy("chaser", enemy_origin)
+		_check(enemy.position == enemy_origin and is_equal_approx(enemy.position.distance_to(sim.player_position), 15.0) and is_equal_approx((enemy.position - edge).dot(outward), -27.0), "The contact fixture uses the real world edge without authored-cover spawn projection")
 		enemy.action_timer = 9999.0
 		sim.step(DELTA, Vector2.ZERO)
 		var bounds: Rect2 = CombatSim.ARENA
 		_check(enemy.position.x >= bounds.position.x and enemy.position.x <= bounds.end.x and enemy.position.y >= bounds.position.y and enemy.position.y <= bounds.end.y, "Post-contact recoil remains inside every arena edge")
+		_check((enemy.position - enemy_origin).dot(outward) > 0.0, "Real edge contact recoils outward toward its corresponding world boundary")
 		_check(sim.run.hits_taken == 1 and sim.run.health == 92.0, "Arena clamping does not cancel contact damage")
+		var clamped: CombatSim = _simulation()
+		clamped.player_position = edge - outward * 16.0
+		var clamped_enemy: CombatSim.Enemy = clamped.spawn_enemy("chaser", edge - outward * 27.0)
+		clamped_enemy.position = edge - outward
+		clamped_enemy.action_timer = 9999.0
+		clamped_enemy.slow_timer = 9999.0
+		clamped_enemy.slow_factor = 0.0
+		_check(clamped_enemy.position.distance_to(clamped.player_position) == 15.0 and (clamped_enemy.position - edge).dot(outward) == -1.0, "The isolated contact fixture starts one pixel inside the actual boundary")
+		clamped.step(DELTA, Vector2.ZERO)
+		_check(clamped_enemy.position.is_equal_approx(edge) and clamped.player_position == edge - outward * 16.0, "An eighteen-pixel contact recoil reaches and clamps exactly to its corresponding world edge")
+		_check(clamped.run.hits_taken == 1 and clamped.run.health == 92.0 and clamped.run.damage_taken == 8.0, "Actual boundary clamping retains one real contact hit and its full health loss")
 	var overlap: CombatSim = _simulation()
 	overlap.player_position = Vector2(640, 365)
 	var coincident: CombatSim.Enemy = overlap.spawn_enemy("chaser", overlap.player_position)
@@ -926,3 +945,40 @@ func _test_swept_collision_order() -> void:
 		sim.fire_weapon("bone", "", Vector2(307, 300), Vector2.RIGHT)
 		sim.step(DELTA, Vector2.ZERO)
 		_check(is_equal_approx(tank.health, tank.max_health - 14.0) and chaser.health == chaser.max_health, "First physical collision is independent of entity pool order")
+
+func _test_projectile_broadphase_equivalence() -> void:
+	var sim: CombatSim = _simulation(9127)
+	var random := RandomNumberGenerator.new()
+	random.seed = 720649
+	for index: int in 120:
+		var enemy: CombatSim.Enemy = sim.spawn_enemy("tank" if index % 3 == 0 else "chaser", Vector2(300, 300))
+		enemy.position = Vector2(random.randf_range(-500, 1800), random.randf_range(-300, 1100))
+		enemy.radius = random.randf_range(4.0, 42.0)
+	sim._rebuild_grid()
+	var before: int = sim.rng.state
+	for index: int in 840:
+		sim._explosion_grid_active = index % 3 != 0
+		var shot := CombatSim.Shot.new()
+		shot.previous = Vector2(random.randf_range(-700, 1900), random.randf_range(-450, 1200))
+		shot.position = shot.previous + Vector2(random.randf_range(-800, 800), random.randf_range(-700, 700)) * (0.01 if index % 2 == 0 else 1.0)
+		if index % 31 == 0:
+			shot.position = shot.previous
+		shot.radius = [0.0, 4.0, 16.0, 64.0][index % 4]
+		for enemy: CombatSim.Enemy in sim.enemies:
+			if enemy.active and (enemy.uid + index) % 11 == 0:
+				shot.hit_ids[enemy.uid] = true
+		var best: float = INF
+		var expected: Array[int] = []
+		for enemy: CombatSim.Enemy in sim.enemies:
+			if not enemy.active or shot.hit_ids.has(enemy.uid):
+				continue
+			var t: float = CombatSim._swept_circle_entry_t(shot.previous, shot.position, enemy.position, enemy.radius + shot.radius)
+			if t < best:
+				best = t
+				expected.assign([enemy.uid])
+			elif is_finite(t) and t == best:
+				expected.append(enemy.uid)
+		var actual: CombatSim.Enemy = sim._first_collision(shot)
+		_check((actual == null and expected.is_empty()) or (actual != null and expected.has(actual.uid)), "Projectile broadphase matches full-pool quadratic oracle for query %d" % index)
+		_check(sim._first_collision(shot) == actual, "Repeated projectile region query retains collision order")
+	_check(sim.rng.state == before, "Projectile collision optimization does not consume combat randomness")

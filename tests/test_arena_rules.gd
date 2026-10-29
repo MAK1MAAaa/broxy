@@ -8,6 +8,7 @@ var _failures: int = 0
 
 func _initialize() -> void:
 	_test_catalog()
+	_test_compiled_terrain()
 	_test_state_lifecycle()
 	_test_player_ground()
 	_test_enemy_ground()
@@ -48,6 +49,9 @@ func _radius(zone: Dictionary) -> Vector2:
 
 func _test_catalog() -> void:
 	_check(ArenaCatalog.IDS.size() == 4 and ArenaCatalog.normalize_id("unknown") == "reliquary", "The catalog exposes exactly four maps with a safe default")
+	_check(ArenaCatalog.WORLD_BOUNDS == Rect2(-1082, -535, 3444, 1800) and ArenaCatalog.ART_MARGIN_TOP == 232.0 and ArenaCatalog.art_rect() == Rect2(-1146, -767, 3780, 2192), "The larger top artwork margin preserves the exact playable-world geometry")
+	_check(ArenaCatalog.visible_rect(ArenaCatalog.WORLD_BOUNDS.get_center()).position - ArenaCatalog.art_rect().position == Vector2(1146, 772), "The unchanged central camera maps to the exact new artwork preview crop")
+	var total_zones: int = 0
 	var points: Array[Vector2] = [Vector2.ZERO, CombatSim.ARENA.get_center(), Vector2.INF]
 	for point: Vector2 in points:
 		_check(ArenaCatalog.movement_multiplier("reliquary", point) == 1.0 and ArenaCatalog.movement_multiplier("unknown", point) == 1.0, "The default/unknown map never applies terrain")
@@ -57,6 +61,7 @@ func _test_catalog() -> void:
 		_check(ArenaCatalog.movement_multiplier(id, CombatSim.ARENA.get_center()) == 1.0 and ArenaCatalog.terrain_name(id, CombatSim.ARENA.get_center()).is_empty(), "Each map leaves the actual player spawn on ordinary ground: " + id)
 		_check(ArenaCatalog.movement_multiplier(id, Vector2.INF) == 1.0, "Nonfinite coordinates never activate terrain: " + id)
 		var zones: Array = definition["zones"]
+		total_zones += zones.size()
 		_check(zones.is_empty() if id == "reliquary" else zones.size() >= int(definition["legacy_zone_count"]) + 6, "Expanded maps preserve the original patches and add distant terrain: " + id)
 		for zone: Dictionary in zones:
 			var center: Vector2 = _center(zone)
@@ -75,6 +80,7 @@ func _test_catalog() -> void:
 		definition["name"] = "mutated"
 		(definition["zones"] as Array).clear()
 		_check(ArenaCatalog.definition(id)["name"] != "mutated" and (id == "reliquary" or not (ArenaCatalog.definition(id)["zones"] as Array).is_empty()), "Catalog copies cannot mutate combat data: " + id)
+	_check(total_zones == 34, "Expanded artwork preserves all thirty-four authored terrain patches")
 
 
 func _test_state_lifecycle() -> void:
@@ -93,6 +99,58 @@ func _test_state_lifecycle() -> void:
 	_check(invalid.arena_id == "reliquary", "Invalid map input safely selects the original arena")
 	var unknown: Dictionary = ArenaCatalog.definition("not-a-map")
 	_check(unknown["id"] == "reliquary", "Visual and simulation fallbacks agree on the same map")
+
+func _terrain_oracle(arena: Dictionary, point: Vector2) -> bool:
+	for zone: Dictionary in arena["zones"]:
+		var x: float = (point.x - float(zone["center"][0])) / float(zone["radius"][0])
+		var y: float = (point.y - float(zone["center"][1])) / float(zone["radius"][1])
+		if x * x + y * y <= 1.0:
+			return true
+	return false
+
+func _compare_terrain(arena: Dictionary, point: Vector2) -> void:
+	var inside: bool = _terrain_oracle(arena, point)
+	var expected: float = float(arena["move_multiplier"]) if inside else 1.0
+	var name: String = str(arena["terrain_name"]) if inside else ""
+	_check(ArenaCatalog.movement_multiplier(str(arena["id"]), point) == expected and ArenaCatalog.terrain_name(str(arena["id"]), point) == name, "Compiled terrain exactly matches original dictionary division at centers, ellipse edges, cell edges and distant points")
+
+func _test_compiled_terrain() -> void:
+	var random := RandomNumberGenerator.new()
+	random.seed = 1283400
+	var zones: int = 0
+	for id: String in ArenaCatalog.IDS:
+		var arena: Dictionary = ArenaCatalog.definition(id)
+		var cache: ArenaCatalog.TerrainIndex = ArenaCatalog._terrain_indices[id]
+		zones += cache.centers_x.size()
+		_check(cache.centers_x.size() == (arena["zones"] as Array).size() and cache.empty_ids.is_empty(), "Terrain compilation preserves every authored ellipse and a separate immutable empty bucket")
+		for zone: Dictionary in arena["zones"]:
+			var center: Vector2 = _center(zone)
+			var radius: Vector2 = _radius(zone)
+			_compare_terrain(arena, center)
+			for angle_index: int in 24:
+				var angle: float = TAU * float(angle_index) / 24.0
+				for factor: float in [0.999999, 1.0, 1.000001]:
+					_compare_terrain(arena, center + Vector2(cos(angle) * radius.x, sin(angle) * radius.y) * factor)
+			for offset: Vector2 in [Vector2(radius.x, 0), Vector2(-radius.x, 0), Vector2(0, radius.y), Vector2(0, -radius.y)]:
+				_compare_terrain(arena, center + offset)
+				_compare_terrain(arena, center + offset + offset.normalized() * 0.0001)
+		for sample: int in 300:
+			_compare_terrain(arena, Vector2(random.randf_range(-1500.0, 2800.0), random.randf_range(-900.0, 1600.0)))
+		for point: Vector2 in [Vector2(1.0e30, -1.0e30), Vector2(-1.0e30, 1.0e30)]:
+			_compare_terrain(arena, point)
+		for x: float in [-1024.0, -512.0, -128.0, 0.0, 128.0, 512.0, 1024.0, 2304.0]:
+			for y: float in [-512.0, -128.0, 0.0, 128.0, 512.0, 1024.0]:
+				for epsilon: float in [-0.0001, 0.0, 0.0001]:
+					_compare_terrain(arena, Vector2(x + epsilon, y + epsilon))
+		var unchanged: Dictionary = ArenaCatalog.definition(id)
+		arena["move_multiplier"] = 999.0
+		(arena["zones"] as Array).clear()
+		_compare_terrain(unchanged, Vector2(310, 275))
+	_check(zones == 34, "The exact terrain index compiles all thirty-four ellipses without reducing gameplay coverage")
+	for point: Vector2 in [Vector2.INF, Vector2(NAN, 1.0)]:
+		for id: String in ArenaCatalog.IDS:
+			_check(ArenaCatalog.movement_multiplier(id, point) == 1.0 and ArenaCatalog.terrain_name(id, point).is_empty(), "Invalid positions never enter terrain index arithmetic")
+	_check(ArenaCatalog.movement_multiplier("unknown", Vector2(310, 275)) == 1.0 and ArenaCatalog.terrain_name("unknown", Vector2(310, 275)).is_empty(), "Unknown maps retain their original neutral terrain fallback")
 
 
 func _test_player_ground() -> void:

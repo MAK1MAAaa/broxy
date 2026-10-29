@@ -6,6 +6,8 @@ const ENEMY_LIMIT: int = 128
 const ENEMY_SCAN_LIMIT: int = 1024
 const ZONE_LIMIT: int = 32
 const OBSTACLE_LIMIT: int = 64
+const PICKUP_LIMIT: int = 24
+const PICKUP_SCAN_LIMIT: int = 128
 const INSET: float = 8.0
 const PAPER: Color = Color("fff9e8")
 const INK: Color = Color("253d54")
@@ -22,6 +24,8 @@ var _arena_id: String = ""
 var _enemies: Array[Dictionary] = []
 var _zones: Array[Dictionary] = []
 var _obstacles: Array[Dictionary] = []
+var _pickups: Array[Dictionary] = []
+var _pinball_active: bool = false
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -53,6 +57,8 @@ func update_snapshot(value: Variant) -> void:
 	_read_enemies(value.get("enemies", []))
 	_read_zones(value.get("zones", []))
 	_read_obstacles(value.get("obstacles", []))
+	_read_pickups(value.get("pickups", []))
+	_pinball_active = value.get("pinball_active", false) == true
 	_valid = true
 	_finish_update()
 
@@ -66,6 +72,8 @@ func _clear() -> void:
 	_enemies.clear()
 	_zones.clear()
 	_obstacles.clear()
+	_pickups.clear()
+	_pinball_active = false
 
 func _finish_update() -> void:
 	visible = _valid
@@ -138,7 +146,25 @@ func _read_obstacles(value: Variant) -> void:
 			continue
 		if not _bounds.encloses(Rect2(center - Vector2.ONE * radius, Vector2.ONE * radius * 2.0)):
 			continue
-		_obstacles.append({"center": center, "radius": float(radius)})
+		if entry.get("active", true) != true:
+			continue
+		var kind: String = "crate" if str(entry.get("kind", "")) == "crate" else "prop"
+		_obstacles.append({"center": center, "radius": float(radius), "kind": kind})
+
+func _read_pickups(value: Variant) -> void:
+	if not value is Array:
+		return
+	for index: int in mini(value.size(), PICKUP_SCAN_LIMIT):
+		if _pickups.size() >= PICKUP_LIMIT:
+			break
+		var entry: Variant = value[index]
+		if not entry is Dictionary or entry.get("active", true) != true:
+			continue
+		var point: Variant = entry.get("position")
+		var kind: String = str(entry.get("kind", ""))
+		if not point is Vector2 or not point.is_finite() or not _contains(point) or kind not in ["gold", "health", "charge"]:
+			continue
+		_pickups.append({"position": point, "kind": kind})
 
 func map_rect() -> Rect2:
 	if not _valid or size.x <= INSET * 2.0 or size.y <= INSET * 2.0:
@@ -155,9 +181,13 @@ func world_to_map(point: Vector2) -> Vector2:
 	return area.position + (_clamp_world(point) - _bounds.position) / _bounds.size * area.size
 
 func presentation_snapshot() -> Dictionary:
+	var crates: int = 0
+	for obstacle: Dictionary in _obstacles:
+		crates += 1 if obstacle["kind"] == "crate" else 0
 	return {"valid": _valid, "bounds": _bounds, "player": _player, "facing": _facing, "view": _view,
 		"arena_id": _arena_id, "enemies": _enemies.duplicate(true), "zones": _zones.duplicate(true),
 		"obstacles": _obstacles.duplicate(true), "obstacle_count": _obstacles.size(),
+		"crate_count": crates, "pickups": _pickups.duplicate(true), "pickup_count": _pickups.size(), "pickup_limit": PICKUP_LIMIT, "pinball_active": _pinball_active,
 		"enemy_count": _enemies.size(), "zone_count": _zones.size(), "enemy_limit": ENEMY_LIMIT}
 
 func _draw() -> void:
@@ -174,6 +204,7 @@ func _draw() -> void:
 	_draw_obstacles(area)
 	draw_rect(area, Color(CYAN, 0.65), false, 1.0)
 	_draw_view(area)
+	_draw_pickups(area)
 	_draw_enemies(area)
 	_draw_player(area)
 
@@ -205,8 +236,26 @@ func _draw_obstacles(area: Rect2) -> void:
 	for obstacle: Dictionary in _obstacles:
 		var point: Vector2 = world_to_map(obstacle["center"])
 		var radius: float = maxf(1.5, obstacle["radius"] * scale)
+		if obstacle["kind"] == "crate":
+			draw_rect(Rect2(point - Vector2.ONE * radius, Vector2.ONE * radius * 2.0), GOLD)
+			draw_rect(Rect2(point - Vector2.ONE * radius, Vector2.ONE * radius * 2.0), Color(INK, 0.70), false, 1.0)
+			continue
 		draw_circle(point, radius, Color(INK, 0.66))
 		draw_arc(point, radius, 0.0, TAU, 8, Color(PAPER, 0.66), 1.0)
+
+func _draw_pickups(area: Rect2) -> void:
+	var inner: Rect2 = area.grow(-3.0)
+	for pickup: Dictionary in _pickups:
+		var point: Vector2 = world_to_map(pickup["position"])
+		point = Vector2(clampf(point.x, inner.position.x, inner.end.x), clampf(point.y, inner.position.y, inner.end.y))
+		match str(pickup["kind"]):
+			"health":
+				draw_line(point - Vector2(2, 0), point + Vector2(2, 0), CYAN, 2.0)
+				draw_line(point - Vector2(0, 2), point + Vector2(0, 2), CYAN, 2.0)
+			"charge":
+				draw_colored_polygon(PackedVector2Array([point + Vector2(0, -3), point + Vector2(2, 0), point + Vector2(0, 3), point - Vector2(2, 0)]), Color("765093"))
+			"gold":
+				draw_circle(point, 2.0, GOLD)
 
 func _draw_view(area: Rect2) -> void:
 	if not _view.has_area():
@@ -235,6 +284,8 @@ func _draw_player(area: Rect2) -> void:
 	var inner: Rect2 = area.grow(-6.0)
 	var point: Vector2 = world_to_map(_player)
 	point = Vector2(clampf(point.x, inner.position.x, inner.end.x), clampf(point.y, inner.position.y, inner.end.y))
+	if _pinball_active:
+		draw_arc(point, 6.0, 0.0, TAU, 12, GOLD, 1.0)
 	var tangent: Vector2 = _facing.orthogonal()
 	var outer := PackedVector2Array([point + _facing * 6.0, point - _facing * 4.0 + tangent * 4.0, point - _facing * 2.0, point - _facing * 4.0 - tangent * 4.0])
 	var center := PackedVector2Array([point + _facing * 4.0, point - _facing * 2.5 + tangent * 2.5, point - _facing, point - _facing * 2.5 - tangent * 2.5])

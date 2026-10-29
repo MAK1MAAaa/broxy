@@ -127,16 +127,16 @@ class WorldFlipperEnvironmentAssets(unittest.TestCase):
                     self.assertEqual(set(sprites.iterdir()), set(originals))
 
     def test_master_records_match_every_png_and_pinned_source(self) -> None:
-        self.assertEqual(len(self.manifest["assets"]), 58)
-        self.assertEqual(len(self.assets), 58)
-        self.assertEqual(len({asset["path"] for asset in self.assets.values()}), 58)
+        self.assertEqual(len(self.manifest["assets"]), 64)
+        self.assertEqual(len(self.assets), 64)
+        self.assertEqual(len({asset["path"] for asset in self.assets.values()}), 64)
         registered: dict[str, dict] = {}
-        for filename in ("world_flipper_sources.json", "world_flipper_enemies.json", "world_flipper_cover_sources.json", "world_flipper_maps_sources.json", "world_flipper_items_sources.json", "world_flipper_heroes.json"):
+        for filename in ("world_flipper_sources.json", "world_flipper_enemies.json", "world_flipper_cover_sources.json", "world_flipper_maps_sources.json", "world_flipper_items_sources.json", "world_flipper_heroes.json", "world_flipper_interactions_sources.json"):
             for source in load_json(ROOT / "tools" / filename)["sources"]:
                 self.assertNotIn(source["id"], registered)
                 registered[source["id"]] = source
         pinned = {source["id"]: source for source in self.manifest["sources"]}
-        self.assertEqual(len(self.manifest["sources"]), 57)
+        self.assertEqual(len(self.manifest["sources"]), 67)
         self.assertEqual(set(pinned), set(registered))
         for source_id, source in pinned.items():
             with self.subTest(source=source_id):
@@ -156,13 +156,13 @@ class WorldFlipperEnvironmentAssets(unittest.TestCase):
             with self.subTest(map=game_id):
                 image = rgba(ART / "maps" / (game_id + ".png"))
                 preview = rgba(ART / "maps/previews" / (game_id + ".png"))
-                self.assertEqual(image.size, (3780, 2104))
+                self.assertEqual(image.size, (3780, 2192))
                 self.assertEqual(image.getchannel("A").getextrema(), (255, 255))
                 self.assert_integer_pixels(image, 2)
                 self.assertEqual(preview.size, (1280, 720))
-                self.assertEqual(preview.tobytes(), image.crop((1146, 684, 2426, 1404)).tobytes())
+                self.assertEqual(preview.tobytes(), image.crop((1146, 772, 2426, 1492)).tobytes())
                 self.assertEqual(self.assets["arena_" + game_id]["source_scale"], 2)
-                self.assertEqual(self.assets["arena_" + game_id + "_preview"]["arena_crop"], [1146, 684, 1280, 720])
+                self.assertEqual(self.assets["arena_" + game_id + "_preview"]["arena_crop"], [1146, 772, 1280, 720])
 
     def test_three_props_keep_integer_source_pixels_transparency_and_the_same_foot_anchor(self) -> None:
         for source in self.environment_sources:

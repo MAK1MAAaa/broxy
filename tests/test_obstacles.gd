@@ -13,12 +13,25 @@ class ProjectionProbe extends ArenaObstacles:
 		projection_calls += 1
 		return super.free_point(point, body_radius, inset)
 
+class FullRouteProbe extends ArenaObstacles:
+	func _local_start_candidates(_start: Vector2, _graph_value: AStar2D, _ids: PackedInt64Array) -> PackedInt64Array:
+		return PackedInt64Array()
+
+class CorridorProbe extends ArenaObstacles:
+	var corridor_calls: int = 0
+	func _cell_corridor_clear(source: Vector2i, target: Vector2i, body_radius: float, candidates: PackedInt32Array) -> bool:
+		corridor_calls += 1
+		return super._cell_corridor_clear(source, target, body_radius, candidates)
+
 
 func _initialize() -> void:
 	_test_authored_layouts()
 	_test_geometry_and_projection()
 	_test_index_boundaries()
 	_test_shared_projection()
+	_test_cell_corridor_cache()
+	_test_shared_route_endpoints()
+	_test_route_fallback()
 	_test_player_and_dash()
 	_test_push_and_recoil()
 	_test_enemy_routes()
@@ -58,9 +71,12 @@ func _test_authored_layouts() -> void:
 		var id: String = ArenaCatalog.IDS[index]
 		var data: Dictionary = ArenaCatalog.definition(id)
 		var sim: CombatSim = _sim(id, false)
-		var items: Array[Dictionary] = sim.obstacles.snapshot()
+		var items: Array[Dictionary] = []
+		for item: Dictionary in sim.obstacles.snapshot():
+			if not str(item["id"]).begins_with("crate:") and str(item["id"]) not in ["west_bumper", "east_bumper"]:
+				items.append(item)
 		_check(data["name"] == names[index] and data["terrain_name"] == terrain[index] and is_equal_approx(float(data["move_multiplier"]), multipliers[index]), "Each existing map keeps its movement rule with the new original-art theme: " + id)
-		_check(items.size() >= 8 and items.size() <= 10, "Each map has a bounded authored cover layout: " + id)
+		_check(items.size() == 10, "Each map retains its ten original authored cover landmarks: " + id)
 		_check(sim.player_position == ROCK and sim.obstacles.is_free(ROCK, 16.0), "The original central spawn stays unchanged and clear: " + id)
 		for first: int in items.size():
 			var item: Dictionary = items[first]
@@ -117,6 +133,135 @@ func _test_player_and_dash() -> void:
 		sim.step(0.3, Vector2(-sign_value, 0), true)
 		_check((sim.player_position.x - ROCK.x) * sign_value > 55.9 and sim.obstacles.is_free(sim.player_position, 16.0), "A complete large-step dash cannot emerge on the far side of cover")
 		_check(sim.dashes_used == 1 and sim.dash_time_left == 0.0 and is_equal_approx(sim.dash_cooldown_left, 2.1) and before == [sim.rng.state, sim.run.rng.state], "Blocked movement preserves dash uses, real time and RNG independence")
+
+
+func _route_path_safe(field: ArenaObstacles, path: PackedVector2Array, radius: float) -> bool:
+	if path.size() < 2:
+		return false
+	for index: int in range(1, path.size()):
+		if not field.segment_clear(path[index - 1], path[index], radius):
+			return false
+	return true
+
+
+func _test_shared_route_endpoints() -> void:
+	var field := ArenaObstacles.new()
+	var interactions := ArenaInteractions.new()
+	interactions.configure(ArenaCatalog.definition("mire"), 42, 1, field)
+	var goal := Vector2(1360, 360)
+	var starts: Array[Vector2] = []
+	for agent: int in 300:
+		var start := Vector2(970 + (agent % 12) * 2, 340.0 + float(agent / 12) * 1.5)
+		starts.append(start)
+		var waypoint: Vector2 = field.next_target(start, goal, 13.0, agent)
+		_check(waypoint != goal and waypoint != start and field.segment_clear(start, waypoint, 13.0) and _route_path_safe(field, field._routes[agent]["path"], 13.0), "Every crowded agent receives a real obstacle-safe detour")
+	var before: Dictionary = field.navigation_stats()
+	_check(int(before["route_builds"]) == 300 and int(before["goal_refreshes"]) == 1 and int(before["goal_visibility_checks"]) == (field._graph_point_ids[13.0] as PackedInt64Array).size(), "Three hundred agents share one exact goal's full visibility calculation")
+	_check(int(before["full_scan_fallbacks"]) == 0 and int(before["start_visibility_checks"]) <= 300 * ArenaObstacles.LOCAL_ROUTE_CANDIDATES, "Nearby visible anchors bound ordinary per-agent attachment checks")
+	goal = Vector2(1460, 410)
+	for agent: int in 300:
+		var waypoint: Vector2 = field.next_target(starts[agent], goal, 13.0, agent)
+		var route: Dictionary = field._routes[agent]
+		_check(field.segment_clear(starts[agent], waypoint, 13.0) and (route["path"] as PackedVector2Array)[-1] == goal and _route_path_safe(field, route["path"], 13.0), "A moving goal retargets only a safe bounded final segment")
+	var after: Dictionary = field.navigation_stats()
+	_check(after["route_builds"] == before["route_builds"] and int(after["tail_retargets"]) == 300, "A safe goal displacement beyond forty-eight pixels avoids three hundred redundant A-star builds")
+	var positions: Array[Vector2] = starts.duplicate()
+	var traversable: bool = true
+	var progressed: bool = false
+	for frame: int in 24:
+		goal = Vector2(1460 + float(frame) * 10.0, 410 + sin(float(frame) * 0.1) * 30.0)
+		for agent: int in positions.size():
+			var waypoint: Vector2 = field.next_target(positions[agent], goal, 13.0, agent)
+			traversable = traversable and field.segment_clear(positions[agent], waypoint, 13.0)
+			positions[agent] = field.move_body(positions[agent], (waypoint - positions[agent]).limit_length(68.0 * STEP), 13.0)
+			traversable = traversable and field.is_free(positions[agent], 13.0)
+			progressed = progressed or positions[agent].distance_to(starts[agent]) > 10.0
+	_check(traversable and progressed, "Actual repeated movement remains legal while a six-hundred-pixel-per-second goal moves across frames")
+	var large: Vector2 = field.next_target(starts[0], goal, 42.0, 1000)
+	_check(field.segment_clear(starts[0], large, 42.0) and field._graph_goals.has(13.0) and field._graph_goals.has(42.0) and _route_path_safe(field, field._routes[1000]["path"], 42.0), "Different body sizes retain separate graph goals and full safe clearance")
+	var stats: Dictionary = field.navigation_stats()
+	stats["route_builds"] = -1
+	_check(int(field.navigation_stats()["route_builds"]) >= 300, "Navigation counters are detached observations")
+
+func _full_circle_segment_clear(field: ArenaObstacles, start: Vector2, end: Vector2, body_radius: float) -> bool:
+	var bounds: Rect2 = field.bounds
+	for point: Vector2 in [start, end]:
+		if point.x < bounds.position.x or point.y < bounds.position.y or point.x > bounds.end.x or point.y > bounds.end.y:
+			return false
+	var delta: Vector2 = end - start
+	for item: Dictionary in field.snapshot():
+		var center: Vector2 = item["center"]
+		var fraction: float = clampf((center - start).dot(delta) / maxf(delta.length_squared(), 0.0000001), 0.0, 1.0)
+		var clearance: float = float(item["radius"]) + body_radius
+		if center.distance_squared_to(start + delta * fraction) <= clearance * clearance + 0.0001:
+			return false
+	return true
+
+func _cell_samples(cell: Vector2i, closed: bool = false) -> Array[Vector2]:
+	var result: Array[Vector2] = []
+	var offsets: Array[float] = []
+	offsets.assign([0.0, 64.0, 128.0] if closed else [0.01, 64.0, 127.99])
+	for x: float in offsets:
+		for y: float in offsets:
+			result.append(Vector2(cell) * ArenaObstacles.INDEX_CELL + Vector2(x, y))
+	return result
+
+func _test_cell_corridor_cache() -> void:
+	var open := CorridorProbe.new([{"id": "nearby", "center": Vector2(256, 190), "radius": 12.0}])
+	var source := Vector2(16, 16)
+	var goal := Vector2(620, 16)
+	_check(not open._segment_candidates(source, goal, 13.0).is_empty() and open.next_target(source, goal, 13.0, 1) == goal and open.corridor_calls == 1, "A truly clear whole-cell corridor is discovered even when broadphase candidates exist")
+	var projection: ArenaObstacles.ProjectedGoal = open._projected_goals[13.0]
+	_check(projection.checked_corridors.has(Vector2i.ZERO) and projection.open_sources.has(Vector2i.ZERO), "The proven whole-cell corridor records its positive result")
+	for start: Vector2 in _cell_samples(Vector2i.ZERO):
+		for target: Vector2 in _cell_samples(Vector2i(4, 0)):
+			_check(_full_circle_segment_clear(open, start, target, 13.0) and open.next_target(start, target, 13.0, 2) == target, "Every sampled endpoint pair inside a cached-open cell hull stays free under a full-circle distance oracle")
+	_check(open.corridor_calls == 1, "Exact endpoints moving inside their two cells reuse one proven corridor")
+	var blocked := CorridorProbe.new([{"id": "crossing", "center": Vector2(256, 64), "radius": 12.0}])
+	_check(blocked.next_target(source, goal, 13.0, 1) == goal and blocked.corridor_calls == 1 and not blocked._projected_goals[13.0].open_sources.has(Vector2i.ZERO), "A clear current segment cannot mark the obstructed surrounding cell hull as open")
+	source = Vector2(16, 64)
+	goal = Vector2(620, 64)
+	var detour: Vector2 = blocked.next_target(source, goal, 13.0, 1)
+	_check(detour != goal and _full_circle_segment_clear(blocked, source, detour, 13.0) and blocked.corridor_calls == 1, "A negative corridor cache still checks exact later endpoints and finds a safe detour")
+	goal = Vector2(660, 64)
+	detour = blocked.next_target(source, goal, 13.0, 1)
+	_check(detour != goal and blocked.corridor_calls == 2, "Changing the goal cell invalidates the prior negative corridor decision")
+	blocked.next_target(source, goal, 42.0, 2)
+	_check(blocked.corridor_calls == 3 and blocked._projected_goals.has(13.0) and blocked._projected_goals.has(42.0), "Different body radii cannot share either positive or negative corridor results")
+	_check(blocked.set_active("crossing", false) and blocked._projected_goals.is_empty() and blocked.next_target(source, goal, 13.0, 1) == goal, "Disabling cover removes stale negative corridors and opens real movement")
+	_check(blocked.set_active("crossing", true) and blocked._projected_goals.is_empty(), "Reactivating cover discards the new positive corridor before it can be reused")
+	detour = blocked.next_target(source, goal, 13.0, 1)
+	_check(detour != goal and _full_circle_segment_clear(blocked, source, detour, 13.0), "Reactivated cover blocks the previously open exact segment again")
+	var field := ArenaObstacles.new()
+	var interactions := ArenaInteractions.new()
+	interactions.configure(ArenaCatalog.definition("mire"), 940, 1, field)
+	var random := RandomNumberGenerator.new()
+	random.seed = 128940
+	for radius: float in [0.0, 13.0, 42.0, 64.0, 100.0]:
+		for sample: int in 24:
+			var first := Vector2i(random.randi_range(-7, 15), random.randi_range(-3, 7))
+			var last := Vector2i(random.randi_range(-7, 15), random.randi_range(-3, 7))
+			var from: Vector2 = Vector2(first) * ArenaObstacles.INDEX_CELL + Vector2.ONE * 64.0
+			var to: Vector2 = Vector2(last) * ArenaObstacles.INDEX_CELL + Vector2.ONE * 64.0
+			if not field._cell_corridor_clear(first, last, radius, field._segment_candidates(from, to, radius)):
+				continue
+			for start: Vector2 in _cell_samples(first, true):
+				for target: Vector2 in _cell_samples(last, true):
+					_check(_full_circle_segment_clear(field, start, target, radius), "A positive corridor proof is conservative at closed cell corners, signed coordinates and body radii above the spatial index")
+
+
+func _test_route_fallback() -> void:
+	var field := FullRouteProbe.new([{"id": "blocking", "center": ROCK, "radius": 40.0}])
+	var start: Vector2 = ROCK + Vector2(-180, 0)
+	var goal: Vector2 = ROCK + Vector2(180, 0)
+	var waypoint: Vector2 = field.next_target(start, goal, 22.0, 1)
+	_check(waypoint != start and waypoint != goal and field.segment_clear(start, waypoint, 22.0) and _route_path_safe(field, field._routes[1]["path"], 22.0), "A missing local candidate set still finds the full reachable safe route")
+	_check(int(field.navigation_stats()["full_scan_fallbacks"]) == 1 and int(field.navigation_stats()["start_visibility_checks"]) == (field._graph_point_ids[22.0] as PackedInt64Array).size(), "A-star failure falls back to every static graph node without dropping navigation")
+	field.set_active("blocking", false)
+	_check(field._graphs.is_empty() and field._graph_point_ids.is_empty() and field._graph_goals.is_empty() and field.next_target(start, goal, 22.0, 1) == goal, "Opening a route discards shared graph endpoints as well as agent paths")
+	field.set_active("blocking", true)
+	waypoint = field.next_target(start, goal, 22.0, 1)
+	_check(waypoint != goal and field.segment_clear(start, waypoint, 22.0) and int(field.navigation_stats()["graphs_built"]) == 2, "Restoring cover rebuilds a legal shared graph without stale open shortcuts")
 
 
 func _test_index_boundaries() -> void:

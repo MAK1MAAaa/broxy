@@ -25,6 +25,7 @@ func _run() -> void:
 	root.size = Vector2i(1280, 720)
 	_test_projection_and_validation()
 	_test_bounded_markers()
+	_test_interaction_markers()
 	var state := RunState.new()
 	state.begin(20261028, "bone", "mire")
 	_ui = GameUI.new()
@@ -131,6 +132,34 @@ func _test_bounded_markers() -> void:
 	value["view"] = Rect2(BOUNDS.position - Vector2.ONE * 300, BOUNDS.size + Vector2.ONE * 600)
 	map.update_snapshot(value)
 	_check((map.presentation_snapshot()["view"] as Rect2).is_equal_approx(BOUNDS), "An oversized camera view is clipped to real map bounds")
+	map.free()
+
+func _test_interaction_markers() -> void:
+	var map := MinimapView.new()
+	map.size = Vector2(192, 126)
+	var value: Dictionary = _map_snapshot()
+	value["obstacles"].append_array([
+		{"center": BOUNDS.get_center(), "radius": 18.0, "kind": "crate", "active": true},
+		{"center": BOUNDS.get_center() + Vector2(80, 0), "radius": 18.0, "kind": "crate", "active": false},
+	])
+	value["pinball_active"] = true
+	value["pickups"] = [{"position": Vector2(0, 0), "kind": "health"}, {"position": Vector2(80, 0), "kind": "charge"}, {"position": Vector2(160, 0), "kind": "gold"},
+		null, {"position": Vector2.INF, "kind": "gold"}, {"position": BOUNDS.end + Vector2.ONE, "kind": "health"}, {"position": Vector2.ZERO, "kind": "unknown"}, {"position": Vector2.ZERO, "kind": "gold", "active": false}]
+	map.update_snapshot(value)
+	var retained: Dictionary = map.presentation_snapshot()
+	_check(retained["crate_count"] == 1 and retained["obstacle_count"] == 3, "The minimap includes only active breakable colliders beside ordinary scenery")
+	_check(retained["pickup_count"] == 3 and retained["pinball_active"], "Only actual finite gold, health and charge positions produce pickup markers")
+	retained["pickups"].clear()
+	value["pickups"][0]["position"] = Vector2.INF
+	_check(map.presentation_snapshot()["pickup_count"] == 3 and map.presentation_snapshot()["pickups"][0]["position"] == Vector2.ZERO, "Caller and returned pickup snapshots cannot mutate retained map state")
+	var crowd: Array[Dictionary] = []
+	for index: int in 500:
+		crowd.append({"position": Vector2(index, 100), "kind": "gold"})
+	value["pickups"] = crowd
+	map.update_snapshot(value)
+	_check(map.presentation_snapshot()["pickup_count"] == MinimapView.PICKUP_LIMIT and map.presentation_snapshot()["pickup_limit"] == 24, "Dense drop snapshots keep a strict bounded pickup draw budget")
+	map.update_snapshot({})
+	_check(map.presentation_snapshot()["pickup_count"] == 0 and map.presentation_snapshot()["crate_count"] == 0 and not map.presentation_snapshot()["pinball_active"], "A replaced or invalid map cannot retain ghost drops, broken crates or ball state")
 	map.free()
 
 func _test_hud_layouts() -> void:

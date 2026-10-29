@@ -10,9 +10,15 @@ var sound: SoundBank
 var settings: Dictionary = {"shake": true, "flash": true}
 var textures: Dictionary = {}
 var _player_atlas: Texture2D
+var _presentation_dirty: bool = true
 var arena_texture: Texture2D
 var _obstacle_textures: Dictionary = {}
 var _arena_obstacles: Array[Dictionary] = []
+var _interaction_textures: Dictionary = {}
+var _interaction_widths: Dictionary = {"barrel": 24.0, "chest": 44.0, "gold": 12.0, "health": 26.0, "charge": 26.0}
+var _interaction_feet: Dictionary = {"barrel": Vector2(64, 112), "chest": Vector2(48, 88), "gold": Vector2(32, 61), "health": Vector2(32, 61), "charge": Vector2(32, 61)}
+var _bumper_flashes: Array[Dictionary] = []
+var _crate_flashes: Array[Dictionary] = []
 var _camera: Camera2D
 var _arena_id: String = "reliquary"
 var _arena_name: String = "沙漠遗迹"
@@ -52,6 +58,13 @@ const SKILL_FEEDBACK_LIFE: float = 0.45
 const SKILL_FEEDBACK_FONT_SIZE: int = 12
 const PULSE_HINDER_TINT: Color = Color("c1b2d8")
 const OBSTACLE_ART_WIDTHS: Dictionary = {"monument": 44.0, "planter": 54.0, "bumper": 69.0}
+const INTERACTION_ROOT: String = "res://assets/worldflipper/interactions/"
+const BUMPER_FLASH_LIMIT: int = 8
+const CRATE_FLASH_LIMIT: int = 16
+const BUMPER_FLASH_LIFE: float = 0.18
+const CRATE_FLASH_LIFE: float = 0.12
+const CRATE_BREAK_LIFE: float = 0.32
+const BALL_FRAME_ENDS: Array[float] = [0.12, 0.18, 0.24, 0.30, 0.36, 0.42, 0.48]
 
 class DashAfterimage:
 	var position: Vector2 = Vector2.ZERO
@@ -162,6 +175,9 @@ func _ready() -> void:
 	arena_texture = load(ArenaCatalog.texture_path(_arena_id)) as Texture2D
 	for id: String in ["monument", "planter", "bumper"]:
 		_obstacle_textures[id] = load("res://assets/worldflipper/props/%s.png" % id) as Texture2D
+	for entry: Array in [["ball", "ball-atlas"], ["barrel", "barrel-atlas"], ["chest", "chest"], ["health", "health"], ["charge", "charge"], ["gold", "mana"]]:
+		_interaction_textures[str(entry[0])] = load(INTERACTION_ROOT + str(entry[1]) + ".png") as Texture2D
+	_cache_interaction_geometry()
 	_camera = Camera2D.new()
 	_camera.name = "ExplorationCamera"
 	_camera.top_level = true
@@ -177,7 +193,18 @@ func _ready() -> void:
 	for definition: ContentDef in GameCatalog.weapons():
 		textures[definition.id] = load(AdventureArt.path("res://assets/icons/%s.svg" % definition.icon))
 	_update_camera()
-	queue_redraw()
+	_request_redraw()
+
+func _request_redraw() -> void:
+	_presentation_dirty = true
+	if is_inside_tree() and get_tree().paused:
+		_presentation_dirty = false
+		queue_redraw()
+
+func _process(_delta: float) -> void:
+	if _presentation_dirty:
+		_presentation_dirty = false
+		queue_redraw()
 
 func apply_visual_settings(value: Dictionary) -> void:
 	settings = value
@@ -188,7 +215,9 @@ func apply_visual_settings(value: Dictionary) -> void:
 		_dash_evasion_pulse_remaining = 0.0
 		_pulse_animated = false
 		_active_skill_painter.disable_animation()
-	queue_redraw()
+		_bumper_flashes.clear()
+		_crate_flashes.clear()
+	_request_redraw()
 
 func begin(state: RunState) -> void:
 	var arena: Dictionary = ArenaCatalog.definition(state.arena_id)
@@ -203,7 +232,10 @@ func begin(state: RunState) -> void:
 	sim.begin(state)
 	if is_node_ready():
 		_load_hero_art()
-	_arena_obstacles = sim.obstacles.snapshot()
+	_arena_obstacles.clear()
+	for obstacle: Dictionary in sim.obstacles.snapshot():
+		if not str(obstacle["id"]).begins_with("crate:"):
+			_arena_obstacles.append(obstacle)
 	sim.ended.connect(_on_ended)
 	sim.shot_fired.connect(func() -> void: sound.play("shoot", -24.0))
 	sim.enemy_hit.connect(func() -> void: sound.play("hit", -24.0))
@@ -217,6 +249,9 @@ func begin(state: RunState) -> void:
 	sim.pulse_cast.connect(_on_pulse_cast)
 	sim.active_skill_cast.connect(_on_active_skill_cast)
 	sim.hero_skill_cast.connect(_on_hero_skill_cast)
+	sim.pinball_bounced.connect(_on_pinball_bounced)
+	sim.crate_hit.connect(_on_crate_hit)
+	sim.world_pickup_collected.connect(_on_world_pickup_collected)
 	_reset_feedback()
 	active = true
 	_last_kills = state.kills
@@ -225,7 +260,7 @@ func begin(state: RunState) -> void:
 	position = Vector2.ZERO
 	_update_camera()
 	hud_changed.emit(hud_snapshot())
-	queue_redraw()
+	_request_redraw()
 
 func stop() -> void:
 	active = false
@@ -235,7 +270,7 @@ func stop() -> void:
 		_camera.position = ArenaCatalog.MAX_VIEW_SIZE * 0.5
 		_camera.force_update_scroll()
 		_camera.enabled = false
-	queue_redraw()
+	_request_redraw()
 
 func camera_view() -> Rect2:
 	return ArenaCatalog.visible_rect(sim.player_position if sim != null else CombatSim.ARENA.get_center())
@@ -254,6 +289,26 @@ func _feedback_safe_rect() -> Rect2:
 	var safe := Rect2(view.position + Vector2(24, 110), view.size - Vector2(48, 222))
 	return safe.intersection(CombatSim.ARENA.grow(-8.0))
 
+func _cosmetic_visible_rect() -> Rect2:
+	var view: Rect2 = camera_view()
+	var padding: Vector2 = position.abs() + Vector2.ONE * 4.0
+	return Rect2(view.position - padding, view.size + padding * 2.0)
+
+static func effect_draw_bounds(effect: CombatSim.Effect) -> Rect2:
+	var extent: float = absf(effect.radius) * 1.4 + 8.0
+	return Rect2(effect.position - Vector2.ONE * extent, Vector2.ONE * extent * 2.0)
+
+static func soul_draw_bounds(soul: CombatSim.Soul) -> Rect2:
+	var size: float = 12.0 if soul.value == 1 else 17.0
+	return Rect2(soul.position - Vector2(size * 0.5, size * 0.5 + 2.0), Vector2(size, size + 4.0))
+
+static func number_draw_bounds(number: FloatingNumber) -> Rect2:
+	var padding: float = float(number.font_size) * 0.5 + 4.0
+	var drift: Vector2 = number.velocity.abs() * minf(maxf(number.life, 0.0), 1.0 / 30.0)
+	var half := Vector2(maxf(0.0, number.text_width) * 0.5 + padding, float(number.font_size) * 2.0 + 4.0)
+	half += drift
+	return Rect2(number.position - half, half * 2.0)
+
 func _physics_process(delta: float) -> void:
 	if not active or sim == null:
 		return
@@ -267,6 +322,7 @@ func _physics_process(delta: float) -> void:
 	_advance_dash_afterimages(delta)
 	_advance_dash_evasion_feedback(delta)
 	_advance_pulse_feedback(delta)
+	_advance_interaction_feedback(delta)
 	_active_skill_painter.advance(delta)
 	var movement: Vector2 = _movement()
 	if autopilot:
@@ -294,7 +350,7 @@ func _physics_process(delta: float) -> void:
 	else:
 		position = Vector2.ZERO
 	_update_camera()
-	queue_redraw()
+	_request_redraw()
 
 func request_dash() -> bool:
 	if not active or sim == null or sim.complete or _dash_pending or stress_mode or autopilot:
@@ -371,7 +427,154 @@ func _on_hero_skill_cast(hero_id: String, parameters: Dictionary, origin: Vector
 	if sound != null:
 		sound.play_cue("pulse_hit" if affected > 0 else "pulse", -19.0, "hero_skill:" + hero_id)
 	hud_changed.emit(hud_snapshot())
-	queue_redraw()
+	_request_redraw()
+
+func _on_pinball_bounced(point: Vector2, normal: Vector2, boosted: bool, combo: int) -> void:
+	if not active or sim == null or sim.complete or not point.is_finite() or not normal.is_finite():
+		return
+	if bool(settings.get("flash", true)):
+		var nearest: Dictionary = {}
+		var distance: float = INF
+		for obstacle: Dictionary in _arena_obstacles:
+			if not boosted:
+				break
+			if str(obstacle["art_id"]) != "bumper":
+				continue
+			var separation: float = point.distance_squared_to(obstacle["center"])
+			if separation < distance and separation <= pow(float(obstacle["radius"]) + 56.0, 2.0):
+				nearest = obstacle
+				distance = separation
+		if not nearest.is_empty():
+			_add_interaction_flash(_bumper_flashes, nearest["center"], BUMPER_FLASH_LIFE, BUMPER_FLASH_LIMIT)
+		_shake = maxf(_shake, 0.9 if boosted else 0.45)
+	if sound != null:
+		sound.play("rune", -23.0)
+	hud_changed.emit(hud_snapshot())
+	_request_redraw()
+
+func _on_crate_hit(point: Vector2, broke: bool) -> void:
+	if not active or sim == null or sim.complete or not point.is_finite():
+		return
+	if bool(settings.get("flash", true)) and not broke:
+		_add_interaction_flash(_crate_flashes, point, CRATE_FLASH_LIFE, CRATE_FLASH_LIMIT)
+	if sound != null:
+		sound.play("death" if broke else "hit", -25.0)
+	_request_redraw()
+
+func _on_world_pickup_collected(kind: String, point: Vector2, value: float) -> void:
+	if not active or sim == null or sim.complete or not point.is_finite() or not is_finite(value) or value <= 0.0:
+		return
+	var source: String = "pickup:" + kind
+	_spawn_number(point + Vector2(0, -24), value, source, false, false)
+	var targets: Dictionary = _number_lookup.get(source, {})
+	var candidates: Array = targets.get(-1, [])
+	if not candidates.is_empty():
+		var number: FloatingNumber = candidates.back()
+		number.text = ("−" if kind == "charge" else "+") + _damage_text(number.amount, false) + ("秒" if kind == "charge" else "")
+		number.color = Color("9fd5a0") if kind == "health" else Color("c8b7e9") if kind == "charge" else Color("efca7d")
+		number.text_width = _number_font.get_string_size(number.text, HORIZONTAL_ALIGNMENT_LEFT, -1, number.font_size).x if _number_font != null else float(number.text.length() * number.font_size) * 0.6
+	if sound != null:
+		sound.play("rune" if kind == "charge" else "level" if kind == "health" else "buy", -24.0)
+	hud_changed.emit(hud_snapshot())
+	_request_redraw()
+
+static func _add_interaction_flash(pool: Array[Dictionary], point: Vector2, life: float, limit: int) -> void:
+	for flash: Dictionary in pool:
+		if point.distance_squared_to(flash["position"]) < 1.0:
+			flash["life"] = life
+			return
+	if pool.size() >= limit:
+		pool.pop_front()
+	pool.append({"position": point, "life": life})
+
+func _advance_interaction_feedback(delta: float) -> void:
+	_advance_interaction_pool(_bumper_flashes, delta)
+	_advance_interaction_pool(_crate_flashes, delta)
+
+static func _advance_interaction_pool(pool: Array[Dictionary], delta: float) -> void:
+	for index: int in range(pool.size() - 1, -1, -1):
+		pool[index]["life"] = maxf(0.0, float(pool[index]["life"]) - delta)
+		if float(pool[index]["life"]) <= 0.0:
+			pool.remove_at(index)
+
+static func _interaction_flash(pool: Array[Dictionary], point: Vector2, duration: float) -> float:
+	for flash: Dictionary in pool:
+		if point.distance_squared_to(flash["position"]) < 1.0:
+			return clampf(float(flash["life"]) / duration, 0.0, 1.0)
+	return 0.0
+
+static func ball_frame_index(age: float) -> int:
+	var phase: float = fposmod(maxf(age, 0.0), BALL_FRAME_ENDS[-1]) if is_finite(age) else 0.0
+	for index: int in BALL_FRAME_ENDS.size():
+		if phase < BALL_FRAME_ENDS[index]:
+			return index
+	return BALL_FRAME_ENDS.size() - 1
+
+static func crate_break_frame(age: float) -> int:
+	if not is_finite(age) or age < 0.0 or age >= CRATE_BREAK_LIFE:
+		return -1
+	return mini(9, 2 + int(age / 0.04))
+
+func interaction_presentation_snapshot() -> Dictionary:
+	var result: Dictionary = {"crates": [], "pickups": [], "pinball": {"active": false}, "bumper_feedback_count": _bumper_flashes.size(), "crate_feedback_count": _crate_flashes.size()}
+	if not active or sim == null or sim.interactions == null:
+		return result
+	var state: Dictionary = sim.interactions.snapshot()
+	for crate: Dictionary in state.get("crates", []):
+		var alive: bool = bool(crate["active"])
+		var frame: int = 1 if alive else crate_break_frame(float(crate["break_age"]))
+		if frame < 0:
+			continue
+		var art_id: String = str(crate["art_id"])
+		var chest: bool = alive and art_id == "chest"
+		var texture_id: String = "chest" if chest else "barrel"
+		var factor: float = float(crate["radius"]) * 2.0 / float(_interaction_widths[texture_id])
+		var pressure: float = _interaction_flash(_crate_flashes, crate["position"], CRATE_FLASH_LIFE) if alive else 0.0
+		var stretch := Vector2(1.0 + pressure * 0.06, 1.0 - pressure * 0.10)
+		var extent := Vector2.ONE * (96.0 if chest else 128.0) * factor * stretch
+		var foot: Vector2 = _interaction_feet[texture_id] * factor * stretch
+		if not alive and not bool(settings.get("flash", true)):
+			frame = 2
+		result["crates"].append({"uid": crate["uid"], "position": crate["position"], "radius": crate["radius"], "active": alive,
+			"frame": frame, "texture": texture_id, "rect": Rect2(crate["position"] - foot, extent), "pressure": pressure})
+	for pickup: Dictionary in state.get("pickups", []):
+		var kind: String = str(pickup["kind"])
+		if kind not in ["gold", "health", "charge"]:
+			continue
+		var bob: float = sin(float(pickup.get("age", 0.0)) * 5.0) * 1.5 if bool(settings.get("flash", true)) else 0.0
+		var visible_width: float = 16.0 if kind == "gold" else 18.0
+		var factor: float = visible_width / float(_interaction_widths[kind])
+		var texture: Texture2D = _interaction_textures.get(kind) as Texture2D
+		var source_size: Vector2 = texture.get_size() if texture != null else Vector2.ONE * 64.0
+		result["pickups"].append({"uid": pickup["uid"], "kind": kind, "position": pickup["position"],
+			"rect": Rect2(pickup["position"] - _interaction_feet[kind] * factor - Vector2(0, bob), source_size * factor)})
+	var ball: Dictionary = sim.pinball_snapshot()
+	ball["hero_id"] = sim.run.hero_id
+	ball["identity_texture"] = HeroCatalog.definition(sim.run.hero_id).idle_path
+	ball["identity_rect"] = _ball_identity_rect()
+	ball["frame"] = ball_frame_index(float(ball.get("age", 0.0))) if bool(settings.get("flash", true)) else 0
+	ball["rect"] = Rect2(sim.player_position - Vector2.ONE * 24.0, Vector2.ONE * 48.0)
+	result["pinball"] = ball
+	return result
+
+func _cache_interaction_geometry() -> void:
+	var value: Variant = JSON.parse_string(FileAccess.get_file_as_string(INTERACTION_ROOT + "interaction-art.json"))
+	var assets: Dictionary = value.get("assets", {}) if value is Dictionary else {}
+	for id: String in _interaction_feet:
+		var definition: Dictionary = assets.get("mana" if id == "gold" else id, {})
+		var foot: Variant = definition.get("foot_anchor")
+		if foot is Array and foot.size() == 2:
+			_interaction_feet[id] = Vector2(float(foot[0]), float(foot[1]))
+	for id: String in _interaction_widths:
+		var texture: Texture2D = _interaction_textures.get(id) as Texture2D
+		if texture == null:
+			continue
+		var pixels: Image = texture.get_image()
+		if id == "barrel":
+			pixels = pixels.get_region(Rect2i(128, 0, 128, 128))
+		var width: int = pixels.get_used_rect().size.x
+		if width > 0:
+			_interaction_widths[id] = float(width)
 
 func pulse_feedback_snapshot() -> Dictionary:
 	return {
@@ -424,7 +627,7 @@ func _on_pulse_cast(origin: Vector2, affected: int) -> void:
 	if sound != null:
 		sound.play_cue("pulse_hit" if _pulse_affected > 0 else "pulse", -20.0, "pulse")
 	hud_changed.emit(hud_snapshot())
-	queue_redraw()
+	_request_redraw()
 
 func _advance_pulse_feedback(delta: float) -> void:
 	_skill_feedback_remaining = maxf(0.0, _skill_feedback_remaining - delta)
@@ -481,7 +684,7 @@ func _on_dash_evaded(point: Vector2, _origin: Vector2, _source_id: String, _kind
 	if sound != null:
 		sound.play_cue("evade", -22.0, "dash_evasion")
 	hud_changed.emit(hud_snapshot())
-	queue_redraw()
+	_request_redraw()
 
 func _advance_dash_evasion_feedback(delta: float) -> void:
 	_dash_evasion_remaining = maxf(0.0, _dash_evasion_remaining - delta)
@@ -567,6 +770,8 @@ func _reset_feedback() -> void:
 	_clear_dash_afterimages()
 	_clear_dash_evasion_feedback()
 	_clear_pulse_feedback()
+	_bumper_flashes.clear()
+	_crate_flashes.clear()
 	_enemy_telegraphs.clear()
 	_impact_painter.clear()
 	_active_skill_painter.clear()
@@ -672,6 +877,8 @@ func _on_ended(victory: bool, reason: String) -> void:
 	_clear_dash_afterimages()
 	_clear_dash_evasion_feedback()
 	_clear_pulse_feedback()
+	_bumper_flashes.clear()
+	_crate_flashes.clear()
 	_enemy_telegraphs.clear()
 	_impact_painter.clear()
 	_active_skill_painter.clear()
@@ -707,9 +914,13 @@ func minimap_snapshot() -> Dictionary:
 	for zone: Dictionary in ArenaCatalog.definition(_arena_id)["zones"]:
 		zones.append({"center": Vector2(float(zone["center"][0]), float(zone["center"][1])),
 			"radius": Vector2(float(zone["radius"][0]), float(zone["radius"][1]))})
+	var obstacles: Array[Dictionary] = sim.obstacles.snapshot()
+	for obstacle: Dictionary in obstacles:
+		obstacle["kind"] = "crate" if str(obstacle["id"]).begins_with("crate:") else "prop"
+	var interactions: Dictionary = sim.interactions.snapshot()
 	return {"bounds": CombatSim.ARENA, "player": sim.player_position, "facing": sim.player_direction,
 		"view": camera_view(), "enemies": enemies, "zones": zones, "arena_id": _arena_id,
-		"obstacles": _arena_obstacles.duplicate(true)}
+		"obstacles": obstacles, "pickups": interactions.get("pickups", []), "pinball_active": bool(sim.pinball_snapshot().get("active", false))}
 
 func _draw() -> void:
 	if arena_texture != null:
@@ -755,10 +966,41 @@ func _draw_obstacles() -> void:
 		# All normalized props share a foot anchor; their opaque width fills the collider.
 		var source_width: float = OBSTACLE_ART_WIDTHS.get(art_id, 69.0)
 		var scale: float = radius * 2.0 / source_width
-		var extent := Vector2.ONE * 96.0 * scale
-		var target := Rect2(center - Vector2(48, 84) * scale, extent)
+		var pressure: float = _interaction_flash(_bumper_flashes, center, BUMPER_FLASH_LIFE) if art_id == "bumper" else 0.0
+		var stretch := Vector2(1.0 + pressure * 0.08, 1.0 - pressure * 0.14)
+		var extent := Vector2.ONE * 96.0 * scale * stretch
+		var target := Rect2(center - Vector2(48, 84) * scale * stretch, extent)
 		if target.intersects(visible):
+			draw_texture_rect(texture, target, false, Color(1.0 + pressure * 0.18, 1.0 + pressure * 0.18, 1.0 + pressure * 0.12))
+	_draw_interactions()
+
+func _draw_interactions() -> void:
+	var state: Dictionary = interaction_presentation_snapshot()
+	var visible: Rect2 = camera_view()
+	for crate: Dictionary in state["crates"]:
+		var target: Rect2 = crate["rect"]
+		var texture: Texture2D = _interaction_textures.get(str(crate["texture"])) as Texture2D
+		if texture == null or not target.intersects(visible):
+			continue
+		if bool(crate["active"]):
+			_draw_interaction_shadow(crate["position"], float(crate["radius"]) * 0.95, 0.20)
+		if str(crate["texture"]) == "chest":
 			draw_texture_rect(texture, target, false)
+		else:
+			var frame: int = int(crate["frame"])
+			draw_texture_rect_region(texture, target, Rect2(Vector2(frame % 4, floorf(float(frame) / 4.0)) * 128.0, Vector2.ONE * 128.0))
+	for pickup: Dictionary in state["pickups"]:
+		var target: Rect2 = pickup["rect"]
+		var texture: Texture2D = _interaction_textures.get(str(pickup["kind"])) as Texture2D
+		if texture == null or not target.intersects(visible):
+			continue
+		_draw_interaction_shadow(pickup["position"], 8.0 if str(pickup["kind"]) == "gold" else 9.0, 0.16)
+		draw_texture_rect(texture, target, false)
+
+func _draw_interaction_shadow(center: Vector2, radius: float, opacity: float) -> void:
+	draw_set_transform(center + Vector2(0, 1), 0.0, Vector2(1.0, 0.30))
+	draw_circle(Vector2.ZERO, radius, Color(Color("253d54"), opacity))
+	draw_set_transform(Vector2.ZERO)
 
 func _draw_skill_feedback() -> void:
 	if _skill_feedback_remaining <= 0.0 or _dash_evasion_font == null:
@@ -857,8 +1099,9 @@ func _draw_outgoing_feedback() -> void:
 	_draw_numbers(false)
 
 func _draw_numbers(player_hit: bool) -> void:
+	var visible: Rect2 = _cosmetic_visible_rect()
 	for number: FloatingNumber in _numbers:
-		if number.player_hit == player_hit:
+		if number.player_hit == player_hit and number_draw_bounds(number).intersects(visible):
 			_draw_number(number)
 
 func _draw_number(number: FloatingNumber) -> void:
@@ -928,12 +1171,16 @@ func _draw_atmosphere() -> void:
 		draw_texture_rect(glow_texture, Rect2(sim.boss.position - Vector2(110, 100), Vector2(220, 180)), false, Color(0.73, 0.59, 0.85, pulse))
 
 func _draw_souls() -> void:
+	var visible: Rect2 = _cosmetic_visible_rect()
 	for soul: CombatSim.Soul in sim.souls:
-		if not soul.active:
+		if not soul.active or not soul_draw_bounds(soul).intersects(visible):
 			continue
-		var size: float = 12.0 if soul.value == 1 else 17.0
-		var offset: Vector2 = Vector2(0, sin(soul.age * 3.0 + float(soul.slot)) * 2.0)
-		draw_texture_rect(soul_texture, Rect2(soul.position + offset - Vector2.ONE * size * 0.5, Vector2.ONE * size), false)
+		_draw_soul(soul)
+
+func _draw_soul(soul: CombatSim.Soul) -> void:
+	var size: float = 12.0 if soul.value == 1 else 17.0
+	var offset: Vector2 = Vector2(0, sin(soul.age * 3.0 + float(soul.slot)) * 2.0)
+	draw_texture_rect(soul_texture, Rect2(soul.position + offset - Vector2.ONE * size * 0.5, Vector2.ONE * size), false)
 
 func _draw_enemies() -> void:
 	# Grouping textures preserves renderer batching even with hundreds of opponents.
@@ -989,7 +1236,7 @@ func _enemy_tint(enemy: CombatSim.Enemy) -> Color:
 	return Color(base.r * gain, base.g * gain, base.b * gain, 1.0)
 
 func _draw_friendly_shots() -> void:
-	_projectile_painter.rebuild(sim.shots)
+	_projectile_painter.rebuild(sim.shots, _cosmetic_visible_rect())
 	_projectile_painter.draw(self)
 
 func _draw_player_ground() -> void:
@@ -1037,14 +1284,17 @@ func _load_hero_art() -> void:
 
 
 func _draw_player() -> void:
-	_draw_dash_afterimages()
 	var center: Vector2 = sim.player_position
 	var bob: float = sin(_visual_time * 9.0) * minf(2.0, sim.player_velocity.length() * 0.012)
 	var tint: Color = _player_tint()
 	var lean: float = clampf(sim.player_velocity.x * 0.0002, -0.045, 0.045)
-	draw_set_transform(center, lean, Vector2(-1.0 if _player_flip_h() else 1.0, 1.0))
-	_draw_player_texture(_player_frame_index(), bob, tint)
-	draw_set_transform(Vector2.ZERO)
+	if active and bool(sim.pinball_snapshot().get("active", false)):
+		_draw_ball_player(tint)
+	else:
+		_draw_dash_afterimages()
+		draw_set_transform(center, lean, Vector2(-1.0 if _player_flip_h() else 1.0, 1.0))
+		_draw_player_texture(_player_frame_index(), bob, tint)
+		draw_set_transform(Vector2.ZERO)
 	var orbit_count: int = mini(8, sim.run.loadout.size())
 	for index: int in orbit_count:
 		var equipped: Dictionary = sim.run.loadout[index]
@@ -1064,6 +1314,47 @@ func _draw_player() -> void:
 		draw_string_outline(_number_font, point, extra, HORIZONTAL_ALIGNMENT_LEFT, -1, 12, 1, Color("0d111b"))
 		draw_string(_number_font, point, extra, HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color("f0e5cc"))
 
+func _draw_ball_player(tint: Color) -> void:
+	var ball: Dictionary = sim.pinball_snapshot()
+	var frame: int = ball_frame_index(float(ball.get("age", 0.0))) if bool(settings.get("flash", true)) else 0
+	var orb: Texture2D = _interaction_textures.get("ball") as Texture2D
+	var center: Vector2 = sim.player_position
+	var animated: bool = bool(settings.get("flash", true))
+	if animated:
+		var velocity: Vector2 = ball.get("velocity", Vector2.ZERO)
+		var streaks: PackedVector2Array = ball_speed_lines(center, velocity)
+		for index: int in range(0, streaks.size(), 2):
+			draw_line(streaks[index], streaks[index + 1], Color(Color("253d54"), 0.72), 2.0)
+			draw_line(streaks[index], streaks[index + 1], Color(Color("efca7d"), 0.85), 1.0)
+		draw_circle(center, 17.0, Color(Color("efca7d"), 0.06))
+	draw_arc(center, 18.0, 0.0, TAU, 40, Color("253d54"), 2.0)
+	draw_arc(center, 18.0, 0.0, TAU, 40, Color("efca7d"), 1.0)
+	if orb != null:
+		draw_texture_rect_region(orb, Rect2(center - Vector2.ONE * 24.0, Vector2.ONE * 48.0), Rect2(Vector2(frame * 64, 0), Vector2.ONE * 64.0))
+	if not textures.has("player"):
+		return
+	var target: Rect2 = _ball_identity_rect()
+	# The original character remains legible inside the shared energy form.
+	for offset: Vector2 in [Vector2.LEFT, Vector2.RIGHT, Vector2.UP, Vector2.DOWN]:
+		draw_texture_rect(textures["player"], Rect2(target.position + offset, target.size), false, Color("253d54"))
+	draw_texture_rect(textures["player"], target, false, tint)
+
+static func ball_speed_lines(center: Vector2, velocity: Vector2) -> PackedVector2Array:
+	var result := PackedVector2Array()
+	if not center.is_finite() or not velocity.is_finite() or velocity.is_zero_approx():
+		return result
+	var backward: Vector2 = -velocity.normalized()
+	var tangent: Vector2 = backward.orthogonal()
+	for side: float in [-1.0, 1.0]:
+		result.append(center + backward * 22.0 + tangent * side * 7.0)
+		result.append(center + backward * 35.0 + tangent * side * 7.0)
+	return result
+
+func _ball_identity_rect() -> Rect2:
+	var hero: HeroDef = HeroCatalog.definition(sim.run.hero_id)
+	var factor: float = 32.0 / float(hero.frame_size)
+	return Rect2(sim.player_position + Vector2(-hero.foot_anchor.x * factor, 10.0 - hero.foot_anchor.y * factor), Vector2.ONE * 32.0)
+
 func _draw_dash_afterimages() -> void:
 	if not bool(settings.get("flash", true)) or not textures.has("player"):
 		return
@@ -1078,30 +1369,35 @@ func _draw_dash_afterimages() -> void:
 	draw_set_transform(Vector2.ZERO)
 
 func _draw_effects() -> void:
+	var visible: Rect2 = _cosmetic_visible_rect()
 	for effect: CombatSim.Effect in sim.effects:
-		var progress: float = 1.0 - effect.life / effect.total
-		var color: Color = effect.color
-		color.a = (1.0 - progress) * 0.65
-		if effect.kind == 0:
-			draw_circle(effect.position, effect.radius * (0.5 + progress * 0.5), Color(color, color.a * 0.08))
-			draw_arc(effect.position, effect.radius * (0.3 + progress * 0.7), 0, TAU, 28, color, 2.5 * (1.0 - progress) + 0.5, true)
-			draw_arc(effect.position, effect.radius * (0.12 + progress * 0.55), 0, TAU, 20, Color(color, color.a * 0.45), 1.0, true)
-		elif effect.kind == 1:
-			draw_arc(effect.position, effect.radius * (0.7 + progress * 0.7), 0, TAU, 12, color, 1.5, true)
-			var ray: float = effect.radius * (0.3 + progress * 0.3)
-			draw_line(effect.position - Vector2(ray, 0), effect.position + Vector2(ray, 0), Color(color, color.a * 0.65), 1.0, true)
-		elif effect.kind == 3:
-			var radius: float = effect.radius * (0.3 + progress * 0.7)
-			draw_arc(effect.position, radius, 0, TAU, 24, color, 2.0, true)
-			for index: int in 6:
-				var direction: Vector2 = Vector2.from_angle(float(index) * TAU / 6.0)
-				draw_line(effect.position + direction * radius * 0.45, effect.position + direction * radius, Color("c9dbed", color.a), 1.5, true)
-			draw_arc(effect.position, radius * 0.55, 0, TAU, 20, Color("e4bb8c", color.a * 0.7), 1.0, true)
-		else:
-			for index: int in 5:
-				var direction: Vector2 = Vector2.from_angle(float(index) * TAU / 5.0)
-				var point: Vector2 = effect.position + direction * effect.radius * progress
-				draw_line(point, point + direction * 5.0 * (1.0 - progress), color, 2.0, true)
+		if effect_draw_bounds(effect).intersects(visible):
+			_draw_effect(effect)
+
+func _draw_effect(effect: CombatSim.Effect) -> void:
+	var progress: float = 1.0 - effect.life / effect.total
+	var color: Color = effect.color
+	color.a = (1.0 - progress) * 0.65
+	if effect.kind == 0:
+		draw_circle(effect.position, effect.radius * (0.5 + progress * 0.5), Color(color, color.a * 0.08))
+		draw_arc(effect.position, effect.radius * (0.3 + progress * 0.7), 0, TAU, 28, color, 2.5 * (1.0 - progress) + 0.5, true)
+		draw_arc(effect.position, effect.radius * (0.12 + progress * 0.55), 0, TAU, 20, Color(color, color.a * 0.45), 1.0, true)
+	elif effect.kind == 1:
+		draw_arc(effect.position, effect.radius * (0.7 + progress * 0.7), 0, TAU, 12, color, 1.5, true)
+		var ray: float = effect.radius * (0.3 + progress * 0.3)
+		draw_line(effect.position - Vector2(ray, 0), effect.position + Vector2(ray, 0), Color(color, color.a * 0.65), 1.0, true)
+	elif effect.kind == 3:
+		var radius: float = effect.radius * (0.3 + progress * 0.7)
+		draw_arc(effect.position, radius, 0, TAU, 24, color, 2.0, true)
+		for index: int in 6:
+			var direction: Vector2 = Vector2.from_angle(float(index) * TAU / 6.0)
+			draw_line(effect.position + direction * radius * 0.45, effect.position + direction * radius, Color("c9dbed", color.a), 1.5, true)
+		draw_arc(effect.position, radius * 0.55, 0, TAU, 20, Color("e4bb8c", color.a * 0.7), 1.0, true)
+	else:
+		for index: int in 5:
+			var direction: Vector2 = Vector2.from_angle(float(index) * TAU / 5.0)
+			var point: Vector2 = effect.position + direction * effect.radius * progress
+			draw_line(point, point + direction * 5.0 * (1.0 - progress), color, 2.0, true)
 
 func _draw_danger() -> void:
 	if active:

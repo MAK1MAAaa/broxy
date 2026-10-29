@@ -138,7 +138,8 @@ func _sim_signature(sim: CombatSim) -> String:
 			entities.append([soul.slot, soul.position, soul.value, soul.age])
 	for zone: CombatSim.WarningZone in sim.zones:
 		entities.append([zone.source_id, zone.position, zone.radius, zone.age, zone.damage, zone.triggered])
-	return JSON.stringify([sim.snapshot(), sim.player_position, sim.player_velocity, sim.player_direction, sim.dash_snapshot(), sim.pulse_snapshot(), str(sim.rng.seed), str(sim.rng.state), entities])
+	return JSON.stringify([sim.snapshot(), sim.player_position, sim.player_velocity, sim.player_direction, sim.dash_snapshot(), sim.pulse_snapshot(), str(sim.rng.seed), str(sim.rng.state), entities,
+		sim.obstacles.snapshot(), sim.interactions.snapshot(), str(sim.interactions._rng.state)])
 
 func _test_world_resources_and_redraws() -> void:
 	var sound := SilentSound.new()
@@ -153,10 +154,38 @@ func _test_world_resources_and_redraws() -> void:
 		world.begin(state)
 		world.set_physics_process(false)
 		_expect_texture(world.arena_texture, ArenaCatalog.texture_path(id), ArenaCatalog.art_rect().size, "expanded world arena " + id)
-		_check(world._arena_obstacles.size() == 10 and world.minimap_snapshot()["obstacles"] == world._arena_obstacles, "Rendered props and minimap use the actual selected collision layout: " + id)
+		var colliders: Array[Dictionary] = world.sim.obstacles.snapshot()
+		var static_props: Array[Dictionary] = []
+		var crate_colliders: Dictionary = {}
+		var expected_markers: Array[Dictionary] = []
+		for collider: Dictionary in colliders:
+			var crate: bool = str(collider["id"]).begins_with("crate:")
+			if crate:
+				crate_colliders[str(collider["id"])] = collider
+			else:
+				static_props.append(collider)
+			var marker: Dictionary = collider.duplicate(true)
+			marker["kind"] = "crate" if crate else "prop"
+			expected_markers.append(marker)
+		var interactions: Dictionary = world.sim.interactions.snapshot()
+		var rendered: Dictionary = world.interaction_presentation_snapshot()
+		_check(static_props.size() == 12 and world._arena_obstacles == static_props and crate_colliders.size() == 12 and colliders.size() == 24 and world.minimap_snapshot()["obstacles"] == expected_markers, "Static rendering retains twelve props while collision and the live minimap also include twelve separate crates: " + id)
+		_check(rendered["crates"].size() == interactions["crates"].size() and rendered["crates"].size() == 12, "Dynamic scenery rendering projects every real active crate exactly once: " + id)
+		for crate: Dictionary in interactions["crates"]:
+			var physics: Dictionary = crate_colliders.get("crate:" + str(crate["id"]), {})
+			var visual: Dictionary = {}
+			for entry: Dictionary in rendered["crates"]:
+				if int(entry["uid"]) == int(crate["uid"]):
+					visual = entry
+					break
+			_check(not physics.is_empty() and not visual.is_empty() and physics["center"] == crate["position"] and visual["position"] == physics["center"] and visual["radius"] == physics["radius"] and visual["active"] == crate["active"], "The dynamic image, collider and map share the same real crate identity and footprint: %s/%s" % [id, crate["id"]])
 		var minimap_copy: Dictionary = world.minimap_snapshot()
+		minimap_copy["obstacles"][0]["center"] = Vector2.INF
 		minimap_copy["obstacles"].clear()
-		_check(world._arena_obstacles.size() == 10 and world.sim.obstacles.snapshot().size() == 10, "HUD snapshots cannot mutate rendering or collision obstacles: " + id)
+		var render_copy: Dictionary = world.interaction_presentation_snapshot()
+		render_copy["crates"][0]["position"] = Vector2.INF
+		render_copy["crates"].clear()
+		_check(world._arena_obstacles == static_props and world.sim.obstacles.snapshot() == colliders and world.sim.interactions.snapshot() == interactions and world.interaction_presentation_snapshot() == rendered and world.minimap_snapshot()["obstacles"] == expected_markers, "Mutating returned map and dynamic-render arrays or nested entries cannot change static art, real crate state or collision: " + id)
 		for prop: String in ["monument", "planter", "bumper"]:
 			_expect_texture(world._obstacle_textures.get(prop) as Texture2D, FAN_ROOT + "props/%s.png" % prop, Vector2(96, 96), "ground prop " + prop)
 		_check(world.texture_filter == CanvasItem.TEXTURE_FILTER_NEAREST, "The actual world uses local nearest filtering: " + id)

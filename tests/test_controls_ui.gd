@@ -305,7 +305,7 @@ func _test_mapped_hud() -> void:
 	var pulse_key: Label = _ui._hud["pulse_key"]
 	var secondary_key: Label = _ui._hud["secondary_key"]
 	_check(dash_label.text == "冲刺 · 空格" and pulse_label.text == GameCatalog.skill("pulse").display_name and pulse_key.text == "Q" and secondary_key.text == "E", "Default controls expose independent dash and both equipped skill keys")
-	_check((_ui._hud["dash"] as Control).tooltip_text == "空格：向当前移动方向冲刺；静止时沿面向。\n短冲距离约132，冷却2.4秒；起始短暂闪避，可冲离减速地形。", "Default controls preserve the exact existing dash tooltip")
+	_check((_ui._hud["dash"] as Control).tooltip_text == "空格：向当前移动方向冲刺；静止时沿面向。\n短冲距离约132，冷却2.4秒；起始短暂闪避，可冲离减速地形。\n冲刺撞击弹板触发球化。", "Default controls expose the exact dash values and its actual bumper-triggered transformation")
 	var custom: Dictionary = ControlBindings.defaults()
 	custom["dash"] = KEY_F
 	custom["pulse"] = KEY_G

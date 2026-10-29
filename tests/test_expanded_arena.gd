@@ -44,7 +44,8 @@ func _test_world_and_camera() -> void:
 	_check(CombatSim.ARENA == ArenaCatalog.WORLD_BOUNDS and CombatSim.ARENA.size == Vector2(3444, 1800), "All combat systems share the expanded playable bounds")
 	_check(CombatSim.ARENA.get_center() == OLD_ARENA.get_center() and _sim().player_position == Vector2(640, 365), "Expansion preserves the existing central spawn coordinates")
 	_check(CombatSim.ARENA.get_area() == OLD_ARENA.get_area() * 12.0, "The authored playable area is twelve times the original arena")
-	_check(ArenaCatalog.art_rect() == Rect2(-1146, -679, 3780, 2104), "The shared art rectangle reserves asymmetric world-edge room for the HUD and minimap")
+	_check(ArenaCatalog.art_rect() == Rect2(-1146, -767, 3780, 2192), "The shared art rectangle reserves the exact expanded top art margin and unchanged side/bottom margins")
+	_check(ArenaCatalog.visible_rect(CombatSim.ARENA.get_center()) == Rect2(0, 5, 1280, 720) and ArenaCatalog.visible_rect(CombatSim.ARENA.get_center()).position - ArenaCatalog.art_rect().position == Vector2(1146, 772), "The unchanged start camera uses the exact new full-resolution preview crop")
 	for point: Vector2 in _points():
 		var visible: Rect2 = ArenaCatalog.visible_rect(point)
 		_check(visible.size == Vector2(1280, 720) and ArenaCatalog.art_rect().encloses(visible), "The camera exposes one full reference viewport inside the artwork")
@@ -53,7 +54,7 @@ func _test_world_and_camera() -> void:
 	var playable: Rect2 = CombatSim.ARENA.grow(-16.0)
 	for point: Vector2 in [playable.position, playable.end, Vector2(playable.position.x, playable.end.y), Vector2(playable.end.x, playable.position.y)]:
 		var screen_position: Vector2 = point - ArenaCatalog.visible_rect(point).position
-		_check(screen_position.x >= 80.0 and screen_position.x <= 992.0 and screen_position.y >= 160.0 and screen_position.y <= 544.0, "The actual clamped player remains clear of HUD panels and the minimap at every corner")
+		_check(screen_position.x in [80.0, 992.0] and screen_position.y in [248.0, 544.0], "The exact corner projection includes the new top artwork margin while preserving side and bottom clearance")
 	_check(ArenaCatalog.visible_rect(Vector2.INF) == ArenaCatalog.visible_rect(CombatSim.ARENA.get_center()), "Invalid presentation coordinates safely use the central view")
 	_check(ArenaCatalog.visible_rect(Vector2.ZERO, Vector2.INF).size == ArenaCatalog.MAX_VIEW_SIZE and ArenaCatalog.visible_rect(Vector2.ZERO, Vector2(4096, 2160)).size == ArenaCatalog.MAX_VIEW_SIZE, "Invalid and oversized logical view sizes remain within the supported camera envelope")
 	_check(ArenaCatalog.visible_rect(Vector2.ZERO, Vector2(960, 540)).size == Vector2(960, 540), "Smaller logical views retain valid centered bounds")

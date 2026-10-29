@@ -8,11 +8,67 @@ const WORLD_BOUNDS: Rect2 = Rect2(-1082, -535, 3444, 1800)
 const MAX_VIEW_SIZE: Vector2 = Vector2(1280, 720)
 const BORDER_SIZE: float = 64.0
 const ART_MARGIN_LEFT: float = 64.0
-const ART_MARGIN_TOP: float = 144.0
+const ART_MARGIN_TOP: float = 232.0
 const ART_MARGIN_RIGHT: float = 272.0
 const ART_MARGIN_BOTTOM: float = 160.0
+const TERRAIN_CELL_SIZE: float = 128.0
+
+class TerrainIndex extends RefCounted:
+	var multiplier: float = 1.0
+	var terrain_name: String = ""
+	var centers_x: PackedFloat64Array = PackedFloat64Array()
+	var centers_y: PackedFloat64Array = PackedFloat64Array()
+	var radii_x: PackedFloat64Array = PackedFloat64Array()
+	var radii_y: PackedFloat64Array = PackedFloat64Array()
+	var cells: Dictionary = {}
+	var empty_ids: PackedInt32Array = PackedInt32Array()
+	var minimum_x: float = INF
+	var minimum_y: float = INF
+	var maximum_x: float = -INF
+	var maximum_y: float = -INF
+
+	func _init(arena: Dictionary) -> void:
+		multiplier = float(arena["move_multiplier"])
+		terrain_name = str(arena["terrain_name"])
+		for zone: Dictionary in arena["zones"]:
+			var center: Array = zone["center"]
+			var radius: Array = zone["radius"]
+			var cx: float = float(center[0])
+			var cy: float = float(center[1])
+			var rx: float = float(radius[0])
+			var ry: float = float(radius[1])
+			var index: int = centers_x.size()
+			centers_x.append(cx)
+			centers_y.append(cy)
+			radii_x.append(rx)
+			radii_y.append(ry)
+			minimum_x = minf(minimum_x, cx - rx)
+			minimum_y = minf(minimum_y, cy - ry)
+			maximum_x = maxf(maximum_x, cx + rx)
+			maximum_y = maxf(maximum_y, cy + ry)
+			var first := Vector2i(floori((cx - rx) / TERRAIN_CELL_SIZE), floori((cy - ry) / TERRAIN_CELL_SIZE))
+			var last := Vector2i(floori((cx + rx) / TERRAIN_CELL_SIZE), floori((cy + ry) / TERRAIN_CELL_SIZE))
+			for x: int in range(first.x, last.x + 1):
+				for y: int in range(first.y, last.y + 1):
+					var key := Vector2i(x, y)
+					var ids: PackedInt32Array = cells.get(key, PackedInt32Array())
+					ids.append(index)
+					cells[key] = ids
+
+	func contains(point: Vector2) -> bool:
+		if point.x < minimum_x or point.x > maximum_x or point.y < minimum_y or point.y > maximum_y:
+			return false
+		var key := Vector2i(floori(point.x / TERRAIN_CELL_SIZE), floori(point.y / TERRAIN_CELL_SIZE))
+		var ids: PackedInt32Array = cells.get(key, empty_ids)
+		for index: int in ids:
+			var x: float = (point.x - centers_x[index]) / radii_x[index]
+			var y: float = (point.y - centers_y[index]) / radii_y[index]
+			if x * x + y * y <= 1.0:
+				return true
+		return false
 
 static var _definitions: Dictionary = {}
+static var _terrain_indices: Dictionary = {}
 
 
 static func normalize_id(id: String) -> String:
@@ -57,27 +113,16 @@ static func movement_multiplier(id: String, point: Vector2) -> float:
 	if id == IDS[0] or not IDS.has(id) or not point.is_finite():
 		return 1.0
 	_ensure_loaded()
-	var arena: Dictionary = _definitions[id]
-	return float(arena["move_multiplier"]) if _inside_zone(arena, point) else 1.0
+	var terrain: TerrainIndex = _terrain_indices[id]
+	return terrain.multiplier if terrain.contains(point) else 1.0
 
 
 static func terrain_name(id: String, point: Vector2) -> String:
 	if id == IDS[0] or not IDS.has(id) or not point.is_finite():
 		return ""
 	_ensure_loaded()
-	var arena: Dictionary = _definitions[id]
-	return str(arena["terrain_name"]) if _inside_zone(arena, point) else ""
-
-
-static func _inside_zone(arena: Dictionary, point: Vector2) -> bool:
-	for zone: Dictionary in arena["zones"]:
-		var center: Array = zone["center"]
-		var radius: Array = zone["radius"]
-		var x: float = (point.x - float(center[0])) / float(radius[0])
-		var y: float = (point.y - float(center[1])) / float(radius[1])
-		if x * x + y * y <= 1.0:
-			return true
-	return false
+	var terrain: TerrainIndex = _terrain_indices[id]
+	return terrain.terrain_name if terrain.contains(point) else ""
 
 
 static func _ensure_loaded() -> void:
@@ -92,3 +137,4 @@ static func _ensure_loaded() -> void:
 	assert(_definitions.size() == IDS.size(), "The arena catalog must contain all four authored maps")
 	for id: String in IDS:
 		assert(_definitions.has(id), "Missing arena: " + id)
+		_terrain_indices[id] = TerrainIndex.new(_definitions[id])

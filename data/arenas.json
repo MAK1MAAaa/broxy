@@ -8,6 +8,20 @@
     "terrain_name": "石板",
     "move_multiplier": 1.0,
     "legacy_zone_count": 0,
+    "crates": [
+      {"id": "court_west", "center": [360, 160], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "court_east", "center": [950, 160], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "court_southwest", "center": [440, 620], "radius": 18, "art_id": "chest", "max_health": 40},
+      {"id": "court_southeast", "center": [840, 620], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "west_passage", "center": [-800, 40], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "northwest_cache", "center": [-280, -350], "radius": 18, "art_id": "chest", "max_health": 40},
+      {"id": "north_cache", "center": [360, -330], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "northeast_cache", "center": [1770, -300], "radius": 18, "art_id": "chest", "max_health": 40},
+      {"id": "east_passage", "center": [2170, 230], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "southeast_cache", "center": [1990, 950], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "south_cache", "center": [970, 1090], "radius": 18, "art_id": "chest", "max_health": 40},
+      {"id": "southwest_cache", "center": [-750, 1020], "radius": 18, "art_id": "barrel", "max_health": 24}
+    ],
     "zones": [],
     "obstacles": [
       {"id": "southwest", "center": [200, 560], "radius": 30, "art_id": "monument"},
@@ -19,7 +33,9 @@
       {"id": "east", "center": [2050, 650], "radius": 40, "art_id": "monument"},
       {"id": "east_south", "center": [1510, 1000], "radius": 38, "art_id": "planter"},
       {"id": "south", "center": [510, 1000], "radius": 44, "art_id": "bumper"},
-      {"id": "west_south", "center": [-500, 900], "radius": 42, "art_id": "monument"}
+      {"id": "west_south", "center": [-500, 900], "radius": 42, "art_id": "monument"},
+      {"id": "west_bumper", "center": [80, 360], "radius": 28, "art_id": "bumper"},
+      {"id": "east_bumper", "center": [1200, 360], "radius": 28, "art_id": "bumper"}
     ]
   },
   {
@@ -31,6 +47,20 @@
     "terrain_name": "湿苔",
     "move_multiplier": 0.72,
     "legacy_zone_count": 3,
+    "crates": [
+      {"id": "court_west", "center": [360, 160], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "court_east", "center": [950, 160], "radius": 18, "art_id": "chest", "max_health": 40},
+      {"id": "court_southwest", "center": [440, 620], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "court_southeast", "center": [840, 620], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "west_passage", "center": [-800, 40], "radius": 18, "art_id": "chest", "max_health": 40},
+      {"id": "northwest_cache", "center": [-280, -350], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "north_cache", "center": [360, -330], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "northeast_cache", "center": [1770, -300], "radius": 18, "art_id": "chest", "max_health": 40},
+      {"id": "east_passage", "center": [2170, 230], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "southeast_cache", "center": [1990, 950], "radius": 18, "art_id": "chest", "max_health": 40},
+      {"id": "south_cache", "center": [970, 1090], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "southwest_cache", "center": [-750, 1020], "radius": 18, "art_id": "barrel", "max_health": 24}
+    ],
     "zones": [
       {"center": [310, 275], "radius": [150, 68]},
       {"center": [970, 440], "radius": [155, 78]},
@@ -54,7 +84,9 @@
       {"id": "east", "center": [2010, 650], "radius": 36, "art_id": "planter"},
       {"id": "east_south", "center": [1520, 1000], "radius": 44, "art_id": "monument"},
       {"id": "south", "center": [530, 1000], "radius": 38, "art_id": "planter"},
-      {"id": "west_south", "center": [-510, 900], "radius": 40, "art_id": "bumper"}
+      {"id": "west_south", "center": [-510, 900], "radius": 40, "art_id": "bumper"},
+      {"id": "west_bumper", "center": [80, 360], "radius": 28, "art_id": "bumper"},
+      {"id": "east_bumper", "center": [1200, 360], "radius": 28, "art_id": "bumper"}
     ]
   },
   {
@@ -66,6 +98,20 @@
     "terrain_name": "秘纹",
     "move_multiplier": 0.84,
     "legacy_zone_count": 3,
+    "crates": [
+      {"id": "court_west", "center": [360, 160], "radius": 18, "art_id": "chest", "max_health": 40},
+      {"id": "court_east", "center": [950, 160], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "court_southwest", "center": [440, 620], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "court_southeast", "center": [840, 620], "radius": 18, "art_id": "chest", "max_health": 40},
+      {"id": "west_passage", "center": [-800, 40], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "northwest_cache", "center": [-280, -350], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "north_cache", "center": [360, -330], "radius": 18, "art_id": "chest", "max_health": 40},
+      {"id": "northeast_cache", "center": [1770, -300], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "east_passage", "center": [2170, 230], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "southeast_cache", "center": [1990, 950], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "south_cache", "center": [970, 1090], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "southwest_cache", "center": [-750, 1020], "radius": 18, "art_id": "chest", "max_health": 40}
+    ],
     "zones": [
       {"center": [340, 455], "radius": [170, 78]},
       {"center": [760, 220], "radius": [170, 52]},
@@ -89,7 +135,9 @@
       {"id": "east", "center": [2030, 650], "radius": 44, "art_id": "monument"},
       {"id": "east_south", "center": [1510, 1000], "radius": 36, "art_id": "bumper"},
       {"id": "south", "center": [530, 1000], "radius": 42, "art_id": "monument"},
-      {"id": "west_south", "center": [-490, 900], "radius": 38, "art_id": "planter"}
+      {"id": "west_south", "center": [-490, 900], "radius": 38, "art_id": "planter"},
+      {"id": "west_bumper", "center": [80, 360], "radius": 28, "art_id": "bumper"},
+      {"id": "east_bumper", "center": [1200, 360], "radius": 28, "art_id": "bumper"}
     ]
   },
   {
@@ -101,6 +149,20 @@
     "terrain_name": "碎木",
     "move_multiplier": 0.88,
     "legacy_zone_count": 4,
+    "crates": [
+      {"id": "court_west", "center": [360, 160], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "court_east", "center": [950, 160], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "court_southwest", "center": [440, 620], "radius": 18, "art_id": "chest", "max_health": 40},
+      {"id": "court_southeast", "center": [840, 620], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "west_passage", "center": [-800, 40], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "northwest_cache", "center": [-280, -350], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "north_cache", "center": [360, -330], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "northeast_cache", "center": [1770, -300], "radius": 18, "art_id": "chest", "max_health": 40},
+      {"id": "east_passage", "center": [2170, 230], "radius": 18, "art_id": "chest", "max_health": 40},
+      {"id": "southeast_cache", "center": [1990, 950], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "south_cache", "center": [970, 1090], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "southwest_cache", "center": [-750, 1020], "radius": 18, "art_id": "chest", "max_health": 40}
+    ],
     "zones": [
       {"center": [245, 230], "radius": [110, 50]},
       {"center": [490, 480], "radius": [140, 64]},
@@ -125,7 +187,9 @@
       {"id": "east", "center": [2040, 660], "radius": 38, "art_id": "monument"},
       {"id": "east_south", "center": [1520, 1010], "radius": 42, "art_id": "planter"},
       {"id": "south", "center": [520, 1000], "radius": 36, "art_id": "bumper"},
-      {"id": "west_south", "center": [-500, 890], "radius": 44, "art_id": "monument"}
+      {"id": "west_south", "center": [-500, 890], "radius": 44, "art_id": "monument"},
+      {"id": "west_bumper", "center": [80, 360], "radius": 28, "art_id": "bumper"},
+      {"id": "east_bumper", "center": [1200, 360], "radius": 28, "art_id": "bumper"}
     ]
   }
 ]

@@ -69,9 +69,9 @@ class WorldFlipperHeroAssets(unittest.TestCase):
         self.assertEqual(len(sources), 12)
         self.assertEqual(len({source["id"] for source in sources}), 12)
         manifest = read(ROOT / "assets/worldflipper/manifest.json")
-        self.assertEqual(manifest["revision"], "world-flipper-fan-05")
-        self.assertEqual(len(manifest["sources"]), 57)
-        self.assertEqual(len(manifest["assets"]), 58)
+        self.assertEqual(manifest["revision"], "world-flipper-fan-06")
+        self.assertEqual(len(manifest["sources"]), 67)
+        self.assertEqual(len(manifest["assets"]), 64)
         self.assertEqual([source for source in manifest["sources"] if source["kind"].startswith("hero_")], sources)
         for hero, (name, _, _) in HEROES.items():
             selected = [source for source in sources if source["character_id"] == hero]
