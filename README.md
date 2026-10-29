@@ -2,7 +2,9 @@
 
 Godot 4.7.2 普通版、带类型标注的 GDScript 开发的 macOS / Windows 单人割草原型。围绕占格背包、可升阶法器与行为符文，完成短波次战斗、经验强化、商店整理和最终 Boss。
 
-当前版本在原游戏基础上更换为明快像素美术，参考《弹射世界》的像素簇与鲜明轮廓：保留鸟喙面具主角、全部敌人与道具身份，重绘六角色、四地图、26枚图标、弹体与界面，使用奶油纸卡和青绿装备盒。玩法与关卡数据沿用原版；旧55项素材保留，新40张像素SVG与菜单PNG独立存放。来源、生成方式与验证见[美术换装](docs/art-reskin.md)。
+此前美术换装在原游戏基础上更换为明快像素风格，参考《弹射世界》的像素簇与鲜明轮廓，重绘六角色、四地图、26枚图标、弹体与界面，使用奶油纸卡和青绿装备盒。玩法与关卡数据沿用原版；旧55项素材保留，新40张像素SVG与菜单PNG独立存放。来源、生成方式与历史验证见[美术换装](docs/art-reskin.md)。
+
+本轮按用户指定改用《弹射世界》原作素材制作同人外观：战斗主角换为阿尔克，接入原作待机与前后步行帧；八件武器使用Wiki透明像素图，统一出现在起始选择、商店、背包、装备详情、HUD和环绕法器。角色仍沿用原绘制大小，动画随暂停冻结，冲刺残影保留采样姿态。素材来源、外观映射与原版权说明见[同人素材](assets/worldflipper/PROVENANCE.md)，实现和验收见[阿尔克与武器换装](docs/world-flipper-art.md)。这些原图未发现开放资产许可，不属于旧程序素材的CC0声明。
 
 当前材质迭代细化六角色的面具、披风、护甲、法杖和金冠，统一左上光与右下暗面，保留原透明轮廓。四张连续大地图使用变长石板、湿苔、冰裂和玄武岩碎屑，外缘分别采用石柱、苔冠、冰晶与岩块。人物、敌人及魂屑增加静止贴地阴影；脚下法阵和Boss光斑压低，并置于实体下方，敌方预警继续置顶。规则与验收见[材质与贴地层次](docs/art-polish.md)。
 
@@ -64,7 +66,7 @@ UI 优化分支 `codex/ui-refinement` 将商店重新组织成装备整理台：
 
 ## 直接游玩
 
-Windows x86_64入口为 `build/Embers-windows-x86_64/Embers.exe`，分发包为 `build/Embers-windows-x86_64.zip`。解压后保留同目录的 `Embers.pck` 与 `licenses/`。当前内容包含缝合像素字体、材质细化后的商店与背包装备台、按需物品详情、四地图与六角色材质、贴地阴影、连续大地图、角落小地图、双背包技能和增强命中反馈，并保留立体按钮及全屏动画封面。字体更换前包备份为 `build/Embers-windows-before-pixel-font-1104700.zip`，更早版本继续保留。本轮验收见[像素字体](docs/pixel-font.md)，此前美术与地图记录见[装备台材质细化](docs/workbench-materials.md)、[材质与贴地层次](docs/art-polish.md)及[大地图与小地图](docs/expanded-map.md)，macOS包保留此前版本。
+Windows x86_64入口为 `build/Embers-windows-x86_64/Embers.exe`，分发包为 `build/Embers-windows-x86_64.zip`。解压后保留同目录的 `Embers.pck` 与 `licenses/`。当前内容包含阿尔克主角与八件原作武器外观、缝合像素字体、商店与背包装备台、按需物品详情、四地图、贴地阴影、连续大地图、小地图、双背包技能和增强命中反馈。换装前包备份为 `build/Embers-windows-before-world-flipper-fea5438.zip`，更早版本继续保留。本轮验收见[阿尔克与武器换装](docs/world-flipper-art.md)，此前记录见[像素字体](docs/pixel-font.md)、[装备台材质细化](docs/workbench-materials.md)及[大地图与小地图](docs/expanded-map.md)。macOS包保留此前版本。
 
 最新macOS应用为 `build/Embers-minimal-hud-macos.app`，分发包为 `build/Embers-minimal-hud-macos-arm64.zip`，包含四地图选择、实际地形与精简界面，以及此前完整背包／共鸣／秘术抉择内容。适用于Apple Silicon、macOS 13及以上，使用本地ad-hoc签名。本轮界面验证见 `reports/minimal-hud-validation.json`，地图与性能历史见 `reports/terrain-validation.json`；旧包保留。
 

@@ -9,6 +9,7 @@ var active: bool = false
 var sound: SoundBank
 var settings: Dictionary = {"shake": true, "flash": true}
 var textures: Dictionary = {}
+var _player_atlas: Texture2D
 var arena_texture: Texture2D
 var _camera: Camera2D
 var _arena_id: String = "reliquary"
@@ -53,6 +54,8 @@ class DashAfterimage:
 	var position: Vector2 = Vector2.ZERO
 	var lean: float = 0.0
 	var life: float = 0.0
+	var frame_index: int = 0
+	var flip_h: bool = false
 
 var _dash_pending: bool = false
 var _pulse_pending: bool = false
@@ -163,6 +166,7 @@ func _ready() -> void:
 	seal_texture = load(AdventureArt.path("res://assets/fx/seal.svg"))
 	for id: String in ["player", "chaser", "rusher", "tank", "caster", "boss"]:
 		textures[id] = load(AdventureArt.path("res://assets/sprites/%s.svg" % id))
+	_player_atlas = load(WorldFlipperPlayerArt.ATLAS_PATH) as Texture2D
 	for definition: ContentDef in GameCatalog.weapons():
 		textures[definition.id] = load(AdventureArt.path("res://assets/icons/%s.svg" % definition.icon))
 	_update_camera()
@@ -458,6 +462,8 @@ func _add_dash_afterimage(point: Vector2, direction: Vector2) -> void:
 	var afterimage: DashAfterimage = _dash_afterimages[_dash_afterimage_next]
 	afterimage.position = point
 	afterimage.lean = clampf(direction.x * 0.12, -0.045, 0.045)
+	afterimage.frame_index = WorldFlipperPlayerArt.frame_index(direction, _visual_time)
+	afterimage.flip_h = WorldFlipperPlayerArt.flip_for(direction)
 	afterimage.life = DASH_AFTERIMAGE_LIFE
 	_dash_afterimage_next = (_dash_afterimage_next + 1) % DASH_AFTERIMAGE_LIMIT
 
@@ -946,14 +952,36 @@ func _player_tint() -> Color:
 		tint.a = 0.55 + sin(_visual_time * 35.0) * 0.30
 	return tint
 
+func _player_motion() -> Vector2:
+	if sim == null:
+		return Vector2.ZERO
+	return sim.dash_direction if sim.dash_time_left > 0.0 else sim.player_velocity
+
+
+func _player_frame_index() -> int:
+	return WorldFlipperPlayerArt.frame_index(_player_motion(), _visual_time)
+
+
+func _player_flip_h() -> bool:
+	return WorldFlipperPlayerArt.flip_for(_player_motion())
+
+
+func _draw_player_texture(frame_index: int, bob: float, tint: Color) -> void:
+	var target := Rect2(Vector2(-34, -50 + bob), Vector2(68, 68))
+	if frame_index > 0 and _player_atlas != null:
+		draw_texture_rect_region(_player_atlas, target, WorldFlipperPlayerArt.frame_rect(frame_index), tint)
+	else:
+		draw_texture_rect(textures["player"], target, false, tint)
+
+
 func _draw_player() -> void:
 	_draw_dash_afterimages()
 	var center: Vector2 = sim.player_position
 	var bob: float = sin(_visual_time * 9.0) * minf(2.0, sim.player_velocity.length() * 0.012)
 	var tint: Color = _player_tint()
 	var lean: float = clampf(sim.player_velocity.x * 0.0002, -0.045, 0.045)
-	draw_set_transform(center, lean)
-	draw_texture_rect(textures["player"], Rect2(Vector2(-34, -50 + bob), Vector2(68, 68)), false, tint)
+	draw_set_transform(center, lean, Vector2(-1.0 if _player_flip_h() else 1.0, 1.0))
+	_draw_player_texture(_player_frame_index(), bob, tint)
 	draw_set_transform(Vector2.ZERO)
 	var orbit_count: int = mini(8, sim.run.loadout.size())
 	for index: int in orbit_count:
@@ -983,8 +1011,8 @@ func _draw_dash_afterimages() -> void:
 		if afterimage.life <= 0.0:
 			continue
 		var opacity: float = 0.16 * clampf(afterimage.life / DASH_AFTERIMAGE_LIFE, 0.0, 1.0)
-		draw_set_transform(afterimage.position, afterimage.lean)
-		draw_texture_rect(textures["player"], Rect2(Vector2(-34, -50), Vector2(68, 68)), false, Color(0.70, 0.88, 0.90, opacity))
+		draw_set_transform(afterimage.position, afterimage.lean, Vector2(-1.0 if afterimage.flip_h else 1.0, 1.0))
+		_draw_player_texture(afterimage.frame_index, 0.0, Color(0.70, 0.88, 0.90, opacity))
 	draw_set_transform(Vector2.ZERO)
 
 func _draw_effects() -> void:

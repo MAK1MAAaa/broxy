@@ -147,3 +147,7 @@ reports/pixel-font/*.log
 reports/pixel-font/*.png
 reports/pixel-font/*.import
 reports/pixel-font/*-raw.json
+reports/world-flipper/*.log
+reports/world-flipper/*.png
+reports/world-flipper/*.import
+reports/world-flipper/*-raw.json

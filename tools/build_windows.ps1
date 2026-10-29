@@ -13,6 +13,10 @@ try {
             throw "Missing distribution notice: assets/licenses/$notice"
         }
     }
+    $worldFlipperNotice = Join-Path $projectRoot 'assets/worldflipper/NOTICE.txt'
+    if (-not (Test-Path -LiteralPath $worldFlipperNotice -PathType Leaf)) {
+        throw 'Missing distribution notice: assets/worldflipper/NOTICE.txt'
+    }
     $fontLicenseSource = Join-Path $projectRoot 'assets/fonts/licenses/fusion-pixel'
     $fontNotices = @(
         'OFL.txt',
@@ -47,6 +51,7 @@ try {
     foreach ($notice in $notices) {
         Copy-Item -LiteralPath (Join-Path $projectRoot "assets/licenses/$notice") -Destination $licenseDirectory -Force
     }
+    Copy-Item -LiteralPath $worldFlipperNotice -Destination (Join-Path $licenseDirectory 'World-Flipper-NOTICE.txt') -Force
     $fontLicenseDirectory = Join-Path $licenseDirectory 'fonts/fusion-pixel'
     foreach ($notice in $fontNotices) {
         $destination = Join-Path $fontLicenseDirectory $notice

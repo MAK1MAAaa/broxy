@@ -17,6 +17,11 @@ for BROXY_LICENSE in Godot-LICENSE.txt Godot-COPYRIGHT.txt README.md; do
     exit 1
   fi
 done
+BROXY_WORLDFLIPPER_NOTICE="$BROXY_ROOT/assets/worldflipper/NOTICE.txt"
+if [ ! -f "$BROXY_WORLDFLIPPER_NOTICE" ]; then
+  echo "Missing distribution notice: assets/worldflipper/NOTICE.txt" >&2
+  exit 1
+fi
 for BROXY_FONT_LICENSE in OFL.txt LICENSES/ark-pixel/OFL.txt LICENSES/cubic-11/OFL.txt LICENSES/galmuri/LICENSE.txt; do
   if [ ! -f "$BROXY_ROOT/assets/fonts/licenses/fusion-pixel/$BROXY_FONT_LICENSE" ]; then
     echo "Missing distribution notice: assets/fonts/licenses/fusion-pixel/$BROXY_FONT_LICENSE" >&2
@@ -29,6 +34,7 @@ mkdir -p "$BROXY_ROOT/build"
 # Notices remain directly readable in Finder without unpacking the game's PCK.
 mkdir -p "$BROXY_APP/Contents/Resources/licenses"
 cp "$BROXY_ROOT/assets/licenses/Godot-LICENSE.txt" "$BROXY_ROOT/assets/licenses/Godot-COPYRIGHT.txt" "$BROXY_ROOT/assets/licenses/README.md" "$BROXY_APP/Contents/Resources/licenses/"
+cp "$BROXY_WORLDFLIPPER_NOTICE" "$BROXY_APP/Contents/Resources/licenses/World-Flipper-NOTICE.txt"
 for BROXY_FONT_LICENSE in OFL.txt LICENSES/ark-pixel/OFL.txt LICENSES/cubic-11/OFL.txt LICENSES/galmuri/LICENSE.txt; do
   BROXY_FONT_DESTINATION="$BROXY_APP/Contents/Resources/licenses/fonts/fusion-pixel/$BROXY_FONT_LICENSE"
   mkdir -p "$(dirname -- "$BROXY_FONT_DESTINATION")"

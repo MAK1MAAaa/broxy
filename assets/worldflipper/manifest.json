@@ -1,0 +1,446 @@
+{
+  "revision": "world-flipper-fan-01",
+  "original_copyright": "© Cygames, Inc. / Citail Inc.",
+  "license_status": "Original game assets; no open asset license found. Unofficial fan-work use is not a claim of authorization.",
+  "copyright_source": "https://worldflipper.jp/copyright/",
+  "terms_source": "https://worldflipper.jp/about/",
+  "acquired_on": "2026-10-29",
+  "sources": [
+    {
+      "id": "alk_neutral",
+      "kind": "player_animation",
+      "pose": "neutral",
+      "name": "Alk / 阿尔克",
+      "filename": "alk-neutral.gif",
+      "url": "https://vivaldi6352.github.io/assets/rarity4/alk/neutral.gif",
+      "source_page": "https://wiki.biligame.com/worldflipper/阿尔克",
+      "mirror_page": "https://vivaldi6352.github.io/",
+      "sha256": "7024671783c383f2e3c3d2ab145438f952ea5046a54eb3731d4c9cdea9e6659f",
+      "source_size": [
+        24,
+        30
+      ],
+      "frame_count": 1,
+      "durations_ms": [
+        20
+      ]
+    },
+    {
+      "id": "alk_walk_front",
+      "kind": "player_animation",
+      "pose": "walk_front",
+      "name": "Alk / 阿尔克",
+      "filename": "alk-walk_front.gif",
+      "url": "https://vivaldi6352.github.io/assets/rarity4/alk/walk_front.gif",
+      "source_page": "https://wiki.biligame.com/worldflipper/阿尔克",
+      "mirror_page": "https://vivaldi6352.github.io/",
+      "sha256": "97eff01baac3fe455deb64a17d9949cdd7567ace1dcdb602929a88023fd9cde6",
+      "source_size": [
+        24,
+        30
+      ],
+      "frame_count": 4,
+      "durations_ms": [
+        80,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "id": "alk_walk_back",
+      "kind": "player_animation",
+      "pose": "walk_back",
+      "name": "Alk / 阿尔克",
+      "filename": "alk-walk_back.gif",
+      "url": "https://vivaldi6352.github.io/assets/rarity4/alk/walk_back.gif",
+      "source_page": "https://wiki.biligame.com/worldflipper/阿尔克",
+      "mirror_page": "https://vivaldi6352.github.io/",
+      "sha256": "d927ef0634e4684dc6d08bbab3ba65a539d2e728522ae8a44146ff59667582fc",
+      "source_size": [
+        24,
+        30
+      ],
+      "frame_count": 4,
+      "durations_ms": [
+        80,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "id": "weapon_bone",
+      "kind": "weapon",
+      "game_id": "bone",
+      "name": "Camping Knife",
+      "filename": "Camping_Knife.png",
+      "url": "https://worldflipper.wiki.gg/images/d/d0/Camping_Knife.png",
+      "source_page": "https://worldflipper.wiki.gg/wiki/Camping_Knife",
+      "sha256": "5a09f291cf336d92eaf1e5c1fc6c41eeb9dc7b7d6285d4acdbc77cf4da7f8a06",
+      "source_size": [
+        15,
+        18
+      ]
+    },
+    {
+      "id": "weapon_frost",
+      "kind": "weapon",
+      "game_id": "frost",
+      "name": "Moon Dance",
+      "filename": "Moon_Dance.png",
+      "url": "https://worldflipper.wiki.gg/images/d/d2/Moon_Dance.png",
+      "source_page": "https://worldflipper.wiki.gg/wiki/Moon_Dance",
+      "sha256": "bd66dfc68e82fd6c416800ea8fa90df7a867d2e84252c5252fc13cd3c02eec5a",
+      "source_size": [
+        20,
+        20
+      ]
+    },
+    {
+      "id": "weapon_ember",
+      "kind": "weapon",
+      "game_id": "ember",
+      "name": "Spiteful Staff",
+      "filename": "Spiteful_Staff.png",
+      "url": "https://worldflipper.wiki.gg/images/7/77/Spiteful_Staff.png",
+      "source_page": "https://worldflipper.wiki.gg/wiki/Spiteful_Staff",
+      "sha256": "c0b564fc0601a48133588ad40636fe352e2670ea5011df6c1aaced2d205252fb",
+      "source_size": [
+        20,
+        20
+      ]
+    },
+    {
+      "id": "weapon_scatter",
+      "kind": "weapon",
+      "game_id": "scatter",
+      "name": "Hyperion Bow",
+      "filename": "Hyperion_Bow.png",
+      "url": "https://worldflipper.wiki.gg/images/3/31/Hyperion_Bow.png",
+      "source_page": "https://worldflipper.wiki.gg/wiki/Hyperion_Bow",
+      "sha256": "f3ec44ee5ddab4ffae3481ef6a2644ed06a7b06e15999eecc75909e62305c9e3",
+      "source_size": [
+        20,
+        20
+      ]
+    },
+    {
+      "id": "weapon_crescent",
+      "kind": "weapon",
+      "game_id": "crescent",
+      "name": "Grim Scythe",
+      "filename": "Grim_Scythe.png",
+      "url": "https://worldflipper.wiki.gg/images/5/54/Grim_Scythe.png",
+      "source_page": "https://worldflipper.wiki.gg/wiki/Grim_Scythe",
+      "sha256": "4faa0b1744a7999ac862ecd8fcc5395ec56c599ea483e53edb01f8f0b89d5b25",
+      "source_size": [
+        20,
+        20
+      ]
+    },
+    {
+      "id": "weapon_storm",
+      "kind": "weapon",
+      "game_id": "storm",
+      "name": "Lightcrest Tome",
+      "filename": "Lightcrest_Tome.png",
+      "url": "https://worldflipper.wiki.gg/images/7/7d/Lightcrest_Tome.png",
+      "source_page": "https://worldflipper.wiki.gg/wiki/Lightcrest_Tome",
+      "sha256": "6d0ce46372f2cd812ca0d4f34c2e5ae161bb067d4e8b3dd368b41cbd0eb357d7",
+      "source_size": [
+        18,
+        20
+      ]
+    },
+    {
+      "id": "weapon_comet",
+      "kind": "weapon",
+      "game_id": "comet",
+      "name": "Spiteful Spear",
+      "filename": "Spiteful_Spear.png",
+      "url": "https://worldflipper.wiki.gg/images/e/ec/Spiteful_Spear.png",
+      "source_page": "https://worldflipper.wiki.gg/wiki/Spiteful_Spear",
+      "sha256": "c3fb44606d5840558732e580bc0d335c06b1e63be06f56d3ba4610ed2c856642",
+      "source_size": [
+        20,
+        20
+      ]
+    },
+    {
+      "id": "weapon_return_ring",
+      "kind": "weapon",
+      "game_id": "return_ring",
+      "name": "Amulet of Ruin",
+      "filename": "Amulet_of_Ruin.png",
+      "url": "https://worldflipper.wiki.gg/images/e/e3/Amulet_of_Ruin.png",
+      "source_page": "https://worldflipper.wiki.gg/wiki/Amulet_of_Ruin",
+      "sha256": "e689c1df39b7f7d0afbe1dc0fc3b9a8996e0ad193ba38f4b18444b0d9004293d",
+      "source_size": [
+        20,
+        20
+      ]
+    }
+  ],
+  "references_cached_only": [
+    {
+      "name": "Alk pixel preview",
+      "filename": "alk-pixel.png",
+      "url": "https://patchwiki.biligame.com/images/worldflipper/b/bf/mudvq7o1qy98411q0j0avoa3jgb0meq.png",
+      "source_page": "https://wiki.biligame.com/worldflipper/阿尔克",
+      "sha256": "4446959e25cd1823991e8d78c48eb726cf1438b92cf3ad6c63b681e5544f677d"
+    },
+    {
+      "name": "Alk portrait",
+      "filename": "alk-full.png",
+      "url": "https://patchwiki.biligame.com/images/worldflipper/d/d3/qep7a45zkk1v3lu70tg3s3gad5mu3gn.png",
+      "source_page": "https://wiki.biligame.com/worldflipper/阿尔克",
+      "sha256": "dd4ffd62af0330633000e2beefca43b07f1adc225d0c8db8b2c9eca6a497d58c"
+    },
+    {
+      "name": "Alk skill animation",
+      "filename": "alk-skill.gif",
+      "url": "https://patchwiki.biligame.com/images/worldflipper/7/72/go93a8z8bak3qbiy1qiql82jskuo56d.gif",
+      "source_page": "https://wiki.biligame.com/worldflipper/阿尔克",
+      "sha256": "4420aa9c600d3ef38936383fac351ddb9d0a874efd3614128c99bbddc0bd169b"
+    }
+  ],
+  "assets": [
+    {
+      "path": "assets/worldflipper/sprites/player.png",
+      "sha256": "3ff027414e4366719636448006d90af5f6f4418940bc5b6fe6581e795ba152e7",
+      "size": [
+        96,
+        96
+      ],
+      "alpha_bounds": [
+        12,
+        3,
+        84,
+        93
+      ],
+      "filter": "nearest",
+      "id": "player",
+      "source_ids": [
+        "alk_neutral"
+      ],
+      "normalization": "3x nearest at (12,3); original 24x30 canvas retained inside 96x96"
+    },
+    {
+      "path": "assets/worldflipper/sprites/player-atlas.png",
+      "sha256": "5ca0b0a24c7da0b33a9b8d6a414f6e519ced0a677619e1faf833f0e64d18cd55",
+      "size": [
+        384,
+        288
+      ],
+      "alpha_bounds": [
+        12,
+        3,
+        372,
+        285
+      ],
+      "filter": "nearest",
+      "id": "player_animation",
+      "source_ids": [
+        "alk_neutral",
+        "alk_walk_front",
+        "alk_walk_back"
+      ],
+      "cell_size": [
+        96,
+        96
+      ],
+      "columns": 4,
+      "animations": {
+        "neutral": {
+          "first_frame": 0,
+          "frame_count": 1,
+          "durations_ms": [
+            20
+          ]
+        },
+        "walk_front": {
+          "first_frame": 1,
+          "frame_count": 4,
+          "durations_ms": [
+            80,
+            100,
+            100,
+            100
+          ]
+        },
+        "walk_back": {
+          "first_frame": 5,
+          "frame_count": 4,
+          "durations_ms": [
+            80,
+            100,
+            100,
+            100
+          ]
+        }
+      }
+    },
+    {
+      "path": "assets/worldflipper/icons/bone.png",
+      "sha256": "403a9048cb4473befad48132bec0f89fe7129f59bff648abaa72e22459f485bc",
+      "size": [
+        64,
+        64
+      ],
+      "alpha_bounds": [
+        9,
+        5,
+        54,
+        59
+      ],
+      "filter": "nearest",
+      "id": "bone",
+      "source_ids": [
+        "weapon_bone"
+      ],
+      "normalization": "3x nearest, centered inside 64x64, no recoloring or background"
+    },
+    {
+      "path": "assets/worldflipper/icons/frost.png",
+      "sha256": "33b54e0a533f2e9a219dab1dafe53d7f2fa8a96eb603be9875ee396205de6ef1",
+      "size": [
+        64,
+        64
+      ],
+      "alpha_bounds": [
+        2,
+        2,
+        62,
+        62
+      ],
+      "filter": "nearest",
+      "id": "frost",
+      "source_ids": [
+        "weapon_frost"
+      ],
+      "normalization": "3x nearest, centered inside 64x64, no recoloring or background"
+    },
+    {
+      "path": "assets/worldflipper/icons/ember.png",
+      "sha256": "d85556c1115388e30911d1e3e7aab64b038b439fa2efee7fa2a4c32a0ad75f62",
+      "size": [
+        64,
+        64
+      ],
+      "alpha_bounds": [
+        2,
+        2,
+        62,
+        62
+      ],
+      "filter": "nearest",
+      "id": "ember",
+      "source_ids": [
+        "weapon_ember"
+      ],
+      "normalization": "3x nearest, centered inside 64x64, no recoloring or background"
+    },
+    {
+      "path": "assets/worldflipper/icons/scatter.png",
+      "sha256": "f7c575f3a371befb3639494b58126d2d2e29f360542e00fb940b8430ec94b3d9",
+      "size": [
+        64,
+        64
+      ],
+      "alpha_bounds": [
+        2,
+        2,
+        62,
+        62
+      ],
+      "filter": "nearest",
+      "id": "scatter",
+      "source_ids": [
+        "weapon_scatter"
+      ],
+      "normalization": "3x nearest, centered inside 64x64, no recoloring or background"
+    },
+    {
+      "path": "assets/worldflipper/icons/crescent.png",
+      "sha256": "88087c5a9becfb8945ed42f2fa179ffe831a13a040b415cb11c7d5b16e754a90",
+      "size": [
+        64,
+        64
+      ],
+      "alpha_bounds": [
+        2,
+        2,
+        62,
+        62
+      ],
+      "filter": "nearest",
+      "id": "crescent",
+      "source_ids": [
+        "weapon_crescent"
+      ],
+      "normalization": "3x nearest, centered inside 64x64, no recoloring or background"
+    },
+    {
+      "path": "assets/worldflipper/icons/storm.png",
+      "sha256": "ad6a50bfd1500cb9a8aa00e7ca84eca57b441c51e076fe4e1f18b41a94eb0ab3",
+      "size": [
+        64,
+        64
+      ],
+      "alpha_bounds": [
+        5,
+        2,
+        59,
+        62
+      ],
+      "filter": "nearest",
+      "id": "storm",
+      "source_ids": [
+        "weapon_storm"
+      ],
+      "normalization": "3x nearest, centered inside 64x64, no recoloring or background"
+    },
+    {
+      "path": "assets/worldflipper/icons/comet.png",
+      "sha256": "71171a2ae2abf62c088e703914fc3c2eb35bf69a5bdfdf70296e298e9118b171",
+      "size": [
+        64,
+        64
+      ],
+      "alpha_bounds": [
+        2,
+        2,
+        62,
+        62
+      ],
+      "filter": "nearest",
+      "id": "comet",
+      "source_ids": [
+        "weapon_comet"
+      ],
+      "normalization": "3x nearest, centered inside 64x64, no recoloring or background"
+    },
+    {
+      "path": "assets/worldflipper/icons/return_ring.png",
+      "sha256": "0419b37f79523df186f8fca8612f9197a22cc5eae493a6b2939e8c12a3db75fd",
+      "size": [
+        64,
+        64
+      ],
+      "alpha_bounds": [
+        2,
+        2,
+        62,
+        62
+      ],
+      "filter": "nearest",
+      "id": "return_ring",
+      "source_ids": [
+        "weapon_return_ring"
+      ],
+      "normalization": "3x nearest, centered inside 64x64, no recoloring or background"
+    }
+  ],
+  "gameplay": "Presentation only; existing catalog IDs, names, rules and collisions remain in force."
+}
