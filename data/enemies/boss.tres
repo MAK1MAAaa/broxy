@@ -6,9 +6,9 @@
 script = ExtResource("1")
 id = "boss"
 kind = "enemy"
-display_name = "无面祭司"
+display_name = "瑞西塔尔"
 subtitle = "终末首领"
-description = "主持终末仪式的无面祭司。倒计时结束前击败它，完成试炼。"
+description = "蓄力时击破全部弱点可打断招式，并使首领短暂破防。倒计时结束前击败它，完成试炼。"
 color = Color(0.89, 0.38, 0.33, 1)
 health = 1500.0
 speed = 34.0

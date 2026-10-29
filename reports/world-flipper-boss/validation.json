@@ -1,0 +1,354 @@
+{
+  "schema_version": 1,
+  "base_commit": "8392c6d",
+  "branch": "codex/boss-encounter",
+  "platform": "Windows",
+  "scope": {
+    "boss_id": "boss",
+    "boss_name": "瑞西塔尔",
+    "boss_health": 1500,
+    "wave_seconds": 90,
+    "unique_attacks": [
+      "forest_storm",
+      "root_corridor",
+      "spirit_chorus"
+    ],
+    "weakpoint_limit": 3,
+    "weakpoints_in_enemy_pool": false,
+    "break_seconds": 1.5,
+    "boss_only_break_multiplier": 1.35,
+    "ghost_caps": [
+      4,
+      6
+    ],
+    "independent_hud_rect": [
+      240,
+      104,
+      800,
+      50
+    ],
+    "old_pngs_preserved": 64
+  },
+  "headless": {
+    "invocations": 115,
+    "suites": 110,
+    "diagnostics": 5,
+    "assertions": 49966,
+    "python_tests": 80,
+    "failures": 0,
+    "engine_errors": 0,
+    "log_sha256": "7a53af72bc5bf310b9eedeff35f6c3f895a8d2b00498aa98c6dc26ab602d9863"
+  },
+  "native": [
+    {
+      "log": "native-boss_encounter.log",
+      "assertions": 908,
+      "sha256": "5865746aaceebfb754b48512c141a8381a42c8fa8eb37b8234d272f55bb9c91c"
+    },
+    {
+      "log": "native-boss_combat.log",
+      "assertions": 333,
+      "sha256": "84cdfe4f14283d472a9bd0f883733417e5b10888317f86ec9cccd2c1cb7e1f12"
+    },
+    {
+      "log": "native-boss_hud.log",
+      "assertions": 29,
+      "sha256": "fbc5c23595b38fed59dff403224a3e824f7d664fac62eb355ce7bf78f01581b3"
+    },
+    {
+      "log": "native-boss_world.log",
+      "assertions": 69,
+      "sha256": "e13a0e0e7f25d219d2386af7d69ff65d7173a2889f189d4a570ef7257c825c4c"
+    },
+    {
+      "log": "native-notifications.log",
+      "assertions": 72,
+      "sha256": "bb5041316202316fe67bfe2db2077290644b425b48baaadb7aa2dade6e34077e"
+    },
+    {
+      "log": "native-ui.log",
+      "assertions": 224,
+      "sha256": "5df79617b34fdc9523ae1fcd38fe91d21b1df6d3258d3ebf428ea4c0b5b29ed7"
+    },
+    {
+      "log": "native-combat.log",
+      "assertions": 2051,
+      "sha256": "c6ece3244b01bfad18aa08ecd4ee4edf5199db37bccc0d8d98af97ccede770bb"
+    },
+    {
+      "log": "native-pinball_combat.log",
+      "assertions": 56,
+      "sha256": "4182bdce387ec1406942539ed3009543601ceab481e9cbe38a9c8e57ffa335b9"
+    },
+    {
+      "log": "native-world_flipper_art.log",
+      "assertions": 196,
+      "sha256": "d1b61e332890e8c587cb0cf839231b63b61cae9aa9696cc2f2fbb5eb189e115b"
+    },
+    {
+      "log": "native-adventure_art.log",
+      "assertions": 291,
+      "sha256": "844c9b9d1f70f69544424f0a4154ebd1d73d5cd9e57c88e59b2077b2084f0f39"
+    },
+    {
+      "log": "native-hero_skill_flow.log",
+      "assertions": 82,
+      "sha256": "9aa404193a12da00e3af3afd0ddb862ea482c5278291ac1dddabc009a1a55c5f"
+    },
+    {
+      "log": "native-cosmetic_culling.log",
+      "assertions": 128,
+      "sha256": "2a001e95e5693149528bd24a43ceb489465d15b5f9112f4ae537a83c5c8305c2"
+    },
+    {
+      "log": "native-render_frame_coalescing.log",
+      "assertions": 9,
+      "sha256": "74493863b9b4839d37bdd93ba4d57f008f49b07f27c914177211ae3825142259"
+    },
+    {
+      "log": "native-obstacles.log",
+      "assertions": 4106,
+      "sha256": "1c4e828b5fda841c7fa0cfde825a5cb3a8e0a113156114c0f184fa8198e08d29"
+    }
+  ],
+  "exported_native": [
+    {
+      "log": "pack-check-boss_encounter.log",
+      "assertions": 908,
+      "sha256": "5865746aaceebfb754b48512c141a8381a42c8fa8eb37b8234d272f55bb9c91c"
+    },
+    {
+      "log": "pack-check-boss_combat.log",
+      "assertions": 333,
+      "sha256": "84cdfe4f14283d472a9bd0f883733417e5b10888317f86ec9cccd2c1cb7e1f12"
+    },
+    {
+      "log": "pack-check-boss_hud.log",
+      "assertions": 29,
+      "sha256": "fbc5c23595b38fed59dff403224a3e824f7d664fac62eb355ce7bf78f01581b3"
+    },
+    {
+      "log": "pack-check-boss_world.log",
+      "assertions": 69,
+      "sha256": "e13a0e0e7f25d219d2386af7d69ff65d7173a2889f189d4a570ef7257c825c4c"
+    },
+    {
+      "log": "pack-check-notifications.log",
+      "assertions": 72,
+      "sha256": "bb5041316202316fe67bfe2db2077290644b425b48baaadb7aa2dade6e34077e"
+    },
+    {
+      "log": "pack-check-ui.log",
+      "assertions": 224,
+      "sha256": "5df79617b34fdc9523ae1fcd38fe91d21b1df6d3258d3ebf428ea4c0b5b29ed7"
+    },
+    {
+      "log": "pack-check-combat.log",
+      "assertions": 2051,
+      "sha256": "c6ece3244b01bfad18aa08ecd4ee4edf5199db37bccc0d8d98af97ccede770bb"
+    },
+    {
+      "log": "pack-check-pinball_combat.log",
+      "assertions": 56,
+      "sha256": "4182bdce387ec1406942539ed3009543601ceab481e9cbe38a9c8e57ffa335b9"
+    },
+    {
+      "log": "pack-check-world_flipper_art.log",
+      "assertions": 196,
+      "sha256": "d1b61e332890e8c587cb0cf839231b63b61cae9aa9696cc2f2fbb5eb189e115b"
+    },
+    {
+      "log": "pack-check-adventure_art.log",
+      "assertions": 291,
+      "sha256": "844c9b9d1f70f69544424f0a4154ebd1d73d5cd9e57c88e59b2077b2084f0f39"
+    },
+    {
+      "log": "pack-check-hero_skill_flow.log",
+      "assertions": 82,
+      "sha256": "9aa404193a12da00e3af3afd0ddb862ea482c5278291ac1dddabc009a1a55c5f"
+    },
+    {
+      "log": "pack-check-cosmetic_culling.log",
+      "assertions": 128,
+      "sha256": "2a001e95e5693149528bd24a43ceb489465d15b5f9112f4ae537a83c5c8305c2"
+    },
+    {
+      "log": "pack-check-render_frame_coalescing.log",
+      "assertions": 9,
+      "sha256": "74493863b9b4839d37bdd93ba4d57f008f49b07f27c914177211ae3825142259"
+    },
+    {
+      "log": "pack-check-obstacles.log",
+      "assertions": 4106,
+      "sha256": "1c4e828b5fda841c7fa0cfde825a5cb3a8e0a113156114c0f184fa8198e08d29"
+    }
+  ],
+  "previews": [
+    {
+      "view": "ashland",
+      "size": [
+        1280,
+        720
+      ],
+      "pixels_equal": true,
+      "source_sha256": "60876fde82c9dc9fb675de3115f7f61760a86a3bf60949341f4255da416fb649",
+      "export_sha256": "60876fde82c9dc9fb675de3115f7f61760a86a3bf60949341f4255da416fb649"
+    },
+    {
+      "view": "break",
+      "size": [
+        1280,
+        720
+      ],
+      "pixels_equal": true,
+      "source_sha256": "54c9044866bb5d9fad17ef6114e9992af0388a41e55ebdaeb50f8691a834c03e",
+      "export_sha256": "54c9044866bb5d9fad17ef6114e9992af0388a41e55ebdaeb50f8691a834c03e"
+    },
+    {
+      "view": "glacier",
+      "size": [
+        1280,
+        720
+      ],
+      "pixels_equal": true,
+      "source_sha256": "ae1ed52b6fd0824322482230fb05cc17ae621db1bfa73f1990c3ac4d1742a334",
+      "export_sha256": "ae1ed52b6fd0824322482230fb05cc17ae621db1bfa73f1990c3ac4d1742a334"
+    },
+    {
+      "view": "mire",
+      "size": [
+        1280,
+        720
+      ],
+      "pixels_equal": true,
+      "source_sha256": "ac0977435dbeef5c392d66700b0b76325eee0ac73d94dd0bbb3ec2d25617adbc",
+      "export_sha256": "ac0977435dbeef5c392d66700b0b76325eee0ac73d94dd0bbb3ec2d25617adbc"
+    },
+    {
+      "view": "phase2",
+      "size": [
+        1280,
+        720
+      ],
+      "pixels_equal": true,
+      "source_sha256": "f7815e693fc7816850fc3680bdbd4f84e54ffff8cefd2772d386afd5884f557a",
+      "export_sha256": "f7815e693fc7816850fc3680bdbd4f84e54ffff8cefd2772d386afd5884f557a"
+    },
+    {
+      "view": "reliquary",
+      "size": [
+        1280,
+        720
+      ],
+      "pixels_equal": true,
+      "source_sha256": "53480044df0ea8e0e8e4e069ea8af09fd3e4599acefb550dcd4b78c16bd09395",
+      "export_sha256": "53480044df0ea8e0e8e4e069ea8af09fd3e4599acefb550dcd4b78c16bd09395"
+    },
+    {
+      "view": "root",
+      "size": [
+        1280,
+        720
+      ],
+      "pixels_equal": true,
+      "source_sha256": "d16df8a82d15bc84a0cf2f01a52ccffd3a213dad0f372beaba1b5efef077761f",
+      "export_sha256": "d16df8a82d15bc84a0cf2f01a52ccffd3a213dad0f372beaba1b5efef077761f"
+    },
+    {
+      "view": "small",
+      "size": [
+        1280,
+        720
+      ],
+      "pixels_equal": true,
+      "source_sha256": "f7815e693fc7816850fc3680bdbd4f84e54ffff8cefd2772d386afd5884f557a",
+      "export_sha256": "f7815e693fc7816850fc3680bdbd4f84e54ffff8cefd2772d386afd5884f557a"
+    },
+    {
+      "view": "storm",
+      "size": [
+        1280,
+        720
+      ],
+      "pixels_equal": true,
+      "source_sha256": "2701d703389d8e0c729a47f7685e34fb54d8b9a614b274e198e8a47500783f09",
+      "export_sha256": "2701d703389d8e0c729a47f7685e34fb54d8b9a614b274e198e8a47500783f09"
+    }
+  ],
+  "assets": {
+    "pinned_sources": 68,
+    "normalized_pngs": 65,
+    "new_weakpoint_pngs": 1,
+    "metadata_files": 2,
+    "manifest_sha256": "9fac0059487f728cfc8aa00825132e53d6f63511507d5d18e0306f33724db1de",
+    "source_qa": {
+      "production_assets": true,
+      "revision": "world-flipper-fan-07",
+      "sources": 68,
+      "png_outputs": 65,
+      "metadata_files": 2,
+      "previous_pngs_unchanged": 64,
+      "full_offline_rebuilds": 2,
+      "files_compared_per_rebuild": 68,
+      "failures": 0,
+      "weakpoint_sha256": "1b907a56c4b71f3a4bc92a01f7f653545f0833e98f7061908c0dfd337419e8ed"
+    },
+    "qa_sha256": "d42efd2221c38fe05a2af43866afda87e1d7ca9d2c22a2cb352d97f6ef40a02e"
+  },
+  "performance": {
+    "seconds": 60.0,
+    "average_fps": 59.8840329206889,
+    "p99_frame_ms": 27.397,
+    "minimum_load": {
+      "enemies": 300,
+      "pickups": 200,
+      "projectiles": 600
+    },
+    "sample_hero_skill_uses": 8,
+    "pinball_cycles": 25,
+    "pinball_bounces": 170,
+    "checks": {
+      "backpack_skill_fx_pool": true,
+      "backpack_skill_inventory_and_real_casts": true,
+      "backpack_skill_source_coverage": true,
+      "dash_feedback": true,
+      "default_settings_and_no_profile": true,
+      "evasion_feedback": true,
+      "grounding_budget": true,
+      "load": true,
+      "performance": true,
+      "pulse_control": true,
+      "real_main_character_casts": true,
+      "real_pinball_cycles_and_reflections": true
+    },
+    "source_hash": "3e209321d6b7f9eb72ae615a08b4c5d82e8a43eccf14356ba24d95516f2c7b8e",
+    "report_sha256": "daf08207cef245c7a3e8a7e3fc735660f363a90f93e4c9b4eda38e4c9c635ee9"
+  },
+  "windows": {
+    "archive": "build/Embers-windows-x86_64.zip",
+    "sha256": "08abe85ea89834375f74f32d1e62db2f21d0fb3876d5db0ce93f7c5b32e92bc5",
+    "zip_files": [
+      "licenses/Godot-COPYRIGHT.txt",
+      "licenses/Godot-LICENSE.txt",
+      "licenses/README.md",
+      "licenses/World-Flipper-NOTICE.txt",
+      "licenses/fonts/fusion-pixel/OFL.txt",
+      "licenses/fonts/fusion-pixel/LICENSES/ark-pixel/OFL.txt",
+      "licenses/fonts/fusion-pixel/LICENSES/cubic-11/OFL.txt",
+      "licenses/fonts/fusion-pixel/LICENSES/galmuri/LICENSE.txt",
+      "Embers.exe",
+      "Embers.pck"
+    ],
+    "crc_and_file_bytes_verified": true,
+    "backup": "Embers-windows-before-boss-8392c6d.zip",
+    "backup_sha256": "96efff4b394a4f6b0cdf751156936de8e665e65cbc3f57834368f72fd8d01003",
+    "exe_smoke_log_sha256": "1f7948b054b9bc80fb686a48f001e701c1b5e1af43ac6a9c1cc85dbb15ad2692"
+  },
+  "macos": "Not built or executed on this Windows host; export include filters updated for both platforms.",
+  "limitations": [
+    "Input tests use real parsed keyboard/gamepad events; no physical controller acceptance was performed.",
+    "Synthetic pressure and fixed captures do not establish human playability, balance, or hardware audio quality.",
+    "Boss visuals are frozen fixtures built through real Main/FSM/weapon damage paths, not natural gameplay or manual difficulty acceptance. Native boss combat and exported-release checks validate the same state transitions and collision rules."
+  ],
+  "passed": true
+}

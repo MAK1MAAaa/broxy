@@ -23,6 +23,7 @@ const RED := Color("b83c50")
 const CORAL := Color("ed9a86")
 const BACKPACK_GRID = preload("res://scripts/ui/backpack_grid.gd")
 const MINIMAP_VIEW = preload("res://scripts/ui/minimap_view.gd")
+const BOSS_HUD = preload("res://scripts/ui/boss_hud.gd")
 const SHOP_PANEL_SKIN = preload("res://scripts/ui/shop_panel_skin.gd")
 const WORKBENCH_ART = preload("res://scripts/ui/shop_workbench_art.gd")
 
@@ -632,31 +633,10 @@ func show_hud() -> void:
 	xp.add_theme_stylebox_override("background", _bar_style(Color("d9e4df")))
 	_page.add_child(xp)
 	_hud["xp_bar"] = xp
-	var boss := HBoxContainer.new()
-	boss.name = "BossStatus"
-	boss.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
-	boss.offset_left = -560
-	boss.offset_right = -54
-	boss.offset_top = 62
-	boss.offset_bottom = 82
-	boss.add_theme_constant_override("separation", 12)
-	boss.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var boss := BOSS_HUD.new()
 	_page.add_child(boss)
-	var boss_name := _label(GameCatalog.enemy("boss").display_name, 16, RED)
-	boss_name.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	boss.add_child(boss_name)
-	var boss_hp := ProgressBar.new()
-	boss_hp.custom_minimum_size = Vector2(200, 8)
-	boss_hp.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	boss_hp.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	boss_hp.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	boss_hp.show_percentage = false
-	boss_hp.add_theme_stylebox_override("fill", _bar_style(RED))
-	boss_hp.add_theme_stylebox_override("background", _bar_style(Color("dbd3c3")))
-	boss.add_child(boss_hp)
-	boss.hide()
 	_hud["boss"] = boss
-	_hud["boss_bar"] = boss_hp
+	_hud["boss_bar"] = boss.health_bar
 	var minimap := MINIMAP_VIEW.new()
 	minimap.name = "ArenaMinimap"
 	minimap.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
@@ -712,9 +692,8 @@ func update_hud(snapshot: Dictionary) -> void:
 	_hud["health"].text = "生命  %d / %d" % [ceili(hp), ceili(maximum)]
 	_hud["health_bar"].max_value = maximum
 	_hud["health_bar"].value = hp
-	var boss_health := float(snapshot.get("boss_health", 0))
-	var boss_max := float(snapshot.get("boss_max_health", 0))
-	var boss_alive: bool = boss_max > 0.0 and boss_health > 0.0
+	_hud["boss"].update_snapshot(snapshot)
+	var boss_alive: bool = _hud["boss"].visible
 	_hud["wave"].text = "波次  %d / %d" % [int(snapshot.get("wave", 1)), GameCatalog.WAVE_DEFS.size()]
 	var time_left := maxf(0.0, float(snapshot.get("time_left", 0)))
 	var seconds := ceili(time_left)
@@ -738,9 +717,6 @@ func update_hud(snapshot: Dictionary) -> void:
 			timer.add_theme_constant_override("outline_size", 2)
 	_hud["xp_bar"].max_value = maxf(1, float(snapshot.get("xp_needed", 1)))
 	_hud["xp_bar"].value = float(snapshot.get("xp", 0))
-	_hud["boss"].visible = boss_alive
-	_hud["boss_bar"].max_value = maxf(1, boss_max)
-	_hud["boss_bar"].value = boss_health
 	(_hud["minimap"] as MinimapView).update_snapshot(snapshot.get("minimap"))
 	_update_dash_hud(snapshot)
 	_update_pulse_hud(snapshot)

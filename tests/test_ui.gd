@@ -73,7 +73,8 @@ func _run_tests() -> void:
 	_check(equipment != null and equipment.get_global_rect().position.y >= 616, "Restyled equipment panel does not cover more of the combat area")
 	_check(_text_inside(ui), "HUD text stays inside the reference viewport without clipping")
 	await _test_boss_hud(ui, state.loadout)
-	ui.update_hud({"health": 100, "max_health": 100, "wave": 8, "time_left": 45.0, "loadout": state.loadout, "boss_health": 100.0, "boss_max_health": 200.0})
+	ui.update_hud({"health": 100, "max_health": 100, "wave": 8, "time_left": 45.0, "loadout": state.loadout,
+		"boss_encounter": {"active": true, "health": 100.0, "max_health": 200.0, "display_name": GameCatalog.enemy("boss").display_name, "phase": "recovery"}})
 	ui.notify("这是用于验证战斗提示固定宽度的长文本。".repeat(30))
 	await _settle()
 	var hud_notice: Label = ui.get("_toast")
@@ -311,7 +312,8 @@ func _test_boss_hud(ui: GameUI, loadout: Array) -> void:
 	var status_before: Rect2 = ui.find_child("RitualStatus", true, false).get_global_rect()
 	var equipment_before: Rect2 = ui.find_child("RitualEquipment", true, false).get_global_rect()
 	var boss_snapshot: Dictionary = {"health": 100, "max_health": 100, "wave": 3, "time_left": 45.0,
-		"loadout": loadout, "boss_health": 150.0, "boss_max_health": 300.0}
+		"loadout": loadout, "boss_encounter": {"active": true, "health": 150.0, "max_health": 300.0,
+			"display_name": GameCatalog.enemy("boss").display_name, "phase": "recovery"}}
 	var wave_label: Label = ui._hud["wave"]
 	var timer_label: Label = ui._hud["time"]
 	var boss_status: Control = ui._hud["boss"]
@@ -341,16 +343,16 @@ func _test_boss_hud(ui: GameUI, loadout: Array) -> void:
 	boss_snapshot["wave"] = 8
 	boss_snapshot["time_left"] = 9.99
 	ui.update_hud(boss_snapshot)
-	boss_snapshot["boss_health"] = 0.0
+	boss_snapshot["boss_encounter"]["health"] = 0.0
 	ui.update_hud(boss_snapshot)
 	_check(not boss_status.visible and wave_label.text == "波次  8 / 8" and timer_label.text == "剩余  00:10", "Zero boss health restores the ordinary objective and timer even on wave eight")
 	_check(timer_label.get_theme_color("font_color").is_equal_approx(GameUI.BONE), "A defeated boss cannot leave urgency color on the normal-wave timer")
-	boss_snapshot["boss_health"] = 150.0
+	boss_snapshot["boss_encounter"]["health"] = 150.0
 	ui.update_hud(boss_snapshot)
-	boss_snapshot["boss_max_health"] = 0.0
+	boss_snapshot["boss_encounter"]["max_health"] = 0.0
 	ui.update_hud(boss_snapshot)
 	_check(not boss_status.visible and wave_label.text == "波次  8 / 8" and timer_label.text == "剩余  00:10" and timer_label.get_theme_color("font_color").is_equal_approx(GameUI.BONE), "Positive current health without a positive maximum is not a living-boss HUD")
-	boss_snapshot["boss_max_health"] = 300.0
+	boss_snapshot["boss_encounter"]["max_health"] = 300.0
 	ui.update_hud(boss_snapshot)
 	boss_snapshot["benchmark"] = true
 	ui.update_hud(boss_snapshot)

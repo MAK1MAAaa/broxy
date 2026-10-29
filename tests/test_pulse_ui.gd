@@ -176,8 +176,8 @@ func _test_layouts() -> void:
 			value["skills"] = [_equipped(), _equipped("starfall", 11, 7.9)]
 			value["gold"] = 9999
 			value["level"] = 25
-			value["boss_health"] = 100.0 if boss_alive else 0.0
-			value["boss_max_health"] = 200.0 if boss_alive else 0.0
+			value["boss_encounter"] = {"active": boss_alive, "health": 100.0, "max_health": 200.0,
+				"display_name": GameCatalog.enemy("boss").display_name, "phase": "recovery"}
 			var weapons: Array = []
 			for index: int in 8:
 				weapons.append(_state.loadout[0].duplicate(true))

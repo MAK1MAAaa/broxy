@@ -2,9 +2,9 @@ extends SceneTree
 ## Runs the shipped simulation and inventory rules without rendering or privileged rewards.
 
 const DELTA: float = 1.0 / 60.0
-const POLICY_VERSION: String = "orbit-avoid-v1/backpack-shop-v2/upgrade-timing-v2/rogue-choices-v1"
+const POLICY_VERSION: String = "orbit-avoid-v1/backpack-shop-v2/upgrade-timing-v2/rogue-choices-v1/boss-weakpoints-v1"
 const SHOP_OBSERVATION_SCHEMA_VERSION: String = "shop-observations-v1"
-const POLICY_CHANGE_NOTE: String = "Explicit core/route/altar choices use shipped transactions before normal space-aware shopping. Relic adjacency affects real damage; this policy does not optimize placement. Movement and upgrade priorities unchanged; not a legacy trajectory-equivalence run."
+const POLICY_CHANGE_NOTE: String = "Explicit core/route/altar choices use shipped transactions before normal space-aware shopping. Relic adjacency affects real damage; this policy does not optimize placement. Boss movement now seeks weakpoints and avoids cast geometry; upgrade priorities are unchanged. This is not a legacy trajectory-equivalence run."
 const RUNES: Array[String] = ["pierce", "bounce", "blast"]
 const MAX_REROLLS: int = 3
 
@@ -66,7 +66,7 @@ func _initialize() -> void:
 	quit(1 if _require_win and not all_won else 0)
 
 func _content_version() -> String:
-	var sources: Array[String] = ["res://scripts/core/run_state.gd", "res://scripts/core/backpack_inventory.gd", "res://scripts/core/backpack_resonance.gd", "res://scripts/combat/combat_sim.gd", "res://scripts/data/content_def.gd", "res://scripts/data/game_catalog.gd", "res://scripts/data/rune_rules.gd", "res://scripts/data/rogue_rules.gd", "res://scripts/main.gd"]
+	var sources: Array[String] = ["res://scripts/core/run_state.gd", "res://scripts/core/boss_encounter.gd", "res://scripts/core/backpack_inventory.gd", "res://scripts/core/backpack_resonance.gd", "res://scripts/combat/combat_sim.gd", "res://scripts/data/content_def.gd", "res://scripts/data/game_catalog.gd", "res://scripts/data/rune_rules.gd", "res://scripts/data/rogue_rules.gd", "res://scripts/main.gd"]
 	var definitions: Array[ContentDef] = GameCatalog.weapons()
 	sources.append_array(["res://scripts/core/arena_catalog.gd", "res://data/arenas.json", "res://scripts/data/dash_rules.gd", "res://scripts/data/pulse_rules.gd", "res://scripts/data/active_skill_rules.gd", "res://scripts/core/control_bindings.gd"])
 	definitions.append_array(GameCatalog.runes())

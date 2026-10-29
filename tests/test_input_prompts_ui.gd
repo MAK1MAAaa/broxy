@@ -222,8 +222,8 @@ func _test_hud_and_pause() -> void:
 		root.size = physical_size
 		for boss_alive: bool in [false, true]:
 			var value: Dictionary = sim.snapshot()
-			value["boss_health"] = 100.0 if boss_alive else 0.0
-			value["boss_max_health"] = 200.0 if boss_alive else 0.0
+			value["boss_encounter"] = {"active": boss_alive, "health": 100.0, "max_health": 200.0,
+				"display_name": GameCatalog.enemy("boss").display_name, "phase": "recovery"}
 			_ui.update_hud(value)
 			await _joy()
 			await _settle()
