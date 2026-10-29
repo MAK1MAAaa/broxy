@@ -74,7 +74,7 @@ func _test() -> void:
 	world._on_player_damaged(2.5, "unknown", "unknown", Vector2.INF)
 	_check(world._damage_direction == Vector2.ZERO, "An unspecified source never produces an infinite or NaN direction")
 	var player_text: String = world._numbers[0].text
-	_check(player_text == "−2.5", "Player feedback retains the loss sign and real fractional amount")
+	_check(player_text == "-2.5", "Player feedback retains the loss sign and real fractional amount")
 	for cycle: int in 10:
 		world._on_damage_dealt(Vector2(200, 200), 1.0, "bone", false)
 		world._advance_feedback(2.0)

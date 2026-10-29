@@ -154,7 +154,8 @@ func _test_control_and_frost() -> void:
 	_cast(world)
 	var feedback: Dictionary = world.skill_feedback_snapshot()
 	_check(bool(feedback["active"]) and feedback["text"] == "受控 ×3" and feedback["affected"] == 3 and is_equal_approx(feedback["remaining"], 0.45), "Three truly controlled ordinary enemies produce one 450ms result")
-	_check(feedback["origin"] == origin and float(feedback["text_width"]) > 40.0 and feedback["anchor"] == origin + Vector2(0, 54), "The cached Chinese text is anchored below the actual cast origin")
+	var expected_text_width: float = GameTypography.font().get_string_size(str(feedback["text"]), HORIZONTAL_ALIGNMENT_LEFT, -1, 12).x
+	_check(feedback["origin"] == origin and expected_text_width > 0.0 and is_equal_approx(float(feedback["text_width"]), expected_text_width) and feedback["anchor"] == origin + Vector2(0, 54), "The cached pixel text uses its actual font width and stays below the cast origin")
 	_check(frost.pulse_hinder_timer > 0.0 and tank.pulse_hinder_timer > 0.0 and caster.pulse_hinder_timer > 0.0 and outside.pulse_hinder_timer == 0.0, "The sign reports actual radial control instead of all living targets")
 	_check(frost.slow_timer > 0.0 and world._enemy_tint(frost) == Color("b4e9ed"), "A frozen target retains frost tint while the separate result still confirms control")
 	var sound: ProbeSoundBank = world.sound as ProbeSoundBank

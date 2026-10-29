@@ -125,7 +125,7 @@ func _run_tests() -> void:
 	await _settle()
 	ui.notify("商店改装提示")
 	await _settle()
-	_check(hud_notice.get_global_rect() == Rect2(210, 502, 860, 40) and hud_notice.get_theme_font_size("font_size") == 16, "Shop notifications restore their original centered size and font after leaving combat")
+	_check(hud_notice.get_global_rect() == Rect2(210, 502, 860, 40) and hud_notice.get_theme_font_size("font_size") == 12, "Shop notifications restore their centered size and native pixel font after leaving combat")
 	_check(hud_notice.mouse_filter == Control.MOUSE_FILTER_IGNORE, "Restored shop notifications remain noninteractive")
 	_check(_buttons_inside(ui), "Shop buttons fit in 1280 by 720")
 	_check(_text_inside(ui), "Shop item and price text fits with the full-size icons")

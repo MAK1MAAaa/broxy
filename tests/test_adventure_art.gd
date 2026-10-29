@@ -221,8 +221,9 @@ func _test_real_inventory_presentation() -> void:
 	var ui := GameUI.new()
 	root.add_child(ui)
 	ui.bind(state)
-	var font := ui._root.theme.default_font as SystemFont
-	_check(font != null and font.resource_path.is_empty() and font.antialiasing != TextServer.FONT_ANTIALIASING_NONE and font.has_char(0x79d8) and font.has_char(0x672f), "The actual UI retains antialiased system Chinese text rather than replacing its font with art")
+	var font := ui._root.theme.default_font as FontFile
+	_check(font != null and font.resource_path == "res://assets/fonts/fusion-pixel-12px-proportional-zh-hans.otf" and font.has_char(0x79d8) and font.has_char(0x672f), "The actual UI uses the bundled Fusion Pixel Chinese font")
+	_check(font != null and font.antialiasing == TextServer.FONT_ANTIALIASING_NONE and font.hinting == TextServer.HINTING_NONE and is_equal_approx(font.oversampling, 1.0) and not font.allow_system_fallback, "The bundled font keeps native pixel rendering without system fallback")
 	_check(ui._root.texture_filter != CanvasItem.TEXTURE_FILTER_NEAREST, "The whole interface is not forced to nearest filtering")
 	var before: String = _run_signature(state)
 	ui.show_title({})

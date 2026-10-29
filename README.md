@@ -12,6 +12,8 @@ UI 优化分支 `codex/ui-refinement` 将商店重新组织成装备整理台：
 
 装备台继续细化木纹、皮革边带、纸边与黄铜卡扣：商品锁定框增加金属层次，格盘使用内凹布面，未解锁行压暗，物品盒高光收窄并补右下暗面。布局、数值和操作保持，制作与验收见[装备台材质细化](docs/workbench-materials.md)。
 
+游戏字体更换为 A「缝合像素 / Fusion Pixel」12px 简体中文比例版，完整字库随游戏打包。标题、按钮、商店、背包、HUD 与战斗浮字共用本地字体；密集信息用12px，常规大按钮与物品详情用24px，大标题用36／48px。禁用抗锯齿与系统字体回退，按原生像素整数倍显示；详情继续按需打开并可滚动。字体来源、许可与验收见[像素字体](docs/pixel-font.md)。
+
 封面改为全屏连贯横幅：鸟喙面具角色与月环仪器居右，法器、地图与开始入口集中左侧，以缩略图、对勾和锁形状态表达选择，不再堆放定位标签、介绍、空记录与底部说明。星尘、环光、烛火和符印组成24帧循环；`assets/title/cover.gif`为1280×720、每帧120毫秒的实际动图，游戏复用同一组离散绘制状态。新增项目约定要求用直观UI解决信息问题，拒绝用解释小字补救。制作、来源和验收见[全屏动画封面](docs/title-cover.md)。
 
 主菜单新增四地图选择：秘仪祭坛、沉沼遗庭、苍霜圣庭、余烬荒原。三张新图具有不同地貌和减速区域，同时影响玩家与敌人，离开恢复；本局八波沿用所选地图。界面移除重复小字，战斗中取消生命条下方的通知及右下角说明；关键数值与风险保留，低频操作改为按钮提示。规则与验证见[地图与地形](docs/maps.md)。
@@ -62,7 +64,7 @@ UI 优化分支 `codex/ui-refinement` 将商店重新组织成装备整理台：
 
 ## 直接游玩
 
-Windows x86_64入口为 `build/Embers-windows-x86_64/Embers.exe`，分发包为 `build/Embers-windows-x86_64.zip`。解压后保留同目录的 `Embers.pck` 与 `licenses/`。当前内容包含材质细化后的商店与背包装备台、按需物品详情、四地图与六角色材质、贴地阴影、连续大地图、角落小地图、双背包技能和增强命中反馈，并保留立体按钮及全屏动画封面。材质更新前包备份为 `build/Embers-windows-before-workbench-materials-0586766.zip`，更早版本继续保留。Windows使用微软雅黑；本轮验收见[装备台材质细化](docs/workbench-materials.md)，此前美术与地图记录见[材质与贴地层次](docs/art-polish.md)及[大地图与小地图](docs/expanded-map.md)，macOS包保留此前版本。
+Windows x86_64入口为 `build/Embers-windows-x86_64/Embers.exe`，分发包为 `build/Embers-windows-x86_64.zip`。解压后保留同目录的 `Embers.pck` 与 `licenses/`。当前内容包含缝合像素字体、材质细化后的商店与背包装备台、按需物品详情、四地图与六角色材质、贴地阴影、连续大地图、角落小地图、双背包技能和增强命中反馈，并保留立体按钮及全屏动画封面。字体更换前包备份为 `build/Embers-windows-before-pixel-font-1104700.zip`，更早版本继续保留。本轮验收见[像素字体](docs/pixel-font.md)，此前美术与地图记录见[装备台材质细化](docs/workbench-materials.md)、[材质与贴地层次](docs/art-polish.md)及[大地图与小地图](docs/expanded-map.md)，macOS包保留此前版本。
 
 最新macOS应用为 `build/Embers-minimal-hud-macos.app`，分发包为 `build/Embers-minimal-hud-macos-arm64.zip`，包含四地图选择、实际地形与精简界面，以及此前完整背包／共鸣／秘术抉择内容。适用于Apple Silicon、macOS 13及以上，使用本地ad-hoc签名。本轮界面验证见 `reports/minimal-hud-validation.json`，地图与性能历史见 `reports/terrain-validation.json`；旧包保留。
 

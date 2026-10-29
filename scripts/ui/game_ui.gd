@@ -362,10 +362,6 @@ func show_title(best: Dictionary) -> void:
 	left.add_theme_constant_override("separation", 8)
 	columns.add_child(left)
 	var title := _label("EMBERS", 60, BONE)
-	var title_font := SystemFont.new()
-	title_font.font_names = PackedStringArray(["Trebuchet MS", "Avenir Next", "Verdana", "Arial"])
-	title_font.font_weight = 800
-	title.add_theme_font_override("font", title_font)
 	left.add_child(title)
 	left.add_child(_label("秘 术 余 烬", 24, PURPLE))
 	var start_card := _panel(left)
@@ -388,7 +384,7 @@ func show_title(best: Dictionary) -> void:
 		card.disabled = not _unlocked_starters.has(id)
 		card.focus_mode = Control.FOCUS_NONE if card.disabled else Control.FOCUS_ALL
 		card.button_pressed = _starter == id
-		card.add_theme_font_size_override("font_size", 17)
+		card.add_theme_font_size_override("font_size", GameTypography.size_for(17))
 		ButtonSkin.apply(card, "choice")
 		_set_button_icon(card, definition)
 		option.add_child(card)
@@ -1106,7 +1102,7 @@ func notify(message: String) -> void:
 		_toast_timer.stop()
 		return
 	_toast.text = message
-	_toast.add_theme_font_size_override("font_size", 16)
+	_toast.add_theme_font_size_override("font_size", GameTypography.size_for(16))
 	_toast.add_theme_stylebox_override("normal", _box(PANEL_LIGHT, GOLD))
 	_toast.clip_text = false
 	_toast.max_lines_visible = -1
@@ -1200,7 +1196,7 @@ func _build_shop() -> void:
 		rogue_text = "秘术抉择 · 符文待领"
 	var ritual := _shop_button(rogue_text, _show_rogue_choices, "rogue", Vector2(232, 38))
 	ritual.name = "OpenRogueChoices"
-	ritual.add_theme_font_size_override("font_size", 16)
+	ritual.add_theme_font_size_override("font_size", GameTypography.size_for(16))
 	ritual.tooltip_text = "选择本局流派、可跳过的追猎契约与下一波敌群；可稍后决定。"
 	heading.add_child(ritual)
 	_add_shop_symbol(heading, "soul", 28)
@@ -1238,7 +1234,7 @@ func _build_shop() -> void:
 	for index: int in run.offers.size():
 		_offer_card(grid, index)
 	var reroll := _shop_button(("刷新未锁  %d 魂屑" if run.locked_offer_count() > 0 else "刷新  %d 魂屑") % run.reroll_cost(), _reroll, "reroll", Vector2(0, 38))
-	reroll.add_theme_font_size_override("font_size", 16)
+	reroll.add_theme_font_size_override("font_size", GameTypography.size_for(16))
 	reroll.tooltip_text = "刷新仅替换未锁定商品；锁定商品跨波保留，价格随波次调整。"
 	goods.add_child(reroll)
 	_build_backpack(columns)
@@ -1358,7 +1354,7 @@ func _show_rogue_choices(keep_notice: bool = false) -> void:
 			var selected: bool = str(option["id"]) == str(choices.get("route", "balanced"))
 			var select := _button(("已选 · " if selected else "选择 · ") + str(option["name"]), _rogue_action.bind("route", str(option["id"]), epoch), Vector2(0, 36))
 			select.name = "RogueRoute_" + str(option["id"])
-			select.add_theme_font_size_override("font_size", 14)
+			select.add_theme_font_size_override("font_size", GameTypography.size_for(14))
 			if selected:
 				_accent(select)
 			inside.add_child(select)
@@ -1487,7 +1483,7 @@ func _build_backpack(parent: Control) -> void:
 	var expand_text: String = "背包已扩满" if int(snapshot["height"]) >= int(snapshot["max_height"]) else "扩容一排 · %d魂屑" % cost
 	var expand := _shop_button(expand_text, _bp_expand, "bag_expand", Vector2(0, 36))
 	expand.name = "ExpandBackpack"
-	expand.add_theme_font_size_override("font_size", 15)
+	expand.add_theme_font_size_override("font_size", GameTypography.size_for(15))
 	expand.disabled = int(snapshot["height"]) >= int(snapshot["max_height"])
 	expand.tooltip_text = str(snapshot.get("expansion_error", "")) if not bool(snapshot.get("can_expand", true)) else "解锁下一排6个格子；不移动现有物品。"
 	body.add_child(expand)
@@ -1610,28 +1606,28 @@ func _build_backpack_details() -> void:
 	_bag_details.add_child(actions)
 	var move := _shop_button("拿起 / 移动", _bp_pick_up.bind(uid), "bag_move:%d" % uid, Vector2(128, 38))
 	move.name = "MoveBackpackItem"
-	move.add_theme_font_size_override("font_size", 15)
+	move.add_theme_font_size_override("font_size", GameTypography.size_for(15))
 	move.tooltip_text = _backpack_move_tooltip()
 	actions.add_child(move)
 	var rotate := _shop_button(_backpack_rotate_text(), _bp_rotate.bind(uid), "bag_rotate:%d" % uid, Vector2(90, 38))
 	rotate.name = "RotateBackpackItem"
-	rotate.add_theme_font_size_override("font_size", 15)
+	rotate.add_theme_font_size_override("font_size", GameTypography.size_for(15))
 	rotate.tooltip_text = _backpack_rotate_tooltip()
 	actions.add_child(rotate)
 	var record := _shop_button("详情", _show_owned_item_record.bind(uid, _shop_epoch), "bag_record:%d" % uid, Vector2(64, 38))
 	record.name = "BackpackItemRecord"
-	record.add_theme_font_size_override("font_size", 15)
+	record.add_theme_font_size_override("font_size", GameTypography.size_for(15))
 	actions.add_child(record)
 	var sale := _shop_button("出售 · %d魂屑" % int(floorf(float(item.get("paid", 0)) * 0.5)), _bp_sell.bind(uid), "bag_sell:%d" % uid, Vector2(0, 32))
 	sale.name = "SellBackpackItem"
-	sale.add_theme_font_size_override("font_size", 13)
+	sale.add_theme_font_size_override("font_size", GameTypography.size_for(13))
 	sale.tooltip_text = "出售不可撤回。" if str(item["kind"]) == "skill" else "出售不可撤回；必须保留至少一件法器。法器上的符文退回背包空格。"
 	_bag_details.add_child(sale)
 	var rune: Dictionary = item.get("rune", {})
 	if str(item["kind"]) == "weapon" and not rune.is_empty():
 		var detach := _shop_button("拆下 %s · %s阶" % [GameCatalog.rune(str(rune["id"])).display_name, _rank_name(int(rune.get("rank", 1)))], _bp_unequip.bind(uid), "bag_unequip:%d" % uid, Vector2(0, 32))
 		detach.name = "UnequipBackpackRune"
-		detach.add_theme_font_size_override("font_size", 12)
+		detach.add_theme_font_size_override("font_size", GameTypography.size_for(12))
 		detach.tooltip_text = "免费拆下；背包需要一个真实空格。"
 		_bag_details.add_child(detach)
 	if str(item["kind"]) == "rune":
@@ -1643,11 +1639,11 @@ func _build_backpack_details() -> void:
 			_bag_details.add_child(row)
 			var equip := _shop_button("装入 %s %s" % [GameCatalog.weapon(str(weapon["id"])).display_name, _rank_name(int(weapon.get("rank", 1)))], _bp_equip.bind(uid, weapon_uid, _shop_epoch), "bag_equip:%d" % weapon_uid, Vector2(0, 30))
 			equip.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-			equip.add_theme_font_size_override("font_size", 12)
+			equip.add_theme_font_size_override("font_size", GameTypography.size_for(12))
 			row.add_child(equip)
 			var index: int = run.weapon_index_for_uid(weapon_uid)
 			var preview := _shop_button("预览", _preview_rune_equip.bind(index, _shop_epoch, run.rune_bag[_selected_rune].duplicate(true), weapon.duplicate(true)), "rune_preview:%d" % index, Vector2(48, 30))
-			preview.add_theme_font_size_override("font_size", 12)
+			preview.add_theme_font_size_override("font_size", GameTypography.size_for(12))
 			row.add_child(preview)
 	if str(item["kind"]) in ["weapon", "relic"]:
 		var resonance := _wrap("遗物共鸣 +%s" % _rune_percent(_item_resonance_bonus(item)) if str(item["kind"]) == "weapon" else "共鸣遗物", 14, CYAN)
@@ -1673,7 +1669,7 @@ func _add_backpack_merge_target(source: int, partner: Dictionary) -> void:
 	var preview: Dictionary = partner["preview"]
 	var merge := _shop_button("与 #%d 合成 → %s阶" % [int(other["uid"]), _rank_name(int(preview["rank_after"]))], _bp_merge.bind(source, int(other["uid"]), _shop_epoch), "bag_merge:%d" % int(other["uid"]), Vector2(0, 32))
 	merge.name = "MergeBackpackItem%d" % int(other["uid"])
-	merge.add_theme_font_size_override("font_size", 13)
+	merge.add_theme_font_size_override("font_size", GameTypography.size_for(13))
 	var returned: Dictionary = preview.get("returned_rune", {})
 	merge.tooltip_text = "保留目标物品的位置和朝向；该操作不可撤回。" + ("另一份符文退回背包。" if not returned.is_empty() else "")
 	if str(other["kind"]) == "weapon":
@@ -1921,7 +1917,7 @@ func _offer_card(parent: Control, index: int) -> void:
 	title_row.add_child(lock_marker)
 	var lock_button := _shop_button("已售" if sold else "解锁" if locked else "锁定", _toggle_offer_lock.bind(index, _shop_epoch, offer.duplicate(true), locked), "lock:%d" % index, Vector2(58, 28))
 	lock_button.name = "OfferLock%d" % index
-	lock_button.add_theme_font_size_override("font_size", 14)
+	lock_button.add_theme_font_size_override("font_size", GameTypography.size_for(14))
 	lock_button.disabled = sold
 	lock_button.focus_mode = Control.FOCUS_NONE if sold else Control.FOCUS_ALL
 	lock_button.tooltip_text = "已售商品不能锁定。" if sold else "解锁后，下次刷新会替换此商品。" if locked else "锁定此商品，刷新和跨波保留；价格随波次调整，最多锁定%d件。" % RunState.SHOP_LOCK_CAP
@@ -1949,7 +1945,7 @@ func _offer_card(parent: Control, index: int) -> void:
 	names.add_child(footprint_row)
 	footprint_row.add_child(footprint)
 	var record := _shop_button("详情", _show_offer_record.bind(index, _shop_epoch, offer.duplicate(true)), "offer_record:%d" % index, Vector2(52, 28))
-	record.add_theme_font_size_override("font_size", 14)
+	record.add_theme_font_size_override("font_size", GameTypography.size_for(14))
 	footprint_row.add_child(record)
 	var summary: String = "%s · %s" % [{"weapon": "法器", "rune": "符文", "relic": "遗物", "skill": "技能"}.get(kind, kind), _item_trait(kind, definition, offer_rank)] if kind != "skill" else "主动技能"
 	var description := _wrap(summary, 15, MUTED)
@@ -1993,7 +1989,7 @@ func _offer_card(parent: Control, index: int) -> void:
 		}.get(error, "暂不可购")
 		buy_text = reason
 	var buy := _shop_button(buy_text, _buy.bind(index), "buy:%d" % index, Vector2(0, 35))
-	buy.add_theme_font_size_override("font_size", 15)
+	buy.add_theme_font_size_override("font_size", GameTypography.size_for(15))
 	buy.clip_text = true
 	buy.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	ButtonSkin.apply(buy, "blocked" if blocked else "primary", true)
@@ -2013,7 +2009,7 @@ func _offer_card(parent: Control, index: int) -> void:
 		actions.add_child(buy)
 		var compare := _shop_button("对照", _compare_relic.bind(index, _shop_epoch, offer.duplicate(true)), "compare:%d" % index, Vector2(54, 35))
 		compare.name = "CompareRelic%d" % index
-		compare.add_theme_font_size_override("font_size", 13)
+		compare.add_theme_font_size_override("font_size", GameTypography.size_for(13))
 		compare.tooltip_text = "查看当前与购入后的属性、生命和法器变化；不会购买。"
 		actions.add_child(compare)
 	else:
@@ -2065,7 +2061,7 @@ func _show_item_record(item: Dictionary, owned: bool, epoch: int) -> void:
 		details = _rune_rank_text(definition.id, rank)
 	elif kind == "skill":
 		details += "\n\n" + _active_skill_stats_text(run.active_skill_parameters(item))
-	var text := _wrap(details, 18, BONE)
+	var text := _wrap(details, 24, BONE)
 	text.name = "ItemRecordEffect"
 	scroll.add_child(text)
 	var close := _button("返回", _close_item_record.bind(epoch), Vector2(180, 42))
@@ -2538,7 +2534,7 @@ func _show_controls(from_pause: bool) -> void:
 		grid.add_child(label)
 		var binding := _button("", _begin_control_capture.bind(action, epoch), Vector2(210, 34))
 		binding.name = "Bind_" + action
-		binding.add_theme_font_size_override("font_size", 16)
+		binding.add_theme_font_size_override("font_size", GameTypography.size_for(16))
 		binding.tooltip_text = "修改%s的键盘主键；方向键始终可用于移动。" % ControlBindings.action_label(action)
 		grid.add_child(binding)
 		_control_buttons[action] = binding
@@ -3210,7 +3206,7 @@ func _section_heading(parent: Control, text: String, color: Color = GOLD, font_s
 func _label(text: String, font_size: int = 18, color: Color = BONE) -> Label:
 	var label := Label.new()
 	label.text = text
-	label.add_theme_font_size_override("font_size", font_size)
+	label.add_theme_font_size_override("font_size", GameTypography.size_for(font_size))
 	label.add_theme_color_override("font_color", color)
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	return label
@@ -3227,6 +3223,7 @@ func _button(text: String, action: Callable, minimum: Vector2 = Vector2(0, 40)) 
 	var button := Button.new()
 	button.text = text
 	button.custom_minimum_size = minimum
+	button.add_theme_font_size_override("font_size", 24 if minimum.y >= 40.0 else 12)
 	button.focus_mode = Control.FOCUS_ALL
 	button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	button.pressed.connect(action)
@@ -3309,21 +3306,14 @@ func _slider_grabber(fill: Color) -> ImageTexture:
 	return ImageTexture.create_from_image(image)
 
 
-static func create_ui_font() -> SystemFont:
-	var font := SystemFont.new()
-	# Some macOS installations resolve PingFang SC to HK without simplified glyphs.
-	font.font_names = PackedStringArray([
-		"Hiragino Sans GB", "PingFang SC", "Heiti SC",
-		"Microsoft YaHei UI", "Microsoft YaHei", "DengXian", "SimHei", "SimSun",
-		"Noto Sans CJK SC", "Noto Sans SC", "Arial",
-	])
-	return font
+static func create_ui_font() -> Font:
+	return GameTypography.font()
 
 
 func _make_theme() -> Theme:
 	var theme := Theme.new()
 	theme.default_font = create_ui_font()
-	theme.default_font_size = 17
+	theme.default_font_size = 12
 	theme.set_color("font_color", "Label", BONE)
 	theme.set_color("font_color", "Button", BONE)
 	theme.set_color("font_hover_color", "Button", BONE)

@@ -101,7 +101,7 @@ func _test_lifetime_and_transitions(ui: GameUI, state: RunState) -> void:
 	ui.notify("购买失败：魂屑不足。")
 	_check(notice.visible and notice.text == "购买失败：魂屑不足。", "The shop still displays an actionable transaction failure")
 	_check(timer.one_shot and is_equal_approx(timer.wait_time, 2.8) and timer.time_left > 2.7, "Shop notifications keep their one-shot 2.8-second lifetime")
-	_check(notice.get_theme_font_size("font_size") == 16 and notice.get_global_rect().size.x == 860, "Shop feedback retains its established full-size presentation")
+	_check(notice.get_theme_font_size("font_size") == 12 and notice.get_global_rect().size.x == 860, "Shop feedback uses the native pixel font size within its established width")
 	_check(notice.mouse_filter == Control.MOUSE_FILTER_IGNORE and notice.focus_mode == Control.FOCUS_NONE, "Shop feedback remains noninteractive")
 	await create_timer(0.18).timeout
 	ui.show_pause()

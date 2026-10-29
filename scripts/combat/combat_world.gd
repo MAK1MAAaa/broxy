@@ -43,10 +43,10 @@ const DASH_AFTERIMAGE_LIFE: float = 0.16
 const DASH_AFTERIMAGE_INTERVAL: float = 0.03
 const DASH_EVASION_LIFE: float = 0.32
 const DASH_EVASION_TEXT: String = "闪避"
-const DASH_EVASION_FONT_SIZE: int = 14
+const DASH_EVASION_FONT_SIZE: int = 12
 const PULSE_FEEDBACK_LIFE: float = 0.30
 const SKILL_FEEDBACK_LIFE: float = 0.45
-const SKILL_FEEDBACK_FONT_SIZE: int = 14
+const SKILL_FEEDBACK_FONT_SIZE: int = 12
 const PULSE_HINDER_TINT: Color = Color("c1b2d8")
 
 class DashAfterimage:
@@ -108,7 +108,7 @@ class FloatingNumber:
 	var life: float = 0.0
 	var total: float = 0.6
 	var player_hit: bool = false
-	var font_size: int = 16
+	var font_size: int = 12
 
 var _number_pool: Array[FloatingNumber] = []
 var _number_free: Array[FloatingNumber] = []
@@ -148,8 +148,8 @@ func _init() -> void:
 func _ready() -> void:
 	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	ControlBindings.ensure_installed()
-	_number_font = ThemeDB.fallback_font
-	_dash_evasion_font = GameUI.create_ui_font()
+	_number_font = GameTypography.font()
+	_dash_evasion_font = GameTypography.font()
 	_dash_evasion_text_width = _dash_evasion_font.get_string_size(DASH_EVASION_TEXT, HORIZONTAL_ALIGNMENT_LEFT, -1, DASH_EVASION_FONT_SIZE).x
 	arena_texture = load(ArenaCatalog.texture_path(_arena_id)) as Texture2D
 	_camera = Camera2D.new()
@@ -569,7 +569,7 @@ func _spawn_number(point: Vector2, amount: float, source: String, player_hit: bo
 	number.player_hit = player_hit
 	number.total = 0.75 if player_hit else 0.6
 	number.life = number.total
-	number.font_size = 21 if player_hit else (13 if secondary else 16)
+	number.font_size = 24 if player_hit else 12
 	number.color = Color("ffb39a") if player_hit else (Color("c7a9e1") if secondary else Color("f2e6c9"))
 	_update_number_text(number)
 	_feedback_serial += 1
@@ -595,7 +595,7 @@ func _update_number_text(number: FloatingNumber) -> void:
 
 static func _damage_text(amount: float, player_hit: bool) -> String:
 	var value: String = str(roundi(amount)) if is_equal_approx(amount, roundf(amount)) else "%.1f" % amount
-	return ("−" if player_hit else "") + value
+	return ("-" if player_hit else "") + value
 
 func _advance_feedback(delta: float) -> void:
 	_impact_painter.advance(delta)
@@ -707,7 +707,7 @@ func _draw_skill_feedback() -> void:
 func _draw_skill_feedback_text(anchor: Vector2) -> void:
 	var point: Vector2 = anchor - Vector2(_skill_feedback_text_width * 0.5, 0)
 	var color: Color = Color("d4c5e2") if _skill_feedback_affected > 0 else Color("b5aebd")
-	draw_string_outline(_dash_evasion_font, point, _skill_feedback_text, HORIZONTAL_ALIGNMENT_LEFT, -1, SKILL_FEEDBACK_FONT_SIZE, 3, Color("0c121a"))
+	draw_string_outline(_dash_evasion_font, point, _skill_feedback_text, HORIZONTAL_ALIGNMENT_LEFT, -1, SKILL_FEEDBACK_FONT_SIZE, 1, Color("0c121a"))
 	draw_string(_dash_evasion_font, point, _skill_feedback_text, HORIZONTAL_ALIGNMENT_LEFT, -1, SKILL_FEEDBACK_FONT_SIZE, color)
 
 func _draw_pulse_feedback() -> void:
@@ -805,7 +805,7 @@ func _draw_number(number: FloatingNumber) -> void:
 		return
 	var alpha: float = minf(1.0, number.life / 0.24)
 	var point: Vector2 = number.position - Vector2(number.text_width * 0.5, 0)
-	draw_string_outline(_number_font, point, number.text, HORIZONTAL_ALIGNMENT_LEFT, -1, number.font_size, 3, Color(0.025, 0.035, 0.06, alpha * 0.9))
+	draw_string_outline(_number_font, point, number.text, HORIZONTAL_ALIGNMENT_LEFT, -1, number.font_size, 2 if number.font_size >= 24 else 1, Color(0.025, 0.035, 0.06, alpha * 0.9))
 	draw_string(_number_font, point, number.text, HORIZONTAL_ALIGNMENT_LEFT, -1, number.font_size, Color(number.color, alpha))
 
 func _draw_feedback() -> void:
@@ -838,7 +838,7 @@ func _draw_dash_evasion_text(anchor: Vector2) -> void:
 	if _dash_evasion_font == null:
 		return
 	var point: Vector2 = anchor - Vector2(_dash_evasion_text_width * 0.5, 0)
-	draw_string_outline(_dash_evasion_font, point, DASH_EVASION_TEXT, HORIZONTAL_ALIGNMENT_LEFT, -1, DASH_EVASION_FONT_SIZE, 3, Color("0c121a"))
+	draw_string_outline(_dash_evasion_font, point, DASH_EVASION_TEXT, HORIZONTAL_ALIGNMENT_LEFT, -1, DASH_EVASION_FONT_SIZE, 1, Color("0c121a"))
 	draw_string(_dash_evasion_font, point, DASH_EVASION_TEXT, HORIZONTAL_ALIGNMENT_LEFT, -1, DASH_EVASION_FONT_SIZE, Color("d0e6df"))
 
 func _draw_player_damage_direction() -> void:
@@ -971,7 +971,7 @@ func _draw_player() -> void:
 		var extra: String = "+%d" % (sim.run.loadout.size() - orbit_count)
 		var width: float = _number_font.get_string_size(extra, HORIZONTAL_ALIGNMENT_LEFT, -1, 12).x
 		var point: Vector2 = center + Vector2(-width * 0.5, 28.0)
-		draw_string_outline(_number_font, point, extra, HORIZONTAL_ALIGNMENT_LEFT, -1, 12, 3, Color("0d111b"))
+		draw_string_outline(_number_font, point, extra, HORIZONTAL_ALIGNMENT_LEFT, -1, 12, 1, Color("0d111b"))
 		draw_string(_number_font, point, extra, HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color("f0e5cc"))
 
 func _draw_dash_afterimages() -> void:

@@ -142,3 +142,8 @@ reports/workbench-materials/*.log
 reports/workbench-materials/*.png
 reports/workbench-materials/*.import
 reports/workbench-materials/*-raw.json
+
+reports/pixel-font/*.log
+reports/pixel-font/*.png
+reports/pixel-font/*.import
+reports/pixel-font/*-raw.json

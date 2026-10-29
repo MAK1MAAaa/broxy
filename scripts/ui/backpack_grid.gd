@@ -67,6 +67,9 @@ var _input_device: String = "keyboard"
 var _native_preview_label: Label
 var _skill_keys: PackedStringArray = ["Q", "E"]
 
+func _ready() -> void:
+	_refresh_skill_badges()
+
 func set_skill_bindings(bindings: Dictionary) -> void:
 	_skill_keys = [ControlBindings.key_label(int(bindings.get("pulse", KEY_Q))), ControlBindings.key_label(int(bindings.get("skill_secondary", KEY_E)))]
 	_refresh_skill_badges()
@@ -91,6 +94,7 @@ func _refresh_skill_badges() -> void:
 			var badge := child.get_node_or_null("SkillKeyBadge") as Label
 			if badge != null:
 				badge.text = _skill_key(child.uid)
+				badge.size = Vector2(20, 16)
 
 func set_input_device(kind: String) -> void:
 	var next: String = "gamepad" if kind == "gamepad" else "keyboard"
@@ -295,7 +299,8 @@ func native_drag(uid: int, offset: Vector2) -> Variant:
 	_native_committed = false
 	var preview := Label.new()
 	preview.text = _native_preview_text(_items[uid])
-	preview.add_theme_font_size_override("font_size", 16)
+	preview.add_theme_font_override("font", GameTypography.font())
+	preview.add_theme_font_size_override("font_size", 12)
 	preview.add_theme_color_override("font_color", BONE)
 	_native_preview_label = preview
 	set_drag_preview(preview)
@@ -471,6 +476,7 @@ func _make_item(item: Dictionary) -> void:
 	rank.name = "ItemRank"
 	rank.text = ["", "Ⅰ", "Ⅱ", "Ⅲ"][clampi(int(item.get("rank", 1)), 1, 3)]
 	rank.position = Vector2(5, 1)
+	rank.add_theme_font_override("font", GameTypography.font())
 	rank.add_theme_font_size_override("font_size", 12)
 	rank.add_theme_color_override("font_color", CYAN if int(item.get("rank", 1)) == 2 else Color("765093") if int(item.get("rank", 1)) == 3 else GOLD)
 	rank.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -482,16 +488,18 @@ func _make_item(item: Dictionary) -> void:
 		badge.clip_text = true
 		badge.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 		badge.position = Vector2(button.size.x - 24, 1)
-		badge.size = Vector2(20, 16)
 		badge.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-		badge.add_theme_font_size_override("font_size", 13)
+		badge.add_theme_font_override("font", GameTypography.font())
+		badge.add_theme_font_size_override("font_size", 12)
 		badge.add_theme_color_override("font_color", CYAN)
 		badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		button.add_child(badge)
+		badge.size = Vector2(20, 16)
 	if button.size.y > 60 or button.size.x > 70:
 		var label := Label.new()
 		label.text = definition.display_name
-		label.add_theme_font_size_override("font_size", 11)
+		label.add_theme_font_override("font", GameTypography.font())
+		label.add_theme_font_size_override("font_size", 12)
 		label.add_theme_color_override("font_color", BONE)
 		label.position = Vector2(40, 17) if button.size.y < 60 else Vector2(3, button.size.y - 19)
 		label.size = Vector2(button.size.x - label.position.x - 3, 18)
@@ -520,6 +528,7 @@ func _make_item(item: Dictionary) -> void:
 		link.name = "CandleLink"
 		link.text = "↑"
 		link.position = Vector2(button.size.x - 14, 24)
+		link.add_theme_font_override("font", GameTypography.font())
 		link.add_theme_font_size_override("font_size", 12)
 		link.add_theme_color_override("font_color", Color("356936"))
 		link.mouse_filter = Control.MOUSE_FILTER_IGNORE
