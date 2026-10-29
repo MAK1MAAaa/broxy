@@ -9,10 +9,13 @@ var active: bool = false
 var sound: SoundBank
 var settings: Dictionary = {"shake": true, "flash": true}
 var textures: Dictionary = {}
+var _player_atlas: Texture2D
 var arena_texture: Texture2D
+var _obstacle_textures: Dictionary = {}
+var _arena_obstacles: Array[Dictionary] = []
 var _camera: Camera2D
 var _arena_id: String = "reliquary"
-var _arena_name: String = "秘仪祭坛"
+var _arena_name: String = "沙漠遗迹"
 var _arena_color: Color = Color(0.78, 0.67, 0.50)
 var soul_texture: Texture2D
 var glow_texture: Texture2D
@@ -43,16 +46,19 @@ const DASH_AFTERIMAGE_LIFE: float = 0.16
 const DASH_AFTERIMAGE_INTERVAL: float = 0.03
 const DASH_EVASION_LIFE: float = 0.32
 const DASH_EVASION_TEXT: String = "闪避"
-const DASH_EVASION_FONT_SIZE: int = 14
+const DASH_EVASION_FONT_SIZE: int = 12
 const PULSE_FEEDBACK_LIFE: float = 0.30
 const SKILL_FEEDBACK_LIFE: float = 0.45
-const SKILL_FEEDBACK_FONT_SIZE: int = 14
+const SKILL_FEEDBACK_FONT_SIZE: int = 12
 const PULSE_HINDER_TINT: Color = Color("c1b2d8")
+const OBSTACLE_ART_WIDTHS: Dictionary = {"monument": 44.0, "planter": 54.0, "bumper": 69.0}
 
 class DashAfterimage:
 	var position: Vector2 = Vector2.ZERO
 	var lean: float = 0.0
 	var life: float = 0.0
+	var frame_index: int = 0
+	var flip_h: bool = false
 
 var _dash_pending: bool = false
 var _pulse_pending: bool = false
@@ -108,7 +114,7 @@ class FloatingNumber:
 	var life: float = 0.0
 	var total: float = 0.6
 	var player_hit: bool = false
-	var font_size: int = 16
+	var font_size: int = 12
 
 var _number_pool: Array[FloatingNumber] = []
 var _number_free: Array[FloatingNumber] = []
@@ -148,10 +154,12 @@ func _init() -> void:
 func _ready() -> void:
 	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	ControlBindings.ensure_installed()
-	_number_font = ThemeDB.fallback_font
-	_dash_evasion_font = GameUI.create_ui_font()
+	_number_font = GameTypography.font()
+	_dash_evasion_font = GameTypography.font()
 	_dash_evasion_text_width = _dash_evasion_font.get_string_size(DASH_EVASION_TEXT, HORIZONTAL_ALIGNMENT_LEFT, -1, DASH_EVASION_FONT_SIZE).x
 	arena_texture = load(ArenaCatalog.texture_path(_arena_id)) as Texture2D
+	for id: String in ["monument", "planter", "bumper"]:
+		_obstacle_textures[id] = load("res://assets/worldflipper/props/%s.png" % id) as Texture2D
 	_camera = Camera2D.new()
 	_camera.name = "ExplorationCamera"
 	_camera.top_level = true
@@ -163,6 +171,7 @@ func _ready() -> void:
 	seal_texture = load(AdventureArt.path("res://assets/fx/seal.svg"))
 	for id: String in ["player", "chaser", "rusher", "tank", "caster", "boss"]:
 		textures[id] = load(AdventureArt.path("res://assets/sprites/%s.svg" % id))
+	_player_atlas = load(WorldFlipperPlayerArt.ATLAS_PATH) as Texture2D
 	for definition: ContentDef in GameCatalog.weapons():
 		textures[definition.id] = load(AdventureArt.path("res://assets/icons/%s.svg" % definition.icon))
 	_update_camera()
@@ -190,6 +199,7 @@ func begin(state: RunState) -> void:
 	_arena_color = Color(str(arena["preview_color"])) if _arena_id != "reliquary" else Color(0.78, 0.67, 0.50)
 	sim = CombatSim.new()
 	sim.begin(state)
+	_arena_obstacles = sim.obstacles.snapshot()
 	sim.ended.connect(_on_ended)
 	sim.shot_fired.connect(func() -> void: sound.play("shoot", -24.0))
 	sim.enemy_hit.connect(func() -> void: sound.play("hit", -24.0))
@@ -458,6 +468,8 @@ func _add_dash_afterimage(point: Vector2, direction: Vector2) -> void:
 	var afterimage: DashAfterimage = _dash_afterimages[_dash_afterimage_next]
 	afterimage.position = point
 	afterimage.lean = clampf(direction.x * 0.12, -0.045, 0.045)
+	afterimage.frame_index = WorldFlipperPlayerArt.frame_index(direction, _visual_time)
+	afterimage.flip_h = WorldFlipperPlayerArt.flip_for(direction)
 	afterimage.life = DASH_AFTERIMAGE_LIFE
 	_dash_afterimage_next = (_dash_afterimage_next + 1) % DASH_AFTERIMAGE_LIMIT
 
@@ -569,7 +581,7 @@ func _spawn_number(point: Vector2, amount: float, source: String, player_hit: bo
 	number.player_hit = player_hit
 	number.total = 0.75 if player_hit else 0.6
 	number.life = number.total
-	number.font_size = 21 if player_hit else (13 if secondary else 16)
+	number.font_size = 24 if player_hit else 12
 	number.color = Color("ffb39a") if player_hit else (Color("c7a9e1") if secondary else Color("f2e6c9"))
 	_update_number_text(number)
 	_feedback_serial += 1
@@ -595,7 +607,7 @@ func _update_number_text(number: FloatingNumber) -> void:
 
 static func _damage_text(amount: float, player_hit: bool) -> String:
 	var value: String = str(roundi(amount)) if is_equal_approx(amount, roundf(amount)) else "%.1f" % amount
-	return ("−" if player_hit else "") + value
+	return ("-" if player_hit else "") + value
 
 func _advance_feedback(delta: float) -> void:
 	_impact_painter.advance(delta)
@@ -666,7 +678,8 @@ func minimap_snapshot() -> Dictionary:
 		zones.append({"center": Vector2(float(zone["center"][0]), float(zone["center"][1])),
 			"radius": Vector2(float(zone["radius"][0]), float(zone["radius"][1]))})
 	return {"bounds": CombatSim.ARENA, "player": sim.player_position, "facing": sim.player_direction,
-		"view": camera_view(), "enemies": enemies, "zones": zones, "arena_id": _arena_id}
+		"view": camera_view(), "enemies": enemies, "zones": zones, "arena_id": _arena_id,
+		"obstacles": _arena_obstacles.duplicate(true)}
 
 func _draw() -> void:
 	if arena_texture != null:
@@ -676,6 +689,7 @@ func _draw() -> void:
 	_draw_atmosphere()
 	_draw_pulse_feedback()
 	_draw_ground_contacts()
+	_draw_obstacles()
 	_draw_player_ground()
 	_draw_souls()
 	_draw_enemies()
@@ -699,6 +713,23 @@ func _draw_ground_contacts() -> void:
 	_grounding_painter.rebuild(sim, camera_view())
 	_grounding_painter.draw(self)
 
+func _draw_obstacles() -> void:
+	var visible: Rect2 = camera_view()
+	for obstacle: Dictionary in _arena_obstacles:
+		var center: Vector2 = obstacle["center"]
+		var radius: float = obstacle["radius"]
+		var art_id: String = obstacle["art_id"]
+		var texture: Texture2D = _obstacle_textures.get(art_id) as Texture2D
+		if texture == null:
+			continue
+		# All normalized props share a foot anchor; their opaque width fills the collider.
+		var source_width: float = OBSTACLE_ART_WIDTHS.get(art_id, 69.0)
+		var scale: float = radius * 2.0 / source_width
+		var extent := Vector2.ONE * 96.0 * scale
+		var target := Rect2(center - Vector2(48, 84) * scale, extent)
+		if target.intersects(visible):
+			draw_texture_rect(texture, target, false)
+
 func _draw_skill_feedback() -> void:
 	if _skill_feedback_remaining <= 0.0 or _dash_evasion_font == null:
 		return
@@ -707,7 +738,7 @@ func _draw_skill_feedback() -> void:
 func _draw_skill_feedback_text(anchor: Vector2) -> void:
 	var point: Vector2 = anchor - Vector2(_skill_feedback_text_width * 0.5, 0)
 	var color: Color = Color("d4c5e2") if _skill_feedback_affected > 0 else Color("b5aebd")
-	draw_string_outline(_dash_evasion_font, point, _skill_feedback_text, HORIZONTAL_ALIGNMENT_LEFT, -1, SKILL_FEEDBACK_FONT_SIZE, 3, Color("0c121a"))
+	draw_string_outline(_dash_evasion_font, point, _skill_feedback_text, HORIZONTAL_ALIGNMENT_LEFT, -1, SKILL_FEEDBACK_FONT_SIZE, 1, Color("0c121a"))
 	draw_string(_dash_evasion_font, point, _skill_feedback_text, HORIZONTAL_ALIGNMENT_LEFT, -1, SKILL_FEEDBACK_FONT_SIZE, color)
 
 func _draw_pulse_feedback() -> void:
@@ -805,7 +836,7 @@ func _draw_number(number: FloatingNumber) -> void:
 		return
 	var alpha: float = minf(1.0, number.life / 0.24)
 	var point: Vector2 = number.position - Vector2(number.text_width * 0.5, 0)
-	draw_string_outline(_number_font, point, number.text, HORIZONTAL_ALIGNMENT_LEFT, -1, number.font_size, 3, Color(0.025, 0.035, 0.06, alpha * 0.9))
+	draw_string_outline(_number_font, point, number.text, HORIZONTAL_ALIGNMENT_LEFT, -1, number.font_size, 2 if number.font_size >= 24 else 1, Color(0.025, 0.035, 0.06, alpha * 0.9))
 	draw_string(_number_font, point, number.text, HORIZONTAL_ALIGNMENT_LEFT, -1, number.font_size, Color(number.color, alpha))
 
 func _draw_feedback() -> void:
@@ -838,7 +869,7 @@ func _draw_dash_evasion_text(anchor: Vector2) -> void:
 	if _dash_evasion_font == null:
 		return
 	var point: Vector2 = anchor - Vector2(_dash_evasion_text_width * 0.5, 0)
-	draw_string_outline(_dash_evasion_font, point, DASH_EVASION_TEXT, HORIZONTAL_ALIGNMENT_LEFT, -1, DASH_EVASION_FONT_SIZE, 3, Color("0c121a"))
+	draw_string_outline(_dash_evasion_font, point, DASH_EVASION_TEXT, HORIZONTAL_ALIGNMENT_LEFT, -1, DASH_EVASION_FONT_SIZE, 1, Color("0c121a"))
 	draw_string(_dash_evasion_font, point, DASH_EVASION_TEXT, HORIZONTAL_ALIGNMENT_LEFT, -1, DASH_EVASION_FONT_SIZE, Color("d0e6df"))
 
 func _draw_player_damage_direction() -> void:
@@ -946,14 +977,36 @@ func _player_tint() -> Color:
 		tint.a = 0.55 + sin(_visual_time * 35.0) * 0.30
 	return tint
 
+func _player_motion() -> Vector2:
+	if sim == null:
+		return Vector2.ZERO
+	return sim.dash_direction if sim.dash_time_left > 0.0 else sim.player_velocity
+
+
+func _player_frame_index() -> int:
+	return WorldFlipperPlayerArt.frame_index(_player_motion(), _visual_time)
+
+
+func _player_flip_h() -> bool:
+	return WorldFlipperPlayerArt.flip_for(_player_motion())
+
+
+func _draw_player_texture(frame_index: int, bob: float, tint: Color) -> void:
+	var target := Rect2(Vector2(-34, -50 + bob), Vector2(68, 68))
+	if frame_index > 0 and _player_atlas != null:
+		draw_texture_rect_region(_player_atlas, target, WorldFlipperPlayerArt.frame_rect(frame_index), tint)
+	else:
+		draw_texture_rect(textures["player"], target, false, tint)
+
+
 func _draw_player() -> void:
 	_draw_dash_afterimages()
 	var center: Vector2 = sim.player_position
 	var bob: float = sin(_visual_time * 9.0) * minf(2.0, sim.player_velocity.length() * 0.012)
 	var tint: Color = _player_tint()
 	var lean: float = clampf(sim.player_velocity.x * 0.0002, -0.045, 0.045)
-	draw_set_transform(center, lean)
-	draw_texture_rect(textures["player"], Rect2(Vector2(-34, -50 + bob), Vector2(68, 68)), false, tint)
+	draw_set_transform(center, lean, Vector2(-1.0 if _player_flip_h() else 1.0, 1.0))
+	_draw_player_texture(_player_frame_index(), bob, tint)
 	draw_set_transform(Vector2.ZERO)
 	var orbit_count: int = mini(8, sim.run.loadout.size())
 	for index: int in orbit_count:
@@ -971,7 +1024,7 @@ func _draw_player() -> void:
 		var extra: String = "+%d" % (sim.run.loadout.size() - orbit_count)
 		var width: float = _number_font.get_string_size(extra, HORIZONTAL_ALIGNMENT_LEFT, -1, 12).x
 		var point: Vector2 = center + Vector2(-width * 0.5, 28.0)
-		draw_string_outline(_number_font, point, extra, HORIZONTAL_ALIGNMENT_LEFT, -1, 12, 3, Color("0d111b"))
+		draw_string_outline(_number_font, point, extra, HORIZONTAL_ALIGNMENT_LEFT, -1, 12, 1, Color("0d111b"))
 		draw_string(_number_font, point, extra, HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color("f0e5cc"))
 
 func _draw_dash_afterimages() -> void:
@@ -983,8 +1036,8 @@ func _draw_dash_afterimages() -> void:
 		if afterimage.life <= 0.0:
 			continue
 		var opacity: float = 0.16 * clampf(afterimage.life / DASH_AFTERIMAGE_LIFE, 0.0, 1.0)
-		draw_set_transform(afterimage.position, afterimage.lean)
-		draw_texture_rect(textures["player"], Rect2(Vector2(-34, -50), Vector2(68, 68)), false, Color(0.70, 0.88, 0.90, opacity))
+		draw_set_transform(afterimage.position, afterimage.lean, Vector2(-1.0 if afterimage.flip_h else 1.0, 1.0))
+		_draw_player_texture(afterimage.frame_index, 0.0, Color(0.70, 0.88, 0.90, opacity))
 	draw_set_transform(Vector2.ZERO)
 
 func _draw_effects() -> void:
@@ -1045,6 +1098,7 @@ func _maintain_stress() -> void:
 		if enemy.active:
 			enemy.position.x = wrapf(enemy.position.x + 0.9, 100.0, 1180.0)
 			enemy.position.y = 175.0 + float(enemy.slot % 15) * 27.0
+			enemy.position = sim.obstacles.free_point(enemy.position, enemy.radius)
 	for shot: CombatSim.Shot in sim.shots:
 		if shot.active:
 			shot.position = Vector2(wrapf(shot.position.x, 85.0, 1195.0), wrapf(shot.position.y, 135.0, 620.0))

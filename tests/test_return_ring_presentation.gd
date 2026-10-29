@@ -1,5 +1,5 @@
 extends SceneTree
-## Native hollow heads and bounded batches must stay independent of combat state.
+## Source-game heads and bounded batches must stay independent of combat state.
 
 const IMPACT = preload("res://scripts/combat/impact_painter.gd")
 
@@ -68,8 +68,14 @@ func _test_heads() -> void:
 func _test_hollow_atlas() -> void:
 	var painter := ProjectilePainter.new()
 	_check(painter.atlas_texture != null and painter.atlas_texture.resource_path == AdventureArt.path("res://assets/fx/projectile_heads.svg"), "The displayed texture uses the tested authored pixel head atlas")
+	var native_image: Image = painter.atlas_texture.get_image()
+	var amulet := load(AdventureArt.FAN_ROOT + "icons/return_ring.png") as Texture2D
+	_check(native_image != null and native_image.get_size() == Vector2i(512, 64), "The imported source-game PNG retains the declared eight-frame atlas")
+	if native_image != null:
+		_check(native_image.get_region(Rect2i(448, 0, 64, 64)).get_data() == amulet.get_image().get_data(), "The actual return-flight head preserves the complete original amulet image")
+	# Keep checking the preserved historical art independently of the runtime reskin.
 	var image := Image.new()
-	var error: Error = image.load_svg_from_string(FileAccess.get_file_as_string(AdventureArt.path("res://assets/fx/projectile_heads.svg")))
+	var error: Error = image.load_svg_from_string(FileAccess.get_file_as_string(AdventureArt.ROOT + "fx/projectile_heads.svg"))
 	_check(error == OK and image.get_size() == Vector2i(512, 64), "The actual SVG can be rasterized at its declared eight-frame resolution")
 	if error != OK or image.get_size() != Vector2i(512, 64):
 		return
@@ -87,8 +93,7 @@ func _test_hollow_atlas() -> void:
 	_check(hollow and opaque_pixels > 60, "The real return-ring frame has visible blades and a transparent central three-world-pixel disc")
 	_check(bounded, "The three-blade texture remains inside the authored twenty-pixel envelope plus antialiasing")
 	if DisplayServer.get_name() != "headless":
-		var native_image: Image = painter.atlas_texture.get_image()
-		_check(native_image != null and not native_image.is_empty() and native_image.get_pixel(480, 32).a <= 0.02, "The imported GPU texture also leaves the ring center transparent")
+		_check(native_image != null and not native_image.is_empty() and native_image.get_region(Rect2i(448, 0, 64, 64)).get_used_rect().has_area(), "The imported GPU texture exposes a visible original amulet head")
 
 
 static func _head_transform(buffer: PackedFloat32Array) -> Transform2D:

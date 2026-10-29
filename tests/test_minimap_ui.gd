@@ -52,6 +52,7 @@ func _map_snapshot() -> Dictionary:
 	return {"bounds": BOUNDS, "player": BOUNDS.get_center(), "facing": Vector2.RIGHT,
 		"view": Rect2(BOUNDS.get_center() - Vector2(640, 360), Vector2(1280, 720)),
 		"arena_id": "mire", "zones": [{"center": Vector2(310, 275), "radius": Vector2(150, 68)}],
+		"obstacles": [{"center": Vector2(200, 560), "radius": 30.0}, {"center": Vector2(-650, -220), "radius": 36.0}],
 		"enemies": [{"position": Vector2(740, 365), "boss": false, "hunter": false},
 			{"position": Vector2(1060, 500), "boss": true, "hunter": false},
 			{"position": Vector2(250, 600), "boss": false, "hunter": true}]}
@@ -81,8 +82,11 @@ func _test_projection_and_validation() -> void:
 	var saved: Dictionary = map.presentation_snapshot()
 	value["enemies"][0]["position"] = Vector2.INF
 	value["zones"][0]["radius"] = Vector2.INF
+	value["obstacles"][0]["radius"] = INF
 	saved["enemies"].clear()
+	saved["obstacles"].clear()
 	_check(map.presentation_snapshot()["enemy_count"] == 3 and map.presentation_snapshot()["zones"][0]["radius"] == Vector2(150, 68), "Input data and returned snapshots cannot mutate the retained render state")
+	_check(map.presentation_snapshot()["obstacle_count"] == 2 and map.presentation_snapshot()["obstacles"][0]["radius"] == 30.0, "Input and returned obstacle geometry are isolated from retained render state")
 	for invalid: Variant in [null, {}, "bad", {"bounds": Rect2(0, 0, 0, 2), "player": Vector2.ZERO}, {"bounds": Rect2(Vector2.ZERO, Vector2(INF, 100)), "player": Vector2.ZERO}, {"bounds": BOUNDS, "player": Vector2.INF}]:
 		map.update_snapshot(invalid)
 		_check(not map.presentation_snapshot()["valid"] and not map.visible and map.presentation_snapshot()["enemy_count"] == 0, "Malformed snapshots clear the prior map rather than leaving ghost markers")
@@ -92,10 +96,12 @@ func _test_projection_and_validation() -> void:
 	value["view"] = Rect2(Vector2(INF, 0), Vector2(1, 1))
 	value["enemies"].append_array([null, {"position": Vector2.INF}, {"position": BOUNDS.end + Vector2.ONE}])
 	value["zones"].append_array([{}, {"center": Vector2.ZERO, "radius": Vector2(-1, 1)}, {"center": Vector2.INF, "radius": Vector2.ONE}])
+	value["obstacles"].append_array([{}, null, {"center": Vector2.ZERO, "radius": -1}, {"center": Vector2.INF, "radius": 30}, {"center": Vector2.ZERO, "radius": INF}, {"center": Vector2.ZERO, "radius": "30"}, {"center": BOUNDS.end + Vector2.ONE, "radius": 1}, {"center": Vector2.ZERO, "radius": 10000}, {"center": BOUNDS.end, "radius": 10}])
 	map.update_snapshot(value)
 	var clean: Dictionary = map.presentation_snapshot()
 	_check(clean["valid"] and clean["player"] == BOUNDS.end and clean["facing"] == Vector2.UP and not (clean["view"] as Rect2).has_area(), "Optional malformed direction and view values fall back without invalidating a real player")
 	_check(clean["enemy_count"] == 3 and clean["zone_count"] == 1, "Invalid and off-map entities never create misleading edge markers")
+	_check(clean["obstacle_count"] == 2, "Invalid obstacle centers, nonnumeric/negative/nonfinite/oversized radii never reach rendering")
 	map.free()
 
 func _test_bounded_markers() -> void:
@@ -112,9 +118,14 @@ func _test_bounded_markers() -> void:
 	for index: int in 100:
 		zones.append({"center": Vector2(400 + index, 300), "radius": Vector2(30, 20)})
 	value["zones"] = zones
+	var obstacles: Array[Dictionary] = []
+	for index: int in 100:
+		obstacles.append({"center": Vector2(200 + index, 560), "radius": 30.0})
+	value["obstacles"] = obstacles
 	map.update_snapshot(value)
 	var snapshot: Dictionary = map.presentation_snapshot()
 	_check(snapshot["enemy_count"] == MinimapView.ENEMY_LIMIT and snapshot["zone_count"] == MinimapView.ZONE_LIMIT, "Crowded snapshots retain a fixed marker and terrain budget")
+	_check(snapshot["obstacle_count"] == MinimapView.OBSTACLE_LIMIT, "Obstacle draw work has a fixed snapshot budget")
 	_check(snapshot["enemies"][0]["boss"] and snapshot["enemies"][1]["hunter"], "Boss and hunter remain visible when ordinary enemy dots reach capacity")
 	value = _map_snapshot()
 	value["view"] = Rect2(BOUNDS.position - Vector2.ONE * 300, BOUNDS.size + Vector2.ONE * 600)

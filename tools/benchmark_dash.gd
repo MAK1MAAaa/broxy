@@ -480,9 +480,12 @@ func _source_fingerprint() -> Dictionary:
 	var paths: Array[String] = ["res://project.godot", "res://tools/benchmark_dash.gd"]
 	for id: String in ArenaCatalog.IDS:
 		paths.append(ArenaCatalog.texture_path(id))
-	paths.append("res://assets/starfall/maps/expanded/manifest.json")
+	paths.append("res://assets/worldflipper/manifest.json")
+	for id: String in ["monument", "planter", "bumper"]:
+		paths.append("res://assets/worldflipper/props/%s.png" % id)
 	for id: String in ["player", "chaser", "rusher", "tank", "caster", "boss"]:
-		paths.append("res://assets/starfall/sprites/%s.svg" % id)
+		paths.append(AdventureArt.path("res://assets/sprites/%s.svg" % id))
+	paths.append(WorldFlipperPlayerArt.ATLAS_PATH)
 	for directory: String in ["res://scripts", "res://data", "res://scenes"]:
 		_collect_sources(directory, paths)
 	if _skill_feedback:
@@ -495,7 +498,7 @@ func _source_fingerprint() -> Dictionary:
 	var manifest := PackedStringArray()
 	var files: Dictionary = {}
 	for path: String in paths:
-		var digest: String = FileAccess.get_sha256(path) if _skill_feedback else FileAccess.get_file_as_string(path).sha256_text()
+		var digest: String = FileAccess.get_sha256(path)
 		files[path] = digest
 		manifest.append(path + ":" + digest)
 	return {"hash": "\n".join(manifest).sha256_text(), "algorithm": "sha256-path-and-content-manifest", "files": files}

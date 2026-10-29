@@ -1,0 +1,30 @@
+WORLD FLIPPER 原作素材与同人作品声明
+
+© Cygames, Inc. / Citail Inc.
+
+本目录中的《弹射世界 / WORLD FLIPPER》角色、敌人、武器、饰品、符文、立绘与背景图片来自原作素材，
+由官方公开试玩、Wiki 与角色保存站提供下载。本项目按用户要求将这些图片用于
+非官方同人试作。原作图片的著作权及相关权利仍属于原权利人，不因下载、
+裁切、缩放、图集整理或收录到本项目而转移。
+
+未发现这些原作图片以开放素材许可发布。Wiki 正文的 Creative Commons
+许可及相关工具、网站代码的开源许可，不应被视为游戏图片的使用许可。
+本项目对原创生成素材作出的 CC0 声明不适用于本目录中的原作素材。
+
+本项目不是《弹射世界》的官方作品，与原权利人没有隶属或合作关系，
+也不声明这项同人使用已获官方授权或认可。本文件仅记录来源与权利状态，
+不授予第三方对原作素材的复制、修改或再发行许可。
+
+各文件的下载地址、校验值及裁切、缩放、图集处理记录见同目录 manifest.json。
+发行包请保留本文件；Windows 外置文件为 licenses/World-Flipper-NOTICE.txt，
+macOS 外置文件位于 Contents/Resources/licenses/World-Flipper-NOTICE.txt。
+
+原作权利与网站说明：
+https://worldflipper.jp/copyright/
+https://worldflipper.jp/about/
+
+素材来源站点：
+世界弹射物语 BWIKI：https://wiki.biligame.com/worldflipper/
+World Flipper Wiki：https://worldflipper.wiki.gg/
+角色素材保存站：https://vivaldi6352.github.io/
+官方公开试玩地图与场景道具：https://worldflipper.jp/demo/

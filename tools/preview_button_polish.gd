@@ -1,7 +1,7 @@
 extends SceneTree
 ## Real UI fixtures with native draw states; no personal profile or simulated play.
 
-const VIEWS: PackedStringArray = ["title", "settings", "controls", "pause", "shop", "poor", "locked", "sold", "upgrades", "hover", "pressed"]
+const VIEWS: PackedStringArray = ["title", "settings", "controls", "pause", "shop", "poor", "locked", "sold", "upgrades", "hover", "pressed", "bag_focus", "bag_selected", "bag_valid", "bag_invalid", "bag_gamepad", "bag_merge", "bag_rune", "bag_record", "offer_record"]
 
 func _initialize() -> void:
 	_preview.call_deferred()
@@ -31,10 +31,17 @@ func _preview() -> void:
 	var state := RunState.new()
 	state.begin(2, "bone")
 	state.gold = 1000
+	if view.begins_with("bag_"):
+		for kind: String in ["skill", "relic"]:
+			state.offers.assign([{"kind": kind, "id": "pulse" if kind == "skill" else "damage", "price": 20, "sold": false}])
+			assert(state.buy_offer(0))
+		if view in ["bag_merge", "bag_rune"]:
+			state.offers.assign([{"kind": "weapon" if view == "bag_merge" else "rune", "id": "bone" if view == "bag_merge" else "pierce", "price": 20, "sold": false}])
+			assert(state.buy_offer(0))
 	var ui := GameUI.new()
 	root.add_child(ui)
 	ui.bind(state)
-	if view in ["shop", "poor", "locked", "sold"]:
+	if view in ["shop", "poor", "locked", "sold", "offer_record"] or view.begins_with("bag_"):
 		state.offers.clear()
 		for definition: ContentDef in GameCatalog.weapons():
 			state.offers.append({"id": definition.id, "kind": "weapon", "price": state.shop_price(definition), "sold": false})
@@ -64,6 +71,42 @@ func _preview() -> void:
 	await _settle()
 	_move_pointer(Vector2(20, 20))
 	await _settle()
+	var bag_state: Dictionary = {}
+	if view.begins_with("bag_"):
+		var grid: BackpackGrid = ui._bag_grid
+		var uid: int = int(state.loadout[0]["uid"])
+		if view == "bag_record":
+			var button: Button = ui._shop_focus_button("bag_record:%d" % uid)
+			button.grab_focus()
+			button.pressed.emit()
+			assert(ui._overlay_mode == "item_record")
+		elif view == "bag_gamepad":
+			ui._on_input_device_changed("gamepad", 0)
+			grid.get_node("BackpackItem%d" % uid).grab_focus()
+		elif view == "bag_rune":
+			grid.select_item(int(state.rune_bag.back()["uid"]))
+		elif view == "bag_merge":
+			grid.select_item(uid)
+		elif view == "bag_focus":
+			var item := grid.get_node("BackpackItem%d" % uid) as Button
+			item.grab_focus()
+			assert(item.has_focus())
+		elif view == "bag_selected":
+			grid.select_item(uid)
+			root.gui_release_focus()
+		else:
+			grid.begin_placement(uid, false, Vector2i(5, 3 if view == "bag_invalid" else 0))
+			assert(bool(grid.placement_at(grid.cursor).get("valid", false)) == (view == "bag_valid"))
+		await _settle()
+		bag_state = {"selected_uid": grid.selected_uid, "held_uid": grid.held_uid,
+			"placement": grid.placement_at(grid.cursor) if grid.held_uid >= 0 else {},
+			"focus": str(root.gui_get_focus_owner().name) if root.gui_get_focus_owner() != null else ""}
+	if view == "offer_record":
+		var button: Button = ui._shop_focus_button("offer_record:0")
+		button.grab_focus()
+		button.pressed.emit()
+		await _settle()
+		assert(ui._overlay_mode == "item_record")
 	var draw_mode: int = -1
 	if view in ["hover", "pressed"]:
 		root.gui_release_focus()
@@ -90,7 +133,7 @@ func _preview() -> void:
 	var unchanged: bool = before == JSON.stringify([state.summary(), state.backpack_snapshot(), str(state.rng.state)])
 	print("BUTTON_PREVIEW ", JSON.stringify({"view": view, "capture": destination, "capture_result": result,
 		"state_unchanged_while_drawing": unchanged, "personal_profile_io": false, "fixed_fixture": true,
-		"window_size": [root.size.x, root.size.y], "viewport_capture_size": [image.get_width(), image.get_height()], "actual_button_draw_mode": draw_mode}))
+		"window_size": [root.size.x, root.size.y], "viewport_capture_size": [image.get_width(), image.get_height()], "actual_button_draw_mode": draw_mode, "bag_state": bag_state}))
 	quit(0 if result == OK and unchanged else 1)
 
 func _move_pointer(point: Vector2) -> void:

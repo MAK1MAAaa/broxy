@@ -125,7 +125,7 @@ func _run_tests() -> void:
 	await _settle()
 	ui.notify("商店改装提示")
 	await _settle()
-	_check(hud_notice.get_global_rect() == Rect2(210, 502, 860, 40) and hud_notice.get_theme_font_size("font_size") == 16, "Shop notifications restore their original centered size and font after leaving combat")
+	_check(hud_notice.get_global_rect() == Rect2(210, 502, 860, 40) and hud_notice.get_theme_font_size("font_size") == 12, "Shop notifications restore their centered size and native pixel font after leaving combat")
 	_check(hud_notice.mouse_filter == Control.MOUSE_FILTER_IGNORE, "Restored shop notifications remain noninteractive")
 	_check(_buttons_inside(ui), "Shop buttons fit in 1280 by 720")
 	_check(_text_inside(ui), "Shop item and price text fits with the full-size icons")
@@ -140,7 +140,8 @@ func _run_tests() -> void:
 	_check(state.rune_bag.size() == 1, "Purchased runes appear in the reserve bag")
 	var rune_uid: int = int(state.rune_bag[0]["uid"])
 	_check(_focus_id() == "bag_equip:%d" % starter_uid, "Buying a loose rune selects its box and focuses the first real weapon target")
-	_check(_has_label_containing(ui, GameCatalog.rune("pierce").display_name) and _has_label_containing(ui, ui._rune_rank_text("pierce", 1)), "The selected rune's current-rank effect stays visible with its install instruction")
+	var selected_rune_guide := ui.find_child("RuneGuide", true, false) as Label
+	_check(_has_label_containing(ui, GameCatalog.rune("pierce").display_name) and selected_rune_guide != null and selected_rune_guide.text.contains("+%d目标" % RuneRules.extra_hits(1)) and selected_rune_guide.tooltip_text == ui._rune_rank_text("pierce", 1), "The selected rune exposes its current-rank target count and retains its complete rules in its tooltip")
 	await _accept_focus()
 	_check(state.rune_bag.is_empty() and state.loadout[0]["rune"].get("id", "") == "pierce", "Selecting a reserve rune and a weapon equips it")
 	_check(_sounds.back() == "buy", "Installing a backpack rune requests transaction feedback")
@@ -570,7 +571,7 @@ func _inside_scroll(node: Node) -> bool:
 
 
 func _decorations_ignore_input(node: Node) -> bool:
-	if node.name == "RitualFrame" or node.name == "PageOrnament":
+	if node.name in ["RitualFrame", "PageOrnament", "ShopPanelFinish", "WorkbenchSurfaceFinish", "ShopWorkbenchBackdrop"]:
 		if not node is Control or node.mouse_filter != Control.MOUSE_FILTER_IGNORE or node.focus_mode != Control.FOCUS_NONE or node.is_processing():
 			return false
 	for child: Node in node.get_children():

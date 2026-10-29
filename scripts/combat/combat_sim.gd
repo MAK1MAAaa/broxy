@@ -101,6 +101,7 @@ class Effect:
 
 var run: RunState
 var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+var obstacles: ArenaObstacles = ArenaObstacles.new()
 var player_position: Vector2 = ARENA.get_center()
 var player_velocity: Vector2 = Vector2.ZERO
 var player_direction: Vector2 = Vector2.RIGHT
@@ -176,6 +177,7 @@ func _init() -> void:
 
 func begin(state: RunState) -> void:
 	run = state
+	obstacles.configure(ArenaCatalog.definition(run.arena_id).get("obstacles", []))
 	rng.seed = int(run.rng.randi())
 	_wave = GameCatalog.wave(run.wave)
 	duration = _wave.duration
@@ -186,7 +188,7 @@ func begin(state: RunState) -> void:
 	_route = RogueRules.route(run.active_route) if not _wave.boss_wave and run.active_route != "balanced" else {}
 	core_activations = {"frostfire": 0, "bone_chorus": 0}
 	hunter = null
-	player_position = ARENA.get_center()
+	player_position = obstacles.free_point(ARENA.get_center(), 16.0, 16.0)
 	dash_time_left = 0.0
 	dash_cooldown_left = 0.0
 	dash_cooldown_total = _current_dash_cooldown()
@@ -280,7 +282,7 @@ func _move_player(delta: float, movement: Vector2, dash_pressed: bool) -> void:
 	if advances_time and dash_time_left > 0.0:
 		var dash_delta: float = minf(delta, dash_time_left)
 		player_velocity = dash_direction * DashRules.SPEED
-		player_position = clamp_point(player_position + player_velocity * dash_delta, 16.0)
+		player_position = obstacles.move_body(player_position, player_velocity * dash_delta, 16.0, 16.0)
 		player_direction = dash_direction
 		dash_time_left = _skill_timer_after(dash_time_left, dash_delta)
 		movement_delta = delta - dash_delta
@@ -288,7 +290,7 @@ func _move_player(delta: float, movement: Vector2, dash_pressed: bool) -> void:
 			return
 	player_velocity = movement.limit_length() * run.stat("move_speed")
 	player_velocity *= ArenaCatalog.movement_multiplier(run.arena_id, player_position)
-	player_position = clamp_point(player_position + player_velocity * movement_delta, 16.0)
+	player_position = obstacles.move_body(player_position, player_velocity * movement_delta, 16.0, 16.0)
 	if _has_movement_direction(movement):
 		player_direction = movement.normalized()
 
@@ -429,7 +431,7 @@ func _cast_pulse(origin: Vector2, fallback: Vector2, parameters: Dictionary) -> 
 		if not offset.is_finite() or offset.length_squared() > last_pulse_radius * last_pulse_radius:
 			continue
 		var direction: Vector2 = offset.normalized() if offset.length_squared() > 0.0 else fallback
-		enemy.position = clamp_point(enemy.position + direction * float(parameters["push_distance"]))
+		enemy.position = obstacles.move_body(enemy.position, direction * float(parameters["push_distance"]), enemy.radius)
 		enemy.pulse_hinder_timer = float(parameters["hinder_seconds"])
 		last_pulse_affected += 1
 	pulses_used += 1
@@ -518,7 +520,8 @@ func spawn_enemy(id: String, position: Vector2 = Vector2.INF) -> Enemy:
 	var enemy: Enemy = enemies[_enemy_free.pop_back()]
 	enemy.active = true
 	enemy.definition = GameCatalog.enemy(id)
-	enemy.position = _edge_position() if position == Vector2.INF else position
+	enemy.radius = enemy.definition.radius
+	enemy.position = obstacles.free_point(_edge_position(enemy.radius) if position == Vector2.INF else position, enemy.radius)
 	enemy.velocity = Vector2.ZERO
 	_uid += 1
 	enemy.uid = _uid
@@ -537,7 +540,7 @@ func spawn_enemy(id: String, position: Vector2 = Vector2.INF) -> Enemy:
 	enemy_count += 1
 	return enemy
 
-func _edge_position() -> Vector2:
+func _edge_position(body_radius: float = 42.0) -> Vector2:
 	var view: Rect2 = ArenaCatalog.visible_rect(player_position)
 	var ring: Rect2 = view.grow(SPAWN_MARGIN)
 	var bounds: Rect2 = ARENA.grow(-SPAWN_INSET)
@@ -554,6 +557,7 @@ func _edge_position() -> Vector2:
 			segments.append(Rect2(Vector2(low.x, ring.position.y), Vector2(high.x - low.x, 0)))
 		if ring.end.y <= bounds.end.y:
 			segments.append(Rect2(Vector2(low.x, ring.end.y), Vector2(high.x - low.x, 0)))
+	segments = obstacles.clear_spawn_segments(segments, body_radius)
 	var edge_roll: float = rng.randf()
 	var position_roll: float = rng.randf()
 	var length: float = 0.0
@@ -568,7 +572,8 @@ func _edge_position() -> Vector2:
 		var last: Rect2 = segments.back()
 		return last.position + last.size * position_roll
 	# The bounded reference view always leaves a hidden edge; retain a safe fallback.
-	return bounds.position if player_position.distance_squared_to(bounds.position) > player_position.distance_squared_to(bounds.end) else bounds.end
+	var fallback: Vector2 = bounds.position if player_position.distance_squared_to(bounds.position) > player_position.distance_squared_to(bounds.end) else bounds.end
+	return obstacles.free_point(fallback, body_radius, SPAWN_INSET)
 
 func _spawn_wave_group() -> void:
 	var count: int = 2 + int(run.wave / 2)
@@ -600,6 +605,7 @@ func _update_enemies(delta: float) -> void:
 			enemy.active = false
 			enemy_count -= 1
 			_enemy_free.append(enemy.slot)
+			obstacles.forget_agent(enemy.uid)
 			continue
 		enemy.age += delta
 		enemy.action_timer -= delta
@@ -643,6 +649,7 @@ func _update_enemies(delta: float) -> void:
 				enemy.action_timer = enemy.definition.cooldown
 				enemy.mode = 0
 		if id != "boss":
+			var charging: bool = id == "rusher" and speed == 330.0
 			if enemy.hunter:
 				speed *= RogueRules.HUNTER_SPEED_FACTOR
 			if enemy.pulse_hinder_timer > 0.0 and not enemy.hunter:
@@ -651,26 +658,37 @@ func _update_enemies(delta: float) -> void:
 			elif enemy.slow_timer > 0.0:
 				speed *= enemy.slow_factor
 			speed *= ArenaCatalog.movement_multiplier(run.arena_id, enemy.position)
-			# A small deterministic orbit separates packs without an O(n²) rigid-body solver.
-			var side: float = sin(float(enemy.uid) * 2.39996 + enemy.age * 0.35) * 0.24
-			enemy.velocity = direction.rotated(side) * speed
-			enemy.position = clamp_point(enemy.position + enemy.velocity * delta)
+			var goal: Vector2 = enemy.position + direction * maxf(distance, 1.0) if id == "caster" and distance < 160.0 else player_position
+			var waypoint: Vector2 = obstacles.next_target(enemy.position, goal, enemy.radius, enemy.uid) if not charging and speed > 0.0 else goal
+			var routing: bool = not charging and speed > 0.0 and not waypoint.is_equal_approx(goal)
+			var displacement: Vector2
+			if routing:
+				displacement = (waypoint - enemy.position).limit_length(speed * delta)
+				enemy.velocity = displacement / delta if delta > 0.0 else Vector2.ZERO
+			else:
+				# Preserve open-ground pack motion; a locked charge remains straight.
+				var side: float = 0.0 if charging else sin(float(enemy.uid) * 2.39996 + enemy.age * 0.35) * 0.24
+				enemy.velocity = direction.rotated(side) * speed
+				displacement = enemy.velocity * delta
+				obstacles.forget_agent(enemy.uid)
+			enemy.position = obstacles.move_body(enemy.position, displacement, enemy.radius, 0.0, not charging)
 		if distance < enemy.radius + 13.0 and invulnerability <= 0.0:
 			var contact_origin: Vector2 = enemy.position
 			if dash_invulnerability_left <= 0.0:
 				# Retreat/charge movement can point away from the player; recoil is radial.
 				var recoil_direction: Vector2 = (contact_origin - player_position).normalized()
-				enemy.position = clamp_point(contact_origin + recoil_direction * 18.0)
+				enemy.position = obstacles.move_body(contact_origin, recoil_direction * 18.0, enemy.radius)
 			_hurt_player(enemy.definition.damage * (1.0 + 0.09 * float(run.wave - 1)), id, "contact", contact_origin)
 
 func _update_boss(enemy: Enemy, direction: Vector2, delta: float) -> void:
 	var target: Vector2 = clamp_point(player_position + Vector2(0, -45) + Vector2(sin(enemy.age * 0.35) * 220.0, cos(enemy.age * 0.25) * 100.0), enemy.radius)
-	var displacement: Vector2 = target - enemy.position
+	var waypoint: Vector2 = obstacles.next_target(enemy.position, target, enemy.radius, enemy.uid)
+	var displacement: Vector2 = waypoint - enemy.position
 	var speed: float = enemy.definition.speed
 	if enemy.slow_timer > 0.0:
 		speed *= enemy.slow_factor
 	speed *= ArenaCatalog.movement_multiplier(run.arena_id, enemy.position)
-	enemy.position += displacement.limit_length(speed * delta)
+	enemy.position = obstacles.move_body(enemy.position, displacement.limit_length(speed * delta), enemy.radius)
 	if enemy.action_timer > 0.0:
 		return
 	_boss_cycle += 1
@@ -1137,6 +1155,7 @@ func _explosion_slots(position: Vector2, radius: float = RuneRules.BLAST_RADIUS)
 
 func _kill_enemy(enemy: Enemy) -> void:
 	enemy.active = false
+	obstacles.forget_agent(enemy.uid)
 	enemy_count -= 1
 	_enemy_free.append(enemy.slot)
 	run.kills += 1
@@ -1157,7 +1176,7 @@ func _drop_soul(position: Vector2, value: int) -> void:
 		return
 	var soul: Soul = souls[_soul_free.pop_back()]
 	soul.active = true
-	soul.position = position
+	soul.position = obstacles.free_point(position, 6.0)
 	soul.value = value
 	soul.age = 0.0
 	soul_count += 1

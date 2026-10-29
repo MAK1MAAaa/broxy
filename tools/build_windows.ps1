@@ -13,6 +13,22 @@ try {
             throw "Missing distribution notice: assets/licenses/$notice"
         }
     }
+    $worldFlipperNotice = Join-Path $projectRoot 'assets/worldflipper/NOTICE.txt'
+    if (-not (Test-Path -LiteralPath $worldFlipperNotice -PathType Leaf)) {
+        throw 'Missing distribution notice: assets/worldflipper/NOTICE.txt'
+    }
+    $fontLicenseSource = Join-Path $projectRoot 'assets/fonts/licenses/fusion-pixel'
+    $fontNotices = @(
+        'OFL.txt',
+        'LICENSES/ark-pixel/OFL.txt',
+        'LICENSES/cubic-11/OFL.txt',
+        'LICENSES/galmuri/LICENSE.txt'
+    )
+    foreach ($notice in $fontNotices) {
+        if (-not (Test-Path -LiteralPath (Join-Path $fontLicenseSource $notice) -PathType Leaf)) {
+            throw "Missing distribution notice: assets/fonts/licenses/fusion-pixel/$notice"
+        }
+    }
 
     $outputDirectory = Join-Path $projectRoot 'build/Embers-windows-x86_64'
     $executable = Join-Path $outputDirectory 'Embers.exe'
@@ -34,6 +50,13 @@ try {
     New-Item -ItemType Directory -Path $licenseDirectory -Force | Out-Null
     foreach ($notice in $notices) {
         Copy-Item -LiteralPath (Join-Path $projectRoot "assets/licenses/$notice") -Destination $licenseDirectory -Force
+    }
+    Copy-Item -LiteralPath $worldFlipperNotice -Destination (Join-Path $licenseDirectory 'World-Flipper-NOTICE.txt') -Force
+    $fontLicenseDirectory = Join-Path $licenseDirectory 'fonts/fusion-pixel'
+    foreach ($notice in $fontNotices) {
+        $destination = Join-Path $fontLicenseDirectory $notice
+        New-Item -ItemType Directory -Path (Split-Path -Parent $destination) -Force | Out-Null
+        Copy-Item -LiteralPath (Join-Path $fontLicenseSource $notice) -Destination $destination -Force
     }
     Compress-Archive -LiteralPath @($executable, $package, $licenseDirectory) -DestinationPath $archive -Force
     Write-Output "Built: $outputDirectory"

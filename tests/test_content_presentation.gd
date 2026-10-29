@@ -261,7 +261,7 @@ func _test_full_shop() -> void:
 		await _settle()
 		var title: Label = ui.find_child("BackpackItemTitle", true, false) as Label
 		var details: Label = ui.find_child("BackpackItemEffect", true, false) as Label
-		_check(title != null and title.text.contains(GameCatalog.relic("grave_candle").display_name) and details != null and details.text.contains("拾取范围 +38") and details.text.contains("移速 -8"), "Keyboard inspection exposes the selected relic's positive and negative ranked effects")
+		_check(title != null and title.text.contains(GameCatalog.relic("grave_candle").display_name) and details != null and details.text.contains("拾取范围 +38") and details.text.contains("移速 -8") and details.tooltip_text.contains("拾取范围 +38") and details.tooltip_text.contains("移速 -8") and details.tooltip_text.contains("正上方") and details.tooltip_text.contains("不叠加"), "Keyboard inspection exposes ranked tradeoffs while its tooltip retains the relic's full linking rule")
 		_check(state.summary() == before and str(ui._screen) == "shop" and str(ui._overlay_mode).is_empty(), "Inline backpack inspection is read-only and stays in the shop")
 		var sale: Button = ui.find_child("SellBackpackItem", true, false) as Button
 		_check(sale != null, "The selected item's action remains keyboard reachable through its details viewport")
@@ -271,7 +271,7 @@ func _test_full_shop() -> void:
 			_check(scroll.get_global_rect().grow(1).encloses(sale.get_global_rect()), "Following keyboard focus brings an item action into the visible details viewport")
 	var offer: Control = ui.find_child("Offer1", true, false)
 	var description: Label = offer.find_child("OfferDescription", true, false) if offer != null else null
-	_check(description != null and description.text.contains("首目标") and description.text.contains("第二") and description.tooltip_text == GameCatalog.weapon("crescent").description, "The compact moon-scythe card preserves first-target and second-hit rules with its full formal tooltip")
+	_check(description != null and description.text.contains("法器") and description.text.contains("穿透") and description.tooltip_text.contains("首目标") and description.tooltip_text.contains("第二") and description.tooltip_text == GameCatalog.weapon("crescent").description, "The compact moon-scythe trait retains first-target and second-hit rules in its full formal tooltip")
 	_check(offer != null and root.get_visible_rect().encloses(offer.get_global_rect()), "The moon-scythe shop card fits inside the full native layout")
 	for index: int in range(1, 5):
 		_check(ui.find_child("Offer%d" % index, true, false) != null, "The backpack redesign retains each of the four formal shop quotes")

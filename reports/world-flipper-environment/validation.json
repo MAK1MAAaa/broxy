@@ -1,0 +1,355 @@
+{
+  "schema_version": 1,
+  "base_commit": "8e99f1c",
+  "branch": "codex/ui-refinement",
+  "platform": "Windows",
+  "scope": {
+    "maps": 4,
+    "obstacles_per_map": 10,
+    "enemy_alpha_removed_source_pixels": {
+      "caster": 48,
+      "boss": 64
+    },
+    "terrain_coordinates_and_multipliers_preserved": true,
+    "character_recruitment_deferred": true
+  },
+  "headless": {
+    "invocations": 101,
+    "suites": 96,
+    "diagnostics": 5,
+    "assertions": 34159,
+    "python_tests": 56,
+    "failures": 0,
+    "engine_errors": 0,
+    "log_sha256": "147a96381cac9ac4ae5e026da34d3851b07483cfd402ca561acb2a6e5f140ff5"
+  },
+  "native": [
+    {
+      "log": "native-adventure_art.log",
+      "assertions": 236,
+      "sha256": "f4446e780cf6ec45884737a64eb5e93ae3f474d6f92816447f32d3b097282d02"
+    },
+    {
+      "log": "native-arena_rules.log",
+      "assertions": 592,
+      "sha256": "a90e5d71f8958ecd413dab0b8609f5d5031d8bc96ff389d7c16a9cf1854601cb"
+    },
+    {
+      "log": "native-art_grounding.log",
+      "assertions": 20,
+      "sha256": "089ba1c7f9a885b8dffd9d11a12aa9a505818e2bf5f3dafd1343c8754eac851d"
+    },
+    {
+      "log": "native-expanded_arena.log",
+      "assertions": 181,
+      "sha256": "cc027441f9e2488920cae397eb174a0d655df6b6b8d89fb6322fb435364cefe5"
+    },
+    {
+      "log": "native-expanded_world.log",
+      "assertions": 189,
+      "sha256": "8fc1660954111f7b0c5773c333ccd14d7e81905cdd530295c955192226548083"
+    },
+    {
+      "log": "native-minimap_ui.log",
+      "assertions": 50,
+      "sha256": "09931bf0a42df0dc07decea297dabf7e2a28dceebc45894bdf712e22e1c424d4"
+    },
+    {
+      "log": "native-obstacles.log",
+      "assertions": 776,
+      "sha256": "6ccb609c0a3cd7acece9f5c7e8bd81a4b183f83dc0d771b213ea1ba6526d19dd"
+    },
+    {
+      "log": "native-skill_feedback.log",
+      "assertions": 91,
+      "sha256": "64d838a848ce6db66a85b66c2e240d5e733c46053686070ceba83211d3604213"
+    },
+    {
+      "log": "native-title_cover.log",
+      "assertions": 91,
+      "sha256": "2771cf772be380c1498403d788f96f38b62406c62f2e4d6d817ce5468df3a170"
+    },
+    {
+      "log": "native-world_flipper_art.log",
+      "assertions": 170,
+      "sha256": "a7e93ec9702a6df06a81ea27dcb5f592043abd718fb2072fe489092f4e0024bb"
+    }
+  ],
+  "exported_native": [
+    {
+      "log": "pack-check-adventure_art.log",
+      "assertions": 236,
+      "sha256": "f4446e780cf6ec45884737a64eb5e93ae3f474d6f92816447f32d3b097282d02"
+    },
+    {
+      "log": "pack-check-arena_rules.log",
+      "assertions": 592,
+      "sha256": "a90e5d71f8958ecd413dab0b8609f5d5031d8bc96ff389d7c16a9cf1854601cb"
+    },
+    {
+      "log": "pack-check-art_grounding.log",
+      "assertions": 20,
+      "sha256": "089ba1c7f9a885b8dffd9d11a12aa9a505818e2bf5f3dafd1343c8754eac851d"
+    },
+    {
+      "log": "pack-check-expanded_arena.log",
+      "assertions": 181,
+      "sha256": "cc027441f9e2488920cae397eb174a0d655df6b6b8d89fb6322fb435364cefe5"
+    },
+    {
+      "log": "pack-check-expanded_world.log",
+      "assertions": 189,
+      "sha256": "8fc1660954111f7b0c5773c333ccd14d7e81905cdd530295c955192226548083"
+    },
+    {
+      "log": "pack-check-minimap_ui.log",
+      "assertions": 50,
+      "sha256": "09931bf0a42df0dc07decea297dabf7e2a28dceebc45894bdf712e22e1c424d4"
+    },
+    {
+      "log": "pack-check-obstacles.log",
+      "assertions": 776,
+      "sha256": "6ccb609c0a3cd7acece9f5c7e8bd81a4b183f83dc0d771b213ea1ba6526d19dd"
+    },
+    {
+      "log": "pack-check-skill_feedback.log",
+      "assertions": 91,
+      "sha256": "64d838a848ce6db66a85b66c2e240d5e733c46053686070ceba83211d3604213"
+    },
+    {
+      "log": "pack-check-title_cover.log",
+      "assertions": 91,
+      "sha256": "2771cf772be380c1498403d788f96f38b62406c62f2e4d6d817ce5468df3a170"
+    },
+    {
+      "log": "pack-check-world_flipper_art.log",
+      "assertions": 170,
+      "sha256": "a7e93ec9702a6df06a81ea27dcb5f592043abd718fb2072fe489092f4e0024bb"
+    }
+  ],
+  "previews": [
+    {
+      "view": "distant-ashland",
+      "size": [
+        1280,
+        720
+      ],
+      "source_sha256": "081c97ac92a41cc0cfd98054d69b8d53b8fc22c041bfd5cbe95e1cef63d4b8ad",
+      "pack_sha256": "081c97ac92a41cc0cfd98054d69b8d53b8fc22c041bfd5cbe95e1cef63d4b8ad",
+      "pixels_equal": true
+    },
+    {
+      "view": "distant-glacier",
+      "size": [
+        1280,
+        720
+      ],
+      "source_sha256": "29cbfab8e6f64f4c43c0c35dd05fea65d3a63d870d4b99b64fa2c959383f6c80",
+      "pack_sha256": "29cbfab8e6f64f4c43c0c35dd05fea65d3a63d870d4b99b64fa2c959383f6c80",
+      "pixels_equal": true
+    },
+    {
+      "view": "distant-mire",
+      "size": [
+        1280,
+        720
+      ],
+      "source_sha256": "103d2be86f46b96eb7d3dd223985b84c5a0240be180a7dcc4364260a542d8c0d",
+      "pack_sha256": "103d2be86f46b96eb7d3dd223985b84c5a0240be180a7dcc4364260a542d8c0d",
+      "pixels_equal": true
+    },
+    {
+      "view": "distant-reliquary",
+      "size": [
+        1280,
+        720
+      ],
+      "source_sha256": "1a564bf707c3dc8f885b879ea1d33990bd3435c851b4b2df03d64eb1318ccbdd",
+      "pack_sha256": "1a564bf707c3dc8f885b879ea1d33990bd3435c851b4b2df03d64eb1318ccbdd",
+      "pixels_equal": true
+    },
+    {
+      "view": "enemies-ashland",
+      "size": [
+        1280,
+        720
+      ],
+      "source_sha256": "95d83ed11ebd03acc16e74a9f1bcd7f8419b1bf331eb1d68671b8edcbd8b5a7d",
+      "pack_sha256": "95d83ed11ebd03acc16e74a9f1bcd7f8419b1bf331eb1d68671b8edcbd8b5a7d",
+      "pixels_equal": true
+    },
+    {
+      "view": "enemies-glacier",
+      "size": [
+        1280,
+        720
+      ],
+      "source_sha256": "7023f1d4c4e20f9b3c95bb67a661b7f54d08ac2bdb37888998acaa1a8512b186",
+      "pack_sha256": "7023f1d4c4e20f9b3c95bb67a661b7f54d08ac2bdb37888998acaa1a8512b186",
+      "pixels_equal": true
+    },
+    {
+      "view": "enemies-mire",
+      "size": [
+        1280,
+        720
+      ],
+      "source_sha256": "6c588d50a0eb9f9e629337fe76a40665c5521431ab6f2b6696e1844e0af5e8ec",
+      "pack_sha256": "6c588d50a0eb9f9e629337fe76a40665c5521431ab6f2b6696e1844e0af5e8ec",
+      "pixels_equal": true
+    },
+    {
+      "view": "enemies-reliquary",
+      "size": [
+        1280,
+        720
+      ],
+      "source_sha256": "4e10a24b91e4841eefb0435d1e263e3f750c90d80fe2264e04baa31a3463b178",
+      "pack_sha256": "4e10a24b91e4841eefb0435d1e263e3f750c90d80fe2264e04baa31a3463b178",
+      "pixels_equal": true
+    },
+    {
+      "view": "settings",
+      "size": [
+        1280,
+        720
+      ],
+      "source_sha256": "93b671ddaabdd53a0ef7976fb78835f4bde21a43d30c6526f881880841029078",
+      "pack_sha256": "93b671ddaabdd53a0ef7976fb78835f4bde21a43d30c6526f881880841029078",
+      "pixels_equal": true
+    },
+    {
+      "view": "shop",
+      "size": [
+        1280,
+        720
+      ],
+      "source_sha256": "26e3bc2fc62566111ab7b46e818879db49a68500f39dd83e7adb9ebad841eb52",
+      "pack_sha256": "26e3bc2fc62566111ab7b46e818879db49a68500f39dd83e7adb9ebad841eb52",
+      "pixels_equal": true
+    },
+    {
+      "view": "small",
+      "size": [
+        1280,
+        720
+      ],
+      "source_sha256": "103d2be86f46b96eb7d3dd223985b84c5a0240be180a7dcc4364260a542d8c0d",
+      "pack_sha256": "103d2be86f46b96eb7d3dd223985b84c5a0240be180a7dcc4364260a542d8c0d",
+      "pixels_equal": true
+    },
+    {
+      "view": "title",
+      "size": [
+        1280,
+        720
+      ],
+      "source_sha256": "d5014544bb80841c53ef739f93f43af16a12fe2b73bfe0fcbccbef7db154dd6c",
+      "pack_sha256": "d5014544bb80841c53ef739f93f43af16a12fe2b73bfe0fcbccbef7db154dd6c",
+      "pixels_equal": true
+    }
+  ],
+  "assets": {
+    "pinned_sources": 25,
+    "normalized_pngs": 28,
+    "manifest_sha256": "6e035f620a101a78356d1cd1a4590e8296ab6382b231cd2b9fc82a202f8fb041",
+    "source_cache_qa": {
+      "checks": 120,
+      "failures": 0,
+      "sha256": "3c96d365564e2e69e1a95d9cfabb0feb60a6cce5110e9b4a70213174a5f79321"
+    },
+    "gif_frames": 24,
+    "gif_duration_ms": 2880,
+    "gif_sha256": "6159b52a0d0269c35349c567aa33913537e997888a975c5c4fc0579643d5b498",
+    "legacy_cover_assets_preserved": 7
+  },
+  "performance": {
+    "seconds": 60.0,
+    "average_fps": 66.3053041477125,
+    "p99_frame_ms": 19.924,
+    "minimum_load": {
+      "enemies": 300,
+      "pickups": 200,
+      "projectiles": 600
+    },
+    "checks": {
+      "backpack_skill_fx_pool": true,
+      "backpack_skill_inventory_and_real_casts": true,
+      "backpack_skill_source_coverage": true,
+      "dash_feedback": true,
+      "default_settings_and_no_profile": true,
+      "evasion_feedback": true,
+      "grounding_budget": true,
+      "load": true,
+      "performance": true,
+      "pulse_control": true
+    },
+    "source_hash": "229e673cfdf46407599262294465df9b0c02fc03fbca60e769e56d1a6ef806d6",
+    "report_sha256": "24c9d607d6e4f8c2703cd5b7f30867efc3b9679574cc78d700541e3521e63c6d",
+    "before_optimization": {
+      "average_fps": 7.45035671825689,
+      "p99_frame_ms": 147.762,
+      "passed": false,
+      "raw_report_sha256": "2dc5838dcb819ccd5e67d7b38fefc8d57faef0ecedc22e63dbb6627e31d47f4b"
+    }
+  },
+  "windows": {
+    "archive": "build/Embers-windows-x86_64.zip",
+    "sha256": "85d1a60ea38959f5bfcf2aa46a222a8c5fe1d60f1fca97ec230df3f1ccfd2df7",
+    "zip_files": [
+      "licenses/Godot-COPYRIGHT.txt",
+      "licenses/Godot-LICENSE.txt",
+      "licenses/README.md",
+      "licenses/World-Flipper-NOTICE.txt",
+      "licenses/fonts/fusion-pixel/OFL.txt",
+      "licenses/fonts/fusion-pixel/LICENSES/ark-pixel/OFL.txt",
+      "licenses/fonts/fusion-pixel/LICENSES/cubic-11/OFL.txt",
+      "licenses/fonts/fusion-pixel/LICENSES/galmuri/LICENSE.txt",
+      "Embers.exe",
+      "Embers.pck"
+    ],
+    "crc_and_file_bytes_verified": true,
+    "backup": "Embers-windows-before-environment-8e99f1c.zip",
+    "backup_sha256": "a2113b06955fe8ccc7a4a5191a90684bdd2d3fec90ac1451c54d25cb6165c396",
+    "exe_smoke_log_sha256": "b1f9060a4aa3777871be49c249953c0c9e2593159f55bd63d22923e39250d860"
+  },
+  "macos": "Not built or executed on this Windows host; prior package retained. Export include filters updated for both platforms.",
+  "source_inputs": {
+    "data/arenas.json": "eae3e35168ec4bc9b06630833190e7b2f4446d0766c2b324c419044224e3ac67",
+    "export_presets.cfg": "4fdf4ef47de4dbf4e4a51fed9f27b21fe21dc487b84b4a8baa9019baa9607e73",
+    "scripts/combat/combat_sim.gd": "2cfc441018cec637a6d542467400ecd837cfdea7004797faa649de1a6d8d5362",
+    "scripts/combat/combat_world.gd": "f96bd67a38d7ca47942aa7479b65891a70b8d7f802a47d8e49cc59e9628456ed",
+    "scripts/core/adventure_art.gd": "bf754a0b084b0b3111950a2c48a7d479d882143e6bb1efe06c6cd1f88dc47d6e",
+    "scripts/core/arena_catalog.gd": "0e640bec081a82eb97a79085ac23cf6df2d537fe8d2321900f5579873302669c",
+    "scripts/core/arena_obstacles.gd": "d3076c5cd3b7024e59048bbaca12816b6fefb9eb34225eec718f4fb9a3bf715e",
+    "scripts/core/arena_obstacles.gd.uid": "5edfb83f5a1fb91914114b4e9e9af5d7487bff77694586c0205d74c33e35a2eb",
+    "scripts/ui/minimap_view.gd": "65d1ef3041df11018196a0c34b5b4fdf30fde12526212008a6c0f5445cbc4066",
+    "scripts/ui/title_cover.gd": "971fd7c79f4329c0eb6fe0ead01a6ee91bbd0fbf9321dbda5f95ae0ab0095179",
+    "tests/test_adventure_art.gd": "6a6c6bf8b4185d003c3dd2abd74f91a58380df0f1503d0f8ae12f67440c527db",
+    "tests/test_dash_evasion_world.gd": "06197de4e9ba7dc77dfd57cb3115eabb745519939da48efc799f924ae2003ff5",
+    "tests/test_expanded_arena.gd": "f0b167982297369b6db9da77636e387d59480d7605f5801f477216876255ec92",
+    "tests/test_minimap_ui.gd": "3709cf805b3ee6687d7ef5a0777ccdbb9eef54467ba5011459448767d978f976",
+    "tests/test_obstacles.gd": "9735250c642bf76ea9a53e4d49c8be62ddd9eee668b94b1a490175c352897b01",
+    "tests/test_obstacles.gd.uid": "512c829ac2d25c4cc4fe118cccb7c0febd45628303057248177c46c43561aa27",
+    "tests/test_player_foreground.gd": "7ef46f76382815da2151349e552862dd26d4c886f8324f8ffbb98d0a8f312345",
+    "tests/test_pulse_world.gd": "e5d7a2e08bfc9654312d0f8d2ac3b274fcc7ba75b1122ab6c9c6f3bc751ffca3",
+    "tests/test_skill_feedback.gd": "32121b5da28b78d0367cbb19dce912b87d9b14e2707daa7727e45a09a5133dbb",
+    "tests/test_title_cover.gd": "e6170cf107cf2de30297e455b6d10b9d8d42d2938200c9f11abf8b599c92802b",
+    "tests/test_title_cover_assets.py": "f8095e64c262daca1180f38825c0f9d0ae38dae25c3036cf48b315a9fac84b68",
+    "tests/test_world_flipper_environment_assets.py": "33fbcc19b5b749908e9f7fdbc9b90a5244fabdf8482a8d8b129819c8a2eb042b",
+    "tools/benchmark_dash.gd": "6929f29cb98b43d4df67ac2306a465aeab2d3b1f56900345608524994dcf1d4b",
+    "tools/fetch_world_flipper_art.py": "7e4cdea16dea2708a8ad226f2a2bef5933e1b285e1064989a18269bf33f75ef8",
+    "tools/package_title_cover_gif.py": "e3675b8124a7af0433b471cf18946becece797374bd577834f2b464d757f21b7",
+    "tools/test.sh": "c2992988fb6cdf7a63d904df1e73936b024ef90d7730dd2be525ad86d8af796c",
+    "tools/world_flipper_enemies.json": "dfe8198795e7e410d15158974eb3aeb805c33ec371c5e9897de7789fb25bce2e",
+    "tools/world_flipper_enemies.py": "6c5a1482c6dd7db9b1a29c448e20860d4058a5b3b4120d1f973a3da2bf2d65f4",
+    "tools/world_flipper_maps.py": "b4794adc37ee71b18f8db692716ef206fb5be78a58ab7a6bd866daee22d30c81",
+    "tools/world_flipper_maps_sources.json": "1cf61029e2848f15e9024893af6ba4277dff7e56195b41e617a0ef02042e0cd8"
+  },
+  "limitations": [
+    "Fixed captures and synthetic pressure do not establish human playability or balance.",
+    "First gate attempt exposed stale draw-spy fixtures and JSON number type assertion; fixtures fixed and the complete gate rerun without engine errors.",
+    "Initial pressure run failed the performance threshold; its measurements are retained and the same workload rerun after geometry optimization."
+  ],
+  "passed": true
+}

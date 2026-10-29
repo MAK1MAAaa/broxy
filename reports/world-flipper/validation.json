@@ -1,0 +1,544 @@
+{
+  "date": "2026-10-29",
+  "branch": "codex/ui-refinement",
+  "base_commit": "fea5438",
+  "gate": {
+    "path": "reports/world-flipper/test.log",
+    "sha256": "656e72a5ed85e9b9185d59830201edf6f21b93e4d6fecca5c3a6d952346a64bd",
+    "entries": 100,
+    "assertions": 33331,
+    "godot_suites": 95,
+    "diagnostic_entries": 5,
+    "python_tests": 49
+  },
+  "native": [
+    {
+      "path": "reports/world-flipper/native-world_flipper_art.log",
+      "sha256": "a7e93ec9702a6df06a81ea27dcb5f592043abd718fb2072fe489092f4e0024bb",
+      "entries": 1,
+      "assertions": 170
+    },
+    {
+      "path": "reports/world-flipper/native-dash_world.log",
+      "sha256": "f0e1221fa5f212fc187acbad607ac094c5d75372f471d276572e42f8d69370e9",
+      "entries": 1,
+      "assertions": 69
+    },
+    {
+      "path": "reports/world-flipper/native-player_foreground.log",
+      "sha256": "7cdc25866ca05669ddbe4686ef0c63cb0361484fe010b637bda2f936c178f1b0",
+      "entries": 1,
+      "assertions": 50
+    },
+    {
+      "path": "reports/world-flipper/native-art_grounding.log",
+      "sha256": "089ba1c7f9a885b8dffd9d11a12aa9a505818e2bf5f3dafd1343c8754eac851d",
+      "entries": 1,
+      "assertions": 20
+    },
+    {
+      "path": "reports/world-flipper/native-pixel_typography.log",
+      "sha256": "116ba5b0cc7c8c11928e32d276c5fc5867b87b082cc45fc210ceacc00e66f542",
+      "entries": 1,
+      "assertions": 992
+    },
+    {
+      "path": "reports/world-flipper/native-skill_feedback.log",
+      "sha256": "64d838a848ce6db66a85b66c2e240d5e733c46053686070ceba83211d3604213",
+      "entries": 1,
+      "assertions": 91
+    },
+    {
+      "path": "reports/world-flipper/native-dash_evasion_world.log",
+      "sha256": "817bdddec90e5356bdd6b6df91f42d5236e1f35ee4dfc75ffd15c66cc7464414",
+      "entries": 1,
+      "assertions": 85
+    },
+    {
+      "path": "reports/world-flipper/native-ui.log",
+      "sha256": "00e669d1da680a57ddb372bc5e7d824497a97c852888cc52307d8344cfd41a72",
+      "entries": 1,
+      "assertions": 223
+    },
+    {
+      "path": "reports/world-flipper/native-backpack_ui.log",
+      "sha256": "a5c49de4c1e562c9b4476396fda7d89abc716c1d7783e004294f05fcd4c996d7",
+      "entries": 1,
+      "assertions": 90
+    },
+    {
+      "path": "reports/world-flipper/native-shop_workbench.log",
+      "sha256": "21271353df29d41e0943a5c8380a53f9ac457a746326e561c148100358f6b654",
+      "entries": 1,
+      "assertions": 259
+    },
+    {
+      "path": "reports/world-flipper/native-resonance_ui.log",
+      "sha256": "8d9120e0d15d3290c4d36403708121a91999b644798774bdc5e4e28589182599",
+      "entries": 1,
+      "assertions": 32
+    },
+    {
+      "path": "reports/world-flipper/native-content_presentation.log",
+      "sha256": "b4b562e19f1982e3a4ea6f9b53355bcb1be58b1910ed7cefdff69b5e18581684",
+      "entries": 1,
+      "assertions": 565
+    },
+    {
+      "path": "reports/world-flipper/native-adventure_art.log",
+      "sha256": "d0e40ed1bbf405d676a128ed410e8f24f261f03cfb7999a946f990f7b5bae9dc",
+      "entries": 1,
+      "assertions": 206
+    },
+    {
+      "path": "reports/world-flipper/native-input_prompts_ui.log",
+      "sha256": "520017d7cd63f8492d9bb21fb14d2d737fe6264528a615a8bf014b8b616cce2d",
+      "entries": 1,
+      "assertions": 67
+    },
+    {
+      "path": "reports/world-flipper/native-gamepad_backpack.log",
+      "sha256": "af3ca1a9c31845ee31746868e7a123537c367a8bd4d2c983da715e3c99a24988",
+      "entries": 1,
+      "assertions": 42
+    }
+  ],
+  "packaged": [
+    {
+      "path": "reports/world-flipper/pack-check-world_flipper_art.log",
+      "sha256": "a7e93ec9702a6df06a81ea27dcb5f592043abd718fb2072fe489092f4e0024bb",
+      "entries": 1,
+      "assertions": 170
+    },
+    {
+      "path": "reports/world-flipper/pack-check-dash_world.log",
+      "sha256": "f0e1221fa5f212fc187acbad607ac094c5d75372f471d276572e42f8d69370e9",
+      "entries": 1,
+      "assertions": 69
+    },
+    {
+      "path": "reports/world-flipper/pack-check-player_foreground.log",
+      "sha256": "7cdc25866ca05669ddbe4686ef0c63cb0361484fe010b637bda2f936c178f1b0",
+      "entries": 1,
+      "assertions": 50
+    },
+    {
+      "path": "reports/world-flipper/pack-check-art_grounding.log",
+      "sha256": "089ba1c7f9a885b8dffd9d11a12aa9a505818e2bf5f3dafd1343c8754eac851d",
+      "entries": 1,
+      "assertions": 20
+    },
+    {
+      "path": "reports/world-flipper/pack-check-pixel_typography.log",
+      "sha256": "116ba5b0cc7c8c11928e32d276c5fc5867b87b082cc45fc210ceacc00e66f542",
+      "entries": 1,
+      "assertions": 992
+    },
+    {
+      "path": "reports/world-flipper/pack-check-skill_feedback.log",
+      "sha256": "64d838a848ce6db66a85b66c2e240d5e733c46053686070ceba83211d3604213",
+      "entries": 1,
+      "assertions": 91
+    },
+    {
+      "path": "reports/world-flipper/pack-check-dash_evasion_world.log",
+      "sha256": "817bdddec90e5356bdd6b6df91f42d5236e1f35ee4dfc75ffd15c66cc7464414",
+      "entries": 1,
+      "assertions": 85
+    },
+    {
+      "path": "reports/world-flipper/pack-check-ui.log",
+      "sha256": "00e669d1da680a57ddb372bc5e7d824497a97c852888cc52307d8344cfd41a72",
+      "entries": 1,
+      "assertions": 223
+    },
+    {
+      "path": "reports/world-flipper/pack-check-backpack_ui.log",
+      "sha256": "a5c49de4c1e562c9b4476396fda7d89abc716c1d7783e004294f05fcd4c996d7",
+      "entries": 1,
+      "assertions": 90
+    },
+    {
+      "path": "reports/world-flipper/pack-check-shop_workbench.log",
+      "sha256": "21271353df29d41e0943a5c8380a53f9ac457a746326e561c148100358f6b654",
+      "entries": 1,
+      "assertions": 259
+    },
+    {
+      "path": "reports/world-flipper/pack-check-resonance_ui.log",
+      "sha256": "8d9120e0d15d3290c4d36403708121a91999b644798774bdc5e4e28589182599",
+      "entries": 1,
+      "assertions": 32
+    },
+    {
+      "path": "reports/world-flipper/pack-check-content_presentation.log",
+      "sha256": "b4b562e19f1982e3a4ea6f9b53355bcb1be58b1910ed7cefdff69b5e18581684",
+      "entries": 1,
+      "assertions": 565
+    },
+    {
+      "path": "reports/world-flipper/pack-check-adventure_art.log",
+      "sha256": "d0e40ed1bbf405d676a128ed410e8f24f261f03cfb7999a946f990f7b5bae9dc",
+      "entries": 1,
+      "assertions": 206
+    },
+    {
+      "path": "reports/world-flipper/pack-check-input_prompts_ui.log",
+      "sha256": "520017d7cd63f8492d9bb21fb14d2d737fe6264528a615a8bf014b8b616cce2d",
+      "entries": 1,
+      "assertions": 67
+    },
+    {
+      "path": "reports/world-flipper/pack-check-gamepad_backpack.log",
+      "sha256": "af3ca1a9c31845ee31746868e7a123537c367a8bd4d2c983da715e3c99a24988",
+      "entries": 1,
+      "assertions": 42
+    }
+  ],
+  "preview_pairs": [
+    {
+      "view": "title",
+      "source_sha256": "9e1ef7b2567409451f27d15f880566f22125a1ada38abfc521649e75fb1297e8",
+      "packed_sha256": "9e1ef7b2567409451f27d15f880566f22125a1ada38abfc521649e75fb1297e8",
+      "pixel_equal": true
+    },
+    {
+      "view": "settings",
+      "source_sha256": "d36ce177b030452f341df1fe86638bcdd63dd1c716eb1df2996e0619b6ef1455",
+      "packed_sha256": "d36ce177b030452f341df1fe86638bcdd63dd1c716eb1df2996e0619b6ef1455",
+      "pixel_equal": true
+    },
+    {
+      "view": "controls",
+      "source_sha256": "d877c624b0e23f6f6f437342ea82ce570a6a2167266b4f15a8ca536640be024a",
+      "packed_sha256": "d877c624b0e23f6f6f437342ea82ce570a6a2167266b4f15a8ca536640be024a",
+      "pixel_equal": true
+    },
+    {
+      "view": "pause",
+      "source_sha256": "bc20cde4cf9b1ff061ea07bffcf8e0f3dedc3485f5a0a55e6ae1644d7e9b7ef2",
+      "packed_sha256": "bc20cde4cf9b1ff061ea07bffcf8e0f3dedc3485f5a0a55e6ae1644d7e9b7ef2",
+      "pixel_equal": true
+    },
+    {
+      "view": "upgrades",
+      "source_sha256": "a9877358f968ba3e35d05015b1093d83099821a64e6ba8f936ac84e9121db617",
+      "packed_sha256": "a9877358f968ba3e35d05015b1093d83099821a64e6ba8f936ac84e9121db617",
+      "pixel_equal": true
+    },
+    {
+      "view": "shop",
+      "source_sha256": "26e3bc2fc62566111ab7b46e818879db49a68500f39dd83e7adb9ebad841eb52",
+      "packed_sha256": "26e3bc2fc62566111ab7b46e818879db49a68500f39dd83e7adb9ebad841eb52",
+      "pixel_equal": true
+    },
+    {
+      "view": "poor",
+      "source_sha256": "1129def410c4a359adfa4354a104510f1ee410f86fb8ef560f436dc75196b4eb",
+      "packed_sha256": "1129def410c4a359adfa4354a104510f1ee410f86fb8ef560f436dc75196b4eb",
+      "pixel_equal": true
+    },
+    {
+      "view": "locked",
+      "source_sha256": "182de0d4699cf3d496fbd2f81187e56f64bd119cd0f90ee8c65c38c8baa7c2d7",
+      "packed_sha256": "182de0d4699cf3d496fbd2f81187e56f64bd119cd0f90ee8c65c38c8baa7c2d7",
+      "pixel_equal": true
+    },
+    {
+      "view": "sold",
+      "source_sha256": "c44e08e98dfd609604510f5567ef8ab5d7d54ecc7bc676f57b8bc2e784cdfeea",
+      "packed_sha256": "c44e08e98dfd609604510f5567ef8ab5d7d54ecc7bc676f57b8bc2e784cdfeea",
+      "pixel_equal": true
+    },
+    {
+      "view": "bag_focus",
+      "source_sha256": "5d4f73879a0adc3b6b0193f13ae4752732094fb4f58fc64476527b31126baad5",
+      "packed_sha256": "5d4f73879a0adc3b6b0193f13ae4752732094fb4f58fc64476527b31126baad5",
+      "pixel_equal": true
+    },
+    {
+      "view": "bag_selected",
+      "source_sha256": "392a57dbc76f64f9637946bae8a39282b6dd06e45a815cb811ad92f4160ce75e",
+      "packed_sha256": "392a57dbc76f64f9637946bae8a39282b6dd06e45a815cb811ad92f4160ce75e",
+      "pixel_equal": true
+    },
+    {
+      "view": "bag_valid",
+      "source_sha256": "93d683edac2e44820037c44400444aa6bb14dce87e54574e2aff7be40ec93ec4",
+      "packed_sha256": "93d683edac2e44820037c44400444aa6bb14dce87e54574e2aff7be40ec93ec4",
+      "pixel_equal": true
+    },
+    {
+      "view": "bag_invalid",
+      "source_sha256": "97a54918f64dbf5656b68d7f6f32d7eb46e159dfa0b84667dc1c28b776fe1df4",
+      "packed_sha256": "97a54918f64dbf5656b68d7f6f32d7eb46e159dfa0b84667dc1c28b776fe1df4",
+      "pixel_equal": true
+    },
+    {
+      "view": "small",
+      "source_sha256": "26e3bc2fc62566111ab7b46e818879db49a68500f39dd83e7adb9ebad841eb52",
+      "packed_sha256": "26e3bc2fc62566111ab7b46e818879db49a68500f39dd83e7adb9ebad841eb52",
+      "pixel_equal": true
+    },
+    {
+      "view": "bag_gamepad",
+      "source_sha256": "c763aa8b91c4c6a4f50c42ebe1bbe428d7e31a0263262eaaa11954b524b50da0",
+      "packed_sha256": "c763aa8b91c4c6a4f50c42ebe1bbe428d7e31a0263262eaaa11954b524b50da0",
+      "pixel_equal": true
+    },
+    {
+      "view": "bag_merge",
+      "source_sha256": "acd1deaf24ecba99eac6d381899250c57d0f89556680b7791d2bd9c83974b593",
+      "packed_sha256": "acd1deaf24ecba99eac6d381899250c57d0f89556680b7791d2bd9c83974b593",
+      "pixel_equal": true
+    },
+    {
+      "view": "bag_rune",
+      "source_sha256": "1151c0ed90cdab9b2ba290e0b40d9079bd9040dab49ded9038c4aaa3e4476195",
+      "packed_sha256": "1151c0ed90cdab9b2ba290e0b40d9079bd9040dab49ded9038c4aaa3e4476195",
+      "pixel_equal": true
+    },
+    {
+      "view": "bag_record",
+      "source_sha256": "b892ae01abdb63259d3a9520f6b63fca9ca9b786c582db6c0adaf4c17b2e4762",
+      "packed_sha256": "b892ae01abdb63259d3a9520f6b63fca9ca9b786c582db6c0adaf4c17b2e4762",
+      "pixel_equal": true
+    },
+    {
+      "view": "offer_record",
+      "source_sha256": "38b3582627020eb4cb2935a8fc9466474926538291c0bff84958f9b11f7b89ad",
+      "packed_sha256": "38b3582627020eb4cb2935a8fc9466474926538291c0bff84958f9b11f7b89ad",
+      "pixel_equal": true
+    },
+    {
+      "view": "filled",
+      "source_sha256": "294dbf5f700f2a8cc3405aaf4f06ef2a86a97166e1371264f18bc2744c94cf70",
+      "packed_sha256": "294dbf5f700f2a8cc3405aaf4f06ef2a86a97166e1371264f18bc2744c94cf70",
+      "pixel_equal": true
+    },
+    {
+      "view": "full",
+      "source_sha256": "fd72bed9ce62097551eeeeac3d2e5fedf94f5f83ad6ada004577ca170cd312c4",
+      "packed_sha256": "fd72bed9ce62097551eeeeac3d2e5fedf94f5f83ad6ada004577ca170cd312c4",
+      "pixel_equal": true
+    },
+    {
+      "view": "skills",
+      "source_sha256": "d856d0372cbc882774247434c683c80643ec756882436b846c05ed5338db263d",
+      "packed_sha256": "d856d0372cbc882774247434c683c80643ec756882436b846c05ed5338db263d",
+      "pixel_equal": true
+    },
+    {
+      "view": "hud-dual",
+      "source_sha256": "446c14df2a295c83ace0b08ba27acb188aee005bd05fd46145b21a50b0699afa",
+      "packed_sha256": "446c14df2a295c83ace0b08ba27acb188aee005bd05fd46145b21a50b0699afa",
+      "pixel_equal": true
+    },
+    {
+      "view": "hud-small",
+      "source_sha256": "446c14df2a295c83ace0b08ba27acb188aee005bd05fd46145b21a50b0699afa",
+      "packed_sha256": "446c14df2a295c83ace0b08ba27acb188aee005bd05fd46145b21a50b0699afa",
+      "pixel_equal": true
+    },
+    {
+      "view": "feedback-danger",
+      "source_sha256": "8f0c036d419d4f326472e10c712920998428e0dd803b808510542376a824e163",
+      "packed_sha256": "8f0c036d419d4f326472e10c712920998428e0dd803b808510542376a824e163",
+      "pixel_equal": true
+    },
+    {
+      "view": "feedback-flash_off",
+      "source_sha256": "3f2a231609db8247d32b1052c92c6e960fd404d5694d78722762477b52e227c5",
+      "packed_sha256": "3f2a231609db8247d32b1052c92c6e960fd404d5694d78722762477b52e227c5",
+      "pixel_equal": true
+    },
+    {
+      "view": "feedback-hurt",
+      "source_sha256": "4a432e0eabcf17fbc710b7c534fa53b6f7901ee351e9b1c34adcc63e36d56c13",
+      "packed_sha256": "4a432e0eabcf17fbc710b7c534fa53b6f7901ee351e9b1c34adcc63e36d56c13",
+      "pixel_equal": true
+    },
+    {
+      "view": "content-arsenal",
+      "source_sha256": "f8d9599871d3965defa3a4519b699e7522d2143726874f8b9df78642d93bef70",
+      "packed_sha256": "f8d9599871d3965defa3a4519b699e7522d2143726874f8b9df78642d93bef70",
+      "pixel_equal": true
+    },
+    {
+      "view": "content-combat",
+      "source_sha256": "b980d7bee47c9d20964cd1d0dc9cf13e2b7df8e8eb4fe982dacea42564c40a4e",
+      "packed_sha256": "b980d7bee47c9d20964cd1d0dc9cf13e2b7df8e8eb4fe982dacea42564c40a4e",
+      "pixel_equal": true
+    }
+  ],
+  "runtime_assets": [
+    {
+      "id": "player",
+      "path": "assets/worldflipper/sprites/player.png",
+      "sha256": "3ff027414e4366719636448006d90af5f6f4418940bc5b6fe6581e795ba152e7",
+      "size": [
+        96,
+        96
+      ],
+      "source_ids": [
+        "alk_neutral"
+      ]
+    },
+    {
+      "id": "player_animation",
+      "path": "assets/worldflipper/sprites/player-atlas.png",
+      "sha256": "5ca0b0a24c7da0b33a9b8d6a414f6e519ced0a677619e1faf833f0e64d18cd55",
+      "size": [
+        384,
+        288
+      ],
+      "source_ids": [
+        "alk_neutral",
+        "alk_walk_front",
+        "alk_walk_back"
+      ]
+    },
+    {
+      "id": "bone",
+      "path": "assets/worldflipper/icons/bone.png",
+      "sha256": "403a9048cb4473befad48132bec0f89fe7129f59bff648abaa72e22459f485bc",
+      "size": [
+        64,
+        64
+      ],
+      "source_ids": [
+        "weapon_bone"
+      ]
+    },
+    {
+      "id": "frost",
+      "path": "assets/worldflipper/icons/frost.png",
+      "sha256": "33b54e0a533f2e9a219dab1dafe53d7f2fa8a96eb603be9875ee396205de6ef1",
+      "size": [
+        64,
+        64
+      ],
+      "source_ids": [
+        "weapon_frost"
+      ]
+    },
+    {
+      "id": "ember",
+      "path": "assets/worldflipper/icons/ember.png",
+      "sha256": "d85556c1115388e30911d1e3e7aab64b038b439fa2efee7fa2a4c32a0ad75f62",
+      "size": [
+        64,
+        64
+      ],
+      "source_ids": [
+        "weapon_ember"
+      ]
+    },
+    {
+      "id": "scatter",
+      "path": "assets/worldflipper/icons/scatter.png",
+      "sha256": "f7c575f3a371befb3639494b58126d2d2e29f360542e00fb940b8430ec94b3d9",
+      "size": [
+        64,
+        64
+      ],
+      "source_ids": [
+        "weapon_scatter"
+      ]
+    },
+    {
+      "id": "crescent",
+      "path": "assets/worldflipper/icons/crescent.png",
+      "sha256": "88087c5a9becfb8945ed42f2fa179ffe831a13a040b415cb11c7d5b16e754a90",
+      "size": [
+        64,
+        64
+      ],
+      "source_ids": [
+        "weapon_crescent"
+      ]
+    },
+    {
+      "id": "storm",
+      "path": "assets/worldflipper/icons/storm.png",
+      "sha256": "ad6a50bfd1500cb9a8aa00e7ca84eca57b441c51e076fe4e1f18b41a94eb0ab3",
+      "size": [
+        64,
+        64
+      ],
+      "source_ids": [
+        "weapon_storm"
+      ]
+    },
+    {
+      "id": "comet",
+      "path": "assets/worldflipper/icons/comet.png",
+      "sha256": "71171a2ae2abf62c088e703914fc3c2eb35bf69a5bdfdf70296e298e9118b171",
+      "size": [
+        64,
+        64
+      ],
+      "source_ids": [
+        "weapon_comet"
+      ]
+    },
+    {
+      "id": "return_ring",
+      "path": "assets/worldflipper/icons/return_ring.png",
+      "sha256": "0419b37f79523df186f8fca8612f9197a22cc5eae493a6b2939e8c12a3db75fd",
+      "size": [
+        64,
+        64
+      ],
+      "source_ids": [
+        "weapon_return_ring"
+      ]
+    }
+  ],
+  "verified_cached_sources": 14,
+  "source_sha256": {
+    "scripts/core/adventure_art.gd": "74d81ca80af12549c47ae1a1c122f1b24f9a0be76a2db49d76b35cc60889c912",
+    "scripts/core/world_flipper_player_art.gd": "ae5157683078c06f8a225b5bbc5679ede9c762d967e58b268421f252fc57aafe",
+    "scripts/combat/combat_world.gd": "0c7bc77891ffd59be246bc5fc544c99eab72d11662a09e7f8e56546cb7de30b4",
+    "tools/fetch_world_flipper_art.py": "9c852b467e08decbd29b0170dc6dc845a02af79f35a7687954c6f1ffd073470f",
+    "tools/world_flipper_sources.json": "385b1394bd7d9fb92e57cc19970a52a5801700587e7aaaf21f86cdd27dcc4cde",
+    "tools/build_windows.ps1": "7e3984a1b5f1f54ef87ef3f31299473fc9327999fc723efc3b321e7b8df68dee",
+    "tools/build_macos.sh": "12ac6f244bbea651315a523f0250bdc85f606d759840cc1f6b1177e1079d044a",
+    "export_presets.cfg": "8a459c11d1ca80c5a3487f9e3d835187f81ed73056dc15f9a317a955d31184f7",
+    "tests/test_adventure_art.gd": "2b7bc292b60728777d4a79c7f7c9d44e2d3310266b31fc27e2307bafcb653dff",
+    "tests/test_world_flipper_art.gd": "bc89a6b51b1af8fddbae23eeebd806c1d8675d9364c91b9d9a2d2a9f0f970224"
+  },
+  "core_rules_and_catalog_unchanged": true,
+  "legacy_and_starfall_art_unchanged": true,
+  "windows": {
+    "build": {
+      "path": "reports/world-flipper/build.log",
+      "sha256": "6216bd0e3ff3eca92516cddc4a16abefff62b2ae52e79c269f023f7c9372ab0f",
+      "entries": 0,
+      "assertions": 0
+    },
+    "smoke": {
+      "path": "reports/world-flipper/exe-smoke.log",
+      "sha256": "15df04eb29bc918ebcb3b01ddfaff3881a2faf04ed2796efa175eba756fff7de",
+      "entries": 0,
+      "assertions": 0
+    },
+    "zip_sha256": "98a44474f7a81397f7d8efba54b3d6920ad203cc33ffb49ece0e20a5ab1df5bc",
+    "zip_crc_ok": true,
+    "member_bytes_match": true,
+    "file_count": 10,
+    "copyright_notice_matches": true,
+    "backup": "build/Embers-windows-before-world-flipper-fea5438.zip",
+    "backup_sha256": "34ea0f52a3eea3f68f9067c16bdad4050a309f1ce651c7ce5639478c651df017"
+  },
+  "script_checks": {
+    "powershell_parser": true,
+    "macos_sh_syntax": true
+  },
+  "not_run": [
+    "macOS export",
+    "combat stress benchmark",
+    "hardware gamepad",
+    "hardware audio"
+  ]
+}

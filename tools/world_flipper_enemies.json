@@ -1,0 +1,175 @@
+{
+  "sources": [
+    {
+      "id": "enemy_chaser",
+      "kind": "enemy",
+      "game_id": "chaser",
+      "name": "Blue Blobble / 蓝波露",
+      "filename": "enemy-chaser.gif",
+      "url": "https://vivaldi6352.github.io/assets/rarity1/slango_blue/neutral.gif",
+      "source_page": "https://wiki.biligame.com/worldflipper/蓝波露",
+      "sha256": "cf8fae5916213f660a0b39bdda21b91053e8471da4eec3248b7a3f6261423b65",
+      "source_size": [
+        30,
+        16
+      ],
+      "frame_count": 1,
+      "durations_ms": [
+        20
+      ],
+      "canvas_size": [
+        64,
+        64
+      ],
+      "scale": 2,
+      "offset": [
+        2,
+        26
+      ]
+    },
+    {
+      "id": "enemy_rusher",
+      "kind": "enemy",
+      "game_id": "rusher",
+      "name": "Zapquill / 帕拉鼠",
+      "filename": "enemy-rusher.gif",
+      "url": "https://vivaldi6352.github.io/assets/rarity1/paralysis_hedgehog/neutral.gif",
+      "source_page": "https://wiki.biligame.com/worldflipper/帕拉鼠",
+      "sha256": "7f8fc62f1fb0ea8acb3cf89d2041243fb976185958de2922e86ae04a4ad04798",
+      "source_size": [
+        30,
+        26
+      ],
+      "frame_count": 1,
+      "durations_ms": [
+        20
+      ],
+      "canvas_size": [
+        64,
+        64
+      ],
+      "scale": 2,
+      "offset": [
+        2,
+        6
+      ]
+    },
+    {
+      "id": "enemy_tank",
+      "kind": "enemy",
+      "game_id": "tank",
+      "name": "Golem / 魔像",
+      "filename": "enemy-tank.gif",
+      "url": "https://vivaldi6352.github.io/assets/rarity2/guardian_golem/neutral.gif",
+      "source_page": "https://wiki.biligame.com/worldflipper/魔像",
+      "sha256": "ca53664478a622846de86137f661a234459febe43b334813a7f0e22f9cafe964",
+      "source_size": [
+        34,
+        28
+      ],
+      "frame_count": 1,
+      "durations_ms": [
+        0
+      ],
+      "canvas_size": [
+        80,
+        80
+      ],
+      "scale": 2,
+      "offset": [
+        6,
+        17
+      ]
+    },
+    {
+      "id": "enemy_caster",
+      "kind": "enemy",
+      "game_id": "caster",
+      "name": "Fire Imp / 火精",
+      "filename": "enemy-caster.gif",
+      "url": "https://vivaldi6352.github.io/assets/rarity1/spirit_fire/neutral.gif",
+      "source_page": "https://wiki.biligame.com/worldflipper/火精",
+      "sha256": "e00e2d0955605c3abab09687b8cbe7ceb143e96c546e5b2d8b12f2def550ef4a",
+      "source_size": [
+        22,
+        28
+      ],
+      "frame_count": 1,
+      "durations_ms": [
+        9980
+      ],
+      "canvas_size": [
+        72,
+        72
+      ],
+      "scale": 2,
+      "offset": [
+        14,
+        14
+      ],
+      "alpha_cleanup": [
+        {
+          "rect": [
+            2,
+            24,
+            18,
+            4
+          ],
+          "rgba": [
+            196,
+            196,
+            196,
+            255
+          ],
+          "expected_pixels": 48,
+          "reason": "Remove the original opaque ground shadow; runtime supplies the shared contact shadow"
+        }
+      ]
+    },
+    {
+      "id": "enemy_boss",
+      "kind": "enemy",
+      "game_id": "boss",
+      "name": "Regitare / 瑞西塔尔",
+      "filename": "enemy-boss.gif",
+      "url": "https://vivaldi6352.github.io/assets/rarity3/lich/neutral.gif",
+      "source_page": "https://wiki.biligame.com/worldflipper/瑞西塔尔",
+      "sha256": "a1189da14675f82b6d9741f27dbda601dcbd9ad38719ed775dd941d78af97f74",
+      "source_size": [
+        30,
+        36
+      ],
+      "frame_count": 1,
+      "durations_ms": [
+        20
+      ],
+      "canvas_size": [
+        160,
+        160
+      ],
+      "scale": 4,
+      "offset": [
+        20,
+        10
+      ],
+      "alpha_cleanup": [
+        {
+          "rect": [
+            4,
+            32,
+            22,
+            4
+          ],
+          "rgba": [
+            196,
+            196,
+            196,
+            255
+          ],
+          "expected_pixels": 64,
+          "reason": "Remove the original opaque ground shadow; runtime supplies the shared contact shadow"
+        }
+      ]
+    }
+  ]
+}

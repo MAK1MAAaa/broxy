@@ -1,1 +1,4 @@
 * text=auto eol=lf
+
+# Preserve the original formatting of vendored font notices.
+assets/fonts/licenses/** -whitespace

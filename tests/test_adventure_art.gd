@@ -7,6 +7,28 @@ const SPRITE_SIZES: Dictionary = {
 	"caster": Vector2(72, 72), "boss": Vector2(160, 160),
 }
 const ART_ROOT: String = "res://assets/starfall/"
+const FAN_ROOT: String = "res://assets/worldflipper/"
+const FAN_OVERRIDES: Dictionary = {
+	"res://assets/arena.svg": FAN_ROOT + "maps/previews/reliquary.png",
+	"res://assets/maps/reliquary.svg": FAN_ROOT + "maps/previews/reliquary.png",
+	"res://assets/maps/mire.svg": FAN_ROOT + "maps/previews/mire.png",
+	"res://assets/maps/glacier.svg": FAN_ROOT + "maps/previews/glacier.png",
+	"res://assets/maps/ashland.svg": FAN_ROOT + "maps/previews/ashland.png",
+	"res://assets/sprites/player.svg": FAN_ROOT + "sprites/player.png",
+	"res://assets/sprites/chaser.svg": FAN_ROOT + "sprites/chaser.png",
+	"res://assets/sprites/rusher.svg": FAN_ROOT + "sprites/rusher.png",
+	"res://assets/sprites/tank.svg": FAN_ROOT + "sprites/tank.png",
+	"res://assets/sprites/caster.svg": FAN_ROOT + "sprites/caster.png",
+	"res://assets/sprites/boss.svg": FAN_ROOT + "sprites/boss.png",
+	"res://assets/icons/bone.svg": FAN_ROOT + "icons/bone.png",
+	"res://assets/icons/frost.svg": FAN_ROOT + "icons/frost.png",
+	"res://assets/icons/ember.svg": FAN_ROOT + "icons/ember.png",
+	"res://assets/icons/scatter.svg": FAN_ROOT + "icons/scatter.png",
+	"res://assets/icons/crescent.svg": FAN_ROOT + "icons/crescent.png",
+	"res://assets/icons/storm.svg": FAN_ROOT + "icons/storm.png",
+	"res://assets/icons/comet.svg": FAN_ROOT + "icons/comet.png",
+	"res://assets/icons/return_ring.svg": FAN_ROOT + "icons/return_ring.png",
+}
 
 class SilentSound extends SoundBank:
 	func _ready() -> void:
@@ -41,11 +63,30 @@ func _settle() -> void:
 		await process_frame
 
 func _test_path_contract() -> void:
-	_check(AdventureArt.path("res://assets/sprites/player.svg") == ART_ROOT + "sprites/player.svg", "An original sprite selects its presentation-only replacement")
-	_check(AdventureArt.path("res://assets/maps/mire.svg") == ART_ROOT + "maps/mire.svg", "An original map selects its replacement without changing catalog data")
+	_check(AdventureArt.FAN_ROOT == FAN_ROOT, "The authorized original-game resources have an isolated presentation root")
+	for source: String in FAN_OVERRIDES:
+		var expected: String = str(FAN_OVERRIDES[source])
+		_check(AdventureArt.path(source) == expected and AdventureArt.path(expected) == expected, "The original-game override has an exact stable route: " + source)
+	_check(AdventureArt.path(ART_ROOT + "sprites/chaser.svg") == ART_ROOT + "sprites/chaser.svg", "The preserved previous enemy artwork remains available through its explicit path")
+	_check(AdventureArt.path("res://assets/maps/mire.svg") == FAN_ROOT + "maps/previews/mire.png", "An original map selects its source-art preview without changing its stable catalog ID")
 	_check(AdventureArt.path("res://assets/menu_art.svg") == ART_ROOT + "menu_art.png", "Legacy menu references retain their preserved static illustration")
 	for source: String in ["res://assets/audio/dash.wav", "res://assets/icons/example.png", "res://other/example.svg", "https://example.test/example.svg", ""]:
 		_check(AdventureArt.path(source) == source, "Audio, non-SVG and external resources keep their original path: " + source)
+	_check(AdventureArt.path(ART_ROOT + "icons/bone.svg") == ART_ROOT + "icons/bone.svg", "Explicit legacy artwork remains available without being rerouted")
+
+func _expected_sprite(id: String) -> String:
+	return str(FAN_OVERRIDES.get("res://assets/sprites/%s.svg" % id, ART_ROOT + "sprites/%s.svg" % id))
+
+func _expected_icon(icon: String) -> String:
+	var definitions: Array[ContentDef] = []
+	definitions.append_array(GameCatalog.weapons())
+	definitions.append_array(GameCatalog.relics())
+	definitions.append_array(GameCatalog.runes())
+	definitions.append_array(GameCatalog.skills())
+	for definition: ContentDef in definitions:
+		if definition.icon == icon:
+			return FAN_ROOT + "icons/%s.png" % icon
+	return ART_ROOT + "icons/%s.svg" % icon
 
 func _expect_texture(texture: Texture2D, expected_path: String, expected_size: Vector2, label: String) -> void:
 	_check(texture != null and texture.resource_path == expected_path and texture.get_size() == expected_size, "A real imported texture has the intended path and unchanged canvas: " + label)
@@ -73,7 +114,7 @@ func _test_imported_family() -> void:
 	for id: String in ArenaCatalog.IDS:
 		var map_source: String = str(ArenaCatalog.definition(id)["texture"])
 		_check(map_source.begins_with("res://assets/") and not map_source.begins_with(ART_ROOT), "The actual map catalog retains its original resource identity: " + id)
-		var expected: String = ART_ROOT + map_source.trim_prefix("res://assets/")
+		var expected: String = AdventureArt.path(map_source)
 		_expect_texture(load(expected) as Texture2D, expected, Vector2(1280, 720), id)
 	_expect_texture(load(ART_ROOT + "fx/projectile_heads.svg") as Texture2D, ART_ROOT + "fx/projectile_heads.svg", Vector2(512, 64), "eight-frame projectile atlas")
 	for name: String in ["glow", "seal"]:
@@ -112,15 +153,21 @@ func _test_world_resources_and_redraws() -> void:
 		world.begin(state)
 		world.set_physics_process(false)
 		_expect_texture(world.arena_texture, ArenaCatalog.texture_path(id), ArenaCatalog.art_rect().size, "expanded world arena " + id)
+		_check(world._arena_obstacles.size() == 10 and world.minimap_snapshot()["obstacles"] == world._arena_obstacles, "Rendered props and minimap use the actual selected collision layout: " + id)
+		var minimap_copy: Dictionary = world.minimap_snapshot()
+		minimap_copy["obstacles"].clear()
+		_check(world._arena_obstacles.size() == 10 and world.sim.obstacles.snapshot().size() == 10, "HUD snapshots cannot mutate rendering or collision obstacles: " + id)
+		for prop: String in ["monument", "planter", "bumper"]:
+			_expect_texture(world._obstacle_textures.get(prop) as Texture2D, FAN_ROOT + "props/%s.png" % prop, Vector2(96, 96), "ground prop " + prop)
 		_check(world.texture_filter == CanvasItem.TEXTURE_FILTER_NEAREST, "The actual world uses local nearest filtering: " + id)
 		for sprite: String in SPRITE_SIZES:
-			_expect_texture(world.textures.get(sprite) as Texture2D, ART_ROOT + "sprites/%s.svg" % sprite, SPRITE_SIZES[sprite], "world " + sprite)
+			_expect_texture(world.textures.get(sprite) as Texture2D, _expected_sprite(sprite), SPRITE_SIZES[sprite], "world " + sprite)
 		for definition: ContentDef in GameCatalog.weapons():
-			_expect_texture(world.textures.get(definition.id) as Texture2D, ART_ROOT + "icons/%s.svg" % definition.icon, Vector2(64, 64), "orbit " + definition.id)
+			_expect_texture(world.textures.get(definition.id) as Texture2D, _expected_icon(definition.icon), Vector2(64, 64), "orbit " + definition.id)
 		_expect_texture(world.soul_texture, ART_ROOT + "icons/soul.svg", Vector2(64, 64), "world pickup")
 		_expect_texture(world.glow_texture, ART_ROOT + "fx/glow.svg", Vector2(96, 96), "world glow")
 		_expect_texture(world.seal_texture, ART_ROOT + "fx/seal.svg", Vector2(96, 96), "world seal")
-		_expect_texture(world._projectile_painter.atlas_texture, ART_ROOT + "fx/projectile_heads.svg", Vector2(512, 64), "world projectile painter")
+		_expect_texture(world._projectile_painter.atlas_texture, FAN_ROOT + "fx/projectile_heads.png", Vector2(512, 64), "world projectile painter")
 		world.sim.spawn_enemy("chaser", Vector2(710, 330))
 		world.sim.fire_weapon("bone", "pierce", Vector2(540, 365), Vector2.RIGHT)
 		world.sim._drop_soul(Vector2(480, 400), 1)
@@ -142,7 +189,8 @@ func _count_texture(node: Node, expected: String) -> int:
 	var result: int = 0
 	if node is TextureRect and node.texture != null and node.texture.resource_path == expected:
 		result += 1
-		_check(node.texture_filter == CanvasItem.TEXTURE_FILTER_NEAREST, "A rendered UI texture uses local nearest filtering: " + expected)
+		var expected_filter: CanvasItem.TextureFilter = CanvasItem.TEXTURE_FILTER_NEAREST
+		_check(node.texture_filter == expected_filter, "A rendered UI texture uses filtering appropriate to its pixel art or illustration: " + expected)
 	for child: Node in node.get_children():
 		result += _count_texture(child, expected)
 	return result
@@ -212,7 +260,7 @@ func _item_art(ui: GameUI, uid: int, icon: String) -> void:
 	if button == null:
 		return
 	var texture := button.find_child("ItemIcon", false, false) as TextureRect
-	_check(texture != null and texture.texture != null and texture.texture.resource_path == ART_ROOT + "icons/%s.svg" % icon and texture.texture_filter == CanvasItem.TEXTURE_FILTER_NEAREST, "The stored item icon uses the replacement after a real inventory transaction")
+	_check(texture != null and texture.texture != null and texture.texture.resource_path == _expected_icon(icon) and texture.texture_filter == CanvasItem.TEXTURE_FILTER_NEAREST, "The stored item icon uses the replacement after a real inventory transaction")
 
 func _test_real_inventory_presentation() -> void:
 	var state := RunState.new()
@@ -221,18 +269,19 @@ func _test_real_inventory_presentation() -> void:
 	var ui := GameUI.new()
 	root.add_child(ui)
 	ui.bind(state)
-	var font := ui._root.theme.default_font as SystemFont
-	_check(font != null and font.resource_path.is_empty() and font.antialiasing != TextServer.FONT_ANTIALIASING_NONE and font.has_char(0x79d8) and font.has_char(0x672f), "The actual UI retains antialiased system Chinese text rather than replacing its font with art")
+	var font := ui._root.theme.default_font as FontFile
+	_check(font != null and font.resource_path == "res://assets/fonts/fusion-pixel-12px-proportional-zh-hans.otf" and font.has_char(0x79d8) and font.has_char(0x672f), "The actual UI uses the bundled Fusion Pixel Chinese font")
+	_check(font != null and font.antialiasing == TextServer.FONT_ANTIALIASING_NONE and font.hinting == TextServer.HINTING_NONE and is_equal_approx(font.oversampling, 1.0) and not font.allow_system_fallback, "The bundled font keeps native pixel rendering without system fallback")
 	_check(ui._root.texture_filter != CanvasItem.TEXTURE_FILTER_NEAREST, "The whole interface is not forced to nearest filtering")
 	var before: String = _run_signature(state)
 	ui.show_title({})
 	await _settle()
 	_check(_count_texture(ui._page, TitleCover.BASE_PATH) == 1, "The real title displays its full-screen animated cover's actual base texture")
 	var starter := ui.find_child("Starter_bone", true, false) as Button
-	_check(starter != null and starter.icon != null and starter.icon.resource_path == ART_ROOT + "icons/bone.svg" and starter.texture_filter == CanvasItem.TEXTURE_FILTER_NEAREST, "The actual starter choice loads its new icon without changing its identity")
+	_check(starter != null and starter.icon != null and starter.icon.resource_path == _expected_icon("bone") and starter.texture_filter == CanvasItem.TEXTURE_FILTER_NEAREST, "The actual starter choice loads its new icon without changing its identity")
 	for id: String in ArenaCatalog.IDS:
 		var map_source: String = str(ArenaCatalog.definition(id)["texture"])
-		_check(_count_texture(ui._page, ART_ROOT + map_source.trim_prefix("res://assets/")) == 1, "The title's real map thumbnail uses the replacement: " + id)
+		_check(_count_texture(ui._page, AdventureArt.path(map_source)) == 1, "The title's real map thumbnail uses the replacement: " + id)
 	_check(_run_signature(state) == before, "Opening and drawing the title leaves inventory and RNG unchanged")
 	await _test_visible_volume_theme(ui)
 	_check(_run_signature(state) == before, "Opening and closing the actual settings preview changes no inventory or RNG state")
@@ -240,7 +289,7 @@ func _test_real_inventory_presentation() -> void:
 	var price: int = _offer(state, "weapon", "bone")
 	ui.show_shop()
 	await _settle()
-	_check(_count_texture(ui._page.find_child("Offer1", true, false), ART_ROOT + "icons/bone.svg") == 1, "A real unsold offer displays its replacement art")
+	_check(_count_texture(ui._page.find_child("Offer1", true, false), _expected_icon("bone")) == 1, "A real unsold offer displays its replacement art")
 	var wallet: int = state.gold
 	var rng_state: int = state.rng.state
 	if not await _press_shop_action(ui, "buy:0"):
@@ -252,7 +301,7 @@ func _test_real_inventory_presentation() -> void:
 	_item_art(ui, source, "bone")
 	ui._bag_grid.select_item(source)
 	await _settle()
-	_check(_count_texture(ui._bag_details, ART_ROOT + "icons/bone.svg") == 1, "The purchased item's actual detail view uses the new art")
+	_check(_count_texture(ui._bag_details, _expected_icon("bone")) == 1, "The purchased item's actual detail view uses the new art")
 	wallet = state.gold
 	if not await _press_shop_action(ui, "bag_merge:%d" % target):
 		ui.queue_free()
@@ -276,12 +325,12 @@ func _test_real_inventory_presentation() -> void:
 			_check(state.backpack_item(rune_uid).is_empty() and int(state.backpack_item(target).get("rune", {}).get("uid", -1)) == rune_uid, "Installing through the real UI consumes the bought rune and retains its actual UID")
 			var button := ui._bag_grid.find_child("BackpackItem%d" % target, false, false)
 			var badge := button.find_child("SocketRuneBadge", false, false) as TextureRect if button != null else null
-			_check(badge != null and badge.texture != null and badge.texture.resource_path == ART_ROOT + "icons/pierce.svg" and badge.texture_filter == CanvasItem.TEXTURE_FILTER_NEAREST, "The installed socket keeps its new rune texture and local nearest filtering")
+			_check(badge != null and badge.texture != null and badge.texture.resource_path == _expected_icon("pierce") and badge.texture_filter == CanvasItem.TEXTURE_FILTER_NEAREST, "The installed socket keeps its new rune texture and local nearest filtering")
 	before = _run_signature(state)
 	ui.show_hud()
 	ui.update_hud({"health": state.health, "max_health": state.stat("max_health"), "wave": state.wave, "time_left": 45.0, "gold": state.gold, "level": state.level, "loadout": state.loadout})
 	await _settle()
-	_check(_count_texture(ui._page, ART_ROOT + "icons/bone.svg") == 1 and _has_text(ui._page, GameCatalog.rune("pierce").display_name + " Ⅰ"), "Actual HUD equipment retains its replacement texture and explicit attached-rune identity")
+	_check(_count_texture(ui._page, _expected_icon("bone")) == 1 and _has_text(ui._page, GameCatalog.rune("pierce").display_name + " Ⅰ"), "Actual HUD equipment retains its replacement texture and explicit attached-rune identity")
 	ui.show_title({})
 	await _settle()
 	ui.show_shop()

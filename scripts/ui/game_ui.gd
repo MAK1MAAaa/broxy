@@ -23,6 +23,8 @@ const RED := Color("b83c50")
 const CORAL := Color("ed9a86")
 const BACKPACK_GRID = preload("res://scripts/ui/backpack_grid.gd")
 const MINIMAP_VIEW = preload("res://scripts/ui/minimap_view.gd")
+const SHOP_PANEL_SKIN = preload("res://scripts/ui/shop_panel_skin.gd")
+const WORKBENCH_ART = preload("res://scripts/ui/shop_workbench_art.gd")
 
 ## Paper-and-brass ornaments draw only on construction/resize and never intercept input.
 class RitualFrame:
@@ -237,7 +239,7 @@ func _refresh_reading_guides() -> void:
 		if guide != null:
 			guide.text = str(guide.get_meta("gamepad_text" if _input_kind == "gamepad" else "keyboard_text"))
 			if surface == _page and _screen == "shop" and _input_kind == "gamepad" and _bag_held_uid >= 0:
-				guide.text = "整理完成后可用 LB / RB 查看详情"
+				guide.text = "LB / RB · 整理中"
 
 
 func _add_reading_guide(parent: Control, keyboard_text: String, gamepad_text: String) -> void:
@@ -262,7 +264,7 @@ func _gamepad_reading_target() -> ScrollContainer:
 	var surface: Control = _overlay if not _overlay_mode.is_empty() else _page
 	var target_name: String = ""
 	if not _overlay_mode.is_empty():
-		target_name = str({"relic_comparison": "ComparisonScroll", "rune_equip_comparison": "RuneEquipScroll", "rogue_choices": "RogueChoicesScroll"}.get(_overlay_mode, ""))
+		target_name = str({"relic_comparison": "ComparisonScroll", "rune_equip_comparison": "RuneEquipScroll", "rogue_choices": "RogueChoicesScroll", "item_record": "ItemRecordScroll"}.get(_overlay_mode, ""))
 	elif _screen == "shop" and not _refresh_queued and _bag_held_uid < 0:
 		if is_instance_valid(_bag_grid) and _bag_grid.held_uid < 0 and _bag_grid.interaction_enabled:
 			target_name = "BackpackDetailsScroll"
@@ -360,18 +362,18 @@ func show_title(best: Dictionary) -> void:
 	left.add_theme_constant_override("separation", 8)
 	columns.add_child(left)
 	var title := _label("EMBERS", 60, BONE)
-	var title_font := SystemFont.new()
-	title_font.font_names = PackedStringArray(["Trebuchet MS", "Avenir Next", "Verdana", "Arial"])
-	title_font.font_weight = 800
-	title.add_theme_font_override("font", title_font)
 	left.add_child(title)
 	left.add_child(_label("秘 术 余 烬", 24, PURPLE))
 	var start_card := _panel(left)
 	start_card.name = "StarterAltar"
 	var start_body := _inside(start_card, 12)
 	start_body.add_theme_constant_override("separation", 6)
-	var starters := HBoxContainer.new()
-	starters.add_theme_constant_override("separation", 12)
+	var starters := GridContainer.new()
+	starters.name = "StarterChoices"
+	starters.columns = 2
+	starters.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	starters.add_theme_constant_override("h_separation", 12)
+	starters.add_theme_constant_override("v_separation", 8)
 	start_body.add_child(starters)
 	for id: String in ["bone", "ember", "frost", "scatter"]:
 		var definition: ContentDef = GameCatalog.weapon(id)
@@ -386,7 +388,7 @@ func show_title(best: Dictionary) -> void:
 		card.disabled = not _unlocked_starters.has(id)
 		card.focus_mode = Control.FOCUS_NONE if card.disabled else Control.FOCUS_ALL
 		card.button_pressed = _starter == id
-		card.add_theme_font_size_override("font_size", 17)
+		card.add_theme_font_size_override("font_size", GameTypography.size_for(17))
 		ButtonSkin.apply(card, "choice")
 		_set_button_icon(card, definition)
 		option.add_child(card)
@@ -927,7 +929,7 @@ func handle_back() -> bool:
 	if _overlay_mode in ["controls_title", "controls_pause"]:
 		_show_settings(_overlay_mode == "controls_pause")
 		return true
-	if _overlay_mode in ["relic_details", "relic_comparison", "rune_equip_comparison", "rogue_choices"]:
+	if _overlay_mode in ["relic_details", "relic_comparison", "rune_equip_comparison", "rogue_choices", "item_record"]:
 		hide_pause()
 		return true
 	if _overlay_mode == "settings_pause":
@@ -1019,7 +1021,7 @@ func show_result(victory: bool, reason: String, best: Dictionary) -> void:
 	build_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
 	build_scroll.focus_mode = Control.FOCUS_ALL
 	body.add_child(build_scroll)
-	build_scroll.add_child(_wrap(_loadout_text(), 15, BONE))
+	_build_result_inventory(build_scroll)
 	_add_reading_guide(body, "滚轮查看最终构筑", "LB / RB 查看最终构筑")
 	body.add_child(_wrap("最佳记录：" + _best_text(best), 13, MUTED))
 	var damage_card := _panel(columns)
@@ -1047,6 +1049,7 @@ func show_result(victory: bool, reason: String, best: Dictionary) -> void:
 			damage_body.add_child(row)
 			var heading := HBoxContainer.new()
 			row.add_child(heading)
+			_add_icon(heading, definition, 24)
 			var name_label := _label(definition.display_name, 16, BONE)
 			name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			heading.add_child(name_label)
@@ -1070,6 +1073,58 @@ func show_result(victory: bool, reason: String, best: Dictionary) -> void:
 	actions.add_child(restart)
 	actions.add_child(_button("返回主菜单", _menu, Vector2(200, 48)))
 	_focus_later(restart)
+
+
+func _build_result_inventory(parent: Control) -> void:
+	var content := VBoxContainer.new()
+	content.name = "ResultBuildItems"
+	content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	content.add_theme_constant_override("separation", 8)
+	parent.add_child(content)
+	var items: Array = run.backpack_snapshot().get("items", [])
+	if items.is_empty():
+		content.add_child(_label("背包为空", 12, MUTED))
+		return
+	for item: Dictionary in items:
+		var kind: String = str(item.get("kind", ""))
+		var id: String = str(item.get("id", ""))
+		var definition: ContentDef = BackpackInventory.definition(kind, id)
+		if definition == null:
+			continue
+		var uid: int = int(item.get("uid", -1))
+		var row := HBoxContainer.new()
+		row.name = "ResultItem_%d" % uid
+		row.set_meta("backpack_uid", uid)
+		row.set_meta("content_kind", kind)
+		row.set_meta("content_id", id)
+		row.add_theme_constant_override("separation", 10)
+		content.add_child(row)
+		_add_icon(row, definition, 32)
+		var names := VBoxContainer.new()
+		names.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		names.add_theme_constant_override("separation", 3)
+		row.add_child(names)
+		var heading := HBoxContainer.new()
+		heading.add_theme_constant_override("separation", 8)
+		names.add_child(heading)
+		var item_name := _wrap(definition.display_name, 16, BONE)
+		item_name.name = "ResultItemName_%d" % uid
+		heading.add_child(item_name)
+		var rank := _label(_rank_name(int(item.get("rank", 1))) + "阶", 12, GOLD)
+		rank.name = "ResultItemRank_%d" % uid
+		heading.add_child(rank)
+		_enable_tooltip(row, _equipment_tooltip(item) if kind == "weapon" else _backpack_effect_text(item))
+		var rune: Dictionary = item.get("rune", {}) if kind == "weapon" else {}
+		if not rune.is_empty():
+			var rune_definition: ContentDef = GameCatalog.rune(str(rune.get("id", "")))
+			if rune_definition == null:
+				continue
+			var socket := HBoxContainer.new()
+			socket.name = "ResultSocket_%d" % uid
+			socket.add_theme_constant_override("separation", 6)
+			names.add_child(socket)
+			_add_icon(socket, rune_definition, 20)
+			socket.add_child(_wrap(rune_definition.display_name + " " + _rank_name(int(rune.get("rank", 1))) + "阶", 12, PURPLE))
 
 
 func _last_hit_text() -> String:
@@ -1104,7 +1159,7 @@ func notify(message: String) -> void:
 		_toast_timer.stop()
 		return
 	_toast.text = message
-	_toast.add_theme_font_size_override("font_size", 16)
+	_toast.add_theme_font_size_override("font_size", GameTypography.size_for(16))
 	_toast.add_theme_stylebox_override("normal", _box(PANEL_LIGHT, GOLD))
 	_toast.clip_text = false
 	_toast.max_lines_visible = -1
@@ -1120,8 +1175,48 @@ func notify(message: String) -> void:
 	_toast_timer.start(2.8)
 
 
+func _workbench_panel(parent: Control, role: String, minimum: Vector2) -> PanelContainer:
+	var panel := PanelContainer.new()
+	panel.custom_minimum_size = minimum
+	parent.add_child(panel)
+	WORKBENCH_ART.apply_surface(panel, role)
+	return panel
+
+
+func _shop_margin(parent: Control, horizontal: int, vertical: int) -> MarginContainer:
+	var margin := MarginContainer.new()
+	_margin(margin, horizontal, vertical)
+	parent.add_child(margin)
+	return margin
+
+
+func _add_shop_symbol(parent: Control, id: String, extent: int) -> void:
+	var icon := TextureRect.new()
+	icon.texture = load(AdventureArt.path("res://assets/icons/%s.svg" % id))
+	icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	icon.custom_minimum_size = Vector2.ONE * extent
+	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	parent.add_child(icon)
+
+
+func _item_trait(kind: String, definition: ContentDef, rank: int) -> String:
+	if kind == "weapon":
+		return {"bone": "速射", "frost": "寒霜减速", "ember": "追踪", "scatter": "三向散射", "crescent": "穿透", "storm": "双发", "comet": "重击", "return_ring": "往返穿透"}.get(definition.id, "")
+	if kind == "rune":
+		return "贯穿 +%d目标" % RuneRules.extra_hits(rank) if definition.id == "pierce" else "弹射 +%d跳" % RuneRules.extra_hits(rank) if definition.id == "bounce" else "爆破 %.0f范围" % RuneRules.blast_radius(rank)
+	if kind == "relic":
+		var values: PackedStringArray = []
+		for pair: Array in [[definition.stat, definition.amount], [definition.bonus_stat, definition.bonus_amount]]:
+			if not str(pair[0]).is_empty():
+				values.append("%s %s" % [_relic_stat_name(str(pair[0])), _relic_amount_text(str(pair[0]), float(pair[1]) * BackpackInventory.rank_multiplier(rank))])
+		return " · ".join(values)
+	return ""
+
+
 func _build_shop() -> void:
-	if _overlay_mode in ["relic_comparison", "rune_equip_comparison", "rogue_choices"]:
+	if _overlay_mode in ["relic_comparison", "rune_equip_comparison", "rogue_choices", "item_record"]:
 		hide_pause()
 	_shop_epoch += 1
 	if is_instance_valid(_bag_grid):
@@ -1136,78 +1231,82 @@ func _build_shop() -> void:
 		if previous != null:
 			focus_id = str(previous.get_meta("shop_focus_id", ""))
 	_clear(_page)
-	_background()
+	_page.add_child(WORKBENCH_ART.make_backdrop())
 	if run == null:
 		return
 	if _selected_rune >= run.rune_bag.size():
 		_selected_rune = -1
-	var shell := _shell(32, 24)
-	shell.add_theme_constant_override("separation", 10)
+	var shell := _shell(24, 24)
+	shell.add_theme_constant_override("separation", 12)
+	var header := _workbench_panel(shell, "header", Vector2(0, 58))
+	header.name = "ShopHeader"
 	var heading := HBoxContainer.new()
-	shell.add_child(heading)
-	var title := _label("祭坛商店", 31, BONE)
+	heading.add_theme_constant_override("separation", 18)
+	_shop_margin(header, 18, 8).add_child(heading)
+	var title := _label("祭坛商店", 28, PANEL)
 	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	heading.add_child(title)
+	heading.add_child(_label("第 %d 波" % run.wave, 20, Color("d3c39b")))
 	var rogue_state: Dictionary = run.rogue_choices()
 	var rogue_text: String = "秘术抉择 · 核心待选" if str(rogue_state.get("core_id", "")).is_empty() else "秘术抉择 · 当前构筑"
 	if bool(rogue_state.get("reward_pending", false)):
 		rogue_text = "秘术抉择 · 符文待领"
-	var ritual := _shop_button(rogue_text, _show_rogue_choices, "rogue", Vector2(240, 38))
+	var ritual := _shop_button(rogue_text, _show_rogue_choices, "rogue", Vector2(232, 38))
 	ritual.name = "OpenRogueChoices"
-	ritual.add_theme_font_size_override("font_size", 15)
+	ritual.add_theme_font_size_override("font_size", GameTypography.size_for(16))
 	ritual.tooltip_text = "选择本局流派、可跳过的追猎契约与下一波敌群；可稍后决定。"
 	heading.add_child(ritual)
-	heading.add_child(_label("波次 %d 完成   /   魂屑 %d" % [run.wave, run.gold], 22, GOLD))
-	var guide := _wrap(_rune_guide(), 15, PURPLE if _selected_rune >= 0 else MUTED)
-	guide.name = "RuneGuide"
-	guide.visible = _selected_rune >= 0
-	shell.add_child(guide)
+	_add_shop_symbol(heading, "soul", 28)
+	var currency := _label(str(run.gold), 26, Color("efca7d"))
+	currency.name = "ShopCurrency"
+	currency.custom_minimum_size.x = 80
+	currency.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	currency.tooltip_text = "魂屑"
+	heading.add_child(currency)
 	var columns := HBoxContainer.new()
+	columns.name = "ShopWorkbench"
 	columns.add_theme_constant_override("separation", 14)
 	columns.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	shell.add_child(columns)
+	var shelf := _workbench_panel(columns, "shelf", Vector2(448, 0))
+	shelf.name = "ShopShelf"
 	var goods := VBoxContainer.new()
-	goods.custom_minimum_size.x = 520
-	goods.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	columns.add_child(goods)
+	goods.add_theme_constant_override("separation", 10)
+	_shop_margin(shelf, 12, 12).add_child(goods)
 	var stock_heading := HBoxContainer.new()
-	stock_heading.add_theme_constant_override("separation", 14)
 	goods.add_child(stock_heading)
-	var lock_count := _label("本次供奉 · 已锁 %d / %d" % [run.locked_offer_count(), RunState.SHOP_LOCK_CAP], 18, GOLD)
+	var stock_title := _label("本次供奉", 21, PANEL)
+	stock_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	stock_heading.add_child(stock_title)
+	var lock_count := _label("已锁 %d / %d" % [run.locked_offer_count(), RunState.SHOP_LOCK_CAP], 16, Color("efca7d"))
 	lock_count.name = "ShopLockCount"
 	stock_heading.add_child(lock_count)
-	var stock_rule := RitualRule.new()
-	stock_rule.custom_minimum_size.x = 28
-	stock_rule.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	stock_heading.add_child(stock_rule)
 	var grid := GridContainer.new()
+	grid.name = "ShopStockGrid"
 	grid.columns = 2
-	grid.add_theme_constant_override("h_separation", 12)
-	grid.add_theme_constant_override("v_separation", 12)
+	grid.add_theme_constant_override("h_separation", 10)
+	grid.add_theme_constant_override("v_separation", 10)
 	grid.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	goods.add_child(grid)
-	for index in range(run.offers.size()):
+	for index: int in run.offers.size():
 		_offer_card(grid, index)
-	_build_backpack(columns)
-	var stats_card := _panel(shell)
-	var stats_margin := MarginContainer.new()
-	_margin(stats_margin, 14, 10)
-	stats_card.add_child(stats_margin)
-	stats_margin.add_child(_label(_stats_text(), 15, BONE))
-	var footer := HBoxContainer.new()
-	footer.add_theme_constant_override("separation", 12)
-	shell.add_child(footer)
-	var reroll := _shop_button(("刷新未锁  %d 魂屑" if run.locked_offer_count() > 0 else "刷新  %d 魂屑") % run.reroll_cost(), _reroll, "reroll", Vector2(180, 46))
-	reroll.add_theme_font_size_override("font_size", 16)
+	var reroll := _shop_button(("刷新未锁  %d 魂屑" if run.locked_offer_count() > 0 else "刷新  %d 魂屑") % run.reroll_cost(), _reroll, "reroll", Vector2(0, 38))
+	reroll.add_theme_font_size_override("font_size", GameTypography.size_for(16))
 	reroll.tooltip_text = "刷新仅替换未锁定商品；锁定商品跨波保留，价格随波次调整。"
-	footer.add_child(reroll)
-	var hint := _label("购买自动找空位 · 法器全部生效", 14, MUTED)
-	hint.name = "ShopLockGuide"
-	hint.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	footer.add_child(hint)
-	var next := _shop_button("开始下一波", _next_wave, "next_wave", Vector2(210, 46))
+	goods.add_child(reroll)
+	_build_backpack(columns)
+	var footer := _workbench_panel(shell, "footer", Vector2(0, 56))
+	footer.name = "ShopFooter"
+	var footer_row := HBoxContainer.new()
+	footer_row.add_theme_constant_override("separation", 16)
+	_shop_margin(footer, 16, 7).add_child(footer_row)
+	var stats := _label(_stats_text(), 15, PANEL)
+	stats.name = "ShopStats"
+	stats.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	footer_row.add_child(stats)
+	var next := _shop_button("开始下一波", _next_wave, "next_wave", Vector2(220, 42))
 	_accent(next)
-	footer.add_child(next)
+	footer_row.add_child(next)
 	_restore_shop_focus.call_deferred(focus_id, _shop_epoch)
 
 
@@ -1298,6 +1397,7 @@ func _show_rogue_choices(keep_notice: bool = false) -> void:
 			claim.name = "RogueReward_" + rune.id
 			claim.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			claim.disabled = not bool(choices.get("can_claim_reward", false))
+			_set_button_icon(claim, rune)
 			rewards.add_child(claim)
 	_section_heading(content, "III · 下一波路线", PURPLE, 18)
 	if bool(choices.get("can_choose_route", false)):
@@ -1312,7 +1412,7 @@ func _show_rogue_choices(keep_notice: bool = false) -> void:
 			var selected: bool = str(option["id"]) == str(choices.get("route", "balanced"))
 			var select := _button(("已选 · " if selected else "选择 · ") + str(option["name"]), _rogue_action.bind("route", str(option["id"]), epoch), Vector2(0, 36))
 			select.name = "RogueRoute_" + str(option["id"])
-			select.add_theme_font_size_override("font_size", 14)
+			select.add_theme_font_size_override("font_size", GameTypography.size_for(14))
 			if selected:
 				_accent(select)
 			inside.add_child(select)
@@ -1383,7 +1483,7 @@ func _rogue_scroll_input(event: InputEvent, scroll: ScrollContainer, epoch: int)
 
 
 func _backpack_default_hint() -> String:
-	return "在「拿起」按A；持物用左杆 / 十字移动，A放置、X旋转、B取消" if _input_kind == "gamepad" else "拖拽整理 · R旋转 · Esc取消"
+	return "A拿起 · X旋转 · B取消" if _input_kind == "gamepad" else "拖拽整理 · R旋转 · Esc取消"
 
 
 func _backpack_move_tooltip() -> String:
@@ -1406,22 +1506,20 @@ func _build_backpack(parent: Control) -> void:
 	if run.backpack_item(_bag_held_uid).is_empty():
 		_bag_held_uid = -1
 	_selected_rune = run.rune_index_for_uid(_bag_selected_uid)
-	var card := _panel(parent, Vector2(650, 0))
+	var assembly := HBoxContainer.new()
+	assembly.add_theme_constant_override("separation", 12)
+	assembly.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	parent.add_child(assembly)
+	var card := _workbench_panel(assembly, "bag", Vector2(332, 0))
 	card.name = "BackpackPanel"
-	var body := _inside(card, 14)
-	body.add_theme_constant_override("separation", 6)
-	var heading := HBoxContainer.new()
-	body.add_child(heading)
-	var title := _label("秘术行囊", 20, GOLD)
-	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	heading.add_child(title)
-	var capacity := _label("占格 %d / %d · 法器 %d · 技能 %d/2" % [int(snapshot["used_cells"]), int(snapshot["total_cells"]), run.loadout.size(), run.active_skills.size()], 14, CYAN)
+	var body := VBoxContainer.new()
+	body.add_theme_constant_override("separation", 8)
+	_shop_margin(card, 16, 14).add_child(body)
+	var title := _label("秘术行囊", 22, PANEL)
+	body.add_child(title)
+	var capacity := _label("占格 %d / %d · 法器 %d · 技能 %d/2" % [int(snapshot["used_cells"]), int(snapshot["total_cells"]), run.loadout.size(), run.active_skills.size()], 14, Color("caddb8"))
 	capacity.name = "BackpackCapacity"
-	heading.add_child(capacity)
-	var columns := HBoxContainer.new()
-	columns.add_theme_constant_override("separation", 12)
-	columns.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	body.add_child(columns)
+	body.add_child(capacity)
 	_bag_grid = BACKPACK_GRID.new()
 	_bag_grid.name = "BackpackGrid"
 	_bag_grid.set_skill_bindings(_controls)
@@ -1434,39 +1532,52 @@ func _build_backpack(parent: Control) -> void:
 	_bag_grid.holding_changed.connect(_bp_holding.bind(_shop_epoch))
 	_bag_grid.hint_changed.connect(_bp_hint.bind(_shop_epoch))
 	_bag_grid.placement_cancelled.connect(_bp_cancelled.bind(_shop_epoch))
-	columns.add_child(_bag_grid)
+	body.add_child(_bag_grid)
+	var spacer := Control.new()
+	spacer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	spacer.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	body.add_child(spacer)
+	var cost: int = int(snapshot.get("expansion_cost", 0))
+	var expand_text: String = "背包已扩满" if int(snapshot["height"]) >= int(snapshot["max_height"]) else "扩容一排 · %d魂屑" % cost
+	var expand := _shop_button(expand_text, _bp_expand, "bag_expand", Vector2(0, 36))
+	expand.name = "ExpandBackpack"
+	expand.add_theme_font_size_override("font_size", GameTypography.size_for(15))
+	expand.disabled = int(snapshot["height"]) >= int(snapshot["max_height"])
+	expand.tooltip_text = str(snapshot.get("expansion_error", "")) if not bool(snapshot.get("can_expand", true)) else "解锁下一排6个格子；不移动现有物品。"
+	body.add_child(expand)
+	_bag_status = _wrap(_backpack_default_hint(), 14, Color("d8ddc4"))
+	_bag_hint_is_default = true
+	_bag_status.name = "BackpackHint"
+	_bag_status.custom_minimum_size.y = 46
+	_bag_status.max_lines_visible = 3
+	_bag_status.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	body.add_child(_bag_status)
+	var inspector := _workbench_panel(assembly, "inspect", Vector2(300, 0))
+	inspector.name = "BackpackInspector"
+	inspector.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var inspector_body := VBoxContainer.new()
+	inspector_body.add_theme_constant_override("separation", 10)
+	_shop_margin(inspector, 14, 14).add_child(inspector_body)
+	var inspector_heading := HBoxContainer.new()
+	inspector_body.add_child(inspector_heading)
+	var inspector_title := _label("装备检视", 20, GOLD)
+	inspector_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	inspector_heading.add_child(inspector_title)
+	_add_reading_guide(inspector_heading, "滚轮", "LB / RB")
 	var scroll := ScrollContainer.new()
 	scroll.name = "BackpackDetailsScroll"
-	scroll.custom_minimum_size.x = 244
 	scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
 	scroll.follow_focus = true
-	columns.add_child(scroll)
+	inspector_body.add_child(scroll)
 	_bag_details = VBoxContainer.new()
 	_bag_details.name = "BackpackDetails"
 	_bag_details.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_bag_details.add_theme_constant_override("separation", 6)
+	_bag_details.add_theme_constant_override("separation", 10)
 	scroll.add_child(_bag_details)
 	_build_backpack_details()
-	_add_reading_guide(body, "滚轮查看物品详情", "LB / RB 查看物品详情")
-	_bag_status = _wrap(_backpack_default_hint(), 13, MUTED)
-	_bag_hint_is_default = true
-	_bag_status.name = "BackpackHint"
-	_bag_status.custom_minimum_size.y = 32
-	body.add_child(_bag_status)
-	var expansion := HBoxContainer.new()
-	expansion.add_theme_constant_override("separation", 10)
-	body.add_child(expansion)
-	var cost: int = int(snapshot.get("expansion_cost", 0))
-	var expand_text: String = "背包已扩满" if int(snapshot["height"]) >= int(snapshot["max_height"]) else "扩容一排 · %d魂屑" % cost
-	var expand := _shop_button(expand_text, _bp_expand, "bag_expand", Vector2(180, 34))
-	expand.name = "ExpandBackpack"
-	expand.add_theme_font_size_override("font_size", 14)
-	expand.disabled = int(snapshot["height"]) >= int(snapshot["max_height"])
-	expand.tooltip_text = str(snapshot.get("expansion_error", "")) if not bool(snapshot.get("can_expand", true)) else "解锁下一排6个格子；不移动现有物品。"
-	expansion.add_child(expand)
 	if _bag_held_uid >= 0:
 		_bag_grid.begin_placement(_bag_held_uid, _bag_held_rotated, _bag_cursor)
 
@@ -1475,6 +1586,12 @@ func _build_backpack_details() -> void:
 	if not is_instance_valid(_bag_details):
 		return
 	_clear(_bag_details)
+	var rune_guide := _wrap(_rune_guide(), 15, PURPLE)
+	rune_guide.name = "RuneGuide"
+	rune_guide.visible = _selected_rune >= 0
+	if _selected_rune >= 0 and _selected_rune < run.rune_bag.size():
+		_enable_tooltip(rune_guide, _rune_rank_text(str(run.rune_bag[_selected_rune]["id"]), int(run.rune_bag[_selected_rune].get("rank", 1))))
+	_bag_details.add_child(rune_guide)
 	var item: Dictionary = run.backpack_item(_bag_selected_uid)
 	if item.is_empty():
 		_bag_details.add_child(_wrap("选择物品查看效果", 15, MUTED))
@@ -1484,8 +1601,8 @@ func _build_backpack_details() -> void:
 	var definition: ContentDef = _definition(str(item["kind"]), str(item["id"]))
 	var heading := HBoxContainer.new()
 	_bag_details.add_child(heading)
-	_add_icon(heading, definition, 40)
-	var title := _wrap("%s · %s阶" % [definition.display_name, _rank_name(rank)], 18, BONE)
+	_add_icon(heading, definition, 56)
+	var title := _wrap("%s · %s阶" % [definition.display_name, _rank_name(rank)], 22, BONE)
 	title.name = "BackpackItemTitle"
 	title.tooltip_text = _backpack_effect_text(item)
 	heading.add_child(title)
@@ -1493,13 +1610,14 @@ func _build_backpack_details() -> void:
 	var footprint := _label("占格 %d×%d" % [dimensions.x, dimensions.y], 13, MUTED)
 	footprint.name = "BackpackFootprint"
 	_bag_details.add_child(footprint)
+	_bag_details.move_child(rune_guide, 2)
 	if str(item["kind"]) == "weapon":
-		var stats := _wrap(_weapon_stats_text(definition, rank, _item_resonance_bonus(item)), 12, CYAN)
+		var stats := _wrap(_weapon_stats_text(definition, rank, _item_resonance_bonus(item)), 15, CYAN)
 		stats.name = "BackpackWeaponStats"
 		_bag_details.add_child(stats)
 		var weapon_index: int = run.weapon_index_for_uid(uid)
 		var source_count: int = (run.loadout[weapon_index].get("resonance_sources", []) as Array).size() if weapon_index >= 0 else 0
-		var resonance_summary := _label("共鸣+%s · %d件遗物" % [_rune_percent(_item_resonance_bonus(item)), source_count], 12, CYAN)
+		var resonance_summary := _label("共鸣+%s · %d件遗物" % [_rune_percent(_item_resonance_bonus(item)), source_count], 14, CYAN)
 		resonance_summary.name = "BackpackResonanceSummary"
 		_enable_tooltip(resonance_summary, _resonance_details(item))
 		_bag_details.add_child(resonance_summary)
@@ -1522,10 +1640,9 @@ func _build_backpack_details() -> void:
 	if not partners.is_empty():
 		_section_heading(_bag_details, "同名同阶合成", GOLD, 14)
 		var sample: Dictionary = partners[0]["preview"]
-		var explanation: String = "释放%d格；全局属性保持两件合计。\n共鸣按新邻接重算。" % int(sample.get("cells_freed", dimensions.x * dimensions.y))
+		var explanation: String = "释放 %d 格" % int(sample.get("cells_freed", dimensions.x * dimensions.y))
 		if str(item["kind"]) == "weapon":
 			explanation = "目标伤害 %.1f → %.1f，释放%d格。" % [float(sample.get("damage_before", definition.damage)), float(sample.get("damage_after", definition.damage * 2.0)), int(sample.get("cells_freed", dimensions.x * dimensions.y))]
-			explanation += "\n合成后按目标位置重算共鸣。"
 		elif str(item["kind"]) == "rune":
 			explanation = _rune_rank_text(str(item["id"]), rank + 1)
 		elif str(item["kind"]) == "skill":
@@ -1538,33 +1655,37 @@ func _build_backpack_details() -> void:
 				var key: String = str(change["key"])
 				effects.append("%s %s → %s" % [_relic_stat_name(key), _relic_amount_text(key, float(change["before"])), _relic_amount_text(key, float(change["after"]))])
 			explanation += "\n目标单件：" + "；".join(effects)
-		var merge_preview := _wrap(explanation, 12, GOLD)
+		var merge_preview := _wrap(explanation, 14, GOLD)
 		merge_preview.name = "BackpackMergePreview"
 		_bag_details.add_child(merge_preview)
 		_add_backpack_merge_target(uid, partners[0])
 	var actions := HBoxContainer.new()
 	actions.add_theme_constant_override("separation", 6)
 	_bag_details.add_child(actions)
-	var move := _shop_button("拿起 / 移动", _bp_pick_up.bind(uid), "bag_move:%d" % uid, Vector2(110, 32))
+	var move := _shop_button("拿起 / 移动", _bp_pick_up.bind(uid), "bag_move:%d" % uid, Vector2(128, 38))
 	move.name = "MoveBackpackItem"
-	move.add_theme_font_size_override("font_size", 13)
+	move.add_theme_font_size_override("font_size", GameTypography.size_for(15))
 	move.tooltip_text = _backpack_move_tooltip()
 	actions.add_child(move)
-	var rotate := _shop_button(_backpack_rotate_text(), _bp_rotate.bind(uid), "bag_rotate:%d" % uid, Vector2(76, 32))
+	var rotate := _shop_button(_backpack_rotate_text(), _bp_rotate.bind(uid), "bag_rotate:%d" % uid, Vector2(90, 38))
 	rotate.name = "RotateBackpackItem"
-	rotate.add_theme_font_size_override("font_size", 13)
+	rotate.add_theme_font_size_override("font_size", GameTypography.size_for(15))
 	rotate.tooltip_text = _backpack_rotate_tooltip()
 	actions.add_child(rotate)
+	var record := _shop_button("详情", _show_owned_item_record.bind(uid, _shop_epoch), "bag_record:%d" % uid, Vector2(64, 38))
+	record.name = "BackpackItemRecord"
+	record.add_theme_font_size_override("font_size", GameTypography.size_for(15))
+	actions.add_child(record)
 	var sale := _shop_button("出售 · %d魂屑" % int(floorf(float(item.get("paid", 0)) * 0.5)), _bp_sell.bind(uid), "bag_sell:%d" % uid, Vector2(0, 32))
 	sale.name = "SellBackpackItem"
-	sale.add_theme_font_size_override("font_size", 13)
+	sale.add_theme_font_size_override("font_size", GameTypography.size_for(13))
 	sale.tooltip_text = "出售不可撤回。" if str(item["kind"]) == "skill" else "出售不可撤回；必须保留至少一件法器。法器上的符文退回背包空格。"
 	_bag_details.add_child(sale)
 	var rune: Dictionary = item.get("rune", {})
 	if str(item["kind"]) == "weapon" and not rune.is_empty():
 		var detach := _shop_button("拆下 %s · %s阶" % [GameCatalog.rune(str(rune["id"])).display_name, _rank_name(int(rune.get("rank", 1)))], _bp_unequip.bind(uid), "bag_unequip:%d" % uid, Vector2(0, 32))
 		detach.name = "UnequipBackpackRune"
-		detach.add_theme_font_size_override("font_size", 12)
+		detach.add_theme_font_size_override("font_size", GameTypography.size_for(12))
 		detach.tooltip_text = "免费拆下；背包需要一个真实空格。"
 		_bag_details.add_child(detach)
 	if str(item["kind"]) == "rune":
@@ -1576,14 +1697,15 @@ func _build_backpack_details() -> void:
 			_bag_details.add_child(row)
 			var equip := _shop_button("装入 %s %s" % [GameCatalog.weapon(str(weapon["id"])).display_name, _rank_name(int(weapon.get("rank", 1)))], _bp_equip.bind(uid, weapon_uid, _shop_epoch), "bag_equip:%d" % weapon_uid, Vector2(0, 30))
 			equip.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-			equip.add_theme_font_size_override("font_size", 12)
+			equip.add_theme_font_size_override("font_size", GameTypography.size_for(12))
 			row.add_child(equip)
 			var index: int = run.weapon_index_for_uid(weapon_uid)
 			var preview := _shop_button("预览", _preview_rune_equip.bind(index, _shop_epoch, run.rune_bag[_selected_rune].duplicate(true), weapon.duplicate(true)), "rune_preview:%d" % index, Vector2(48, 30))
-			preview.add_theme_font_size_override("font_size", 12)
+			preview.add_theme_font_size_override("font_size", GameTypography.size_for(12))
 			row.add_child(preview)
 	if str(item["kind"]) in ["weapon", "relic"]:
-		var resonance := _wrap(_resonance_details(item), 12, CYAN)
+		var resonance := _wrap("遗物共鸣 +%s" % _rune_percent(_item_resonance_bonus(item)) if str(item["kind"]) == "weapon" else "共鸣遗物", 14, CYAN)
+		_enable_tooltip(resonance, _resonance_details(item))
 		resonance.name = "BackpackResonance"
 		_bag_details.add_child(resonance)
 	if partners.size() > 1:
@@ -1591,7 +1713,11 @@ func _build_backpack_details() -> void:
 		for index: int in range(1, partners.size()):
 			_add_backpack_merge_target(uid, partners[index])
 	if str(item["kind"]) != "skill":
-		var description := _wrap(_backpack_effect_text(item), 13, CYAN)
+		var effect_summary: String = _item_trait(str(item["kind"]), definition, rank)
+		if str(item["kind"]) == "weapon" and run.linked_weapon_uids().has(uid):
+			effect_summary += " · 烛引"
+		var description := _wrap(effect_summary, 15, CYAN)
+		_enable_tooltip(description, _backpack_effect_text(item))
 		description.name = "BackpackItemEffect"
 		_bag_details.add_child(description)
 
@@ -1601,7 +1727,7 @@ func _add_backpack_merge_target(source: int, partner: Dictionary) -> void:
 	var preview: Dictionary = partner["preview"]
 	var merge := _shop_button("与 #%d 合成 → %s阶" % [int(other["uid"]), _rank_name(int(preview["rank_after"]))], _bp_merge.bind(source, int(other["uid"]), _shop_epoch), "bag_merge:%d" % int(other["uid"]), Vector2(0, 32))
 	merge.name = "MergeBackpackItem%d" % int(other["uid"])
-	merge.add_theme_font_size_override("font_size", 13)
+	merge.add_theme_font_size_override("font_size", GameTypography.size_for(13))
 	var returned: Dictionary = preview.get("returned_rune", {})
 	merge.tooltip_text = "保留目标物品的位置和朝向；该操作不可撤回。" + ("另一份符文退回背包。" if not returned.is_empty() else "")
 	if str(other["kind"]) == "weapon":
@@ -1797,21 +1923,38 @@ func _offer_card(parent: Control, index: int) -> void:
 	var offer: Dictionary = run.offers[index]
 	var kind := str(offer.get("kind", "weapon"))
 	var definition = _definition(kind, str(offer.get("id", "")))
-	var card := _panel(parent, Vector2(252, 180))
+	var card := _panel(parent, Vector2(200, 178))
 	card.name = "Offer%d" % (index + 1)
 	var category: Color = {"weapon": GOLD, "rune": PURPLE, "relic": CYAN, "skill": Color("287eb5")}.get(kind, GOLD)
 	var locked: bool = run.is_offer_locked(index)
 	var sold: bool = bool(offer.get("sold", false))
-	var border := _box(Color("fffbed"), Color(GOLD, 0.74) if locked else Color(category, 0.48))
-	border.border_width_left = 3
-	card.add_theme_stylebox_override("panel", border)
+	SHOP_PANEL_SKIN.apply(card, category, false, locked, sold)
+	var surface := card.get_theme_stylebox("panel").duplicate() as StyleBoxFlat
+	surface.content_margin_left = 0
+	surface.content_margin_right = 0
+	surface.content_margin_top = 0
+	surface.content_margin_bottom = 0
+	card.add_theme_stylebox_override("panel", surface)
 	card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	card.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	var body := _inside(card, 12)
-	body.add_theme_constant_override("separation", 5)
+	var body := _inside(card, 8)
+	body.add_theme_constant_override("separation", 4)
 	var name_row := HBoxContainer.new()
+	name_row.add_theme_constant_override("separation", 8)
 	body.add_child(name_row)
-	_add_icon(name_row, definition, 34)
+	var icon_well := PanelContainer.new()
+	icon_well.name = "OfferIconWell"
+	icon_well.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	icon_well.custom_minimum_size = Vector2(60, 60)
+	var icon_surface := _box(category.lerp(PANEL, 0.92), category.lerp(PANEL_LIGHT, 0.70), 3)
+	icon_surface.content_margin_left = 4
+	icon_surface.content_margin_right = 4
+	icon_surface.content_margin_top = 4
+	icon_surface.content_margin_bottom = 4
+	icon_surface.border_width_bottom = 2
+	icon_well.add_theme_stylebox_override("panel", icon_surface)
+	name_row.add_child(icon_well)
+	_add_icon(icon_well, definition, 48)
 	var names := VBoxContainer.new()
 	names.add_theme_constant_override("separation", 2)
 	names.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -1820,18 +1963,19 @@ func _offer_card(parent: Control, index: int) -> void:
 	title_row.add_theme_constant_override("separation", 6)
 	names.add_child(title_row)
 	var name_label := _label(definition.display_name, 18, BONE)
+	name_label.name = "OfferName"
 	name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	name_label.clip_text = true
 	name_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	_enable_tooltip(name_label, definition.description)
 	title_row.add_child(name_label)
-	var lock_marker := _label("已锁" if locked else "", 11, GOLD)
+	var lock_marker := _label("已锁" if locked else "", 14, GOLD)
 	lock_marker.name = "OfferLockMarker%d" % index
-	lock_marker.custom_minimum_size.x = 22
+	lock_marker.visible = locked
 	title_row.add_child(lock_marker)
-	var lock_button := _shop_button("已售" if sold else "解锁" if locked else "锁定", _toggle_offer_lock.bind(index, _shop_epoch, offer.duplicate(true), locked), "lock:%d" % index, Vector2(56, 24))
+	var lock_button := _shop_button("已售" if sold else "解锁" if locked else "锁定", _toggle_offer_lock.bind(index, _shop_epoch, offer.duplicate(true), locked), "lock:%d" % index, Vector2(58, 28))
 	lock_button.name = "OfferLock%d" % index
-	lock_button.add_theme_font_size_override("font_size", 12)
+	lock_button.add_theme_font_size_override("font_size", GameTypography.size_for(14))
 	lock_button.disabled = sold
 	lock_button.focus_mode = Control.FOCUS_NONE if sold else Control.FOCUS_ALL
 	lock_button.tooltip_text = "已售商品不能锁定。" if sold else "解锁后，下次刷新会替换此商品。" if locked else "锁定此商品，刷新和跨波保留；价格随波次调整，最多锁定%d件。" % RunState.SHOP_LOCK_CAP
@@ -1840,48 +1984,74 @@ func _offer_card(parent: Control, index: int) -> void:
 		if not lock_error.is_empty():
 			lock_button.tooltip_text += "\n" + lock_error
 	ButtonSkin.apply(lock_button, "primary" if locked else "quiet", true)
+	names.remove_child(title_row)
+	body.add_child(title_row)
+	body.move_child(title_row, 0)
 	title_row.add_child(lock_button)
 	var dimensions: Vector2i = definition.inventory_size
 	var offer_rank: int = int(offer.get("rank", 1)) if kind == "skill" else 1
-	names.add_child(_label("%s阶 · %s · 占格%d×%d" % [_rank_name(offer_rank), {"weapon": "法器", "rune": "符文", "relic": "遗物", "skill": "技能"}.get(kind, kind), dimensions.x, dimensions.y], 11, category))
-	var summary: String = _shop_description(definition) if kind != "skill" else ""
-	var description := _wrap(summary, 13, MUTED)
+	var rank_badge := _label("%s阶" % _rank_name(offer_rank), 14, category)
+	rank_badge.name = "OfferRank"
+	title_row.add_child(rank_badge)
+	title_row.move_child(rank_badge, 1)
+	var footprint := WORKBENCH_ART.make_footprint(dimensions, category)
+	footprint.name = "OfferFootprint"
+	footprint.tooltip_text = "占格%d×%d" % [dimensions.x, dimensions.y]
+	footprint.set_meta("dimensions", dimensions)
+	var footprint_row := HBoxContainer.new()
+	footprint_row.add_theme_constant_override("separation", 6)
+	names.add_child(footprint_row)
+	footprint_row.add_child(footprint)
+	var record := _shop_button("详情", _show_offer_record.bind(index, _shop_epoch, offer.duplicate(true)), "offer_record:%d" % index, Vector2(52, 28))
+	record.add_theme_font_size_override("font_size", GameTypography.size_for(14))
+	footprint_row.add_child(record)
+	var summary: String = "%s · %s" % [{"weapon": "法器", "rune": "符文", "relic": "遗物", "skill": "技能"}.get(kind, kind), _item_trait(kind, definition, offer_rank)] if kind != "skill" else "主动技能"
+	var description := _wrap(summary, 15, MUTED)
 	description.name = "OfferDescription"
 	description.max_lines_visible = 2
 	description.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	_enable_tooltip(description, definition.description)
-	description.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	body.add_child(description)
-	description.visible = kind != "skill"
+	names.add_child(description)
+	names.move_child(description, 0)
 	if kind == "weapon":
 		var projection: Dictionary = run.weapon_purchase_preview(index)
 		var has_placement: bool = bool(projection.get("has_projection", false))
 		var predicted_bonus: float = float(projection.get("resonance_bonus", 0.0))
-		var predicted: String = _weapon_stats_text(definition, 1, predicted_bonus) if has_placement else "已售出，不再预测落点。" if sold else "无完整空位，整理后更新共鸣预估。"
-		var stats := _wrap(predicted, 12, GOLD)
+		var predicted: String = _weapon_stats_text(definition, 1, predicted_bonus) if has_placement else "已售出" if sold else "背包无空位"
+		var stats := _wrap(predicted, 14, GOLD)
 		stats.name = "WeaponStats"
 		_enable_tooltip(stats, ("按购买时自动落点预计，共鸣 +%s。\n" % _rune_percent(predicted_bonus) if has_placement else "当前没有可用于购买预估的实际落点。\n") + _weapon_stats_note())
 		body.add_child(stats)
 	elif kind == "skill":
 		var projection: Dictionary = run.skill_purchase_preview(index)
-		var stats := _wrap(_active_skill_stats_text(projection.get("parameters", projection)), 13, category)
+		var stats := _wrap(_active_skill_stats_text(projection.get("parameters", projection)), 14, category)
 		stats.name = "SkillStats"
 		body.add_child(stats)
 	var price: int = int(offer.get("price", 0))
+	var breathing := VBoxContainer.new()
+	breathing.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	breathing.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	breathing.alignment = BoxContainer.ALIGNMENT_END
+	body.add_child(breathing)
+	var price_label := _label("%d 魂屑" % price, 15, GOLD)
+	price_label.name = "OfferPrice"
+	breathing.add_child(price_label)
 	var error: String = run.purchase_error(index)
 	var blocked: bool = not sold and not error.is_empty()
-	var buy_text: String = "已购买" if sold else "购买  %d 魂屑" % price
+	var buy_text: String = "已购买" if sold else "购买"
 	if blocked:
 		var reason: String = {
 			"魂屑不足。": "魂屑不足",
 			"背包空间不足。": "背包无空位",
 			"主动技能已达上限（2）。": "技能已满 2/2",
 		}.get(error, "暂不可购")
-		buy_text = "%s · %d魂屑" % [reason, price]
+		buy_text = reason
 	var buy := _shop_button(buy_text, _buy.bind(index), "buy:%d" % index, Vector2(0, 35))
-	buy.add_theme_font_size_override("font_size", 14)
+	buy.add_theme_font_size_override("font_size", GameTypography.size_for(15))
+	buy.clip_text = true
+	buy.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	ButtonSkin.apply(buy, "blocked" if blocked else "primary", true)
-	buy.tooltip_text = error
+	buy.tooltip_text = "购买自动找空位。\n" + error
 	if error == "魂屑不足。":
 		buy.tooltip_text += "还差%d魂屑。" % (price - run.gold)
 	elif error == "背包空间不足。":
@@ -1897,11 +2067,70 @@ func _offer_card(parent: Control, index: int) -> void:
 		actions.add_child(buy)
 		var compare := _shop_button("对照", _compare_relic.bind(index, _shop_epoch, offer.duplicate(true)), "compare:%d" % index, Vector2(54, 35))
 		compare.name = "CompareRelic%d" % index
-		compare.add_theme_font_size_override("font_size", 13)
+		compare.add_theme_font_size_override("font_size", GameTypography.size_for(13))
 		compare.tooltip_text = "查看当前与购入后的属性、生命和法器变化；不会购买。"
 		actions.add_child(compare)
 	else:
 		body.add_child(buy)
+
+
+func _show_offer_record(index: int, epoch: int, expected_offer: Dictionary) -> void:
+	if _screen != "shop" or _refresh_queued or not _overlay_mode.is_empty() or epoch != _shop_epoch:
+		return
+	if run == null or index < 0 or index >= run.offers.size() or run.offers[index] != expected_offer:
+		return
+	_show_item_record({"kind": expected_offer["kind"], "id": expected_offer["id"], "rank": expected_offer.get("rank", 1)}, false, epoch)
+
+
+func _show_owned_item_record(uid: int, epoch: int) -> void:
+	if _bp_guard(uid, epoch) and uid == _bag_selected_uid:
+		_show_item_record(run.backpack_item(uid), true, epoch)
+
+
+func _show_item_record(item: Dictionary, owned: bool, epoch: int) -> void:
+	var kind: String = str(item["kind"])
+	var definition: ContentDef = _definition(kind, str(item["id"]))
+	var rank: int = int(item.get("rank", 1))
+	_begin_overlay("item_record")
+	var body := _modal(definition.display_name + " · " + _rank_name(rank) + "阶", Vector2(680, 580))
+	body.name = "ItemRecord"
+	var heading := HBoxContainer.new()
+	heading.add_theme_constant_override("separation", 18)
+	body.add_child(heading)
+	_add_icon(heading, definition, 80)
+	heading.add_child(_label(_item_trait(kind, definition, rank), 20, CYAN))
+	var scroll := ScrollContainer.new()
+	scroll.name = "ItemRecordScroll"
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+	scroll.follow_focus = true
+	scroll.focus_mode = Control.FOCUS_ALL
+	scroll.gui_input.connect(_comparison_scroll_input.bind(scroll, epoch))
+	body.add_child(scroll)
+	var details: String = _backpack_effect_text(item) if owned else definition.description
+	if kind == "weapon" and owned:
+		details = _equipment_tooltip(item) + "\n\n" + _resonance_details(item)
+	elif kind == "weapon" and definition.return_delay > 0.0:
+		details += "\n\n" + _return_flight_tooltip(definition)
+	elif kind == "relic" and owned:
+		details += "\n\n" + _resonance_details(item)
+	elif kind == "rune":
+		details = _rune_rank_text(definition.id, rank)
+	elif kind == "skill":
+		details += "\n\n" + _active_skill_stats_text(run.active_skill_parameters(item))
+	var text := _wrap(details, 24, BONE)
+	text.name = "ItemRecordEffect"
+	scroll.add_child(text)
+	var close := _button("返回", _close_item_record.bind(epoch), Vector2(180, 42))
+	close.name = "CloseItemRecord"
+	_reading_footer(body, close)
+	_focus_later(close)
+
+
+func _close_item_record(epoch: int) -> void:
+	if _screen == "shop" and epoch == _shop_epoch and _overlay_mode == "item_record":
+		hide_pause()
 
 
 func _toggle_offer_lock(index: int, epoch: int, expected_offer: Dictionary, was_locked: bool) -> void:
@@ -2029,7 +2258,14 @@ func _build_relic_weapon_comparison(parent: Control, preview: Dictionary) -> voi
 	for change: Dictionary in preview["weapon_changes"]:
 		var slot: int = int(change["slot"])
 		var definition: ContentDef = GameCatalog.weapon(str(change["id"]))
-		var name_label := _comparison_cell(grid, "%02d  %s / %d枚" % [slot + 1, definition.display_name, int(change["shots"])], BONE, 220)
+		var identity := HBoxContainer.new()
+		identity.name = "ComparisonWeapon%dIdentity" % slot
+		identity.custom_minimum_size.x = 220
+		identity.add_theme_constant_override("separation", 8)
+		grid.add_child(identity)
+		_add_icon(identity, definition, 24)
+		var name_label := _wrap("%02d  %s / %d枚" % [slot + 1, definition.display_name, int(change["shots"])], 14, BONE)
+		identity.add_child(name_label)
 		_enable_tooltip(name_label, _equipment_tooltip(run.loadout[slot]))
 		var damage_delta: float = float(change["damage_after"]) - float(change["damage_before"])
 		var damage := _comparison_cell(grid, "%.1f → %.1f\n%s" % [float(change["damage_before"]), float(change["damage_after"]), _comparison_delta(damage_delta, "伤害", 1)], _comparison_change_color(damage_delta), 270)
@@ -2071,7 +2307,7 @@ func _close_relic_comparison(epoch: int) -> void:
 
 
 func _comparison_scroll_input(event: InputEvent, scroll: ScrollContainer, epoch: int) -> void:
-	if epoch != _shop_epoch or _overlay_mode not in ["relic_comparison", "rune_equip_comparison"] or not event is InputEventKey:
+	if epoch != _shop_epoch or _overlay_mode not in ["relic_comparison", "rune_equip_comparison", "item_record"] or not event is InputEventKey:
 		return
 	var key_event := event as InputEventKey
 	if not key_event.pressed:
@@ -2363,7 +2599,7 @@ func _show_controls(from_pause: bool) -> void:
 		grid.add_child(label)
 		var binding := _button("", _begin_control_capture.bind(action, epoch), Vector2(210, 34))
 		binding.name = "Bind_" + action
-		binding.add_theme_font_size_override("font_size", 16)
+		binding.add_theme_font_size_override("font_size", GameTypography.size_for(16))
 		binding.tooltip_text = "修改%s的键盘主键；方向键始终可用于移动。" % ControlBindings.action_label(action)
 		grid.add_child(binding)
 		_control_buttons[action] = binding
@@ -2724,7 +2960,8 @@ func _definition(kind: String, id: String) -> ContentDef:
 func _rune_guide() -> String:
 	if _selected_rune >= 0 and _selected_rune < run.rune_bag.size():
 		var definition: ContentDef = GameCatalog.rune(str(run.rune_bag[_selected_rune]["id"]))
-		return "已选%s %s阶：%s" % [definition.display_name, _rank_name(int(run.rune_bag[_selected_rune].get("rank", 1))), _rune_rank_text(definition.id, int(run.rune_bag[_selected_rune].get("rank", 1)))]
+		var rank: int = int(run.rune_bag[_selected_rune].get("rank", 1))
+		return "%s · %s" % [definition.display_name, _item_trait("rune", definition, rank)]
 	return ""
 
 
@@ -3034,7 +3271,7 @@ func _section_heading(parent: Control, text: String, color: Color = GOLD, font_s
 func _label(text: String, font_size: int = 18, color: Color = BONE) -> Label:
 	var label := Label.new()
 	label.text = text
-	label.add_theme_font_size_override("font_size", font_size)
+	label.add_theme_font_size_override("font_size", GameTypography.size_for(font_size))
 	label.add_theme_color_override("font_color", color)
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	return label
@@ -3051,6 +3288,7 @@ func _button(text: String, action: Callable, minimum: Vector2 = Vector2(0, 40)) 
 	var button := Button.new()
 	button.text = text
 	button.custom_minimum_size = minimum
+	button.add_theme_font_size_override("font_size", 24 if minimum.y >= 40.0 else 12)
 	button.focus_mode = Control.FOCUS_ALL
 	button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	button.pressed.connect(action)
@@ -3133,21 +3371,14 @@ func _slider_grabber(fill: Color) -> ImageTexture:
 	return ImageTexture.create_from_image(image)
 
 
-static func create_ui_font() -> SystemFont:
-	var font := SystemFont.new()
-	# Some macOS installations resolve PingFang SC to HK without simplified glyphs.
-	font.font_names = PackedStringArray([
-		"Hiragino Sans GB", "PingFang SC", "Heiti SC",
-		"Microsoft YaHei UI", "Microsoft YaHei", "DengXian", "SimHei", "SimSun",
-		"Noto Sans CJK SC", "Noto Sans SC", "Arial",
-	])
-	return font
+static func create_ui_font() -> Font:
+	return GameTypography.font()
 
 
 func _make_theme() -> Theme:
 	var theme := Theme.new()
 	theme.default_font = create_ui_font()
-	theme.default_font_size = 17
+	theme.default_font_size = 12
 	theme.set_color("font_color", "Label", BONE)
 	theme.set_color("font_color", "Button", BONE)
 	theme.set_color("font_hover_color", "Button", BONE)
@@ -3192,6 +3423,9 @@ func _add_icon(parent: Control, definition: ContentDef, size: int) -> void:
 	if texture == null:
 		return
 	var rect := TextureRect.new()
+	rect.name = "ContentIcon_%s_%s" % [definition.kind, definition.id]
+	rect.set_meta("content_kind", definition.kind)
+	rect.set_meta("content_id", definition.id)
 	rect.texture = texture
 	rect.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	rect.custom_minimum_size = Vector2(size, size)
@@ -3205,6 +3439,8 @@ func _set_button_icon(button: Button, definition: ContentDef) -> void:
 	var texture := _icon_texture(definition)
 	if texture != null:
 		button.icon = texture
+		button.set_meta("content_kind", definition.kind)
+		button.set_meta("content_id", definition.id)
 		button.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 		button.expand_icon = true
 		button.add_theme_constant_override("icon_max_width", 36)

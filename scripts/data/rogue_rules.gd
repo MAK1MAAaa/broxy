@@ -19,10 +19,10 @@ static func core(id: String) -> Dictionary:
 	match id:
 		"frostfire":
 			return {"id": id, "name": "霜火共鸣", "weapons": ["frost", "ember"], "always_grant": false,
-				"description": "幽焰优先追踪减速目标；直接命中时消耗减速，产生%d像素范围、%d%%本次伤害的次级爆发，不触发符文。免费补齐霜矛与幽焰，各一件；每局只选一个核心。" % [int(FROSTFIRE_RADIUS), int(FROSTFIRE_FACTOR * 100.0)]}
+				"description": "%s优先追踪减速目标；直接命中时消耗减速，产生%d像素范围、%d%%本次伤害的次级爆发，不触发符文。免费补齐%s与%s，各一件；每局只选一个核心。" % [GameCatalog.weapon("ember").display_name, int(FROSTFIRE_RADIUS), int(FROSTFIRE_FACTOR * 100.0), GameCatalog.weapon("frost").display_name, GameCatalog.weapon("ember").display_name]}
 		"bone_chorus":
 			return {"id": id, "name": "白骨齐鸣", "weapons": ["bone"], "always_grant": true,
-				"description": "每件骨针每第%d次攻击额外向两侧各发射一枚%d%%伤害骨针，沿用所装符文。赠送一件骨针，即使已持有；每局只选一个核心。" % [CHORUS_INTERVAL, int(CHORUS_FACTOR * 100.0)]}
+				"description": "每件%s每第%d次攻击额外向两侧各发射一枚%d%%伤害飞刃，沿用所装符文。赠送一件%s，即使已持有；每局只选一个核心。" % [GameCatalog.weapon("bone").display_name, CHORUS_INTERVAL, int(CHORUS_FACTOR * 100.0), GameCatalog.weapon("bone").display_name]}
 	return {}
 
 static func routes() -> Array[Dictionary]:

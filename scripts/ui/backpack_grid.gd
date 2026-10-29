@@ -67,6 +67,9 @@ var _input_device: String = "keyboard"
 var _native_preview_label: Label
 var _skill_keys: PackedStringArray = ["Q", "E"]
 
+func _ready() -> void:
+	_refresh_skill_badges()
+
 func set_skill_bindings(bindings: Dictionary) -> void:
 	_skill_keys = [ControlBindings.key_label(int(bindings.get("pulse", KEY_Q))), ControlBindings.key_label(int(bindings.get("skill_secondary", KEY_E)))]
 	_refresh_skill_badges()
@@ -91,6 +94,7 @@ func _refresh_skill_badges() -> void:
 			var badge := child.get_node_or_null("SkillKeyBadge") as Label
 			if badge != null:
 				badge.text = _skill_key(child.uid)
+				badge.size = Vector2(20, 16)
 
 func set_input_device(kind: String) -> void:
 	var next: String = "gamepad" if kind == "gamepad" else "keyboard"
@@ -295,7 +299,8 @@ func native_drag(uid: int, offset: Vector2) -> Variant:
 	_native_committed = false
 	var preview := Label.new()
 	preview.text = _native_preview_text(_items[uid])
-	preview.add_theme_font_size_override("font_size", 16)
+	preview.add_theme_font_override("font", GameTypography.font())
+	preview.add_theme_font_size_override("font_size", 12)
 	preview.add_theme_color_override("font_color", BONE)
 	_native_preview_label = preview
 	set_drag_preview(preview)
@@ -453,6 +458,8 @@ func _make_item(item: Dictionary) -> void:
 	artwork.focus_mode = Control.FOCUS_NONE
 	artwork.size = button.size
 	button.add_child(artwork)
+	button.focus_entered.connect(artwork.queue_redraw)
+	button.focus_exited.connect(artwork.queue_redraw)
 	var icon := TextureRect.new()
 	icon.name = "ItemIcon"
 	icon.texture = load(AdventureArt.path("res://assets/icons/%s.svg" % definition.icon))
@@ -469,6 +476,7 @@ func _make_item(item: Dictionary) -> void:
 	rank.name = "ItemRank"
 	rank.text = ["", "Ⅰ", "Ⅱ", "Ⅲ"][clampi(int(item.get("rank", 1)), 1, 3)]
 	rank.position = Vector2(5, 1)
+	rank.add_theme_font_override("font", GameTypography.font())
 	rank.add_theme_font_size_override("font_size", 12)
 	rank.add_theme_color_override("font_color", CYAN if int(item.get("rank", 1)) == 2 else Color("765093") if int(item.get("rank", 1)) == 3 else GOLD)
 	rank.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -480,16 +488,18 @@ func _make_item(item: Dictionary) -> void:
 		badge.clip_text = true
 		badge.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 		badge.position = Vector2(button.size.x - 24, 1)
-		badge.size = Vector2(20, 16)
 		badge.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-		badge.add_theme_font_size_override("font_size", 13)
+		badge.add_theme_font_override("font", GameTypography.font())
+		badge.add_theme_font_size_override("font_size", 12)
 		badge.add_theme_color_override("font_color", CYAN)
 		badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		button.add_child(badge)
+		badge.size = Vector2(20, 16)
 	if button.size.y > 60 or button.size.x > 70:
 		var label := Label.new()
 		label.text = definition.display_name
-		label.add_theme_font_size_override("font_size", 11)
+		label.add_theme_font_override("font", GameTypography.font())
+		label.add_theme_font_size_override("font_size", 12)
 		label.add_theme_color_override("font_color", BONE)
 		label.position = Vector2(40, 17) if button.size.y < 60 else Vector2(3, button.size.y - 19)
 		label.size = Vector2(button.size.x - label.position.x - 3, 18)
@@ -518,6 +528,7 @@ func _make_item(item: Dictionary) -> void:
 		link.name = "CandleLink"
 		link.text = "↑"
 		link.position = Vector2(button.size.x - 14, 24)
+		link.add_theme_font_override("font", GameTypography.font())
 		link.add_theme_font_size_override("font_size", 12)
 		link.add_theme_color_override("font_color", Color("356936"))
 		link.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -525,18 +536,20 @@ func _make_item(item: Dictionary) -> void:
 
 func _style_item(button: Button, item: Dictionary) -> void:
 	var definition: ContentDef = _definition(item)
-	for state: String in ["normal", "hover", "pressed", "focus"]:
+	for state: String in ["normal", "hover", "pressed", "hover_pressed"]:
 		var style := StyleBoxFlat.new()
 		style.bg_color = _material_color(str(item["kind"]))
-		if state == "pressed":
+		if state in ["pressed", "hover_pressed"]:
 			style.bg_color = style.bg_color.lightened(0.12)
 		elif state == "hover":
 			style.bg_color = style.bg_color.lightened(0.05)
-		style.border_color = CYAN if int(item["uid"]) == selected_uid or state == "focus" else definition.color.lerp(GOLD, 0.5)
-		style.set_border_width_all(2 if int(item["uid"]) == selected_uid or state == "focus" else 1)
+		style.border_color = CYAN if int(item["uid"]) == selected_uid else definition.color.lerp(GOLD, 0.5)
+		style.set_border_width_all(2 if int(item["uid"]) == selected_uid else 1)
 		style.set_corner_radius_all(0)
 		style.anti_aliasing = false
 		button.add_theme_stylebox_override(state, style)
+	var focus := StyleBoxEmpty.new()
+	button.add_theme_stylebox_override("focus", focus)
 
 func _refresh_selection() -> void:
 	for child: Node in get_children():
@@ -553,20 +566,27 @@ func _refresh_preview() -> void:
 		_preview.queue_redraw()
 
 func _draw() -> void:
+	draw_rect(Rect2(Vector2.ZERO, custom_minimum_size), Color("263c34"))
 	for y: int in int(_snapshot.get("max_height", 6)):
 		for x: int in int(_snapshot.get("width", 6)):
 			var active: bool = y < int(_snapshot.get("height", 4))
 			var rect := Rect2(Vector2(x, y) * CELL + Vector2.ONE, Vector2.ONE * (CELL - 2.0))
-			draw_rect(rect, Color("e7dabb") if active else Color("d3ddd6"))
-			draw_rect(rect, Color("a58654") if active else Color("acb8b0"), false, 1.0)
+			var cloth := Color("ddd0af") if (x + y) % 2 == 0 else Color("d9ccab")
+			draw_rect(rect, cloth if active else Color("748b7f"))
+			draw_rect(rect, Color("a69774") if active else Color("536d60"), false, 1.0)
+			draw_line(rect.position + Vector2.ONE, rect.position + Vector2(rect.size.x - 1, 1), Color("c3b594") if active else Color("657d70"), 2.0)
+			draw_line(rect.position + Vector2.ONE, rect.position + Vector2(1, rect.size.y - 1), Color("c3b594") if active else Color("657d70"), 1.0)
+			draw_line(rect.position + Vector2(1, rect.size.y - 2), rect.end - Vector2.ONE * 2.0, Color("eee3c7") if active else Color("91a393"), 1.0)
 			if active:
-				draw_line(rect.position + Vector2(4, 5), rect.position + Vector2(43, 5), Color("f7edcf"), 1.0)
-				draw_line(rect.position + Vector2(5, 43), rect.position + Vector2(43, 43), Color("b9aa86"), 1.0)
-				for stitch: int in 3:
-					var stitch_y: float = float(12 + stitch * 11)
-					draw_line(rect.position + Vector2(4, stitch_y), rect.position + Vector2(6, stitch_y + 3), Color("b29465"), 1.0)
-			if not active:
-				draw_line(rect.position + Vector2(16, 24), rect.position + Vector2(32, 24), Color("8c9b91"), 1.0)
+				for stitch_y: int in [14, 32]:
+					draw_line(rect.position + Vector2(5, stitch_y), rect.position + Vector2(7, stitch_y + 2), Color("c7b999"), 1.0)
+				draw_line(rect.position + Vector2(16, 40), rect.position + Vector2(27, 40), Color("d1c3a3"), 1.0)
+			else:
+				var center: Vector2 = rect.get_center().floor()
+				var lock_tint := Color("bac6af")
+				draw_rect(Rect2(center + Vector2(-5, -1), Vector2(10, 8)), lock_tint)
+				draw_polyline(PackedVector2Array([center + Vector2(-3, -1), center + Vector2(-3, -5), center + Vector2(3, -5), center + Vector2(3, -1)]), lock_tint, 2.0)
+				draw_rect(Rect2(center + Vector2(-1, 1), Vector2(2, 3)), Color("667e6e"))
 
 func draw_preview(canvas: Control) -> void:
 	for contact: Dictionary in _resonance_contacts:
@@ -693,13 +713,18 @@ func draw_item_material(canvas: Control, item: Dictionary) -> void:
 	var extent: Vector2 = canvas.size
 	var kind: String = str(item["kind"])
 	var tint: Color = _definition(item).color.lerp(GOLD, 0.65)
-	canvas.draw_rect(Rect2(Vector2(4, 4), Vector2(extent.x - 8, 8)), Color(1, 1, 1, 0.35))
-	canvas.draw_line(Vector2(4, extent.y - 5), Vector2(extent.x - 4, extent.y - 5), Color("adbea9"), 2.0)
+	canvas.draw_rect(Rect2(Vector2(3, 3), extent - Vector2.ONE * 6), Color(BONE, 0.10), false, 1.0)
+	canvas.draw_rect(Rect2(Vector2(4, 4), Vector2(extent.x - 8, 3)), Color(1, 1, 1, 0.38))
+	canvas.draw_line(Vector2(4, 4), Vector2(4, extent.y - 5), Color(1, 1, 1, 0.28), 1.0)
+	canvas.draw_line(Vector2(extent.x - 4, 11), Vector2(extent.x - 4, extent.y - 5), Color(BONE, 0.10), 1.0)
+	canvas.draw_rect(Rect2(Vector2(4, extent.y - 7), Vector2(extent.x - 8, 3)), Color(BONE, 0.10))
+	canvas.draw_line(Vector2(4, extent.y - 4), Vector2(extent.x - 4, extent.y - 4), Color("afbc9f"), 1.0)
 	if kind == "weapon":
 		canvas.draw_line(Vector2(5, 16), Vector2(extent.x - 5, 16), Color(tint, 0.22), 3.0)
 	elif kind == "relic":
 		for row: int in range(20, int(extent.y) - 8, 10):
 			canvas.draw_rect(Rect2(Vector2(5, row), Vector2(2, 3)), Color(tint, 0.35))
+			canvas.draw_rect(Rect2(Vector2(extent.x - 7, row), Vector2(2, 3)), Color(tint, 0.25))
 	elif kind == "skill":
 		canvas.draw_rect(Rect2(Vector2(5, 17), extent - Vector2(10, 22)), Color(CYAN, 0.28), false, 1.0)
 		for offset: int in 3:
@@ -708,7 +733,8 @@ func draw_item_material(canvas: Control, item: Dictionary) -> void:
 	else:
 		canvas.draw_rect(Rect2(Vector2(6, 6), extent - Vector2.ONE * 12), Color(PURPLE, 0.16), false, 1.0)
 	for corner: Vector2 in [Vector2(4, 4), Vector2(extent.x - 6, 4), Vector2(4, extent.y - 6), extent - Vector2.ONE * 6]:
-		canvas.draw_rect(Rect2(corner, Vector2(2, 2)), Color(GOLD, 0.65))
+		canvas.draw_rect(Rect2(corner, Vector2(2, 2)), Color("9c8051"))
+		canvas.draw_rect(Rect2(corner, Vector2(2, 1)), Color("e4cd92"))
 	var rank: int = clampi(int(item.get("rank", 1)), 1, 3)
 	var rank_tint: Color = CYAN if rank == 2 else PURPLE if rank == 3 else GOLD
 	for mark: int in rank:
@@ -721,6 +747,22 @@ func draw_item_material(canvas: Control, item: Dictionary) -> void:
 		for mark: int in clampi(int(rune.get("rank", 1)), 1, 3):
 			var mark_x: float = extent.x - 17 + float(mark * 4)
 			canvas.draw_rect(Rect2(Vector2(mark_x, 21), Vector2(2, 1)), PURPLE)
+	var button := canvas.get_parent() as Button
+	if button != null and button.has_focus():
+		_draw_item_focus(canvas)
+
+func _draw_item_focus(canvas: Control) -> void:
+	var extent: Vector2 = canvas.size
+	var focus_tint := Color("edbc65")
+	for corner: Vector2 in [Vector2.ZERO, Vector2(extent.x, 0), Vector2(0, extent.y), extent]:
+		var left: bool = corner.x == 0.0
+		var top: bool = corner.y == 0.0
+		var horizontal := Rect2(corner + Vector2(0 if left else -7, 0 if top else -2), Vector2(7, 2))
+		var vertical := Rect2(corner + Vector2(0 if left else -2, 0 if top else -7), Vector2(2, 7))
+		canvas.draw_rect(horizontal.grow(1.0).intersection(Rect2(Vector2.ZERO, extent)), BONE)
+		canvas.draw_rect(vertical.grow(1.0).intersection(Rect2(Vector2.ZERO, extent)), BONE)
+		canvas.draw_rect(horizontal, focus_tint)
+		canvas.draw_rect(vertical, focus_tint)
 
 static func _material_color(kind: String) -> Color:
 	match kind:
