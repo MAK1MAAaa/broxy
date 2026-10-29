@@ -6,6 +6,16 @@ const LIMIT: int = 2
 const MAX_RANK: int = 3
 
 static func parameters(id: String, rank: int, stats: Dictionary) -> Dictionary:
+	var result: Dictionary = _parameters(id, rank, stats)
+	var hero: HeroDef = HeroCatalog.rear_for_skill(id)
+	if hero != null and not result.is_empty():
+		result["skill_name"] = result["name"]
+		result["name"] = hero.display_name
+		result["hero_id"] = hero.id
+		result["rear_bonuses"] = HeroCatalog.rear_bonuses(id, rank)
+	return result
+
+static func _parameters(id: String, rank: int, stats: Dictionary) -> Dictionary:
 	var tier: int = clampi(rank, 1, MAX_RANK)
 	var index: int = tier - 1
 	var multiplier: float = maxf(0.0, _stat(stats, "damage", 1.0))

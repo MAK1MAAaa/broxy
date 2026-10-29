@@ -123,15 +123,19 @@ func _test_goods() -> void:
 		_check(card != null and _inside_canvas(card), "Each real offer has a visible bounded card")
 		if card == null:
 			continue
-		var well := card.find_child("OfferIconWell", true, false) as Control
-		var icons: Array[Node] = well.find_children("*", "TextureRect", true, false) if well != null else []
-		var icon: TextureRect = icons[0] as TextureRect if not icons.is_empty() else null
-		_check(well != null and icon != null and icon.texture != null and icon.size.x >= 48.0 and icon.size.y >= 48.0, "An offer keeps a readable large item icon")
-		var footprint := card.find_child("OfferFootprint", true, false) as Control
 		var offer: Dictionary = _state.offers[index]
+		var definition: ContentDef = BackpackInventory.definition(str(offer["kind"]), str(offer["id"]))
+		var icon := card.find_child("ContentIcon_%s_%s" % [definition.kind, definition.id], true, false) as TextureRect
+		var expected_art: String = AdventureArt.path("res://assets/icons/%s.svg" % definition.icon)
+		_check(icon != null and icon.texture != null and icon.texture.resource_path == expected_art and icon.size.x >= 48.0 and icon.size.y >= 48.0 and card.get_global_rect().encloses(icon.get_global_rect()), "Every offer keeps its actual catalog art large and inside the card")
+		if definition.kind == "skill":
+			_check(str(card.get_meta("hero_id", "")) == HeroCatalog.rear_for_skill(definition.id).id and icon != null and icon.texture.resource_path == HeroCatalog.rear_for_skill(definition.id).idle_path, "A rear offer presents its real character identity directly")
+		else:
+			var well := card.find_child("OfferIconWell", true, false) as Control
+			_check(well != null and icon != null and well.get_global_rect().encloses(icon.get_global_rect()), "Other item categories retain their dedicated icon well")
+		var footprint := card.find_child("OfferFootprint", true, false) as Control
 		var price := card.find_child("OfferPrice", true, false) as Label
 		_check(price != null and price.is_visible_in_tree() and price.text == "%d 魂屑" % int(offer["price"]) and card.get_global_rect().encloses(price.get_global_rect()), "Offer prices stay complete and separate from purchase availability text")
-		var definition: ContentDef = BackpackInventory.definition(str(offer["kind"]), str(offer["id"]))
 		_check(footprint != null and footprint.get_meta("dimensions", Vector2i.ZERO) == definition.inventory_size and card.get_global_rect().encloses(footprint.get_global_rect()), "The compact footprint represents the actual offered item's dimensions")
 		for action: String in ["lock", "buy", "offer_record"]:
 			var button: Button = _ui._shop_focus_button("%s:%d" % [action, index])
@@ -198,7 +202,8 @@ func _test_offer_records() -> void:
 				_check(text.text.contains(_ui._rune_rank_text(definition.id, int(offer.get("rank", 1)))), "A rune record describes the actual offered rank")
 			elif kind == "skill":
 				var parameters: Dictionary = _state.active_skill_parameters(offer)
-				_check(text.text.contains(definition.description) and text.text.contains("范围 " + _number(float(parameters["radius"]))) and text.text.contains("冷却 " + _number(float(parameters["cooldown"]))), "A skill record includes its current projected radius and cooldown")
+				var title := _control("ItemRecord").get_child(0) as Label
+				_check(title != null and title.text.contains(HeroCatalog.rear_for_skill(definition.id).display_name) and text.text.contains(str(parameters["skill_name"])) and text.text.contains(GameUI._rear_bonuses_text(definition.id, int(offer.get("rank", 1)))) and text.text.contains("范围 " + _number(float(parameters["radius"]))) and text.text.contains("冷却 " + _number(float(parameters["cooldown"]))), "A rear record identifies its character, skill, real rank attributes, projected radius and cooldown")
 		_check(_state_signature() == before, "Opening an offered item record never changes inventory, balance or random state")
 		await _close_record(source)
 		_check(_state_signature() == before, "Returning from an offered item record remains a read-only operation")

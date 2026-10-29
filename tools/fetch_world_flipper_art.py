@@ -14,6 +14,7 @@ from world_flipper_cover import cover_assets
 from world_flipper_enemies import enemy_assets
 from world_flipper_maps import map_assets
 from world_flipper_items import item_assets
+from world_flipper_heroes import hero_assets
 
 ROOT = Path(__file__).resolve().parents[1]
 CACHE = ROOT / ".tools/worldflipper/source"
@@ -24,6 +25,7 @@ EXTRA_REGISTRIES = (
     "world_flipper_cover_sources.json",
     "world_flipper_maps_sources.json",
     "world_flipper_items_sources.json",
+    "world_flipper_heroes.json",
 )
 CELL = (96, 96)
 MAX_DOWNLOAD_BYTES = 8 * 1024 * 1024
@@ -186,9 +188,10 @@ def main() -> None:
     cover = cover_assets(sources, paths, OUTPUT)
     maps = map_assets(sources, paths, OUTPUT)
     items = item_assets(sources, paths, OUTPUT)
-    assets = player + weapons + enemies + cover + maps + items + projectile_assets(weapons)
+    heroes = hero_assets(sources, paths, OUTPUT)
+    assets = player + weapons + enemies + cover + maps + items + projectile_assets(weapons) + heroes
     manifest = {
-        "revision": "world-flipper-fan-04",
+        "revision": "world-flipper-fan-05",
         "original_copyright": "© Cygames, Inc. / Citail Inc.",
         "license_status": "Original game assets; no open asset license found. Unofficial fan-work use is not a claim of authorization.",
         "copyright_source": "https://worldflipper.jp/copyright/",
@@ -197,7 +200,7 @@ def main() -> None:
         "sources": sources,
         "references_cached_only": registry["references"],
         "assets": assets,
-        "gameplay": "Alk remains the only hero; recruitment is deferred. Arena IDs, terrain zones and multipliers remain stable. Authored low props block ground movement, dash and knockback; flying projectiles pass over them.",
+        "gameplay": "Alk and three independently normalized original hero sets use the current game's party and skill rules rather than the original game's statistics. Arena IDs, terrain zones and multipliers remain stable. Authored low props block ground movement, dash and knockback; flying projectiles pass over them.",
     }
     (OUTPUT / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
     print(json.dumps({"assets": len(assets), "preview": str(preview(frames, icons)), "offline": args.offline}, ensure_ascii=False))

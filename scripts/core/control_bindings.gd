@@ -2,7 +2,7 @@ class_name ControlBindings
 extends RefCounted
 ## Isolated gameplay actions; menu bindings remain owned by Godot's ui_* actions.
 
-const ACTIONS: Array[String] = ["move_up", "move_down", "move_left", "move_right", "dash", "pulse", "skill_secondary"]
+const ACTIONS: Array[String] = ["move_up", "move_down", "move_left", "move_right", "dash", "pulse", "skill_secondary", "hero_skill"]
 const LEGACY_ACTIONS: Array[String] = ["move_up", "move_down", "move_left", "move_right", "dash", "pulse"]
 const DEADZONE: float = 0.20
 const PREFIX: String = "broxy_"
@@ -10,7 +10,7 @@ const PREFIX: String = "broxy_"
 static var _installed: Dictionary = {}
 
 static func defaults() -> Dictionary:
-	return {"move_up": KEY_W, "move_down": KEY_S, "move_left": KEY_A, "move_right": KEY_D, "dash": KEY_SPACE, "pulse": KEY_Q, "skill_secondary": KEY_E}
+	return {"move_up": KEY_W, "move_down": KEY_S, "move_left": KEY_A, "move_right": KEY_D, "dash": KEY_SPACE, "pulse": KEY_Q, "skill_secondary": KEY_E, "hero_skill": KEY_R}
 
 static func normalize(value: Variant) -> Dictionary:
 	if not value is Dictionary:
@@ -31,6 +31,15 @@ static func normalize(value: Variant) -> Dictionary:
 			if not occupied.has(candidate):
 				result["skill_secondary"] = candidate
 				break
+	occupied[result["skill_secondary"]] = true
+	var hero_key: Variant = value.get("hero_skill", KEY_NONE)
+	if hero_key is int and _key_error(int(hero_key)).is_empty() and not occupied.has(hero_key):
+		result["hero_skill"] = int(hero_key)
+	else:
+		for candidate: int in [KEY_R, KEY_F, KEY_C, KEY_V, KEY_1, KEY_2, KEY_3, KEY_4]:
+			if not occupied.has(candidate):
+				result["hero_skill"] = candidate
+				break
 	return result
 
 static func binding_error(bindings: Dictionary, action: String, keycode: int) -> String:
@@ -49,7 +58,7 @@ static func key_label(keycode: int) -> String:
 	return "空格" if keycode == KEY_SPACE else OS.get_keycode_string(keycode)
 
 static func action_label(id: String) -> String:
-	return str({"move_up": "向上移动", "move_down": "向下移动", "move_left": "向左移动", "move_right": "向右移动", "dash": "冲刺", "pulse": "技能1", "skill_secondary": "技能2", "pause": "暂停"}.get(id, id))
+	return str({"move_up": "向上移动", "move_down": "向下移动", "move_left": "向左移动", "move_right": "向右移动", "dash": "冲刺", "pulse": "后排1", "skill_secondary": "后排2", "hero_skill": "主角技能", "pause": "暂停"}.get(id, id))
 
 static func install(bindings: Dictionary) -> void:
 	_installed = normalize(bindings)
@@ -73,6 +82,7 @@ static func install(bindings: Dictionary) -> void:
 	_add_button(PREFIX + "dash", JOY_BUTTON_A)
 	_add_button(PREFIX + "pulse", JOY_BUTTON_X)
 	_add_button(PREFIX + "skill_secondary", JOY_BUTTON_Y)
+	_add_button(PREFIX + "hero_skill", JOY_BUTTON_RIGHT_SHOULDER)
 	_add_button(PREFIX + "pause", JOY_BUTTON_START)
 
 static func ensure_installed() -> void:
@@ -102,7 +112,7 @@ static func pressed(event: InputEvent, action: String) -> bool:
 	if event is InputEventJoypadButton:
 		if not event.pressed:
 			return false
-		var button: int = int({"move_up": JOY_BUTTON_DPAD_UP, "move_down": JOY_BUTTON_DPAD_DOWN, "move_left": JOY_BUTTON_DPAD_LEFT, "move_right": JOY_BUTTON_DPAD_RIGHT, "dash": JOY_BUTTON_A, "pulse": JOY_BUTTON_X, "skill_secondary": JOY_BUTTON_Y, "pause": JOY_BUTTON_START}.get(action, -1))
+		var button: int = int({"move_up": JOY_BUTTON_DPAD_UP, "move_down": JOY_BUTTON_DPAD_DOWN, "move_left": JOY_BUTTON_DPAD_LEFT, "move_right": JOY_BUTTON_DPAD_RIGHT, "dash": JOY_BUTTON_A, "pulse": JOY_BUTTON_X, "skill_secondary": JOY_BUTTON_Y, "hero_skill": JOY_BUTTON_RIGHT_SHOULDER, "pause": JOY_BUTTON_START}.get(action, -1))
 		return event.button_index == button
 	return false
 

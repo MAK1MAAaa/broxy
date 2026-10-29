@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="HeroDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/hero_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "clarisse"
+display_name = "克拉莉丝"
+starter_weapon = "ember"
+idle_path = "res://assets/worldflipper/characters/clarisse/idle.png"
+atlas_path = "res://assets/worldflipper/characters/clarisse/atlas.png"
+portrait_path = "res://assets/worldflipper/portraits/clarisse.png"
+frame_size = 128
+foot_anchor = Vector2(64, 125)
+base_bonuses = {"damage": 0.06}
+main_skill = {"id": "hero_clarisse", "name": "炼金爆破", "shape": "circle", "origin_mode": "nearest", "radius": 140.0, "damage": 60.0, "cooldown": 12.0}

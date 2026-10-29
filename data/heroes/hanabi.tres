@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="HeroDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/hero_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "hanabi"
+display_name = "花火"
+starter_weapon = "scatter"
+idle_path = "res://assets/worldflipper/characters/hanabi/idle.png"
+atlas_path = "res://assets/worldflipper/characters/hanabi/atlas.png"
+portrait_path = "res://assets/worldflipper/portraits/hanabi.png"
+frame_size = 128
+foot_anchor = Vector2(64, 125)
+base_bonuses = {"max_health": 8.0}
+main_skill = {"id": "hero_hanabi", "name": "忍法花火", "shape": "line", "origin_mode": "player", "radius": 280.0, "damage": 45.0, "cooldown": 9.0, "width": 70.0}

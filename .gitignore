@@ -166,3 +166,8 @@ reports/world-flipper-catalog/*.png
 reports/world-flipper-catalog/*.import
 reports/world-flipper-catalog/*-raw.json
 reports/world-flipper-catalog/*/
+reports/world-flipper-party/*.log
+reports/world-flipper-party/*.png
+reports/world-flipper-party/*.import
+reports/world-flipper-party/*-raw.json
+reports/world-flipper-party/*/

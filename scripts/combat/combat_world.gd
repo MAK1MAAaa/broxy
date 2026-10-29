@@ -63,6 +63,8 @@ class DashAfterimage:
 var _dash_pending: bool = false
 var _pulse_pending: bool = false
 var _secondary_skill_pending: bool = false
+var _hero_skill_pending: bool = false
+var _hero_pending_id: String = ""
 var _pulse_pending_uid: int = -1
 var _secondary_pending_uid: int = -1
 var _pulse_remaining: float = 0.0
@@ -171,7 +173,7 @@ func _ready() -> void:
 	seal_texture = load(AdventureArt.path("res://assets/fx/seal.svg"))
 	for id: String in ["player", "chaser", "rusher", "tank", "caster", "boss"]:
 		textures[id] = load(AdventureArt.path("res://assets/sprites/%s.svg" % id))
-	_player_atlas = load(WorldFlipperPlayerArt.ATLAS_PATH) as Texture2D
+	_load_hero_art()
 	for definition: ContentDef in GameCatalog.weapons():
 		textures[definition.id] = load(AdventureArt.path("res://assets/icons/%s.svg" % definition.icon))
 	_update_camera()
@@ -199,6 +201,8 @@ func begin(state: RunState) -> void:
 	_arena_color = Color(str(arena["preview_color"])) if _arena_id != "reliquary" else Color(0.78, 0.67, 0.50)
 	sim = CombatSim.new()
 	sim.begin(state)
+	if is_node_ready():
+		_load_hero_art()
 	_arena_obstacles = sim.obstacles.snapshot()
 	sim.ended.connect(_on_ended)
 	sim.shot_fired.connect(func() -> void: sound.play("shoot", -24.0))
@@ -212,6 +216,7 @@ func begin(state: RunState) -> void:
 	sim.dash_evaded.connect(_on_dash_evaded)
 	sim.pulse_cast.connect(_on_pulse_cast)
 	sim.active_skill_cast.connect(_on_active_skill_cast)
+	sim.hero_skill_cast.connect(_on_hero_skill_cast)
 	_reset_feedback()
 	active = true
 	_last_kills = state.kills
@@ -267,6 +272,7 @@ func _physics_process(delta: float) -> void:
 	if autopilot:
 		movement = BotPolicy.movement(sim)
 	var dash_pressed: bool = _dash_pending and not stress_mode and not autopilot
+	var hero_pressed: bool = _hero_skill_pending and not stress_mode and not autopilot and _hero_pending_id == sim.run.hero_id
 	var skill_requests: Array[Dictionary] = []
 	if not stress_mode and not autopilot:
 		if _pulse_pending:
@@ -274,7 +280,7 @@ func _physics_process(delta: float) -> void:
 		if _secondary_skill_pending:
 			skill_requests.append({"slot": 1, "uid": _secondary_pending_uid})
 	clear_pending_actions()
-	sim.step(delta, movement, dash_pressed, false, skill_requests)
+	sim.step(delta, movement, dash_pressed, false, skill_requests, hero_pressed)
 	_record_dash_motion(delta)
 	if stress_mode:
 		_maintain_stress()
@@ -304,11 +310,24 @@ func clear_pending_actions() -> void:
 	_dash_pending = false
 	_pulse_pending = false
 	_secondary_skill_pending = false
+	_hero_skill_pending = false
+	_hero_pending_id = ""
 	_pulse_pending_uid = -1
 	_secondary_pending_uid = -1
 
 func request_pulse() -> bool:
 	return request_skill(0)
+
+func request_hero_skill() -> bool:
+	if not active or sim == null or sim.complete or stress_mode or autopilot or _hero_skill_pending:
+		return false
+	if (is_inside_tree() and get_tree().paused) or sim.run == null or sim.run.health <= 0.0:
+		return false
+	if not bool(sim.hero_skill_snapshot().get("ready", false)):
+		return false
+	_hero_skill_pending = true
+	_hero_pending_id = sim.run.hero_id
+	return true
 
 func request_skill(slot: int) -> bool:
 	if slot < 0 or slot >= ActiveSkillRules.LIMIT:
@@ -342,6 +361,17 @@ func _on_active_skill_cast(id: String, uid: int, origin: Vector2, direction: Vec
 	if sound != null:
 		sound.play_cue("pulse_hit" if affected > 0 else "pulse", -22.0, "active_skill:%d" % uid)
 	hud_changed.emit(hud_snapshot())
+
+func _on_hero_skill_cast(hero_id: String, parameters: Dictionary, origin: Vector2, direction: Vector2, affected: int) -> void:
+	if not active or sim == null or sim.complete:
+		return
+	_active_skill_painter.add_hero_cast(parameters, origin, direction, bool(settings.get("flash", true)))
+	if affected > 0:
+		_shake = maxf(_shake, 1.8)
+	if sound != null:
+		sound.play_cue("pulse_hit" if affected > 0 else "pulse", -19.0, "hero_skill:" + hero_id)
+	hud_changed.emit(hud_snapshot())
+	queue_redraw()
 
 func pulse_feedback_snapshot() -> Dictionary:
 	return {
@@ -992,11 +1022,18 @@ func _player_flip_h() -> bool:
 
 
 func _draw_player_texture(frame_index: int, bob: float, tint: Color) -> void:
-	var target := Rect2(Vector2(-34, -50 + bob), Vector2(68, 68))
+	var hero: HeroDef = HeroCatalog.definition(sim.run.hero_id if sim != null and sim.run != null else "alk")
+	var scale_factor: float = 68.0 / 96.0
+	var target := Rect2(Vector2(-hero.foot_anchor.x * scale_factor, 15.875 - hero.foot_anchor.y * scale_factor + bob), Vector2.ONE * hero.frame_size * scale_factor)
 	if frame_index > 0 and _player_atlas != null:
-		draw_texture_rect_region(_player_atlas, target, WorldFlipperPlayerArt.frame_rect(frame_index), tint)
+		draw_texture_rect_region(_player_atlas, target, WorldFlipperPlayerArt.frame_rect(frame_index, hero.frame_size), tint)
 	else:
 		draw_texture_rect(textures["player"], target, false, tint)
+
+func _load_hero_art() -> void:
+	var hero: HeroDef = HeroCatalog.definition(sim.run.hero_id if sim != null and sim.run != null else "alk")
+	textures["player"] = load(hero.idle_path) as Texture2D
+	_player_atlas = load(hero.atlas_path) as Texture2D
 
 
 func _draw_player() -> void:

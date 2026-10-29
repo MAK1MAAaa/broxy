@@ -101,6 +101,7 @@ var _toast: Label
 var _toast_timer: Timer
 var _screen := "title"
 var _starter := "bone"
+var _hero_id := "alk"
 var _arena_id := "reliquary"
 var _selected_rune := -1
 var _refresh_queued := false
@@ -208,6 +209,7 @@ func _refresh_input_prompts() -> void:
 	if _screen == "hud" and not _hud.is_empty() and not _hud_skill_snapshot.is_empty():
 		_update_dash_hud(_hud_skill_snapshot)
 		_update_pulse_hud(_hud_skill_snapshot)
+		_update_hero_hud(_hud_skill_snapshot)
 	if is_instance_valid(_bag_grid):
 		_bag_grid.set_skill_bindings(_controls)
 		_bag_grid.set_input_device(_input_kind)
@@ -227,7 +229,7 @@ func _refresh_input_prompts() -> void:
 			if slot_index >= 0:
 				var action: String = "pulse" if slot_index == 0 else "skill_secondary"
 				var input_key: String = ("X" if slot_index == 0 else "Y") if _input_kind == "gamepad" else ControlBindings.key_label(int(_controls[action]))
-				skill_slot.text = "技能%d · %s" % [slot_index + 1, input_key]
+				skill_slot.text = "后排%d · %s" % [slot_index + 1, input_key]
 	_refresh_reading_guides()
 
 
@@ -342,8 +344,7 @@ func set_progress(starters: Array[String]) -> void:
 	for id: String in ["frost", "scatter"]:
 		if starters.has(id):
 			_unlocked_starters.append(id)
-	if not _unlocked_starters.has(_starter):
-		_starter = "bone"
+	_starter = HeroCatalog.definition(_hero_id).starter_weapon
 
 
 func show_title(best: Dictionary) -> void:
@@ -369,32 +370,55 @@ func show_title(best: Dictionary) -> void:
 	var start_body := _inside(start_card, 12)
 	start_body.add_theme_constant_override("separation", 6)
 	var starters := GridContainer.new()
-	starters.name = "StarterChoices"
+	starters.name = "CharacterChoices"
 	starters.columns = 2
 	starters.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	starters.add_theme_constant_override("h_separation", 12)
 	starters.add_theme_constant_override("v_separation", 8)
 	start_body.add_child(starters)
-	for id: String in ["bone", "ember", "frost", "scatter"]:
-		var definition: ContentDef = GameCatalog.weapon(id)
-		var option := VBoxContainer.new()
-		option.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		option.add_theme_constant_override("separation", 4)
-		starters.add_child(option)
-		var card := _button(definition.display_name, _select_starter.bind(id), Vector2(0, 58))
-		card.name = "Starter_" + id
+	for id: String in HeroCatalog.IDS:
+		var hero: HeroDef = HeroCatalog.definition(id)
+		var definition: ContentDef = GameCatalog.weapon(hero.starter_weapon)
+		var card := _button("", _select_hero.bind(id), Vector2(0, 76))
+		card.name = "Character_" + id
 		card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		card.toggle_mode = true
-		card.disabled = not _unlocked_starters.has(id)
-		card.focus_mode = Control.FOCUS_NONE if card.disabled else Control.FOCUS_ALL
-		card.button_pressed = _starter == id
-		card.add_theme_font_size_override("font_size", GameTypography.size_for(17))
+		card.button_pressed = _hero_id == id
+		card.set_meta("hero_id", id)
 		ButtonSkin.apply(card, "choice")
-		_set_button_icon(card, definition)
-		option.add_child(card)
+		starters.add_child(card)
+		var inset := MarginContainer.new()
+		inset.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		_margin(inset, 10, 4)
+		inset.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		card.add_child(inset)
+		var identity := HBoxContainer.new()
+		identity.add_theme_constant_override("separation", 8)
+		identity.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		inset.add_child(identity)
+		_add_hero_icon(identity, hero, 56)
+		var names := VBoxContainer.new()
+		names.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		names.alignment = BoxContainer.ALIGNMENT_CENTER
+		names.add_theme_constant_override("separation", 4)
+		names.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		identity.add_child(names)
+		var name_label := _label(hero.display_name, 20, BONE)
+		name_label.name = "CharacterName_" + id
+		names.add_child(name_label)
+		var weapon := HBoxContainer.new()
+		weapon.add_theme_constant_override("separation", 4)
+		weapon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		names.add_child(weapon)
+		_add_icon(weapon, definition, 20)
+		var weapon_name := _wrap(definition.display_name, 14, GOLD)
+		weapon_name.name = "CharacterWeapon_" + id
+		weapon_name.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		weapon.add_child(weapon_name)
 		_add_title_choice_mark(card)
 	_build_arena_selection(left)
 	var start := _button("进入试炼", _start, Vector2(0, 50))
+	start.name = "StartTrial"
 	_accent(start)
 	left.add_child(start)
 	_focus_later(start)
@@ -411,8 +435,58 @@ func show_title(best: Dictionary) -> void:
 	var footer := HBoxContainer.new()
 	footer.add_theme_constant_override("separation", 12)
 	shell.add_child(footer)
-	footer.add_child(_button("设置", _show_settings.bind(false), Vector2(120, 40)))
-	footer.add_child(_button("退出游戏", _quit, Vector2(140, 40)))
+	var settings := _button("设置", _show_settings.bind(false), Vector2(120, 40))
+	settings.name = "TitleSettings"
+	footer.add_child(settings)
+	var quit := _button("退出游戏", _quit, Vector2(140, 40))
+	quit.name = "TitleQuit"
+	footer.add_child(quit)
+	_wire_title_focus(start, settings, quit)
+
+
+func selected_hero() -> String:
+	return _hero_id
+
+
+func _select_hero(id: String) -> void:
+	if _screen == "title":
+		set_selected_hero(id)
+
+
+func set_selected_hero(id: String) -> void:
+	if id not in HeroCatalog.IDS or not _overlay_mode.is_empty():
+		return
+	_hero_id = id
+	_starter = HeroCatalog.definition(id).starter_weapon
+	if _screen == "title" and _page != null:
+		_refresh_title.call_deferred()
+
+
+func _wire_title_focus(start: Button, settings: Button, quit: Button) -> void:
+	var characters: Array[Button] = []
+	var arenas: Array[Button] = []
+	for id: String in HeroCatalog.IDS:
+		characters.append(_page.find_child("Character_" + id, true, false) as Button)
+	for id: String in ArenaCatalog.IDS:
+		arenas.append(_page.find_child("Arena_" + id, true, false) as Button)
+	for index: int in characters.size():
+		var card: Button = characters[index]
+		card.focus_neighbor_left = card.get_path_to(characters[index - 1] if index % 2 == 1 else card)
+		card.focus_neighbor_right = card.get_path_to(characters[index + 1] if index % 2 == 0 else card)
+		card.focus_neighbor_top = card.get_path_to(characters[index - 2] if index >= 2 else card)
+		card.focus_neighbor_bottom = card.get_path_to(characters[index + 2] if index < 2 else arenas[index - 2])
+	for index: int in arenas.size():
+		var card: Button = arenas[index]
+		card.focus_neighbor_left = card.get_path_to(arenas[index - 1] if index % 2 == 1 else card)
+		card.focus_neighbor_right = card.get_path_to(arenas[index + 1] if index % 2 == 0 else card)
+		card.focus_neighbor_top = card.get_path_to(arenas[index - 2] if index >= 2 else characters[index + 2])
+		card.focus_neighbor_bottom = card.get_path_to(arenas[index + 2] if index < 2 else start)
+	start.focus_neighbor_top = start.get_path_to(arenas[2])
+	start.focus_neighbor_bottom = start.get_path_to(settings)
+	settings.focus_neighbor_top = settings.get_path_to(start)
+	settings.focus_neighbor_right = settings.get_path_to(quit)
+	quit.focus_neighbor_top = quit.get_path_to(start)
+	quit.focus_neighbor_left = quit.get_path_to(settings)
 
 
 func selected_arena() -> String:
@@ -622,6 +696,7 @@ func show_hud() -> void:
 	bottom_row.add_child(active_slots)
 	_add_active_skill_slot(active_slots, "pulse", "Pulse")
 	_add_active_skill_slot(active_slots, "secondary", "Secondary")
+	_add_active_skill_slot(active_slots, "hero", "Hero", GOLD)
 
 
 
@@ -629,7 +704,7 @@ func update_hud(snapshot: Dictionary) -> void:
 	if _screen != "hud" or _hud.is_empty():
 		return
 	_hud_skill_snapshot = {"health": snapshot.get("health", 0.0), "benchmark": snapshot.get("benchmark", false)}
-	for key: String in ["dash", "skills"]:
+	for key: String in ["dash", "skills", "hero_skill"]:
 		var skill: Variant = snapshot.get(key, {})
 		_hud_skill_snapshot[key] = skill.duplicate(true) if skill is Dictionary or skill is Array else skill
 	var hp := float(snapshot.get("health", 0.0))
@@ -669,6 +744,7 @@ func update_hud(snapshot: Dictionary) -> void:
 	(_hud["minimap"] as MinimapView).update_snapshot(snapshot.get("minimap"))
 	_update_dash_hud(snapshot)
 	_update_pulse_hud(snapshot)
+	_update_hero_hud(snapshot)
 	var loadout: Array = snapshot.get("loadout", [])
 	var key := str(loadout)
 	if key != _hud_loadout_key:
@@ -750,13 +826,13 @@ func _update_dash_hud(snapshot: Dictionary) -> void:
 		meter.value = clampf(1.0 - remaining / total, 0.0, 1.0) if remaining > 0.0 and total > 0.0 else 0.0
 
 
-func _add_active_skill_slot(parent: HBoxContainer, key: String, prefix: String) -> void:
+func _add_active_skill_slot(parent: HBoxContainer, key: String, prefix: String, tint: Color = CYAN) -> void:
 	var card := PanelContainer.new()
 	card.name = prefix + "Skill"
-	card.custom_minimum_size = Vector2(104, 64)
+	card.custom_minimum_size = Vector2(112, 64)
 	card.mouse_filter = Control.MOUSE_FILTER_PASS
 	card.focus_mode = Control.FOCUS_NONE
-	var style := _box(Color("e5efe9"), Color(CYAN, 0.45))
+	var style := _box(Color("f4edd8") if key == "hero" else Color("e5efe9"), Color(tint, 0.45))
 	style.content_margin_left = 8
 	style.content_margin_right = 8
 	style.content_margin_top = 3
@@ -771,7 +847,7 @@ func _add_active_skill_slot(parent: HBoxContainer, key: String, prefix: String) 
 	row.add_theme_constant_override("separation", 4)
 	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	box.add_child(row)
-	var badge := _label("", 14, CYAN)
+	var badge := _label("", 14, tint)
 	badge.name = prefix + "Key"
 	badge.custom_minimum_size.x = 18
 	badge.clip_text = true
@@ -802,7 +878,7 @@ func _add_active_skill_slot(parent: HBoxContainer, key: String, prefix: String) 
 	meter.step = 0.0
 	meter.show_percentage = false
 	meter.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	meter.add_theme_stylebox_override("fill", _bar_style(CYAN))
+	meter.add_theme_stylebox_override("fill", _bar_style(tint))
 	meter.add_theme_stylebox_override("background", _bar_style(Color("c9d9d2")))
 	box.add_child(meter)
 	_hud[key] = card
@@ -863,12 +939,56 @@ func _update_pulse_hud(snapshot: Dictionary) -> void:
 		if str(icon.get_meta("skill_icon", "")) != icon_id or icon.texture == null:
 			icon.texture = load(AdventureArt.path("res://assets/icons/%s.svg" % icon_id))
 			icon.set_meta("skill_icon", icon_id)
+		icon.set_meta("content_kind", "skill")
+		icon.set_meta("content_id", id)
+		icon.set_meta("hero_id", HeroCatalog.rear_for_skill(id).id)
 		icon.modulate = Color.WHITE if ready else Color(0.65, 0.72, 0.70)
 		meter.value = 1.0 if ready else clampf(1.0 - remaining / total, 0.0, 1.0) if remaining > 0.0 and total > 0.0 else 0.0
-		indicator.tooltip_text = "%s · %s阶\n%s · 伤害%s · 范围%s · 冷却%s秒" % [definition.display_name, _rank_name(int(skill.get("rank", 1))), input_key, _skill_number(float(skill.get("damage", 0.0))), _skill_number(float(skill.get("radius", 0.0))), _skill_number(total)]
+		var skill_name: String = str(skill.get("skill_name", _rear_skill_name(id)))
+		indicator.tooltip_text = "%s · %s阶\n%s · %s · 伤害%s · 范围%s · 冷却%s秒" % [definition.display_name, _rank_name(int(skill.get("rank", 1))), input_key, skill_name, _skill_number(float(skill.get("damage", 0.0))), _skill_number(float(skill.get("radius", 0.0))), _skill_number(total)]
 		if id == "pulse":
-			indicator.tooltip_text = "%s · %s阶\n%s · 击退%s · 减速%s%%\n范围%s · 冷却%s秒" % [definition.display_name, _rank_name(int(skill.get("rank", 1))), input_key, _skill_number(PulseRules.PUSH_DISTANCE), _skill_number((1.0 - PulseRules.HINDER_FACTOR) * 100.0), _skill_number(float(skill.get("radius", 0.0))), _skill_number(total)]
+			indicator.tooltip_text = "%s · %s阶\n%s · %s · 击退%s · 减速%s%%\n范围%s · 冷却%s秒" % [definition.display_name, _rank_name(int(skill.get("rank", 1))), input_key, skill_name, _skill_number(PulseRules.PUSH_DISTANCE), _skill_number((1.0 - PulseRules.HINDER_FACTOR) * 100.0), _skill_number(float(skill.get("radius", 0.0))), _skill_number(total)]
+		indicator.tooltip_text += "\n" + _rear_bonuses_text(id, int(skill.get("rank", 1)))
 		indicator.set_meta("skill_uid", int(skill["uid"]))
+
+
+func _update_hero_hud(snapshot: Dictionary) -> void:
+	var indicator: Control = _hud["hero"]
+	var icon: TextureRect = _hud["hero_icon"]
+	var badge: Label = _hud["hero_key"]
+	var clock: Label = _hud["hero_time"]
+	var value: Variant = snapshot.get("hero_skill", {})
+	var skill: Dictionary = value if value is Dictionary else {}
+	if bool(snapshot.get("benchmark", false)) or float(snapshot.get("health", 0.0)) <= 0.0 or not bool(skill.get("available", false)):
+		_clear_hud_skill("hero")
+		badge.text = ""
+		clock.text = ""
+		icon.texture = null
+		return
+	var hero: HeroDef = HeroCatalog.definition(str(skill.get("hero_id", run.hero_id if run != null else _hero_id)))
+	var remaining: float = float(skill.get("cooldown_remaining", 0.0))
+	var total: float = float(skill.get("cooldown_duration", 0.0))
+	remaining = maxf(0.0, remaining) if is_finite(remaining) else 0.0
+	total = maxf(0.0, total) if is_finite(total) else 0.0
+	var ready: bool = bool(skill.get("ready", false)) and remaining <= 0.0
+	var skill_name: String = str(skill.get("skill_name", skill.get("name", "")))
+	badge.text = "RB" if _input_kind == "gamepad" else ControlBindings.key_label(int(_controls.get("hero_skill", KEY_R)))
+	if str(icon.get_meta("hero_id", "")) != hero.id or icon.texture == null:
+		icon.texture = load(hero.idle_path)
+	icon.set_meta("hero_id", hero.id)
+	icon.set_meta("content_kind", "hero")
+	icon.set_meta("content_id", hero.id)
+	icon.name = "ContentIcon_hero_" + hero.id
+	icon.modulate = Color.WHITE if ready else Color(0.65, 0.72, 0.70)
+	var label: Label = _hud["hero_label"]
+	label.text = skill_name
+	label.add_theme_color_override("font_color", GOLD if ready else MUTED)
+	clock.text = "就绪" if ready else "%.1f" % (ceilf(remaining * 10.0) / 10.0) if remaining > 0.0 else "—"
+	clock.add_theme_color_override("font_color", GOLD if ready else MUTED)
+	(_hud["hero_bar"] as ProgressBar).value = 1.0 if ready else clampf(1.0 - remaining / total, 0.0, 1.0) if remaining > 0.0 and total > 0.0 else 0.0
+	indicator.tooltip_text = "%s · %s\n%s · 伤害%s · 范围%s · 冷却%s秒" % [hero.display_name, skill_name, badge.text, _skill_number(float(skill.get("damage", 0.0))), _skill_number(float(skill.get("radius", 0.0))), _skill_number(total)]
+	indicator.set_meta("hero_id", hero.id)
+	indicator.show()
 
 
 static func _skill_tooltip_value(value: Variant, fallback: float) -> float:
@@ -1113,6 +1233,11 @@ func _build_result_inventory(parent: Control) -> void:
 		var rank := _label(_rank_name(int(item.get("rank", 1))) + "阶", 12, GOLD)
 		rank.name = "ResultItemRank_%d" % uid
 		heading.add_child(rank)
+		if kind == "skill":
+			var skill_name := _label(_rear_skill_name(id), 14, CYAN)
+			skill_name.name = "ResultSkillName_%d" % uid
+			names.add_child(skill_name)
+			_add_rear_bonuses(names, id, int(item.get("rank", 1)))
 		_enable_tooltip(row, _equipment_tooltip(item) if kind == "weapon" else _backpack_effect_text(item))
 		var rune: Dictionary = item.get("rune", {}) if kind == "weapon" else {}
 		if not rune.is_empty():
@@ -1517,7 +1642,7 @@ func _build_backpack(parent: Control) -> void:
 	_shop_margin(card, 16, 14).add_child(body)
 	var title := _label("秘术行囊", 22, PANEL)
 	body.add_child(title)
-	var capacity := _label("占格 %d / %d · 法器 %d · 技能 %d/2" % [int(snapshot["used_cells"]), int(snapshot["total_cells"]), run.loadout.size(), run.active_skills.size()], 14, Color("caddb8"))
+	var capacity := _label("占格 %d / %d · 法器 %d · 后排 %d/2" % [int(snapshot["used_cells"]), int(snapshot["total_cells"]), run.loadout.size(), run.active_skills.size()], 14, Color("caddb8"))
 	capacity.name = "BackpackCapacity"
 	body.add_child(capacity)
 	_bag_grid = BACKPACK_GRID.new()
@@ -1622,14 +1747,18 @@ func _build_backpack_details() -> void:
 		_enable_tooltip(resonance_summary, _resonance_details(item))
 		_bag_details.add_child(resonance_summary)
 	elif str(item["kind"]) == "skill":
+		var skill_name := _label(_rear_skill_name(definition.id), 18, CYAN)
+		skill_name.name = "BackpackRearSkillName"
+		_bag_details.add_child(skill_name)
 		var skill_stats := _wrap(_active_skill_stats_text(run.active_skill_parameters(item)), 14, CYAN)
 		skill_stats.name = "BackpackSkillStats"
 		_bag_details.add_child(skill_stats)
+		_add_rear_bonuses(_bag_details, definition.id, rank)
 		var slot_index: int = _active_skill_index(uid)
 		if slot_index >= 0:
 			var action: String = "pulse" if slot_index == 0 else "skill_secondary"
 			var input_key: String = ("X" if slot_index == 0 else "Y") if _input_kind == "gamepad" else ControlBindings.key_label(int(_controls[action]))
-			var slot_status := _label("技能%d · %s" % [slot_index + 1, input_key], 14, CYAN)
+			var slot_status := _label("后排%d · %s" % [slot_index + 1, input_key], 14, CYAN)
 			slot_status.name = "BackpackSkillSlot"
 			_bag_details.add_child(slot_status)
 	var partners: Array[Dictionary] = []
@@ -1649,6 +1778,7 @@ func _build_backpack_details() -> void:
 			explanation = "伤害 %s → %s\n范围 %s → %s · 冷却 %s → %s秒" % [_skill_number(float(sample.get("damage_before", 0.0))), _skill_number(float(sample.get("damage_after", 0.0))), _skill_number(float(sample.get("radius_before", 0.0))), _skill_number(float(sample.get("radius_after", 0.0))), _skill_number(float(sample.get("cooldown_before", 0.0))), _skill_number(float(sample.get("cooldown_after", 0.0)))]
 			if str(item["id"]) == "pulse":
 				explanation = "范围 %s → %s\n冷却 %s → %s秒" % [_skill_number(float(sample.get("radius_before", 0.0))), _skill_number(float(sample.get("radius_after", 0.0))), _skill_number(float(sample.get("cooldown_before", 0.0))), _skill_number(float(sample.get("cooldown_after", 0.0)))]
+			explanation += "\n" + _rear_bonuses_text(str(item["id"]), rank) + " → " + _rear_bonuses_text(str(item["id"]), rank + 1)
 		elif str(item["kind"]) == "relic" and str(item["id"]) in ["fold_clasp", "echo_stone"]:
 			var effects: PackedStringArray = []
 			for change: Dictionary in sample.get("stat_changes", []):
@@ -1855,7 +1985,7 @@ func _backpack_effect_text(item: Dictionary) -> String:
 	var rank: int = int(item.get("rank", 1))
 	var definition: ContentDef = _definition(str(item["kind"]), str(item["id"]))
 	match str(item["kind"]):
-		"skill": return definition.description
+		"skill": return _rear_skill_name(definition.id) + "\n" + _active_skill_stats_text(run.active_skill_parameters(item)) + "\n" + _rear_bonuses_text(definition.id, rank)
 		"weapon":
 			var text: String = definition.description
 			var rune: Dictionary = item.get("rune", {})
@@ -1890,6 +2020,35 @@ func _active_skill_index(uid: int) -> int:
 	return -1
 
 
+static func _rear_skill_name(id: String) -> String:
+	return str(ActiveSkillRules.parameters(id, 1, {}).get("skill_name", ""))
+
+
+static func _rear_bonuses_text(id: String, rank: int) -> String:
+	var values: PackedStringArray = []
+	var bonuses: Dictionary = HeroCatalog.rear_bonuses(id, rank)
+	for key: String in bonuses:
+		values.append("%s %s" % [_relic_stat_name(key), _relic_amount_text(key, float(bonuses[key]))])
+	return " · ".join(values)
+
+
+func _add_rear_bonuses(parent: Control, id: String, rank: int) -> void:
+	var row := HBoxContainer.new()
+	row.name = "RearBonuses"
+	row.add_theme_constant_override("separation", 5)
+	row.set_meta("rear_id", id)
+	row.set_meta("rank", rank)
+	parent.add_child(row)
+	var bonuses: Dictionary = HeroCatalog.rear_bonuses(id, rank)
+	for key: String in bonuses:
+		var relic_id: String = str({"damage": "damage", "attack_speed": "haste", "max_health": "vitality"}.get(key, ""))
+		if not relic_id.is_empty():
+			_add_icon(row, GameCatalog.relic(relic_id), 18)
+		var value := _label("%s %s" % [_relic_stat_name(key), _relic_amount_text(key, float(bonuses[key]))], 14, CYAN)
+		value.name = "RearBonus_" + key
+		row.add_child(value)
+
+
 static func _active_skill_stats_text(parameters: Dictionary) -> String:
 	if str(parameters.get("id", "")) == "pulse":
 		return "范围 %s · 冷却 %s秒\n击退 %s · 减速 %s%%" % [_skill_number(float(parameters.get("radius", 0.0))), _skill_number(float(parameters.get("cooldown", 0.0))), _skill_number(float(parameters.get("push_distance", PulseRules.PUSH_DISTANCE))), _skill_number((1.0 - float(parameters.get("hinder_factor", PulseRules.HINDER_FACTOR))) * 100.0)]
@@ -1922,10 +2081,13 @@ static func _rune_rank_text(id: String, rank: int) -> String:
 func _offer_card(parent: Control, index: int) -> void:
 	var offer: Dictionary = run.offers[index]
 	var kind := str(offer.get("kind", "weapon"))
+	if kind == "skill":
+		_rear_offer_card(parent, index)
+		return
 	var definition = _definition(kind, str(offer.get("id", "")))
 	var card := _panel(parent, Vector2(200, 178))
 	card.name = "Offer%d" % (index + 1)
-	var category: Color = {"weapon": GOLD, "rune": PURPLE, "relic": CYAN, "skill": Color("287eb5")}.get(kind, GOLD)
+	var category: Color = {"weapon": GOLD, "rune": PURPLE, "relic": CYAN}.get(kind, GOLD)
 	var locked: bool = run.is_offer_locked(index)
 	var sold: bool = bool(offer.get("sold", false))
 	SHOP_PANEL_SKIN.apply(card, category, false, locked, sold)
@@ -1989,7 +2151,7 @@ func _offer_card(parent: Control, index: int) -> void:
 	body.move_child(title_row, 0)
 	title_row.add_child(lock_button)
 	var dimensions: Vector2i = definition.inventory_size
-	var offer_rank: int = int(offer.get("rank", 1)) if kind == "skill" else 1
+	var offer_rank: int = 1
 	var rank_badge := _label("%s阶" % _rank_name(offer_rank), 14, category)
 	rank_badge.name = "OfferRank"
 	title_row.add_child(rank_badge)
@@ -2005,7 +2167,7 @@ func _offer_card(parent: Control, index: int) -> void:
 	var record := _shop_button("详情", _show_offer_record.bind(index, _shop_epoch, offer.duplicate(true)), "offer_record:%d" % index, Vector2(52, 28))
 	record.add_theme_font_size_override("font_size", GameTypography.size_for(14))
 	footprint_row.add_child(record)
-	var summary: String = "%s · %s" % [{"weapon": "法器", "rune": "符文", "relic": "遗物", "skill": "技能"}.get(kind, kind), _item_trait(kind, definition, offer_rank)] if kind != "skill" else "主动技能"
+	var summary: String = "%s · %s" % [{"weapon": "法器", "rune": "符文", "relic": "遗物"}.get(kind, kind), _item_trait(kind, definition, offer_rank)]
 	var description := _wrap(summary, 15, MUTED)
 	description.name = "OfferDescription"
 	description.max_lines_visible = 2
@@ -2022,11 +2184,84 @@ func _offer_card(parent: Control, index: int) -> void:
 		stats.name = "WeaponStats"
 		_enable_tooltip(stats, ("按购买时自动落点预计，共鸣 +%s。\n" % _rune_percent(predicted_bonus) if has_placement else "当前没有可用于购买预估的实际落点。\n") + _weapon_stats_note())
 		body.add_child(stats)
-	elif kind == "skill":
-		var projection: Dictionary = run.skill_purchase_preview(index)
-		var stats := _wrap(_active_skill_stats_text(projection.get("parameters", projection)), 14, category)
-		stats.name = "SkillStats"
-		body.add_child(stats)
+	_add_offer_purchase(body, index, kind, offer, sold)
+
+
+func _rear_offer_card(parent: Control, index: int) -> void:
+	var offer: Dictionary = run.offers[index]
+	var id: String = str(offer.get("id", ""))
+	var definition: ContentDef = GameCatalog.skill(id)
+	var rank: int = int(offer.get("rank", 1))
+	var sold: bool = bool(offer.get("sold", false))
+	var locked: bool = run.is_offer_locked(index)
+	var category := Color("287eb5")
+	var card := _panel(parent, Vector2(200, 178))
+	card.name = "Offer%d" % (index + 1)
+	card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	card.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	card.set_meta("hero_id", HeroCatalog.rear_for_skill(id).id)
+	SHOP_PANEL_SKIN.apply(card, category, false, locked, sold)
+	var surface := card.get_theme_stylebox("panel").duplicate() as StyleBoxFlat
+	surface.content_margin_left = 0
+	surface.content_margin_right = 0
+	surface.content_margin_top = 0
+	surface.content_margin_bottom = 0
+	card.add_theme_stylebox_override("panel", surface)
+	var body := _inside(card, 8)
+	body.add_theme_constant_override("separation", 3)
+	var identity := HBoxContainer.new()
+	identity.add_theme_constant_override("separation", 6)
+	body.add_child(identity)
+	_add_icon(identity, definition, 48)
+	var names := VBoxContainer.new()
+	names.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	names.add_theme_constant_override("separation", 2)
+	identity.add_child(names)
+	var title := HBoxContainer.new()
+	title.add_theme_constant_override("separation", 4)
+	names.add_child(title)
+	var name_label := _label(definition.display_name, 20, BONE)
+	name_label.name = "OfferName"
+	name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	title.add_child(name_label)
+	var rank_label := _label(_rank_name(rank) + "阶", 14, category)
+	rank_label.name = "OfferRank"
+	title.add_child(rank_label)
+	var skill_name := _label(_rear_skill_name(id), 14, CYAN)
+	skill_name.name = "OfferDescription"
+	names.add_child(skill_name)
+	var projection: Dictionary = run.skill_purchase_preview(index)
+	var stats := _wrap(_active_skill_stats_text(projection.get("parameters", projection)), 14, category)
+	stats.name = "SkillStats"
+	body.add_child(stats)
+	_add_rear_bonuses(body, id, rank)
+	var actions := HBoxContainer.new()
+	actions.add_theme_constant_override("separation", 6)
+	body.add_child(actions)
+	var footprint := WORKBENCH_ART.make_footprint(definition.inventory_size, category)
+	footprint.name = "OfferFootprint"
+	footprint.set_meta("dimensions", definition.inventory_size)
+	footprint.tooltip_text = "占格%d×%d" % [definition.inventory_size.x, definition.inventory_size.y]
+	footprint.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	actions.add_child(footprint)
+	var record := _shop_button("详情", _show_offer_record.bind(index, _shop_epoch, offer.duplicate(true)), "offer_record:%d" % index, Vector2(46, 28))
+	record.add_theme_font_size_override("font_size", GameTypography.size_for(14))
+	actions.add_child(record)
+	var lock_button := _shop_button("已售" if sold else "解锁" if locked else "锁定", _toggle_offer_lock.bind(index, _shop_epoch, offer.duplicate(true), locked), "lock:%d" % index, Vector2(46, 28))
+	lock_button.name = "OfferLock%d" % index
+	lock_button.add_theme_font_size_override("font_size", GameTypography.size_for(14))
+	lock_button.disabled = sold
+	lock_button.focus_mode = Control.FOCUS_NONE if sold else Control.FOCUS_ALL
+	ButtonSkin.apply(lock_button, "primary" if locked else "quiet", true)
+	actions.add_child(lock_button)
+	var lock_marker := _label("已锁" if locked else "", 14, GOLD)
+	lock_marker.name = "OfferLockMarker%d" % index
+	lock_marker.visible = locked
+	names.add_child(lock_marker)
+	_add_offer_purchase(body, index, "skill", offer, sold)
+
+
+func _add_offer_purchase(body: VBoxContainer, index: int, kind: String, offer: Dictionary, sold: bool) -> void:
 	var price: int = int(offer.get("price", 0))
 	var breathing := VBoxContainer.new()
 	breathing.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -2043,7 +2278,9 @@ func _offer_card(parent: Control, index: int) -> void:
 		var reason: String = {
 			"魂屑不足。": "魂屑不足",
 			"背包空间不足。": "背包无空位",
-			"主动技能已达上限（2）。": "技能已满 2/2",
+			"主动技能已达上限（2）。": "后排已满 2/2",
+			"后排角色已达上限（2）。": "后排已满 2/2",
+			"主角不能同时作为后排。": "当前主角",
 		}.get(error, "暂不可购")
 		buy_text = reason
 	var buy := _shop_button(buy_text, _buy.bind(index), "buy:%d" % index, Vector2(0, 35))
@@ -2118,7 +2355,7 @@ func _show_item_record(item: Dictionary, owned: bool, epoch: int) -> void:
 	elif kind == "rune":
 		details = _rune_rank_text(definition.id, rank)
 	elif kind == "skill":
-		details += "\n\n" + _active_skill_stats_text(run.active_skill_parameters(item))
+		details = _rear_skill_name(definition.id) + "\n" + _active_skill_stats_text(run.active_skill_parameters(item)) + "\n" + _rear_bonuses_text(definition.id, rank)
 	var text := _wrap(details, 24, BONE)
 	text.name = "ItemRecordEffect"
 	scroll.add_child(text)
@@ -2585,8 +2822,7 @@ func _show_controls(from_pause: bool) -> void:
 	var epoch: int = _controls_epoch
 	var body := _modal("操作设置", Vector2(700, 646))
 	(body.get_parent().get_parent() as Control).name = "ControlsPanel"
-	body.add_theme_constant_override("separation", 8)
-	body.add_child(_wrap("选择动作后按新键；Esc / 手柄B取消本次重绑。", 14, MUTED))
+	body.add_theme_constant_override("separation", 6)
 	var grid := GridContainer.new()
 	grid.columns = 2
 	grid.add_theme_constant_override("h_separation", 24)
@@ -2606,11 +2842,11 @@ func _show_controls(from_pause: bool) -> void:
 	_capture_label = _label("", 14, GOLD)
 	_capture_label.name = "BindingCapture"
 	body.add_child(_capture_label)
-	_controls_notice = _wrap("主键不可重复；界面保留键不可重绑。", 14, MUTED)
+	_controls_notice = _wrap("", 14, MUTED)
 	_controls_notice.name = "BindingStatus"
-	_controls_notice.custom_minimum_size.y = 34
+	_controls_notice.custom_minimum_size.y = 24
 	body.add_child(_controls_notice)
-	var guide := _wrap("键盘：方向键始终可用；Esc、Enter、Tab、F11及修饰键保留。\n手柄：左杆 / 十字移动，A冲刺，X / Y技能，Start暂停。\n菜单A确定、B返回；背包持物时X旋转。", 13, MUTED)
+	var guide := _wrap("左杆 / 十字 移动　A 冲刺　X / Y 后排　RB 主角\nStart 暂停　A 确定　B 返回　X 旋转", 13, MUTED)
 	guide.name = "ControllerGuide"
 	body.add_child(guide)
 	var actions := HBoxContainer.new()
@@ -2657,7 +2893,7 @@ func _refresh_control_buttons() -> void:
 		button.text = "请按新键…" if _capture_action == action else ControlBindings.key_label(int(_controls[action]))
 		button.add_theme_color_override("font_color", CYAN if _capture_action == action else BONE)
 	if is_instance_valid(_capture_label):
-		_capture_label.text = "正在重绑：" + ControlBindings.action_label(_capture_action) if not _capture_action.is_empty() else "选择一个动作开始重绑。"
+		_capture_label.text = "正在重绑：" + ControlBindings.action_label(_capture_action) if not _capture_action.is_empty() else ""
 
 
 func _set_controls_notice(message: String, color: Color) -> void:
@@ -2711,22 +2947,15 @@ func _candle_link_names(candle: Dictionary) -> String:
 	return "、".join(names) if not names.is_empty() else "无；请把烛台放在法器正下方。"
 
 
-func _select_starter(id: String) -> void:
-	if _screen != "title" or not _overlay_mode.is_empty() or not _unlocked_starters.has(id):
-		return
-	_starter = id
-	_refresh_title.call_deferred()
-
-
 func _refresh_title() -> void:
 	if _screen != "title":
 		return
 	# Update in place so a queued selection never rebuilds away a settings modal
 	# or its source control and keyboard focus.
-	for id: String in ["bone", "ember", "frost", "scatter"]:
-		var button := _page.find_child("Starter_" + id, true, false) as Button
+	for id: String in HeroCatalog.IDS:
+		var button := _page.find_child("Character_" + id, true, false) as Button
 		if button != null:
-			button.set_pressed_no_signal(_starter == id)
+			button.set_pressed_no_signal(_hero_id == id)
 			var mark := button.get_node_or_null("SelectionMark") as Control
 			if mark != null:
 				mark.queue_redraw()
@@ -2735,8 +2964,7 @@ func _refresh_title() -> void:
 func _start() -> void:
 	if _screen not in ["title", "result"] or not _overlay_mode.is_empty():
 		return
-	if not _unlocked_starters.has(_starter):
-		return
+	_starter = HeroCatalog.definition(_hero_id).starter_weapon
 	start_requested.emit(_starter)
 
 
@@ -2907,40 +3135,38 @@ func _update_hud_slots(loadout: Array) -> void:
 	for index in range(mini(8, loadout.size())):
 		var card := PanelContainer.new()
 		card.name = "EquipmentSlot%d" % (index + 1)
-		card.custom_minimum_size.x = 94
+		card.custom_minimum_size.x = 58
 		card.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		var style := _box(Color("f4edd8"), Color(GOLD, 0.22))
-		style.content_margin_left = 8
-		style.content_margin_right = 8
+		style.content_margin_left = 5
+		style.content_margin_right = 5
 		style.content_margin_top = 4
 		style.content_margin_bottom = 4
 		card.add_theme_stylebox_override("panel", style)
 		slots.add_child(card)
-		var box := HBoxContainer.new()
-		box.add_theme_constant_override("separation", 8)
+		var box := VBoxContainer.new()
+		box.add_theme_constant_override("separation", 2)
 		box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		card.add_child(box)
-		box.add_child(_label("%02d" % (index + 1), 12, GOLD))
 		var item: Dictionary = loadout[index]
 		var definition: ContentDef = GameCatalog.weapon(str(item["id"]))
+		card.set_meta("content_kind", "weapon")
+		card.set_meta("content_id", definition.id)
+		card.set_meta("backpack_uid", int(item.get("uid", -1)))
 		_enable_tooltip(card, _equipment_tooltip(item))
-		_add_icon(box, definition, 26)
-		var names := VBoxContainer.new()
-		names.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		names.add_theme_constant_override("separation", 1)
-		names.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		box.add_child(names)
-		var title := _label(definition.display_name + " " + _rank_name(int(item.get("rank", 1))), 12, BONE)
-		title.clip_text = true
-		title.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-		names.add_child(title)
+		_add_icon(box, definition, 30)
+		var badges := HBoxContainer.new()
+		badges.alignment = BoxContainer.ALIGNMENT_CENTER
+		badges.add_theme_constant_override("separation", 4)
+		box.add_child(badges)
+		var rank := _label(_rank_name(int(item.get("rank", 1))), 12, GOLD)
+		rank.name = "EquipmentRank%d" % (index + 1)
+		badges.add_child(rank)
 		var rune: Dictionary = item.get("rune", {})
-		var socket := _label("无附魔" if rune.is_empty() else "%s %s" % [GameCatalog.rune(str(rune["id"])).display_name, _rank_name(int(rune.get("rank", 1)))], 10, MUTED if rune.is_empty() else PURPLE)
-		socket.clip_text = true
-		socket.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-		names.add_child(socket)
+		if not rune.is_empty():
+			_add_icon(badges, GameCatalog.rune(str(rune["id"])), 14)
 	if loadout.size() > 8:
-		var more := _label("另%d件\n同样攻击" % (loadout.size() - 8), 12, GOLD)
+		var more := _label("+%d" % (loadout.size() - 8), 12, GOLD)
 		more.name = "AdditionalWeapons"
 		_enable_tooltip(more, _loadout_text())
 		slots.add_child(more)
@@ -3427,6 +3653,20 @@ func _add_icon(parent: Control, definition: ContentDef, size: int) -> void:
 	rect.set_meta("content_kind", definition.kind)
 	rect.set_meta("content_id", definition.id)
 	rect.texture = texture
+	rect.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	rect.custom_minimum_size = Vector2(size, size)
+	rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	parent.add_child(rect)
+
+
+func _add_hero_icon(parent: Control, hero: HeroDef, size: int) -> void:
+	var rect := TextureRect.new()
+	rect.name = "ContentIcon_hero_" + hero.id
+	rect.set_meta("content_kind", "hero")
+	rect.set_meta("content_id", hero.id)
+	rect.texture = load(hero.idle_path)
 	rect.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	rect.custom_minimum_size = Vector2(size, size)
 	rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE

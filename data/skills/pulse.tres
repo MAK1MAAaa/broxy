@@ -6,8 +6,8 @@
 script = ExtResource("1")
 id = "pulse"
 kind = "skill"
-display_name = "秘术脉冲"
-description = "径向击退与减速。升阶扩大范围。"
+display_name = "克拉莉丝"
+description = "秘术脉冲：径向击退与减速。伤害 +8%／16%／32%。"
 icon = "skill_pulse"
 color = Color(0.63, 0.85, 0.97, 1)
 price = 20

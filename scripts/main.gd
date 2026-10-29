@@ -60,6 +60,7 @@ func _ready() -> void:
 	ui.set_settings(store.settings)
 	ui.set_controls(store.controls)
 	ui.set_progress(store.unlocked_starters)
+	ui.set_selected_hero(store.selected_hero)
 	ui.start_requested.connect(_start_run)
 	ui.next_wave_requested.connect(_next_wave)
 	ui.resume_requested.connect(_resume)
@@ -101,7 +102,7 @@ func _ready() -> void:
 			_screenshot_clock = maxf(0.5, argument.trim_prefix("--capture-delay=").to_float())
 
 func _start_run(starter: String) -> void:
-	if not store.starter_unlocked(starter):
+	if not store.starter_unlocked(starter) and starter != HeroCatalog.definition(ui.selected_hero()).starter_weapon:
 		ui.notify("此起始法器尚未解锁。")
 		return
 	_begin_run(starter)
@@ -110,7 +111,9 @@ func _begin_run(starter: String, seed_value: int = 0) -> void:
 	_invalidate_combat_upgrades()
 	get_tree().paused = false
 	paused = false
-	run.begin(seed_value if seed_value > 0 else int(Time.get_unix_time_from_system()) ^ Time.get_ticks_usec(), starter, ui.selected_arena())
+	store.selected_hero = HeroCatalog.normalize_id(ui.selected_hero())
+	store.save_profile()
+	run.begin(seed_value if seed_value > 0 else int(Time.get_unix_time_from_system()) ^ Time.get_ticks_usec(), starter, ui.selected_arena(), store.selected_hero)
 	screen = Screen.COMBAT
 	ui.show_hud()
 	world.begin(run)
@@ -329,6 +332,9 @@ func _handle_control_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 	elif ControlBindings.pressed(event, "skill_secondary"):
 		world.request_skill(1)
+		get_viewport().set_input_as_handled()
+	elif ControlBindings.pressed(event, "hero_skill"):
+		world.request_hero_skill()
 		get_viewport().set_input_as_handled()
 
 func _handle_back_input(allow_pause: bool) -> void:

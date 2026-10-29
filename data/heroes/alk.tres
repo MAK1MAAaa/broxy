@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="HeroDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/hero_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "alk"
+display_name = "阿尔克"
+starter_weapon = "bone"
+idle_path = "res://assets/worldflipper/sprites/player.png"
+atlas_path = "res://assets/worldflipper/sprites/player-atlas.png"
+portrait_path = "res://assets/worldflipper/portraits/alk.png"
+frame_size = 96
+foot_anchor = Vector2(48, 93)
+base_bonuses = {}
+main_skill = {"id": "hero_alk", "name": "勇者斩击", "shape": "arc", "origin_mode": "player", "radius": 180.0, "damage": 50.0, "cooldown": 8.0, "half_angle_radians": 1.0471975511966}

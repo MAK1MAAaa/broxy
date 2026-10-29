@@ -65,6 +65,8 @@ var _sample_zero_pulse_start: int = 0
 var _skill_audio_playing_peak: int = 0
 var _skill_audio_streams_observed: Dictionary = {}
 var _backpack_skills: bool = false
+var _hero_skills: bool = false
+var _sample_hero_uses_start: int = 0
 var _backpack_skill_uids: Dictionary = {}
 var _backpack_skill_purchases: Array[Dictionary] = []
 var _backpack_skill_requests: Dictionary = {}
@@ -115,8 +117,10 @@ func _parse_arguments() -> bool:
 			_skill_feedback = true
 		elif argument == "--backpack-skills":
 			_backpack_skills = true
+		elif argument == "--hero-skills":
+			_hero_skills = true
 		else:
-			push_error("Supported arguments: --seconds=<at least 5> --output=<report.json> [--evasion-probes] [--pulse-cycles] [--skill-relics] [--input-prompts] [--skill-feedback] [--backpack-skills]")
+			push_error("Supported arguments: --seconds=<at least 5> --output=<report.json> [--evasion-probes] [--pulse-cycles] [--skill-relics] [--input-prompts] [--skill-feedback] [--backpack-skills] [--hero-skills]")
 			return false
 	if _backpack_skills and (_pulse_cycles or _skill_feedback or _skill_relics or _input_prompts):
 		push_error("--backpack-skills cannot be combined with --pulse-cycles, --skill-feedback, --skill-relics, or --input-prompts")
@@ -305,6 +309,10 @@ func _before_world_physics() -> void:
 	_observe_feedback()
 	if _backpack_skills and not _request_ready_backpack_skills(world):
 		return
+	if _hero_skills and bool(world.sim.hero_skill_snapshot()["ready"]):
+		if not world.request_hero_skill():
+			_abort("A ready World rejected the pressure fixture's main-character skill")
+			return
 	if _pulse_cycles and bool(world.sim.pulse_snapshot()["ready"]):
 		if not world.request_pulse():
 			_abort("A ready real World rejected the explicit pressure pulse request")
@@ -458,6 +466,7 @@ func _process(_delta: float) -> bool:
 		_sample_zero_pulse_start = _zero_pulse_casts
 		if _backpack_skills:
 			_begin_backpack_skill_sample()
+		_sample_hero_uses_start = int(_app.world.sim.hero_skill_snapshot()["uses"])
 	elif _sampling:
 		_frame_samples.append(float(now - _last_frame_usec) / 1000.0)
 		_last_frame_usec = now
@@ -715,6 +724,17 @@ func _finish_report(now: int) -> void:
 		report["checks"]["skill_feedback_single_slot_and_real_control"] = feedback_validity
 		report["passed"] = bool(report["passed"]) and feedback_validity
 		report["fixture_overrides"].append("skill-feedback option only observes real control results and native player streams; enemy layout and skill request timing stay unchanged; zero-target coverage is reported honestly and tested separately")
+	if _hero_skills:
+		var hero: Dictionary = _app.world.sim.hero_skill_snapshot()
+		var uses: int = int(hero["uses"]) - _sample_hero_uses_start
+		var minimum_uses: int = maxi(1, floori(_seconds / float(hero["cooldown_duration"])) - 1)
+		report["hero_skills"] = true
+		report["hero_id"] = hero["hero_id"]
+		report["sample_hero_skill_uses"] = uses
+		report["thresholds"]["minimum_sample_hero_skill_uses"] = minimum_uses
+		report["checks"]["real_main_character_casts"] = uses >= minimum_uses
+		report["passed"] = bool(report["passed"]) and uses >= minimum_uses
+		report["fixture_overrides"].append("main-character option repeatedly requests the real independent R skill; its cooldown, damage and shared fixed effect pool remain production rules")
 	var absolute: String = ProjectSettings.globalize_path(_output)
 	var directory_error: Error = DirAccess.make_dir_recursive_absolute(absolute.get_base_dir())
 	if directory_error != OK:

@@ -142,7 +142,7 @@ func _test_hud_and_input() -> void:
 	_ui.update_hud(sim.snapshot())
 	await _settle()
 	_check((_ui._hud["dash"] as Control).tooltip_text.contains("冷却2.1秒"), "The ready dash tooltip reads its actual relic-modified cooldown")
-	_check((_ui._hud["pulse"] as Control).tooltip_text.contains("范围162") and (_ui._hud["pulse"] as Control).tooltip_text.contains("冷却8.8秒") and (_ui._hud["pulse_label"] as Label).text == "秘术脉冲" and (_ui._hud["pulse_key"] as Label).text == "Q", "The equipped pulse tooltip exposes both the range benefit and cooldown cost")
+	_check((_ui._hud["pulse"] as Control).tooltip_text.contains("范围162") and (_ui._hud["pulse"] as Control).tooltip_text.contains("冷却8.8秒") and (_ui._hud["pulse_label"] as Label).text == GameCatalog.skill("pulse").display_name and (_ui._hud["pulse_key"] as Label).text == "Q", "The equipped pulse tooltip exposes both the range benefit and cooldown cost")
 	sim.step(1.0 / 60.0, Vector2.RIGHT, true, true)
 	for frame: int in 15:
 		sim.step(1.0 / 60.0, Vector2.ZERO)

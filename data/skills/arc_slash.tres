@@ -6,8 +6,8 @@
 script = ExtResource("1")
 id = "arc_slash"
 kind = "skill"
-display_name = "月弧"
-description = "挥出前方月刃。升阶提高伤害与范围。"
+display_name = "希尔媞"
+description = "月弧：挥出前方月刃。攻击速度 +6%／12%／24%。"
 icon = "skill_arc_slash"
 color = Color(0.85, 0.76, 0.99, 1)
 price = 24
