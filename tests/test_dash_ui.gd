@@ -174,8 +174,8 @@ func _test_resolutions_and_boss() -> void:
 			var snapshot: Dictionary = _snapshot()
 			snapshot["dash"] = _dash(false, false, 1.8)
 			snapshot["wave"] = 8 if boss_alive else 1
-			snapshot["boss_health"] = 100.0 if boss_alive else 0.0
-			snapshot["boss_max_health"] = 200.0 if boss_alive else 0.0
+			snapshot["boss_encounter"] = {"active": boss_alive, "health": 100.0, "max_health": 200.0,
+				"display_name": GameCatalog.enemy("boss").display_name, "phase": "recovery"}
 			_ui.update_hud(snapshot)
 			await _settle()
 			var status := _ui.find_child("RitualStatus", true, false) as Control
@@ -184,7 +184,7 @@ func _test_resolutions_and_boss() -> void:
 			_check(status.get_global_rect().grow(0.1).encloses(skill) and Rect2(Vector2.ZERO, Vector2(1280, 720)).encloses(skill), "The compact skill remains fully inside the status panel: " + str(physical_size))
 			_check(_indicator().size.x <= 108.0 and _bar().size.y >= 5.0 and _bar().size.y <= 6.0, "Skill width and meter height stay within the compact layout budget")
 			_check(_label().size.x + 0.1 >= _label().get_minimum_size().x and _label().size.y + 0.1 >= _label().get_minimum_size().y, "The cooldown label is completely readable without clipping")
-			_check(boss.visible == boss_alive and (not boss_alive or not boss.get_global_rect().intersects(skill)), "Boss health remains visible on its own second row without overlapping the skill")
+			_check(boss.visible == boss_alive and (not boss_alive or boss.get_global_rect() == Rect2(240, 104, 800, 50) and not boss.get_global_rect().intersects(skill)), "Boss health remains in its independent region below the topbar without overlapping the skill")
 			_check(not _ui._hud.has("bag_info") and _ui.find_child("HUDMapInfo", true, false) == null, "A skill does not restore the removed lower-right descriptions")
 			_ui.notify("空格冲刺与地图说明".repeat(12))
 			_check(not _ui._toast.visible and _ui._toast.text.is_empty() and _ui._toast_timer.is_stopped(), "Skill updates preserve the removed battle notification area")

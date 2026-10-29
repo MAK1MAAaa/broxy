@@ -61,7 +61,8 @@ func _map_snapshot() -> Dictionary:
 func _hud_snapshot(boss: bool = false) -> Dictionary:
 	return {"health": 100.0, "max_health": 100.0, "wave": 8 if boss else 1, "time_left": 45.0,
 		"gold": 0, "level": 1, "xp": 0, "xp_needed": 42, "loadout": _ui.run.loadout,
-		"boss_health": 100.0 if boss else 0.0, "boss_max_health": 200.0 if boss else 0.0,
+		"boss_encounter": {"active": boss, "health": 100.0, "max_health": 200.0,
+			"display_name": GameCatalog.enemy("boss").display_name, "phase": "recovery"},
 		"minimap": _map_snapshot()}
 
 func _map() -> MinimapView:

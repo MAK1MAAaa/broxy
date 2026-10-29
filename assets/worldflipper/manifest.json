@@ -1,5 +1,5 @@
 {
-  "revision": "world-flipper-fan-06",
+  "revision": "world-flipper-fan-07",
   "original_copyright": "© Cygames, Inc. / Citail Inc.",
   "license_status": "Original game assets; no open asset license found. Unofficial fan-work use is not a claim of authorization.",
   "copyright_source": "https://worldflipper.jp/copyright/",
@@ -2051,6 +2051,237 @@
         61
       ],
       "normalization": "One complete native atlas face, integer2x nearest, centered horizontally at footy61; original colors and transparent silhouette retained. Mana is a static face in this adaptation, not the original five-frame pickup animation."
+    },
+    {
+      "id": "boss_weakpoint_layer1",
+      "kind": "weakpoint_art",
+      "name": "World Flipper / complete weak-point sights and authored break pieces",
+      "filename": "boss-layer1.png",
+      "source_page": "https://worldflipper.jp/demo/",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/common/layer1.png",
+      "sha256": "e133576809d7d3c3228ea7a26baa9f4389e412728f8358dfaa717e7b9a6006bb",
+      "source_size": [
+        2808,
+        506
+      ],
+      "atlas": {
+        "url": "https://worldflipper.jp/demo/src/assets/production/battle/common/layer1.atlas.json",
+        "sha256": "9c0dd3f3f29c663358dbf9a096d10f58ee533fb1257066a9371e27b747a4ee40"
+      },
+      "frames": {
+        "sight_a": {
+          "n": "battle/common/layer1/.gen/boss_weak_point_sight/a",
+          "w": 38,
+          "h": 38,
+          "x": 1847,
+          "y": 396,
+          "fx": 0,
+          "fy": -1,
+          "fw": 39,
+          "fh": 39
+        },
+        "sight_b": {
+          "n": "battle/common/layer1/.gen/boss_weak_point_sight/b",
+          "w": 38,
+          "h": 38,
+          "x": 1727,
+          "y": 431,
+          "fx": 0,
+          "fy": -1,
+          "fw": 39,
+          "fh": 39
+        },
+        "sight_c": {
+          "n": "battle/common/layer1/.gen/boss_weak_point_sight/c",
+          "w": 18,
+          "h": 30,
+          "x": 236,
+          "y": 446,
+          "r": true
+        },
+        "broken_a": {
+          "n": "battle/common/layer1/.gen/boss_weak_point_broken/a",
+          "w": 18,
+          "h": 30,
+          "x": 236,
+          "y": 446,
+          "r": true
+        },
+        "broken_b": {
+          "n": "battle/common/layer1/.gen/boss_weak_point_broken/b",
+          "w": 38,
+          "h": 38,
+          "x": 1847,
+          "y": 396,
+          "fx": 0,
+          "fy": -1,
+          "fw": 39,
+          "fh": 39
+        }
+      },
+      "cell_size": [
+        96,
+        96
+      ],
+      "columns": 3,
+      "states": [
+        "white",
+        "red",
+        "broken"
+      ],
+      "center_anchor": [
+        48,
+        48
+      ],
+      "parts": {
+        "sight": {
+          "url": "https://worldflipper.jp/demo/src/assets/production/battle/common/layer1/boss_weak_point_sight.parts.json",
+          "sha256": "549f1c7325043f4b856a87ee4468aa5296d787118787329e39d54aadeeae4cd5",
+          "quarter_turn_matrices": [
+            {
+              "a": 4096,
+              "b": 0,
+              "c": 0,
+              "d": 4096,
+              "x": 0,
+              "y": 0
+            },
+            {
+              "a": 0,
+              "b": 4096,
+              "c": -4096,
+              "d": 0,
+              "x": 0,
+              "y": 0
+            },
+            {
+              "a": -4096,
+              "b": 0,
+              "c": 0,
+              "d": -4096,
+              "x": 0,
+              "y": 0
+            },
+            {
+              "a": 0,
+              "b": -4096,
+              "c": 4096,
+              "d": 0,
+              "x": 0,
+              "y": 0
+            }
+          ],
+          "cross_source_transform": {
+            "a": 4096,
+            "b": 0,
+            "c": 0,
+            "d": 4096,
+            "x": -122880,
+            "y": -36864
+          },
+          "inner_scale_fixed4096": 2867
+        },
+        "broken": {
+          "url": "https://worldflipper.jp/demo/src/assets/production/battle/common/layer1/boss_weak_point_broken.parts.json",
+          "sha256": "aab31faa5b556f3cb88957da776c9b8efd053d0f3af157d4c41805a491297b42",
+          "quarter_piece_matrices": [
+            {
+              "a": 4891,
+              "b": 215,
+              "c": -369,
+              "d": 4933,
+              "x": 21094,
+              "y": 34406
+            },
+            {
+              "a": -236,
+              "b": 4904,
+              "c": -4934,
+              "d": -67,
+              "x": 18227,
+              "y": 33587
+            },
+            {
+              "a": -4979,
+              "b": 177,
+              "c": 291,
+              "d": -5054,
+              "x": -17817,
+              "y": -35225
+            },
+            {
+              "a": 243,
+              "b": -4988,
+              "c": 5047,
+              "d": -225,
+              "x": -20480,
+              "y": -36659
+            }
+          ],
+          "bar_piece_matrices": [
+            {
+              "a": -560,
+              "b": 6037,
+              "c": -4084,
+              "d": -93,
+              "x": -10035,
+              "y": -70246
+            },
+            {
+              "a": 109,
+              "b": -6203,
+              "c": 4101,
+              "d": -415,
+              "x": 3686,
+              "y": 61644
+            },
+            {
+              "a": -5985,
+              "b": -554,
+              "c": 770,
+              "d": -4035,
+              "x": 63488,
+              "y": 7782
+            },
+            {
+              "a": 6118,
+              "b": -324,
+              "c": -56,
+              "d": 4135,
+              "x": -63078,
+              "y": -41984
+            }
+          ],
+          "bar_source_transform": {
+            "a": 4096,
+            "b": 0,
+            "c": 0,
+            "d": 4096,
+            "x": -122880,
+            "y": -36864
+          },
+          "quarter_source_transform": {
+            "a": 4096,
+            "b": 0,
+            "c": 0,
+            "d": 4096,
+            "x": 0,
+            "y": -159744
+          },
+          "global_scale_fixed4096": 2703
+        }
+      },
+      "timelines": {
+        "sight": {
+          "url": "https://worldflipper.jp/demo/src/assets/production/battle/common/layer1/boss_weak_point_sight.timeline.json",
+          "sha256": "20771ca0df7cbc9d199058117b4b651fa9f26d18d82cd913b55769908f5535f5"
+        },
+        "broken": {
+          "url": "https://worldflipper.jp/demo/src/assets/production/battle/common/layer1/boss_weak_point_broken.timeline.json",
+          "sha256": "e9831d499764e148c6a2a718d1b95da6274e072fa9a5bf2d0e36f26ff6690365"
+        }
+      },
+      "normalization": "Restore original atlas trim/rotation; combine four quarter-circle corners and four cross arms for complete white/red targets; broken is a bounded static authored piece-matrix snapshot. Original colors/alpha retained. Runtime state flashing, scale and break duration are project adaptations, not decoded original timing."
     }
   ],
   "references_cached_only": [
@@ -4785,6 +5016,41 @@
         32,
         61
       ]
+    },
+    {
+      "id": "boss_weakpoint_states",
+      "path": "assets/worldflipper/boss/weakpoint-atlas.png",
+      "sha256": "1b907a56c4b71f3a4bc92a01f7f653545f0833e98f7061908c0dfd337419e8ed",
+      "size": [
+        288,
+        96
+      ],
+      "alpha_bounds": [
+        10,
+        7,
+        280,
+        88
+      ],
+      "source_ids": [
+        "boss_weakpoint_layer1"
+      ],
+      "frame_size": [
+        96,
+        96
+      ],
+      "columns": 3,
+      "frame_count": 3,
+      "states": [
+        "white",
+        "red",
+        "broken"
+      ],
+      "center_anchor": [
+        48,
+        48
+      ],
+      "filter": "nearest",
+      "normalization": "Restore original atlas trim/rotation; combine four quarter-circle corners and four cross arms for complete white/red targets; broken is a bounded static authored piece-matrix snapshot. Original colors/alpha retained. Runtime state flashing, scale and break duration are project adaptations, not decoded original timing."
     }
   ],
   "metadata_files": [
@@ -4792,6 +5058,11 @@
       "path": "assets/worldflipper/interactions/interaction-art.json",
       "sha256": "d0449a40378e1e168c26a9b170831ed592c4964675c44d557ecf83829589df5c",
       "purpose": "Runtime frame layout, anchors and explicitly adapted ball/break timing"
+    },
+    {
+      "path": "assets/worldflipper/boss/weakpoint-art.json",
+      "sha256": "97110ceb8a59d447ba30eded9203eaf3462b13d9129adc26df1fdf12197fb39f",
+      "purpose": "Complete weak-point state layout and project-specific runtime animation contract"
     }
   ],
   "gameplay": "Alk and three independently normalized original hero sets use the current game's party and skill rules rather than the original game's statistics. Arena IDs, terrain zones and multipliers remain stable. Fixed low props block ground movement, dash and knockback while flying attacks pass over them. Separate breakable crates intercept friendly projectiles; dash contact with a bumper activates the protagonist's adapted pinball form. Crate drops and interaction animation timing follow this project's independent rules."

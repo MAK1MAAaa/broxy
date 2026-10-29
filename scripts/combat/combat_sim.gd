@@ -18,6 +18,8 @@ signal hero_skill_cast(hero_id: String, parameters: Dictionary, origin: Vector2,
 signal pinball_bounced(position: Vector2, normal: Vector2, boosted: bool, combo: int)
 signal crate_hit(position: Vector2, broke: bool)
 signal world_pickup_collected(kind: String, position: Vector2, value: float)
+signal boss_weakpoint_hit(uid: int, cast_id: int, position: Vector2, broke: bool)
+signal boss_interrupted(position: Vector2)
 signal ended(victory: bool, reason: String)
 
 const ARENA: Rect2 = ArenaCatalog.WORLD_BOUNDS
@@ -58,6 +60,9 @@ class Enemy:
 	var mode: int = 0
 	var radius: float = 16.0
 	var hunter: bool = false
+	var boss_ghost: bool = false
+	var boss_cast_id: int = 0
+	var damage_scale: float = 1.0
 
 class Shot:
 	var active: bool = false
@@ -81,6 +86,7 @@ class Shot:
 	var returning: bool = false
 	var return_cancelled: bool = false
 	var hit_ids: Dictionary = {}
+	var weakpoint_hit_ids: Dictionary = {}
 	var homing: float = 0.0
 	var slow: float = 0.0
 	var hostile: bool = false
@@ -95,6 +101,12 @@ class Soul:
 	var age: float = 0.0
 
 class WarningZone:
+	var shape: String = "circle"
+	var direction: Vector2 = Vector2.RIGHT
+	var length: float = 0.0
+	var width: float = 0.0
+	var source_cast_id: int = 0
+	var duration: float = 0.3
 	var source_id: String = "boss"
 	var position: Vector2 = Vector2.ZERO
 	var radius: float = 65.0
@@ -146,6 +158,10 @@ var enemy_count: int = 0
 var shot_count: int = 0
 var soul_count: int = 0
 var boss: Enemy
+var boss_encounter: BossEncounter = BossEncounter.new()
+var boss_interrupts: int = 0
+var weakpoints_broken: int = 0
+var weakpoint_damage: float = 0.0
 var primary_hits: int = 0
 var secondary_hits: int = 0
 var damage_by_weapon: Dictionary = {}
@@ -174,7 +190,6 @@ var _cooldowns: Array[float] = []
 var _uid: int = 0
 var _spawn_timer: float = 0.0
 var _wave: ContentDef
-var _boss_cycle: int = 0
 var sandbox: bool = false
 var core_activations: Dictionary = {"frostfire": 0, "bone_chorus": 0}
 var _chorus_counts: Dictionary = {}
@@ -201,6 +216,10 @@ func _init() -> void:
 
 func begin(state: RunState) -> void:
 	run = state
+	boss_encounter.stop()
+	boss_interrupts = 0
+	weakpoints_broken = 0
+	weakpoint_damage = 0.0
 	interactions.configure(ArenaCatalog.definition(run.arena_id), run.rng.seed, run.wave, obstacles)
 	_crate_indices.clear()
 	for crate: Dictionary in interactions.snapshot()["crates"]:
@@ -248,6 +267,7 @@ func begin(state: RunState) -> void:
 	if _wave.boss_wave:
 		boss = spawn_enemy("boss", Vector2(640, 208))
 		boss.action_timer = 2.5
+		boss_encounter.begin(boss.position, 1.0)
 	elif run.altar_choice == "accepted" and run.wave == run.altar_wave and not run.hunter_defeated:
 		hunter = spawn_enemy("rusher")
 		if hunter != null:
@@ -268,6 +288,7 @@ func step(delta: float, movement: Vector2, dash_pressed: bool = false, pulse_pre
 	run.elapsed += delta
 	invulnerability = maxf(0.0, invulnerability - delta)
 	interactions.advance(delta)
+	_advance_boss_encounter(delta)
 	if _has_movement_direction(movement):
 		player_direction = movement.normalized()
 	_update_pulse(delta, pulse_pressed, skill_requests)
@@ -296,6 +317,7 @@ func step(delta: float, movement: Vector2, dash_pressed: bool = false, pulse_pre
 	_explosion_grid_active = false
 	if complete:
 		return
+	_dispatch_boss_events(boss_encounter.finish_friendly_step())
 	_update_souls(delta)
 	_collect_world_pickups()
 	_update_zones(delta)
@@ -314,7 +336,7 @@ func step(delta: float, movement: Vector2, dash_pressed: bool = false, pulse_pre
 			_spawn_timer += _wave.spawn_interval * float(_route.get("interval_factor", 1.0))
 		if elapsed >= duration:
 			if _wave.boss_wave:
-				_finish(false, "仪式已经完成。请在 90 秒内击败无面祭司。")
+				_finish(false, "仪式已经完成。请在 90 秒内击败%s。" % GameCatalog.enemy("boss").display_name)
 			else:
 				collect_remaining_souls()
 				_finish(true, "邪潮暂歇")
@@ -400,6 +422,15 @@ func _pinball_first_hit(start: Vector2, movement: Vector2) -> Dictionary:
 			nearest = fraction
 			result = {"t": fraction, "normal": normal, "enemy": enemy,
 				"penetration": maxf(0.0, radius - offset.length())}
+	var weak: Dictionary = _weakpoint_first_hit(start, start + movement, 16.0, {}, true)
+	if not weak.is_empty() and float(weak["t"]) < nearest:
+		var point: Dictionary = weak["point"]
+		var offset: Vector2 = start - (point["position"] as Vector2)
+		if offset.length_squared() > pow(16.0 + float(point["radius"]), 2) or offset.dot(movement) < 0.0:
+			var normal: Vector2 = (start + movement * float(weak["t"]) - (point["position"] as Vector2)).normalized()
+			result = {"t": weak["t"], "normal": normal if not normal.is_zero_approx() else -movement.normalized(),
+				"weakpoint": point, "id": "weakpoint:" + str(weak["key"]),
+				"penetration": maxf(0.0, 16.0 + float(point["radius"]) - offset.length())}
 	return result
 
 func _pinball_candidates(start: Vector2, end: Vector2) -> Array[Enemy]:
@@ -449,6 +480,8 @@ func _move_pinball(delta: float, movement: Vector2) -> float:
 				apply_damage(enemy, damage, "skill:pinball")
 				if enemy.health < before:
 					_pinball_combo += 1
+			elif impact.has("weakpoint"):
+				_pinball_combo += int(bool(_damage_boss_weakpoint(impact["weakpoint"], damage).get("hit", false)))
 			elif _crate_indices.has(collider_id):
 				var outcome: Dictionary = _damage_crate(int(_crate_indices[collider_id]), damage)
 				_pinball_combo += int(bool(outcome.get("broke", false)))
@@ -666,6 +699,9 @@ func _starfall_origin(direction: Vector2) -> Vector2:
 	return _nearest_skill_origin(direction, 320.0)
 
 func _nearest_skill_origin(direction: Vector2, target_range: float) -> Vector2:
+	var point: Dictionary = _nearest_weakpoint(player_position, target_range)
+	if not point.is_empty():
+		return point["position"]
 	var closest: Enemy
 	var distance_squared: float = target_range * target_range
 	for enemy: Enemy in enemies:
@@ -710,6 +746,7 @@ func _cast_damage_skill(origin: Vector2, direction: Vector2, parameters: Diction
 		if enemy.health < before:
 			affected += 1
 	if not complete:
+		affected += _damage_boss_points_in_skill(origin, direction, parameters)
 		_damage_crates_in_skill(origin, direction, parameters)
 	return affected
 
@@ -792,7 +829,7 @@ func pulse_snapshot() -> Dictionary:
 		"last_affected": last_pulse_affected,
 	}
 
-func spawn_enemy(id: String, position: Vector2 = Vector2.INF) -> Enemy:
+func spawn_enemy(id: String, position: Vector2 = Vector2.INF, deterministic_timer: bool = false) -> Enemy:
 	if _enemy_free.is_empty():
 		return null
 	_explosion_grid_active = false
@@ -809,13 +846,16 @@ func spawn_enemy(id: String, position: Vector2 = Vector2.INF) -> Enemy:
 	enemy.health = enemy.max_health
 	enemy.radius = enemy.definition.radius
 	enemy.age = 0.0
-	enemy.action_timer = rng.randf_range(1.0, 2.5)
+	enemy.action_timer = 1.8 if deterministic_timer else rng.randf_range(1.0, 2.5)
 	enemy.mode = 0
 	enemy.slow_timer = 0.0
 	enemy.slow_factor = 1.0
 	enemy.pulse_hinder_timer = 0.0
 	enemy.hurt_timer = 0.0
 	enemy.hunter = false
+	enemy.boss_ghost = false
+	enemy.boss_cast_id = 0
+	enemy.damage_scale = 1.0
 	enemy_count += 1
 	return enemy
 
@@ -855,10 +895,10 @@ func _edge_position(body_radius: float = 42.0) -> Vector2:
 	return obstacles.free_point(fallback, body_radius, SPAWN_INSET)
 
 func _spawn_wave_group() -> void:
-	var count: int = 2 + int(run.wave / 2)
 	if _wave.boss_wave:
-		count = 2 if boss != null and boss.health > boss.max_health * 0.5 else 3
-	elif not _route.is_empty():
+		return
+	var count: int = 2 + int(run.wave / 2)
+	if not _route.is_empty():
 		count = maxi(1, ceili(float(count) * float(_route["count_factor"])))
 	var weights: Dictionary = _wave.spawn_weights if _route.is_empty() else _route["weights"]
 	for index: int in count:
@@ -953,45 +993,172 @@ func _update_enemies(delta: float) -> void:
 			enemy.position = obstacles.move_body(enemy.position, displacement, enemy.radius, 0.0, not charging)
 		if distance < enemy.radius + 13.0 and invulnerability <= 0.0:
 			var contact_origin: Vector2 = enemy.position
-			if dash_invulnerability_left <= 0.0:
+			if dash_invulnerability_left <= 0.0 and not (enemy == boss and bool(boss_encounter.snapshot()["hold_position"])):
 				# Retreat/charge movement can point away from the player; recoil is radial.
 				var recoil_direction: Vector2 = (contact_origin - player_position).normalized()
 				enemy.position = obstacles.move_body(contact_origin, recoil_direction * 18.0, enemy.radius)
-			_hurt_player(enemy.definition.damage * (1.0 + 0.09 * float(run.wave - 1)), id, "contact", contact_origin)
+			_hurt_player(enemy.definition.damage * enemy.damage_scale * (1.0 + 0.09 * float(run.wave - 1)), id, "contact", contact_origin)
 
-func _update_boss(enemy: Enemy, direction: Vector2, delta: float) -> void:
+func _update_boss(enemy: Enemy, _direction: Vector2, delta: float) -> void:
+	if enemy == boss and bool(boss_encounter.snapshot()["hold_position"]):
+		enemy.velocity = Vector2.ZERO
+		return
 	var target: Vector2 = clamp_point(player_position + Vector2(0, -45) + Vector2(sin(enemy.age * 0.35) * 220.0, cos(enemy.age * 0.25) * 100.0), enemy.radius)
 	var waypoint: Vector2 = obstacles.next_target(enemy.position, target, enemy.radius, enemy.uid)
-	var displacement: Vector2 = waypoint - enemy.position
-	var speed: float = enemy.definition.speed
-	if enemy.slow_timer > 0.0:
-		speed *= enemy.slow_factor
+	var speed: float = enemy.definition.speed * (enemy.slow_factor if enemy.slow_timer > 0.0 else 1.0)
 	speed *= ArenaCatalog.movement_multiplier(run.arena_id, enemy.position)
-	enemy.position = obstacles.move_body(enemy.position, displacement.limit_length(speed * delta), enemy.radius)
-	if enemy.action_timer > 0.0:
+	var displacement: Vector2 = (waypoint - enemy.position).limit_length(speed * delta)
+	enemy.velocity = displacement / delta if delta > 0.0 else Vector2.ZERO
+	enemy.position = obstacles.move_body(enemy.position, displacement, enemy.radius)
+
+func boss_weakpoints() -> Array[Dictionary]:
+	var points: Array[Dictionary] = []
+	if complete or boss == null or not boss.active or boss.health <= 0.0:
+		return points
+	for point: Dictionary in boss_encounter.weakpoints_snapshot():
+		if bool(point["active"]):
+			points.append(point)
+	return points
+
+func boss_encounter_snapshot() -> Dictionary:
+	var value: Dictionary = boss_encounter.snapshot()
+	value.merge({"active": not complete and boss != null and boss.active and boss.health > 0.0,
+		"health": boss.health if boss != null else 0.0, "max_health": boss.max_health if boss != null else 0.0,
+		"display_name": GameCatalog.enemy("boss").display_name, "geometry": boss_encounter.telegraph_snapshot(),
+		"interrupts": boss_interrupts, "weakpoints_broken": weakpoints_broken, "weakpoint_damage": weakpoint_damage}, true)
+	return value
+
+func _advance_boss_encounter(delta: float) -> void:
+	if boss == null or not boss.active or boss.health <= 0.0:
 		return
-	_boss_cycle += 1
-	var phase_two: bool = enemy.health < enemy.max_health * 0.5
-	match _boss_cycle % 3:
-		0:
-			var number: int = 14 if phase_two else 10
-			for index: int in number:
-				var angle: float = TAU * float(index) / float(number) + enemy.age * 0.3
-				_hostile_shot(enemy.position, Vector2.from_angle(angle) * 145.0, 14.0, enemy.definition.id)
-		1:
-			for offset: int in 3:
-				var zone: WarningZone = WarningZone.new()
-				zone.source_id = enemy.definition.id
-				zone.position = clamp_point(player_position + Vector2(float(offset - 1) * 110.0, float(offset % 2) * 65.0), 80.0)
-				zone.radius = 64.0
-				zone.damage = 20.0
+	_dispatch_boss_events(boss_encounter.advance(delta, boss.position, player_position, boss.health / boss.max_health))
+
+func _dispatch_boss_events(events: Array[Dictionary]) -> void:
+	if complete or boss == null or not boss.active:
+		return
+	for event: Dictionary in events:
+		match str(event["type"]):
+			"telegraph":
+				_place_boss_weakpoints(int(event["cast_id"]))
+			"attack", "root_lane":
+				var zone := WarningZone.new()
+				zone.shape = str(event["shape"])
+				zone.position = event["position"]
+				zone.radius = float(event.get("radius", 0.0))
+				zone.direction = event.get("direction", Vector2.RIGHT)
+				zone.length = float(event.get("length", 0.0))
+				zone.width = float(event.get("width", 0.0))
+				zone.damage = float(event["damage"])
+				zone.delay = float(event.get("delay", 0.0))
+				zone.duration = float(event.get("duration", 0.3))
+				zone.source_cast_id = int(event["cast_id"])
 				zones.append(zone)
-		2:
-			for index: int in 5:
-				_hostile_shot(enemy.position, direction.rotated(float(index - 2) * 0.17) * 195.0, 13.0, enemy.definition.id)
-			for index: int in (4 if phase_two else 2):
-				spawn_enemy("chaser", clamp_point(enemy.position + Vector2.from_angle(float(index) * 2.4) * 100.0))
-	enemy.action_timer = 1.8 if phase_two else 2.6
+			"summon":
+				var alive: int = 0
+				for enemy: Enemy in enemies:
+					alive += int(enemy.active and enemy.boss_ghost)
+				for point: Vector2 in event["positions"]:
+					if alive >= int(event["max_alive"]) or enemy_count >= ENEMY_LIMIT:
+						break
+					var ghost: Enemy = spawn_enemy(str(event["enemy_id"]), point, true)
+					if ghost == null:
+						break
+					ghost.boss_ghost = true
+					ghost.boss_cast_id = int(event["cast_id"])
+					ghost.max_health *= float(event["health_factor"])
+					ghost.health = ghost.max_health
+					ghost.damage_scale = float(event["damage_factor"])
+					alive += 1
+
+func _place_boss_weakpoints(cast_id: int) -> void:
+	var locations: Dictionary = {}
+	for point: Dictionary in boss_encounter.weakpoints_snapshot():
+		locations[int(point["uid"])] = _safe_weakpoint_position(point["position"], float(point["radius"]), locations)
+	var placed: bool = boss_encounter.relocate_weakpoints(cast_id, locations)
+	if not placed:
+		push_error("The authored boss weakpoints cannot fit the active arena")
+
+func _safe_weakpoint_position(desired: Vector2, radius: float, locations: Dictionary) -> Vector2:
+	for attempt: int in 65:
+		var offset: Vector2 = Vector2.ZERO if attempt == 0 else Vector2.from_angle(float((attempt - 1) % 16) * TAU / 16.0) * (32.0 + float((attempt - 1) / 16) * 32.0)
+		var position: Vector2 = obstacles.free_point(desired + offset, radius + 4.0, radius + 4.0)
+		if _weakpoint_position_fits(position, radius, locations):
+			return position
+	for y: int in range(32, int(ARENA.size.y), 64):
+		for x: int in range(32, int(ARENA.size.x), 64):
+			var position: Vector2 = ARENA.position + Vector2(x, y)
+			if _weakpoint_position_fits(position, radius, locations):
+				return position
+	return Vector2.INF
+
+func _weakpoint_position_fits(position: Vector2, radius: float, locations: Dictionary) -> bool:
+	if not ARENA.grow(-radius - 4.0).has_point(position) or not obstacles.is_free(position, radius + 4.0):
+		return false
+	for existing: Vector2 in locations.values():
+		if position.distance_to(existing) < radius * 2.0 + 4.0:
+			return false
+	return true
+
+func _nearest_weakpoint(position: Vector2, distance: float, excluded: Dictionary = {}) -> Dictionary:
+	var best: float = distance * distance
+	var result: Dictionary = {}
+	for point: Dictionary in boss_weakpoints():
+		var key: String = "%d:%d" % [point["cast_id"], point["uid"]]
+		if excluded.has(key):
+			continue
+		var squared: float = position.distance_squared_to(point["position"])
+		if squared < best or (result.is_empty() and squared <= best):
+			best = squared
+			result = point
+	return result
+
+func _weakpoint_first_hit(start: Vector2, end: Vector2, padding: float, excluded: Dictionary = {}, ignore_outward_overlap: bool = false) -> Dictionary:
+	var result: Dictionary = {}
+	var best: float = INF
+	for point: Dictionary in boss_weakpoints():
+		var key: String = "%d:%d" % [point["cast_id"], point["uid"]]
+		if excluded.has(key):
+			continue
+		if ignore_outward_overlap:
+			var offset: Vector2 = start - (point["position"] as Vector2)
+			if offset.length_squared() <= pow(padding + float(point["radius"]), 2) and offset.dot(end - start) >= 0.0:
+				continue
+		var entry: float = _swept_circle_entry_t(start, end, point["position"], padding + float(point["radius"]))
+		if entry < best:
+			best = entry
+			result = {"t": entry, "point": point, "key": key}
+	return result
+
+func _damage_boss_weakpoint(point: Dictionary, amount: float) -> Dictionary:
+	if complete or boss == null or not boss.active or boss.health <= 0.0:
+		return {}
+	var outcome: Dictionary = boss_encounter.damage_weakpoint(int(point["uid"]), int(point["cast_id"]), amount)
+	if bool(outcome.get("hit", false)):
+		weakpoint_damage += float(outcome["damage"])
+		weakpoints_broken += int(bool(outcome["broke"]))
+		boss_weakpoint_hit.emit(int(point["uid"]), int(point["cast_id"]), outcome["position"], bool(outcome["broke"]))
+		if bool(outcome["interrupted"]):
+			boss_interrupts += 1
+			boss_interrupted.emit(boss.position)
+	return outcome
+
+func _damage_boss_points_in_skill(origin: Vector2, direction: Vector2, spec: Dictionary) -> int:
+	var affected: int = 0
+	var amount: float = float(spec.get("damage", 0.0))
+	if amount <= 0.0:
+		return affected
+	for point: Dictionary in boss_weakpoints():
+		if skill_contains(spec, origin, direction, point["position"]):
+			affected += int(bool(_damage_boss_weakpoint(point, amount).get("hit", false)))
+	return affected
+
+func _clear_boss_ghosts() -> void:
+	for enemy: Enemy in enemies:
+		if enemy.active and enemy.boss_ghost:
+			enemy.active = false
+			enemy_count -= 1
+			_enemy_free.append(enemy.slot)
+			obstacles.forget_agent(enemy.uid)
 
 func _rebuild_grid() -> void:
 	_shot_region_candidates.clear()
@@ -1056,12 +1223,14 @@ func _update_weapons(delta: float) -> void:
 		var definition: ContentDef = GameCatalog.weapon(str(equipped["id"]))
 		var uid: int = int(equipped.get("uid", -index - 1))
 		var target: Enemy = _weapon_target(player_position, definition.range, str(equipped["id"]) == "ember" and run.core_id == "frostfire", _linked_weapons.has(uid))
-		if target == null:
+		var point: Dictionary = _nearest_weakpoint(player_position, definition.range)
+		if target == null and point.is_empty():
 			_cooldowns[index] = 0.08
 			continue
 		var rune_entry: Dictionary = equipped.get("rune", {})
 		var rune: String = str(rune_entry.get("id", ""))
-		var angle: float = (target.position - player_position).angle()
+		var aim: Vector2 = point["position"] if not point.is_empty() else target.position
+		var angle: float = (aim - player_position).angle()
 		var fired: bool = false
 		for pellet: int in definition.shots:
 			var offset: float = (float(pellet) - float(definition.shots - 1) * 0.5) * definition.spread
@@ -1148,6 +1317,7 @@ func _allocate_shot() -> Shot:
 	var shot: Shot = shots[_shot_free.pop_back()]
 	shot.active = true
 	shot.hit_ids.clear()
+	shot.weakpoint_hit_ids.clear()
 	shot.remaining = 0
 	shot.innate_remaining = 0
 	shot.weapon_rank = 1
@@ -1199,9 +1369,11 @@ func _update_shots(delta: float) -> void:
 			shot.velocity = (player_position - shot.position).normalized() * shot.return_speed
 		elif shot.homing > 0.0 and not shot.hostile:
 			var target: Enemy = _weapon_target(shot.position, 420.0, shot.source == "ember" and run.core_id == "frostfire", shot.low_health_priority, shot.hit_ids)
-			if target != null:
+			var point: Dictionary = _nearest_weakpoint(shot.position, 420.0, shot.weakpoint_hit_ids)
+			if target != null or not point.is_empty():
+				var aim: Vector2 = point["position"] if not point.is_empty() else target.position
 				var speed: float = shot.velocity.length()
-				var desired: Vector2 = (target.position - shot.position).normalized()
+				var desired: Vector2 = (aim - shot.position).normalized()
 				var heading: Vector2 = shot.velocity.normalized()
 				var weight: float = minf(1.0, shot.homing * delta)
 				var turn_cross: float = heading.cross(desired)
@@ -1234,6 +1406,20 @@ func _update_shots(delta: float) -> void:
 		while shot.active and hit_count < hit_limit:
 			var crate: Dictionary = interactions.first_crate_hit(shot.previous, shot.position, shot.radius)
 			var enemy_t: float = _swept_circle_entry_t(shot.previous, shot.position, impact.position, shot.radius + impact.radius) if impact != null else INF
+			if boss != null and boss.active:
+				var point: Dictionary = _weakpoint_first_hit(shot.previous, shot.position, shot.radius, shot.weakpoint_hit_ids)
+				if not point.is_empty() and float(point["t"]) <= minf(enemy_t, float(crate.get("t", INF))):
+					hit_count += 1
+					shot.weakpoint_hit_ids[point["key"]] = true
+					_damage_boss_weakpoint(point["point"], shot.damage)
+					if shot.innate_remaining > 0:
+						shot.innate_remaining -= 1
+						continue
+					if shot.rune == "pierce" and shot.remaining > 0:
+						shot.remaining -= 1
+						continue
+					_release_shot(shot)
+					break
 			if not crate.is_empty() and float(crate["t"]) <= enemy_t:
 				_damage_crate(int(crate["index"]), shot.damage)
 				_release_shot(shot)
@@ -1309,6 +1495,7 @@ func _frostfire_burst(point: Vector2, damage: float, source: String, excluded: D
 		if enemy.active and not excluded.has(enemy.uid) and enemy.position.distance_squared_to(point) < pow(RogueRules.FROSTFIRE_RADIUS + enemy.radius, 2):
 			apply_damage(enemy, damage * RogueRules.FROSTFIRE_FACTOR, source, true)
 	if not complete:
+		_damage_boss_points_in_skill(point, Vector2.RIGHT, {"shape": "circle", "radius": RogueRules.FROSTFIRE_RADIUS, "damage": damage * RogueRules.FROSTFIRE_FACTOR})
 		_damage_crates_in_skill(point, Vector2.RIGHT, {"shape": "circle", "radius": RogueRules.FROSTFIRE_RADIUS, "damage": damage * RogueRules.FROSTFIRE_FACTOR})
 
 func _first_collision(shot: Shot) -> Enemy:
@@ -1395,7 +1582,8 @@ static func clamp_point(point: Vector2, inset: float = 0.0) -> Vector2:
 func apply_damage(enemy: Enemy, amount: float, source: String, secondary: bool = false, slow: float = 0.0) -> void:
 	if complete or not enemy.active:
 		return
-	var actual: float = minf(enemy.health, maxf(0.0, amount))
+	var multiplier: float = float(boss_encounter.snapshot()["damage_multiplier"]) if enemy == boss else 1.0
+	var actual: float = minf(enemy.health, maxf(0.0, amount) * multiplier)
 	if actual <= 0.0:
 		return
 	enemy.health -= actual
@@ -1431,6 +1619,7 @@ func _explode(position: Vector2, amount: float, source: String, excluded: Dictio
 			# Secondary damage deliberately never enters the rune dispatch path.
 			apply_damage(enemy, amount, source, true)
 	if not complete:
+		_damage_boss_points_in_skill(position, Vector2.RIGHT, {"shape": "circle", "radius": radius, "damage": amount})
 		_damage_crates_in_skill(position, Vector2.RIGHT, {"shape": "circle", "radius": radius, "damage": amount})
 
 func _explosion_slots(position: Vector2, radius: float = RuneRules.BLAST_RADIUS) -> PackedInt32Array:
@@ -1470,7 +1659,7 @@ func _kill_enemy(enemy: Enemy) -> void:
 	enemy_killed.emit(enemy.position, enemy.definition.color)
 	if enemy == boss:
 		collect_remaining_souls()
-		_finish(true, "无面祭司已被击败。你的余烬仍在燃烧。")
+		_finish(true, "%s已被击败。你的余烬仍在燃烧。" % GameCatalog.enemy("boss").display_name)
 
 func _drop_soul(position: Vector2, value: int) -> void:
 	if _soul_free.is_empty():
@@ -1509,18 +1698,31 @@ func collect_remaining_souls() -> void:
 	if collected > 0:
 		run.collect_souls(collected)
 
+static func zone_contains(zone: WarningZone, point: Vector2, padding: float = 10.0) -> bool:
+	if zone.shape != "lane":
+		return point.distance_squared_to(zone.position) < pow(zone.radius + padding, 2)
+	var direction: Vector2 = zone.direction.normalized()
+	var offset: Vector2 = point - zone.position
+	var along: float = offset.dot(direction)
+	var across: float = offset.dot(direction.orthogonal())
+	var outside := Vector2(along - clampf(along, 0.0, zone.length), across - clampf(across, -zone.width * 0.5, zone.width * 0.5))
+	return outside.length_squared() <= padding * padding
+
 func _update_zones(delta: float) -> void:
 	for index: int in range(zones.size() - 1, -1, -1):
 		if complete:
 			return
 		var zone: WarningZone = zones[index]
 		zone.age += delta
-		if zone.age >= zone.delay and not zone.triggered:
+		var activate: bool = zone.age >= zone.delay and not zone.triggered
+		if activate:
 			zone.triggered = true
-			add_effect(zone.position, Color("ff705c"), zone.radius, 0.4)
-			if zone.position.distance_to(player_position) < zone.radius + 10.0:
-				_hurt_player(zone.damage, zone.source_id, "ritual", zone.position)
-		if zone.age > zone.delay + 0.3:
+			if zone.shape != "lane":
+				add_effect(zone.position, Color("ff705c"), zone.radius, zone.duration)
+		var can_damage: bool = zone.age >= zone.delay and zone.age <= zone.delay + zone.duration if zone.source_cast_id > 0 else activate
+		if can_damage and zone_contains(zone, player_position):
+			_hurt_player(zone.damage, zone.source_id, "ritual", zone.position)
+		if zone.age > zone.delay + zone.duration:
 			zones.remove_at(index)
 
 func _hurt_player(amount: float, source_id: String = "enemy", kind: String = "contact", origin: Vector2 = Vector2.INF) -> void:
@@ -1587,6 +1789,8 @@ func _finish(won: bool, reason: String) -> void:
 	if complete:
 		return
 	complete = true
+	boss_encounter.stop()
+	_clear_boss_ghosts()
 	victory = won
 	end_reason = reason
 	ended.emit(won, reason)
@@ -1602,6 +1806,7 @@ func snapshot() -> Dictionary:
 		"skills": active_skill_snapshots(),
 		"hero_skill": hero_skill_snapshot(),
 		"pinball": pinball_snapshot(),
+		"boss_encounter": boss_encounter_snapshot(),
 		"boss_health": boss.health if boss != null and boss.active else 0.0,
 		"boss_max_health": boss.max_health if boss != null else 0.0,
 	}

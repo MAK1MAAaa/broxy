@@ -413,10 +413,13 @@ func _test_spawns_and_randomness() -> void:
 func _test_boss_summons_and_drops() -> void:
 	var sim: CombatSim = _sim()
 	sim.player_position = ROCK + Vector2(280, 0)
-	var boss: CombatSim.Enemy = sim.spawn_enemy("boss", ROCK + Vector2(-100, 0))
-	boss.action_timer = 0.0
-	sim._boss_cycle = 1
-	sim._update_boss(boss, Vector2.RIGHT, 0.0)
+	var boss: CombatSim.Enemy = sim.spawn_enemy("boss", ROCK + Vector2(-196, 0))
+	sim.boss = boss
+	sim.boss_encounter.begin(boss.position, 1.0)
+	for index: int in 3:
+		sim._advance_boss_encounter(BossEncounter.OPENING_SECONDS if index == 0 else BossEncounter.RECOVERY_SECONDS)
+		sim._advance_boss_encounter(float(sim.boss_encounter_snapshot()["charge_left"]))
+		sim._dispatch_boss_events(sim.boss_encounter.finish_friendly_step())
 	var safe: bool = sim.enemy_count == 3
 	for enemy: CombatSim.Enemy in sim.enemies:
 		if enemy.active:

@@ -16,6 +16,7 @@ from world_flipper_maps import map_assets
 from world_flipper_items import item_assets
 from world_flipper_heroes import hero_assets
 from world_flipper_interactions import interaction_assets
+from world_flipper_weakpoints import weakpoint_assets
 
 ROOT = Path(__file__).resolve().parents[1]
 CACHE = ROOT / ".tools/worldflipper/source"
@@ -28,6 +29,7 @@ EXTRA_REGISTRIES = (
     "world_flipper_items_sources.json",
     "world_flipper_heroes.json",
     "world_flipper_interactions_sources.json",
+    "world_flipper_weakpoints_sources.json",
 )
 CELL = (96, 96)
 MAX_DOWNLOAD_BYTES = 8 * 1024 * 1024
@@ -192,10 +194,12 @@ def main() -> None:
     items = item_assets(sources, paths, OUTPUT)
     heroes = hero_assets(sources, paths, OUTPUT)
     interactions = interaction_assets(sources, paths, OUTPUT)
-    assets = player + weapons + enemies + cover + maps + items + projectile_assets(weapons) + heroes + interactions
-    metadata_path = OUTPUT / "interactions/interaction-art.json"
+    weakpoints = weakpoint_assets(sources, paths, OUTPUT)
+    assets = player + weapons + enemies + cover + maps + items + projectile_assets(weapons) + heroes + interactions + weakpoints
+    metadata_paths = (("interactions/interaction-art.json", "Runtime frame layout, anchors and explicitly adapted ball/break timing"),
+                      ("boss/weakpoint-art.json", "Complete weak-point state layout and project-specific runtime animation contract"))
     manifest = {
-        "revision": "world-flipper-fan-06",
+        "revision": "world-flipper-fan-07",
         "original_copyright": "© Cygames, Inc. / Citail Inc.",
         "license_status": "Original game assets; no open asset license found. Unofficial fan-work use is not a claim of authorization.",
         "copyright_source": "https://worldflipper.jp/copyright/",
@@ -204,8 +208,8 @@ def main() -> None:
         "sources": sources,
         "references_cached_only": registry["references"],
         "assets": assets,
-        "metadata_files": [{"path": "assets/worldflipper/interactions/interaction-art.json", "sha256": sha256(metadata_path.read_bytes()),
-                            "purpose": "Runtime frame layout, anchors and explicitly adapted ball/break timing"}],
+        "metadata_files": [{"path": "assets/worldflipper/" + relative, "sha256": sha256((OUTPUT / relative).read_bytes()),
+                            "purpose": purpose} for relative, purpose in metadata_paths],
         "gameplay": "Alk and three independently normalized original hero sets use the current game's party and skill rules rather than the original game's statistics. Arena IDs, terrain zones and multipliers remain stable. Fixed low props block ground movement, dash and knockback while flying attacks pass over them. Separate breakable crates intercept friendly projectiles; dash contact with a bumper activates the protagonist's adapted pinball form. Crate drops and interaction animation timing follow this project's independent rules.",
     }
     (OUTPUT / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")

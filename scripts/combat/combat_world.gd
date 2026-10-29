@@ -19,6 +19,8 @@ var _interaction_widths: Dictionary = {"barrel": 24.0, "chest": 44.0, "gold": 12
 var _interaction_feet: Dictionary = {"barrel": Vector2(64, 112), "chest": Vector2(48, 88), "gold": Vector2(32, 61), "health": Vector2(32, 61), "charge": Vector2(32, 61)}
 var _bumper_flashes: Array[Dictionary] = []
 var _crate_flashes: Array[Dictionary] = []
+var _weakpoint_texture: Texture2D
+var _boss_receipts: Array[WeakpointReceipt] = []
 var _camera: Camera2D
 var _arena_id: String = "reliquary"
 var _arena_name: String = "沙漠遗迹"
@@ -65,6 +67,17 @@ const BUMPER_FLASH_LIFE: float = 0.18
 const CRATE_FLASH_LIFE: float = 0.12
 const CRATE_BREAK_LIFE: float = 0.32
 const BALL_FRAME_ENDS: Array[float] = [0.12, 0.18, 0.24, 0.30, 0.36, 0.42, 0.48]
+const WEAKPOINT_ATLAS_PATH: String = "res://assets/worldflipper/boss/weakpoint-atlas.png"
+const WEAKPOINT_HIT_LIFE: float = 0.10
+const WEAKPOINT_BREAK_LIFE: float = 0.22
+const WEAKPOINT_LIMIT: int = 3
+
+class WeakpointReceipt:
+	var uid: int = -1
+	var cast_id: int = -1
+	var position: Vector2 = Vector2.ZERO
+	var broke: bool = false
+	var life: float = 0.0
 
 class DashAfterimage:
 	var position: Vector2 = Vector2.ZERO
@@ -152,6 +165,8 @@ const GROUNDING_PAINTER_SCRIPT = preload("res://scripts/combat/grounding_painter
 var _grounding_painter: GROUNDING_PAINTER_SCRIPT = GROUNDING_PAINTER_SCRIPT.new()
 
 func _init() -> void:
+	for index: int in WEAKPOINT_LIMIT:
+		_boss_receipts.append(WeakpointReceipt.new())
 	for index: int in DASH_AFTERIMAGE_LIMIT:
 		_dash_afterimages.append(DashAfterimage.new())
 	for index: int in NUMBER_LIMIT:
@@ -178,6 +193,7 @@ func _ready() -> void:
 	for entry: Array in [["ball", "ball-atlas"], ["barrel", "barrel-atlas"], ["chest", "chest"], ["health", "health"], ["charge", "charge"], ["gold", "mana"]]:
 		_interaction_textures[str(entry[0])] = load(INTERACTION_ROOT + str(entry[1]) + ".png") as Texture2D
 	_cache_interaction_geometry()
+	_weakpoint_texture = load(WEAKPOINT_ATLAS_PATH) as Texture2D
 	_camera = Camera2D.new()
 	_camera.name = "ExplorationCamera"
 	_camera.top_level = true
@@ -252,6 +268,8 @@ func begin(state: RunState) -> void:
 	sim.pinball_bounced.connect(_on_pinball_bounced)
 	sim.crate_hit.connect(_on_crate_hit)
 	sim.world_pickup_collected.connect(_on_world_pickup_collected)
+	sim.boss_weakpoint_hit.connect(_on_boss_weakpoint_hit)
+	sim.boss_interrupted.connect(_on_boss_interrupted)
 	_reset_feedback()
 	active = true
 	_last_kills = state.kills
@@ -286,8 +304,12 @@ func _update_camera() -> void:
 
 func _feedback_safe_rect() -> Rect2:
 	var view: Rect2 = camera_view()
-	var safe := Rect2(view.position + Vector2(24, 110), view.size - Vector2(48, 222))
+	var top: float = 174.0 if _boss_alive() else 110.0
+	var safe := Rect2(view.position + Vector2(24, top), view.size - Vector2(48, top + 112.0))
 	return safe.intersection(CombatSim.ARENA.grow(-8.0))
+
+func _boss_alive() -> bool:
+	return active and sim != null and sim.boss != null and sim.boss.active and sim.boss.health > 0.0
 
 func _cosmetic_visible_rect() -> Rect2:
 	var view: Rect2 = camera_view()
@@ -323,6 +345,7 @@ func _physics_process(delta: float) -> void:
 	_advance_dash_evasion_feedback(delta)
 	_advance_pulse_feedback(delta)
 	_advance_interaction_feedback(delta)
+	_advance_boss_feedback(delta)
 	_active_skill_painter.advance(delta)
 	var movement: Vector2 = _movement()
 	if autopilot:
@@ -477,6 +500,106 @@ func _on_world_pickup_collected(kind: String, point: Vector2, value: float) -> v
 		sound.play("rune" if kind == "charge" else "level" if kind == "health" else "buy", -24.0)
 	hud_changed.emit(hud_snapshot())
 	_request_redraw()
+
+func _on_boss_weakpoint_hit(uid: int, cast_id: int, point: Vector2, broke: bool) -> void:
+	if not _boss_alive() or uid < 0 or cast_id < 0 or not point.is_finite():
+		return
+	var selected: WeakpointReceipt = _boss_receipts[0]
+	for receipt: WeakpointReceipt in _boss_receipts:
+		if receipt.uid == uid and receipt.cast_id == cast_id:
+			selected = receipt
+			break
+		if receipt.life < selected.life:
+			selected = receipt
+	selected.uid = uid
+	selected.cast_id = cast_id
+	selected.position = point
+	selected.broke = broke
+	selected.life = WEAKPOINT_BREAK_LIFE if broke else WEAKPOINT_HIT_LIFE
+	if sound != null:
+		sound.play("death" if broke else "hit", -22.0)
+	hud_changed.emit(hud_snapshot())
+	_request_redraw()
+
+func _on_boss_interrupted(point: Vector2) -> void:
+	if not _boss_alive() or not point.is_finite():
+		return
+	if bool(settings.get("flash", true)):
+		_impact_painter.add_hit(point, "storm", -1)
+		_shake = maxf(_shake, 1.2)
+	if sound != null:
+		sound.play_cue("pulse_hit", -18.0, "boss_interrupt")
+	hud_changed.emit(hud_snapshot())
+	_request_redraw()
+
+func _clear_boss_feedback() -> void:
+	for receipt: WeakpointReceipt in _boss_receipts:
+		receipt.uid = -1
+		receipt.cast_id = -1
+		receipt.life = 0.0
+
+func _advance_boss_feedback(delta: float) -> void:
+	if not _boss_alive():
+		_clear_boss_feedback()
+		return
+	var cast_id: int = int(sim.boss_encounter.snapshot().get("cast_id", -1))
+	for receipt: WeakpointReceipt in _boss_receipts:
+		receipt.life = maxf(0.0, receipt.life - delta) if receipt.cast_id == cast_id else 0.0
+
+static func weakpoint_draw_rect(point: Vector2) -> Rect2:
+	return Rect2(point - Vector2(16, 16), Vector2(32, 32))
+
+static func weakpoint_source_rect(frame: int) -> Rect2:
+	return Rect2(Vector2(frame * 96, 0), Vector2(96, 96)) if frame >= 0 and frame < 3 else Rect2()
+
+func boss_weakpoint_presentation_snapshot() -> Array[Dictionary]:
+	var value: Array[Dictionary] = []
+	if not _boss_alive():
+		return value
+	var encounter: Dictionary = sim.boss_encounter.snapshot()
+	var cast_id: int = int(encounter.get("cast_id", -1))
+	var total: float = float(encounter.get("charge_total", 0.0))
+	var red: bool = total > 0.0 and float(encounter.get("charge_left", total)) <= total * 0.3
+	var flashing: bool = bool(settings.get("flash", true))
+	for point: Dictionary in sim.boss_weakpoints():
+		if value.size() >= WEAKPOINT_LIMIT:
+			break
+		if not bool(point.get("active", false)) or float(point.get("health", 0.0)) <= 0.0:
+			continue
+		var center: Vector2 = point["position"]
+		if not center.is_finite():
+			continue
+		var tint: Color = Color.WHITE
+		for receipt: WeakpointReceipt in _boss_receipts:
+			if flashing and receipt.life > 0.0 and not receipt.broke and receipt.uid == int(point["uid"]) and receipt.cast_id == cast_id:
+				tint = Color(1.25, 1.10, 0.85)
+				center = receipt.position
+		value.append({"uid": int(point["uid"]), "cast_id": int(point["cast_id"]), "position": center,
+			"frame": 1 if red else 0, "rect": weakpoint_draw_rect(center), "tint": tint, "broken": false})
+	for receipt: WeakpointReceipt in _boss_receipts:
+		if receipt.life > 0.0 and receipt.broke and receipt.cast_id == cast_id:
+			value.append({"uid": receipt.uid, "cast_id": receipt.cast_id, "position": receipt.position,
+				"frame": 2, "rect": weakpoint_draw_rect(receipt.position), "tint": Color.WHITE, "broken": true})
+	return value
+
+func _draw_boss_weakpoints() -> void:
+	if _weakpoint_texture == null:
+		return
+	var visible: Rect2 = _cosmetic_visible_rect()
+	for point: Dictionary in boss_weakpoint_presentation_snapshot():
+		if (point["rect"] as Rect2).intersects(visible):
+			draw_texture_rect_region(_weakpoint_texture, point["rect"], weakpoint_source_rect(int(point["frame"])), point["tint"])
+
+func boss_danger_snapshot() -> Dictionary:
+	if not _boss_alive():
+		return {}
+	var encounter: Dictionary = sim.boss_encounter.snapshot()
+	if str(encounter.get("phase", "")) != "charge":
+		return {}
+	var total: float = float(encounter.get("charge_total", 0.0))
+	var progress: float = clampf(1.0 - float(encounter.get("charge_left", 0.0)) / total, 0.0, 1.0) if total > 0.0 else 0.0
+	return {"cast_id": int(encounter["cast_id"]), "progress": progress,
+		"geometry": sim.boss_encounter.telegraph_snapshot(), "safe_channels": encounter.get("safe_channels", []).duplicate(true)}
 
 static func _add_interaction_flash(pool: Array[Dictionary], point: Vector2, life: float, limit: int) -> void:
 	for flash: Dictionary in pool:
@@ -772,6 +895,7 @@ func _reset_feedback() -> void:
 	_clear_pulse_feedback()
 	_bumper_flashes.clear()
 	_crate_flashes.clear()
+	_clear_boss_feedback()
 	_enemy_telegraphs.clear()
 	_impact_painter.clear()
 	_active_skill_painter.clear()
@@ -879,6 +1003,7 @@ func _on_ended(victory: bool, reason: String) -> void:
 	_clear_pulse_feedback()
 	_bumper_flashes.clear()
 	_crate_flashes.clear()
+	_clear_boss_feedback()
 	_enemy_telegraphs.clear()
 	_impact_painter.clear()
 	_active_skill_painter.clear()
@@ -939,6 +1064,7 @@ func _draw() -> void:
 	_active_skill_painter.draw(self)
 	_draw_impact_feedback()
 	_draw_rune_feedback()
+	_draw_boss_weakpoints()
 	_draw_outgoing_feedback()
 	_draw_player()
 	_draw_skill_feedback()
@@ -1403,18 +1529,17 @@ func _draw_danger() -> void:
 	if active:
 		_enemy_telegraphs.rebuild(sim.enemies)
 		_enemy_telegraphs.draw(self)
+	var current: Dictionary = boss_danger_snapshot()
+	for corridor: Dictionary in current.get("safe_channels", []):
+		_draw_danger_shape(corridor, 0.0, true)
+	for shape: Dictionary in current.get("geometry", []):
+		_draw_danger_shape(shape, float(current.get("progress", 0.0)))
 	for zone: CombatSim.WarningZone in sim.zones:
-		if zone.triggered:
+		if zone.triggered and zone.source_cast_id <= 0:
 			continue
-		var progress: float = minf(1.0, zone.age / zone.delay)
-		draw_circle(zone.position, zone.radius, Color(0.9, 0.22, 0.16, 0.10 + progress * 0.06))
-		draw_arc(zone.position, zone.radius, 0, TAU, 40, Color("b85246"), 1.3, true)
-		draw_arc(zone.position, zone.radius, -PI * 0.5, -PI * 0.5 + TAU * progress, 40, Color("c94d50"), 3.0, true)
-		for index: int in 8:
-			var direction: Vector2 = Vector2.from_angle(float(index) * TAU / 8.0)
-			draw_line(zone.position + direction * (zone.radius - 4.0), zone.position + direction * (zone.radius + 3.0), Color("963e42"), 1.3, true)
-		draw_line(zone.position - Vector2(8, 0), zone.position + Vector2(8, 0), Color("963e42"), 1.0, true)
-		draw_line(zone.position - Vector2(0, 8), zone.position + Vector2(0, 8), Color("963e42"), 1.0, true)
+		var shape: Dictionary = {"shape": zone.shape, "position": zone.position, "radius": zone.radius,
+			"direction": zone.direction, "length": zone.length, "width": zone.width}
+		_draw_danger_shape(shape, clampf(zone.age / zone.delay, 0.0, 1.0) if zone.delay > 0.0 else 1.0)
 	# Live hostile rounds remain above all warning strokes.
 	for shot: CombatSim.Shot in sim.shots:
 		if not shot.active or not shot.hostile:
@@ -1423,6 +1548,49 @@ func _draw_danger() -> void:
 		draw_circle(shot.position, shot.radius, Color("ff8666"))
 		draw_arc(shot.position, shot.radius, 0, TAU, 12, Color("ffdfb1"), 1.5, true)
 		draw_circle(shot.position, 2.5, Color("fff2d7"))
+
+static func lane_polygon(shape: Dictionary) -> PackedVector2Array:
+	var point: Variant = shape.get("position")
+	var heading: Variant = shape.get("direction")
+	var length: float = float(shape.get("length", 0.0))
+	var width: float = float(shape.get("width", 0.0))
+	if not point is Vector2 or not heading is Vector2 or not point.is_finite() or not heading.is_finite():
+		return PackedVector2Array()
+	if heading.is_zero_approx() or not is_finite(length) or not is_finite(width) or length <= 0.0 or width <= 0.0:
+		return PackedVector2Array()
+	var direction: Vector2 = heading.normalized()
+	var side: Vector2 = direction.orthogonal() * width * 0.5
+	var end: Vector2 = point + direction * length
+	return PackedVector2Array([point + side, end + side, end - side, point - side])
+
+func _draw_danger_shape(shape: Dictionary, progress: float, safe: bool = false) -> void:
+	var center: Vector2 = shape.get("position", Vector2.ZERO)
+	if str(shape.get("shape", "circle")) == "lane":
+		var corners: PackedVector2Array = lane_polygon(shape)
+		if corners.is_empty():
+			return
+		var color: Color = Color("8ce1ce") if safe else Color("c94d50")
+		draw_colored_polygon(corners, Color(color, 0.08 if safe else 0.10 + progress * 0.06))
+		var border: PackedVector2Array = corners.duplicate()
+		border.append(corners[0])
+		draw_polyline(border, Color(color, 0.48 if safe else 0.9), 1.5 if safe else 2.0, true)
+		if not safe:
+			var direction: Vector2 = (shape["direction"] as Vector2).normalized()
+			var side: Vector2 = direction.orthogonal() * float(shape["width"]) * 0.5
+			var front: Vector2 = center + direction * float(shape["length"]) * progress
+			draw_line(front + side, front - side, Color("f2b496"), 2.0, true)
+		return
+	var radius: float = float(shape.get("radius", 0.0))
+	if not center.is_finite() or not is_finite(radius) or radius <= 0.0:
+		return
+	draw_circle(center, radius, Color(0.9, 0.22, 0.16, 0.10 + progress * 0.06))
+	draw_arc(center, radius, 0, TAU, 40, Color("b85246"), 1.3, true)
+	draw_arc(center, radius, -PI * 0.5, -PI * 0.5 + TAU * progress, 40, Color("c94d50"), 3.0, true)
+	for index: int in 8:
+		var direction: Vector2 = Vector2.from_angle(float(index) * TAU / 8.0)
+		draw_line(center + direction * (radius - 4.0), center + direction * (radius + 3.0), Color("963e42"), 1.3, true)
+	draw_line(center - Vector2(8, 0), center + Vector2(8, 0), Color("963e42"), 1.0, true)
+	draw_line(center - Vector2(0, 8), center + Vector2(0, 8), Color("963e42"), 1.0, true)
 
 func _maintain_stress() -> void:
 	# This deliberately retains 300 enemies, 600 live moving projectiles and 200 drops.
