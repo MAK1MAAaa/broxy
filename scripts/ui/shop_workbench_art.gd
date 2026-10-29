@@ -40,6 +40,10 @@ class SurfaceFinish extends PassiveLayer:
 	func _draw() -> void:
 		if size.x < 28.0 or size.y < 28.0:
 			return
+		match role:
+			"shelf": _draw_wood()
+			"bag": _draw_leather()
+			"inspect": _draw_paper()
 		var pale: bool = role == "inspect"
 		var edge := Color("a3916d") if pale else Color("b59a68")
 		var shade := Color("d0c4a6") if pale else Color("172c2d")
@@ -62,9 +66,74 @@ class SurfaceFinish extends PassiveLayer:
 		else:
 			_draw_corner_hardware(edge, light, 5.0, 6.0)
 
+	func _draw_wood() -> void:
+		var inner := Rect2(Vector2(5, 5), size - Vector2(10, 10))
+		var plank_width: float = floorf(inner.size.x / 4.0)
+		for plank: int in 4:
+			var left: float = inner.position.x + float(plank) * plank_width
+			var width: float = inner.end.x - left if plank == 3 else plank_width
+			draw_rect(Rect2(Vector2(left, 5), Vector2(width, inner.size.y)), Color("64513b") if plank % 2 == 0 else Color("5b4b38"))
+			draw_line(Vector2(left, 6), Vector2(left, size.y - 6), Color("3a352d"), 1.0)
+			draw_line(Vector2(left + 1, 7), Vector2(left + 1, size.y - 7), Color("776146"), 1.0)
+			if width < 44.0:
+				continue
+			for grain: int in mini(12, maxi(0, int((size.y - 36.0) / 40.0))):
+				var grain_y: float = 22.0 + float(grain) * 40.0 + float(plank % 2) * 9.0
+				var grain_x: float = left + 12.0 + float((grain + plank) % 3) * 9.0
+				var length: float = minf(23.0 + float(grain % 3) * 6.0, width - 18.0)
+				if grain_x + length < inner.end.x:
+					draw_line(Vector2(grain_x, grain_y), Vector2(grain_x + length, grain_y), Color(0.14, 0.12, 0.09, 0.10), 1.0)
+		draw_rect(Rect2(Vector2(12, 10), Vector2(size.x - 24, minf(38.0, size.y - 20.0))), Color(0.10, 0.12, 0.11, 0.18))
+		draw_rect(inner, Color("2d302b"), false, 2.0)
+		draw_line(Vector2(8, size.y - 7), Vector2(size.x - 8, size.y - 7), Color("8a6b43"), 1.0)
+
+	func _draw_leather() -> void:
+		var inner := Rect2(Vector2(5, 5), size - Vector2(10, 10))
+		draw_rect(inner, Color("344f43"))
+		draw_rect(Rect2(Vector2(6, 6), Vector2(size.x - 12, minf(62.0, size.y - 12))), Color("3a5647"))
+		var lower_y: float = maxf(6.0, size.y * 0.66)
+		draw_rect(Rect2(Vector2(6, lower_y), Vector2(size.x - 12, size.y - lower_y - 6)), Color("2e493e"))
+		for binding_x: float in [6.0, size.x - 13.0]:
+			draw_rect(Rect2(Vector2(binding_x, 9), Vector2(7, size.y - 18)), Color("294137"))
+			draw_line(Vector2(binding_x + 1, 12), Vector2(binding_x + 1, size.y - 12), Color("4b6451"), 1.0)
+		if size.y > 84.0:
+			draw_line(Vector2(14, 68), Vector2(size.x - 14, 68), Color("233b34"), 1.0)
+			draw_line(Vector2(14, 69), Vector2(size.x - 14, 69), Color("4c6551"), 1.0)
+		if size.y >= 540.0 and size.x > 64.0:
+			var strap_y: float = floorf(size.y - 144.0)
+			draw_rect(Rect2(Vector2(16, strap_y), Vector2(size.x - 32, 10)), Color("2a4338"))
+			draw_line(Vector2(18, strap_y + 1), Vector2(size.x - 18, strap_y + 1), Color("48604c"), 1.0)
+			var clasp := Rect2(Vector2(floorf(size.x * 0.5) - 9, strap_y - 4), Vector2(18, 18))
+			draw_rect(clasp, Color("273b32"))
+			draw_rect(clasp.grow(-1), Color("9c8558"), false, 2.0)
+			draw_line(clasp.position + Vector2(3, 2), clasp.position + Vector2(14, 2), Color("c7ae73"), 1.0)
+			draw_rect(Rect2(clasp.position + Vector2(8, 5), Vector2(2, 8)), Color("8a774e"))
+
+	func _draw_paper() -> void:
+		var inner := Rect2(Vector2(5, 5), size - Vector2(10, 10))
+		draw_rect(inner, Color("f6efdc"))
+		draw_rect(Rect2(Vector2(5, 5), Vector2(size.x - 10, minf(52.0, size.y - 10))), Color("f9f2df"))
+		if size.y > 68.0:
+			draw_line(Vector2(8, 54), Vector2(size.x - 8, 54), Color("e6dcc2"), 1.0)
+		draw_line(Vector2(6, 10), Vector2(6, size.y - 10), Color("e5d8b9"), 2.0)
+		draw_line(Vector2(size.x - 7, 10), Vector2(size.x - 7, size.y - 10), Color("e4d7b7"), 2.0)
+		if size.y > 320.0 and size.x > 160.0:
+			var center := Vector2(floorf(size.x * 0.5), floorf(size.y - 83.0))
+			var tint := Color(0.43, 0.38, 0.24, 0.045)
+			for radius: float in [45.0, 29.0]:
+				var points := PackedVector2Array()
+				for point: Vector2 in [Vector2(-1, -0.4), Vector2(-0.4, -1), Vector2(0.4, -1), Vector2(1, -0.4), Vector2(1, 0.4), Vector2(0.4, 1), Vector2(-0.4, 1), Vector2(-1, 0.4), Vector2(-1, -0.4)]:
+					points.append(center + point * radius)
+				draw_polyline(points, tint, 1.0)
+			for direction: Vector2 in [Vector2.UP, Vector2.RIGHT, Vector2.DOWN, Vector2.LEFT]:
+				draw_line(center + direction * 14, center + direction * 49, tint, 1.0)
+				draw_rect(Rect2(center + direction * 38 - Vector2.ONE * 2, Vector2(4, 4)), tint)
+
 	func _draw_corner_hardware(edge: Color, light: Color, inset: float, length: float) -> void:
 		for corner: Vector2 in [Vector2(inset, inset), Vector2(size.x - inset, inset), Vector2(inset, size.y - inset), size - Vector2.ONE * inset]:
 			var direction := Vector2(1 if corner.x < size.x * 0.5 else -1, 1 if corner.y < size.y * 0.5 else -1)
+			var plate := Rect2(corner + Vector2(0 if direction.x > 0 else -5, 0 if direction.y > 0 else -5), Vector2(5, 5))
+			draw_rect(plate, Color("6e6246"))
 			draw_line(corner, corner + Vector2(direction.x * length, 0), edge, 2.0)
 			draw_line(corner, corner + Vector2(0, direction.y * length), edge, 2.0)
 			var rivet: Vector2 = (corner + direction * 3).floor()

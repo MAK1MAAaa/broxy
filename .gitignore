@@ -138,3 +138,7 @@ reports/shop-workbench/*.log
 reports/shop-workbench/*.png
 reports/shop-workbench/*.import
 reports/shop-workbench/*-raw.json
+reports/workbench-materials/*.log
+reports/workbench-materials/*.png
+reports/workbench-materials/*.import
+reports/workbench-materials/*-raw.json

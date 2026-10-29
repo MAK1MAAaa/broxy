@@ -557,24 +557,27 @@ func _refresh_preview() -> void:
 		_preview.queue_redraw()
 
 func _draw() -> void:
+	draw_rect(Rect2(Vector2.ZERO, custom_minimum_size), Color("263c34"))
 	for y: int in int(_snapshot.get("max_height", 6)):
 		for x: int in int(_snapshot.get("width", 6)):
 			var active: bool = y < int(_snapshot.get("height", 4))
 			var rect := Rect2(Vector2(x, y) * CELL + Vector2.ONE, Vector2.ONE * (CELL - 2.0))
-			draw_rect(rect, Color("e5d9bc") if active else Color("cbd6d0"))
-			draw_rect(rect, Color("b4a487") if active else Color("a6b5ab"), false, 1.0)
-			draw_line(rect.position + Vector2.ONE, rect.position + Vector2(rect.size.x - 1, 1), Color("d0c3a5") if active else Color("bdcbc3"), 1.0)
-			draw_line(rect.position + Vector2.ONE, rect.position + Vector2(1, rect.size.y - 1), Color("d0c3a5") if active else Color("bdcbc3"), 1.0)
-			draw_line(rect.position + Vector2(1, rect.size.y - 2), rect.end - Vector2.ONE * 2.0, Color("f7eed8") if active else Color("e2e9e1"), 1.0)
+			var cloth := Color("ddd0af") if (x + y) % 2 == 0 else Color("d9ccab")
+			draw_rect(rect, cloth if active else Color("748b7f"))
+			draw_rect(rect, Color("a69774") if active else Color("536d60"), false, 1.0)
+			draw_line(rect.position + Vector2.ONE, rect.position + Vector2(rect.size.x - 1, 1), Color("c3b594") if active else Color("657d70"), 2.0)
+			draw_line(rect.position + Vector2.ONE, rect.position + Vector2(1, rect.size.y - 1), Color("c3b594") if active else Color("657d70"), 1.0)
+			draw_line(rect.position + Vector2(1, rect.size.y - 2), rect.end - Vector2.ONE * 2.0, Color("eee3c7") if active else Color("91a393"), 1.0)
 			if active:
 				for stitch_y: int in [14, 32]:
-					draw_line(rect.position + Vector2(5, stitch_y), rect.position + Vector2(7, stitch_y + 2), Color("ccbea0"), 1.0)
+					draw_line(rect.position + Vector2(5, stitch_y), rect.position + Vector2(7, stitch_y + 2), Color("c7b999"), 1.0)
+				draw_line(rect.position + Vector2(16, 40), rect.position + Vector2(27, 40), Color("d1c3a3"), 1.0)
 			else:
 				var center: Vector2 = rect.get_center().floor()
-				var lock_tint := Color("8c9f95")
+				var lock_tint := Color("bac6af")
 				draw_rect(Rect2(center + Vector2(-5, -1), Vector2(10, 8)), lock_tint)
 				draw_polyline(PackedVector2Array([center + Vector2(-3, -1), center + Vector2(-3, -5), center + Vector2(3, -5), center + Vector2(3, -1)]), lock_tint, 2.0)
-				draw_rect(Rect2(center + Vector2(-1, 1), Vector2(2, 3)), Color("dce5dc"))
+				draw_rect(Rect2(center + Vector2(-1, 1), Vector2(2, 3)), Color("667e6e"))
 
 func draw_preview(canvas: Control) -> void:
 	for contact: Dictionary in _resonance_contacts:
@@ -701,13 +704,18 @@ func draw_item_material(canvas: Control, item: Dictionary) -> void:
 	var extent: Vector2 = canvas.size
 	var kind: String = str(item["kind"])
 	var tint: Color = _definition(item).color.lerp(GOLD, 0.65)
-	canvas.draw_rect(Rect2(Vector2(4, 4), Vector2(extent.x - 8, 8)), Color(1, 1, 1, 0.35))
-	canvas.draw_line(Vector2(4, extent.y - 5), Vector2(extent.x - 4, extent.y - 5), Color("adbea9"), 2.0)
+	canvas.draw_rect(Rect2(Vector2(3, 3), extent - Vector2.ONE * 6), Color(BONE, 0.10), false, 1.0)
+	canvas.draw_rect(Rect2(Vector2(4, 4), Vector2(extent.x - 8, 3)), Color(1, 1, 1, 0.38))
+	canvas.draw_line(Vector2(4, 4), Vector2(4, extent.y - 5), Color(1, 1, 1, 0.28), 1.0)
+	canvas.draw_line(Vector2(extent.x - 4, 11), Vector2(extent.x - 4, extent.y - 5), Color(BONE, 0.10), 1.0)
+	canvas.draw_rect(Rect2(Vector2(4, extent.y - 7), Vector2(extent.x - 8, 3)), Color(BONE, 0.10))
+	canvas.draw_line(Vector2(4, extent.y - 4), Vector2(extent.x - 4, extent.y - 4), Color("afbc9f"), 1.0)
 	if kind == "weapon":
 		canvas.draw_line(Vector2(5, 16), Vector2(extent.x - 5, 16), Color(tint, 0.22), 3.0)
 	elif kind == "relic":
 		for row: int in range(20, int(extent.y) - 8, 10):
 			canvas.draw_rect(Rect2(Vector2(5, row), Vector2(2, 3)), Color(tint, 0.35))
+			canvas.draw_rect(Rect2(Vector2(extent.x - 7, row), Vector2(2, 3)), Color(tint, 0.25))
 	elif kind == "skill":
 		canvas.draw_rect(Rect2(Vector2(5, 17), extent - Vector2(10, 22)), Color(CYAN, 0.28), false, 1.0)
 		for offset: int in 3:
@@ -716,7 +724,8 @@ func draw_item_material(canvas: Control, item: Dictionary) -> void:
 	else:
 		canvas.draw_rect(Rect2(Vector2(6, 6), extent - Vector2.ONE * 12), Color(PURPLE, 0.16), false, 1.0)
 	for corner: Vector2 in [Vector2(4, 4), Vector2(extent.x - 6, 4), Vector2(4, extent.y - 6), extent - Vector2.ONE * 6]:
-		canvas.draw_rect(Rect2(corner, Vector2(2, 2)), Color(GOLD, 0.65))
+		canvas.draw_rect(Rect2(corner, Vector2(2, 2)), Color("9c8051"))
+		canvas.draw_rect(Rect2(corner, Vector2(2, 1)), Color("e4cd92"))
 	var rank: int = clampi(int(item.get("rank", 1)), 1, 3)
 	var rank_tint: Color = CYAN if rank == 2 else PURPLE if rank == 3 else GOLD
 	for mark: int in rank:
