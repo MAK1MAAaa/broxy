@@ -110,7 +110,7 @@ func _test_weapon_details(ui: GameUI) -> void:
 	state.offers = _weapon_offers()
 	await _settle()
 	_check(rune_bought and equipped, "A legal rune purchase upgrades the same equipment fixture")
-	var bone_name: Label = _equipment_name(ui, 0, "骨针")
+	var bone_name: Label = _equipment_name(ui, 0, GameCatalog.weapon("bone").display_name)
 	var bone_stats: String = str(first[0]["text"])
 	_check(bone_name != null and bone_name.tooltip_text.contains(GameCatalog.weapon("bone").description) and bone_name.tooltip_text.contains(bone_stats) and bone_name.tooltip_text.contains(GameCatalog.rune("bounce").description), "An equipped weapon name retains its base behavior, current numbers and rune behavior in one tooltip")
 	var increased: bool = _purchase(state, "relic", "damage")

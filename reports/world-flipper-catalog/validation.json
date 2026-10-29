@@ -1,0 +1,208 @@
+{
+  "schema_version": 1,
+  "base_commit": "d5e68e7",
+  "branch": "codex/content-catalog",
+  "platform": "Windows",
+  "scope": {
+    "weapon_names": 8,
+    "item_icons": 28,
+    "new_item_icons": 20,
+    "projectile_atlas_frames": 8,
+    "all_existing_pngs_preserved": true,
+    "weapon_numeric_data_preserved": true
+  },
+  "headless": {
+    "invocations": 102,
+    "suites": 97,
+    "diagnostics": 5,
+    "assertions": 34528,
+    "python_tests": 60,
+    "failures": 0,
+    "engine_errors": 0,
+    "log_sha256": "dd3639c4ce91b0884988c0d6b66ac96ecbf89717d69658788e230596eb7ab04a"
+  },
+  "native": [
+    {
+      "log": "native-adventure_art.log",
+      "assertions": 236,
+      "sha256": "f4446e780cf6ec45884737a64eb5e93ae3f474d6f92816447f32d3b097282d02"
+    },
+    {
+      "log": "native-content_identity.log",
+      "assertions": 367,
+      "sha256": "2c1f2535f16d449c5d89d0eb6692eebaa55a55f546471852b4e323f47cb27e7f"
+    },
+    {
+      "log": "native-gamepad_reading.log",
+      "assertions": 227,
+      "sha256": "2c90a597d25701ab5c5be05637a42950fbf30fe9659d922f71e4e15c250492b8"
+    },
+    {
+      "log": "native-resonance_ui.log",
+      "assertions": 32,
+      "sha256": "8d9120e0d15d3290c4d36403708121a91999b644798774bdc5e4e28589182599"
+    },
+    {
+      "log": "native-return_ring_presentation.log",
+      "assertions": 36,
+      "sha256": "49083de64cd4020a78d5b07314161b4e33370a71a94148b9312431806b9dfa2e"
+    },
+    {
+      "log": "native-shop_workbench.log",
+      "assertions": 259,
+      "sha256": "21271353df29d41e0943a5c8380a53f9ac457a746326e561c148100358f6b654"
+    },
+    {
+      "log": "native-world_flipper_art.log",
+      "assertions": 170,
+      "sha256": "a7e93ec9702a6df06a81ea27dcb5f592043abd718fb2072fe489092f4e0024bb"
+    }
+  ],
+  "exported_native": [
+    {
+      "log": "pack-check-adventure_art.log",
+      "assertions": 236,
+      "sha256": "f4446e780cf6ec45884737a64eb5e93ae3f474d6f92816447f32d3b097282d02"
+    },
+    {
+      "log": "pack-check-content_identity.log",
+      "assertions": 367,
+      "sha256": "2c1f2535f16d449c5d89d0eb6692eebaa55a55f546471852b4e323f47cb27e7f"
+    },
+    {
+      "log": "pack-check-gamepad_reading.log",
+      "assertions": 227,
+      "sha256": "2c90a597d25701ab5c5be05637a42950fbf30fe9659d922f71e4e15c250492b8"
+    },
+    {
+      "log": "pack-check-resonance_ui.log",
+      "assertions": 32,
+      "sha256": "8d9120e0d15d3290c4d36403708121a91999b644798774bdc5e4e28589182599"
+    },
+    {
+      "log": "pack-check-return_ring_presentation.log",
+      "assertions": 36,
+      "sha256": "49083de64cd4020a78d5b07314161b4e33370a71a94148b9312431806b9dfa2e"
+    },
+    {
+      "log": "pack-check-shop_workbench.log",
+      "assertions": 259,
+      "sha256": "21271353df29d41e0943a5c8380a53f9ac457a746326e561c148100358f6b654"
+    },
+    {
+      "log": "pack-check-world_flipper_art.log",
+      "assertions": 170,
+      "sha256": "a7e93ec9702a6df06a81ea27dcb5f592043abd718fb2072fe489092f4e0024bb"
+    }
+  ],
+  "previews": [
+    {
+      "view": "arsenal",
+      "size": [
+        1280,
+        720
+      ],
+      "pixels_equal": true,
+      "source_sha256": "674e9eef1445fbd1327c8fb060e280f6572b4e3ddef7355d86fb15e4676e6097",
+      "pack_sha256": "674e9eef1445fbd1327c8fb060e280f6572b4e3ddef7355d86fb15e4676e6097"
+    },
+    {
+      "view": "bag_record",
+      "size": [
+        1280,
+        720
+      ],
+      "pixels_equal": true,
+      "source_sha256": "32540c7dc963a59c130ab95c8b50cc5350f970cbaab5eec2e6b9f7b7e6c6d64f",
+      "pack_sha256": "32540c7dc963a59c130ab95c8b50cc5350f970cbaab5eec2e6b9f7b7e6c6d64f"
+    },
+    {
+      "view": "result",
+      "size": [
+        1280,
+        720
+      ],
+      "pixels_equal": true,
+      "source_sha256": "7d4d871c717755d1e155e9f062382588d09c665f60f6f793dd50b4f071a56af2",
+      "pack_sha256": "7d4d871c717755d1e155e9f062382588d09c665f60f6f793dd50b4f071a56af2"
+    },
+    {
+      "view": "shop",
+      "size": [
+        1280,
+        720
+      ],
+      "pixels_equal": true,
+      "source_sha256": "d5473392381a338fa8b9fd110d8f79799154f1a7ea1087004f1ed07981800cdb",
+      "pack_sha256": "d5473392381a338fa8b9fd110d8f79799154f1a7ea1087004f1ed07981800cdb"
+    },
+    {
+      "view": "title",
+      "size": [
+        1280,
+        720
+      ],
+      "pixels_equal": true,
+      "source_sha256": "8d24cc28a9705df241e7749a659008bb1f9a39b805b0c73ad4973f2e39fd81c3",
+      "pack_sha256": "8d24cc28a9705df241e7749a659008bb1f9a39b805b0c73ad4973f2e39fd81c3"
+    }
+  ],
+  "assets": {
+    "pinned_sources": 45,
+    "normalized_pngs": 49,
+    "manifest_sha256": "d478ace75ce5804edb9655c4b3d4ae9f4ba124f74684ff3e6949d42593e9277f",
+    "item_qa_checks": 112,
+    "item_qa_sha256": "2c82026d42ba09e79796917b4b3823e76cf086edf7a720a081e1791f0f79867f"
+  },
+  "performance": {
+    "seconds": 60.0,
+    "average_fps": 67.4711480439966,
+    "p99_frame_ms": 20.27,
+    "minimum_load": {
+      "enemies": 300,
+      "pickups": 200,
+      "projectiles": 600
+    },
+    "checks": {
+      "backpack_skill_fx_pool": true,
+      "backpack_skill_inventory_and_real_casts": true,
+      "backpack_skill_source_coverage": true,
+      "dash_feedback": true,
+      "default_settings_and_no_profile": true,
+      "evasion_feedback": true,
+      "grounding_budget": true,
+      "load": true,
+      "performance": true,
+      "pulse_control": true
+    },
+    "source_hash": "03b3af00d25bb44aff418cd656f79a39c56e547969bee1853ddd1f269cd44669",
+    "report_sha256": "2a8605faef6dd134e85259b4feacde31d38543aa52b346ff8f28961b241f98bb"
+  },
+  "windows": {
+    "archive": "build/Embers-windows-x86_64.zip",
+    "sha256": "1591be298b05e1fcf5aff027dccc68bac57a20b04b7636ead7a45ca9908f69b4",
+    "zip_files": [
+      "licenses/Godot-COPYRIGHT.txt",
+      "licenses/Godot-LICENSE.txt",
+      "licenses/README.md",
+      "licenses/World-Flipper-NOTICE.txt",
+      "licenses/fonts/fusion-pixel/OFL.txt",
+      "licenses/fonts/fusion-pixel/LICENSES/ark-pixel/OFL.txt",
+      "licenses/fonts/fusion-pixel/LICENSES/cubic-11/OFL.txt",
+      "licenses/fonts/fusion-pixel/LICENSES/galmuri/LICENSE.txt",
+      "Embers.exe",
+      "Embers.pck"
+    ],
+    "crc_and_file_bytes_verified": true,
+    "backup": "Embers-windows-before-catalog-d5e68e7.zip",
+    "backup_sha256": "85d1a60ea38959f5bfcf2aa46a222a8c5fe1d60f1fca97ec230df3f1ccfd2df7",
+    "exe_smoke_log_sha256": "4341243be5c5e369057de761450abf1d2f447141e3e022e9f0284500b79dc459"
+  },
+  "macos": "Not built or executed on this Windows host; export include filters updated for both platforms.",
+  "limitations": [
+    "Result damage rows use an explicit synthetic history fixture; inventory uses real purchases.",
+    "Fixed captures and synthetic pressure do not establish human playability or balance.",
+    "Legacy return-ring and rune tests initially expected replaced SVG artwork; their runtime image assertions were migrated, preserving the behavior and geometry checks."
+  ],
+  "passed": true
+}

@@ -238,4 +238,4 @@ func _test_full_reward_and_candle() -> void:
 	_check(linked_effect.text.contains("烛引") and linked_effect.tooltip_text.contains("引魂烛联动"), "A linked weapon shows its targeting status and preserves the full behavior in its details")
 	_ui._bp_select(candle, _ui._shop_epoch)
 	var effect: String = (_ui.find_child("BackpackItemEffect", true, false) as Label).tooltip_text
-	_check(effect.contains("正上方") and effect.contains("骨针 #") and effect.contains("不叠加"), "The candle names its actual linked weapon and states direction and non-stacking behavior")
+	_check(effect.contains("正上方") and effect.contains(GameCatalog.weapon("bone").display_name + " #") and effect.contains("不叠加"), "The candle names its actual linked weapon and states direction and non-stacking behavior")

@@ -82,7 +82,7 @@ func _test_details_and_forecast() -> void:
 	_check(preview["has_projection"] and forecast.text == _ui._weapon_stats_text(GameCatalog.weapon("bone"), 1, float(preview["resonance_bonus"])) and forecast.text.contains("%.1f伤害" % float(preview["damage"])), "Weapon offers retain the compact weapon-stat format while using real automatic-placement damage")
 	_check(forecast.tooltip_text.contains("自动落点") and forecast.tooltip_text.contains(_ui._rune_percent(float(preview["resonance_bonus"]))), "Forecast scope and its local bonus are inspectable")
 	_ui._bag_grid.select_item(4)
-	_check(_label("BackpackResonance").tooltip_text.contains("骨针 #1") and _label("BackpackResonance").tooltip_text.contains("合成或出售"), "The selected relic's tooltip identifies its affected weapon and layout-changing actions")
+	_check(_label("BackpackResonance").tooltip_text.contains(GameCatalog.weapon("bone").display_name + " #1") and _label("BackpackResonance").tooltip_text.contains("合成或出售"), "The selected relic's tooltip identifies its affected weapon and layout-changing actions")
 	_ui.show_hud()
 	_ui.update_hud({"health": state.health, "max_health": state.stat("max_health"), "wave": 4, "time_left": 45.0, "loadout": state.loadout})
 	await _settle()

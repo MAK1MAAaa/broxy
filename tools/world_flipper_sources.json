@@ -75,7 +75,10 @@
       "source_size": [
         15,
         18
-      ]
+      ],
+      "display_name_zh": "野营刀",
+      "name_source_page": "https://wiki.biligame.com/worldflipper/野营刀",
+      "name_verification": "Chinese and English original armament pages matched by base and maximum HP/ATK; this project retains its own weapon mechanics and stable IDs"
     },
     {
       "id": "weapon_frost",
@@ -89,7 +92,10 @@
       "source_size": [
         20,
         20
-      ]
+      ],
+      "display_name_zh": "月之舞",
+      "name_source_page": "https://wiki.biligame.com/worldflipper/月之舞",
+      "name_verification": "Chinese and English original armament pages matched by base and maximum HP/ATK; this project retains its own weapon mechanics and stable IDs"
     },
     {
       "id": "weapon_ember",
@@ -103,7 +109,10 @@
       "source_size": [
         20,
         20
-      ]
+      ],
+      "display_name_zh": "怨嗟之杖",
+      "name_source_page": "https://wiki.biligame.com/worldflipper/怨嗟之杖",
+      "name_verification": "Chinese and English original armament pages matched by base and maximum HP/ATK; this project retains its own weapon mechanics and stable IDs"
     },
     {
       "id": "weapon_scatter",
@@ -117,7 +126,10 @@
       "source_size": [
         20,
         20
-      ]
+      ],
+      "display_name_zh": "海伯利安之弓",
+      "name_source_page": "https://wiki.biligame.com/worldflipper/海伯利安之弓",
+      "name_verification": "Chinese and English original armament pages matched by base and maximum HP/ATK; this project retains its own weapon mechanics and stable IDs"
     },
     {
       "id": "weapon_crescent",
@@ -131,7 +143,10 @@
       "source_size": [
         20,
         20
-      ]
+      ],
+      "display_name_zh": "悲叹死镰",
+      "name_source_page": "https://wiki.biligame.com/worldflipper/悲叹死镰",
+      "name_verification": "Chinese and English original armament pages matched by base and maximum HP/ATK; this project retains its own weapon mechanics and stable IDs"
     },
     {
       "id": "weapon_storm",
@@ -145,7 +160,10 @@
       "source_size": [
         18,
         20
-      ]
+      ],
+      "display_name_zh": "光芒龙典",
+      "name_source_page": "https://wiki.biligame.com/worldflipper/光芒龙典",
+      "name_verification": "Chinese and English original armament pages matched by base and maximum HP/ATK; this project retains its own weapon mechanics and stable IDs"
     },
     {
       "id": "weapon_comet",
@@ -159,7 +177,10 @@
       "source_size": [
         20,
         20
-      ]
+      ],
+      "display_name_zh": "怨嗟逆枪",
+      "name_source_page": "https://wiki.biligame.com/worldflipper/怨嗟逆枪",
+      "name_verification": "Chinese and English original armament pages matched by base and maximum HP/ATK; this project retains its own weapon mechanics and stable IDs"
     },
     {
       "id": "weapon_return_ring",
@@ -173,7 +194,10 @@
       "source_size": [
         20,
         20
-      ]
+      ],
+      "display_name_zh": "止战徽记",
+      "name_source_page": "https://wiki.biligame.com/worldflipper/止战徽记",
+      "name_verification": "Chinese and English original armament pages matched by base and maximum HP/ATK; this project retains its own weapon mechanics and stable IDs"
     }
   ],
   "references": [

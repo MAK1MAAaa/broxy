@@ -126,17 +126,17 @@ class WorldFlipperEnvironmentAssets(unittest.TestCase):
                     self.assertEqual({path: path.read_bytes() for path in originals}, originals)
                     self.assertEqual(set(sprites.iterdir()), set(originals))
 
-    def test_master_records_match_all_28_pngs_and_25_pinned_sources(self) -> None:
-        self.assertEqual(len(self.manifest["assets"]), 28)
-        self.assertEqual(len(self.assets), 28)
-        self.assertEqual(len({asset["path"] for asset in self.assets.values()}), 28)
+    def test_master_records_match_every_png_and_pinned_source(self) -> None:
+        self.assertEqual(len(self.manifest["assets"]), 49)
+        self.assertEqual(len(self.assets), 49)
+        self.assertEqual(len({asset["path"] for asset in self.assets.values()}), 49)
         registered: dict[str, dict] = {}
-        for filename in ("world_flipper_sources.json", "world_flipper_enemies.json", "world_flipper_cover_sources.json", "world_flipper_maps_sources.json"):
+        for filename in ("world_flipper_sources.json", "world_flipper_enemies.json", "world_flipper_cover_sources.json", "world_flipper_maps_sources.json", "world_flipper_items_sources.json"):
             for source in load_json(ROOT / "tools" / filename)["sources"]:
                 self.assertNotIn(source["id"], registered)
                 registered[source["id"]] = source
         pinned = {source["id"]: source for source in self.manifest["sources"]}
-        self.assertEqual(len(self.manifest["sources"]), 25)
+        self.assertEqual(len(self.manifest["sources"]), 45)
         self.assertEqual(set(pinned), set(registered))
         for source_id, source in pinned.items():
             with self.subTest(source=source_id):

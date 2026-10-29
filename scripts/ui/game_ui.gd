@@ -368,8 +368,12 @@ func show_title(best: Dictionary) -> void:
 	start_card.name = "StarterAltar"
 	var start_body := _inside(start_card, 12)
 	start_body.add_theme_constant_override("separation", 6)
-	var starters := HBoxContainer.new()
-	starters.add_theme_constant_override("separation", 12)
+	var starters := GridContainer.new()
+	starters.name = "StarterChoices"
+	starters.columns = 2
+	starters.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	starters.add_theme_constant_override("h_separation", 12)
+	starters.add_theme_constant_override("v_separation", 8)
 	start_body.add_child(starters)
 	for id: String in ["bone", "ember", "frost", "scatter"]:
 		var definition: ContentDef = GameCatalog.weapon(id)
@@ -1017,7 +1021,7 @@ func show_result(victory: bool, reason: String, best: Dictionary) -> void:
 	build_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
 	build_scroll.focus_mode = Control.FOCUS_ALL
 	body.add_child(build_scroll)
-	build_scroll.add_child(_wrap(_loadout_text(), 15, BONE))
+	_build_result_inventory(build_scroll)
 	_add_reading_guide(body, "滚轮查看最终构筑", "LB / RB 查看最终构筑")
 	body.add_child(_wrap("最佳记录：" + _best_text(best), 13, MUTED))
 	var damage_card := _panel(columns)
@@ -1045,6 +1049,7 @@ func show_result(victory: bool, reason: String, best: Dictionary) -> void:
 			damage_body.add_child(row)
 			var heading := HBoxContainer.new()
 			row.add_child(heading)
+			_add_icon(heading, definition, 24)
 			var name_label := _label(definition.display_name, 16, BONE)
 			name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			heading.add_child(name_label)
@@ -1068,6 +1073,58 @@ func show_result(victory: bool, reason: String, best: Dictionary) -> void:
 	actions.add_child(restart)
 	actions.add_child(_button("返回主菜单", _menu, Vector2(200, 48)))
 	_focus_later(restart)
+
+
+func _build_result_inventory(parent: Control) -> void:
+	var content := VBoxContainer.new()
+	content.name = "ResultBuildItems"
+	content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	content.add_theme_constant_override("separation", 8)
+	parent.add_child(content)
+	var items: Array = run.backpack_snapshot().get("items", [])
+	if items.is_empty():
+		content.add_child(_label("背包为空", 12, MUTED))
+		return
+	for item: Dictionary in items:
+		var kind: String = str(item.get("kind", ""))
+		var id: String = str(item.get("id", ""))
+		var definition: ContentDef = BackpackInventory.definition(kind, id)
+		if definition == null:
+			continue
+		var uid: int = int(item.get("uid", -1))
+		var row := HBoxContainer.new()
+		row.name = "ResultItem_%d" % uid
+		row.set_meta("backpack_uid", uid)
+		row.set_meta("content_kind", kind)
+		row.set_meta("content_id", id)
+		row.add_theme_constant_override("separation", 10)
+		content.add_child(row)
+		_add_icon(row, definition, 32)
+		var names := VBoxContainer.new()
+		names.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		names.add_theme_constant_override("separation", 3)
+		row.add_child(names)
+		var heading := HBoxContainer.new()
+		heading.add_theme_constant_override("separation", 8)
+		names.add_child(heading)
+		var item_name := _wrap(definition.display_name, 16, BONE)
+		item_name.name = "ResultItemName_%d" % uid
+		heading.add_child(item_name)
+		var rank := _label(_rank_name(int(item.get("rank", 1))) + "阶", 12, GOLD)
+		rank.name = "ResultItemRank_%d" % uid
+		heading.add_child(rank)
+		_enable_tooltip(row, _equipment_tooltip(item) if kind == "weapon" else _backpack_effect_text(item))
+		var rune: Dictionary = item.get("rune", {}) if kind == "weapon" else {}
+		if not rune.is_empty():
+			var rune_definition: ContentDef = GameCatalog.rune(str(rune.get("id", "")))
+			if rune_definition == null:
+				continue
+			var socket := HBoxContainer.new()
+			socket.name = "ResultSocket_%d" % uid
+			socket.add_theme_constant_override("separation", 6)
+			names.add_child(socket)
+			_add_icon(socket, rune_definition, 20)
+			socket.add_child(_wrap(rune_definition.display_name + " " + _rank_name(int(rune.get("rank", 1))) + "阶", 12, PURPLE))
 
 
 func _last_hit_text() -> String:
@@ -1340,6 +1397,7 @@ func _show_rogue_choices(keep_notice: bool = false) -> void:
 			claim.name = "RogueReward_" + rune.id
 			claim.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			claim.disabled = not bool(choices.get("can_claim_reward", false))
+			_set_button_icon(claim, rune)
 			rewards.add_child(claim)
 	_section_heading(content, "III · 下一波路线", PURPLE, 18)
 	if bool(choices.get("can_choose_route", false)):
@@ -2200,7 +2258,14 @@ func _build_relic_weapon_comparison(parent: Control, preview: Dictionary) -> voi
 	for change: Dictionary in preview["weapon_changes"]:
 		var slot: int = int(change["slot"])
 		var definition: ContentDef = GameCatalog.weapon(str(change["id"]))
-		var name_label := _comparison_cell(grid, "%02d  %s / %d枚" % [slot + 1, definition.display_name, int(change["shots"])], BONE, 220)
+		var identity := HBoxContainer.new()
+		identity.name = "ComparisonWeapon%dIdentity" % slot
+		identity.custom_minimum_size.x = 220
+		identity.add_theme_constant_override("separation", 8)
+		grid.add_child(identity)
+		_add_icon(identity, definition, 24)
+		var name_label := _wrap("%02d  %s / %d枚" % [slot + 1, definition.display_name, int(change["shots"])], 14, BONE)
+		identity.add_child(name_label)
 		_enable_tooltip(name_label, _equipment_tooltip(run.loadout[slot]))
 		var damage_delta: float = float(change["damage_after"]) - float(change["damage_before"])
 		var damage := _comparison_cell(grid, "%.1f → %.1f\n%s" % [float(change["damage_before"]), float(change["damage_after"]), _comparison_delta(damage_delta, "伤害", 1)], _comparison_change_color(damage_delta), 270)
@@ -3358,6 +3423,9 @@ func _add_icon(parent: Control, definition: ContentDef, size: int) -> void:
 	if texture == null:
 		return
 	var rect := TextureRect.new()
+	rect.name = "ContentIcon_%s_%s" % [definition.kind, definition.id]
+	rect.set_meta("content_kind", definition.kind)
+	rect.set_meta("content_id", definition.id)
 	rect.texture = texture
 	rect.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	rect.custom_minimum_size = Vector2(size, size)
@@ -3371,6 +3439,8 @@ func _set_button_icon(button: Button, definition: ContentDef) -> void:
 	var texture := _icon_texture(definition)
 	if texture != null:
 		button.icon = texture
+		button.set_meta("content_kind", definition.kind)
+		button.set_meta("content_id", definition.id)
 		button.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 		button.expand_icon = true
 		button.add_theme_constant_override("icon_max_width", 36)

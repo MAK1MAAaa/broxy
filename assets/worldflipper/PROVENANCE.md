@@ -20,17 +20,42 @@
 
 石碑、花坛和弹板来自同一官方试玩的field_object图集，按对应atlas帧排除1像素边栏，分别最近邻放大4／3／3倍，放入96×96透明画布，脚点统一在 `(48,84)`。原色和轮廓不变。运行时按配置半径显示并阻挡地面角色、敌人、冲刺和击退；飞行弹体可以越过这些低矮障碍。地图改用原场景主题，活动尺寸、原34处地形坐标和减速倍率保持，障碍位置为本项目重新布置。
 
-武器采用 [Wiki武器像素图](https://worldflipper.wiki.gg/wiki/Category:Armament_sprite_images) 中带透明背景的原图，最近邻放大3倍后居中放入64×64画布，不重画、不重新着色、不附加图鉴底纹。下表仅表示当前游戏的外观映射，不表示移植原作武器机制。
+武器采用 [Wiki武器像素图](https://worldflipper.wiki.gg/wiki/Category:Armament_sprite_images) 中带透明背景的原图，最近邻放大3倍后居中放入64×64画布，不重画、不重新着色、不附加图鉴底纹。任务1将显示名称统一到下表，稳定ID与当前游戏的攻击参数保持；使用原作品名和图片，不表示移植原作武器机制。
 
-| 当前物品 | 原作素材 | 图鉴 |
+| 稳定ID | 当前显示名称 | 原作素材 |
 | --- | --- | --- |
-| 骨针 | Camping Knife | [图鉴](https://worldflipper.wiki.gg/wiki/Camping_Knife) |
-| 霜矛 | Moon Dance | [图鉴](https://worldflipper.wiki.gg/wiki/Moon_Dance) |
-| 幽焰 | Spiteful Staff | [图鉴](https://worldflipper.wiki.gg/wiki/Spiteful_Staff) |
-| 散魂 | Hyperion Bow | [图鉴](https://worldflipper.wiki.gg/wiki/Hyperion_Bow) |
-| 月镰 | Grim Scythe | [图鉴](https://worldflipper.wiki.gg/wiki/Grim_Scythe) |
-| 雷灯 | Lightcrest Tome | [图鉴](https://worldflipper.wiki.gg/wiki/Lightcrest_Tome) |
-| 星陨 | Spiteful Spear | [图鉴](https://worldflipper.wiki.gg/wiki/Spiteful_Spear) |
-| 归魂环 | Amulet of Ruin | [图鉴](https://worldflipper.wiki.gg/wiki/Amulet_of_Ruin) |
+| bone | 野营刀 | [Camping Knife](https://worldflipper.wiki.gg/wiki/Camping_Knife) |
+| frost | 月之舞 | [Moon Dance](https://worldflipper.wiki.gg/wiki/Moon_Dance) |
+| ember | 怨嗟之杖 | [Spiteful Staff](https://worldflipper.wiki.gg/wiki/Spiteful_Staff) |
+| scatter | 海伯利安之弓 | [Hyperion Bow](https://worldflipper.wiki.gg/wiki/Hyperion_Bow) |
+| crescent | 悲叹死镰 | [Grim Scythe](https://worldflipper.wiki.gg/wiki/Grim_Scythe) |
+| storm | 光芒龙典 | [Lightcrest Tome](https://worldflipper.wiki.gg/wiki/Lightcrest_Tome) |
+| comet | 怨嗟逆枪 | [Spiteful Spear](https://worldflipper.wiki.gg/wiki/Spiteful_Spear) |
+| return_ring | 止战徽记 | [Amulet of Ruin](https://worldflipper.wiki.gg/wiki/Amulet_of_Ruin) |
 
-[manifest.json](manifest.json) 记录每个原始URL、来源页、下载SHA-256、原尺寸、帧时长及最终文件校验。`tools/world_flipper_sources.json`、`world_flipper_enemies.json`、`world_flipper_cover_sources.json`、`world_flipper_maps_sources.json` 固定下载清单，`python tools/fetch_world_flipper_art.py --references` 下载、校验并生成28张素材图片（含保留的历史封面背景）；已有缓存时可加 `--offline` 重建。当前封面GIF需用 `tools/render_title_cover.gd` 捕获后，再运行 `tools/package_title_cover_gif.py` 编码，AI底图保留生成记录，不参与公开源离线重建。需要Python 3.10+和Pillow。多主角、选角与招募机制按用户要求留待后续讨论，当前仍以阿尔克作为主角。
+八件规范化武器原图同时按 `bone / frost / ember / scatter / crescent / storm / comet / return_ring` 顺序放入 `fx/projectile_heads.png`，每格64×64，整图512×64。弹头沿用图标的原始透明像素，不再使用另一套外观；飞行轨迹、碰撞半径、符文和伤害仍取本游戏的战斗数据。
+
+14件遗物的透明像素来自同一Wiki的不同原作装备，分别规范为64×64、3倍nearest。原作图片中自带的光点保留，没有添加文字、底板或重绘。下表是本游戏遗物的独立外观映射：遗物名称、属性和相邻共鸣仍由本项目定义，不等同于原作装备能力。
+
+| 遗物ID | 当前名称 | 原作图片 |
+| --- | --- | --- |
+| damage | 血棘 | [Beared Fang](https://worldflipper.wiki.gg/wiki/Beared_Fang) |
+| haste | 时砂 | [Protostar Belt](https://worldflipper.wiki.gg/wiki/Protostar_Belt) |
+| speed | 夜行靴 | [Seaside Ribbon](https://worldflipper.wiki.gg/wiki/Seaside_Ribbon) |
+| vitality | 心瓮 | [Luna Womb](https://worldflipper.wiki.gg/wiki/Luna_Womb) |
+| armor | 黑曜甲 | [Spiteful Cloak](https://worldflipper.wiki.gg/wiki/Spiteful_Cloak) |
+| magnet | 引魂铃 | [Earrings of Amity](https://worldflipper.wiki.gg/wiki/Earrings_of_Amity) |
+| moon_charm | 月蚀吊坠 | [Spiteful Necklace](https://worldflipper.wiki.gg/wiki/Spiteful_Necklace) |
+| pilgrim | 巡礼靴 | [Ebony Handbag](https://worldflipper.wiki.gg/wiki/Ebony_Handbag) |
+| bulwark | 骨盾印 | [Aero Bone Shield](https://worldflipper.wiki.gg/wiki/Aero_Bone_Shield) |
+| hourglass | 裂砂漏 | [Polychromatic Earrings](https://worldflipper.wiki.gg/wiki/Polychromatic_Earrings) |
+| blood_pact | 血契书 | [Dream Journal](https://worldflipper.wiki.gg/wiki/Dream_Journal) |
+| grave_candle | 引魂烛 | [Lightcrest Crown](https://worldflipper.wiki.gg/wiki/Lightcrest_Crown) |
+| fold_clasp | 折影扣 | [Square Glasses](https://worldflipper.wiki.gg/wiki/Square_Glasses) |
+| echo_stone | 回响石 | [Savant's Doll](https://worldflipper.wiki.gg/wiki/Savant%27s_Doll) |
+
+三个符文采用 [Wiki能力魂像素图](https://worldflipper.wiki.gg/wiki/Category:Armament_Core_sprite_images)：`pierce` 对应 Wrist-Mounted Catapult (Core)，`bounce` 对应 Protostar Shield (Core)，`blast` 对应 Aero Bomb Bag (Core)。它们使用三个不同的原图，按3倍nearest置入64×64透明画布，贯穿、弹射和爆破的触发规则沿用本游戏。
+
+三个技能图标取自[官方试玩道具图集](https://worldflipper.jp/demo/src/assets/production/item/sprite_sheet.png)中的透明像素能力球：`skill_pulse` 使用 `ability_sphere_17`，`skill_starfall` 使用 `ability_sphere_09`，`skill_arc_slash` 使用 `ability_sphere_15`。原生20×20裁片分别为 `(25,221,20,20)`、`(26,27,20,20)`、`(25,173,20,20)`，均按3倍nearest居中放置；对应[atlas](https://worldflipper.jp/demo/src/assets/production/item/sprite_sheet.atlas.json)的SHA与帧名也写入来源清单。没有采用带白色卡片底的dynamic技能UI图，也没有把这些能力球记为角色肖像。
+
+[manifest.json](manifest.json) 记录每个原始URL、来源页、下载SHA-256、原尺寸、帧时长及最终文件校验。当前由五份清单锁定45条来源记录：`tools/world_flipper_sources.json`、`world_flipper_enemies.json`、`world_flipper_cover_sources.json`、`world_flipper_maps_sources.json`、`world_flipper_items_sources.json`。其中三个能力球共用同一原图集、保留各自裁片记录。`python tools/fetch_world_flipper_art.py --references` 下载、校验并生成49张规范化PNG，包含保留的历史封面背景与原立绘；已有缓存时可加 `--offline` 重建。当前封面GIF需用 `tools/render_title_cover.gd` 捕获后，再运行 `tools/package_title_cover_gif.py` 编码，AI底图保留生成记录，不参与公开源离线重建。需要Python 3.10+和Pillow。当前任务1为物品目录统一，主角仍为阿尔克；自选主角、两名后排角色与R技能按后续独立任务实现与验收。实现与本轮验证范围见[目录统一记录](../../docs/world-flipper-catalog.md)。

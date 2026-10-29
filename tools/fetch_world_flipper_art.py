@@ -13,6 +13,7 @@ from PIL import Image, ImageDraw
 from world_flipper_cover import cover_assets
 from world_flipper_enemies import enemy_assets
 from world_flipper_maps import map_assets
+from world_flipper_items import item_assets
 
 ROOT = Path(__file__).resolve().parents[1]
 CACHE = ROOT / ".tools/worldflipper/source"
@@ -22,6 +23,7 @@ EXTRA_REGISTRIES = (
     "world_flipper_enemies.json",
     "world_flipper_cover_sources.json",
     "world_flipper_maps_sources.json",
+    "world_flipper_items_sources.json",
 )
 CELL = (96, 96)
 MAX_DOWNLOAD_BYTES = 8 * 1024 * 1024
@@ -145,6 +147,23 @@ def preview(frames: list[Image.Image], weapons: list[Image.Image]) -> Path:
     return path
 
 
+def projectile_assets(weapons: list[dict]) -> list[dict]:
+    atlas = Image.new("RGBA", (512, 64))
+    for index, weapon in enumerate(weapons):
+        with Image.open(ROOT / weapon["path"]) as image:
+            if image.size != (64, 64):
+                raise ValueError("Projectile art requires complete sixty-four-pixel weapon cells")
+            atlas.alpha_composite(image.convert("RGBA"), (index * 64, 0))
+    record = write_image(atlas, "fx/projectile_heads.png")
+    record.update({
+        "id": "weapon_projectiles", "cell_size": [64, 64], "columns": 8,
+        "weapon_ids": [weapon["id"] for weapon in weapons],
+        "source_ids": [source for weapon in weapons for source in weapon["source_ids"]],
+        "normalization": "Eight unmodified normalized weapon icons in the existing projectile-frame order; original transparent pixels retained; combat geometry unchanged",
+    })
+    return [record]
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--offline", action="store_true", help="Only use checksum-verified cached sources")
@@ -166,14 +185,15 @@ def main() -> None:
     enemies = enemy_assets(sources, paths, OUTPUT)
     cover = cover_assets(sources, paths, OUTPUT)
     maps = map_assets(sources, paths, OUTPUT)
-    assets = player + weapons + enemies + cover + maps
+    items = item_assets(sources, paths, OUTPUT)
+    assets = player + weapons + enemies + cover + maps + items + projectile_assets(weapons)
     manifest = {
-        "revision": "world-flipper-fan-03",
+        "revision": "world-flipper-fan-04",
         "original_copyright": "© Cygames, Inc. / Citail Inc.",
         "license_status": "Original game assets; no open asset license found. Unofficial fan-work use is not a claim of authorization.",
         "copyright_source": "https://worldflipper.jp/copyright/",
         "terms_source": "https://worldflipper.jp/about/",
-        "acquired_on": "2026-10-29",
+        "acquired_on": "2026-10-30",
         "sources": sources,
         "references_cached_only": registry["references"],
         "assets": assets,

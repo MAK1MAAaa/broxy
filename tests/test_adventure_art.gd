@@ -78,7 +78,15 @@ func _expected_sprite(id: String) -> String:
 	return str(FAN_OVERRIDES.get("res://assets/sprites/%s.svg" % id, ART_ROOT + "sprites/%s.svg" % id))
 
 func _expected_icon(icon: String) -> String:
-	return str(FAN_OVERRIDES.get("res://assets/icons/%s.svg" % icon, ART_ROOT + "icons/%s.svg" % icon))
+	var definitions: Array[ContentDef] = []
+	definitions.append_array(GameCatalog.weapons())
+	definitions.append_array(GameCatalog.relics())
+	definitions.append_array(GameCatalog.runes())
+	definitions.append_array(GameCatalog.skills())
+	for definition: ContentDef in definitions:
+		if definition.icon == icon:
+			return FAN_ROOT + "icons/%s.png" % icon
+	return ART_ROOT + "icons/%s.svg" % icon
 
 func _expect_texture(texture: Texture2D, expected_path: String, expected_size: Vector2, label: String) -> void:
 	_check(texture != null and texture.resource_path == expected_path and texture.get_size() == expected_size, "A real imported texture has the intended path and unchanged canvas: " + label)
@@ -159,7 +167,7 @@ func _test_world_resources_and_redraws() -> void:
 		_expect_texture(world.soul_texture, ART_ROOT + "icons/soul.svg", Vector2(64, 64), "world pickup")
 		_expect_texture(world.glow_texture, ART_ROOT + "fx/glow.svg", Vector2(96, 96), "world glow")
 		_expect_texture(world.seal_texture, ART_ROOT + "fx/seal.svg", Vector2(96, 96), "world seal")
-		_expect_texture(world._projectile_painter.atlas_texture, ART_ROOT + "fx/projectile_heads.svg", Vector2(512, 64), "world projectile painter")
+		_expect_texture(world._projectile_painter.atlas_texture, FAN_ROOT + "fx/projectile_heads.png", Vector2(512, 64), "world projectile painter")
 		world.sim.spawn_enemy("chaser", Vector2(710, 330))
 		world.sim.fire_weapon("bone", "pierce", Vector2(540, 365), Vector2.RIGHT)
 		world.sim._drop_soul(Vector2(480, 400), 1)
@@ -317,7 +325,7 @@ func _test_real_inventory_presentation() -> void:
 			_check(state.backpack_item(rune_uid).is_empty() and int(state.backpack_item(target).get("rune", {}).get("uid", -1)) == rune_uid, "Installing through the real UI consumes the bought rune and retains its actual UID")
 			var button := ui._bag_grid.find_child("BackpackItem%d" % target, false, false)
 			var badge := button.find_child("SocketRuneBadge", false, false) as TextureRect if button != null else null
-			_check(badge != null and badge.texture != null and badge.texture.resource_path == ART_ROOT + "icons/pierce.svg" and badge.texture_filter == CanvasItem.TEXTURE_FILTER_NEAREST, "The installed socket keeps its new rune texture and local nearest filtering")
+			_check(badge != null and badge.texture != null and badge.texture.resource_path == _expected_icon("pierce") and badge.texture_filter == CanvasItem.TEXTURE_FILTER_NEAREST, "The installed socket keeps its new rune texture and local nearest filtering")
 	before = _run_signature(state)
 	ui.show_hud()
 	ui.update_hud({"health": state.health, "max_health": state.stat("max_health"), "wave": state.wave, "time_left": 45.0, "gold": state.gold, "level": state.level, "loadout": state.loadout})

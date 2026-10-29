@@ -1,10 +1,10 @@
 {
-  "revision": "world-flipper-fan-03",
+  "revision": "world-flipper-fan-04",
   "original_copyright": "© Cygames, Inc. / Citail Inc.",
   "license_status": "Original game assets; no open asset license found. Unofficial fan-work use is not a claim of authorization.",
   "copyright_source": "https://worldflipper.jp/copyright/",
   "terms_source": "https://worldflipper.jp/about/",
-  "acquired_on": "2026-10-29",
+  "acquired_on": "2026-10-30",
   "sources": [
     {
       "id": "alk_neutral",
@@ -81,7 +81,10 @@
       "source_size": [
         15,
         18
-      ]
+      ],
+      "display_name_zh": "野营刀",
+      "name_source_page": "https://wiki.biligame.com/worldflipper/野营刀",
+      "name_verification": "Chinese and English original armament pages matched by base and maximum HP/ATK; this project retains its own weapon mechanics and stable IDs"
     },
     {
       "id": "weapon_frost",
@@ -95,7 +98,10 @@
       "source_size": [
         20,
         20
-      ]
+      ],
+      "display_name_zh": "月之舞",
+      "name_source_page": "https://wiki.biligame.com/worldflipper/月之舞",
+      "name_verification": "Chinese and English original armament pages matched by base and maximum HP/ATK; this project retains its own weapon mechanics and stable IDs"
     },
     {
       "id": "weapon_ember",
@@ -109,7 +115,10 @@
       "source_size": [
         20,
         20
-      ]
+      ],
+      "display_name_zh": "怨嗟之杖",
+      "name_source_page": "https://wiki.biligame.com/worldflipper/怨嗟之杖",
+      "name_verification": "Chinese and English original armament pages matched by base and maximum HP/ATK; this project retains its own weapon mechanics and stable IDs"
     },
     {
       "id": "weapon_scatter",
@@ -123,7 +132,10 @@
       "source_size": [
         20,
         20
-      ]
+      ],
+      "display_name_zh": "海伯利安之弓",
+      "name_source_page": "https://wiki.biligame.com/worldflipper/海伯利安之弓",
+      "name_verification": "Chinese and English original armament pages matched by base and maximum HP/ATK; this project retains its own weapon mechanics and stable IDs"
     },
     {
       "id": "weapon_crescent",
@@ -137,7 +149,10 @@
       "source_size": [
         20,
         20
-      ]
+      ],
+      "display_name_zh": "悲叹死镰",
+      "name_source_page": "https://wiki.biligame.com/worldflipper/悲叹死镰",
+      "name_verification": "Chinese and English original armament pages matched by base and maximum HP/ATK; this project retains its own weapon mechanics and stable IDs"
     },
     {
       "id": "weapon_storm",
@@ -151,7 +166,10 @@
       "source_size": [
         18,
         20
-      ]
+      ],
+      "display_name_zh": "光芒龙典",
+      "name_source_page": "https://wiki.biligame.com/worldflipper/光芒龙典",
+      "name_verification": "Chinese and English original armament pages matched by base and maximum HP/ATK; this project retains its own weapon mechanics and stable IDs"
     },
     {
       "id": "weapon_comet",
@@ -165,7 +183,10 @@
       "source_size": [
         20,
         20
-      ]
+      ],
+      "display_name_zh": "怨嗟逆枪",
+      "name_source_page": "https://wiki.biligame.com/worldflipper/怨嗟逆枪",
+      "name_verification": "Chinese and English original armament pages matched by base and maximum HP/ATK; this project retains its own weapon mechanics and stable IDs"
     },
     {
       "id": "weapon_return_ring",
@@ -179,7 +200,10 @@
       "source_size": [
         20,
         20
-      ]
+      ],
+      "display_name_zh": "止战徽记",
+      "name_source_page": "https://wiki.biligame.com/worldflipper/止战徽记",
+      "name_verification": "Chinese and English original armament pages matched by base and maximum HP/ATK; this project retains its own weapon mechanics and stable IDs"
     },
     {
       "id": "enemy_chaser",
@@ -630,6 +654,484 @@
       ],
       "scale": 3,
       "normalization": "Original atlas a frame, unmodified source colors and transparency; 3x nearest; centered on a 96x96 canvas with the foot at y84."
+    },
+    {
+      "id": "item_damage",
+      "kind": "item_icon",
+      "game_id": "damage",
+      "item_kind": "relic",
+      "name": "Beared Fang",
+      "filename": "item-Beared_Fang.png",
+      "url": "https://worldflipper.wiki.gg/images/Beared_Fang.png?78a0b9",
+      "source_page": "https://worldflipper.wiki.gg/wiki/Beared_Fang",
+      "sha256": "60d261990fb34cca08254ecf00f3e176a24730eaeac86339443349654a1d5a14",
+      "source_size": [
+        19,
+        20
+      ],
+      "crop": [
+        0,
+        0,
+        19,
+        20
+      ],
+      "scale": 3,
+      "source_category": "Armament sprite images"
+    },
+    {
+      "id": "item_haste",
+      "kind": "item_icon",
+      "game_id": "haste",
+      "item_kind": "relic",
+      "name": "Protostar Belt",
+      "filename": "item-Protostar_Belt.png",
+      "url": "https://worldflipper.wiki.gg/images/Protostar_Belt.png?d1b05b",
+      "source_page": "https://worldflipper.wiki.gg/wiki/Protostar_Belt",
+      "sha256": "0a1ca6c852138a1de44773a4fd0345cdafde15f746d30ad6481f5ae384ff3482",
+      "source_size": [
+        20,
+        20
+      ],
+      "crop": [
+        0,
+        0,
+        20,
+        20
+      ],
+      "scale": 3,
+      "source_category": "Armament sprite images"
+    },
+    {
+      "id": "item_speed",
+      "kind": "item_icon",
+      "game_id": "speed",
+      "item_kind": "relic",
+      "name": "Seaside Ribbon",
+      "filename": "item-Seaside_Ribbon.png",
+      "url": "https://worldflipper.wiki.gg/images/Seaside_Ribbon.png?c9057f",
+      "source_page": "https://worldflipper.wiki.gg/wiki/Seaside_Ribbon",
+      "sha256": "47d588e118a5b8f364cdc3f8195da43713367f59e4b54cfadcb7d58eb49342ab",
+      "source_size": [
+        20,
+        20
+      ],
+      "crop": [
+        0,
+        0,
+        20,
+        20
+      ],
+      "scale": 3,
+      "source_category": "Armament sprite images"
+    },
+    {
+      "id": "item_vitality",
+      "kind": "item_icon",
+      "game_id": "vitality",
+      "item_kind": "relic",
+      "name": "Luna Womb",
+      "filename": "item-Luna_Womb.png",
+      "url": "https://worldflipper.wiki.gg/images/Luna_Womb.png?9fb983",
+      "source_page": "https://worldflipper.wiki.gg/wiki/Luna_Womb",
+      "sha256": "0ca575bcc011d1a71fcc6057f3aaf138d110e72b1af881c8d854635057cb9bfd",
+      "source_size": [
+        20,
+        20
+      ],
+      "crop": [
+        0,
+        0,
+        20,
+        20
+      ],
+      "scale": 3,
+      "source_category": "Armament sprite images"
+    },
+    {
+      "id": "item_armor",
+      "kind": "item_icon",
+      "game_id": "armor",
+      "item_kind": "relic",
+      "name": "Spiteful Cloak",
+      "filename": "item-Spiteful_Cloak.png",
+      "url": "https://worldflipper.wiki.gg/images/Spiteful_Cloak.png?5eaccb",
+      "source_page": "https://worldflipper.wiki.gg/wiki/Spiteful_Cloak",
+      "sha256": "21b7a0139cf8ce0201de5dd984f404a1aadce3771235623216fb559171df5cba",
+      "source_size": [
+        20,
+        20
+      ],
+      "crop": [
+        0,
+        0,
+        20,
+        20
+      ],
+      "scale": 3,
+      "source_category": "Armament sprite images"
+    },
+    {
+      "id": "item_magnet",
+      "kind": "item_icon",
+      "game_id": "magnet",
+      "item_kind": "relic",
+      "name": "Earrings of Amity",
+      "filename": "item-Earrings_of_Amity.png",
+      "url": "https://worldflipper.wiki.gg/images/Earrings_of_Amity.png?223a61",
+      "source_page": "https://worldflipper.wiki.gg/wiki/Earrings_of_Amity",
+      "sha256": "51f2cdb534aba9f82513ca8a43d6078f1fef96cb095488bdb81231862ffdd131",
+      "source_size": [
+        20,
+        20
+      ],
+      "crop": [
+        0,
+        0,
+        20,
+        20
+      ],
+      "scale": 3,
+      "source_category": "Armament sprite images"
+    },
+    {
+      "id": "item_moon_charm",
+      "kind": "item_icon",
+      "game_id": "moon_charm",
+      "item_kind": "relic",
+      "name": "Spiteful Necklace",
+      "filename": "item-Spiteful_Necklace.png",
+      "url": "https://worldflipper.wiki.gg/images/Spiteful_Necklace.png?8a10e1",
+      "source_page": "https://worldflipper.wiki.gg/wiki/Spiteful_Necklace",
+      "sha256": "35a0d4dbccb65b35fe65d444fc6b699a498aaeab24b247d9c460c5b4f1318ca8",
+      "source_size": [
+        19,
+        20
+      ],
+      "crop": [
+        0,
+        0,
+        19,
+        20
+      ],
+      "scale": 3,
+      "source_category": "Armament sprite images"
+    },
+    {
+      "id": "item_pilgrim",
+      "kind": "item_icon",
+      "game_id": "pilgrim",
+      "item_kind": "relic",
+      "name": "Ebony Handbag",
+      "filename": "item-Ebony_Handbag.png",
+      "url": "https://worldflipper.wiki.gg/images/Ebony_Handbag.png?2548e2",
+      "source_page": "https://worldflipper.wiki.gg/wiki/Ebony_Handbag",
+      "sha256": "3414514dea9683018d67cfd3481e85ca606b560ac0577cdcc6d1991c166f85aa",
+      "source_size": [
+        20,
+        20
+      ],
+      "crop": [
+        0,
+        0,
+        20,
+        20
+      ],
+      "scale": 3,
+      "source_category": "Armament sprite images"
+    },
+    {
+      "id": "item_bulwark",
+      "kind": "item_icon",
+      "game_id": "bulwark",
+      "item_kind": "relic",
+      "name": "Aero Bone Shield",
+      "filename": "item-Aero_Bone_Shield.png",
+      "url": "https://worldflipper.wiki.gg/images/Aero_Bone_Shield.png?40ea1e",
+      "source_page": "https://worldflipper.wiki.gg/wiki/Aero_Bone_Shield",
+      "sha256": "c992b669c38c263ac18f6bf3c7a016dbe876bcdb30aa38b8434685ddc0f509b9",
+      "source_size": [
+        20,
+        20
+      ],
+      "crop": [
+        0,
+        0,
+        20,
+        20
+      ],
+      "scale": 3,
+      "source_category": "Armament sprite images"
+    },
+    {
+      "id": "item_hourglass",
+      "kind": "item_icon",
+      "game_id": "hourglass",
+      "item_kind": "relic",
+      "name": "Polychromatic Earrings",
+      "filename": "item-Polychromatic_Earrings.png",
+      "url": "https://worldflipper.wiki.gg/images/Polychromatic_Earrings.png?f87500",
+      "source_page": "https://worldflipper.wiki.gg/wiki/Polychromatic_Earrings",
+      "sha256": "3acd4b18392b40267ca14dbe9c522b3e001c9b98f900d8c902dcdea3ea9a4ba8",
+      "source_size": [
+        15,
+        20
+      ],
+      "crop": [
+        0,
+        0,
+        15,
+        20
+      ],
+      "scale": 3,
+      "source_category": "Armament sprite images"
+    },
+    {
+      "id": "item_blood_pact",
+      "kind": "item_icon",
+      "game_id": "blood_pact",
+      "item_kind": "relic",
+      "name": "Dream Journal",
+      "filename": "item-Dream_Journal.png",
+      "url": "https://worldflipper.wiki.gg/images/Dream_Journal.png?fa5ddc",
+      "source_page": "https://worldflipper.wiki.gg/wiki/Dream_Journal",
+      "sha256": "5c90f001fb6de083395129301e210702d5749ba2640ac7742a1b67bfa7dceacb",
+      "source_size": [
+        19,
+        20
+      ],
+      "crop": [
+        0,
+        0,
+        19,
+        20
+      ],
+      "scale": 3,
+      "source_category": "Armament sprite images"
+    },
+    {
+      "id": "item_grave_candle",
+      "kind": "item_icon",
+      "game_id": "grave_candle",
+      "item_kind": "relic",
+      "name": "Lightcrest Crown",
+      "filename": "item-Lightcrest_Crown.png",
+      "url": "https://worldflipper.wiki.gg/images/Lightcrest_Crown.png?b445d1",
+      "source_page": "https://worldflipper.wiki.gg/wiki/Lightcrest_Crown",
+      "sha256": "384268266e2f83917f5b0d917a11a89c029de64077daf08a22621fbf0a1b20ac",
+      "source_size": [
+        20,
+        20
+      ],
+      "crop": [
+        0,
+        0,
+        20,
+        20
+      ],
+      "scale": 3,
+      "source_category": "Armament sprite images"
+    },
+    {
+      "id": "item_fold_clasp",
+      "kind": "item_icon",
+      "game_id": "fold_clasp",
+      "item_kind": "relic",
+      "name": "Square Glasses",
+      "filename": "item-Square_Glasses.png",
+      "url": "https://worldflipper.wiki.gg/images/Square_Glasses.png?c2923c",
+      "source_page": "https://worldflipper.wiki.gg/wiki/Square_Glasses",
+      "sha256": "fcedc3374546b8e9efb13480b87ff55d7a04b8fdf0c5a3ef20865e258fdcc777",
+      "source_size": [
+        20,
+        19
+      ],
+      "crop": [
+        0,
+        0,
+        20,
+        19
+      ],
+      "scale": 3,
+      "source_category": "Armament sprite images"
+    },
+    {
+      "id": "item_echo_stone",
+      "kind": "item_icon",
+      "game_id": "echo_stone",
+      "item_kind": "relic",
+      "name": "Savant's Doll",
+      "filename": "item-Savants_Doll.png",
+      "url": "https://worldflipper.wiki.gg/images/Savant%27s_Doll.png?20f67d",
+      "source_page": "https://worldflipper.wiki.gg/wiki/Savant's_Doll",
+      "sha256": "e4a9113d9d79d9e6547752d23bba104fe0ece02dcfafa7290c3807be71b0c003",
+      "source_size": [
+        20,
+        20
+      ],
+      "crop": [
+        0,
+        0,
+        20,
+        20
+      ],
+      "scale": 3,
+      "source_category": "Armament sprite images"
+    },
+    {
+      "id": "item_pierce",
+      "kind": "item_icon",
+      "game_id": "pierce",
+      "item_kind": "rune",
+      "name": "Wrist-Mounted Catapult (Core)",
+      "filename": "item-Wrist-Mounted_Catapult_Core.png",
+      "url": "https://worldflipper.wiki.gg/images/Wrist-Mounted_Catapult_%28Core%29.png?626d93",
+      "source_page": "https://worldflipper.wiki.gg/wiki/Wrist-Mounted_Catapult",
+      "sha256": "9a5309dec608389a062e86928297a939c231ab5c2da75c84cffa228d5b146653",
+      "source_size": [
+        19,
+        19
+      ],
+      "crop": [
+        0,
+        0,
+        19,
+        19
+      ],
+      "scale": 3,
+      "source_category": "Armament Core sprite images"
+    },
+    {
+      "id": "item_bounce",
+      "kind": "item_icon",
+      "game_id": "bounce",
+      "item_kind": "rune",
+      "name": "Protostar Shield (Core)",
+      "filename": "item-Protostar_Shield_Core.png",
+      "url": "https://worldflipper.wiki.gg/images/Protostar_Shield_%28Core%29.png?b516a9",
+      "source_page": "https://worldflipper.wiki.gg/wiki/Protostar_Shield",
+      "sha256": "d2551527a863d29f952a25b82b9e05182b65887d55c27c7cca2ae417fa934b72",
+      "source_size": [
+        20,
+        20
+      ],
+      "crop": [
+        0,
+        0,
+        20,
+        20
+      ],
+      "scale": 3,
+      "source_category": "Armament Core sprite images"
+    },
+    {
+      "id": "item_blast",
+      "kind": "item_icon",
+      "game_id": "blast",
+      "item_kind": "rune",
+      "name": "Aero Bomb Bag (Core)",
+      "filename": "item-Aero_Bomb_Bag_Core.png",
+      "url": "https://worldflipper.wiki.gg/images/Aero_Bomb_Bag_%28Core%29.png?3497e6",
+      "source_page": "https://worldflipper.wiki.gg/wiki/Aero_Bomb_Bag",
+      "sha256": "be1cc5a764c1914e8d27cf22f243fc2b026f642db9f9fda325cc0401a1cc6591",
+      "source_size": [
+        20,
+        20
+      ],
+      "crop": [
+        0,
+        0,
+        20,
+        20
+      ],
+      "scale": 3,
+      "source_category": "Armament Core sprite images"
+    },
+    {
+      "id": "item_skill_pulse",
+      "kind": "item_icon",
+      "game_id": "skill_pulse",
+      "item_kind": "skill",
+      "name": "World Flipper ability sphere 17",
+      "filename": "original-item-sheet.png",
+      "url": "https://worldflipper.jp/demo/src/assets/production/item/sprite_sheet.png",
+      "source_page": "https://worldflipper.jp/demo/",
+      "sha256": "44a5da88ea84ab1acaf7b6feb6ddb0a7d43aa4aee6c6a278d29278a3c5c2885d",
+      "source_size": [
+        559,
+        256
+      ],
+      "crop": [
+        25,
+        221,
+        20,
+        20
+      ],
+      "scale": 3,
+      "source_category": "Official public demo pixel ability spheres",
+      "atlas": {
+        "url": "https://worldflipper.jp/demo/src/assets/production/item/sprite_sheet.atlas.json",
+        "sha256": "23d80aedee6963fc7e0c949d39bfe874eec24e15c723dddfe214433172155565",
+        "frame": "item/equipment/general/ability_sphere_17",
+        "rotated": false
+      }
+    },
+    {
+      "id": "item_skill_starfall",
+      "kind": "item_icon",
+      "game_id": "skill_starfall",
+      "item_kind": "skill",
+      "name": "World Flipper ability sphere 09",
+      "filename": "original-item-sheet.png",
+      "url": "https://worldflipper.jp/demo/src/assets/production/item/sprite_sheet.png",
+      "source_page": "https://worldflipper.jp/demo/",
+      "sha256": "44a5da88ea84ab1acaf7b6feb6ddb0a7d43aa4aee6c6a278d29278a3c5c2885d",
+      "source_size": [
+        559,
+        256
+      ],
+      "crop": [
+        26,
+        27,
+        20,
+        20
+      ],
+      "scale": 3,
+      "source_category": "Official public demo pixel ability spheres",
+      "atlas": {
+        "url": "https://worldflipper.jp/demo/src/assets/production/item/sprite_sheet.atlas.json",
+        "sha256": "23d80aedee6963fc7e0c949d39bfe874eec24e15c723dddfe214433172155565",
+        "frame": "item/equipment/general/ability_sphere_09",
+        "rotated": false
+      }
+    },
+    {
+      "id": "item_skill_arc_slash",
+      "kind": "item_icon",
+      "game_id": "skill_arc_slash",
+      "item_kind": "skill",
+      "name": "World Flipper ability sphere 15",
+      "filename": "original-item-sheet.png",
+      "url": "https://worldflipper.jp/demo/src/assets/production/item/sprite_sheet.png",
+      "source_page": "https://worldflipper.jp/demo/",
+      "sha256": "44a5da88ea84ab1acaf7b6feb6ddb0a7d43aa4aee6c6a278d29278a3c5c2885d",
+      "source_size": [
+        559,
+        256
+      ],
+      "crop": [
+        25,
+        173,
+        20,
+        20
+      ],
+      "scale": 3,
+      "source_category": "Official public demo pixel ability spheres",
+      "atlas": {
+        "url": "https://worldflipper.jp/demo/src/assets/production/item/sprite_sheet.atlas.json",
+        "sha256": "23d80aedee6963fc7e0c949d39bfe874eec24e15c723dddfe214433172155565",
+        "frame": "item/equipment/general/ability_sphere_15",
+        "rotated": false
+      }
     }
   ],
   "references_cached_only": [
@@ -1565,6 +2067,726 @@
         48,
         84
       ]
+    },
+    {
+      "id": "item_icon_damage",
+      "path": "assets/worldflipper/icons/damage.png",
+      "sha256": "c591f6c888d3ca8f26f170bf45b3425f6d2a1a2a0e299fcbe3a6a06416bd9f14",
+      "size": [
+        64,
+        64
+      ],
+      "alpha_bounds": [
+        3,
+        2,
+        60,
+        62
+      ],
+      "filter": "nearest",
+      "source_ids": [
+        "item_damage"
+      ],
+      "source_crop": [
+        0,
+        0,
+        19,
+        20
+      ],
+      "source_scale": 3,
+      "offset": [
+        3,
+        2
+      ],
+      "item_kind": "relic",
+      "source_name": "Beared Fang",
+      "normalization": "3x nearest, original RGBA colors and alpha preserved, centered at (3, 2) inside 64x64; no labels, frames or recoloring added"
+    },
+    {
+      "id": "item_icon_haste",
+      "path": "assets/worldflipper/icons/haste.png",
+      "sha256": "97a419019f1b31aaace5758ece4d48a2052190787b6c0afe2d668bdff43730f8",
+      "size": [
+        64,
+        64
+      ],
+      "alpha_bounds": [
+        2,
+        2,
+        62,
+        62
+      ],
+      "filter": "nearest",
+      "source_ids": [
+        "item_haste"
+      ],
+      "source_crop": [
+        0,
+        0,
+        20,
+        20
+      ],
+      "source_scale": 3,
+      "offset": [
+        2,
+        2
+      ],
+      "item_kind": "relic",
+      "source_name": "Protostar Belt",
+      "normalization": "3x nearest, original RGBA colors and alpha preserved, centered at (2, 2) inside 64x64; no labels, frames or recoloring added"
+    },
+    {
+      "id": "item_icon_speed",
+      "path": "assets/worldflipper/icons/speed.png",
+      "sha256": "24444ca34886a7a29cb134ce494697057de2b9974c94bf4145b826f1e641d774",
+      "size": [
+        64,
+        64
+      ],
+      "alpha_bounds": [
+        2,
+        2,
+        62,
+        62
+      ],
+      "filter": "nearest",
+      "source_ids": [
+        "item_speed"
+      ],
+      "source_crop": [
+        0,
+        0,
+        20,
+        20
+      ],
+      "source_scale": 3,
+      "offset": [
+        2,
+        2
+      ],
+      "item_kind": "relic",
+      "source_name": "Seaside Ribbon",
+      "normalization": "3x nearest, original RGBA colors and alpha preserved, centered at (2, 2) inside 64x64; no labels, frames or recoloring added"
+    },
+    {
+      "id": "item_icon_vitality",
+      "path": "assets/worldflipper/icons/vitality.png",
+      "sha256": "872de1c8478e85dfef506f6d3b5de72289cb084c3a8356c36057010adb8e3c7a",
+      "size": [
+        64,
+        64
+      ],
+      "alpha_bounds": [
+        2,
+        2,
+        62,
+        62
+      ],
+      "filter": "nearest",
+      "source_ids": [
+        "item_vitality"
+      ],
+      "source_crop": [
+        0,
+        0,
+        20,
+        20
+      ],
+      "source_scale": 3,
+      "offset": [
+        2,
+        2
+      ],
+      "item_kind": "relic",
+      "source_name": "Luna Womb",
+      "normalization": "3x nearest, original RGBA colors and alpha preserved, centered at (2, 2) inside 64x64; no labels, frames or recoloring added"
+    },
+    {
+      "id": "item_icon_armor",
+      "path": "assets/worldflipper/icons/armor.png",
+      "sha256": "b7c2aff5c9720cf8b8cb771b7ae3e16c62c75b1af94d1cd63a20a33dce92676a",
+      "size": [
+        64,
+        64
+      ],
+      "alpha_bounds": [
+        2,
+        2,
+        62,
+        62
+      ],
+      "filter": "nearest",
+      "source_ids": [
+        "item_armor"
+      ],
+      "source_crop": [
+        0,
+        0,
+        20,
+        20
+      ],
+      "source_scale": 3,
+      "offset": [
+        2,
+        2
+      ],
+      "item_kind": "relic",
+      "source_name": "Spiteful Cloak",
+      "normalization": "3x nearest, original RGBA colors and alpha preserved, centered at (2, 2) inside 64x64; no labels, frames or recoloring added"
+    },
+    {
+      "id": "item_icon_magnet",
+      "path": "assets/worldflipper/icons/magnet.png",
+      "sha256": "117ba10f7c35c9e31fabd73e84a5bff12b615e05fc6010df9bab9c953a5758bb",
+      "size": [
+        64,
+        64
+      ],
+      "alpha_bounds": [
+        2,
+        2,
+        62,
+        62
+      ],
+      "filter": "nearest",
+      "source_ids": [
+        "item_magnet"
+      ],
+      "source_crop": [
+        0,
+        0,
+        20,
+        20
+      ],
+      "source_scale": 3,
+      "offset": [
+        2,
+        2
+      ],
+      "item_kind": "relic",
+      "source_name": "Earrings of Amity",
+      "normalization": "3x nearest, original RGBA colors and alpha preserved, centered at (2, 2) inside 64x64; no labels, frames or recoloring added"
+    },
+    {
+      "id": "item_icon_moon_charm",
+      "path": "assets/worldflipper/icons/moon_charm.png",
+      "sha256": "1f46eff4d74118f53796eb5ab7a74a3523281efac8c046daf2f9a88135d07298",
+      "size": [
+        64,
+        64
+      ],
+      "alpha_bounds": [
+        3,
+        2,
+        60,
+        62
+      ],
+      "filter": "nearest",
+      "source_ids": [
+        "item_moon_charm"
+      ],
+      "source_crop": [
+        0,
+        0,
+        19,
+        20
+      ],
+      "source_scale": 3,
+      "offset": [
+        3,
+        2
+      ],
+      "item_kind": "relic",
+      "source_name": "Spiteful Necklace",
+      "normalization": "3x nearest, original RGBA colors and alpha preserved, centered at (3, 2) inside 64x64; no labels, frames or recoloring added"
+    },
+    {
+      "id": "item_icon_pilgrim",
+      "path": "assets/worldflipper/icons/pilgrim.png",
+      "sha256": "b0c700b929c632dcfb68e112cb7375c7d3c99a517ce5b95e97518bab53b9c972",
+      "size": [
+        64,
+        64
+      ],
+      "alpha_bounds": [
+        2,
+        2,
+        62,
+        62
+      ],
+      "filter": "nearest",
+      "source_ids": [
+        "item_pilgrim"
+      ],
+      "source_crop": [
+        0,
+        0,
+        20,
+        20
+      ],
+      "source_scale": 3,
+      "offset": [
+        2,
+        2
+      ],
+      "item_kind": "relic",
+      "source_name": "Ebony Handbag",
+      "normalization": "3x nearest, original RGBA colors and alpha preserved, centered at (2, 2) inside 64x64; no labels, frames or recoloring added"
+    },
+    {
+      "id": "item_icon_bulwark",
+      "path": "assets/worldflipper/icons/bulwark.png",
+      "sha256": "a1bb8ad64f31641031af1c360726f0e66f1d6a006fcbc7dc2e10514bc0d63283",
+      "size": [
+        64,
+        64
+      ],
+      "alpha_bounds": [
+        2,
+        2,
+        62,
+        62
+      ],
+      "filter": "nearest",
+      "source_ids": [
+        "item_bulwark"
+      ],
+      "source_crop": [
+        0,
+        0,
+        20,
+        20
+      ],
+      "source_scale": 3,
+      "offset": [
+        2,
+        2
+      ],
+      "item_kind": "relic",
+      "source_name": "Aero Bone Shield",
+      "normalization": "3x nearest, original RGBA colors and alpha preserved, centered at (2, 2) inside 64x64; no labels, frames or recoloring added"
+    },
+    {
+      "id": "item_icon_hourglass",
+      "path": "assets/worldflipper/icons/hourglass.png",
+      "sha256": "5354f7656eb88d17cc070cdd55d2d6926c661fd25f399503327016bbd8243570",
+      "size": [
+        64,
+        64
+      ],
+      "alpha_bounds": [
+        9,
+        2,
+        54,
+        62
+      ],
+      "filter": "nearest",
+      "source_ids": [
+        "item_hourglass"
+      ],
+      "source_crop": [
+        0,
+        0,
+        15,
+        20
+      ],
+      "source_scale": 3,
+      "offset": [
+        9,
+        2
+      ],
+      "item_kind": "relic",
+      "source_name": "Polychromatic Earrings",
+      "normalization": "3x nearest, original RGBA colors and alpha preserved, centered at (9, 2) inside 64x64; no labels, frames or recoloring added"
+    },
+    {
+      "id": "item_icon_blood_pact",
+      "path": "assets/worldflipper/icons/blood_pact.png",
+      "sha256": "2833c182bf69a18c004ce220fe92c5e55e4b32375212ea35e3bde28c80974dc5",
+      "size": [
+        64,
+        64
+      ],
+      "alpha_bounds": [
+        3,
+        2,
+        60,
+        62
+      ],
+      "filter": "nearest",
+      "source_ids": [
+        "item_blood_pact"
+      ],
+      "source_crop": [
+        0,
+        0,
+        19,
+        20
+      ],
+      "source_scale": 3,
+      "offset": [
+        3,
+        2
+      ],
+      "item_kind": "relic",
+      "source_name": "Dream Journal",
+      "normalization": "3x nearest, original RGBA colors and alpha preserved, centered at (3, 2) inside 64x64; no labels, frames or recoloring added"
+    },
+    {
+      "id": "item_icon_grave_candle",
+      "path": "assets/worldflipper/icons/grave_candle.png",
+      "sha256": "4d151880a4da2c708af4550250e34e81ab2812e61c0cb80251d4727993098d88",
+      "size": [
+        64,
+        64
+      ],
+      "alpha_bounds": [
+        2,
+        2,
+        62,
+        62
+      ],
+      "filter": "nearest",
+      "source_ids": [
+        "item_grave_candle"
+      ],
+      "source_crop": [
+        0,
+        0,
+        20,
+        20
+      ],
+      "source_scale": 3,
+      "offset": [
+        2,
+        2
+      ],
+      "item_kind": "relic",
+      "source_name": "Lightcrest Crown",
+      "normalization": "3x nearest, original RGBA colors and alpha preserved, centered at (2, 2) inside 64x64; no labels, frames or recoloring added"
+    },
+    {
+      "id": "item_icon_fold_clasp",
+      "path": "assets/worldflipper/icons/fold_clasp.png",
+      "sha256": "86e23e4f2cf177bc6c41b019a129d7ebac4f95452c8ba2cdb88a451d7416c8b4",
+      "size": [
+        64,
+        64
+      ],
+      "alpha_bounds": [
+        2,
+        3,
+        62,
+        60
+      ],
+      "filter": "nearest",
+      "source_ids": [
+        "item_fold_clasp"
+      ],
+      "source_crop": [
+        0,
+        0,
+        20,
+        19
+      ],
+      "source_scale": 3,
+      "offset": [
+        2,
+        3
+      ],
+      "item_kind": "relic",
+      "source_name": "Square Glasses",
+      "normalization": "3x nearest, original RGBA colors and alpha preserved, centered at (2, 3) inside 64x64; no labels, frames or recoloring added"
+    },
+    {
+      "id": "item_icon_echo_stone",
+      "path": "assets/worldflipper/icons/echo_stone.png",
+      "sha256": "09ec3c6f1dd29c2459911d43c64c62ed013b79c74b721e4fe96a34c1e87d8d77",
+      "size": [
+        64,
+        64
+      ],
+      "alpha_bounds": [
+        2,
+        2,
+        62,
+        62
+      ],
+      "filter": "nearest",
+      "source_ids": [
+        "item_echo_stone"
+      ],
+      "source_crop": [
+        0,
+        0,
+        20,
+        20
+      ],
+      "source_scale": 3,
+      "offset": [
+        2,
+        2
+      ],
+      "item_kind": "relic",
+      "source_name": "Savant's Doll",
+      "normalization": "3x nearest, original RGBA colors and alpha preserved, centered at (2, 2) inside 64x64; no labels, frames or recoloring added"
+    },
+    {
+      "id": "item_icon_pierce",
+      "path": "assets/worldflipper/icons/pierce.png",
+      "sha256": "4cf79245746492394706706758cfc3a88d9ef762a019d39b91b305e3a85db48b",
+      "size": [
+        64,
+        64
+      ],
+      "alpha_bounds": [
+        3,
+        3,
+        60,
+        60
+      ],
+      "filter": "nearest",
+      "source_ids": [
+        "item_pierce"
+      ],
+      "source_crop": [
+        0,
+        0,
+        19,
+        19
+      ],
+      "source_scale": 3,
+      "offset": [
+        3,
+        3
+      ],
+      "item_kind": "rune",
+      "source_name": "Wrist-Mounted Catapult (Core)",
+      "normalization": "3x nearest, original RGBA colors and alpha preserved, centered at (3, 3) inside 64x64; no labels, frames or recoloring added"
+    },
+    {
+      "id": "item_icon_bounce",
+      "path": "assets/worldflipper/icons/bounce.png",
+      "sha256": "4ada2988e64fb9ab8f3eb6b327f03a361337da1afa90a9c151879aa9a44ff105",
+      "size": [
+        64,
+        64
+      ],
+      "alpha_bounds": [
+        2,
+        2,
+        62,
+        62
+      ],
+      "filter": "nearest",
+      "source_ids": [
+        "item_bounce"
+      ],
+      "source_crop": [
+        0,
+        0,
+        20,
+        20
+      ],
+      "source_scale": 3,
+      "offset": [
+        2,
+        2
+      ],
+      "item_kind": "rune",
+      "source_name": "Protostar Shield (Core)",
+      "normalization": "3x nearest, original RGBA colors and alpha preserved, centered at (2, 2) inside 64x64; no labels, frames or recoloring added"
+    },
+    {
+      "id": "item_icon_blast",
+      "path": "assets/worldflipper/icons/blast.png",
+      "sha256": "2da7cc2313a93db613c127a69a9c2dbbdaf56906d4d09269290475ed46f49a10",
+      "size": [
+        64,
+        64
+      ],
+      "alpha_bounds": [
+        2,
+        2,
+        62,
+        62
+      ],
+      "filter": "nearest",
+      "source_ids": [
+        "item_blast"
+      ],
+      "source_crop": [
+        0,
+        0,
+        20,
+        20
+      ],
+      "source_scale": 3,
+      "offset": [
+        2,
+        2
+      ],
+      "item_kind": "rune",
+      "source_name": "Aero Bomb Bag (Core)",
+      "normalization": "3x nearest, original RGBA colors and alpha preserved, centered at (2, 2) inside 64x64; no labels, frames or recoloring added"
+    },
+    {
+      "id": "item_icon_skill_pulse",
+      "path": "assets/worldflipper/icons/skill_pulse.png",
+      "sha256": "ee1d77ee88895162066bf7c6ac4d203f5a616d052607c016fa0a1b75cbcc82a1",
+      "size": [
+        64,
+        64
+      ],
+      "alpha_bounds": [
+        2,
+        2,
+        62,
+        62
+      ],
+      "filter": "nearest",
+      "source_ids": [
+        "item_skill_pulse"
+      ],
+      "source_crop": [
+        25,
+        221,
+        20,
+        20
+      ],
+      "source_scale": 3,
+      "offset": [
+        2,
+        2
+      ],
+      "item_kind": "skill",
+      "source_name": "World Flipper ability sphere 17",
+      "normalization": "3x nearest, original RGBA colors and alpha preserved, centered at (2, 2) inside 64x64; no labels, frames or recoloring added",
+      "source_atlas": {
+        "url": "https://worldflipper.jp/demo/src/assets/production/item/sprite_sheet.atlas.json",
+        "sha256": "23d80aedee6963fc7e0c949d39bfe874eec24e15c723dddfe214433172155565",
+        "frame": "item/equipment/general/ability_sphere_17",
+        "rotated": false
+      }
+    },
+    {
+      "id": "item_icon_skill_starfall",
+      "path": "assets/worldflipper/icons/skill_starfall.png",
+      "sha256": "1695d910fb70f74d3e3f7bceace8fa80ce2262d19090377dd6c85682c6c6c927",
+      "size": [
+        64,
+        64
+      ],
+      "alpha_bounds": [
+        2,
+        2,
+        62,
+        62
+      ],
+      "filter": "nearest",
+      "source_ids": [
+        "item_skill_starfall"
+      ],
+      "source_crop": [
+        26,
+        27,
+        20,
+        20
+      ],
+      "source_scale": 3,
+      "offset": [
+        2,
+        2
+      ],
+      "item_kind": "skill",
+      "source_name": "World Flipper ability sphere 09",
+      "normalization": "3x nearest, original RGBA colors and alpha preserved, centered at (2, 2) inside 64x64; no labels, frames or recoloring added",
+      "source_atlas": {
+        "url": "https://worldflipper.jp/demo/src/assets/production/item/sprite_sheet.atlas.json",
+        "sha256": "23d80aedee6963fc7e0c949d39bfe874eec24e15c723dddfe214433172155565",
+        "frame": "item/equipment/general/ability_sphere_09",
+        "rotated": false
+      }
+    },
+    {
+      "id": "item_icon_skill_arc_slash",
+      "path": "assets/worldflipper/icons/skill_arc_slash.png",
+      "sha256": "049745d5fa5c53d4ec49549c63ea3774cff35f499d3a89fbf6091a307c70032d",
+      "size": [
+        64,
+        64
+      ],
+      "alpha_bounds": [
+        2,
+        2,
+        62,
+        62
+      ],
+      "filter": "nearest",
+      "source_ids": [
+        "item_skill_arc_slash"
+      ],
+      "source_crop": [
+        25,
+        173,
+        20,
+        20
+      ],
+      "source_scale": 3,
+      "offset": [
+        2,
+        2
+      ],
+      "item_kind": "skill",
+      "source_name": "World Flipper ability sphere 15",
+      "normalization": "3x nearest, original RGBA colors and alpha preserved, centered at (2, 2) inside 64x64; no labels, frames or recoloring added",
+      "source_atlas": {
+        "url": "https://worldflipper.jp/demo/src/assets/production/item/sprite_sheet.atlas.json",
+        "sha256": "23d80aedee6963fc7e0c949d39bfe874eec24e15c723dddfe214433172155565",
+        "frame": "item/equipment/general/ability_sphere_15",
+        "rotated": false
+      }
+    },
+    {
+      "path": "assets/worldflipper/fx/projectile_heads.png",
+      "sha256": "f934ec82696ab36901476b2da51302845f3912f6933c0fbae84eea864b1a20ae",
+      "size": [
+        512,
+        64
+      ],
+      "alpha_bounds": [
+        9,
+        2,
+        510,
+        62
+      ],
+      "filter": "nearest",
+      "id": "weapon_projectiles",
+      "cell_size": [
+        64,
+        64
+      ],
+      "columns": 8,
+      "weapon_ids": [
+        "bone",
+        "frost",
+        "ember",
+        "scatter",
+        "crescent",
+        "storm",
+        "comet",
+        "return_ring"
+      ],
+      "source_ids": [
+        "weapon_bone",
+        "weapon_frost",
+        "weapon_ember",
+        "weapon_scatter",
+        "weapon_crescent",
+        "weapon_storm",
+        "weapon_comet",
+        "weapon_return_ring"
+      ],
+      "normalization": "Eight unmodified normalized weapon icons in the existing projectile-frame order; original transparent pixels retained; combat geometry unchanged"
     }
   ],
   "gameplay": "Alk remains the only hero; recruitment is deferred. Arena IDs, terrain zones and multipliers remain stable. Authored low props block ground movement, dash and knockback; flying projectiles pass over them."

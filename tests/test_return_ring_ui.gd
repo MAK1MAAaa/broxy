@@ -87,7 +87,7 @@ static func make_fixture(incoming: String = "bounce") -> RunState:
 func _test_return_facts() -> void:
 	var weapon: ContentDef = GameCatalog.weapon("return_ring")
 	var blast_description: String = GameCatalog.rune("blast").description
-	_check(blast_description.contains("月镰与归魂环") and blast_description.contains("第二次直接命中"), "The shared blast tooltip names both weapons that require a second direct hit")
+	_check(blast_description.contains("额外穿透型法器") and blast_description.contains("第二次直接命中"), "The shared blast tooltip identifies weapons that require a second direct hit by their actual behavior")
 	for rune: String in ["pierce", "bounce", "blast"]:
 		var state: RunState = make_fixture(rune)
 		var before: String = _signature(state)
