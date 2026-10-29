@@ -10,6 +10,11 @@ const ART_ROOT: String = "res://assets/starfall/"
 const FAN_ROOT: String = "res://assets/worldflipper/"
 const FAN_OVERRIDES: Dictionary = {
 	"res://assets/sprites/player.svg": FAN_ROOT + "sprites/player.png",
+	"res://assets/sprites/chaser.svg": FAN_ROOT + "sprites/chaser.png",
+	"res://assets/sprites/rusher.svg": FAN_ROOT + "sprites/rusher.png",
+	"res://assets/sprites/tank.svg": FAN_ROOT + "sprites/tank.png",
+	"res://assets/sprites/caster.svg": FAN_ROOT + "sprites/caster.png",
+	"res://assets/sprites/boss.svg": FAN_ROOT + "sprites/boss.png",
 	"res://assets/icons/bone.svg": FAN_ROOT + "icons/bone.png",
 	"res://assets/icons/frost.svg": FAN_ROOT + "icons/frost.png",
 	"res://assets/icons/ember.svg": FAN_ROOT + "icons/ember.png",
@@ -57,7 +62,7 @@ func _test_path_contract() -> void:
 	for source: String in FAN_OVERRIDES:
 		var expected: String = str(FAN_OVERRIDES[source])
 		_check(AdventureArt.path(source) == expected and AdventureArt.path(expected) == expected, "The original-game override has an exact stable route: " + source)
-	_check(AdventureArt.path("res://assets/sprites/chaser.svg") == ART_ROOT + "sprites/chaser.svg", "Enemy sprites retain their established presentation family")
+	_check(AdventureArt.path(ART_ROOT + "sprites/chaser.svg") == ART_ROOT + "sprites/chaser.svg", "The preserved previous enemy artwork remains available through its explicit path")
 	_check(AdventureArt.path("res://assets/maps/mire.svg") == ART_ROOT + "maps/mire.svg", "An original map selects its replacement without changing catalog data")
 	_check(AdventureArt.path("res://assets/menu_art.svg") == ART_ROOT + "menu_art.png", "Legacy menu references retain their preserved static illustration")
 	for source: String in ["res://assets/audio/dash.wav", "res://assets/icons/example.png", "res://other/example.svg", "https://example.test/example.svg", ""]:
@@ -165,7 +170,8 @@ func _count_texture(node: Node, expected: String) -> int:
 	var result: int = 0
 	if node is TextureRect and node.texture != null and node.texture.resource_path == expected:
 		result += 1
-		_check(node.texture_filter == CanvasItem.TEXTURE_FILTER_NEAREST, "A rendered UI texture uses local nearest filtering: " + expected)
+		var expected_filter: CanvasItem.TextureFilter = CanvasItem.TEXTURE_FILTER_LINEAR if expected in [TitleCover.BASE_PATH, TitleCover.DEFAULT_PORTRAIT_PATH] else CanvasItem.TEXTURE_FILTER_NEAREST
+		_check(node.texture_filter == expected_filter, "A rendered UI texture uses filtering appropriate to its pixel art or illustration: " + expected)
 	for child: Node in node.get_children():
 		result += _count_texture(child, expected)
 	return result

@@ -1,5 +1,5 @@
 {
-  "revision": "world-flipper-fan-01",
+  "revision": "world-flipper-fan-02",
   "original_copyright": "© Cygames, Inc. / Citail Inc.",
   "license_status": "Original game assets; no open asset license found. Unofficial fan-work use is not a claim of authorization.",
   "copyright_source": "https://worldflipper.jp/copyright/",
@@ -179,6 +179,168 @@
       "source_size": [
         20,
         20
+      ]
+    },
+    {
+      "id": "enemy_chaser",
+      "kind": "enemy",
+      "game_id": "chaser",
+      "name": "Blue Blobble / 蓝波露",
+      "filename": "enemy-chaser.gif",
+      "url": "https://vivaldi6352.github.io/assets/rarity1/slango_blue/neutral.gif",
+      "source_page": "https://wiki.biligame.com/worldflipper/蓝波露",
+      "sha256": "cf8fae5916213f660a0b39bdda21b91053e8471da4eec3248b7a3f6261423b65",
+      "source_size": [
+        30,
+        16
+      ],
+      "frame_count": 1,
+      "durations_ms": [
+        20
+      ],
+      "canvas_size": [
+        64,
+        64
+      ],
+      "scale": 2,
+      "offset": [
+        2,
+        26
+      ]
+    },
+    {
+      "id": "enemy_rusher",
+      "kind": "enemy",
+      "game_id": "rusher",
+      "name": "Zapquill / 帕拉鼠",
+      "filename": "enemy-rusher.gif",
+      "url": "https://vivaldi6352.github.io/assets/rarity1/paralysis_hedgehog/neutral.gif",
+      "source_page": "https://wiki.biligame.com/worldflipper/帕拉鼠",
+      "sha256": "7f8fc62f1fb0ea8acb3cf89d2041243fb976185958de2922e86ae04a4ad04798",
+      "source_size": [
+        30,
+        26
+      ],
+      "frame_count": 1,
+      "durations_ms": [
+        20
+      ],
+      "canvas_size": [
+        64,
+        64
+      ],
+      "scale": 2,
+      "offset": [
+        2,
+        6
+      ]
+    },
+    {
+      "id": "enemy_tank",
+      "kind": "enemy",
+      "game_id": "tank",
+      "name": "Golem / 魔像",
+      "filename": "enemy-tank.gif",
+      "url": "https://vivaldi6352.github.io/assets/rarity2/guardian_golem/neutral.gif",
+      "source_page": "https://wiki.biligame.com/worldflipper/魔像",
+      "sha256": "ca53664478a622846de86137f661a234459febe43b334813a7f0e22f9cafe964",
+      "source_size": [
+        34,
+        28
+      ],
+      "frame_count": 1,
+      "durations_ms": [
+        0
+      ],
+      "canvas_size": [
+        80,
+        80
+      ],
+      "scale": 2,
+      "offset": [
+        6,
+        17
+      ]
+    },
+    {
+      "id": "enemy_caster",
+      "kind": "enemy",
+      "game_id": "caster",
+      "name": "Fire Imp / 火精",
+      "filename": "enemy-caster.gif",
+      "url": "https://vivaldi6352.github.io/assets/rarity1/spirit_fire/neutral.gif",
+      "source_page": "https://wiki.biligame.com/worldflipper/火精",
+      "sha256": "e00e2d0955605c3abab09687b8cbe7ceb143e96c546e5b2d8b12f2def550ef4a",
+      "source_size": [
+        22,
+        28
+      ],
+      "frame_count": 1,
+      "durations_ms": [
+        9980
+      ],
+      "canvas_size": [
+        72,
+        72
+      ],
+      "scale": 2,
+      "offset": [
+        14,
+        10
+      ]
+    },
+    {
+      "id": "enemy_boss",
+      "kind": "enemy",
+      "game_id": "boss",
+      "name": "Regitare / 瑞西塔尔",
+      "filename": "enemy-boss.gif",
+      "url": "https://vivaldi6352.github.io/assets/rarity3/lich/neutral.gif",
+      "source_page": "https://wiki.biligame.com/worldflipper/瑞西塔尔",
+      "sha256": "a1189da14675f82b6d9741f27dbda601dcbd9ad38719ed775dd941d78af97f74",
+      "source_size": [
+        30,
+        36
+      ],
+      "frame_count": 1,
+      "durations_ms": [
+        20
+      ],
+      "canvas_size": [
+        160,
+        160
+      ],
+      "scale": 4,
+      "offset": [
+        20,
+        2
+      ]
+    },
+    {
+      "id": "cover_background",
+      "kind": "cover_background",
+      "name": "World Flipper official character-page background",
+      "filename": "cover-background.png",
+      "url": "https://worldflipper.jp/assets/images/top_char_bg.png",
+      "source_page": "https://worldflipper.jp/",
+      "sha256": "02aae14ad9789b3e1a57f7073922cd097d3e83fd26b5e10dff0b3d0deb4c93a6",
+      "source_size": [
+        1851,
+        989
+      ]
+    },
+    {
+      "id": "portrait_alk",
+      "kind": "cover_portrait",
+      "character_id": "alk",
+      "name": "Alk / 阿尔克 original portrait",
+      "filename": "alk-full.png",
+      "url": "https://patchwiki.biligame.com/images/worldflipper/d/d3/qep7a45zkk1v3lu70tg3s3gad5mu3gn.png",
+      "source_page": "https://wiki.biligame.com/worldflipper/阿尔克",
+      "sha256": "dd4ffd62af0330633000e2beefca43b07f1adc225d0c8db8b2c9eca6a497d58c",
+      "source_size": [
+        939,
+        1727
       ]
     }
   ],
@@ -440,7 +602,147 @@
         "weapon_return_ring"
       ],
       "normalization": "3x nearest, centered inside 64x64, no recoloring or background"
+    },
+    {
+      "id": "enemy_chaser",
+      "path": "assets/worldflipper/sprites/chaser.png",
+      "sha256": "117e9d34f43c185f1831155e59565fda89d5ef2bf67e861f352498a8f98074a7",
+      "size": [
+        64,
+        64
+      ],
+      "alpha_bounds": [
+        2,
+        26,
+        62,
+        58
+      ],
+      "filter": "nearest",
+      "source_ids": [
+        "enemy_chaser"
+      ],
+      "normalization": "2x nearest at (2, 26); complete original pose retained without recoloring inside 64x64"
+    },
+    {
+      "id": "enemy_rusher",
+      "path": "assets/worldflipper/sprites/rusher.png",
+      "sha256": "ab551d0cb0cef0e210cd503a2ca8c678243ae3d9e5a8284b5d16886ae3c89ce2",
+      "size": [
+        64,
+        64
+      ],
+      "alpha_bounds": [
+        2,
+        6,
+        62,
+        58
+      ],
+      "filter": "nearest",
+      "source_ids": [
+        "enemy_rusher"
+      ],
+      "normalization": "2x nearest at (2, 6); complete original pose retained without recoloring inside 64x64"
+    },
+    {
+      "id": "enemy_tank",
+      "path": "assets/worldflipper/sprites/tank.png",
+      "sha256": "9fc77fd43d54c9d1888b9898ab9f5d8b51ed9c9fc65bc3b6ce0ae6cde448de04",
+      "size": [
+        80,
+        80
+      ],
+      "alpha_bounds": [
+        6,
+        17,
+        74,
+        73
+      ],
+      "filter": "nearest",
+      "source_ids": [
+        "enemy_tank"
+      ],
+      "normalization": "2x nearest at (6, 17); complete original pose retained without recoloring inside 80x80"
+    },
+    {
+      "id": "enemy_caster",
+      "path": "assets/worldflipper/sprites/caster.png",
+      "sha256": "41d068a27248183ee523a035d20ad513803aa7b9373ab4db5077d5e25cd956ea",
+      "size": [
+        72,
+        72
+      ],
+      "alpha_bounds": [
+        14,
+        10,
+        58,
+        66
+      ],
+      "filter": "nearest",
+      "source_ids": [
+        "enemy_caster"
+      ],
+      "normalization": "2x nearest at (14, 10); complete original pose retained without recoloring inside 72x72"
+    },
+    {
+      "id": "enemy_boss",
+      "path": "assets/worldflipper/sprites/boss.png",
+      "sha256": "55c82cd66698ef25e2b662861f2b838d49f245d830972b5cf5c5123c517912d7",
+      "size": [
+        160,
+        160
+      ],
+      "alpha_bounds": [
+        20,
+        2,
+        140,
+        146
+      ],
+      "filter": "nearest",
+      "source_ids": [
+        "enemy_boss"
+      ],
+      "normalization": "4x nearest at (20, 2); complete original pose retained without recoloring inside 160x160"
+    },
+    {
+      "id": "cover_background",
+      "path": "assets/worldflipper/title/cover.png",
+      "sha256": "4b11f31bfdf0916473b18739144ffe3eebd1d7caaa364ec05dd9555f75157dfe",
+      "size": [
+        1280,
+        720
+      ],
+      "alpha_bounds": [
+        0,
+        0,
+        1280,
+        720
+      ],
+      "filter": "linear",
+      "source_ids": [
+        "cover_background"
+      ],
+      "normalization": "Cream matte; proportional cover fit and centered 1280x720 crop; no character baked into the background"
+    },
+    {
+      "id": "portrait_alk",
+      "path": "assets/worldflipper/portraits/alk.png",
+      "sha256": "dd4ffd62af0330633000e2beefca43b07f1adc225d0c8db8b2c9eca6a497d58c",
+      "size": [
+        939,
+        1727
+      ],
+      "alpha_bounds": [
+        0,
+        0,
+        939,
+        1727
+      ],
+      "filter": "linear",
+      "source_ids": [
+        "portrait_alk"
+      ],
+      "normalization": "Original source bytes preserved; runtime keeps the full aspect ratio inside a separate right-side portrait layer"
     }
   ],
-  "gameplay": "Presentation only; existing catalog IDs, names, rules and collisions remain in force."
+  "gameplay": "Presentation only; current hero remains Alk and recruitment rules are not implemented. Existing catalog IDs, names, combat rules and collisions remain in force."
 }

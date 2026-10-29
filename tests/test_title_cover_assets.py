@@ -8,7 +8,7 @@ import struct
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
-ART = ROOT / "assets/title"
+ART = ROOT / "assets/worldflipper/title"
 
 
 def gif_stream(data: bytes) -> dict:
@@ -90,6 +90,12 @@ class TitleCoverAssets(unittest.TestCase):
         for name, key in (("cover.png", "base_png_sha256"), ("cover.gif", "gif_sha256")):
             self.assertEqual(hashlib.sha256((ART / name).read_bytes()).hexdigest(), metadata[key])
         self.assertEqual(hashlib.sha256((ROOT / metadata["renderer"]).read_bytes()).hexdigest(), metadata["renderer_sha256"])
+        self.assertEqual(metadata["base_png_path"], "assets/worldflipper/title/cover.png")
+        self.assertEqual(metadata["default_character_id"], "alk")
+        self.assertEqual(metadata["portrait_path"], "assets/worldflipper/portraits/alk.png")
+        self.assertEqual(hashlib.sha256((ROOT / metadata["portrait_path"]).read_bytes()).hexdigest(), metadata["portrait_sha256"])
+        self.assertEqual(metadata["source_registry"], "tools/world_flipper_cover_sources.json")
+        self.assertEqual(hashlib.sha256((ROOT / metadata["source_registry"]).read_bytes()).hexdigest(), metadata["source_registry_sha256"])
         self.assertEqual(len(set(metadata["source_frame_sha256"])), 24)
         self.assertEqual(len(set(metadata["decoded_gif_frame_sha256"])), 24)
 
@@ -97,10 +103,16 @@ class TitleCoverAssets(unittest.TestCase):
         png = (ART / "cover.png").read_bytes()
         self.assertEqual(png[:8], b"\x89PNG\r\n\x1a\n")
         self.assertEqual(struct.unpack_from(">II", png, 16), (1280, 720))
-        source = json.loads((ART / "image-generation.json").read_text(encoding="utf-8"))
-        self.assertEqual(source["tool"], "image_gen.imagegen built-in")
-        self.assertFalse(source["external_game_art_embedded"])
-        self.assertIn("bird-beak", source["prompt"])
+        registry = json.loads((ROOT / "tools/world_flipper_cover_sources.json").read_text(encoding="utf-8"))
+        sources = {source["id"]: source for source in registry["sources"]}
+        self.assertEqual(set(sources), {"cover_background", "portrait_alk"})
+        self.assertEqual(sources["cover_background"]["kind"], "cover_background")
+        self.assertEqual(sources["cover_background"]["url"], "https://worldflipper.jp/assets/images/top_char_bg.png")
+        self.assertEqual(sources["cover_background"]["source_size"], [1851, 989])
+        self.assertEqual(sources["portrait_alk"]["kind"], "cover_portrait")
+        self.assertEqual(sources["portrait_alk"]["character_id"], "alk")
+        self.assertTrue(sources["portrait_alk"]["source_page"].startswith("https://wiki.biligame.com/worldflipper/"))
+        self.assertEqual(hashlib.sha256((ROOT / "assets/worldflipper/portraits/alk.png").read_bytes()).hexdigest(), sources["portrait_alk"]["sha256"])
 
 
 if __name__ == "__main__":

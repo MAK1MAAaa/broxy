@@ -10,10 +10,17 @@ from urllib.request import Request, urlopen
 
 from PIL import Image, ImageDraw
 
+from world_flipper_cover import cover_assets
+from world_flipper_enemies import enemy_assets
+
 ROOT = Path(__file__).resolve().parents[1]
 CACHE = ROOT / ".tools/worldflipper/source"
 OUTPUT = ROOT / "assets/worldflipper"
 REGISTRY = Path(__file__).with_name("world_flipper_sources.json")
+EXTRA_REGISTRIES = (
+    "world_flipper_enemies.json",
+    "world_flipper_cover_sources.json",
+)
 CELL = (96, 96)
 MAX_DOWNLOAD_BYTES = 8 * 1024 * 1024
 
@@ -142,7 +149,11 @@ def main() -> None:
     parser.add_argument("--references", action="store_true", help="Also cache the Wiki portrait, pixel preview and skill GIF; these do not enter the game")
     args = parser.parse_args()
     registry = json.loads(REGISTRY.read_text(encoding="utf-8"))
-    sources: list[dict] = registry["sources"]
+    sources: list[dict] = list(registry["sources"])
+    for filename in EXTRA_REGISTRIES:
+        sources.extend(json.loads(REGISTRY.with_name(filename).read_text(encoding="utf-8"))["sources"])
+    if len({source["id"] for source in sources}) != len(sources):
+        raise ValueError("Every source must have a unique identity")
     CACHE.mkdir(parents=True, exist_ok=True)
     paths = {source["id"]: acquire(source, args.offline) for source in sources}
     if args.references:
@@ -150,8 +161,11 @@ def main() -> None:
             acquire(source, args.offline)
     player, frames = player_assets(sources, paths)
     weapons, icons = weapon_assets(sources, paths)
+    enemies = enemy_assets(sources, paths, OUTPUT)
+    cover = cover_assets(sources, paths, OUTPUT)
+    assets = player + weapons + enemies + cover
     manifest = {
-        "revision": "world-flipper-fan-01",
+        "revision": "world-flipper-fan-02",
         "original_copyright": "© Cygames, Inc. / Citail Inc.",
         "license_status": "Original game assets; no open asset license found. Unofficial fan-work use is not a claim of authorization.",
         "copyright_source": "https://worldflipper.jp/copyright/",
@@ -159,11 +173,11 @@ def main() -> None:
         "acquired_on": "2026-10-29",
         "sources": sources,
         "references_cached_only": registry["references"],
-        "assets": player + weapons,
-        "gameplay": "Presentation only; existing catalog IDs, names, rules and collisions remain in force.",
+        "assets": assets,
+        "gameplay": "Presentation only; current hero remains Alk and recruitment rules are not implemented. Existing catalog IDs, names, combat rules and collisions remain in force.",
     }
     (OUTPUT / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
-    print(json.dumps({"assets": len(player + weapons), "preview": str(preview(frames, icons)), "offline": args.offline}, ensure_ascii=False))
+    print(json.dumps({"assets": len(assets), "preview": str(preview(frames, icons)), "offline": args.offline}, ensure_ascii=False))
 
 
 if __name__ == "__main__":

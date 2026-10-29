@@ -64,5 +64,5 @@ func _bake() -> void:
 	print("TITLE_COVER_BAKE ", JSON.stringify({"frames": TitleCover.FRAME_COUNT,
 		"frame_seconds": TitleCover.FRAME_SECONDS, "with_ui": with_ui, "profile_io": false,
 		"viewport": [1280, 720], "directory": directory, "loop_frame_zero_matches": loop_matches,
-		"gif_sha256": FileAccess.get_sha256("res://assets/title/cover.gif"), "player": cover.snapshot()}))
+		"gif_sha256": FileAccess.get_sha256(TitleCover.GIF_PATH) if FileAccess.file_exists(TitleCover.GIF_PATH) else "", "player": cover.snapshot()}))
 	quit(0)

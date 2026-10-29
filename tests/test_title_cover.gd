@@ -11,7 +11,7 @@ func _initialize() -> void:
 
 func _run() -> void:
 	root.size = Vector2i(1280, 720)
-	var gif: PackedByteArray = FileAccess.get_file_as_bytes("res://assets/title/cover.gif")
+	var gif: PackedByteArray = FileAccess.get_file_as_bytes(TitleCover.GIF_PATH)
 	_check(gif.size() > 13 and gif.slice(0, 6).get_string_from_ascii() == "GIF89a", "The actual delivered looping GIF is included in both source and exported package")
 	_check(gif.size() > 10 and int(gif[6]) + (int(gif[7]) << 8) == 1280 and int(gif[8]) + (int(gif[9]) << 8) == 720, "The shipped GIF has the full 1280 by 720 cover canvas")
 	var existed: bool = FileAccess.file_exists(GameStore.PATH)
@@ -29,6 +29,7 @@ func _run() -> void:
 	_check(cover != null, "The real title contains the native animated cover")
 	if cover != null:
 		_test_composition(cover)
+		await _test_portrait_switching(cover)
 		await _test_animation(cover)
 		await _test_native_pixels(cover)
 		await _test_selection_and_modal(cover)
@@ -101,6 +102,12 @@ func _test_composition(cover: TitleCover) -> void:
 	var viewport := Rect2(Vector2.ZERO, Vector2(1280, 720))
 	_check(cover.get_global_rect().is_equal_approx(viewport), "The artwork fills the complete logical title without a half-width seam")
 	_check(cover.texture != null and cover.texture.resource_path == TitleCover.BASE_PATH and cover.texture.get_size() == Vector2(1280, 720), "The cover loads its actual full-screen imported artwork")
+	var portrait := cover.get_node_or_null("PortraitLayer") as TextureRect
+	_check(portrait != null and portrait.texture != null and portrait.texture.resource_path == TitleCover.DEFAULT_PORTRAIT_PATH, "The original Alk portrait occupies its own imported layer above the clean background")
+	if portrait != null:
+		_check(viewport.encloses(portrait.get_global_rect()) and portrait.get_global_rect().position.x >= 660.0, "The complete portrait slot stays inside the unobstructed right side")
+		_check(portrait.stretch_mode == TextureRect.STRETCH_KEEP_ASPECT_CENTERED and portrait.texture_filter == CanvasItem.TEXTURE_FILTER_LINEAR, "The full illustration keeps its aspect ratio and smooth downsampling instead of cropping or using pixel-art filtering")
+		_check(str(cover.snapshot().get("portrait_id", "")) == TitleCover.DEFAULT_CHARACTER_ID and str(cover.snapshot().get("portrait_path", "")) == TitleCover.DEFAULT_PORTRAIT_PATH and cover.snapshot().get("portrait_rect", Rect2()) == portrait.get_rect(), "The title exposes the actual selected original portrait and its layout")
 	_check(_decorations_ignore_input(cover), "The background and animated ornaments neither capture input nor process every frame")
 	var actions := _ui.find_child("TitleActions", true, false) as Control
 	var breathing := _ui.find_child("IllustrationBreathingSpace", true, false) as Control
@@ -123,6 +130,34 @@ func _test_composition(cover: TitleCover) -> void:
 	for action: String in ["进入试炼", "设置", "退出游戏"]:
 		var button: Button = _button_with_text(_ui._page, action)
 		_check(button != null and button.focus_mode == Control.FOCUS_ALL and not button.disabled and viewport.encloses(button.get_global_rect()), "A necessary title action remains available: " + action)
+
+func _test_portrait_switching(cover: TitleCover) -> void:
+	var portrait := cover.get_node_or_null("PortraitLayer") as TextureRect
+	var clock := cover.get_node_or_null("FrameClock") as Timer
+	if portrait == null or clock == null:
+		_check(false, "Portrait switching uses the real native layer and its existing clock")
+		return
+	var clocks_before: int = _count_clocks(root)
+	var default_texture: Texture2D = portrait.texture
+	var alternate_path: String = TitleCover.BASE_PATH
+	cover.set_frame(8)
+	cover.set_character("pixel_preview", alternate_path)
+	_check(portrait.texture != null and portrait.texture.resource_path == alternate_path and str(cover.snapshot().get("portrait_id", "")) == "pixel_preview", "Switching character uses the supplied imported texture in the same portrait layer")
+	_check(int(cover.snapshot().get("frame", -1)) == 8 and clock.is_stopped() and cover.get_node("FrameClock") == clock and _count_clocks(root) == clocks_before, "Replacing the portrait preserves a frozen authored frame and the single existing timer")
+	cover.set_playing(true)
+	cover.set_character("missing_character", "res://assets/worldflipper/portraits/missing.png")
+	_check(portrait.texture == default_texture and str(cover.snapshot().get("portrait_id", "")) == TitleCover.DEFAULT_CHARACTER_ID and str(cover.snapshot().get("portrait_path", "")) == TitleCover.DEFAULT_PORTRAIT_PATH, "An unknown portrait path safely returns to the original default character")
+	_check(not clock.is_stopped() and cover.get_node("FrameClock") == clock and _count_clocks(root) == clocks_before, "A fallback portrait preserves playback and never adds another frame clock")
+	var pending := TitleCover.new()
+	pending.set_character("pixel_preview", alternate_path)
+	root.add_child(pending)
+	await _settle()
+	var pending_portrait := pending.get_node_or_null("PortraitLayer") as TextureRect
+	_check(pending_portrait != null and pending_portrait.texture != null and pending_portrait.texture.resource_path == alternate_path and str(pending.snapshot().get("portrait_id", "")) == "pixel_preview", "A portrait chosen before ready survives initialization without being replaced by the default")
+	pending.queue_free()
+	await _settle()
+	_check(_count_clocks(root) == clocks_before, "Freeing a preconfigured cover releases its sole owned clock")
+	cover.set_character(TitleCover.DEFAULT_CHARACTER_ID, TitleCover.DEFAULT_PORTRAIT_PATH)
 
 func _test_animation(cover: TitleCover) -> void:
 	var clock := cover.get_node_or_null("FrameClock") as Timer
