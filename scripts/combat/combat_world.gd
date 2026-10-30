@@ -1059,6 +1059,7 @@ func _draw() -> void:
 	_draw_player_ground()
 	_draw_souls()
 	_draw_enemies()
+	_draw_boss_art()
 	_draw_friendly_shots()
 	_draw_effects()
 	_active_skill_painter.draw(self)
@@ -1292,9 +1293,6 @@ func _draw_atmosphere() -> void:
 			view.position.y + 100.0 + fposmod(float(index) * 73.7 - _visual_time * (2.0 + float(index % 3)), view.size.y - 220.0))
 		var alpha: float = 0.07 + (sin(_visual_time * 0.7 + phase) + 1.0) * 0.035
 		draw_circle(point, 1.0 if index % 3 else 1.5, Color(_arena_color, alpha))
-	if sim.boss != null and sim.boss.active:
-		var pulse: float = 0.13 + sin(_visual_time * 1.5) * 0.02
-		draw_texture_rect(glow_texture, Rect2(sim.boss.position - Vector2(110, 100), Vector2(220, 180)), false, Color(0.73, 0.59, 0.85, pulse))
 
 func _draw_souls() -> void:
 	var visible: Rect2 = _cosmetic_visible_rect()
@@ -1550,47 +1548,14 @@ func _draw_danger() -> void:
 		draw_circle(shot.position, 2.5, Color("fff2d7"))
 
 static func lane_polygon(shape: Dictionary) -> PackedVector2Array:
-	var point: Variant = shape.get("position")
-	var heading: Variant = shape.get("direction")
-	var length: float = float(shape.get("length", 0.0))
-	var width: float = float(shape.get("width", 0.0))
-	if not point is Vector2 or not heading is Vector2 or not point.is_finite() or not heading.is_finite():
-		return PackedVector2Array()
-	if heading.is_zero_approx() or not is_finite(length) or not is_finite(width) or length <= 0.0 or width <= 0.0:
-		return PackedVector2Array()
-	var direction: Vector2 = heading.normalized()
-	var side: Vector2 = direction.orthogonal() * width * 0.5
-	var end: Vector2 = point + direction * length
-	return PackedVector2Array([point + side, end + side, end - side, point - side])
+	return DangerPainter.lane_polygon(shape)
 
 func _draw_danger_shape(shape: Dictionary, progress: float, safe: bool = false) -> void:
-	var center: Vector2 = shape.get("position", Vector2.ZERO)
-	if str(shape.get("shape", "circle")) == "lane":
-		var corners: PackedVector2Array = lane_polygon(shape)
-		if corners.is_empty():
-			return
-		var color: Color = Color("8ce1ce") if safe else Color("c94d50")
-		draw_colored_polygon(corners, Color(color, 0.08 if safe else 0.10 + progress * 0.06))
-		var border: PackedVector2Array = corners.duplicate()
-		border.append(corners[0])
-		draw_polyline(border, Color(color, 0.48 if safe else 0.9), 1.5 if safe else 2.0, true)
-		if not safe:
-			var direction: Vector2 = (shape["direction"] as Vector2).normalized()
-			var side: Vector2 = direction.orthogonal() * float(shape["width"]) * 0.5
-			var front: Vector2 = center + direction * float(shape["length"]) * progress
-			draw_line(front + side, front - side, Color("f2b496"), 2.0, true)
-		return
-	var radius: float = float(shape.get("radius", 0.0))
-	if not center.is_finite() or not is_finite(radius) or radius <= 0.0:
-		return
-	draw_circle(center, radius, Color(0.9, 0.22, 0.16, 0.10 + progress * 0.06))
-	draw_arc(center, radius, 0, TAU, 40, Color("b85246"), 1.3, true)
-	draw_arc(center, radius, -PI * 0.5, -PI * 0.5 + TAU * progress, 40, Color("c94d50"), 3.0, true)
-	for index: int in 8:
-		var direction: Vector2 = Vector2.from_angle(float(index) * TAU / 8.0)
-		draw_line(center + direction * (radius - 4.0), center + direction * (radius + 3.0), Color("963e42"), 1.3, true)
-	draw_line(center - Vector2(8, 0), center + Vector2(8, 0), Color("963e42"), 1.0, true)
-	draw_line(center - Vector2(0, 8), center + Vector2(0, 8), Color("963e42"), 1.0, true)
+	DangerPainter.draw(self, shape, progress, safe)
+
+func _draw_boss_art() -> void:
+	if _boss_alive():
+		BossArtPainter.draw(self, sim.boss.position, sim.boss_encounter.snapshot(), _visual_time, bool(settings.get("flash", true)))
 
 func _maintain_stress() -> void:
 	# This deliberately retains 300 enemies, 600 live moving projectiles and 200 drops.

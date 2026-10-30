@@ -183,3 +183,9 @@ reports/world-flipper-boss/*.png
 reports/world-flipper-boss/*.import
 reports/world-flipper-boss/*-raw.json
 reports/world-flipper-boss/*/
+
+reports/art-motion/*.log
+reports/art-motion/*.png
+reports/art-motion/*.import
+reports/art-motion/*-raw.json
+reports/art-motion/*/

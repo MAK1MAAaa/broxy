@@ -1,0 +1,483 @@
+{
+  "schema_version": 1,
+  "base_commit": "bd66d46",
+  "branch": "codex/art-motion",
+  "platform": "Windows",
+  "scope": {
+    "skill_families": [
+      "blade",
+      "alchemy",
+      "wind",
+      "firework",
+      "meteor",
+      "crescent"
+    ],
+    "cosmetic_pool": 8,
+    "cosmetic_lifetime_seconds": 0.26,
+    "danger_draw_commands_per_shape": 7,
+    "boss_ornament_draw_commands": 14,
+    "existing_pngs_preserved": 65,
+    "gameplay_and_ui_sources_unchanged": true
+  },
+  "headless": {
+    "invocations": 118,
+    "suites": 113,
+    "diagnostics": 5,
+    "assertions": 51369,
+    "python_tests": 80,
+    "failures": 0,
+    "engine_errors": 0,
+    "log_sha256": "485b3bf8104cf9354f265b2b19eaeb778a5222328ca9f602282e8d4d129f798b"
+  },
+  "native": [
+    {
+      "log": "native-danger_painter.log",
+      "assertions": 562,
+      "sha256": "3d84f20b23db3d69e5666f39aa772d96cbd0484d1cc5a5ffe73cdfcee0562949"
+    },
+    {
+      "log": "native-boss_art_painter.log",
+      "assertions": 126,
+      "sha256": "45013357248df46ab52a6d23d81f8cdcb96588a2314508c0476643f2d66a7af1"
+    },
+    {
+      "log": "native-skill_art_polish.log",
+      "assertions": 715,
+      "sha256": "017e0471258bc70346867e236d20fc781576cf5f4d72a6f51d6e82435a030d40"
+    },
+    {
+      "log": "native-boss_world.log",
+      "assertions": 69,
+      "sha256": "e13a0e0e7f25d219d2386af7d69ff65d7173a2889f189d4a570ef7257c825c4c"
+    },
+    {
+      "log": "native-boss_hud.log",
+      "assertions": 29,
+      "sha256": "fbc5c23595b38fed59dff403224a3e824f7d664fac62eb355ce7bf78f01581b3"
+    },
+    {
+      "log": "native-active_skill_world.log",
+      "assertions": 38,
+      "sha256": "e0bc7ed38b3c440c28cf1cd39f09210c9539e3f7b3c1270a3773c9e458678974"
+    },
+    {
+      "log": "native-hero_skill_flow.log",
+      "assertions": 82,
+      "sha256": "9aa404193a12da00e3af3afd0ddb862ea482c5278291ac1dddabc009a1a55c5f"
+    },
+    {
+      "log": "native-enemy_hit_style.log",
+      "assertions": 513,
+      "sha256": "264a5da4d90732352a851bd07aacaad5e26b2b894b0006fcbbf017a50d9c5427"
+    },
+    {
+      "log": "native-cosmetic_culling.log",
+      "assertions": 128,
+      "sha256": "2a001e95e5693149528bd24a43ceb489465d15b5f9112f4ae537a83c5c8305c2"
+    },
+    {
+      "log": "native-render_frame_coalescing.log",
+      "assertions": 9,
+      "sha256": "74493863b9b4839d37bdd93ba4d57f008f49b07f27c914177211ae3825142259"
+    },
+    {
+      "log": "native-skill_feedback.log",
+      "assertions": 91,
+      "sha256": "64d838a848ce6db66a85b66c2e240d5e733c46053686070ceba83211d3604213"
+    },
+    {
+      "log": "native-player_foreground.log",
+      "assertions": 50,
+      "sha256": "7cdc25866ca05669ddbe4686ef0c63cb0361484fe010b637bda2f936c178f1b0"
+    }
+  ],
+  "exported_native": [
+    {
+      "log": "pack-check-danger_painter.log",
+      "assertions": 562,
+      "sha256": "3d84f20b23db3d69e5666f39aa772d96cbd0484d1cc5a5ffe73cdfcee0562949"
+    },
+    {
+      "log": "pack-check-boss_art_painter.log",
+      "assertions": 126,
+      "sha256": "45013357248df46ab52a6d23d81f8cdcb96588a2314508c0476643f2d66a7af1"
+    },
+    {
+      "log": "pack-check-skill_art_polish.log",
+      "assertions": 715,
+      "sha256": "017e0471258bc70346867e236d20fc781576cf5f4d72a6f51d6e82435a030d40"
+    },
+    {
+      "log": "pack-check-boss_world.log",
+      "assertions": 69,
+      "sha256": "e13a0e0e7f25d219d2386af7d69ff65d7173a2889f189d4a570ef7257c825c4c"
+    },
+    {
+      "log": "pack-check-boss_hud.log",
+      "assertions": 29,
+      "sha256": "fbc5c23595b38fed59dff403224a3e824f7d664fac62eb355ce7bf78f01581b3"
+    },
+    {
+      "log": "pack-check-active_skill_world.log",
+      "assertions": 38,
+      "sha256": "e0bc7ed38b3c440c28cf1cd39f09210c9539e3f7b3c1270a3773c9e458678974"
+    },
+    {
+      "log": "pack-check-hero_skill_flow.log",
+      "assertions": 82,
+      "sha256": "9aa404193a12da00e3af3afd0ddb862ea482c5278291ac1dddabc009a1a55c5f"
+    },
+    {
+      "log": "pack-check-enemy_hit_style.log",
+      "assertions": 513,
+      "sha256": "264a5da4d90732352a851bd07aacaad5e26b2b894b0006fcbbf017a50d9c5427"
+    },
+    {
+      "log": "pack-check-cosmetic_culling.log",
+      "assertions": 128,
+      "sha256": "2a001e95e5693149528bd24a43ceb489465d15b5f9112f4ae537a83c5c8305c2"
+    },
+    {
+      "log": "pack-check-render_frame_coalescing.log",
+      "assertions": 9,
+      "sha256": "577984788d7f7d5b5c65c718144600cf1f95376fa06fd652bcdc02f236138025"
+    },
+    {
+      "log": "pack-check-skill_feedback.log",
+      "assertions": 91,
+      "sha256": "64d838a848ce6db66a85b66c2e240d5e733c46053686070ceba83211d3604213"
+    },
+    {
+      "log": "pack-check-player_foreground.log",
+      "assertions": 50,
+      "sha256": "7cdc25866ca05669ddbe4686ef0c63cb0361484fe010b637bda2f936c178f1b0"
+    }
+  ],
+  "previews": [
+    {
+      "view": "boss-break",
+      "size": [
+        1280,
+        720
+      ],
+      "pixels_equal_to_export": true,
+      "gameplay_hash_equal_to_baseline": true,
+      "gameplay_hash": "5e71028c55c071d2ad9efc04b2599bb0f0a917e762022fb7892dd0ef8f418b57",
+      "changed_pixels_bounds": [
+        558,
+        194,
+        729,
+        364
+      ],
+      "source_sha256": "e4e57ab2dc4da2a8bee0ec5ee1c8b3e22637e0831d388cf82cb6fa348553784f",
+      "export_sha256": "e4e57ab2dc4da2a8bee0ec5ee1c8b3e22637e0831d388cf82cb6fa348553784f",
+      "baseline_sha256": "54c9044866bb5d9fad17ef6114e9992af0388a41e55ebdaeb50f8691a834c03e"
+    },
+    {
+      "view": "boss-charge",
+      "size": [
+        1280,
+        720
+      ],
+      "pixels_equal_to_export": true,
+      "gameplay_hash_equal_to_baseline": true,
+      "gameplay_hash": "1b3d3d8014622185ee2db7af2c90d73d5971d100aed13850490b28bb52e5b314",
+      "changed_pixels_bounds": [
+        436,
+        196,
+        844,
+        612
+      ],
+      "source_sha256": "fedc030d06ed9a305959b2597a9b5f536833f4c0c7560d34d991c8372dcf5bea",
+      "export_sha256": "fedc030d06ed9a305959b2597a9b5f536833f4c0c7560d34d991c8372dcf5bea",
+      "baseline_sha256": "ac0977435dbeef5c392d66700b0b76325eee0ac73d94dd0bbb3ec2d25617adbc"
+    },
+    {
+      "view": "boss-flash-off",
+      "size": [
+        1280,
+        720
+      ],
+      "pixels_equal_to_export": true,
+      "gameplay_hash_equal_to_baseline": true,
+      "gameplay_hash": "5e71028c55c071d2ad9efc04b2599bb0f0a917e762022fb7892dd0ef8f418b57",
+      "changed_pixels_bounds": [
+        558,
+        194,
+        729,
+        364
+      ],
+      "source_sha256": "19ea42ae6e829a5342f80b784f040d4489c048c4910287631fa8010e0f68f7df",
+      "export_sha256": "19ea42ae6e829a5342f80b784f040d4489c048c4910287631fa8010e0f68f7df",
+      "baseline_sha256": "50713afd2722809f6f647acd821d778cd4f294aa271edf0cec5c4e1ea35328cf"
+    },
+    {
+      "view": "hero-alk",
+      "size": [
+        1280,
+        720
+      ],
+      "pixels_equal_to_export": true,
+      "gameplay_hash_equal_to_baseline": true,
+      "gameplay_hash": "086a7da6507fb1783733e6c9b8bf1ed0cf2f42a2efa72b88f47efd0d59610718",
+      "changed_pixels_bounds": [
+        680,
+        204,
+        820,
+        545
+      ],
+      "source_sha256": "40e7d498f6d53059a5fcc28ddcaf164a3cecf232a4e13f87c8f0771e9e3f4761",
+      "export_sha256": "40e7d498f6d53059a5fcc28ddcaf164a3cecf232a4e13f87c8f0771e9e3f4761",
+      "baseline_sha256": "58f9ba0f141d42f0480a64afd32c0e0c45c0f7df56b3b4cc228552975e804fb2"
+    },
+    {
+      "view": "hero-celtie",
+      "size": [
+        1280,
+        720
+      ],
+      "pixels_equal_to_export": true,
+      "gameplay_hash_equal_to_baseline": true,
+      "gameplay_hash": "93ef0e4eef87647fdd97594542ae12c1aa2a3158b33172974ac69e86c2f7552a",
+      "changed_pixels_bounds": [
+        460,
+        179,
+        821,
+        545
+      ],
+      "source_sha256": "627f9fd2feda66a6036b1ac221554d6294ce5cddec0f0d5c5c7246712798fbca",
+      "export_sha256": "627f9fd2feda66a6036b1ac221554d6294ce5cddec0f0d5c5c7246712798fbca",
+      "baseline_sha256": "672b6866a67a9dea62d7acf6f36cd97f314e027c72013fb26f5384d9f079308a"
+    },
+    {
+      "view": "hero-clarisse",
+      "size": [
+        1280,
+        720
+      ],
+      "pixels_equal_to_export": true,
+      "gameplay_hash_equal_to_baseline": true,
+      "gameplay_hash": "bf6ff826ddf16788a085eef7f6792fd69a96333bda1ad86b7dfe9bf175c6facc",
+      "changed_pixels_bounds": [
+        579,
+        219,
+        861,
+        545
+      ],
+      "source_sha256": "1a01b1360ed8c1d6661e5f30e7897f92d7deb6d6b04a6b8d7cf5216ce1f9fc90",
+      "export_sha256": "1a01b1360ed8c1d6661e5f30e7897f92d7deb6d6b04a6b8d7cf5216ce1f9fc90",
+      "baseline_sha256": "46804697b1874f424f924fb0b6f47866315b03767fc93deb6c946fb043c11b79"
+    },
+    {
+      "view": "hero-hanabi",
+      "size": [
+        1280,
+        720
+      ],
+      "pixels_equal_to_export": true,
+      "gameplay_hash_equal_to_baseline": true,
+      "gameplay_hash": "3e55c1baac12fc18339bf95d4d65a9136a83e34876441da952bb4f63097daebf",
+      "changed_pixels_bounds": [
+        639,
+        324,
+        921,
+        545
+      ],
+      "source_sha256": "3ff85c1b6381bf3609416d7f18f706ece24fe3adb27475eec88372de164523cc",
+      "export_sha256": "3ff85c1b6381bf3609416d7f18f706ece24fe3adb27475eec88372de164523cc",
+      "baseline_sha256": "ca3c31a10715d0bb16dd6298ef9ae7b80adac1f7b4e43f55a3cde0eb29063c24"
+    },
+    {
+      "view": "phase2-ashland",
+      "size": [
+        1280,
+        720
+      ],
+      "pixels_equal_to_export": true,
+      "gameplay_hash_equal_to_baseline": true,
+      "gameplay_hash": "5ddc6047d25ef60f4f6a0e32ade5652e3a77cb0412c6b947bab80d8aef41aa33",
+      "changed_pixels_bounds": [
+        218,
+        0,
+        1062,
+        720
+      ],
+      "source_sha256": "fe0073b700442daaab73fd036f2842ff1d988e260baf9f4fd51c1833379e2cbf",
+      "export_sha256": "fe0073b700442daaab73fd036f2842ff1d988e260baf9f4fd51c1833379e2cbf",
+      "baseline_sha256": "1b2a57180d44111c582372ef3dc99248d512e646a56293cca57a5c55125bdf92"
+    },
+    {
+      "view": "phase2-glacier",
+      "size": [
+        1280,
+        720
+      ],
+      "pixels_equal_to_export": true,
+      "gameplay_hash_equal_to_baseline": true,
+      "gameplay_hash": "abd5a57a8d6fe5b6120123f9241b7372a10f3b1960524ff1ee125ef631931efb",
+      "changed_pixels_bounds": [
+        218,
+        0,
+        1062,
+        720
+      ],
+      "source_sha256": "c0e041ebf7a02aefbdeb2c5562cf8935e8bee680fafa13571cc01f65c06641c8",
+      "export_sha256": "c0e041ebf7a02aefbdeb2c5562cf8935e8bee680fafa13571cc01f65c06641c8",
+      "baseline_sha256": "9dc45942c4035a8a04f46101b6750d61578a2e3d55d53a252879972d1e2ca888"
+    },
+    {
+      "view": "phase2-mire",
+      "size": [
+        1280,
+        720
+      ],
+      "pixels_equal_to_export": true,
+      "gameplay_hash_equal_to_baseline": true,
+      "gameplay_hash": "1a295634ad300aef666283f4d6540778964252eb57e2a22dd9f48cabe9d08319",
+      "changed_pixels_bounds": [
+        218,
+        0,
+        1062,
+        720
+      ],
+      "source_sha256": "5de62f00e60ecd1d00d605084710f13ef14627db57527767941e24ea2b26a52e",
+      "export_sha256": "5de62f00e60ecd1d00d605084710f13ef14627db57527767941e24ea2b26a52e",
+      "baseline_sha256": "f7815e693fc7816850fc3680bdbd4f84e54ffff8cefd2772d386afd5884f557a"
+    },
+    {
+      "view": "phase2-reliquary",
+      "size": [
+        1280,
+        720
+      ],
+      "pixels_equal_to_export": true,
+      "gameplay_hash_equal_to_baseline": true,
+      "gameplay_hash": "7cfa320078b804c25ffaff0b4e2d28b9ef4ec3bcff549aa2349ad3ec20ba4b63",
+      "changed_pixels_bounds": [
+        218,
+        0,
+        1062,
+        720
+      ],
+      "source_sha256": "8da91a1eb70b144481ee63aeefaec9a6c04cdb0d1fea7dcfa1a5e40510dabc14",
+      "export_sha256": "8da91a1eb70b144481ee63aeefaec9a6c04cdb0d1fea7dcfa1a5e40510dabc14",
+      "baseline_sha256": "2dc01f5dd2dda29778272f8802c931d805a094e64fa25d5765524f239d8111e3"
+    },
+    {
+      "view": "rear",
+      "size": [
+        1280,
+        720
+      ],
+      "pixels_equal_to_export": true,
+      "gameplay_hash_equal_to_baseline": true,
+      "gameplay_hash": "2e84d946e3e87c96d8482f15378bb6fae905dd240ce6a9db0c5727f403a35b07",
+      "changed_pixels_bounds": [
+        607,
+        246,
+        833,
+        545
+      ],
+      "source_sha256": "e6ff84253721ad6e05ae202cf8e93afc365d5d2f5c0ea2797618c17366c3b034",
+      "export_sha256": "e6ff84253721ad6e05ae202cf8e93afc365d5d2f5c0ea2797618c17366c3b034",
+      "baseline_sha256": "01a02542c1036c6bc303e2bd211b9620537d012919b2cccff17993b9c708c61e"
+    },
+    {
+      "view": "skill-flash-off",
+      "size": [
+        1280,
+        720
+      ],
+      "pixels_equal_to_export": true,
+      "gameplay_hash_equal_to_baseline": true,
+      "gameplay_hash": "3e55c1baac12fc18339bf95d4d65a9136a83e34876441da952bb4f63097daebf",
+      "changed_pixels_bounds": [
+        639,
+        324,
+        921,
+        545
+      ],
+      "source_sha256": "adfb66bbde1362a544148f648df204d421c5707d6b9d8f81f3299c07196985f3",
+      "export_sha256": "adfb66bbde1362a544148f648df204d421c5707d6b9d8f81f3299c07196985f3",
+      "baseline_sha256": "f2a701cdaf5f1ece8d77207c91f08c89971911090135d431596cc8e532b461ea"
+    },
+    {
+      "view": "small",
+      "size": [
+        1280,
+        720
+      ],
+      "pixels_equal_to_export": true,
+      "gameplay_hash_equal_to_baseline": true,
+      "gameplay_hash": "086a7da6507fb1783733e6c9b8bf1ed0cf2f42a2efa72b88f47efd0d59610718",
+      "changed_pixels_bounds": [
+        36,
+        36,
+        820,
+        545
+      ],
+      "source_sha256": "40e7d498f6d53059a5fcc28ddcaf164a3cecf232a4e13f87c8f0771e9e3f4761",
+      "export_sha256": "40e7d498f6d53059a5fcc28ddcaf164a3cecf232a4e13f87c8f0771e9e3f4761",
+      "baseline_sha256": "7e5c14005b99db45798f295248c421bee64eb17c6028cd2be04cb834bf4c860c"
+    }
+  ],
+  "assets": {
+    "pinned_sources": 68,
+    "normalized_pngs": 65,
+    "metadata_files": 2,
+    "manifest_unchanged": true,
+    "manifest_sha256": "9fac0059487f728cfc8aa00825132e53d6f63511507d5d18e0306f33724db1de"
+  },
+  "performance": {
+    "seconds": 60.0,
+    "average_fps": 59.2724301698035,
+    "p99_frame_ms": 27.581,
+    "minimum_load": {
+      "enemies": 300,
+      "pickups": 200,
+      "projectiles": 600
+    },
+    "checks": {
+      "backpack_skill_fx_pool": true,
+      "backpack_skill_inventory_and_real_casts": true,
+      "backpack_skill_source_coverage": true,
+      "dash_feedback": true,
+      "default_settings_and_no_profile": true,
+      "evasion_feedback": true,
+      "grounding_budget": true,
+      "load": true,
+      "performance": true,
+      "pulse_control": true,
+      "real_main_character_casts": true,
+      "real_pinball_cycles_and_reflections": true
+    },
+    "source_hash": "a44950320c269f27562c7ca69ae55630f71ed718f2870662ad1a74a98692d47e",
+    "report_sha256": "1575e5931e96a30d771763c265eb763d515a1435e6412f3df05dc47f2c1b660f"
+  },
+  "windows": {
+    "archive": "build/Embers-windows-x86_64.zip",
+    "sha256": "64b2c2f224aa685543e125b1718b47d1988fc1c91300d27b7bc1aa94415ea924",
+    "zip_files": [
+      "licenses/Godot-COPYRIGHT.txt",
+      "licenses/Godot-LICENSE.txt",
+      "licenses/README.md",
+      "licenses/World-Flipper-NOTICE.txt",
+      "licenses/fonts/fusion-pixel/OFL.txt",
+      "licenses/fonts/fusion-pixel/LICENSES/ark-pixel/OFL.txt",
+      "licenses/fonts/fusion-pixel/LICENSES/cubic-11/OFL.txt",
+      "licenses/fonts/fusion-pixel/LICENSES/galmuri/LICENSE.txt",
+      "Embers.exe",
+      "Embers.pck"
+    ],
+    "crc_and_file_bytes_verified": true,
+    "backup": "Embers-windows-before-art-motion-bd66d46.zip",
+    "backup_sha256": "08abe85ea89834375f74f32d1e62db2f21d0fb3876d5db0ce93f7c5b32e92bc5",
+    "exe_smoke_log_sha256": "539ad81dec910805e802ab5f717bee1c74528bb67c3a4f2e494eceaea86d4c95"
+  },
+  "macos": "Not built or executed on this Windows host.",
+  "limitations": [
+    "Fixed art fixtures exercise actual casts and boss transitions; they are not natural play or human balance acceptance.",
+    "No physical controller or hardware audio acceptance was performed."
+  ],
+  "passed": true
+}

@@ -13,6 +13,7 @@ func _preview() -> void:
 	var view: String = "charge"
 	var destination: String = ""
 	var small: bool = false
+	var flash: bool = true
 	for argument: String in OS.get_cmdline_user_args():
 		if argument.begins_with("--arena="):
 			arena_id = argument.trim_prefix("--arena=")
@@ -20,6 +21,8 @@ func _preview() -> void:
 			view = argument.trim_prefix("--view=")
 		elif argument.begins_with("--capture="):
 			destination = argument.trim_prefix("--capture=")
+		elif argument == "--flash-off":
+			flash = false
 		elif argument == "--small":
 			small = true
 		else:
@@ -60,7 +63,7 @@ func _preview() -> void:
 	world.set_physics_process(false)
 	world.autopilot = false
 	world.begin(state)
-	world.apply_visual_settings({"shake": false, "flash": true})
+	world.apply_visual_settings({"shake": false, "flash": flash})
 	var sim: CombatSim = world.sim
 	sim.sandbox = true
 	sim._cooldowns.fill(9999.0)
@@ -95,7 +98,7 @@ func _preview() -> void:
 		result = root.get_texture().get_image().save_png(absolute)
 	var pure: bool = _signature(world) == before
 	print("BOSS_PREVIEW ", JSON.stringify({"arena": arena_id, "view": view, "seed": SEED, "size": root.size,
-		"fixed_fixture": true, "natural_gameplay": false, "profile_io": false, "persistent_profile": app.store.persistent,
+		"fixed_fixture": true, "natural_gameplay": false, "profile_io": false, "flash": flash, "persistent_profile": app.store.persistent,
 		"fixture": fixture, "state_unchanged_while_drawing": pure, "state_hash": before.sha256_text(), "capture": destination, "result": result}))
 	await app._quit_game(0 if result == OK and pure else 1)
 
