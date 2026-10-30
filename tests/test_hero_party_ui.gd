@@ -208,10 +208,11 @@ func _test_hud() -> void:
 		root.size = physical_size
 		await _settle()
 		var panel := _ui.find_child("RitualEquipment", true, false) as Control
+		var abilities := _ui.find_child("RitualAbilities", true, false) as Control
 		var slots: Control = _ui._hud["slots"]
 		_check(slots.get_child_count() == 8 and panel.get_global_rect().grow(0.1).encloses(slots.get_global_rect()), "Eight icon-and-rank weapon slots remain visible beside the party")
 		for key: String in ["pulse", "secondary", "hero"]:
 			var card: Control = _ui._hud[key]
-			_check(panel.get_global_rect().grow(0.1).encloses(card.get_global_rect()) and root.get_visible_rect().encloses(card.get_global_rect()) and not card.get_global_rect().intersects(slots.get_global_rect()), "Q/E/R cards fit without overlapping eight weapons: " + str(physical_size) + "/" + key)
+			_check(abilities.get_global_rect().grow(0.1).encloses(card.get_global_rect()) and root.get_visible_rect().encloses(card.get_global_rect()) and not card.get_global_rect().intersects(slots.get_global_rect()), "Right-hand Q/E/R cards fit without overlapping eight left-hand weapons: " + str(physical_size) + "/" + key)
 	_ui.set_controls(ControlBindings.defaults())
 	root.size = Vector2i(1280, 720)

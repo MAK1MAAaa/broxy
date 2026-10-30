@@ -197,7 +197,7 @@ func _test_charge_and_history() -> void:
 	_check(hud["boss_encounter"] == world.sim.boss_encounter_snapshot(), "World forwards the actual encounter snapshot to the independent HUD")
 	var view: Rect2 = world.camera_view()
 	var safe: Rect2 = world._feedback_safe_rect()
-	_check(is_equal_approx(safe.position.y, view.position.y + 174.0), "A living boss moves the screen feedback top to exactly 174px")
+	_check(is_equal_approx(safe.position.y, view.position.y + 150.0), "Feedback clears the compact top HUD and minimap by 150px")
 	await _settle()
 	if DisplayServer.get_name() != "headless":
 		_check(world.passes.find("weakpoints") >= 0 and world.passes.find("weakpoints") < world.passes.find("player") and world.passes.back() == "danger", "Real canvas submission keeps targets before the player and every hostile warning above them")
@@ -207,7 +207,7 @@ func _test_charge_and_history() -> void:
 	copied["safe_channels"].clear()
 	_check(_signature(world) == before and world.boss_danger_snapshot() == current, "Mutating a presentation copy cannot alter attack rectangles or safe channels")
 	world.sim.boss.health = 0.0
-	_check(is_equal_approx(world._feedback_safe_rect().position.y, view.position.y + 110.0) and world.boss_danger_snapshot().is_empty(), "An inactive boss restores the ordinary 110px feedback top without stale hazards")
+	_check(is_equal_approx(world._feedback_safe_rect().position.y, view.position.y + 150.0) and world.boss_danger_snapshot().is_empty(), "Boss defeat preserves the compact HUD clearance without stale hazards")
 	world.sound.queue_free()
 	world.queue_free()
 	await _settle()

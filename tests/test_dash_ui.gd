@@ -75,6 +75,12 @@ func _label() -> Label:
 func _bar() -> ProgressBar:
 	return _ui._hud["dash_bar"] as ProgressBar
 
+func _time() -> Label:
+	return _ui._hud["dash_time"] as Label
+
+func _badge() -> Label:
+	return _ui._hud["dash_key"] as Label
+
 func _test_snapshot_states() -> void:
 	_ui.show_hud()
 	_ui.update_hud(_snapshot())
@@ -82,7 +88,7 @@ func _test_snapshot_states() -> void:
 	_check(not _indicator().visible and _label().text.is_empty(), "Legacy snapshots without dash state do not add a false ready indicator")
 	_update(_dash())
 	await _settle()
-	_check(_indicator().visible and _label().text == "冲刺 · 空格" and is_equal_approx(_bar().value, 1.0), "A ready snapshot names the action and its key with a full meter")
+	_check(_indicator().visible and _label().text == "冲刺" and _badge().text == "空格" and _time().text == "就绪" and is_equal_approx(_bar().value, 1.0), "A ready snapshot separates the action, key and readiness with a full meter")
 	var instruction: String = _indicator().tooltip_text
 	_check(instruction.contains("空格") and instruction.contains("面向") and instruction.contains("132") and instruction.contains("2.4") and instruction.contains("减速"), "The optional tooltip explains direction, distance, cooldown and terrain escape")
 	_check(_indicator().focus_mode == Control.FOCUS_NONE and _indicator().mouse_filter == Control.MOUSE_FILTER_PASS, "The hoverable skill wrapper never claims focus or stops pointer propagation")
@@ -91,22 +97,22 @@ func _test_snapshot_states() -> void:
 	_check(_indicator().get_signal_connection_list("gui_input").is_empty(), "The skill does not attach an input handler that can accept gameplay events")
 	_check(not _indicator().is_processing() and not _indicator().is_physics_processing() and _indicator().find_children("*", "Timer", true, false).is_empty(), "The skill has no per-frame countdown or timer")
 	_update(_dash(false, true, 2.4))
-	_check(_label().text == "冲刺中" and _bar().value == 0.0, "An active dash is distinct from ready and recovering states")
+	_check(_label().text == "冲刺中" and _time().text == "—" and _bar().value == 0.0, "An active dash is distinct from ready and recovering states")
 	_update(_dash(false, false, 1.8))
-	_check(_label().text == "冲刺 1.8秒" and is_equal_approx(_bar().value, 0.25), "Cooldown seconds and meter use the same authoritative remaining time")
-	var unchanged: Array = [_label().text, _bar().value]
+	_check(_label().text == "冲刺" and _time().text == "1.8" and is_equal_approx(_bar().value, 0.25), "Cooldown seconds and meter use the same authoritative remaining time")
+	var unchanged: Array = [_label().text, _time().text, _bar().value]
 	paused = true
 	await _settle()
-	_check(unchanged == [_label().text, _bar().value], "Without a new snapshot the skill cannot silently count down during a scene-tree pause")
+	_check(unchanged == [_label().text, _time().text, _bar().value], "Without a new snapshot the skill cannot silently count down during a scene-tree pause")
 	paused = false
 	_update(_dash(false, false, 0.04))
-	_check(_label().text == "冲刺 0.1秒" and _bar().value < 1.0, "A positive fractional cooldown is never rounded into a misleading zero-second ready state")
+	_check(_label().text == "冲刺" and _time().text == "0.1" and _bar().value < 1.0, "A positive fractional cooldown is never rounded into a misleading zero-second ready state")
 	_update(_dash(false, false, 0.0, 0.0))
 	_check(_label().text == "冲刺" and _bar().value == 0.0, "An unavailable zero-duration state neither divides by zero nor advertises readiness")
 	_update(_dash(false, false, NAN, NAN))
 	_check(_label().text == "冲刺" and is_finite(_bar().value), "Malformed diagnostic timing does not produce non-finite progress")
 	_update(_dash())
-	_check(_label().text == "冲刺 · 空格" and _bar().value == 1.0, "A fresh ready snapshot fully restores feedback after recovery")
+	_check(_label().text == "冲刺" and _badge().text == "空格" and _time().text == "就绪" and _bar().value == 1.0, "A fresh ready snapshot fully restores feedback after recovery")
 	var benchmark: Dictionary = _snapshot()
 	benchmark["benchmark"] = true
 	benchmark["dash"] = _dash()
@@ -115,7 +121,7 @@ func _test_snapshot_states() -> void:
 	_ui.update_hud(benchmark)
 	_check(not _indicator().visible and _label().text.is_empty() and _bar().value == 0.0, "Benchmark mode suppresses and clears irrelevant skill information")
 	_update(_dash())
-	_check(_indicator().visible and _label().text == "冲刺 · 空格", "Returning to an ordinary snapshot restores the skill without rebuilding the HUD")
+	_check(_indicator().visible and _label().text == "冲刺" and _badge().text == "空格", "Returning to an ordinary snapshot restores the skill without rebuilding the HUD")
 	var dead: Dictionary = _snapshot()
 	dead["health"] = 0.0
 	dead["dash"] = _dash(false, true, 2.4)
@@ -178,13 +184,13 @@ func _test_resolutions_and_boss() -> void:
 				"display_name": GameCatalog.enemy("boss").display_name, "phase": "recovery"}
 			_ui.update_hud(snapshot)
 			await _settle()
-			var status := _ui.find_child("RitualStatus", true, false) as Control
+			var abilities := _ui.find_child("RitualAbilities", true, false) as Control
 			var skill: Rect2 = _indicator().get_global_rect()
 			var boss: Control = _ui._hud["boss"]
-			_check(status.get_global_rect().grow(0.1).encloses(skill) and Rect2(Vector2.ZERO, Vector2(1280, 720)).encloses(skill), "The compact skill remains fully inside the status panel: " + str(physical_size))
-			_check(_indicator().size.x <= 108.0 and _bar().size.y >= 5.0 and _bar().size.y <= 6.0, "Skill width and meter height stay within the compact layout budget")
+			_check(abilities.get_global_rect().grow(0.1).encloses(skill) and Rect2(Vector2.ZERO, Vector2(1280, 720)).encloses(skill), "Dash remains fully inside the right-hand abilities panel: " + str(physical_size))
+			_check(_indicator().size.x <= 140.0 and _bar().size.y >= 5.0 and _bar().size.y <= 6.0, "The shared skill card and meter stay within the compact side-frame budget")
 			_check(_label().size.x + 0.1 >= _label().get_minimum_size().x and _label().size.y + 0.1 >= _label().get_minimum_size().y, "The cooldown label is completely readable without clipping")
-			_check(boss.visible == boss_alive and (not boss_alive or boss.get_global_rect() == Rect2(240, 104, 800, 50) and not boss.get_global_rect().intersects(skill)), "Boss health remains in its independent region below the topbar without overlapping the skill")
+			_check(boss.visible == boss_alive and (not boss_alive or boss.get_global_rect().end.y < 160.0 and not boss.get_global_rect().intersects(skill)), "Boss health remains in the upper center without overlapping right-hand dash")
 			_check(not _ui._hud.has("bag_info") and _ui.find_child("HUDMapInfo", true, false) == null, "A skill does not restore the removed lower-right descriptions")
 			_ui.notify("空格冲刺与地图说明".repeat(12))
 			_check(not _ui._toast.visible and _ui._toast.text.is_empty() and _ui._toast_timer.is_stopped(), "Skill updates preserve the removed battle notification area")
@@ -198,4 +204,4 @@ func _test_lifecycle() -> void:
 	_ui.show_hud()
 	_update(_dash())
 	await _settle()
-	_check(_indicator().visible and _label().text == "冲刺 · 空格" and _bar().value == 1.0, "A new combat HUD does not retain the previous cooldown or active label")
+	_check(_indicator().visible and _label().text == "冲刺" and _badge().text == "空格" and _time().text == "就绪" and _bar().value == 1.0, "A new combat HUD does not retain the previous cooldown or active label")

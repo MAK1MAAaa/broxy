@@ -1,0 +1,419 @@
+{
+  "schema_version": 1,
+  "base_commit": "d08acb3",
+  "branch": "codex/hud-reflow",
+  "platform": "Windows",
+  "scope": {
+    "weapon_frame": "left translucent 2 columns",
+    "ability_frame": "right translucent Q/E/R/dash",
+    "vitals": "bottom center unframed, HP and level inside left",
+    "top": [
+      "countdown",
+      "soul_count"
+    ],
+    "boss": "health only, phase colors, world-owned 2.4s arrival name",
+    "gameplay_sources_unchanged": true
+  },
+  "headless": {
+    "invocations": 120,
+    "suites": 115,
+    "diagnostics": 5,
+    "assertions": 51537,
+    "python_tests": 80,
+    "failures": 0,
+    "engine_errors": 0,
+    "log_sha256": "9696ca6dd6786a6d8c59f7c7782d31d0cd94f17b79ba2794e11f04918bcba9a6"
+  },
+  "native": [
+    {
+      "log": "native-hud_reflow.log",
+      "assertions": 147,
+      "sha256": "b132ef252d1f3935019e48c2d8b77124baa5af34d1dd7c1214f34cc1eeed707f",
+      "invocations": 1
+    },
+    {
+      "log": "native-boss_intro.log",
+      "assertions": 14,
+      "sha256": "30cb17cbeabaf90e98b726be2b2edd75d39f055399952a1133c5fb2804cc0c4a",
+      "invocations": 1
+    },
+    {
+      "log": "native-boss_hud.log",
+      "assertions": 41,
+      "sha256": "c5a5f68c554c005028adba62e0eea19b32e42c770fab109361d5168aba009a97",
+      "invocations": 1
+    },
+    {
+      "log": "native-ui.log",
+      "assertions": 224,
+      "sha256": "5df79617b34fdc9523ae1fcd38fe91d21b1df6d3258d3ebf428ea4c0b5b29ed7",
+      "invocations": 1
+    },
+    {
+      "log": "native-notifications.log",
+      "assertions": 71,
+      "sha256": "be14d5230e47a5327c7eb8651bdba550f2b68c4400bad1f203b3893f07aea43b",
+      "invocations": 1
+    },
+    {
+      "log": "native-concise_ui.log",
+      "assertions": 257,
+      "sha256": "c9407fe4c05bc01913d8b89cc99af86a37bc07a73ce53d038c49afc05f10a9f6",
+      "invocations": 1
+    },
+    {
+      "log": "native-dash_ui.log",
+      "assertions": 48,
+      "sha256": "00970fa9a21bc18ee43a4834d63d48f221962d64a3e6074c0b06f07a34b7430b",
+      "invocations": 1
+    },
+    {
+      "log": "native-pulse_ui.log",
+      "assertions": 73,
+      "sha256": "df30571b1e88f90048966da5cae91981623407aaef306978619a966d7c4e65aa",
+      "invocations": 1
+    },
+    {
+      "log": "native-controls_ui.log",
+      "assertions": 130,
+      "sha256": "1116faaf921179e6e82891900c48da4a95d8fa9bfc751040c7387e7a8972d0b9",
+      "invocations": 1
+    },
+    {
+      "log": "native-input_prompts_ui.log",
+      "assertions": 74,
+      "sha256": "7161d25c6876fa466ac100928c7f6eb3980c2bc4a02e301e630a826ae8f6408c",
+      "invocations": 1
+    },
+    {
+      "log": "native-input_prompts_flow.log",
+      "assertions": 80,
+      "sha256": "0dbe6d4062c0b882fa6c5dbef9437e86ee132d4bb4749788ff98d2f94ac061a9",
+      "invocations": 1
+    },
+    {
+      "log": "native-minimap_ui.log",
+      "assertions": 55,
+      "sha256": "0cebe797f3070e4c5691c165e06ee19d1f985d8af23467eb9fdeba3ae40bcab9",
+      "invocations": 1
+    },
+    {
+      "log": "native-hero_party_ui.log",
+      "assertions": 77,
+      "sha256": "7cc5182883098b12b0cc0f9a16d0d4a5f6fac18d308bf2194aedc4ed7f86b737",
+      "invocations": 1
+    },
+    {
+      "log": "native-boss_world.log",
+      "assertions": 69,
+      "sha256": "e13a0e0e7f25d219d2386af7d69ff65d7173a2889f189d4a570ef7257c825c4c",
+      "invocations": 1
+    },
+    {
+      "log": "native-skill_relic_ui.log",
+      "assertions": 55,
+      "sha256": "1ca338c42df3fe16755739998641588671ea1b8e1566545eee071a6618baea20",
+      "invocations": 1
+    },
+    {
+      "log": "native-pinball_world.log",
+      "assertions": 164,
+      "sha256": "83b0caf2d63545cf1f738dec4fd9fa408d85a1959e28244bfb1ff0d71ef28095",
+      "invocations": 1
+    }
+  ],
+  "exported_native": [
+    {
+      "log": "pack-check-hud_reflow.log",
+      "assertions": 147,
+      "sha256": "b132ef252d1f3935019e48c2d8b77124baa5af34d1dd7c1214f34cc1eeed707f",
+      "invocations": 1
+    },
+    {
+      "log": "pack-check-boss_intro.log",
+      "assertions": 14,
+      "sha256": "30cb17cbeabaf90e98b726be2b2edd75d39f055399952a1133c5fb2804cc0c4a",
+      "invocations": 1
+    },
+    {
+      "log": "pack-check-boss_hud.log",
+      "assertions": 41,
+      "sha256": "c5a5f68c554c005028adba62e0eea19b32e42c770fab109361d5168aba009a97",
+      "invocations": 1
+    },
+    {
+      "log": "pack-check-ui.log",
+      "assertions": 224,
+      "sha256": "5df79617b34fdc9523ae1fcd38fe91d21b1df6d3258d3ebf428ea4c0b5b29ed7",
+      "invocations": 1
+    },
+    {
+      "log": "pack-check-notifications.log",
+      "assertions": 71,
+      "sha256": "be14d5230e47a5327c7eb8651bdba550f2b68c4400bad1f203b3893f07aea43b",
+      "invocations": 1
+    },
+    {
+      "log": "pack-check-concise_ui.log",
+      "assertions": 257,
+      "sha256": "c9407fe4c05bc01913d8b89cc99af86a37bc07a73ce53d038c49afc05f10a9f6",
+      "invocations": 1
+    },
+    {
+      "log": "pack-check-dash_ui.log",
+      "assertions": 48,
+      "sha256": "00970fa9a21bc18ee43a4834d63d48f221962d64a3e6074c0b06f07a34b7430b",
+      "invocations": 1
+    },
+    {
+      "log": "pack-check-pulse_ui.log",
+      "assertions": 73,
+      "sha256": "df30571b1e88f90048966da5cae91981623407aaef306978619a966d7c4e65aa",
+      "invocations": 1
+    },
+    {
+      "log": "pack-check-controls_ui.log",
+      "assertions": 130,
+      "sha256": "1116faaf921179e6e82891900c48da4a95d8fa9bfc751040c7387e7a8972d0b9",
+      "invocations": 1
+    },
+    {
+      "log": "pack-check-input_prompts_ui.log",
+      "assertions": 74,
+      "sha256": "7161d25c6876fa466ac100928c7f6eb3980c2bc4a02e301e630a826ae8f6408c",
+      "invocations": 1
+    },
+    {
+      "log": "pack-check-input_prompts_flow.log",
+      "assertions": 80,
+      "sha256": "0dbe6d4062c0b882fa6c5dbef9437e86ee132d4bb4749788ff98d2f94ac061a9",
+      "invocations": 1
+    },
+    {
+      "log": "pack-check-minimap_ui.log",
+      "assertions": 55,
+      "sha256": "0cebe797f3070e4c5691c165e06ee19d1f985d8af23467eb9fdeba3ae40bcab9",
+      "invocations": 1
+    },
+    {
+      "log": "pack-check-hero_party_ui.log",
+      "assertions": 77,
+      "sha256": "7cc5182883098b12b0cc0f9a16d0d4a5f6fac18d308bf2194aedc4ed7f86b737",
+      "invocations": 1
+    },
+    {
+      "log": "pack-check-boss_world.log",
+      "assertions": 69,
+      "sha256": "e13a0e0e7f25d219d2386af7d69ff65d7173a2889f189d4a570ef7257c825c4c",
+      "invocations": 1
+    },
+    {
+      "log": "pack-check-skill_relic_ui.log",
+      "assertions": 55,
+      "sha256": "1ca338c42df3fe16755739998641588671ea1b8e1566545eee071a6618baea20",
+      "invocations": 1
+    },
+    {
+      "log": "pack-check-pinball_world.log",
+      "assertions": 164,
+      "sha256": "83b0caf2d63545cf1f738dec4fd9fa408d85a1959e28244bfb1ff0d71ef28095",
+      "invocations": 1
+    }
+  ],
+  "previews": [
+    {
+      "view": "full",
+      "size": [
+        1280,
+        720
+      ],
+      "pixels_equal_to_export": true,
+      "state_hash": "70bea385e3e300fbf669f525766023cb8c6d917b22b9f565d72fa1c98a2fb5cc",
+      "state_unchanged_while_drawing": true,
+      "source_sha256": "192fc368a88a9ee44049d7c39bdabb7fa375e8231b879edcd440331bf30c08af",
+      "export_sha256": "192fc368a88a9ee44049d7c39bdabb7fa375e8231b879edcd440331bf30c08af",
+      "actual_values": {
+        "health": 67.2,
+        "level": 3,
+        "boss_intro_left": 0.0,
+        "boss_phase2": false
+      }
+    },
+    {
+      "view": "cooldown",
+      "size": [
+        1280,
+        720
+      ],
+      "pixels_equal_to_export": true,
+      "state_hash": "f41e1d29e7ad1cca76de14ea29a596b11e145057cba3801dea76b2e68af68d09",
+      "state_unchanged_while_drawing": true,
+      "source_sha256": "6bcc9e659121421b37e21d89f73fadd354b282756e09494de787a47511aff4e1",
+      "export_sha256": "6bcc9e659121421b37e21d89f73fadd354b282756e09494de787a47511aff4e1",
+      "actual_values": {
+        "health": 67.2,
+        "level": 3,
+        "boss_intro_left": 0.0,
+        "boss_phase2": false
+      }
+    },
+    {
+      "view": "boss-intro",
+      "size": [
+        1280,
+        720
+      ],
+      "pixels_equal_to_export": true,
+      "state_hash": "0f0f8d66883eedb06fe79dc510ece531056db3fe03dbb1be2663be41e7d9aaf1",
+      "state_unchanged_while_drawing": true,
+      "source_sha256": "7e17ae1c4270d7ca8a6a0babc6a48eb8dd64d1a3c7341b56baa379734d6d40a6",
+      "export_sha256": "7e17ae1c4270d7ca8a6a0babc6a48eb8dd64d1a3c7341b56baa379734d6d40a6",
+      "actual_values": {
+        "health": 67.2,
+        "level": 3,
+        "boss_intro_left": 2.4,
+        "boss_phase2": false
+      }
+    },
+    {
+      "view": "boss-settled",
+      "size": [
+        1280,
+        720
+      ],
+      "pixels_equal_to_export": true,
+      "state_hash": "66facb4e6e99ad380954bda51258018487acba017c8998eef58d0425fc8ab375",
+      "state_unchanged_while_drawing": true,
+      "source_sha256": "be737203b179e8ec16480102214189df76b45bcb3f69a3b04fb62c676921d956",
+      "export_sha256": "be737203b179e8ec16480102214189df76b45bcb3f69a3b04fb62c676921d956",
+      "actual_values": {
+        "health": 67.2,
+        "level": 3,
+        "boss_intro_left": 0.0,
+        "boss_phase2": false
+      }
+    },
+    {
+      "view": "boss-phase2",
+      "size": [
+        1280,
+        720
+      ],
+      "pixels_equal_to_export": true,
+      "state_hash": "8e2fd1988b0e00e58e0952049ce2d496b0836124f7b0293e95a84fa830369648",
+      "state_unchanged_while_drawing": true,
+      "source_sha256": "7173229f17edaf25b3c73132fc929bd81f2c2e5751d83bac4da2bdaa27f50e07",
+      "export_sha256": "7173229f17edaf25b3c73132fc929bd81f2c2e5751d83bac4da2bdaa27f50e07",
+      "actual_values": {
+        "health": 67.2,
+        "level": 3,
+        "boss_intro_left": 0.0,
+        "boss_phase2": true
+      }
+    },
+    {
+      "view": "empty",
+      "size": [
+        1280,
+        720
+      ],
+      "pixels_equal_to_export": true,
+      "state_hash": "ebfcf656019caf54044b8a077ac79f5bf573ff2ddd5d761f9f4b48eb0b51da79",
+      "state_unchanged_while_drawing": true,
+      "source_sha256": "0868a73b67677f08ebf84eb3268c073f1890111e468214503ffeeb16357bd5a8",
+      "export_sha256": "0868a73b67677f08ebf84eb3268c073f1890111e468214503ffeeb16357bd5a8",
+      "actual_values": {
+        "health": 60.0,
+        "level": 3,
+        "boss_intro_left": 0.0,
+        "boss_phase2": false
+      }
+    },
+    {
+      "view": "small",
+      "size": [
+        1280,
+        720
+      ],
+      "pixels_equal_to_export": true,
+      "state_hash": "f41e1d29e7ad1cca76de14ea29a596b11e145057cba3801dea76b2e68af68d09",
+      "state_unchanged_while_drawing": true,
+      "source_sha256": "6bcc9e659121421b37e21d89f73fadd354b282756e09494de787a47511aff4e1",
+      "export_sha256": "6bcc9e659121421b37e21d89f73fadd354b282756e09494de787a47511aff4e1",
+      "actual_values": {
+        "health": 67.2,
+        "level": 3,
+        "boss_intro_left": 0.0,
+        "boss_phase2": false
+      }
+    },
+    {
+      "view": "gamepad",
+      "size": [
+        1280,
+        720
+      ],
+      "pixels_equal_to_export": true,
+      "state_hash": "f41e1d29e7ad1cca76de14ea29a596b11e145057cba3801dea76b2e68af68d09",
+      "state_unchanged_while_drawing": true,
+      "source_sha256": "3afca61d2d0c84ccc95a2615bea4fad60a4f444d805e350f8f2c2b95fc3413b3",
+      "export_sha256": "3afca61d2d0c84ccc95a2615bea4fad60a4f444d805e350f8f2c2b95fc3413b3",
+      "actual_values": {
+        "health": 67.2,
+        "level": 3,
+        "boss_intro_left": 0.0,
+        "boss_phase2": false
+      }
+    },
+    {
+      "view": "small-gamepad",
+      "size": [
+        1280,
+        720
+      ],
+      "pixels_equal_to_export": true,
+      "state_hash": "f41e1d29e7ad1cca76de14ea29a596b11e145057cba3801dea76b2e68af68d09",
+      "state_unchanged_while_drawing": true,
+      "source_sha256": "3afca61d2d0c84ccc95a2615bea4fad60a4f444d805e350f8f2c2b95fc3413b3",
+      "export_sha256": "3afca61d2d0c84ccc95a2615bea4fad60a4f444d805e350f8f2c2b95fc3413b3",
+      "actual_values": {
+        "health": 67.2,
+        "level": 3,
+        "boss_intro_left": 0.0,
+        "boss_phase2": false
+      }
+    }
+  ],
+  "assets": {
+    "normalized_pngs": 65,
+    "manifest_sha256": "9fac0059487f728cfc8aa00825132e53d6f63511507d5d18e0306f33724db1de",
+    "all_pngs_match_manifest": true
+  },
+  "windows": {
+    "archive": "build/Embers-windows-x86_64.zip",
+    "sha256": "e515890964af3183b29174709ca659ff966106bd8cffe7e908e4afb31e20a56b",
+    "zip_files": [
+      "licenses/Godot-COPYRIGHT.txt",
+      "licenses/Godot-LICENSE.txt",
+      "licenses/README.md",
+      "licenses/World-Flipper-NOTICE.txt",
+      "licenses/fonts/fusion-pixel/OFL.txt",
+      "licenses/fonts/fusion-pixel/LICENSES/ark-pixel/OFL.txt",
+      "licenses/fonts/fusion-pixel/LICENSES/cubic-11/OFL.txt",
+      "licenses/fonts/fusion-pixel/LICENSES/galmuri/LICENSE.txt",
+      "Embers.exe",
+      "Embers.pck"
+    ],
+    "crc_and_file_bytes_verified": true,
+    "backup": "Embers-windows-before-hud-d08acb3.zip",
+    "backup_sha256": "64b2c2f224aa685543e125b1718b47d1988fc1c91300d27b7bc1aa94415ea924",
+    "exe_smoke_log_sha256": "f1d8c571db2c259ee93a4c7abf29416bfd3c7ac792236fffc6ada6478cb88bd8"
+  },
+  "macos": "Not built or executed on this Windows host.",
+  "limitations": [
+    "Fixed fixtures use actual purchases, actions and boss transitions with disclosed setup interventions; they are not natural play or human balance acceptance.",
+    "Gamepad prompts tested through synthetic input, no physical controller hardware acceptance.",
+    "Performance pressure benchmark not repeated for this HUD layout change."
+  ],
+  "passed": true
+}

@@ -304,14 +304,14 @@ func _test_mapped_hud() -> void:
 	var pulse_label: Label = _ui._hud["pulse_label"]
 	var pulse_key: Label = _ui._hud["pulse_key"]
 	var secondary_key: Label = _ui._hud["secondary_key"]
-	_check(dash_label.text == "冲刺 · 空格" and pulse_label.text == GameCatalog.skill("pulse").display_name and pulse_key.text == "Q" and secondary_key.text == "E", "Default controls expose independent dash and both equipped skill keys")
+	_check(dash_label.text == "冲刺" and (_ui._hud["dash_key"] as Label).text == "空格" and pulse_label.text == GameCatalog.skill("pulse").display_name and pulse_key.text == "Q" and secondary_key.text == "E", "Default controls expose independent dash and both equipped skill keys")
 	_check((_ui._hud["dash"] as Control).tooltip_text == "空格：向当前移动方向冲刺；静止时沿面向。\n短冲距离约132，冷却2.4秒；起始短暂闪避，可冲离减速地形。\n冲刺撞击弹板触发球化。", "Default controls expose the exact dash values and its actual bumper-triggered transformation")
 	var custom: Dictionary = ControlBindings.defaults()
 	custom["dash"] = KEY_F
 	custom["pulse"] = KEY_G
 	custom["skill_secondary"] = KEY_H
 	_ui.set_controls(custom)
-	_check(dash_label.text == "冲刺 · F" and pulse_label.text == GameCatalog.skill("pulse").display_name and pulse_key.text == "G" and secondary_key.text == "H" and (_ui._hud["dash"] as Control).tooltip_text.begins_with("F：") and (_ui._hud["pulse"] as Control).tooltip_text.contains("G ·"), "An event-driven mapping update immediately refreshes all keys and tooltips without another simulation tick")
+	_check(dash_label.text == "冲刺" and (_ui._hud["dash_key"] as Label).text == "F" and pulse_label.text == GameCatalog.skill("pulse").display_name and pulse_key.text == "G" and secondary_key.text == "H" and (_ui._hud["dash"] as Control).tooltip_text.begins_with("F：") and (_ui._hud["pulse"] as Control).tooltip_text.contains("G ·"), "An event-driven mapping update immediately refreshes all keys and tooltips without another simulation tick")
 	var progress: Array = [(_ui._hud["dash_bar"] as ProgressBar).value, (_ui._hud["pulse_bar"] as ProgressBar).value, (_ui._hud["secondary_bar"] as ProgressBar).value]
 	custom["dash"] = KEY_SCROLLLOCK
 	_ui.set_controls(custom)
@@ -320,8 +320,8 @@ func _test_mapped_hud() -> void:
 		await _settle()
 		for key: String in ["dash", "pulse", "secondary"]:
 			var skill: Control = _ui._hud[key]
-			var maximum_width: float = 108.0 if skill == _ui._hud["dash"] else 112.0
-			_check(skill.size.x >= 100.0 and skill.size.x <= maximum_width + 0.1 and root.get_visible_rect().encloses(skill.get_global_rect()) and skill.focus_mode == Control.FOCUS_NONE, "Even a long valid key name respects the compact HUD width and input behavior")
+			var abilities := _ui.find_child("RitualAbilities", true, false) as Control
+			_check(skill.size.x == 140.0 and abilities.get_global_rect().encloses(skill.get_global_rect()) and root.get_visible_rect().encloses(skill.get_global_rect()) and skill.focus_mode == Control.FOCUS_NONE, "Even a long valid key name respects the shared side frame and input behavior")
 	_check((_ui._hud["dash"] as Control).tooltip_text.begins_with(ControlBindings.key_label(KEY_SCROLLLOCK) + "：") and progress == [(_ui._hud["dash_bar"] as ProgressBar).value, (_ui._hud["pulse_bar"] as ProgressBar).value, (_ui._hud["secondary_bar"] as ProgressBar).value], "The full long key remains available in the tooltip without changing skill timing")
 	_ui.notify("键位提示不应恢复战斗通知")
 	_check(not _ui._toast.visible and not _ui._hud.has("bag_info") and _ui.find_child("HUDMapInfo", true, false) == null, "Control hints do not restore removed battle notifications or lower-right descriptions")

@@ -48,7 +48,7 @@ func _test_combat_geometry(ui: GameUI, state: RunState) -> void:
 	var status_before: Rect2 = status.get_global_rect()
 	var equipment_before: Rect2 = equipment.get_global_rect()
 	var occupied_before: Dictionary = {}
-	for key: String in ["health", "health_bar", "wave", "time", "gold", "level", "xp_bar", "slots"]:
+	for key: String in ["health", "health_bar", "time", "gold", "level", "xp_bar", "slots"]:
 		occupied_before[key] = hud[key].get_global_rect()
 	var focused_before: Control = root.gui_get_focus_owner()
 	var reachable_art: Rect2 = _reachable_player_art_bounds()
@@ -65,15 +65,16 @@ func _test_combat_geometry(ui: GameUI, state: RunState) -> void:
 	var boss: Control = hud["boss"]
 	var boss_bar: ProgressBar = hud["boss_bar"]
 	_check(boss.visible and boss_bar.value == 150.0 and boss_bar.max_value == 300.0, "The clean combat HUD retains an accurate visible Boss health bar")
-	_check(boss is BossHUD and boss.get_global_rect() == Rect2(240, 104, 800, 50), "Boss status occupies its own exact region below the unchanged topbar")
+	_check(boss is BossHUD and boss.get_global_rect().end.y < 160.0 and boss.get_global_rect().get_center().x == 640.0, "Boss health occupies its own centered upper region")
 	_check(_viewport_contains(boss.get_global_rect()) and not boss.get_global_rect().intersects(reachable_art), "The full Boss status clears the reachable player drawing bounds")
 	for key: String in occupied_before:
 		var control: Control = hud[key]
 		var painted: Rect2 = _label_text_bounds(control) if control is Label else control.get_global_rect()
 		_check(painted.has_area() and not boss.get_global_rect().intersects(painted), "Boss status preserves the painted HUD field: " + key)
-	for node_name: String in ["BossName", "BossHealthValue", "BossPhase"]:
-		var label := boss.find_child(node_name, true, false) as Label
-		_check(_label_text_bounds(label).has_area() and _rect_contains(boss.get_global_rect(), _label_text_bounds(label)), "Real Boss names and values fit completely inside the independent status region")
+	for node_name: String in ["BossHealthValue", "BossPhase", "BossSkillName", "BossCharge", "BossBreak"]:
+		_check(boss.find_child(node_name, true, false) == null, "Boss health has no persistent number, phase or cast widget: " + node_name)
+	var boss_name := boss.find_child("BossArrivalName", true, false) as Label
+	_check(boss_name != null and not boss_name.visible, "An ordinary snapshot cannot repeat the arrival name")
 	_check(_rect_contains(boss.get_global_rect(), boss_bar.get_global_rect()) and boss_bar.size.y >= 6.0, "The complete Boss health meter fits inside its status region")
 	_check(notice.mouse_filter == Control.MOUSE_FILTER_IGNORE and notice.focus_mode == Control.FOCUS_NONE, "The hidden notification control never intercepts pointer or keyboard input")
 	var probe := MovementKeyProbe.new()

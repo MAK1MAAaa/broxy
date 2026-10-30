@@ -83,7 +83,7 @@ func _test_states() -> void:
 	await _settle()
 	_check(_skill().visible and _label().text == "空槽" and _bar().value == 0.0, "A snapshot without backpack skills shows an empty first slot")
 	_check(_skill("secondary").visible and _label("secondary").text == "空槽", "The second active skill slot remains visibly empty")
-	_check(_skill("dash").visible and _label("dash").text == "冲刺 · 空格", "Dash remains independently available without backpack skills")
+	_check(_skill("dash").visible and _label("dash").text == "冲刺" and (_ui._hud["dash_key"] as Label).text == "空格", "Dash remains independently available without backpack skills")
 	var legacy: Dictionary = _snapshot()
 	legacy["pulse"] = {"ready": true, "cooldown_left": 0.0, "cooldown_total": 8.0}
 	_ui.update_hud(legacy)
@@ -185,15 +185,15 @@ func _test_layouts() -> void:
 			_ui.update_hud(value)
 			await _settle()
 			var equipment := _ui.find_child("RitualEquipment", true, false) as Control
-			var status := _ui.find_child("RitualStatus", true, false) as Control
+			var abilities := _ui.find_child("RitualAbilities", true, false) as Control
 			var viewport := Rect2(Vector2.ZERO, Vector2(1280, 720))
 			for key: String in ["pulse", "secondary"]:
 				var rect: Rect2 = _skill(key).get_global_rect()
-				_check(equipment.get_global_rect().grow(0.1).encloses(rect) and viewport.encloses(rect), "Both active skill cards fit inside the bottom HUD at " + str(physical_size))
+				_check(abilities.get_global_rect().grow(0.1).encloses(rect) and viewport.encloses(rect), "Both active skill cards fit inside the right-hand abilities panel at " + str(physical_size))
 				_check(not rect.intersects((_ui._hud["slots"] as Control).get_global_rect()), "Skill cards do not overlap eight weapon cards")
 			_check(not _skill().get_global_rect().intersects(_skill("secondary").get_global_rect()), "The two active skills never overlap")
-			_check(status.get_global_rect().grow(0.1).encloses(_skill("dash").get_global_rect()), "Independent dash stays inside the top HUD")
-			_check((_ui._hud["slots"] as HBoxContainer).get_child_count() == 8, "Two skill cards preserve all eight visible weapon slots")
+			_check(abilities.get_global_rect().grow(0.1).encloses(_skill("dash").get_global_rect()), "Independent dash shares the right-hand frame with skills")
+			_check((_ui._hud["slots"] as Control).get_child_count() == 8 and equipment.get_global_rect().grow(0.1).encloses((_ui._hud["slots"] as Control).get_global_rect()), "Two skill cards preserve all eight visible left-hand weapon slots")
 			_check(not _ui._hud.has("bag_info") and _ui.find_child("HUDMapInfo", true, false) == null, "Skill controls preserve the removed explanatory HUD copy")
 
 func _test_backpack_skills() -> void:

@@ -21,6 +21,10 @@ const PURPLE := Color("765093")
 const CYAN := Color("14766f")
 const RED := Color("b83c50")
 const CORAL := Color("ed9a86")
+const HUD_TEXT := Color("fff5da")
+const HUD_MUTED := Color("b8c7d0")
+const HUD_TEAL := Color("71ddcb")
+const HUD_GOLD := Color("ffd184")
 const BACKPACK_GRID = preload("res://scripts/ui/backpack_grid.gd")
 const MINIMAP_VIEW = preload("res://scripts/ui/minimap_view.gd")
 const BOSS_HUD = preload("res://scripts/ui/boss_hud.gd")
@@ -584,55 +588,37 @@ func show_hud() -> void:
 	_toast_timer.stop()
 	_hud.clear()
 	_hud_loadout_key = ""
-	var top := PanelContainer.new()
+	var top := HBoxContainer.new()
 	top.name = "RitualStatus"
-	top.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
-	top.offset_left = 24
+	top.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
+	top.offset_left = -240
+	top.offset_right = 240
 	top.offset_top = 16
-	top.offset_right = -24
-	top.offset_bottom = 86
+	top.offset_bottom = 56
+	top.alignment = BoxContainer.ALIGNMENT_CENTER
+	top.add_theme_constant_override("separation", 40)
 	top.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_page.add_child(top)
-	_decorate(top, GOLD, true)
-	var margin := MarginContainer.new()
-	_margin(margin, 18, 4)
-	margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	top.add_child(margin)
-	var row := HBoxContainer.new()
-	row.add_theme_constant_override("separation", 30)
-	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	margin.add_child(row)
-	var health_box := VBoxContainer.new()
-	health_box.custom_minimum_size.x = 260
-	health_box.add_theme_constant_override("separation", 4)
-	row.add_child(health_box)
-	_hud["health"] = _label("生命  100 / 100", 16, BONE)
-	health_box.add_child(_hud["health"])
-	var hp := ProgressBar.new()
-	hp.custom_minimum_size.y = 9
-	hp.show_percentage = false
-	hp.add_theme_stylebox_override("fill", _bar_style(RED))
-	hp.add_theme_stylebox_override("background", _bar_style(Color("dbd3c3")))
-	health_box.add_child(hp)
-	_hud["health_bar"] = hp
-	for entry: Array in [["wave", "波次  1 / 8"], ["time", "剩余  00:45"], ["gold", "魂屑  0"], ["level", "等级  1"]]:
-		var item := _label(str(entry[1]), 17, GOLD if entry[0] == "gold" else BONE)
-		item.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		row.add_child(item)
+	for entry: Array in [["time", "00:45"], ["gold", "魂屑  0"]]:
+		var item := _label(str(entry[1]), 36 if entry[0] == "time" else 24, HUD_TEXT)
+		item.name = "Countdown" if entry[0] == "time" else "SoulCount"
+		item.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		item.add_theme_color_override("font_outline_color", Color("182b3e"))
+		item.add_theme_constant_override("outline_size", 4)
+		top.add_child(item)
 		_hud[str(entry[0])] = item
-	_add_hud_skill(row, "dash", "Dash", "空格：向当前移动方向冲刺；静止时沿面向。\n短冲距离约132，冷却2.4秒；起始短暂闪避，可冲离减速地形。\n冲刺撞击弹板触发球化。")
-	var xp := ProgressBar.new()
-	xp.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
-	xp.offset_left = 26
-	xp.offset_right = -26
-	xp.offset_top = 91
-	xp.offset_bottom = 94
-	xp.show_percentage = false
-	xp.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	xp.add_theme_stylebox_override("fill", _bar_style(PURPLE))
-	xp.add_theme_stylebox_override("background", _bar_style(Color("d9e4df")))
-	_page.add_child(xp)
-	_hud["xp_bar"] = xp
+	var vital := VBoxContainer.new()
+	vital.name = "PlayerVitals"
+	vital.set_anchors_and_offsets_preset(Control.PRESET_CENTER_BOTTOM)
+	vital.offset_left = -220
+	vital.offset_right = 220
+	vital.offset_top = -90
+	vital.offset_bottom = -20
+	vital.add_theme_constant_override("separation", 6)
+	vital.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_page.add_child(vital)
+	_add_vital_bar(vital, "health", "100 / 100", Color("dc626e"), 32)
+	_add_vital_bar(vital, "xp", "等级  1", HUD_TEAL, 32)
 	var boss := BOSS_HUD.new()
 	_page.add_child(boss)
 	_hud["boss"] = boss
@@ -642,42 +628,81 @@ func show_hud() -> void:
 	minimap.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
 	minimap.offset_left = -216
 	minimap.offset_right = -24
-	minimap.offset_top = 104
-	minimap.offset_bottom = 230
+	minimap.offset_top = 24
+	minimap.offset_bottom = 150
 	minimap.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	minimap.focus_mode = Control.FOCUS_NONE
 	_page.add_child(minimap)
 	_hud["minimap"] = minimap
-	var bottom := PanelContainer.new()
-	bottom.name = "RitualEquipment"
-	bottom.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
-	bottom.offset_left = 24
-	bottom.offset_right = -24
-	bottom.offset_top = -104
-	bottom.offset_bottom = -18
-	bottom.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_page.add_child(bottom)
-	_decorate(bottom, GOLD, true)
-	var bottom_margin := MarginContainer.new()
-	_margin(bottom_margin, 16, 10)
-	bottom.add_child(bottom_margin)
-	var bottom_row := HBoxContainer.new()
-	bottom_row.add_theme_constant_override("separation", 16)
-	bottom_margin.add_child(bottom_row)
-	var slots := HBoxContainer.new()
-	slots.add_theme_constant_override("separation", 12)
-	slots.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	bottom_row.add_child(slots)
+	var equipment := _hud_side_panel("RitualEquipment", false)
+	var slots := GridContainer.new()
+	slots.name = "WeaponSlots"
+	slots.columns = 2
+	slots.add_theme_constant_override("h_separation", 6)
+	slots.add_theme_constant_override("v_separation", 6)
+	slots.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	equipment.add_child(slots)
 	_hud["slots"] = slots
-	var active_slots := HBoxContainer.new()
+	var abilities := _hud_side_panel("RitualAbilities", true)
+	var active_slots := VBoxContainer.new()
 	active_slots.name = "ActiveSkillSlots"
-	active_slots.add_theme_constant_override("separation", 10)
+	active_slots.add_theme_constant_override("separation", 6)
 	active_slots.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	bottom_row.add_child(active_slots)
+	abilities.add_child(active_slots)
 	_add_active_skill_slot(active_slots, "pulse", "Pulse")
 	_add_active_skill_slot(active_slots, "secondary", "Secondary")
-	_add_active_skill_slot(active_slots, "hero", "Hero", GOLD)
+	_add_active_skill_slot(active_slots, "hero", "Hero", HUD_GOLD)
+	_add_active_skill_slot(active_slots, "dash", "Dash")
 
+
+func _hud_side_panel(node_name: String, right: bool) -> PanelContainer:
+	var panel := PanelContainer.new()
+	panel.name = node_name
+	panel.anchor_left = 1.0 if right else 0.0
+	panel.anchor_right = panel.anchor_left
+	panel.anchor_top = 0.5
+	panel.anchor_bottom = 0.5
+	panel.offset_left = -180 if right else 24
+	panel.offset_right = -24 if right else 180
+	panel.offset_top = -110
+	panel.offset_bottom = -110
+	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	panel.focus_mode = Control.FOCUS_NONE
+	var style := _box(Color(0.055, 0.10, 0.16, 0.68), Color(HUD_GOLD, 0.5), 0)
+	style.content_margin_left = 8
+	style.content_margin_right = 8
+	style.content_margin_top = 8
+	style.content_margin_bottom = 8
+	panel.add_theme_stylebox_override("panel", style)
+	_page.add_child(panel)
+	return panel
+
+
+func _add_vital_bar(parent: VBoxContainer, key: String, text: String, color: Color, height: int) -> void:
+	var bar := ProgressBar.new()
+	bar.name = "PlayerHealth" if key == "health" else "PlayerExperience"
+	bar.custom_minimum_size.y = height
+	bar.show_percentage = false
+	bar.step = 0.0
+	bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	bar.focus_mode = Control.FOCUS_NONE
+	bar.add_theme_stylebox_override("fill", _bar_style(color))
+	var background := _bar_style(Color(0.04, 0.07, 0.11, 0.8))
+	background.border_color = Color("1c3043")
+	background.set_border_width_all(2)
+	bar.add_theme_stylebox_override("background", background)
+	parent.add_child(bar)
+	var label := _label(text, 24, HUD_TEXT)
+	label.name = "HealthValue" if key == "health" else "PlayerLevel"
+	label.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	label.offset_left = 12
+	label.offset_right = -12
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	label.add_theme_color_override("font_outline_color", Color("182b3e"))
+	label.add_theme_constant_override("outline_size", 2)
+	bar.add_child(label)
+	_hud[key + "_bar"] = bar
+	_hud["health" if key == "health" else "level"] = label
 
 
 func update_hud(snapshot: Dictionary) -> void:
@@ -689,32 +714,18 @@ func update_hud(snapshot: Dictionary) -> void:
 		_hud_skill_snapshot[key] = skill.duplicate(true) if skill is Dictionary or skill is Array else skill
 	var hp := float(snapshot.get("health", 0.0))
 	var maximum := maxf(1.0, float(snapshot.get("max_health", 1.0)))
-	_hud["health"].text = "生命  %d / %d" % [ceili(hp), ceili(maximum)]
+	_hud["health"].text = "%d / %d" % [ceili(hp), ceili(maximum)]
 	_hud["health_bar"].max_value = maximum
 	_hud["health_bar"].value = hp
 	_hud["boss"].update_snapshot(snapshot)
 	var boss_alive: bool = _hud["boss"].visible
-	_hud["wave"].text = "波次  %d / %d" % [int(snapshot.get("wave", 1)), GameCatalog.WAVE_DEFS.size()]
 	var time_left := maxf(0.0, float(snapshot.get("time_left", 0)))
 	var seconds := ceili(time_left)
 	var timer: Label = _hud["time"]
-	timer.text = "剩余  %02d:%02d" % [seconds / 60, seconds % 60]
-	timer.add_theme_color_override("font_color", BONE)
-	timer.add_theme_constant_override("outline_size", 0)
+	timer.text = "%02d:%02d" % [seconds / 60, seconds % 60]
+	timer.add_theme_color_override("font_color", CORAL if boss_alive and not bool(snapshot.get("benchmark", false)) and time_left <= 10.0 else HUD_TEXT)
 	_hud["gold"].text = "魂屑  %d" % int(snapshot.get("gold", 0))
 	_hud["level"].text = "等级  %d" % int(snapshot.get("level", 1))
-	if bool(snapshot.get("benchmark", false)):
-		_hud["wave"].text = "性能测试"
-		timer.text = "采样  %02d:%02d" % [seconds / 60, seconds % 60]
-		_hud["gold"].text = "敌人  %d" % int(snapshot.get("enemies", 0))
-		_hud["level"].text = "投射物  %d" % int(snapshot.get("projectiles", 0))
-	elif boss_alive:
-		_hud["wave"].text = "击败首领"
-		timer.text = "限时  %02d:%02d" % [seconds / 60, seconds % 60]
-		if time_left <= 10.0:
-			timer.add_theme_color_override("font_color", CORAL)
-			timer.add_theme_color_override("font_outline_color", BONE)
-			timer.add_theme_constant_override("outline_size", 2)
 	_hud["xp_bar"].max_value = maxf(1, float(snapshot.get("xp_needed", 1)))
 	_hud["xp_bar"].value = float(snapshot.get("xp", 0))
 	(_hud["minimap"] as MinimapView).update_snapshot(snapshot.get("minimap"))
@@ -726,39 +737,6 @@ func update_hud(snapshot: Dictionary) -> void:
 	if key != _hud_loadout_key:
 		_hud_loadout_key = key
 		_update_hud_slots(loadout)
-
-
-func _add_hud_skill(row: HBoxContainer, key: String, prefix: String, tooltip: String) -> void:
-	var indicator := VBoxContainer.new()
-	indicator.name = prefix + "Skill"
-	indicator.custom_minimum_size.x = 106
-	indicator.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
-	indicator.add_theme_constant_override("separation", 3)
-	indicator.mouse_filter = Control.MOUSE_FILTER_PASS
-	indicator.focus_mode = Control.FOCUS_NONE
-	indicator.tooltip_text = tooltip
-	row.add_child(indicator)
-	var label := _label("", 14, CYAN)
-	label.name = prefix + "Status"
-	label.focus_mode = Control.FOCUS_NONE
-	label.clip_text = true
-	label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-	indicator.add_child(label)
-	var meter := ProgressBar.new()
-	meter.name = prefix + "Cooldown"
-	meter.custom_minimum_size.y = 5
-	meter.max_value = 1.0
-	meter.step = 0.0
-	meter.show_percentage = false
-	meter.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	meter.focus_mode = Control.FOCUS_NONE
-	meter.add_theme_stylebox_override("fill", _bar_style(CYAN))
-	meter.add_theme_stylebox_override("background", _bar_style(Color("d9e4df")))
-	indicator.add_child(meter)
-	indicator.hide()
-	_hud[key] = indicator
-	_hud[key + "_label"] = label
-	_hud[key + "_bar"] = meter
 
 
 func _clear_hud_skill(key: String) -> void:
@@ -774,6 +752,8 @@ func _update_dash_hud(snapshot: Dictionary) -> void:
 	var value: Variant = snapshot.get("dash", {})
 	if bool(snapshot.get("benchmark", false)) or not value is Dictionary or value.is_empty() or float(snapshot.get("health", 0.0)) <= 0.0:
 		_clear_hud_skill("dash")
+		_hud["dash_key"].text = ""
+		_hud["dash_time"].text = ""
 		return
 	var dash: Dictionary = value
 	var remaining: float = float(dash.get("cooldown_left", 0.0))
@@ -787,36 +767,41 @@ func _update_dash_hud(snapshot: Dictionary) -> void:
 	indicator.tooltip_text = "%s：向当前移动方向冲刺；静止时沿面向。\n短冲距离约132，冷却%s秒；起始短暂闪避，可冲离减速地形。\n冲刺撞击弹板触发球化。" % [key, _skill_number(next_total)]
 	if remaining > 0.0 and total > 0.0 and not is_equal_approx(total, next_total):
 		indicator.tooltip_text += "\n本次冷却总长%s秒；改装仅影响下次施放。" % _skill_number(total)
+	(_hud["dash_key"] as Label).text = key
+	var clock: Label = _hud["dash_time"]
+	clock.text = "就绪" if ready else "%.1f" % (ceilf(remaining * 10.0) / 10.0) if remaining > 0.0 else "—"
+	clock.add_theme_color_override("font_color", HUD_TEAL if ready else HUD_MUTED)
 	indicator.show()
 	var pinball_value: Variant = snapshot.get("pinball", {})
 	var pinball: Dictionary = pinball_value if pinball_value is Dictionary else {}
 	if bool(pinball.get("active", false)):
 		label.text = "弹射×%d" % maxi(0, int(pinball.get("combo", 0)))
-		label.add_theme_color_override("font_color", GOLD)
+		label.add_theme_color_override("font_color", HUD_GOLD)
 		meter.value = clampf(1.0 - remaining / total, 0.0, 1.0) if remaining > 0.0 and total > 0.0 else 1.0 if ready else 0.0
 	elif active:
 		label.text = "冲刺中"
-		label.add_theme_color_override("font_color", GOLD)
+		clock.text = "—"
+		label.add_theme_color_override("font_color", HUD_GOLD)
 		meter.value = 0.0
 	elif ready:
-		label.text = "冲刺 · " + key
-		label.add_theme_color_override("font_color", CYAN)
+		label.text = "冲刺"
+		label.add_theme_color_override("font_color", HUD_TEAL)
 		meter.value = 1.0
 	else:
-		label.text = "冲刺 %.1f秒" % (ceilf(remaining * 10.0) / 10.0) if remaining > 0.0 else "冲刺"
-		label.add_theme_color_override("font_color", MUTED)
+		label.text = "冲刺"
+		label.add_theme_color_override("font_color", HUD_MUTED)
 		meter.value = clampf(1.0 - remaining / total, 0.0, 1.0) if remaining > 0.0 and total > 0.0 else 0.0
 
 
-func _add_active_skill_slot(parent: HBoxContainer, key: String, prefix: String, tint: Color = CYAN) -> void:
+func _add_active_skill_slot(parent: BoxContainer, key: String, prefix: String, tint: Color = HUD_TEAL) -> void:
 	var card := PanelContainer.new()
 	card.name = prefix + "Skill"
-	card.custom_minimum_size = Vector2(112, 64)
+	card.custom_minimum_size = Vector2(140, 76)
 	card.mouse_filter = Control.MOUSE_FILTER_PASS
 	card.focus_mode = Control.FOCUS_NONE
-	var style := _box(Color("f4edd8") if key == "hero" else Color("e5efe9"), Color(tint, 0.45))
-	style.content_margin_left = 8
-	style.content_margin_right = 8
+	var style := _box(Color(tint, 0.08), Color(tint, 0.3), 0)
+	style.content_margin_left = 6
+	style.content_margin_right = 6
 	style.content_margin_top = 3
 	style.content_margin_bottom = 3
 	card.add_theme_stylebox_override("panel", style)
@@ -831,24 +816,30 @@ func _add_active_skill_slot(parent: HBoxContainer, key: String, prefix: String, 
 	box.add_child(row)
 	var badge := _label("", 14, tint)
 	badge.name = prefix + "Key"
-	badge.custom_minimum_size.x = 18
+	badge.custom_minimum_size.x = 24
+	badge.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	badge.clip_text = true
 	badge.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	row.add_child(badge)
 	var icon := TextureRect.new()
 	icon.name = prefix + "Icon"
-	icon.custom_minimum_size = Vector2(26, 26)
+	icon.custom_minimum_size = Vector2(32, 32)
 	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	row.add_child(icon)
-	var clock := _label("", 12, CYAN)
+	if key == "dash":
+		icon.draw.connect(func() -> void:
+			for x: float in [3.0, 15.0]:
+				icon.draw_polyline(PackedVector2Array([Vector2(x, 7), Vector2(x + 10, 16), Vector2(x, 25)]), HUD_TEAL, 3.0)
+		)
+	var clock := _label("", 12, tint)
 	clock.name = prefix + "Time"
-	clock.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	clock.custom_minimum_size.x = 30
 	clock.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	row.add_child(clock)
-	var label := _label("空槽", 12, MUTED)
+	var label := _label("空槽", 24, HUD_MUTED)
 	label.name = prefix + "Status"
 	label.clip_text = true
 	label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
@@ -861,7 +852,7 @@ func _add_active_skill_slot(parent: HBoxContainer, key: String, prefix: String, 
 	meter.show_percentage = false
 	meter.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	meter.add_theme_stylebox_override("fill", _bar_style(tint))
-	meter.add_theme_stylebox_override("background", _bar_style(Color("c9d9d2")))
+	meter.add_theme_stylebox_override("background", _bar_style(Color(0.04, 0.07, 0.11, 0.65)))
 	box.add_child(meter)
 	_hud[key] = card
 	_hud[key + "_label"] = label
@@ -900,9 +891,9 @@ func _update_pulse_hud(snapshot: Dictionary) -> void:
 		var definition: ContentDef = GameCatalog.skill(id) if available else null
 		if definition == null:
 			label.text = "空槽"
-			label.add_theme_color_override("font_color", MUTED)
+			label.add_theme_color_override("font_color", HUD_MUTED)
 			clock.text = "—"
-			clock.add_theme_color_override("font_color", MUTED)
+			clock.add_theme_color_override("font_color", HUD_MUTED)
 			icon.texture = null
 			meter.value = 0.0
 			indicator.tooltip_text = input_key + " · 空槽"
@@ -914,9 +905,9 @@ func _update_pulse_hud(snapshot: Dictionary) -> void:
 		total = maxf(0.0, total) if is_finite(total) else 0.0
 		var ready: bool = bool(skill.get("ready", false)) and remaining <= 0.0
 		label.text = definition.display_name
-		label.add_theme_color_override("font_color", CYAN if ready else MUTED)
+		label.add_theme_color_override("font_color", HUD_TEAL if ready else HUD_MUTED)
 		clock.text = "就绪" if ready else "%.1f" % (ceilf(remaining * 10.0) / 10.0) if remaining > 0.0 else "—"
-		clock.add_theme_color_override("font_color", CYAN if ready else MUTED)
+		clock.add_theme_color_override("font_color", HUD_TEAL if ready else HUD_MUTED)
 		var icon_id: String = definition.icon
 		if str(icon.get_meta("skill_icon", "")) != icon_id or icon.texture == null:
 			icon.texture = load(AdventureArt.path("res://assets/icons/%s.svg" % icon_id))
@@ -964,9 +955,9 @@ func _update_hero_hud(snapshot: Dictionary) -> void:
 	icon.modulate = Color.WHITE if ready else Color(0.65, 0.72, 0.70)
 	var label: Label = _hud["hero_label"]
 	label.text = skill_name
-	label.add_theme_color_override("font_color", GOLD if ready else MUTED)
+	label.add_theme_color_override("font_color", HUD_GOLD if ready else HUD_MUTED)
 	clock.text = "就绪" if ready else "%.1f" % (ceilf(remaining * 10.0) / 10.0) if remaining > 0.0 else "—"
-	clock.add_theme_color_override("font_color", GOLD if ready else MUTED)
+	clock.add_theme_color_override("font_color", HUD_GOLD if ready else HUD_MUTED)
 	(_hud["hero_bar"] as ProgressBar).value = 1.0 if ready else clampf(1.0 - remaining / total, 0.0, 1.0) if remaining > 0.0 and total > 0.0 else 0.0
 	indicator.tooltip_text = "%s · %s\n%s · 伤害%s · 范围%s · 冷却%s秒" % [hero.display_name, skill_name, badge.text, _skill_number(float(skill.get("damage", 0.0))), _skill_number(float(skill.get("radius", 0.0))), _skill_number(total)]
 	indicator.set_meta("hero_id", hero.id)
@@ -3112,14 +3103,14 @@ func _set_screen(screen: String) -> void:
 
 
 func _update_hud_slots(loadout: Array) -> void:
-	var slots: HBoxContainer = _hud["slots"]
+	var slots: GridContainer = _hud["slots"]
 	_clear(slots)
 	for index in range(mini(8, loadout.size())):
 		var card := PanelContainer.new()
 		card.name = "EquipmentSlot%d" % (index + 1)
-		card.custom_minimum_size.x = 58
+		card.custom_minimum_size = Vector2(64, 64)
 		card.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		var style := _box(Color("f4edd8"), Color(GOLD, 0.22))
+		var style := _box(Color(HUD_GOLD, 0.06), Color(HUD_GOLD, 0.25), 0)
 		style.content_margin_left = 5
 		style.content_margin_right = 5
 		style.content_margin_top = 4
@@ -3136,19 +3127,19 @@ func _update_hud_slots(loadout: Array) -> void:
 		card.set_meta("content_id", definition.id)
 		card.set_meta("backpack_uid", int(item.get("uid", -1)))
 		_enable_tooltip(card, _equipment_tooltip(item))
-		_add_icon(box, definition, 30)
+		_add_icon(box, definition, 40)
 		var badges := HBoxContainer.new()
 		badges.alignment = BoxContainer.ALIGNMENT_CENTER
 		badges.add_theme_constant_override("separation", 4)
 		box.add_child(badges)
-		var rank := _label(_rank_name(int(item.get("rank", 1))), 12, GOLD)
+		var rank := _label(_rank_name(int(item.get("rank", 1))), 12, HUD_GOLD)
 		rank.name = "EquipmentRank%d" % (index + 1)
 		badges.add_child(rank)
 		var rune: Dictionary = item.get("rune", {})
 		if not rune.is_empty():
 			_add_icon(badges, GameCatalog.rune(str(rune["id"])), 14)
 	if loadout.size() > 8:
-		var more := _label("+%d" % (loadout.size() - 8), 12, GOLD)
+		var more := _label("+%d" % (loadout.size() - 8), 12, HUD_GOLD)
 		more.name = "AdditionalWeapons"
 		_enable_tooltip(more, _loadout_text())
 		slots.add_child(more)

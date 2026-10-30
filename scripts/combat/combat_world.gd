@@ -71,6 +71,7 @@ const WEAKPOINT_ATLAS_PATH: String = "res://assets/worldflipper/boss/weakpoint-a
 const WEAKPOINT_HIT_LIFE: float = 0.10
 const WEAKPOINT_BREAK_LIFE: float = 0.22
 const WEAKPOINT_LIMIT: int = 3
+const BOSS_INTRO_SECONDS: float = 2.4
 
 class WeakpointReceipt:
 	var uid: int = -1
@@ -304,8 +305,7 @@ func _update_camera() -> void:
 
 func _feedback_safe_rect() -> Rect2:
 	var view: Rect2 = camera_view()
-	var top: float = 174.0 if _boss_alive() else 110.0
-	var safe := Rect2(view.position + Vector2(24, top), view.size - Vector2(48, top + 112.0))
+	var safe := Rect2(view.position + Vector2(196, 150), view.size - Vector2(392, 262))
 	return safe.intersection(CombatSim.ARENA.grow(-8.0))
 
 func _boss_alive() -> bool:
@@ -1013,6 +1013,7 @@ func _on_ended(victory: bool, reason: String) -> void:
 
 func hud_snapshot() -> Dictionary:
 	var value: Dictionary = sim.snapshot()
+	value["boss_intro_left"] = maxf(0.0, BOSS_INTRO_SECONDS - sim.elapsed) if _boss_alive() else 0.0
 	value["arena_id"] = _arena_id
 	value["arena_name"] = _arena_name
 	value["terrain_name"] = ArenaCatalog.terrain_name(_arena_id, sim.player_position)

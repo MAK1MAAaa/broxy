@@ -189,3 +189,9 @@ reports/art-motion/*.png
 reports/art-motion/*.import
 reports/art-motion/*-raw.json
 reports/art-motion/*/
+
+reports/hud-reflow/*.log
+reports/hud-reflow/*.png
+reports/hud-reflow/*.import
+reports/hud-reflow/*-raw.json
+reports/hud-reflow/*/

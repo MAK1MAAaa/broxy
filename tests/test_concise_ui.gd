@@ -185,7 +185,7 @@ func _test_live_hud_bounds() -> void:
 						continue
 					var panel: Control = app.ui.find_child("RitualEquipment", true, false)
 					app.ui.notify("试炼开始 · 地图与地形说明")
-					var slots: HBoxContainer = app.ui._hud["slots"]
+					var slots: Control = app.ui._hud["slots"]
 					no_small_copy = no_small_copy and not app.ui._hud.has("bag_info") and app.ui.find_child("HUDMapInfo", true, false) == null
 					notice_suppressed = notice_suppressed and not app.ui._toast.visible and app.ui._toast.text.is_empty() and app.ui._toast_timer.is_stopped()
 					active_counts_match = active_counts_match and state.loadout.size() == count

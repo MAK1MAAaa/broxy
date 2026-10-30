@@ -174,9 +174,10 @@ func _test_hud_layouts() -> void:
 			var area: Rect2 = minimap.get_global_rect()
 			var status := _ui.find_child("RitualStatus", true, false) as Control
 			var equipment := _ui.find_child("RitualEquipment", true, false) as Control
+			var abilities := _ui.find_child("RitualAbilities", true, false) as Control
 			_check(minimap.visible and minimap.presentation_snapshot()["enemy_count"] == 3, "A real HUD snapshot feeds terrain and enemy markers at " + str(physical_size))
-			_check(Rect2(Vector2.ZERO, Vector2(1280, 720)).encloses(area) and area.position.y >= 104.0 and area.size.is_equal_approx(Vector2(192, 126)), "The minimap stays anchored inside the reference viewport with its compact budget")
-			_check(not area.intersects(status.get_global_rect()) and not area.intersects(equipment.get_global_rect()), "The map never overlaps status or equipped skill controls")
+			_check(Rect2(Vector2.ZERO, Vector2(1280, 720)).encloses(area) and area.position.x > 1000.0 and area.size.is_equal_approx(Vector2(192, 126)), "The minimap stays anchored to the upper right inside the reference viewport with its compact budget")
+			_check(not area.intersects(status.get_global_rect()) and not area.intersects(equipment.get_global_rect()) and not area.intersects(abilities.get_global_rect()), "The map never overlaps the compact top status or either side frame")
 			if boss:
 				_check(not area.intersects((_ui._hud["boss"] as Control).get_global_rect()), "Boss health stays separate from the map")
 			_check(minimap.mouse_filter == Control.MOUSE_FILTER_IGNORE and minimap.focus_mode == Control.FOCUS_NONE and minimap.get_child_count() == 0, "The map has no labels, legend controls or focus targets")
