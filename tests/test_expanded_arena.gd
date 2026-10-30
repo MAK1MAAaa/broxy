@@ -59,7 +59,8 @@ func _test_world_and_camera() -> void:
 	_check(ArenaCatalog.visible_rect(Vector2.ZERO, Vector2.INF).size == ArenaCatalog.MAX_VIEW_SIZE and ArenaCatalog.visible_rect(Vector2.ZERO, Vector2(4096, 2160)).size == ArenaCatalog.MAX_VIEW_SIZE, "Invalid and oversized logical view sizes remain within the supported camera envelope")
 	_check(ArenaCatalog.visible_rect(Vector2.ZERO, Vector2(960, 540)).size == Vector2(960, 540), "Smaller logical views retain valid centered bounds")
 	for id: String in ArenaCatalog.IDS:
-		_check(ArenaCatalog.texture_path(id) == "res://assets/worldflipper/maps/%s.png" % id, "The expanded source-art texture preserves the selected map identity: " + id)
+		var directory: String = "stages" if ArenaCatalog.ORIGINAL_STAGE_IDS.has(id) else "maps"
+		_check(ArenaCatalog.texture_path(id) == "res://assets/worldflipper/%s/%s.png" % [directory, id], "The source-art texture preserves the selected map identity and asset family: " + id)
 	_check(ArenaCatalog.texture_path("unknown") == ArenaCatalog.texture_path("reliquary"), "Unknown map art follows the same catalog fallback")
 
 func _test_authored_terrain() -> void:
@@ -68,7 +69,7 @@ func _test_authored_terrain() -> void:
 		var zones: Array = definition["zones"]
 		var legacy_count: int = int(definition["legacy_zone_count"])
 		_check(legacy_count == ({"mire": 3, "glacier": 3, "ashland": 4}.get(id, 0)), "Legacy art regions remain explicitly identified: " + id)
-		_check(zones.size() == legacy_count + (0 if id == "reliquary" else 8 if id in ["mire", "glacier", "ashland"] else 6), "Original terrain maps keep eight distant patches and the new scenes add six authored patches: " + id)
+		_check(zones.size() == legacy_count + (0 if id == "reliquary" or ArenaCatalog.ORIGINAL_STAGE_IDS.has(id) else 8 if id in ["mire", "glacier", "ashland"] else 6), "Expanded scenes retain their patches and source-geometry stages add no invented patches: " + id)
 		_check(ArenaCatalog.movement_multiplier(id, CombatSim.ARENA.get_center()) == 1.0, "The unchanged central spawn stays on clear ground: " + id)
 		var valid_bounds: bool = true
 		var disjoint: bool = true

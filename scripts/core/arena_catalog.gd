@@ -2,8 +2,11 @@ class_name ArenaCatalog
 extends RefCounted
 ## Shared world geometry, authored terrain and source-art resource paths.
 
-const IDS: Array[String] = ["reliquary", "mire", "glacier", "ashland", "town", "throne", "tower_peak"]
+const LEGACY_IDS: Array[String] = ["reliquary", "mire", "glacier", "ashland", "town", "throne", "tower_peak"]
+const ORIGINAL_STAGE_IDS: Array[String] = ["jp_sand_2_9_5", "jp_shrine_6_6_2", "jp_ship_3_6_2"]
+const IDS: Array[String] = ["reliquary", "mire", "glacier", "ashland", "town", "throne", "tower_peak", "jp_sand_2_9_5", "jp_shrine_6_6_2", "jp_ship_3_6_2"]
 const SOURCE_PATH: String = "res://data/arenas.json"
+const LAYOUT_PATH: String = "res://data/worldflipper/layouts.json"
 const WORLD_BOUNDS: Rect2 = Rect2(-1082, -535, 3444, 1800)
 const MAX_VIEW_SIZE: Vector2 = Vector2(1280, 720)
 const BORDER_SIZE: float = 64.0
@@ -69,6 +72,7 @@ class TerrainIndex extends RefCounted:
 
 static var _definitions: Dictionary = {}
 static var _terrain_indices: Dictionary = {}
+static var _wall_geometry: Dictionary = {}
 
 
 static func normalize_id(id: String) -> String:
@@ -87,10 +91,62 @@ static func art_rect() -> Rect2:
 
 
 static func texture_path(id: String) -> String:
-	return "res://assets/worldflipper/maps/%s.png" % normalize_id(id)
+	var known: String = normalize_id(id)
+	return "res://assets/worldflipper/%s/%s.png" % ["stages" if ORIGINAL_STAGE_IDS.has(known) else "maps", known]
 
 static func preview_path(id: String) -> String:
-	return "res://assets/worldflipper/maps/previews/%s.png" % normalize_id(id)
+	var known: String = normalize_id(id)
+	return "res://assets/worldflipper/%s/previews/%s.png" % ["stages" if ORIGINAL_STAGE_IDS.has(known) else "maps", known]
+
+
+static func stage_info(id: String) -> Dictionary:
+	_ensure_loaded()
+	return (_definitions[normalize_id(id)].get("stage", {}) as Dictionary).duplicate(true)
+
+
+static func play_bounds(id: String) -> Rect2:
+	if not ORIGINAL_STAGE_IDS.has(id):
+		return WORLD_BOUNDS
+	_ensure_loaded()
+	var rect: Array = _definitions[id]["stage"]["play_bounds"]
+	return Rect2(float(rect[0]), float(rect[1]), float(rect[2]), float(rect[3]))
+
+
+static func wall_geometry(id: String) -> Array[Dictionary]:
+	var result: Array[Dictionary] = []
+	if not ORIGINAL_STAGE_IDS.has(id):
+		return result
+	_ensure_loaded()
+	_ensure_walls_loaded()
+	for row: Dictionary in _wall_geometry[id]:
+		result.append(row.duplicate(true))
+	return result
+
+
+static func _ensure_walls_loaded() -> void:
+	if not _wall_geometry.is_empty():
+		return
+	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(LAYOUT_PATH))
+	assert(parsed is Dictionary and parsed.get("layouts") is Array, "Original stages require their verified terrain geometry")
+	var layouts: Dictionary = {}
+	for layout: Dictionary in parsed["layouts"]:
+		layouts[str(layout["id"])] = layout
+	for id: String in ORIGINAL_STAGE_IDS:
+		var stage: Dictionary = _definitions[id]["stage"]
+		var source: Dictionary = layouts[str(stage["layout_id"])]
+		assert(source["field_id"] == stage["field_id"], "Stage background and terrain field must match")
+		var rows: Array[Dictionary] = []
+		var scale: float = float(stage["logic_scale"])
+		var offset: Array = stage["logic_offset"]
+		for layer: Dictionary in source["layers"]:
+			if int(layer["index"]) != int(stage["layer_index"]):
+				continue
+			for wall: Dictionary in layer["walls"]:
+				rows.append({"id": wall["id"], "object_id": wall["object_id"],
+					"a": [float(wall["a"][0]) * scale + float(offset[0]), float(wall["a"][1]) * scale + float(offset[1])],
+					"b": [float(wall["b"][0]) * scale + float(offset[0]), float(wall["b"][1]) * scale + float(offset[1])]})
+		assert(rows.size() == int(stage["wall_segment_count"]), "Stage wall count must match its source layer")
+		_wall_geometry[id] = rows
 
 
 static func camera_center(point: Vector2, view_size: Vector2 = MAX_VIEW_SIZE) -> Vector2:
@@ -103,6 +159,21 @@ static func camera_center(point: Vector2, view_size: Vector2 = MAX_VIEW_SIZE) ->
 static func visible_rect(point: Vector2, view_size: Vector2 = MAX_VIEW_SIZE) -> Rect2:
 	var size: Vector2 = _safe_view_size(view_size)
 	return Rect2(camera_center(point, size) - size * 0.5, size)
+
+static func camera_center_for(id: String, point: Vector2, view_size: Vector2 = MAX_VIEW_SIZE) -> Vector2:
+	if not ORIGINAL_STAGE_IDS.has(id):
+		return camera_center(point, view_size)
+	var play: Rect2 = play_bounds(id)
+	var size: Vector2 = _safe_view_size(view_size)
+	var half: Vector2 = size * 0.5
+	var frame: Rect2 = play.grow_individual(ART_MARGIN_LEFT, ART_MARGIN_TOP, ART_MARGIN_RIGHT, ART_MARGIN_BOTTOM)
+	var target: Vector2 = point if point.is_finite() else play.get_center()
+	return Vector2(play.get_center().x if frame.size.x <= size.x else clampf(target.x, frame.position.x + half.x, frame.end.x - half.x),
+		play.get_center().y if frame.size.y <= size.y else clampf(target.y, frame.position.y + half.y, frame.end.y - half.y))
+
+static func visible_rect_for(id: String, point: Vector2, view_size: Vector2 = MAX_VIEW_SIZE) -> Rect2:
+	var size: Vector2 = _safe_view_size(view_size)
+	return Rect2(camera_center_for(id, point, size) - size * 0.5, size)
 
 
 static func _safe_view_size(value: Vector2) -> Vector2:

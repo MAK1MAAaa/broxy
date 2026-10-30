@@ -13,7 +13,8 @@ portrait_path = "res://assets/worldflipper/portraits/celtie.png"
 frame_size = 128
 foot_anchor = Vector2(64, 125)
 base_bonuses = {"attack_speed": 0.04}
-main_skill = {"id": "hero_celtie", "name": "风神·解放", "element": "wind", "shape": "double_arc", "delivery": "instant", "visual_family": "wind", "origin_mode": "player", "radius": 180.0, "damage": 35.0, "cooldown": 7.0, "half_angle_radians": 0.8726646259971648, "combo_per_hit": 0.005, "combo_bonus_cap": 0.5}
+main_skill = {"id": "hero_celtie", "name": "风神·解放", "element": "wind", "shape": "rectangle", "delivery": "areas", "visual_family": "wind", "origin_mode": "player", "radius": 360.0, "damage": 35.0, "cooldown": 7.0, "half_angle_radians": 0.8726646259971648, "combo_per_hit": 0.005, "combo_bonus_cap": 0.5, "half_length": 360.0, "width": 48.0, "timeline": [{"delay": 0.4166666666666667, "duration": 0.5166666666666667, "hits": 1, "damage_weight": 1.0, "shape": "rectangle", "half_length": 360.0, "width": 48.0, "radius": 360.0, "anchor": "caster_at_activation"}]}
+action_evidence = {"catalog_skill_id": "wind_spgirl:2", "action_ref": "battle/action/skill/action/rare5/wind_spgirl$wind_spgirl_2", "git_blob_sha1": "4cb7bd803ea9b011a6d9e760102a08ff01efb5bc", "source_commit": "1d45b529ef078ba9b1f876d4588debd0c8a9a214", "time_adaptation": "one original action unit = 1/60 project seconds; not a verified original FPS", "geometry_adaptation": "uniform scale chosen per skill for free movement; no original area size claim"}
 source_id = "141001"
 source_skill_name = "风神·解放"
 source_skill_weight = 340

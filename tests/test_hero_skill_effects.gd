@@ -46,19 +46,25 @@ func _run() -> void:
 	print("HeroSkillEffects: %d assertions, %d failures" % [_checks, _failures])
 	quit(0 if _failures == 0 else 1)
 
+func _advance(sim: CombatSim, frames: int) -> void:
+	for frame: int in frames:
+		sim.step(STEP, Vector2.ZERO)
+
 func _test_alk() -> void:
 	var sim: CombatSim = _sim("alk")
 	var front: CombatSim.Enemy = _target(sim, Vector2(90, 0))
 	var back: CombatSim.Enemy = _target(sim, Vector2(-90, 0))
-	var damage: float = sim.run.hero_skill_parameters()["damage"]
+	var damage: float = sim.hero_skill_snapshot()["damage"]
 	var permanent: float = sim.run.stat("damage")
 	_check(sim.try_hero_skill(), "Alk casts the actual surrounding shockwave")
-	_check(is_equal_approx(10000.0 - front.health, damage) and is_equal_approx(10000.0 - back.health, damage), "Alk hits both sides rather than only an old forward arc")
+	_check(front.health == 10000.0 and back.health == 10000.0, "Alk cannot deal damage during the real jump windup")
 	var effect: Dictionary = sim.hero_effects_snapshot()
 	_check(effect["attack_left"] == 5.0 and is_equal_approx(float(effect["attack_bonus"]), 0.2), "The real cast grants bounded temporary attack power")
 	var shot: CombatSim.Shot = sim.fire_weapon("bone", "", sim.player_position, Vector2.RIGHT)
 	_check(is_equal_approx(shot.damage, GameCatalog.weapon("bone").damage * permanent * 1.2), "Temporary attack power changes the actual emitted weapon shot")
 	sim._release_shot(shot)
+	_advance(sim, 44)
+	_check(is_equal_approx(10000.0 - front.health, damage) and is_equal_approx(10000.0 - back.health, damage), "Alk resolves the surrounding fire shockwave after forty-four adapted action units")
 	effect["attack_bonus"] = 20.0
 	_check(is_equal_approx(sim.hero_effects.attack_multiplier(), 1.2) and sim.run.stat("damage") == permanent, "Reading or mutating effect snapshots cannot turn a temporary buff into permanent stats")
 	sim.step(5.0, Vector2.ZERO)
@@ -73,11 +79,14 @@ func _test_clarisse() -> void:
 		if source == "skill:hero_clarisse" and uid == front.uid:
 			records.append(amount)
 	)
-	var damage: float = sim.run.hero_skill_parameters()["damage"]
+	var damage: float = sim.hero_skill_snapshot()["damage"]
 	_check(sim.try_hero_skill(), "Clarisse casts the actual forward explosion")
-	_check(records.size() == 12 and is_equal_approx(10000.0 - front.health, damage), "Twelve actual damage receipts preserve the cast's total adapted damage")
+	_check(records.is_empty() and front.health == 10000.0, "The forward explosion cannot deal pre-windup damage")
+	_advance(sim, 146)
+	var expected: float = damage * (0.0375 + 0.9625 * 1.25)
+	_check(records.size() == 15 and is_equal_approx(10000.0 - front.health, expected), "Four early and eleven later receipts include vulnerability only after the first actual hit")
 	_check(rear.health == 10000.0 and rear.fire_vulnerability_left == 0.0, "The front explosion does not apply damage or vulnerability behind the caster")
-	_check(front.fire_vulnerability_left == 4.0 and is_equal_approx(front.fire_vulnerability, 0.25), "A surviving hit target receives the actual bounded fire weakness")
+	_check(front.fire_vulnerability_left > 3.8 and is_equal_approx(front.fire_vulnerability, 0.25), "A surviving hit target receives the actual bounded fire weakness")
 	var before: float = front.health
 	sim.apply_damage(front, 10.0, "test", false, 0.0, "fire")
 	_check(is_equal_approx(before - front.health, 12.5), "Subsequent fire damage consumes the real target modifier")
@@ -97,6 +106,7 @@ func _test_celtie() -> void:
 	sim._pinball_combo = 40
 	var base: float = sim.run.hero_skill_parameters()["damage"]
 	_check(sim.try_hero_skill(), "Celtie casts with a real existing pinball combo")
+	_advance(sim, 25)
 	_check(is_equal_approx(10000.0 - front.health, base * 1.2) and is_equal_approx(10000.0 - back.health, base * 1.2) and side.health == 10000.0, "Both opposite arcs use the combo bonus and exclude perpendicular space")
 	_check(sim.hero_skill_snapshot()["combo"] == 40 and is_equal_approx(float(sim.hero_skill_snapshot()["combo_bonus"]), 0.2), "The cooldown snapshot locks the actual combo used for this cast")
 	var capped: CombatSim = _sim("celtie")
@@ -110,11 +120,14 @@ func _test_hanabi() -> void:
 	var run_rng: int = sim.run.rng.state
 	_check(sim.try_hero_skill(), "Hanabi casts five independently moving bombs")
 	var effect: Dictionary = sim.hero_effects_snapshot()
-	_check(effect["active_bombs"] == 5 and effect["explosions"] == 0 and target.health == 10000.0 and sim.skill_hits == 0, "Casting cannot apply an invisible instant line or pre-impact damage")
+	_check(effect["reserved_bombs"] == 5 and effect["active_bombs"] == 0 and effect["explosions"] == 0 and target.health == 10000.0 and sim.skill_hits == 0, "Casting cannot apply an invisible instant line or pre-impact damage")
+	_advance(sim, 55)
+	effect = sim.hero_effects_snapshot()
+	_check(effect["active_bombs"] == 5 and effect["reserved_bombs"] == 0, "Five reserved deliveries launch only after the original action wait has elapsed")
 	var positions: Dictionary = {}
 	for bomb: Dictionary in effect["bombs"]:
 		positions[bomb["position"]] = true
-		_check(bomb["life"] == 1.2 and bomb["velocity"].length() > 0.0, "Every actual bomb owns its own lifetime and motion")
+		_check(is_equal_approx(float(bomb["life"]), 1.2) and bomb["velocity"].length() > 0.0, "Every actual bomb owns its own lifetime and motion")
 	_check(positions.size() == 5, "The five bomb trajectories have distinct initial positions")
 	var saved: Dictionary = sim.hero_effects_snapshot()
 	effect["bombs"][0]["position"] = Vector2.INF
@@ -128,11 +141,13 @@ func _test_hanabi() -> void:
 	var sweep: CombatSim = _sim("hanabi")
 	var swept: CombatSim.Enemy = _target(sweep, Vector2(140, 0))
 	_check(sweep.try_hero_skill(), "The large-step sweep fixture uses a real cast")
+	_advance(sweep, 55)
 	sweep.step(0.7, Vector2.ZERO)
 	_check(swept.health < 10000.0, "A long but valid physics interval cannot tunnel bombs through a target")
 	var wall: CombatSim = _sim("hanabi")
 	wall.obstacles.configure([{"id": "test_wall", "center": wall.player_position + Vector2(80, 0), "radius": 32.0}])
 	_check(wall.try_hero_skill(), "The solid-obstacle fixture uses a real cast")
+	_advance(wall, 55)
 	wall.step(0.5, Vector2.ZERO)
 	_check(wall.hero_effects_snapshot()["explosions"] > 0, "Bombs detonate on the real ground collision system")
 
@@ -142,13 +157,13 @@ func _test_pool_and_clear() -> void:
 	for cast: int in 4:
 		_check(runtime.spawn_bombs(parameters, Vector2(640, 360), Vector2.RIGHT), "The bounded pool admits exactly four complete five-bomb casts")
 	var before: Dictionary = runtime.snapshot()
-	_check(not runtime.spawn_bombs(parameters, Vector2.ZERO, Vector2.RIGHT) and runtime.snapshot() == before and before["active_bombs"] == HeroSkillRuntime.BOMB_LIMIT, "An exhausted pool rejects a complete cast transaction without overwriting live bombs")
+	_check(not runtime.spawn_bombs(parameters, Vector2.ZERO, Vector2.RIGHT) and runtime.snapshot() == before and before["reserved_bombs"] == HeroSkillRuntime.BOMB_LIMIT, "An exhausted pool rejects a complete cast transaction without overwriting live bombs")
 	runtime.clear()
 	_check(runtime.snapshot()["active_bombs"] == 0 and runtime.bombs.size() == HeroSkillRuntime.BOMB_LIMIT, "Clearing reuses the fixed pool instead of reallocating active entities")
 	var sim: CombatSim = _sim("hanabi")
 	_check(sim.try_hero_skill(), "Lifecycle fixture starts a live delivery")
 	sim._finish(false, "fixture")
-	_check(sim.hero_effects_snapshot()["active_bombs"] == 0, "Terminal combat clears pending physical skill deliveries")
+	_check(sim.hero_effects_snapshot()["active_bombs"] == 0 and sim.hero_effects_snapshot()["reserved_bombs"] == 0, "Terminal combat clears pending physical skill deliveries")
 	sim.begin(sim.run)
 	_check(sim.hero_effects_snapshot()["active_bombs"] == 0 and sim.hero_skill_snapshot()["uses"] == 0, "A new wave starts with no old bombs and a fresh R clock")
 

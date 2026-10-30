@@ -47,7 +47,7 @@ func _snapshot(state: RunState) -> Dictionary:
 
 func _test_main_characters() -> void:
 	var starters: Dictionary = {"alk": "bone", "clarisse": "ember", "celtie": "frost", "hanabi": "scatter"}
-	var shapes: Dictionary = {"alk": "circle", "clarisse": "circle", "celtie": "double_arc", "hanabi": "circle"}
+	var shapes: Dictionary = {"alk": "circle", "clarisse": "circle", "celtie": "rectangle", "hanabi": "circle"}
 	var damages: Dictionary = {"alk": 50.0, "clarisse": 60.0, "celtie": 35.0, "hanabi": 45.0}
 	var cooldowns: Dictionary = {"alk": 8.0, "clarisse": 12.0, "celtie": 7.0, "hanabi": 9.0}
 	_check(HeroCatalog.IDS.size() == 4 and HeroCatalog.normalize_id("missing") == "alk", "All four characters are available with a deterministic legacy fallback")

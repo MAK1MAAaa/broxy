@@ -60,7 +60,7 @@ func add_cast(id: String, origin: Vector2, direction: Vector2, radius: float, an
 	return true
 
 func add_hero_cast(parameters: Dictionary, origin: Vector2, direction: Vector2, animated: bool) -> bool:
-	if str(parameters.get("delivery", "instant")) == "bombs":
+	if str(parameters.get("delivery", "instant")) in ["bombs", "areas"]:
 		return false
 	var radius: float = _number(parameters.get("radius"), 0.0)
 	var shape: String = str(parameters.get("shape", ""))

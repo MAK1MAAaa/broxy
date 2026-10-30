@@ -201,3 +201,9 @@ reports/world-flipper-expansion/*.png
 reports/world-flipper-expansion/*.import
 reports/world-flipper-expansion/*-raw.json
 reports/world-flipper-expansion/*/
+
+reports/world-flipper-actions/*.log
+reports/world-flipper-actions/*.png
+reports/world-flipper-actions/*.import
+reports/world-flipper-actions/*-raw.json
+reports/world-flipper-actions/*/

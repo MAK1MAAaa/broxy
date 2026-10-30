@@ -91,7 +91,7 @@ func _test_manifest_provenance() -> void:
 func _test_current_map_geometry(assets: Dictionary, sources: Dictionary) -> void:
 	var expected_crop := Rect2i(1146, 772, 1280, 720)
 	_check(ArenaCatalog.WORLD_BOUNDS == Rect2(-1082, -535, 3444, 1800) and ArenaCatalog.art_rect() == Rect2(-1146, -767, 3780, 2192), "Runtime map art extends its top border without changing the playable world")
-	for id: String in ArenaCatalog.IDS:
+	for id: String in ArenaCatalog.LEGACY_IDS:
 		var asset: Dictionary = assets.get("arena_" + id, {})
 		var preview: Dictionary = assets.get("arena_" + id + "_preview", {})
 		var path: String = "assets/worldflipper/maps/%s.png" % id

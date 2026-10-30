@@ -36,8 +36,8 @@ func _near(a: Vector2, b: Vector2) -> bool:
 	return a.distance_to(b) < 0.003
 
 func _zone_center(arena: String) -> Vector2:
-	if arena == "reliquary":
-		return CombatSim.ARENA.get_center()
+	if (ArenaCatalog.definition(arena)["zones"] as Array).is_empty():
+		return ArenaCatalog.play_bounds(arena).get_center()
 	var zone: Dictionary = ArenaCatalog.definition(arena)["zones"][0]
 	return Vector2(float(zone["center"][0]), float(zone["center"][1]))
 

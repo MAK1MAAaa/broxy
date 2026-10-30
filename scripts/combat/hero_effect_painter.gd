@@ -33,6 +33,15 @@ static func geometry_snapshot(snapshot: Dictionary, flash: bool) -> Dictionary:
 			var extent: float = layer[0]
 			commands.append({"kind": "rect", "rect": Rect2(point - Vector2.ONE * extent, Vector2.ONE * extent * 2), "color": layer[1]})
 		commands.append(_line(point + Vector2(3, -6), point + Vector2(6, -9), CORE, 2.0))
+	var preparing: Array = snapshot.get("preparing_bombs", [])
+	for index: int in mini(LIMIT, preparing.size()):
+		var charge: Dictionary = preparing[index]
+		var point: Vector2 = charge["position"]
+		var progress: float = 1.0 - clampf(float(charge["remaining"]) / maxf(0.001, float(charge["total"])), 0.0, 1.0)
+		bounds.append(Rect2(point - Vector2.ONE * 6, Vector2.ONE * 12))
+		var diamond := PackedVector2Array([point + Vector2(0, -4), point + Vector2(4, 0), point + Vector2(0, 4), point + Vector2(-4, 0)])
+		for edge: int in 4:
+			commands.append(_line(diamond[edge], diamond[(edge + 1) % 4], Color(FIRE, 0.35 + progress * 0.5), 1.0))
 	var bursts: Array = snapshot.get("bursts", [])
 	for index: int in mini(LIMIT, bursts.size()):
 		var burst: Dictionary = bursts[index]
@@ -47,7 +56,7 @@ static func geometry_snapshot(snapshot: Dictionary, flash: bool) -> Dictionary:
 			var direction := Vector2.from_angle(float(ray) * TAU / 6.0)
 			var along: float = radius * (1.0 - fraction * 0.55)
 			commands.append(_line(point + direction * along * 0.65, point + direction * along, Color(CORE, fraction), 3.0))
-	return {"commands": commands, "bounds": bounds, "bomb_count": mini(LIMIT, bombs.size()), "burst_count": mini(LIMIT, bursts.size())}
+	return {"commands": commands, "bounds": bounds, "bomb_count": mini(LIMIT, bombs.size()), "burst_count": mini(LIMIT, bursts.size()), "preparing_count": mini(LIMIT, preparing.size())}
 
 static func _line(from: Vector2, to: Vector2, color: Color, width: float) -> Dictionary:
 	return {"kind": "line", "from": from, "to": to, "color": color, "width": width}

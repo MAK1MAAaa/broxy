@@ -45,13 +45,27 @@ func _run() -> void:
 		world.set_physics_process(false)
 		world.sim.sandbox = true
 		world.sim._cooldowns.fill(9999.0)
-		world.sim.player_position = Vector2(-500, 900)
+		var original_stage: bool = ArenaCatalog.ORIGINAL_STAGE_IDS.has(id)
+		world.sim.player_position = world.sim.obstacles.free_point(ArenaCatalog.play_bounds(id).get_center(), 16, 16) if original_stage else Vector2(-500, 900)
 		world._update_camera()
 		for index: int in 5:
 			var enemy: CombatSim.Enemy = world.sim.spawn_enemy(["chaser", "rusher", "tank", "caster", "boss"][index], world.sim.player_position + Vector2(-220 + index * 90, -90))
 			enemy.action_timer = 9999.0
 		for index: int in 2:
-			world.sim._drop_soul(world.sim.player_position + Vector2(100 + index * 25, 65), 1 if index == 0 else 3)
+			var point: Vector2 = world.sim.player_position + Vector2(100 + index * 25, 65)
+			if original_stage:
+				point = world.sim.obstacles.free_point(point)
+			world.sim._drop_soul(point, 1 if index == 0 else 3)
+		if original_stage:
+			var visible: Rect2 = world.camera_view()
+			var legal: bool = world.sim.obstacles.is_free(world.sim.player_position, 16, 16)
+			for enemy: CombatSim.Enemy in world.sim.enemies:
+				if enemy.active:
+					legal = legal and world.sim.obstacles.is_free(enemy.position, enemy.radius) and visible.has_point(enemy.position)
+			for soul: CombatSim.Soul in world.sim.souls:
+				if soul.active:
+					legal = legal and world.sim.obstacles.is_free(soul.position) and visible.has_point(soul.position)
+			_check(legal, "Every source-stage grounding fixture uses actual legal, visible actor and soul positions: " + id)
 		var before: String = _signature(world)
 		for repeat: int in 3:
 			world._grounding_painter.rebuild(world.sim, world.camera_view())

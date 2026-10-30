@@ -1,6 +1,7 @@
 extends SceneTree
 ## Real dash-to-ball transitions, swept damage, topology and useful world pickups.
 
+const STEP: float = 1.0 / 60.0
 var _checks: int = 0
 var _failures: int = 0
 
@@ -113,7 +114,21 @@ func _test_damage_and_order() -> void:
 		_check((enemy.health == 400.0 and sim.interactions.snapshot()["crates"][0]["active"]) if enemy_first else (enemy.health == 500.0 and not sim.interactions.snapshot()["crates"][0]["active"]), "Projectile comparison uses collider entry time across NPC and crate: " + str(enemy_first))
 	sim = _fixture([], _barrel())
 	sim.player_position = Vector2(700, 360)
-	_check(sim.try_hero_skill() and not sim.interactions.snapshot()["crates"][0]["active"], "The independent hero's real arc can break scenery")
+	enemy = _target(sim, Vector2(750, 420))
+	enemy.definition = enemy.definition.duplicate() as ContentDef
+	enemy.definition.speed = 0.0
+	enemy.action_timer = 9999.0
+	var hero_breaks: Array[bool] = []
+	sim.crate_hit.connect(func(_point: Vector2, broken: bool) -> void: hero_breaks.append(broken))
+	_check(sim.try_hero_skill() and sim.interactions.snapshot()["crates"][0]["active"] and enemy.health == 500.0, "Alk's real R reserves its shockwave without instant enemy or scenery damage")
+	var hero_damage: float = float(sim.hero_skill_snapshot()["damage"])
+	for frame: int in 43:
+		sim.step(STEP, Vector2.ZERO)
+	_check(sim.interactions.snapshot()["crates"][0]["active"] and enemy.health == 500.0 and hero_breaks.is_empty(), "The first 43 action units preserve both the barrel and the enemy")
+	sim.step(STEP, Vector2.ZERO)
+	_check(not sim.interactions.snapshot()["crates"][0]["active"] and sim.obstacles.is_free(Vector2(800, 360), 16.0), "Alk's actual action-unit-44 shockwave breaks scenery and opens its physical cell")
+	_check(is_equal_approx(enemy.health, 500.0 - hero_damage) and is_equal_approx(float(sim.damage_by_skill.get("hero_alk", 0.0)), hero_damage), "The same delayed R applies its real locked damage through hero skill accounting")
+	_check(hero_breaks == [true] and sim.run.kills == 0 and sim.run.xp == 0, "The delayed scenery break dispatches once and never invents a monster kill or XP")
 
 func _test_pickups() -> void:
 	var sim: CombatSim = _fixture()

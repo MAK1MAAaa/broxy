@@ -66,6 +66,10 @@ class Enemy:
 	var damage_scale: float = 1.0
 	var fire_vulnerability_left: float = 0.0
 	var fire_vulnerability: float = 0.0
+	var positive_conditions: Dictionary = {}
+	var positive_attack: float = 0.0
+	var positive_speed: float = 0.0
+	var positive_defense: float = 0.0
 
 class Shot:
 	var active: bool = false
@@ -173,6 +177,7 @@ var skill_hits: int = 0
 var _active_skill_clocks: Dictionary = {}
 var _hero_skill_clock: Dictionary = {}
 var hero_effects: HeroSkillRuntime = HeroSkillRuntime.new()
+var skill_timeline: SkillTimelineRuntime = SkillTimelineRuntime.new()
 var weapon_effects: WeaponEffectRuntime = WeaponEffectRuntime.new()
 var interactions: ArenaInteractions = ArenaInteractions.new()
 var _crate_indices: Dictionary = {}
@@ -227,7 +232,10 @@ func begin(state: RunState) -> void:
 	boss_interrupts = 0
 	weakpoints_broken = 0
 	weakpoint_damage = 0.0
+	obstacles.bounds = ArenaCatalog.play_bounds(run.arena_id)
 	interactions.configure(ArenaCatalog.definition(run.arena_id), run.rng.seed, run.wave, obstacles)
+	var walls_valid: bool = obstacles.configure_walls(ArenaCatalog.wall_geometry(run.arena_id))
+	assert(walls_valid, "Authored terrain walls must be valid")
 	_crate_indices.clear()
 	for crate: Dictionary in interactions.snapshot()["crates"]:
 		_crate_indices["crate:" + str(crate["id"])] = int(crate["index"])
@@ -247,7 +255,7 @@ func begin(state: RunState) -> void:
 	_route = RogueRules.route(run.active_route) if not _wave.boss_wave and run.active_route != "balanced" else {}
 	core_activations = {"frostfire": 0, "bone_chorus": 0}
 	hunter = null
-	player_position = obstacles.free_point(ARENA.get_center(), 16.0, 16.0)
+	player_position = obstacles.free_point(obstacles.bounds.get_center(), 16.0, 16.0)
 	dash_time_left = 0.0
 	dash_cooldown_left = 0.0
 	dash_cooldown_total = _current_dash_cooldown()
@@ -260,6 +268,7 @@ func begin(state: RunState) -> void:
 	_active_skill_clocks.clear()
 	_hero_skill_clock.clear()
 	hero_effects.clear()
+	skill_timeline.clear()
 	weapon_effects.begin(run)
 	damage_by_skill.clear()
 	skill_hits = 0
@@ -327,6 +336,8 @@ func step(delta: float, movement: Vector2, dash_pressed: bool = false, pulse_pre
 	_update_shots(delta)
 	if not complete:
 		_advance_hero_bombs(delta)
+	if not complete:
+		_advance_skill_timeline(delta)
 	_explosion_grid_active = false
 	if complete:
 		return
@@ -375,7 +386,8 @@ func _move_player(delta: float, movement: Vector2, dash_pressed: bool) -> void:
 		var dash_delta: float = minf(delta, dash_time_left)
 		player_velocity = dash_direction * DashRules.SPEED
 		var impact: Dictionary = obstacles.first_hit(player_position, player_velocity * dash_delta, 16.0, 16.0)
-		if not impact.is_empty() and str(impact.get("art_id", "")) == "bumper":
+		var source_wall: bool = ArenaCatalog.ORIGINAL_STAGE_IDS.has(run.arena_id) and str(impact.get("id", "")).begins_with("wall:")
+		if not impact.is_empty() and (str(impact.get("art_id", "")) == "bumper" or source_wall):
 			var used: float = dash_delta * clampf(float(impact["t"]), 0.0, 1.0)
 			var normal: Vector2 = impact["normal"]
 			player_position += player_velocity * used + normal * 0.1
@@ -666,6 +678,7 @@ func try_active_skill(slot: int, expected_uid: int = -1) -> bool:
 	if parameters.is_empty():
 		return false
 	parameters["damage"] = float(parameters.get("damage", 0.0)) * hero_effects.attack_multiplier()
+	parameters["damage"] *= hero_effects.skill_multiplier(str(parameters.get("element", "")))
 	var direction: Vector2 = _skill_direction()
 	var origin: Vector2 = _starfall_origin(direction) if item["id"] == "starfall" else player_position
 	_active_skill_clocks[uid] = {"remaining": parameters["cooldown"], "duration": parameters["cooldown"],
@@ -697,9 +710,21 @@ func try_hero_skill(expected_hero: String = "") -> bool:
 	if parameters.get("origin_mode", "player") == "nearest":
 		origin = _nearest_skill_origin(direction, float(parameters.get("target_range", 400.0)))
 	elif parameters.get("origin_mode", "player") == "forward":
-		origin = clamp_point(player_position + direction * float(parameters.get("forward_distance", 160.0)))
-	if parameters.get("delivery", "instant") == "bombs" and not hero_effects.spawn_bombs(parameters, origin, direction):
+		origin = _clamp_skill_origin(player_position + direction * float(parameters.get("forward_distance", 160.0)))
+	if parameters.get("delivery", "instant") == "bombs":
+		if not hero_effects.can_spawn_parameters(parameters, origin, direction):
+			return false
+		var count: int = int(parameters.get("projectiles", 5))
+		var impacts: Array[SkillTimelineRuntime.Area] = skill_timeline.reserve_impacts(parameters, origin, direction, count)
+		if impacts.size() != count:
+			return false
+		if not hero_effects.spawn_bombs(parameters, origin, direction, impacts):
+			skill_timeline.cancel(impacts)
+			return false
+	if parameters.get("delivery", "instant") == "areas" and not skill_timeline.enqueue(parameters, origin, direction):
 		return false
+	hero_effects.set_attack_buff(float(parameters.get("attack_bonus", 0.0)), float(parameters.get("buff_seconds", 0.0)))
+	hero_effects.set_skill_buff(float(parameters.get("skill_bonus", 0.0)), float(parameters.get("skill_buff_seconds", 0.0)), str(parameters.get("buff_element", "")))
 	_hero_skill_clock = {"hero_id": run.hero_id, "remaining": parameters["cooldown"], "duration": parameters["cooldown"],
 		"uses": int(_hero_skill_clock.get("uses", 0)) + 1, "parameters": parameters}
 	var affected: int = _cast_hero_delivery(origin, direction, parameters)
@@ -713,8 +738,14 @@ func _next_hero_skill_parameters() -> Dictionary:
 		return {}
 	var static_haste: float = run.stat("skill_haste")
 	parameters["cooldown"] = float(parameters["cooldown"]) * (1.0 + static_haste) / (1.0 + static_haste + weapon_effects.haste_bonus())
-	parameters["damage"] = float(parameters.get("damage", 0.0)) * hero_effects.attack_multiplier()
-	if parameters.get("shape", "") == "double_arc":
+	var attack: float = hero_effects.attack_multiplier()
+	if float(parameters.get("attack_bonus", 0.0)) > 0.0:
+		attack = maxf(attack, 1.0 + float(parameters["attack_bonus"]))
+	var skill_power: float = hero_effects.skill_multiplier(str(parameters.get("element", "")))
+	if parameters.get("element", "") == parameters.get("buff_element", ""):
+		skill_power = maxf(skill_power, 1.0 + float(parameters.get("skill_bonus", 0.0)))
+	parameters["damage"] = float(parameters.get("damage", 0.0)) * attack * skill_power
+	if float(parameters.get("combo_per_hit", 0.0)) > 0.0:
 		var combo_bonus: float = minf(float(parameters.get("combo_bonus_cap", 0.5)), float(_pinball_combo) * float(parameters.get("combo_per_hit", 0.005)))
 		parameters["damage"] *= 1.0 + maxf(0.0, combo_bonus)
 		parameters["combo"] = _pinball_combo
@@ -734,16 +765,19 @@ func hero_skill_snapshot() -> Dictionary:
 	return result
 
 func hero_effects_snapshot() -> Dictionary:
-	return hero_effects.snapshot()
+	var value: Dictionary = hero_effects.snapshot()
+	value["timeline"] = skill_timeline.snapshot()
+	return value
 
 func clear_hero_effects() -> void:
 	hero_effects.clear()
+	skill_timeline.clear()
 	for enemy: Enemy in enemies:
 		enemy.fire_vulnerability_left = 0.0
 		enemy.fire_vulnerability = 0.0
 
 func _cast_hero_delivery(origin: Vector2, direction: Vector2, parameters: Dictionary) -> int:
-	if parameters.get("delivery", "instant") == "bombs":
+	if parameters.get("delivery", "instant") in ["bombs", "areas"]:
 		return 0
 	var hits: int = clampi(int(parameters.get("hits", 1)), 1, 12)
 	var part: Dictionary = parameters.duplicate(true)
@@ -769,7 +803,16 @@ func _advance_hero_bombs(delta: float) -> void:
 			return
 		if not bomb.active:
 			continue
-		var travel_time: float = minf(delta, bomb.life)
+		var travel_delta: float = delta
+		if bomb.delay > 0.0:
+			bomb.position = player_position + bomb.velocity.normalized() * 18.0
+			bomb.previous = bomb.position
+			travel_delta = maxf(0.0, delta - bomb.delay)
+			bomb.delay = maxf(0.0, bomb.delay - delta)
+			if bomb.delay > 0.0000001:
+				continue
+			bomb.delay = 0.0
+		var travel_time: float = minf(travel_delta, bomb.life)
 		bomb.previous = bomb.position
 		var destination: Vector2 = bomb.position + bomb.velocity * travel_time
 		var obstacle: Dictionary = obstacles.first_hit(bomb.position, destination - bomb.position, bomb.collision_radius)
@@ -783,12 +826,95 @@ func _advance_hero_bombs(delta: float) -> void:
 		if not point.is_empty():
 			nearest = minf(nearest, float(point["t"]))
 		bomb.position = bomb.position.lerp(destination, nearest) if is_finite(nearest) else destination
-		bomb.life = maxf(0.0, bomb.life - delta)
+		bomb.life = maxf(0.0, bomb.life - travel_delta)
 		if is_finite(nearest) or bomb.life <= 0.0:
 			var blast: Dictionary = {"id": bomb.source, "shape": "circle", "radius": bomb.blast_radius,
 				"damage": bomb.damage, "element": bomb.element}
-			hero_effects.detonate(bomb)
-			_cast_damage_skill(bomb.position, bomb.velocity.normalized(), blast)
+			var offset: float = delta - travel_delta + travel_time * (nearest if is_finite(nearest) else 1.0)
+			hero_effects.detonate(bomb, maxf(0.0, delta - offset))
+			if bomb.impact_area != null:
+				skill_timeline.activate_impact(bomb.impact_area, bomb.position, offset)
+				bomb.impact_area = null
+			else:
+				_cast_damage_skill(bomb.position, bomb.velocity.normalized(), blast)
+
+func _advance_skill_timeline(delta: float) -> void:
+	skill_timeline.advance(delta, player_position)
+	var weakness_expiries: Dictionary = {}
+	for area: SkillTimelineRuntime.Area in skill_timeline.areas:
+		if complete:
+			return
+		if not skill_timeline.can_contact(area):
+			continue
+		var area_serial: int = area.serial
+		var parameters: Dictionary = area.parameters
+		var damage: float = float(parameters.get("damage", 0.0))
+		var source: String = "skill:" + str(parameters["id"])
+		var element: String = str(parameters.get("element", ""))
+		var weakness: float = clampf(float(parameters.get("fire_vulnerability", 0.0)), 0.0, 1.0)
+		var weakness_seconds: float = clampf(float(parameters.get("vulnerability_seconds", 0.0)), 0.0, 30.0)
+		for enemy: Enemy in enemies:
+			if complete or not area.occupied or area.serial != area_serial:
+				break
+			if not enemy.active or enemy.health <= 0.0:
+				continue
+			var target_uid: int = enemy.uid
+			var key: String = "enemy:%d" % target_uid
+			if not skill_contains(parameters, area.origin, area.direction, enemy.position):
+				skill_timeline.separate(area, key)
+				continue
+			var hits: int = skill_timeline.claim_hits(area, key)
+			if hits > 0 and area.purpose == "dispel":
+				dispel_enemy_condition(enemy)
+				continue
+			var next_contact: float = float(area.next_contacts.get(key, 0.0))
+			for index: int in hits:
+				if complete or not area.occupied or area.serial != area_serial or not enemy.active or enemy.uid != target_uid:
+					break
+				var contact_time: float = elapsed - area.age + next_contact - float(hits - index) * area.interval
+				apply_damage(enemy, damage, source, false, 0.0, element)
+				if not complete and enemy.active and enemy.uid == target_uid and area.occupied and area.serial == area_serial and weakness > 0.0:
+					enemy.fire_vulnerability = weakness
+					enemy.fire_vulnerability_left = weakness_seconds
+					weakness_expiries[target_uid] = {"enemy": enemy, "expiry": contact_time + weakness_seconds}
+		if complete or not area.occupied or area.serial != area_serial or area.purpose != "damage":
+			continue
+		for point: Dictionary in boss_weakpoints():
+			if complete or not area.occupied or area.serial != area_serial:
+				break
+			var key: String = "point:%d:%d" % [boss_encounter.snapshot()["cast_id"], point["uid"]]
+			if skill_contains(parameters, area.origin, area.direction, point["position"]):
+				for hit: int in skill_timeline.claim_hits(area, key):
+					if complete or not area.occupied or area.serial != area_serial:
+						break
+					_damage_boss_weakpoint(point, damage)
+			else:
+				skill_timeline.separate(area, key)
+		if complete or not area.occupied or area.serial != area_serial:
+			continue
+		var reach: float = float(parameters.get("radius", 0.0)) + float(parameters.get("width", 0.0)) * 0.5
+		for crate: Dictionary in interactions.damage_candidates(area.origin, reach):
+			if complete or not area.occupied or area.serial != area_serial:
+				break
+			var key: String = "crate:%d" % crate["index"]
+			if skill_contains(parameters, area.origin, area.direction, crate["position"]):
+				for hit: int in skill_timeline.claim_hits(area, key):
+					if complete or not area.occupied or area.serial != area_serial:
+						break
+					_damage_crate(int(crate["index"]), damage)
+			else:
+				skill_timeline.separate(area, key)
+	for target_uid: int in weakness_expiries:
+		var entry: Dictionary = weakness_expiries[target_uid]
+		var target: Enemy = entry["enemy"]
+		if target.active and target.uid == target_uid and target.fire_vulnerability_left > 0.0:
+			target.fire_vulnerability_left = _skill_timer_after(float(entry["expiry"]), elapsed)
+			if target.fire_vulnerability_left <= 0.0:
+				target.fire_vulnerability = 0.0
+	skill_timeline.finish_step()
+
+func _clamp_skill_origin(point: Vector2) -> Vector2:
+	return Vector2(clampf(point.x, obstacles.bounds.position.x, obstacles.bounds.end.x), clampf(point.y, obstacles.bounds.position.y, obstacles.bounds.end.y))
 
 func _starfall_origin(direction: Vector2) -> Vector2:
 	return _nearest_skill_origin(direction, 320.0)
@@ -806,7 +932,7 @@ func _nearest_skill_origin(direction: Vector2, target_range: float) -> Vector2:
 		if candidate <= distance_squared and (closest == null or candidate < distance_squared):
 			closest = enemy
 			distance_squared = candidate
-	return closest.position if closest != null else clamp_point(player_position + direction * 140.0)
+	return closest.position if closest != null else _clamp_skill_origin(player_position + direction * 140.0)
 
 func _cast_pulse(origin: Vector2, fallback: Vector2, parameters: Dictionary) -> int:
 	last_pulse_radius = float(parameters["radius"])
@@ -863,6 +989,8 @@ static func skill_contains(parameters: Dictionary, origin: Vector2, direction: V
 	var offset: Vector2 = point - origin
 	var radius: float = float(parameters.get("radius", 0.0))
 	var shape: String = str(parameters.get("shape", "arc" if parameters.get("id", "") == "arc_slash" else "circle"))
+	if shape == "rectangle":
+		return absf(direction.dot(offset)) <= float(parameters.get("half_length", 0.0)) and absf(direction.cross(offset)) <= float(parameters.get("width", 0.0)) * 0.5
 	if shape == "line":
 		var along: float = direction.dot(offset)
 		return along >= 0.0 and along <= radius and absf(direction.cross(offset)) <= float(parameters.get("width", 70.0)) * 0.5
@@ -894,6 +1022,7 @@ func active_skill_snapshot(slot: int) -> Dictionary:
 	if next_parameters.is_empty():
 		return result
 	next_parameters["damage"] = float(next_parameters.get("damage", 0.0)) * hero_effects.attack_multiplier()
+	next_parameters["damage"] *= hero_effects.skill_multiplier(str(next_parameters.get("element", "")))
 	var uid: int = int(item["uid"])
 	var clock: Dictionary = _active_skill_clocks.get(uid, {})
 	var remaining: float = float(clock.get("remaining", 0.0))
@@ -957,13 +1086,17 @@ func spawn_enemy(id: String, position: Vector2 = Vector2.INF, deterministic_time
 	enemy.damage_scale = 1.0
 	enemy.fire_vulnerability_left = 0.0
 	enemy.fire_vulnerability = 0.0
+	enemy.positive_conditions.clear()
+	enemy.positive_attack = 0.0
+	enemy.positive_speed = 0.0
+	enemy.positive_defense = 0.0
 	enemy_count += 1
 	return enemy
 
 func _edge_position(body_radius: float = 42.0) -> Vector2:
-	var view: Rect2 = ArenaCatalog.visible_rect(player_position)
+	var view: Rect2 = ArenaCatalog.visible_rect_for(run.arena_id, player_position)
 	var ring: Rect2 = view.grow(SPAWN_MARGIN)
-	var bounds: Rect2 = ARENA.grow(-SPAWN_INSET)
+	var bounds: Rect2 = obstacles.bounds.grow(-SPAWN_INSET)
 	var low: Vector2 = ring.position.max(bounds.position)
 	var high: Vector2 = ring.end.min(bounds.end)
 	var segments: Array[Rect2] = []
@@ -1015,6 +1148,40 @@ func _spawn_wave_group() -> void:
 				break
 		spawn_enemy(selected)
 
+func grant_enemy_condition(enemy: Enemy, kind: String, amount: float, seconds: float) -> bool:
+	if complete or enemy == null or not enemy.active or enemy.health <= 0.0 or enemy.slot < 0 or enemy.slot >= enemies.size() or enemies[enemy.slot] != enemy:
+		return false
+	if kind not in ["attack", "speed", "defense"] or not is_finite(amount) or not is_finite(seconds) or amount <= 0.0 or seconds <= 0.0:
+		return false
+	enemy.positive_conditions[kind] = {"amount": minf(amount, 0.8 if kind == "defense" else 2.0), "remaining": minf(seconds, 30.0)}
+	_refresh_enemy_conditions(enemy)
+	return true
+
+func dispel_enemy_condition(enemy: Enemy) -> bool:
+	if complete or enemy == null or not enemy.active or enemy.health <= 0.0 or enemy.slot < 0 or enemy.slot >= enemies.size() or enemies[enemy.slot] != enemy or enemy.positive_conditions.is_empty():
+		return false
+	var first: String = str(enemy.positive_conditions.keys()[0])
+	enemy.positive_conditions.erase(first)
+	_refresh_enemy_conditions(enemy)
+	add_effect(enemy.position, Color("b6e7df"), enemy.radius + 8.0, 0.22, 1)
+	return true
+
+func _advance_enemy_conditions(enemy: Enemy, delta: float) -> void:
+	var changed: bool = false
+	for kind: String in enemy.positive_conditions.keys():
+		var value: Dictionary = enemy.positive_conditions[kind]
+		value["remaining"] = maxf(0.0, float(value["remaining"]) - delta)
+		if float(value["remaining"]) <= 0.0000001:
+			enemy.positive_conditions.erase(kind)
+			changed = true
+	if changed:
+		_refresh_enemy_conditions(enemy)
+
+func _refresh_enemy_conditions(enemy: Enemy) -> void:
+	enemy.positive_attack = float((enemy.positive_conditions.get("attack", {}) as Dictionary).get("amount", 0.0))
+	enemy.positive_speed = float((enemy.positive_conditions.get("speed", {}) as Dictionary).get("amount", 0.0))
+	enemy.positive_defense = float((enemy.positive_conditions.get("defense", {}) as Dictionary).get("amount", 0.0))
+
 func _update_enemies(delta: float) -> void:
 	for enemy: Enemy in enemies:
 		if complete:
@@ -1031,6 +1198,8 @@ func _update_enemies(delta: float) -> void:
 		enemy.action_timer -= delta
 		enemy.hurt_timer = maxf(0.0, enemy.hurt_timer - delta)
 		enemy.slow_timer = maxf(0.0, enemy.slow_timer - delta)
+		if not enemy.positive_conditions.is_empty():
+			_advance_enemy_conditions(enemy, delta)
 		if enemy.fire_vulnerability_left > 0.0:
 			enemy.fire_vulnerability_left = _skill_timer_after(enemy.fire_vulnerability_left, delta)
 			if enemy.fire_vulnerability_left <= 0.0:
@@ -1069,11 +1238,12 @@ func _update_enemies(delta: float) -> void:
 				enemy.mode = 1
 			if enemy.action_timer <= 0.0:
 				var aim: Vector2 = (player_position - enemy.position).normalized()
-				_hostile_shot(enemy.position, aim * enemy.definition.projectile_speed, enemy.definition.damage, id)
+				_hostile_shot(enemy.position, aim * enemy.definition.projectile_speed, enemy.definition.damage * (1.0 + enemy.positive_attack), id)
 				enemy.action_timer = enemy.definition.cooldown
 				enemy.mode = 0
 		if id != "boss":
 			var charging: bool = id == "rusher" and speed == 330.0
+			speed *= 1.0 + enemy.positive_speed
 			if enemy.hunter:
 				speed *= RogueRules.HUNTER_SPEED_FACTOR
 			if enemy.pulse_hinder_timer > 0.0 and not enemy.hunter:
@@ -1102,7 +1272,7 @@ func _update_enemies(delta: float) -> void:
 				# Retreat/charge movement can point away from the player; recoil is radial.
 				var recoil_direction: Vector2 = (contact_origin - player_position).normalized()
 				enemy.position = obstacles.move_body(contact_origin, recoil_direction * 18.0, enemy.radius)
-			_hurt_player(enemy.definition.damage * enemy.damage_scale * (1.0 + 0.09 * float(run.wave - 1)), id, "contact", contact_origin)
+			_hurt_player(enemy.definition.damage * enemy.damage_scale * (1.0 + enemy.positive_attack) * (1.0 + 0.09 * float(run.wave - 1)), id, "contact", contact_origin)
 
 func _update_boss(enemy: Enemy, _direction: Vector2, delta: float) -> void:
 	if enemy == boss and bool(boss_encounter.snapshot()["hold_position"]):
@@ -1111,6 +1281,7 @@ func _update_boss(enemy: Enemy, _direction: Vector2, delta: float) -> void:
 	var target: Vector2 = clamp_point(player_position + Vector2(0, -45) + Vector2(sin(enemy.age * 0.35) * 220.0, cos(enemy.age * 0.25) * 100.0), enemy.radius)
 	var waypoint: Vector2 = obstacles.next_target(enemy.position, target, enemy.radius, enemy.uid)
 	var speed: float = enemy.definition.speed * (enemy.slow_factor if enemy.slow_timer > 0.0 else 1.0)
+	speed *= 1.0 + enemy.positive_speed
 	speed *= ArenaCatalog.movement_multiplier(run.arena_id, enemy.position)
 	var displacement: Vector2 = (waypoint - enemy.position).limit_length(speed * delta)
 	enemy.velocity = displacement / delta if delta > 0.0 else Vector2.ZERO
@@ -1687,9 +1858,11 @@ static func clamp_point(point: Vector2, inset: float = 0.0) -> Vector2:
 	return Vector2(clampf(point.x, bounds.position.x, bounds.end.x), clampf(point.y, bounds.position.y, bounds.end.y))
 
 func apply_damage(enemy: Enemy, amount: float, source: String, secondary: bool = false, slow: float = 0.0, element: String = "") -> void:
-	if complete or not enemy.active:
+	if complete or enemy == null or not enemy.active:
 		return
+	var target_uid: int = enemy.uid
 	var multiplier: float = float(boss_encounter.snapshot()["damage_multiplier"]) if enemy == boss else 1.0
+	multiplier *= 1.0 - enemy.positive_defense
 	if enemy.fire_vulnerability_left > 0.0:
 		if element.is_empty():
 			var weapon: ContentDef = GameCatalog.weapon(source)
@@ -1716,8 +1889,12 @@ func apply_damage(enemy: Enemy, amount: float, source: String, secondary: bool =
 			secondary_hits += 1
 		else:
 			primary_hits += 1
-	damage_dealt.emit(enemy.position, actual, source, secondary, enemy.uid)
+	damage_dealt.emit(enemy.position, actual, source, secondary, target_uid)
+	if complete or not enemy.active or enemy.uid != target_uid:
+		return
 	enemy_hit.emit()
+	if complete or not enemy.active or enemy.uid != target_uid:
+		return
 	if enemy.health <= 0.0:
 		_kill_enemy(enemy)
 
@@ -1767,6 +1944,8 @@ func _explosion_slots(position: Vector2, radius: float = RuneRules.BLAST_RADIUS)
 	return slots
 
 func _kill_enemy(enemy: Enemy) -> void:
+	if enemy == null or not enemy.active:
+		return
 	_explosion_region_slots.clear()
 	enemy.active = false
 	obstacles.forget_agent(enemy.uid)
@@ -1920,6 +2099,14 @@ func _finish(won: bool, reason: String) -> void:
 	end_reason = reason
 	ended.emit(won, reason)
 
+func enemy_conditions_snapshot() -> Array[Dictionary]:
+	var value: Array[Dictionary] = []
+	for enemy: Enemy in enemies:
+		if enemy.active and not enemy.positive_conditions.is_empty():
+			value.append({"uid": enemy.uid, "conditions": enemy.positive_conditions.duplicate(true),
+				"attack": enemy.positive_attack, "speed": enemy.positive_speed, "defense": enemy.positive_defense})
+	return value
+
 func snapshot() -> Dictionary:
 	return {
 		"health": run.health, "max_health": run.stat("max_health"), "wave": run.wave,
@@ -1931,6 +2118,7 @@ func snapshot() -> Dictionary:
 		"skills": active_skill_snapshots(),
 		"hero_skill": hero_skill_snapshot(),
 		"hero_effects": hero_effects_snapshot(),
+		"enemy_conditions": enemy_conditions_snapshot(),
 		"weapon_effects": weapon_effects.snapshot(),
 		"pinball": pinball_snapshot(),
 		"boss_encounter": boss_encounter_snapshot(),

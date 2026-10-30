@@ -1103,5 +1103,122 @@
         "art_id": "bumper"
       }
     ]
+  },
+  {
+    "id": "jp_sand_2_9_5",
+    "name": "沙漠遗迹 2-9-5",
+    "texture": "res://assets/worldflipper/stages/jp_sand_2_9_5.png",
+    "preview_color": "9b9066",
+    "terrain_name": "",
+    "move_multiplier": 1.0,
+    "legacy_zone_count": 0,
+    "zones": [],
+    "obstacles": [],
+    "crates": [],
+    "stage": {
+      "layout_id": "main_2_9_5",
+      "demo_layout_id": "main_2_9_5",
+      "field_id": "sand_ruins",
+      "layer_index": 0,
+      "source_id": "terrain_main_chapter_02_09_05",
+      "logic_scale": 0.6666666666666666,
+      "logic_offset": [
+        96.0,
+        -275.0
+      ],
+      "native_bounds": [
+        46,
+        0,
+        180,
+        320
+      ],
+      "play_bounds": [
+        280.0,
+        -275.0,
+        720,
+        1280
+      ],
+      "wall_segment_count": 3,
+      "source_label": "main_2_9_5",
+      "unresolved_prop_count": 4
+    }
+  },
+  {
+    "id": "jp_shrine_6_6_2",
+    "name": "竹林神社 6-6-2",
+    "texture": "res://assets/worldflipper/stages/jp_shrine_6_6_2.png",
+    "preview_color": "7c9c78",
+    "terrain_name": "",
+    "move_multiplier": 1.0,
+    "legacy_zone_count": 0,
+    "zones": [],
+    "obstacles": [],
+    "crates": [],
+    "stage": {
+      "layout_id": "main_6_6_2",
+      "demo_layout_id": "main_6_6_2",
+      "field_id": "japan_shrine",
+      "layer_index": 0,
+      "source_id": "terrain_main_chapter_06_06_02",
+      "logic_scale": 0.6666666666666666,
+      "logic_offset": [
+        96.0,
+        -275.0
+      ],
+      "native_bounds": [
+        46,
+        0,
+        180,
+        320
+      ],
+      "play_bounds": [
+        280.0,
+        -275.0,
+        720,
+        1280
+      ],
+      "wall_segment_count": 6,
+      "source_label": "main_6_6_2",
+      "unresolved_prop_count": 4
+    }
+  },
+  {
+    "id": "jp_ship_3_6_2",
+    "name": "海盗船 3-6-2",
+    "texture": "res://assets/worldflipper/stages/jp_ship_3_6_2.png",
+    "preview_color": "729799",
+    "terrain_name": "",
+    "move_multiplier": 1.0,
+    "legacy_zone_count": 0,
+    "zones": [],
+    "obstacles": [],
+    "crates": [],
+    "stage": {
+      "layout_id": "main_3_6_2",
+      "demo_layout_id": "main_3_6_2_trial",
+      "field_id": "sea_ship_boss",
+      "layer_index": 0,
+      "source_id": "terrain_main_chapter_03_06_02-trial",
+      "logic_scale": 0.6666666666666666,
+      "logic_offset": [
+        96.0,
+        -811.0
+      ],
+      "native_bounds": [
+        46,
+        134,
+        180,
+        320
+      ],
+      "play_bounds": [
+        280.0,
+        -275.0,
+        720,
+        1280
+      ],
+      "wall_segment_count": 8,
+      "source_label": "main_3_6_2",
+      "unresolved_prop_count": 17
+    }
   }
 ]

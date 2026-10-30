@@ -87,7 +87,11 @@ func _preview() -> void:
 			push_error("The expansion fixture cannot queue the real selected R skill")
 			await app._quit_game(1)
 			return
-		var frames: int = 12 if hero_id == "hanabi" else 7
+		var parameters: Dictionary = sim.run.hero_skill_parameters()
+		var delay: float = float(parameters.get("cast_delay", 0.0))
+		if parameters.get("timeline") is Array and not parameters["timeline"].is_empty():
+			delay = float(parameters["timeline"][0]["delay"])
+		var frames: int = ceili(delay / STEP) + (12 if hero_id == "hanabi" else 7)
 		for frame: int in frames:
 			world._physics_process(STEP)
 		if view == "bomb-burst":

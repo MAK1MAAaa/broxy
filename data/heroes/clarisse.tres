@@ -13,9 +13,10 @@ portrait_path = "res://assets/worldflipper/portraits/clarisse.png"
 frame_size = 128
 foot_anchor = Vector2(64, 125)
 base_bonuses = {"damage": 0.06}
-main_skill = {"id": "hero_clarisse", "name": "炼金爆发", "element": "fire", "shape": "circle", "delivery": "multihit", "visual_family": "alchemy", "origin_mode": "forward", "forward_distance": 160.0, "radius": 140.0, "damage": 60.0, "cooldown": 12.0, "hits": 12, "fire_vulnerability": 0.25, "vulnerability_seconds": 4.0}
+main_skill = {"id": "hero_clarisse", "name": "炼金爆发", "element": "fire", "shape": "circle", "delivery": "areas", "visual_family": "alchemy", "origin_mode": "forward", "forward_distance": 160.0, "radius": 140.0, "damage": 60.0, "cooldown": 12.0, "hits": 15, "fire_vulnerability": 0.25, "vulnerability_seconds": 4.0, "skill_bonus": 0.25, "skill_buff_seconds": 5.0, "buff_element": "fire", "timeline": [{"delay": 0.7, "duration": 0.26666666666666666, "hits": 4, "damage_weight": 0.15, "shape": "circle", "radius": 140.0}, {"delay": 0.7, "duration": 1.7333333333333334, "hits": 1, "damage_weight": 0.0, "purpose": "dispel", "shape": "circle", "radius": 140.0}, {"delay": 1.3166666666666667, "duration": 1.1166666666666667, "hits": 11, "damage_weight": 0.85, "shape": "circle", "radius": 140.0}]}
+action_evidence = {"catalog_skill_id": "clarisse:2", "action_ref": "battle/action/skill/action/rare5/clarisse$clarisse_2", "git_blob_sha1": "0a2e0b3a835ccef7db5944714512d803d8ebdc2c", "source_commit": "1d45b529ef078ba9b1f876d4588debd0c8a9a214", "time_adaptation": "one original action unit = 1/60 project seconds; not a verified original FPS", "geometry_adaptation": "uniform scale chosen per skill for free movement; no original area size claim"}
 source_id = "111003"
 source_skill_name = "炼金爆发"
 source_skill_weight = 430
 source_url = "https://wiki.biligame.com/worldflipper/克拉莉丝"
-adaptation_notes = "前方十二段爆炸与火属性易伤已适配；当前敌人没有强化状态，原作驱散未实现。伤害、冷却和易伤时长为本作数值，不是原作能量或倍率。"
+adaptation_notes = "最终日服动作分为4击与11击两段持续爆区；命中后火易伤、独立单次驱散区及火属性技伤增益按自由移动适配。伤害、时间映射、范围与冷却为本作数值，不是原作能量或倍率。"

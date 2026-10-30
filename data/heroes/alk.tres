@@ -13,7 +13,8 @@ portrait_path = "res://assets/worldflipper/portraits/alk.png"
 frame_size = 96
 foot_anchor = Vector2(48, 93)
 base_bonuses = {}
-main_skill = {"id": "hero_alk", "name": "粉碎流星", "element": "fire", "shape": "circle", "delivery": "instant", "visual_family": "shockwave", "origin_mode": "player", "radius": 180.0, "damage": 50.0, "cooldown": 8.0, "attack_bonus": 0.2, "buff_seconds": 5.0}
+main_skill = {"id": "hero_alk", "name": "粉碎流星", "element": "fire", "shape": "circle", "delivery": "areas", "visual_family": "shockwave", "origin_mode": "player", "radius": 180.0, "damage": 50.0, "cooldown": 8.0, "attack_bonus": 0.2, "buff_seconds": 5.0, "timeline": [{"delay": 0.7333333333333333, "duration": 0.3333333333333333, "hits": 1, "damage_weight": 1.0, "shape": "circle", "radius": 180.0, "anchor": "caster_at_activation"}]}
+action_evidence = {"catalog_skill_id": "alk:2", "action_ref": "battle/action/skill/action/rare4/alk$alk_2", "git_blob_sha1": "07f845d5825084d39353c7086c42386e6f20e224", "source_commit": "1d45b529ef078ba9b1f876d4588debd0c8a9a214", "time_adaptation": "one original action unit = 1/60 project seconds; not a verified original FPS", "geometry_adaptation": "uniform scale chosen per skill for free movement; no original area size claim"}
 source_id = "1"
 source_skill_name = "粉碎流星"
 source_skill_weight = 450

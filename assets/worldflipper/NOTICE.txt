@@ -30,3 +30,5 @@ World Flipper Wiki：https://worldflipper.wiki.gg/
 官方公开试玩地图与场景道具：https://worldflipper.jp/demo/
 日服最终版数据归档：https://github.com/blead/wf-assets
 归档版本、固定提交及数据校验值见 tools/world_flipper_catalog_sources.json。
+
+Additional original-stage crops and open-wall geometry use verified official-demo resources with references matched to the pinned JP catalog. Runtime bounds, scale, timing and combat are adaptations; unresolved original mechanisms are not claimed as reproduced. Source registries and limits are documented in docs/world-flipper-actions.md. Original animation preparation uses the pinned 2022 vivaldi6352 mirror; unimplemented and missing character variants remain separately tracked.

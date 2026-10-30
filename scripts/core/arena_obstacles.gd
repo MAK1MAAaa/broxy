@@ -21,6 +21,8 @@ class ProjectedGoal:
 	var checked_corridors: Dictionary = {}
 
 var bounds: Rect2 = ArenaCatalog.WORLD_BOUNDS
+var walls: TerrainWalls = TerrainWalls.new()
+var _wall_rows: Array[Dictionary] = []
 var _items: Array[Dictionary] = []
 var _centers: PackedVector2Array = PackedVector2Array()
 var _radii: PackedFloat64Array = PackedFloat64Array()
@@ -50,6 +52,8 @@ func _init(rows: Array = []) -> void:
 
 
 func configure(rows: Array) -> void:
+	walls.clear()
+	_wall_rows.clear()
 	_items.clear()
 	_centers.clear()
 	_radii.clear()
@@ -99,6 +103,18 @@ func configure(rows: Array) -> void:
 				var bucket: PackedInt32Array = _cells[key] if _cells.has(key) else PackedInt32Array()
 				bucket.append(index)
 				_cells[key] = bucket
+
+
+func configure_walls(rows: Array) -> bool:
+	if not walls.configure(rows):
+		return false
+	_wall_rows = walls.snapshot()
+	_projected_goals.clear()
+	_graphs.clear()
+	_graph_point_ids.clear()
+	_graph_goals.clear()
+	_routes.clear()
+	return true
 
 
 static func _read_point(value: Variant) -> Vector2:
@@ -172,6 +188,8 @@ func is_free(point: Vector2, body_radius: float = 0.0, inset: float = 0.0) -> bo
 	var area: Rect2 = bounds.grow(-maxf(0.0, inset))
 	if point.x < area.position.x or point.y < area.position.y or point.x > area.end.x or point.y > area.end.y:
 		return false
+	if not _wall_rows.is_empty() and not walls.is_free(point, body_radius):
+		return false
 	for index: int in _point_candidates(point, body_radius):
 		if _active[index] == 0:
 			continue
@@ -189,6 +207,8 @@ func _clamp(point: Vector2, inset: float) -> Vector2:
 
 
 func free_point(point: Vector2, body_radius: float = 0.0, inset: float = 0.0) -> Vector2:
+	if not _wall_rows.is_empty():
+		return _free_combined(point, body_radius, inset)
 	var result: Vector2 = _clamp(point, inset)
 	var radius: float = maxf(0.0, body_radius) if is_finite(body_radius) else 0.0
 	if _centers.is_empty():
@@ -254,6 +274,15 @@ func first_hit(start: Vector2, movement: Vector2, body_radius: float, inset: flo
 		result = {"t": entry, "normal": normal, "id": _items[index]["id"], "center": center,
 			"art_id": _items[index]["art_id"], "index": index}
 		nearest = entry
+	if not _wall_rows.is_empty() and (filter_prefix.is_empty() or "wall:".begins_with(filter_prefix)):
+		var wall: Dictionary = walls.first_hit(start, start + movement, body_radius)
+		if not wall.is_empty() and float(wall["t"]) < nearest:
+			wall["source_id"] = wall["id"]
+			wall["id"] = "wall:" + str(wall["id"])
+			wall["center"] = wall["wall_point"]
+			wall["art_id"] = "wall"
+			wall["index"] = -1
+			result = wall
 	return result
 
 
@@ -285,6 +314,8 @@ static func _boundary_hit(start: Vector2, movement: Vector2, area: Rect2) -> Dic
 
 
 func move_body(start: Vector2, movement: Vector2, body_radius: float, inset: float = 0.0, slide: bool = true) -> Vector2:
+	if not _wall_rows.is_empty():
+		return _move_combined(start, movement, body_radius, inset, slide)
 	var area: Rect2 = bounds if inset <= 0.0 else bounds.grow(-inset)
 	var position: Vector2 = start if start.is_finite() else area.get_center()
 	if not area.has_point(position):
@@ -346,12 +377,14 @@ func segment_clear(start: Vector2, end: Vector2, body_radius: float = 0.0) -> bo
 	if start.x < bounds.position.x or start.y < bounds.position.y or start.x > bounds.end.x or start.y > bounds.end.y \
 		or end.x < bounds.position.x or end.y < bounds.position.y or end.x > bounds.end.x or end.y > bounds.end.y:
 		return false
-	if _centers.is_empty():
+	if _centers.is_empty() and _wall_rows.is_empty():
 		return true
 	return _clear_candidates(start, end, body_radius, _segment_candidates(start, end, body_radius))
 
 
 func _clear_candidates(start: Vector2, end: Vector2, body_radius: float, candidates: PackedInt32Array) -> bool:
+	if not _wall_rows.is_empty() and (not walls.is_free(start, body_radius) or not walls.is_free(end, body_radius) or not walls.segment_clear(start, end, body_radius)):
+		return false
 	if candidates.is_empty():
 		return true
 	var movement: Vector2 = end - start
@@ -416,7 +449,9 @@ func next_target(start: Vector2, target: Vector2, body_radius: float, agent_id: 
 			projection.checked_corridors.clear()
 	var goal: Vector2 = projection.position
 	var direct: bool = false
-	if start.is_finite() and bounds.has_point(start):
+	if not _wall_rows.is_empty():
+		direct = segment_clear(start, goal, body_radius)
+	elif start.is_finite() and bounds.has_point(start):
 		var source_cell := Vector2i((start / INDEX_CELL).floor())
 		if projection.open_sources.has(source_cell):
 			_routes.erase(agent_id)
@@ -505,6 +540,23 @@ func _graph(body_radius: float) -> AStar2D:
 			var point: Vector2 = center + Vector2.from_angle(TAU * float(index) / float(ROUTE_SIDES)) * radius
 			if is_free(point, body_radius):
 				graph.add_point(graph.get_point_count(), point)
+	if not _wall_rows.is_empty():
+		var endpoints: Dictionary = {}
+		var added: Dictionary = {}
+		var clearance: float = (body_radius + ROUTE_CLEARANCE) / cos(PI / float(ROUTE_SIDES))
+		for row: Dictionary in _wall_rows:
+			for key: String in ["a", "b"]:
+				var endpoint: Vector2 = _read_point(row[key])
+				if endpoints.has(endpoint):
+					continue
+				endpoints[endpoint] = true
+				# These are visibility-graph candidates around actual end caps;
+				# physical collision remains the exact unsampled wall capsule.
+				for side: int in ROUTE_SIDES:
+					var point: Vector2 = endpoint + Vector2.from_angle(TAU * float(side) / float(ROUTE_SIDES)) * clearance
+					if not added.has(point) and is_free(point, body_radius):
+						graph.add_point(graph.get_point_count(), point)
+						added[point] = true
 	var ids: PackedInt64Array = graph.get_point_ids()
 	_graph_point_ids[body_radius] = ids
 	for first: int in ids.size():
@@ -618,7 +670,149 @@ func clear_spawn_segments(segments: Array[Rect2], body_radius: float) -> Array[R
 					if high < interval.y:
 						retained.append(Vector2(maxf(high, interval.x), interval.y))
 			intervals = retained
+		if not _wall_rows.is_empty():
+			intervals = _clear_wall_intervals(segment, direction, intervals, body_radius)
 		for interval: Vector2 in intervals:
 			if interval.y - interval.x > 0.0001:
 				result.append(Rect2(segment.position + direction * interval.x, direction * (interval.y - interval.x)))
+	return result
+
+
+func _move_combined(start: Vector2, movement: Vector2, body_radius: float, inset: float, allow_slide: bool) -> Vector2:
+	var position: Vector2 = free_point(start, body_radius, inset)
+	if not position.is_finite() or not movement.is_finite():
+		return position
+	var remaining: Vector2 = movement
+	for _iteration: int in TerrainWalls.MAX_SLIDES:
+		if remaining.length_squared() <= 0.000001:
+			break
+		var hit: Dictionary = first_hit(position, remaining, body_radius, inset)
+		if hit.is_empty():
+			return free_point(position + remaining, body_radius, inset)
+		var advance: float = maxf(0.0, float(hit["t"]) - SKIN / maxf(remaining.length(), SKIN))
+		position += remaining * advance
+		if not allow_slide:
+			break
+		remaining *= 1.0 - advance
+		var normal: Vector2 = hit["normal"]
+		var inward: float = remaining.dot(normal)
+		if inward < 0.0:
+			remaining -= normal * inward
+		elif advance == 0.0:
+			break
+	return free_point(position, body_radius, inset)
+
+
+func _wall_curves(radius: float) -> Array[Dictionary]:
+	var result: Array[Dictionary] = []
+	for row: Dictionary in _wall_rows:
+		var ax: float = float(row["a"][0])
+		var ay: float = float(row["a"][1])
+		var bx: float = float(row["b"][0])
+		var by: float = float(row["b"][1])
+		var vx: float = bx - ax
+		var vy: float = by - ay
+		var length: float = sqrt(vx * vx + vy * vy)
+		if length > 0.0:
+			var nx: float = -vy / length * radius
+			var ny: float = vx / length * radius
+			for side: float in [-1.0, 1.0]:
+				result.append({"kind": 0, "ax": ax + nx * side, "ay": ay + ny * side, "bx": bx + nx * side, "by": by + ny * side})
+		result.append({"kind": 1, "x": ax, "y": ay, "r": radius})
+		if length > 0.0:
+			result.append({"kind": 1, "x": bx, "y": by, "r": radius})
+	return result
+
+
+static func _bounds_curves(area: Rect2) -> Array[Dictionary]:
+	return [{"kind": 0, "ax": float(area.position.x), "ay": float(area.position.y), "bx": float(area.end.x), "by": float(area.position.y)},
+		{"kind": 0, "ax": float(area.end.x), "ay": float(area.position.y), "bx": float(area.end.x), "by": float(area.end.y)},
+		{"kind": 0, "ax": float(area.end.x), "ay": float(area.end.y), "bx": float(area.position.x), "by": float(area.end.y)},
+		{"kind": 0, "ax": float(area.position.x), "ay": float(area.end.y), "bx": float(area.position.x), "by": float(area.position.y)}]
+
+
+func _free_combined(point: Vector2, body_radius: float, inset: float) -> Vector2:
+	var radius: float = maxf(0.0, body_radius) if is_finite(body_radius) else 0.0
+	var area: Rect2 = bounds.grow(-maxf(0.0, inset))
+	if area.size.x <= 0.0 or area.size.y <= 0.0:
+		return Vector2.INF
+	var query: Vector2 = _clamp(point, inset)
+	if is_free(query, radius, inset):
+		return query
+	# Exact boundary candidates for a bounded union: wall offset lines/end caps,
+	# circle colliders, and the four actual bounds edges. No iterative pushing
+	# between a wall and a boundary, and no sampled replacement collision.
+	var curves: Array[Dictionary] = _wall_curves(radius + SKIN)
+	curves.append_array(_bounds_curves(area))
+	for index: int in _centers.size():
+		if _active[index] != 0:
+			curves.append({"kind": 1, "x": float(_centers[index].x), "y": float(_centers[index].y), "r": _radii[index] + radius + SKIN})
+	var candidates: Array[Vector2] = []
+	var x: float = float(query.x)
+	var y: float = float(query.y)
+	for curve: Dictionary in curves:
+		if int(curve["kind"]) == 0:
+			var ax: float = float(curve["ax"])
+			var ay: float = float(curve["ay"])
+			var vx: float = float(curve["bx"]) - ax
+			var vy: float = float(curve["by"]) - ay
+			var fraction: float = clampf(((x - ax) * vx + (y - ay) * vy) / (vx * vx + vy * vy), 0.0, 1.0)
+			candidates.append(Vector2(ax + vx * fraction, ay + vy * fraction))
+		else:
+			var cx: float = float(curve["x"])
+			var cy: float = float(curve["y"])
+			var ox: float = x - cx
+			var oy: float = y - cy
+			var length: float = sqrt(ox * ox + oy * oy)
+			var clearance: float = float(curve["r"])
+			if length > 0.000000001:
+				candidates.append(Vector2(cx + ox / length * clearance, cy + oy / length * clearance))
+			else:
+				for direction: Vector2 in [Vector2.RIGHT, Vector2.DOWN, Vector2.LEFT, Vector2.UP]:
+					candidates.append(Vector2(cx, cy) + direction * clearance)
+	var best: Vector2 = Vector2.INF
+	var best_squared: float = INF
+	for candidate: Vector2 in candidates:
+		var squared: float = candidate.distance_squared_to(query)
+		if squared < best_squared and is_free(candidate, radius, inset):
+			best = candidate
+			best_squared = squared
+	for first: int in curves.size():
+		if TerrainWalls._curve_distance_squared(curves[first], x, y) > best_squared:
+			continue
+		for second: int in range(first + 1, curves.size()):
+			if TerrainWalls._curve_distance_squared(curves[second], x, y) > best_squared:
+				continue
+			var intersections: PackedFloat64Array = TerrainWalls._intersections(curves[first], curves[second])
+			for at: int in range(0, intersections.size(), 2):
+				var candidate := Vector2(intersections[at], intersections[at + 1])
+				var squared: float = candidate.distance_squared_to(query)
+				if squared < best_squared and is_free(candidate, radius, inset):
+					best = candidate
+					best_squared = squared
+	return best
+
+
+func _clear_wall_intervals(segment: Rect2, direction: Vector2, intervals: Array[Vector2], body_radius: float) -> Array[Vector2]:
+	var curves: Array[Dictionary] = _wall_curves(body_radius + SKIN)
+	curves.append_array(_bounds_curves(bounds))
+	var ray: Dictionary = {"kind": 0, "ax": float(segment.position.x), "ay": float(segment.position.y), "bx": float(segment.end.x), "by": float(segment.end.y)}
+	var cuts := PackedFloat64Array()
+	for curve: Dictionary in curves:
+		var points: PackedFloat64Array = TerrainWalls._intersections(ray, curve)
+		for at: int in range(0, points.size(), 2):
+			cuts.append((points[at] - float(segment.position.x)) * float(direction.x) + (points[at + 1] - float(segment.position.y)) * float(direction.y))
+	cuts.sort()
+	var result: Array[Vector2] = []
+	for interval: Vector2 in intervals:
+		var start: float = float(interval.x)
+		for cut: float in cuts:
+			if cut <= start + 0.0001 or cut >= float(interval.y):
+				continue
+			var midpoint: Vector2 = segment.position + direction * ((start + cut) * 0.5)
+			if is_free(midpoint, body_radius):
+				result.append(Vector2(start, cut))
+			start = cut
+		if float(interval.y) - start > 0.0001 and is_free(segment.position + direction * ((start + float(interval.y)) * 0.5), body_radius):
+			result.append(Vector2(start, float(interval.y)))
 	return result

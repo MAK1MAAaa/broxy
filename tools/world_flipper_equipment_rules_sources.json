@@ -1,0 +1,165 @@
+{
+  "schema_version": 1,
+  "repository": "https://github.com/blead/wf-assets",
+  "commit": "1d45b529ef078ba9b1f876d4588debd0c8a9a214",
+  "asset_version": "1.780.40",
+  "region": "JP",
+  "sources": [
+    {
+      "id": "equipment",
+      "path": "orderedmap/item/equipment.json",
+      "url": "https://raw.githubusercontent.com/blead/wf-assets/1d45b529ef078ba9b1f876d4588debd0c8a9a214/orderedmap/item/equipment.json",
+      "cache_filename": "equipment.json",
+      "sha256": "f881e55f15cb084a293ef16024b055b486d57ad000fdf91d1340c8e870a39190",
+      "bytes": 173834,
+      "records": 426
+    },
+    {
+      "id": "status",
+      "path": "orderedmap/item/equipment_status.json",
+      "url": "https://raw.githubusercontent.com/blead/wf-assets/1d45b529ef078ba9b1f876d4588debd0c8a9a214/orderedmap/item/equipment_status.json",
+      "cache_filename": "status.json",
+      "sha256": "6c38009ba3e3dba0b8a622404a1970f5c6761e17501cecdd0fc647d972e62eec",
+      "bytes": 58380,
+      "records": 426
+    },
+    {
+      "id": "ability_soul",
+      "path": "orderedmap/ability/ability_soul.json",
+      "url": "https://raw.githubusercontent.com/blead/wf-assets/1d45b529ef078ba9b1f876d4588debd0c8a9a214/orderedmap/ability/ability_soul.json",
+      "cache_filename": "ability_soul.json",
+      "sha256": "2f35cb8cd337cc3774a36a4c4577f2edc91e4b5942b3302115eb4a1448b0525f",
+      "bytes": 1149006,
+      "records": 426
+    },
+    {
+      "id": "enhancement",
+      "path": "orderedmap/equipment_enhancement/equipment_enhancement.json",
+      "url": "https://raw.githubusercontent.com/blead/wf-assets/1d45b529ef078ba9b1f876d4588debd0c8a9a214/orderedmap/equipment_enhancement/equipment_enhancement.json",
+      "cache_filename": "enhancement.json",
+      "sha256": "4117e1a20ca3af8e53e5c7574ba642aed145aa8027831bafc2df7a619cea3a4f",
+      "bytes": 10129,
+      "records": 29
+    },
+    {
+      "id": "enhancement_ability",
+      "path": "orderedmap/equipment_enhancement/equipment_enhancement_ability.json",
+      "url": "https://raw.githubusercontent.com/blead/wf-assets/1d45b529ef078ba9b1f876d4588debd0c8a9a214/orderedmap/equipment_enhancement/equipment_enhancement_ability.json",
+      "cache_filename": "enhancement_ability.json",
+      "sha256": "39dc29082778c9226ad513f6e9c0cf007bd679db023f597b9c0d1b85939b7bd7",
+      "bytes": 144708,
+      "records": 29
+    },
+    {
+      "id": "enhancement_status",
+      "path": "orderedmap/equipment_enhancement/equipment_enhancement_status.json",
+      "url": "https://raw.githubusercontent.com/blead/wf-assets/1d45b529ef078ba9b1f876d4588debd0c8a9a214/orderedmap/equipment_enhancement/equipment_enhancement_status.json",
+      "cache_filename": "enhancement_status.json",
+      "sha256": "f5049aa48a2964bdeb149fe1b11f59cc0558ca8dd665cdcfa3c1017e00588af0",
+      "bytes": 3794,
+      "records": 29
+    },
+    {
+      "id": "stance_detail",
+      "path": "orderedmap/stance_detail/equipment_stance_detail.json",
+      "url": "https://raw.githubusercontent.com/blead/wf-assets/1d45b529ef078ba9b1f876d4588debd0c8a9a214/orderedmap/stance_detail/equipment_stance_detail.json",
+      "cache_filename": "stance_detail.json",
+      "sha256": "156edfd5db69e9b4d7114f93adc73e6f36dc616200c20cbfd089b727a70a7b37",
+      "bytes": 61983,
+      "records": 424
+    }
+  ],
+  "secondary_identity_checks": [
+    {
+      "game_id": "bone",
+      "canonical_equipment_id": "3010053",
+      "url": "https://worldflipper.wiki.gg/wiki/Camping_Knife",
+      "wiki_revision": "12064",
+      "element": "dark",
+      "retrieved_on": "2026-10-31",
+      "raw_html_sha256": "c8fb8e039b4a8ad48bae24d03d48d62b0faa885957a2f879b3fef2dc8252f1bf",
+      "evidence_level": "secondary Wiki cross-check; original amounts/conditions/slots are read from the pinned JP ability_soul table, not copied from prose"
+    },
+    {
+      "game_id": "frost",
+      "canonical_equipment_id": "5030036",
+      "url": "https://worldflipper.wiki.gg/wiki/Moon_Dance",
+      "wiki_revision": "11819",
+      "element": "water",
+      "retrieved_on": "2026-10-31",
+      "raw_html_sha256": "19c247f95a3ac4a6c379757565b680a489eb59621867c24f50bb4ddf40eb508b",
+      "evidence_level": "secondary Wiki cross-check; original amounts/conditions/slots are read from the pinned JP ability_soul table, not copied from prose"
+    },
+    {
+      "game_id": "ember",
+      "canonical_equipment_id": "5060034",
+      "url": "https://worldflipper.wiki.gg/wiki/Spiteful_Staff",
+      "wiki_revision": "12922",
+      "element": "dark",
+      "retrieved_on": "2026-10-31",
+      "raw_html_sha256": "b20c28db37fb261252b14e6e91e6a0502e9c7ef504557ea1a9d6055cae5d987b",
+      "evidence_level": "secondary Wiki cross-check; original amounts/conditions/slots are read from the pinned JP ability_soul table, not copied from prose"
+    },
+    {
+      "game_id": "scatter",
+      "canonical_equipment_id": "5040026",
+      "url": "https://worldflipper.wiki.gg/wiki/Hyperion_Bow",
+      "wiki_revision": "11599",
+      "element": "light",
+      "retrieved_on": "2026-10-31",
+      "raw_html_sha256": "5716fc69c26e3892d6b2d74297095d1a142ce18b1b2f5d6bd515456a291ac085",
+      "evidence_level": "secondary Wiki cross-check; original amounts/conditions/slots are read from the pinned JP ability_soul table, not copied from prose"
+    },
+    {
+      "game_id": "crescent",
+      "canonical_equipment_id": "5020037",
+      "url": "https://worldflipper.wiki.gg/wiki/Grim_Scythe",
+      "wiki_revision": "12062",
+      "element": "dark",
+      "retrieved_on": "2026-10-31",
+      "raw_html_sha256": "3de797bded89cc5189cc415e90ccd5cdd26ada286bb982c541159205a083ed37",
+      "evidence_level": "secondary Wiki cross-check; original amounts/conditions/slots are read from the pinned JP ability_soul table, not copied from prose"
+    },
+    {
+      "game_id": "storm",
+      "canonical_equipment_id": "4050031",
+      "url": "https://worldflipper.wiki.gg/wiki/Lightcrest_Tome",
+      "wiki_revision": "11938",
+      "element": "light",
+      "retrieved_on": "2026-10-31",
+      "raw_html_sha256": "07e6027ca98b87c6863a138e74cb9af6ee4bfcf25cff622bc5fee1ba1409a9d3",
+      "evidence_level": "secondary Wiki cross-check; original amounts/conditions/slots are read from the pinned JP ability_soul table, not copied from prose"
+    },
+    {
+      "game_id": "comet",
+      "canonical_equipment_id": "5030039",
+      "url": "https://worldflipper.wiki.gg/wiki/Spiteful_Spear",
+      "wiki_revision": "12925",
+      "element": "light",
+      "retrieved_on": "2026-10-31",
+      "raw_html_sha256": "9b60c6d692c3ffb8a87b0fd0fdd4fa67e07d13e9978e21795e800720436627e6",
+      "evidence_level": "secondary Wiki cross-check; original amounts/conditions/slots are read from the pinned JP ability_soul table, not copied from prose"
+    },
+    {
+      "game_id": "return_ring",
+      "canonical_equipment_id": "5090030",
+      "url": "https://worldflipper.wiki.gg/wiki/Amulet_of_Ruin",
+      "wiki_revision": "12727",
+      "element": "water",
+      "retrieved_on": "2026-10-31",
+      "raw_html_sha256": "57ddbc2ecd415064b343689f6890e012ea4f842da635d6d130b4bde7e3d2538a",
+      "evidence_level": "secondary Wiki cross-check; original amounts/conditions/slots are read from the pinned JP ability_soul table, not copied from prose"
+    }
+  ],
+  "expected_counts": {
+    "equipment": 426,
+    "ability_rows": 886,
+    "ability_row_width": 123,
+    "enhanced_equipment": 29,
+    "enhancement_rows": 108,
+    "enhancement_row_width": 126,
+    "stance_metadata": 424
+  },
+  "decoder_scope": "All original rows are retained. Only explicitly reviewed JP rules have normalized semantic operations; every other row is unsupported, without a generic gameplay fallback.",
+  "license_status": "Original game data; no open asset license found. Wiki identity checks do not grant a license to original game assets."
+}

@@ -295,12 +295,12 @@ func stop() -> void:
 	_request_redraw()
 
 func camera_view() -> Rect2:
-	return ArenaCatalog.visible_rect(sim.player_position if sim != null else CombatSim.ARENA.get_center())
+	return ArenaCatalog.visible_rect_for(_arena_id, sim.player_position if sim != null else CombatSim.ARENA.get_center())
 
 func _update_camera() -> void:
 	if not active or sim == null or not is_instance_valid(_camera):
 		return
-	_camera.position = ArenaCatalog.camera_center(sim.player_position)
+	_camera.position = ArenaCatalog.camera_center_for(_arena_id, sim.player_position)
 	_camera.enabled = true
 	if not _camera.is_current():
 		_camera.make_current()
@@ -309,7 +309,7 @@ func _update_camera() -> void:
 func _feedback_safe_rect() -> Rect2:
 	var view: Rect2 = camera_view()
 	var safe := Rect2(view.position + Vector2(196, 150), view.size - Vector2(392, 262))
-	return safe.intersection(CombatSim.ARENA.grow(-8.0))
+	return safe.intersection(sim.obstacles.bounds.grow(-8.0) if sim != null else CombatSim.ARENA.grow(-8.0))
 
 func _boss_alive() -> bool:
 	return active and sim != null and sim.boss != null and sim.boss.active and sim.boss.health > 0.0
@@ -1047,9 +1047,9 @@ func minimap_snapshot() -> Dictionary:
 	for obstacle: Dictionary in obstacles:
 		obstacle["kind"] = "crate" if str(obstacle["id"]).begins_with("crate:") else "prop"
 	var interactions: Dictionary = sim.interactions.snapshot()
-	return {"bounds": CombatSim.ARENA, "player": sim.player_position, "facing": sim.player_direction,
+	return {"bounds": sim.obstacles.bounds, "player": sim.player_position, "facing": sim.player_direction,
 		"view": camera_view(), "enemies": enemies, "zones": zones, "arena_id": _arena_id,
-		"obstacles": obstacles, "pickups": interactions.get("pickups", []), "pinball_active": bool(sim.pinball_snapshot().get("active", false))}
+		"obstacles": obstacles, "walls": sim.obstacles.walls.snapshot(), "pickups": interactions.get("pickups", []), "pinball_active": bool(sim.pinball_snapshot().get("active", false))}
 
 func _draw() -> void:
 	if arena_texture != null:
@@ -1068,6 +1068,7 @@ func _draw() -> void:
 	_draw_effects()
 	_active_skill_painter.draw(self)
 	HeroEffectPainter.draw(self, sim.hero_effects_snapshot(), bool(settings.get("flash", true)))
+	SkillAreaPainter.draw(self, sim.skill_timeline.snapshot(), bool(settings.get("flash", true)))
 	_draw_impact_feedback()
 	_draw_rune_feedback()
 	_draw_boss_weakpoints()
@@ -1326,6 +1327,12 @@ func _draw_enemies() -> void:
 			if enemy.hunter:
 				draw_arc(enemy.position + Vector2(0, 5), enemy.radius + 8.0, 0, TAU, 28, Color("c87866"), 2.0, true)
 			draw_texture_rect(texture, enemy_draw_rect(enemy, bob, breathing), false, tint)
+			if not enemy.positive_conditions.is_empty():
+				var crest := Rect2(enemy.position - Vector2(enemy.radius + 5, enemy.radius + 7), Vector2.ONE * (enemy.radius + 5) * 2)
+				for corner: Vector2 in [crest.position, crest.position + Vector2(crest.size.x, 0), crest.end, crest.position + Vector2(0, crest.size.y)]:
+					var inward: Vector2 = (enemy.position - corner).sign()
+					draw_line(corner, corner + Vector2(5.0 * inward.x, 0), Color("e8c778"), 1.0)
+					draw_line(corner, corner + Vector2(0, 5.0 * inward.y), Color("e8c778"), 1.0)
 			if enemy.hunter:
 				_draw_hunter_mark(enemy, size)
 			if id == "tank" and enemy.health < enemy.max_health:

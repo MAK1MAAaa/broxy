@@ -48,7 +48,7 @@ func _radius(zone: Dictionary) -> Vector2:
 
 
 func _test_catalog() -> void:
-	_check(ArenaCatalog.IDS.size() == 7 and ArenaCatalog.normalize_id("unknown") == "reliquary", "The catalog exposes seven maps with a safe default")
+	_check(ArenaCatalog.IDS.size() == 10 and ArenaCatalog.LEGACY_IDS.size() == 7 and ArenaCatalog.normalize_id("unknown") == "reliquary", "The catalog preserves seven maps and appends three verified original layouts with a safe default")
 	_check(ArenaCatalog.WORLD_BOUNDS == Rect2(-1082, -535, 3444, 1800) and ArenaCatalog.ART_MARGIN_TOP == 232.0 and ArenaCatalog.art_rect() == Rect2(-1146, -767, 3780, 2192), "The larger top artwork margin preserves the exact playable-world geometry")
 	_check(ArenaCatalog.visible_rect(ArenaCatalog.WORLD_BOUNDS.get_center()).position - ArenaCatalog.art_rect().position == Vector2(1146, 772), "The unchanged central camera maps to the exact new artwork preview crop")
 	var total_zones: int = 0
@@ -62,7 +62,7 @@ func _test_catalog() -> void:
 		_check(ArenaCatalog.movement_multiplier(id, Vector2.INF) == 1.0, "Nonfinite coordinates never activate terrain: " + id)
 		var zones: Array = definition["zones"]
 		total_zones += zones.size()
-		_check(zones.is_empty() if id == "reliquary" else zones.size() >= int(definition["legacy_zone_count"]) + 6, "Expanded maps preserve the original patches and add distant terrain: " + id)
+		_check(zones.is_empty() if id == "reliquary" or ArenaCatalog.ORIGINAL_STAGE_IDS.has(id) else zones.size() >= int(definition["legacy_zone_count"]) + 6, "Expanded maps preserve authored patches; original-layout stages do not invent ground modifiers: " + id)
 		for zone: Dictionary in zones:
 			var center: Vector2 = _center(zone)
 			var radius: Vector2 = _radius(zone)
@@ -77,9 +77,20 @@ func _test_catalog() -> void:
 				# Their axis-aligned envelopes are disjoint, a stronger condition than
 				# non-intersecting ellipses and a guaranteed ordinary-ground corridor.
 				_check(not bounds.intersects(Rect2(_center(other) - _radius(other), _radius(other) * 2.0)), "Ground patches leave separate traversable corridors: " + id)
+		var expected_name: String = str(definition["name"])
+		var expected_zones: Array = (definition["zones"] as Array).duplicate(true)
+		var expected_stage: Dictionary = (definition.get("stage", {}) as Dictionary).duplicate(true)
 		definition["name"] = "mutated"
+		if not (definition["zones"] as Array).is_empty():
+			definition["zones"][0]["center"][0] = INF
 		(definition["zones"] as Array).clear()
-		_check(ArenaCatalog.definition(id)["name"] != "mutated" and (id == "reliquary" or not (ArenaCatalog.definition(id)["zones"] as Array).is_empty()), "Catalog copies cannot mutate combat data: " + id)
+		var fresh: Dictionary = ArenaCatalog.definition(id)
+		_check(fresh["name"] == expected_name and fresh["zones"] == expected_zones, "Catalog copies cannot mutate the name or any nested/empty terrain geometry: " + id)
+		if ArenaCatalog.ORIGINAL_STAGE_IDS.has(id):
+			definition["stage"]["logic_offset"][0] = INF
+			definition["stage"]["play_bounds"].clear()
+			definition["stage"]["layout_id"] = "mutated"
+			_check(ArenaCatalog.definition(id)["stage"] == expected_stage and ArenaCatalog.stage_info(id) == expected_stage, "Original-stage nested transform and bounds copies cannot mutate cached source data: " + id)
 	_check(total_zones == 52, "Expanded artwork preserves all fifty-two authored terrain patches")
 
 
@@ -207,7 +218,7 @@ func _test_enemy_ground() -> void:
 
 
 func _test_projectiles_and_timers() -> void:
-	for id: String in ArenaCatalog.IDS:
+	for id: String in ArenaCatalog.LEGACY_IDS:
 		var sim: CombatSim = _sim(id)
 		var point := Vector2(310, 275)
 		if id != "reliquary":

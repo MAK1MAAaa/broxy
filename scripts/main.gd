@@ -25,15 +25,22 @@ var _upgrade_request_sim: CombatSim
 var _upgrade_request_generation: int = -1
 var _combat_upgrade_sim: CombatSim
 var _combat_upgrade_generation: int = -1
+var _wf_actions_preview_redirecting: bool = false
 
 func _ready() -> void:
+	if "--wf-actions-preview" in OS.get_cmdline_user_args() and not has_meta("wf_actions_preview_child"):
+		store.persistent = false
+		_wf_actions_preview_redirecting = true
+		process_mode = Node.PROCESS_MODE_DISABLED
+		_start_wf_actions_preview.call_deferred()
+		return
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	# VSync schedules presentation; a second 60 Hz software limiter can miss vblank.
 	Engine.max_fps = 0
 	args = OS.get_cmdline_user_args()
 	var selected_arena: String = _arena_from_args(args)
 	if selected_arena.is_empty():
-		push_error("--arena requires reliquary, mire, glacier, or ashland")
+		push_error("--arena requires one of: " + ", ".join(ArenaCatalog.IDS))
 		get_tree().quit(2)
 		return
 	# Direct CLI validation must be as isolated as the standalone preview fixtures.
@@ -100,6 +107,17 @@ func _ready() -> void:
 	for argument: String in args:
 		if argument.begins_with("--capture-delay="):
 			_screenshot_clock = maxf(0.5, argument.trim_prefix("--capture-delay=").to_float())
+
+func _start_wf_actions_preview() -> void:
+	# Runtime loading avoids a preload cycle: the diagnostic instantiates MAIN.
+	var diagnostic_script := load("res://scripts/diagnostics/wf_actions_preview.gd") as Script
+	if diagnostic_script == null:
+		push_error("The embedded World Flipper preview diagnostic is unavailable")
+		get_tree().quit(2)
+		return
+	var diagnostic: Node = diagnostic_script.new()
+	get_tree().root.add_child(diagnostic)
+	queue_free()
 
 func _start_run(starter: String) -> void:
 	if not store.starter_unlocked(starter) and starter != HeroCatalog.definition(ui.selected_hero()).starter_weapon:
@@ -363,6 +381,10 @@ func _can_request_combat_skill() -> bool:
 	)
 
 func _notification(what: int) -> void:
+	if _wf_actions_preview_redirecting:
+		if what == NOTIFICATION_WM_CLOSE_REQUEST:
+			get_tree().quit()
+		return
 	if what == NOTIFICATION_APPLICATION_FOCUS_OUT and (screen == Screen.COMBAT or _combat_upgrades_active()) and not paused and not _benchmark and not ("--smoke" in args) and not ("--autoplay" in args):
 		_pause()
 	elif what == NOTIFICATION_WM_CLOSE_REQUEST:

@@ -2,15 +2,14 @@ extends SceneTree
 ## Real skill definitions constrain every decorative point and the fixed cosmetic budget.
 
 const PAINTER = preload("res://scripts/combat/active_skill_painter.gd")
-const FAMILIES: Dictionary = {"alk": "shockwave", "clarisse": "alchemy", "celtie": "wind",
-	"starfall": "meteor", "arc_slash": "crescent"}
-const COLORS: Dictionary = {"alk": Color("f1875e"), "clarisse": Color("efa54c"), "celtie": Color("87d9ab"),
-	"starfall": Color("ffc86b"), "arc_slash": Color("91e0d1")}
+const FAMILIES: Dictionary = {"starfall": "meteor", "arc_slash": "crescent"}
+const COLORS: Dictionary = {"starfall": Color("ffc86b"), "arc_slash": Color("91e0d1")}
 var _checks: int = 0
 var _failures: int = 0
 
 func _initialize() -> void:
 	_test_definition_geometry()
+	_test_timeline_geometry()
 	_test_identity_and_static_mode()
 	_test_bomb_delivery_separation()
 	_test_budget_and_invalid_input()
@@ -39,7 +38,7 @@ func _test_definition_geometry() -> void:
 		for direction: Vector2 in [Vector2.RIGHT, Vector2.UP, Vector2(-0.6, 0.8)]:
 			for progress: float in [0.0, 0.25, 0.6, 0.95]:
 				var painter = PAINTER.new()
-				_check(_add(painter, id, origin, direction), "Every actual hero and rear skill accepts presentation: " + id)
+				_check(_add(painter, id, origin, direction), "Every instant rear skill accepts its own bounded presentation: " + id)
 				painter.advance(PAINTER.LIFE * progress)
 				var records: Array[Dictionary] = painter.geometry_snapshot()
 				_check(records.size() == 1, "One cast produces one diagnostic record: " + id)
@@ -81,13 +80,13 @@ func _test_identity_and_static_mode() -> void:
 		_check(later["origin"] == static_record["origin"] and later["direction"] == static_record["direction"] and later["radius"] == static_record["radius"] and later["width"] == static_record["width"] and later["half_angle_radians"] == static_record["half_angle_radians"] and later["polygons"].is_empty() and later["details"].is_empty(), "Suppressed effects fade without rotating, moving fragments or replaying animation: " + id)
 		_check(painter.snapshot()["animated"] == 0, "Reading or advancing a suppressed cast cannot replay it: " + id)
 	var zero_direction = PAINTER.new()
-	_add(zero_direction, "alk", Vector2.ZERO, Vector2.ZERO)
+	_add(zero_direction, "starfall", Vector2.ZERO, Vector2.ZERO)
 	_check(zero_direction.geometry_snapshot()[0]["direction"] == Vector2.RIGHT, "A zero diagnostic heading retains the existing finite right-facing fallback")
 
 func _test_bomb_delivery_separation() -> void:
 	var spec: Dictionary = HeroCatalog.hero_skill_parameters("hanabi", {})
 	var painter = PAINTER.new()
-	_add(painter, "alk", Vector2(640, 360), Vector2.RIGHT)
+	_add(painter, "starfall", Vector2(640, 360), Vector2.RIGHT)
 	var before: String = JSON.stringify(painter.geometry_snapshot())
 	for heading: Vector2 in [Vector2.RIGHT, Vector2.UP, Vector2(-0.6, 0.8)]:
 		_check(not painter.add_hero_cast(spec, Vector2(640, 360), heading, true), "Hanabi's actual bombs never produce an instant cosmetic hit rectangle")
@@ -98,7 +97,7 @@ func _test_bomb_delivery_separation() -> void:
 func _test_budget_and_invalid_input() -> void:
 	var painter = PAINTER.new()
 	for index: int in 80:
-		_add(painter, HeroCatalog.IDS[index % HeroCatalog.IDS.size()], Vector2(640, 360), Vector2.RIGHT)
+		_add(painter, "starfall" if index % 2 == 0 else "arc_slash", Vector2(640, 360), Vector2.RIGHT)
 	_check(painter.snapshot() == {"active": 8, "animated": 8, "capacity": 8} and painter.geometry_snapshot().size() == 8, "Skill spam reuses the exact original eight-slot pool")
 	var before: String = JSON.stringify(painter.geometry_snapshot())
 	for delta: float in [0.0, -1.0, NAN, INF]:
@@ -117,7 +116,7 @@ func _test_budget_and_invalid_input() -> void:
 	_check(JSON.stringify(painter.geometry_snapshot()) == before, "Rejected geometry leaves all previous visible casts untouched")
 	painter.advance(PAINTER.LIFE)
 	_check(painter.snapshot()["active"] == 0 and painter.geometry_snapshot().is_empty(), "No fragments or range confirmations outlive the original 0.26-second effect")
-	_add(painter, "alk", Vector2.ZERO, Vector2.RIGHT)
+	_add(painter, "starfall", Vector2.ZERO, Vector2.RIGHT)
 	painter.clear()
 	_check(painter.snapshot() == {"active": 0, "animated": 0, "capacity": 8}, "Clearing returns the complete fixed pool to its inactive state")
 
@@ -128,7 +127,7 @@ func _test_pure_queries() -> void:
 	sim.begin(run)
 	var before: String = JSON.stringify([sim.snapshot(), sim.interactions.snapshot(), run.summary(), str(sim.rng.state), str(run.rng.state), str(sim.interactions._rng.state)])
 	var painter = PAINTER.new()
-	_add(painter, "alk", sim.player_position, Vector2.RIGHT)
+	_add(painter, "starfall", sim.player_position, Vector2.RIGHT)
 	painter.advance(0.08)
 	var stable: String = JSON.stringify(painter.geometry_snapshot())
 	var remaining: float = painter._pool[0].life
@@ -151,3 +150,54 @@ func _test_pure_queries() -> void:
 	seed(812073)
 	painter.geometry_snapshot()
 	_check(randi() == expected, "Procedural fragments do not consume the global random stream either")
+
+func _test_timeline_geometry() -> void:
+	for id: String in ["alk", "clarisse", "celtie"]:
+		var spec: Dictionary = HeroCatalog.hero_skill_parameters(id, {})
+		for direction: Vector2 in [Vector2.RIGHT, Vector2.UP, Vector2(-0.6, 0.8)]:
+			for age: float in [0.0, 0.5, 0.75, 1.4, 2.3]:
+				var runtime := SkillTimelineRuntime.new()
+				_check(runtime.enqueue(spec, Vector2(640, 360), direction), "Actual delayed areas enter their authoritative pool: " + id)
+				runtime.advance(age, Vector2(640, 360))
+				runtime.finish_step()
+				var value: Dictionary = runtime.snapshot()
+				var stable: String = JSON.stringify(value)
+				var has_damage: bool = false
+				for area: Dictionary in value["areas"]:
+					has_damage = has_damage or area["purpose"] == "damage"
+				for flash: bool in [true, false]:
+					var geometry: Dictionary = SkillAreaPainter.geometry_snapshot(value, flash)
+					_check(geometry["commands"].is_empty() == (not has_damage) and geometry["commands"].size() <= SkillAreaPainter.MAX_COMMANDS, "Real area phases retain bounded geometry in both flash settings: " + id)
+					for command: Dictionary in geometry["commands"]:
+						var points := PackedVector2Array()
+						var padding: float = 0.0
+						match str(command["kind"]):
+							"line":
+								points.append_array(PackedVector2Array([command["from"], command["to"]]))
+								padding = float(command["width"]) * 0.5
+							"polygon":
+								points = command["points"]
+								_check(not Geometry2D.triangulate_polygon(points).is_empty(), "Active wind ribbons remain valid simple polygons")
+							"arc":
+								var center: Vector2 = command["center"]
+								var extent := Vector2.ONE * float(command["radius"])
+								points.append_array(PackedVector2Array([center - extent, center + extent]))
+								padding = float(command["width"]) * 0.5
+						var contained: bool = false
+						for bound: Rect2 in geometry["bounds"]:
+							var fits: bool = true
+							for point: Vector2 in points:
+								fits = fits and point.is_finite() and bound.grow(0.002 - padding).has_point(point)
+							contained = contained or fits
+						_check(contained, "The exact native area command including stroke width stays inside an authoritative range bound: " + id)
+					_check(JSON.stringify(value) == stable and runtime.snapshot() == value, "Area art is a pure read of simulation clocks, positions and contact counters")
+				var old = PAINTER.new()
+				_check(not old.add_hero_cast(spec, Vector2(640, 360), direction, true) and old.geometry_snapshot().is_empty(), "Delayed areas cannot also emit a phantom instant cast: " + id)
+	var full := SkillTimelineRuntime.new()
+	for index: int in SkillTimelineRuntime.LIMIT:
+		_check(full.enqueue(HeroCatalog.hero_skill_parameters("alk", {}), Vector2(640, 360), Vector2.RIGHT), "All declared area slots remain usable by real phase definitions")
+	full.advance(0.8, Vector2(640, 360))
+	var crowded: Dictionary = SkillAreaPainter.geometry_snapshot(full.snapshot(), true)
+	_check(crowded["bounds"].size() == SkillTimelineRuntime.LIMIT and crowded["commands"].size() <= SkillAreaPainter.MAX_COMMANDS, "Twenty-four real areas keep their complete native geometry within the fixed command budget")
+	full.clear()
+	_check(SkillAreaPainter.geometry_snapshot(full.snapshot(), true)["commands"].is_empty(), "A cleared timeline cannot leave stale windups or impact art")

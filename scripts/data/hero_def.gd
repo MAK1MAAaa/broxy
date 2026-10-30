@@ -12,6 +12,7 @@ extends Resource
 @export var foot_anchor: Vector2 = Vector2(48.0, 93.0)
 @export var base_bonuses: Dictionary = {}
 @export var main_skill: Dictionary = {}
+@export var action_evidence: Dictionary = {}
 @export var source_id: String = ""
 @export var source_skill_name: String = ""
 @export var source_skill_weight: int = 0

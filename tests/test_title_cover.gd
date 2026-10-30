@@ -28,7 +28,7 @@ func _run() -> void:
 	var cover := _cover()
 	_check(cover != null, "The real title contains the native animated cover")
 	if cover != null:
-		_test_composition(cover)
+		await _test_composition(cover)
 		await _test_composite_cover(cover)
 		await _test_animation(cover)
 		await _test_native_pixels(cover)
@@ -98,6 +98,9 @@ func _visible_text(node: Node) -> String:
 	return result
 
 func _test_composition(cover: TitleCover) -> void:
+	var original_focus: Control = root.gui_get_focus_owner()
+	var choice_scroll := _ui.find_child("ArenaChoiceScroll", true, false) as ScrollContainer
+	var original_scroll: int = choice_scroll.scroll_vertical if choice_scroll != null else 0
 	cover.set_frame(0)
 	var viewport := Rect2(Vector2.ZERO, Vector2(1280, 720))
 	_check(cover.get_global_rect().is_equal_approx(viewport), "The artwork fills the complete logical title without a half-width seam")
@@ -121,8 +124,16 @@ func _test_composition(cover: TitleCover) -> void:
 		_check(_ui.find_child("ArenaEffect_" + id, true, false) == null, "Map cards do not append explanatory terrain lines: " + id)
 		var option: Button = _button("Arena_" + id)
 		var name := _ui.find_child("ArenaName_" + id, true, false) as Label
+		if option != null:
+			option.grab_focus()
+			await _settle()
 		_check(option != null and option.toggle_mode and option.focus_mode == Control.FOCUS_ALL and viewport.encloses(option.get_global_rect()), "The actual map remains an accessible selectable control: " + id)
 		_check(name != null and name.text.contains(str(ArenaCatalog.definition(id)["name"])), "A map retains its necessary identifying name: " + id)
+	if is_instance_valid(original_focus):
+		original_focus.grab_focus()
+	if choice_scroll != null:
+		choice_scroll.scroll_vertical = original_scroll
+	await _settle()
 	var text: String = _visible_text(_ui._page)
 	_check(not text.contains("最高波次") and not text.contains("尚无记录") and not text.contains("方向键移动"), "Even a populated profile does not recreate cover statistics or control instructions")
 	for action: String in ["进入试炼", "设置", "退出游戏"]:

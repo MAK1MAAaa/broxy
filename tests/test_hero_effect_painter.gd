@@ -34,14 +34,19 @@ func _sim() -> CombatSim:
 	sim.player_direction = Vector2.RIGHT
 	return sim
 
-func _casts(sim: CombatSim) -> void:
-	for cast: int in 4:
+func _casts(sim: CombatSim, count: int = 4) -> void:
+	for cast: int in count:
 		sim._charge_owned_skills(9999.0)
 		_check(sim.try_hero_skill(), "The pressure fixture grants charge through the real cooldown helper and queues a complete five-bomb delivery")
 
 func _run() -> void:
 	var sim: CombatSim = _sim()
 	_casts(sim)
+	var reserved: Dictionary = sim.hero_effects_snapshot()
+	var preparing: Dictionary = HeroEffectPainter.geometry_snapshot(reserved, true)
+	_check(reserved["reserved_bombs"] == 20 and reserved["active_bombs"] == 0 and preparing["preparing_count"] == 20 and preparing["commands"].size() == 80, "Four real casts reserve all twenty slots and show charge tells without pretending the bombs have launched")
+	_check_geometry(preparing, 0, 0, 7, 20)
+	sim.step(55.0 / 60.0, Vector2.ZERO)
 	var live: Dictionary = sim.hero_effects_snapshot()
 	_check(live["active_bombs"] == 20, "The actual skill runtime reaches its declared twenty-bomb capacity")
 	var geometry: Dictionary = HeroEffectPainter.geometry_snapshot(live, true)
@@ -50,14 +55,21 @@ func _run() -> void:
 	sim.step(1.2, Vector2.ZERO)
 	var burst: Dictionary = sim.hero_effects_snapshot()
 	_check(burst["active_bombs"] == 0 and burst["bursts"].size() == 20 and burst["explosions"] == 20, "Real simulation expiry produces one blast receipt per bomb")
-	_casts(sim)
+	sim._charge_owned_skills(9999.0)
+	var unavailable: Dictionary = sim.hero_effects_snapshot()
+	_check(not sim.try_hero_skill() and sim.hero_effects_snapshot() == unavailable, "Twenty persistent impact areas reject a new five-area reservation without overwriting actual blasts")
+	sim.step(0.5, Vector2.ZERO)
+	_casts(sim, 3)
+	sim.step(55.0 / 60.0, Vector2.ZERO)
+	sim.step(1.2, Vector2.ZERO)
+	_casts(sim, 1)
 	var mixed: Dictionary = sim.hero_effects_snapshot()
 	geometry = HeroEffectPainter.geometry_snapshot(mixed, true)
-	_check(geometry["bomb_count"] == 20 and geometry["burst_count"] == 20 and geometry["commands"].size() == HeroEffectPainter.MAX_COMMANDS, "Simultaneous old blasts and new bombs respect the exact two-pool native command ceiling")
-	_check_geometry(geometry, 20, 20, 7)
+	_check(geometry["bomb_count"] == 0 and geometry["preparing_count"] == 5 and geometry["burst_count"] == 15 and geometry["commands"].size() == 125 and geometry["commands"].size() <= HeroEffectPainter.MAX_COMMANDS, "Old real blasts and newly reserved bombs retain their complete bounded native commands")
+	_check_geometry(geometry, 0, 15, 7, 5)
 	var static_geometry: Dictionary = HeroEffectPainter.geometry_snapshot(mixed, false)
-	_check(static_geometry["bomb_count"] == 20 and static_geometry["burst_count"] == 20 and static_geometry["commands"].size() == 120, "Disabling flash retains actual moving bodies and one exact range ring per blast without radial flashes")
-	_check_geometry(static_geometry, 20, 20, 1)
+	_check(static_geometry["bomb_count"] == 0 and static_geometry["preparing_count"] == 5 and static_geometry["burst_count"] == 15 and static_geometry["commands"].size() == 35, "Disabling flash retains actual moving bodies and one exact range ring per blast without radial flashes")
+	_check_geometry(static_geometry, 0, 15, 1, 5)
 	var before: String = _signature(sim)
 	var original: String = JSON.stringify(mixed)
 	for repeat: int in 25:
@@ -81,13 +93,13 @@ func _run() -> void:
 	print("HeroEffectPainter: %d assertions, %d failures" % [_checks, _failures])
 	quit(0 if _failures == 0 else 1)
 
-func _check_geometry(value: Dictionary, bombs: int, bursts: int, burst_commands: int) -> void:
+func _check_geometry(value: Dictionary, bombs: int, bursts: int, burst_commands: int, preparing: int = 0) -> void:
 	var bounds: Array = value["bounds"]
 	var commands: Array = value["commands"]
-	_check(bounds.size() == bombs + bursts and commands.size() <= HeroEffectPainter.MAX_COMMANDS, "Every authoritative entity receives one finite bounded paint region")
+	_check(bounds.size() == bombs + bursts + preparing and commands.size() <= HeroEffectPainter.MAX_COMMANDS, "Every authoritative entity receives one finite bounded paint region")
 	for index: int in commands.size():
 		var command: Dictionary = commands[index]
-		var entity: int = index / 5 if index < bombs * 5 else bombs + (index - bombs * 5) / burst_commands
+		var entity: int = index / 5 if index < bombs * 5 else bombs + (index - bombs * 5) / 4 if index < bombs * 5 + preparing * 4 else bombs + preparing + (index - bombs * 5 - preparing * 4) / burst_commands
 		var extent: Rect2
 		match str(command["kind"]):
 			"line":

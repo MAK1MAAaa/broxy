@@ -116,7 +116,11 @@ func _test_selection() -> void:
 			_check(card != null and viewport.encloses(card.get_global_rect()), "All character cards remain in the scaled title viewport: " + str(physical_size) + "/" + id)
 		for id: String in ArenaCatalog.IDS:
 			var map := _ui.find_child("Arena_" + id, true, false) as Control
-			_check(map != null and viewport.encloses(map.get_global_rect()), "Character selection preserves all four visible maps: " + id)
+			if map != null:
+				map.grab_focus()
+				await _settle()
+			var scroll := _ui.find_child("ArenaChoiceScroll", true, false) as ScrollContainer
+			_check(map != null and viewport.encloses(map.get_global_rect()) and scroll != null and scroll.get_global_rect().encloses(map.get_global_rect()), "Character selection preserves focus-following access to every map: " + id)
 		var start := _ui.find_child("StartTrial", true, false) as Control
 		_check(start != null and viewport.encloses(start.get_global_rect()) and cover != null and _ui.find_child("MenuArtwork", true, false) == cover, "The start action remains visible and the composite cover remains unchanged")
 	root.size = Vector2i(1280, 720)

@@ -40,7 +40,7 @@ func _fixture(seed_value: int = 20261030, count: int = 1, wave: int = 1, arena_i
 func _test_authored_layouts() -> void:
 	var legacy_ids: Array[String] = ["southwest", "southeast", "northwest", "north", "northeast", "east_north", "east", "east_south", "south", "west_south"]
 	var zone_count: int = 0
-	for id: String in ArenaCatalog.IDS:
+	for id: String in ArenaCatalog.LEGACY_IDS:
 		var arena: Dictionary = ArenaCatalog.definition(id)
 		zone_count += (arena["zones"] as Array).size()
 		var field := ArenaObstacles.new()

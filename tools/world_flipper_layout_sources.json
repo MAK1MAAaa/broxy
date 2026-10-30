@@ -1,0 +1,303 @@
+{
+  "schema_version": 1,
+  "archive": {
+    "repository": "https://github.com/blead/wf-assets",
+    "commit": "1d45b529ef078ba9b1f876d4588debd0c8a9a214",
+    "commit_date": "2024-02-19T17:09:36Z",
+    "region": "JP",
+    "asset_version": "1.780.40",
+    "license_status": "Original game data, no open asset license found. Public archive does not grant an asset license. Copyright Cygames, Inc. / Citail Inc."
+  },
+  "source_page": "https://worldflipper.jp/demo/",
+  "acquired_on": "2026-10-31",
+  "scope": "Eight public official-demo terrain files with actual geometry and verified demo field bindings; only three geometry references match final-JP layout entries. This is not full original-map runtime coverage.",
+  "coordinate_evidence": {
+    "runtime_source_id": "demo_runtime",
+    "inspection": "Static hexadecimal-string decoding and source inspection only; the remote JavaScript was not executed.",
+    "classes": [
+      "pinball.terrain.TmxParser",
+      "pinball.terrain.ZoneParser",
+      "pinball.terrain.YakumonoParser"
+    ],
+    "native_axes": "x right, y down, based on the source x/y values.",
+    "logic_units_per_native_unit": 6,
+    "wall_contract": "Open polyline: connect adjacent source vertices only; (object origin + vertex) * 6; do not close its last and first vertices.",
+    "point_contract": "Center is (object x + width/2, object y + height/2) * 6.",
+    "bounds_contract": "Rectangle x/y/width/height are multiplied by 6; this metadata alone is not authorization to fabricate four solid boundary walls.",
+    "layer_contract": "Each objectgroup name is parsed as its integer terrain index; preserve separate layers and source array order.",
+    "editor_contract": "The verified parser does not filter editor visible=false and does not use ellipse/rotation to infer a prop collision radius.",
+    "unsupported_collision_geometry": "Prop center points are known, but their collider radii/shapes require the corresponding yakumono definitions. Editor widths/heights must not be substituted as collider radii."
+  },
+  "background_source_registry": "tools/world_flipper_maps_sources.json",
+  "availability_probes": [
+    {
+      "layout_id": "fake_princess_01_10",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/terrain/event_quest/story_event/fake_princess_01/fake_princess_01_10.json",
+      "http_status": 404,
+      "checked_on": "2026-10-31",
+      "meaning": "Only this public demo URL was checked; not proof that the original asset is unavailable elsewhere."
+    },
+    {
+      "layout_id": "abyss_cloud",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/terrain/event_quest/raid_event/abyss_cloud/abyss_cloud.json",
+      "http_status": 404,
+      "checked_on": "2026-10-31",
+      "meaning": "Only this public demo URL was checked; not proof that the original asset is unavailable elsewhere."
+    },
+    {
+      "layout_id": "main_10_6_2",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/terrain/main_quest/chapter_10/main_chapter_10_06_02.json",
+      "http_status": 404,
+      "checked_on": "2026-10-31",
+      "meaning": "Only this public demo URL was checked; not proof that the original asset is unavailable elsewhere."
+    }
+  ],
+  "sources": [
+    {
+      "id": "terrain_main_chapter_02_09_05",
+      "role": "terrain",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/terrain/main_quest/chapter_02/main_chapter_02_09_05.json",
+      "cache_filename": "main_chapter_02_09_05.json",
+      "sha256": "990cfe273bb673fc0b5195a3b5219ae23d3c9e97c9fc7e42bfbc09e7316293f6",
+      "bytes": 3305,
+      "terrain_ref": "battle/terrain/main_quest/chapter_02/main_chapter_02_09_05"
+    },
+    {
+      "id": "terrain_main_chapter_06_06_02",
+      "role": "terrain",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/terrain/main_quest/chapter_06/main_chapter_06_06_02.json",
+      "cache_filename": "main_chapter_06_06_02.json",
+      "sha256": "a8d9f5a5075383b3d9fade0b4e43164d8ecb41add8b902e4d5f22fe063a81b01",
+      "bytes": 4390,
+      "terrain_ref": "battle/terrain/main_quest/chapter_06/main_chapter_06_06_02"
+    },
+    {
+      "id": "terrain_tutorial_01_01_01",
+      "role": "terrain",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/terrain/tutorial/tutorial_01_01_01.json",
+      "cache_filename": "tutorial_01_01_01.json",
+      "sha256": "cde620cb036c3e29cd9a949862aeea449f0999ee2400aa8fb06647e388f3de48",
+      "bytes": 3654,
+      "terrain_ref": "battle/terrain/tutorial/tutorial_01_01_01"
+    },
+    {
+      "id": "terrain_tutorial_01_01_02",
+      "role": "terrain",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/terrain/tutorial/tutorial_01_01_02.json",
+      "cache_filename": "tutorial_01_01_02.json",
+      "sha256": "8ee8af40fd866db9991708fe85fd714832a34b4ddf51014e5f7f2d3a963d44fe",
+      "bytes": 6354,
+      "terrain_ref": "battle/terrain/tutorial/tutorial_01_01_02"
+    },
+    {
+      "id": "terrain_tutorial_01_01_03",
+      "role": "terrain",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/terrain/tutorial/tutorial_01_01_03.json",
+      "cache_filename": "tutorial_01_01_03.json",
+      "sha256": "ddd04e02142549877d5d02b426600a684b2b28eb4fc74eada4b0213fb0813cbd",
+      "bytes": 8159,
+      "terrain_ref": "battle/terrain/tutorial/tutorial_01_01_03"
+    },
+    {
+      "id": "terrain_tutorial_01_01_04",
+      "role": "terrain",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/terrain/tutorial/tutorial_01_01_04.json",
+      "cache_filename": "tutorial_01_01_04.json",
+      "sha256": "06ddc0318182f2cf3ffab0e9d1fe49ec7986cf5b8c2dece1d8e6788a9b2638fb",
+      "bytes": 9630,
+      "terrain_ref": "battle/terrain/tutorial/tutorial_01_01_04"
+    },
+    {
+      "id": "terrain_tutorial_01_01_05",
+      "role": "terrain",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/terrain/tutorial/tutorial_01_01_05.json",
+      "cache_filename": "tutorial_01_01_05.json",
+      "sha256": "59ec4e3048784c8aef8002a97d75db33c2ee7f38c9cd9e623dae80df50060ca1",
+      "bytes": 3880,
+      "terrain_ref": "battle/terrain/tutorial/tutorial_01_01_05"
+    },
+    {
+      "id": "terrain_main_chapter_03_06_02-trial",
+      "role": "terrain",
+      "url": "https://worldflipper.jp/demo/src/assets/trial/production/battle/terrain/main_quest/chapter_03/main_chapter_03_06_02.json",
+      "cache_filename": "main_chapter_03_06_02-trial.json",
+      "sha256": "dd949f2f36e5cf02c4170adf7fced4265270355d9132eaa83c07b39025dc1d5f",
+      "bytes": 7733,
+      "terrain_ref": "battle/terrain/main_quest/chapter_03/main_chapter_03_06_02"
+    },
+    {
+      "id": "demo_field_data",
+      "role": "field_data",
+      "url": "https://worldflipper.jp/demo/src/assets/trial/production/master/battle/field_data.orderedmap",
+      "cache_filename": "field_data.orderedmap",
+      "sha256": "3b66dbbbaff2de8939dbbeb3301cc22900931b481ba59b245aeb55d19350b37f",
+      "bytes": 271
+    },
+    {
+      "id": "demo_field",
+      "role": "field",
+      "url": "https://worldflipper.jp/demo/src/assets/trial/production/master/battle/field.orderedmap",
+      "cache_filename": "field.orderedmap",
+      "sha256": "d3b2b2e63c23c648e631fe2ba957849c7bf068928f31c19a51ecbd69f07766fe",
+      "bytes": 724
+    },
+    {
+      "id": "demo_field_data_iosbundled",
+      "role": "field_data",
+      "url": "https://worldflipper.jp/demo/src/assets/trial/production/master/battle/field_data_iosbundled.orderedmap",
+      "cache_filename": "field_data_iosbundled.orderedmap",
+      "sha256": "8b899b44f00269848ba2836b8448845d4f6174a330e8b669db7e2629bf7face5",
+      "bytes": 338
+    },
+    {
+      "id": "demo_field_iosbundled",
+      "role": "field",
+      "url": "https://worldflipper.jp/demo/src/assets/trial/production/master/battle/field_iosbundled.orderedmap",
+      "cache_filename": "field_iosbundled.orderedmap",
+      "sha256": "edb490b1345ab73d372e63db95fdf54d75383f4c29fe231297ba62d067f40c1a",
+      "bytes": 590
+    },
+    {
+      "id": "demo_runtime",
+      "role": "runtime",
+      "url": "https://worldflipper.jp/demo/src/world-flipper.js",
+      "cache_filename": "world-flipper.js",
+      "sha256": "db5f3806599510ed3b6783ce5c4ccdac764eccbf4d297299af12eb902a814315",
+      "bytes": 28990839
+    },
+    {
+      "id": "jp_pathlist",
+      "role": "pathlist",
+      "url": "https://raw.githubusercontent.com/blead/wf-assets/1d45b529ef078ba9b1f876d4588debd0c8a9a214/.pathlist",
+      "cache_filename": "jp-pathlist.txt",
+      "sha256": "63f214f430f60c26051b37dda5a217300b8d445c15dc079595ec32799ab8321d",
+      "bytes": 4387004
+    },
+    {
+      "id": "background_sand_ruins_atlas",
+      "role": "atlas",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field/world_sand/sand_ruins/background/background.atlas.json",
+      "cache_filename": "sand_ruins-background.atlas.json",
+      "sha256": "e20cc2788bcc23312683ec8858751353ce5247a8a5e7fe41d971c3c98857d904",
+      "bytes": 101,
+      "field_id": "sand_ruins"
+    },
+    {
+      "id": "background_sand_ruins_parts",
+      "role": "parts",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field/world_sand/sand_ruins/background/background.parts.json",
+      "cache_filename": "sand_ruins-background.parts.json",
+      "sha256": "918100b1affb5674d1718b6c5bd7b1dadcfd86364dedcc4ed8b551754bbefc86",
+      "bytes": 232,
+      "field_id": "sand_ruins"
+    },
+    {
+      "id": "background_japan_shrine_atlas",
+      "role": "atlas",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field/world_japan/japan_shrine/background/background.atlas.json",
+      "cache_filename": "japan_shrine-background.atlas.json",
+      "sha256": "4db8ce99e5034807e0fd90fd1d59c49420c969442d7deccda9a8b0ad4fee9423",
+      "bytes": 104,
+      "field_id": "japan_shrine"
+    },
+    {
+      "id": "background_japan_shrine_parts",
+      "role": "parts",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field/world_japan/japan_shrine/background/background.parts.json",
+      "cache_filename": "japan_shrine-background.parts.json",
+      "sha256": "a07fb9bd249425e0fb760626435b7c92ce26c1fe7a7e4328a74db421dacd075f",
+      "bytes": 235,
+      "field_id": "japan_shrine"
+    },
+    {
+      "id": "background_sea_ship_boss_atlas",
+      "role": "atlas",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field/world_sea/sea_ship_boss/background/background.atlas.json",
+      "cache_filename": "sea_ship_boss-background.atlas.json",
+      "sha256": "1f570ddfbfc5ff4dbf5161e9ef4a35b8dc7136094b27a4b2511f88cffef71d16",
+      "bytes": 104,
+      "field_id": "sea_ship_boss"
+    },
+    {
+      "id": "background_sea_ship_boss_parts",
+      "role": "parts",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field/world_sea/sea_ship_boss/background/background.parts.json",
+      "cache_filename": "sea_ship_boss-background.parts.json",
+      "sha256": "3c83503cecd2b62b6da0704ca9e53f168bba8c804a2c20407f354b4aed9e7e5d",
+      "bytes": 234,
+      "field_id": "sea_ship_boss"
+    },
+    {
+      "id": "background_evil_tower_atlas",
+      "role": "atlas",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field/world_evil/evil_tower/background/background.atlas.json",
+      "cache_filename": "evil_tower-background.atlas.json",
+      "sha256": "d040d61350d750d8a09033527e19c49bfe81ba7cff1857d016f5a3d00ab1e126",
+      "bytes": 101,
+      "field_id": "evil_tower"
+    },
+    {
+      "id": "background_evil_tower_parts",
+      "role": "parts",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field/world_evil/evil_tower/background/background.parts.json",
+      "cache_filename": "evil_tower-background.parts.json",
+      "sha256": "4770ffcaa683b7919fc1b9b3e7636b00ba73b55f0340e56814237e7d316ac026",
+      "bytes": 232,
+      "field_id": "evil_tower"
+    },
+    {
+      "id": "background_evil_tower_top_atlas",
+      "role": "atlas",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field/world_evil/evil_tower_top/background/background.atlas.json",
+      "cache_filename": "evil_tower_top-background.atlas.json",
+      "sha256": "4a41e2f666e370bfd593039f55b52f6c6f11f9baf3b8081090999a7a5f9ffa5e",
+      "bytes": 662,
+      "field_id": "evil_tower_top"
+    },
+    {
+      "id": "background_evil_tower_top_parts",
+      "role": "parts",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field/world_evil/evil_tower_top/background/background.parts.json",
+      "cache_filename": "evil_tower_top-background.parts.json",
+      "sha256": "1456d80eb7c08a4f355e04dd3055d95d1d5249473356fd294de1fbd4e121997a",
+      "bytes": 1225,
+      "field_id": "evil_tower_top"
+    },
+    {
+      "id": "background_town_street_atlas",
+      "role": "atlas",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field/world_town/town_street/background/background.atlas.json",
+      "cache_filename": "town_street-background.atlas.json",
+      "sha256": "d0bade763247b65038a4eb9218889df7b245f5bc698e57799943ddeac4a2961b",
+      "bytes": 102,
+      "field_id": "town_street"
+    },
+    {
+      "id": "background_town_street_parts",
+      "role": "parts",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field/world_town/town_street/background/background.parts.json",
+      "cache_filename": "town_street-background.parts.json",
+      "sha256": "42d7f17c3cca9ca66bf2b7431f7a542fd300c21aa8546eda0ebe482020b7090c",
+      "bytes": 233,
+      "field_id": "town_street"
+    },
+    {
+      "id": "background_light_castle_throne_atlas",
+      "role": "atlas",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field/world_light/light_castle_throne/background/background.atlas.json",
+      "cache_filename": "light_castle_throne-background.atlas.json",
+      "sha256": "cec084673aab99da4ac318b91efe986197dac5770660783ff2ebe9f991a07042",
+      "bytes": 111,
+      "field_id": "light_castle_throne"
+    },
+    {
+      "id": "background_light_castle_throne_parts",
+      "role": "parts",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field/world_light/light_castle_throne/background/background.parts.json",
+      "cache_filename": "light_castle_throne-background.parts.json",
+      "sha256": "c3798a8c32116e096a2f2cfe8e3e2ec6a5b3246010549db6ec87806784a82479",
+      "bytes": 242,
+      "field_id": "light_castle_throne"
+    }
+  ]
+}

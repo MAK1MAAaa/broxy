@@ -169,8 +169,12 @@ func _test_world_resources_and_redraws() -> void:
 			expected_markers.append(marker)
 		var interactions: Dictionary = world.sim.interactions.snapshot()
 		var rendered: Dictionary = world.interaction_presentation_snapshot()
-		_check(static_props.size() == 12 and world._arena_obstacles == static_props and crate_colliders.size() == 12 and colliders.size() == 24 and world.minimap_snapshot()["obstacles"] == expected_markers, "Static rendering retains twelve props while collision and the live minimap also include twelve separate crates: " + id)
-		_check(rendered["crates"].size() == interactions["crates"].size() and rendered["crates"].size() == 12, "Dynamic scenery rendering projects every real active crate exactly once: " + id)
+		if ArenaCatalog.LEGACY_IDS.has(id):
+			_check(static_props.size() == 12 and world._arena_obstacles == static_props and crate_colliders.size() == 12 and colliders.size() == 24 and world.minimap_snapshot()["obstacles"] == expected_markers, "Static rendering retains twelve props while collision and the live minimap also include twelve separate crates: " + id)
+			_check(rendered["crates"].size() == interactions["crates"].size() and rendered["crates"].size() == 12, "Dynamic scenery rendering projects every real active crate exactly once: " + id)
+		else:
+			_check(static_props.is_empty() and world._arena_obstacles.is_empty() and crate_colliders.is_empty() and colliders.is_empty() and world.minimap_snapshot()["obstacles"].is_empty(), "Original layouts retain their real walls without invented prop colliders: " + id)
+			_check(rendered["crates"].is_empty() and interactions["crates"].is_empty() and world.minimap_snapshot()["walls"].size() == ArenaCatalog.wall_geometry(id).size(), "Source-stage rendering retains its actual wall geometry and has no invented breakable scenery: " + id)
 		for crate: Dictionary in interactions["crates"]:
 			var physics: Dictionary = crate_colliders.get("crate:" + str(crate["id"]), {})
 			var visual: Dictionary = {}
@@ -180,12 +184,18 @@ func _test_world_resources_and_redraws() -> void:
 					break
 			_check(not physics.is_empty() and not visual.is_empty() and physics["center"] == crate["position"] and visual["position"] == physics["center"] and visual["radius"] == physics["radius"] and visual["active"] == crate["active"], "The dynamic image, collider and map share the same real crate identity and footprint: %s/%s" % [id, crate["id"]])
 		var minimap_copy: Dictionary = world.minimap_snapshot()
-		minimap_copy["obstacles"][0]["center"] = Vector2.INF
+		var expected_walls: Array[Dictionary] = world.sim.obstacles.walls.snapshot()
+		if not minimap_copy["obstacles"].is_empty():
+			minimap_copy["obstacles"][0]["center"] = Vector2.INF
 		minimap_copy["obstacles"].clear()
+		if not minimap_copy["walls"].is_empty():
+			minimap_copy["walls"][0]["a"][0] = INF
+		minimap_copy["walls"].clear()
 		var render_copy: Dictionary = world.interaction_presentation_snapshot()
-		render_copy["crates"][0]["position"] = Vector2.INF
+		if not render_copy["crates"].is_empty():
+			render_copy["crates"][0]["position"] = Vector2.INF
 		render_copy["crates"].clear()
-		_check(world._arena_obstacles == static_props and world.sim.obstacles.snapshot() == colliders and world.sim.interactions.snapshot() == interactions and world.interaction_presentation_snapshot() == rendered and world.minimap_snapshot()["obstacles"] == expected_markers, "Mutating returned map and dynamic-render arrays or nested entries cannot change static art, real crate state or collision: " + id)
+		_check(world._arena_obstacles == static_props and world.sim.obstacles.snapshot() == colliders and world.sim.interactions.snapshot() == interactions and world.interaction_presentation_snapshot() == rendered and world.minimap_snapshot()["obstacles"] == expected_markers and world.sim.obstacles.walls.snapshot() == expected_walls and world.minimap_snapshot()["walls"] == expected_walls, "Mutating returned map and dynamic-render arrays or nested entries cannot change static art, real crate state or collision: " + id)
 		for prop: String in ["monument", "planter", "bumper"]:
 			_expect_texture(world._obstacle_textures.get(prop) as Texture2D, FAN_ROOT + "props/%s.png" % prop, Vector2(96, 96), "ground prop " + prop)
 		_check(world.texture_filter == CanvasItem.TEXTURE_FILTER_NEAREST, "The actual world uses local nearest filtering: " + id)

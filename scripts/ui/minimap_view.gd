@@ -8,6 +8,7 @@ const ZONE_LIMIT: int = 32
 const OBSTACLE_LIMIT: int = 64
 const PICKUP_LIMIT: int = 24
 const PICKUP_SCAN_LIMIT: int = 128
+const WALL_LIMIT: int = 512
 const INSET: float = 8.0
 const PAPER: Color = Color("fff9e8")
 const INK: Color = Color("253d54")
@@ -24,6 +25,7 @@ var _arena_id: String = ""
 var _enemies: Array[Dictionary] = []
 var _zones: Array[Dictionary] = []
 var _obstacles: Array[Dictionary] = []
+var _walls: Array[Dictionary] = []
 var _pickups: Array[Dictionary] = []
 var _pinball_active: bool = false
 
@@ -57,6 +59,7 @@ func update_snapshot(value: Variant) -> void:
 	_read_enemies(value.get("enemies", []))
 	_read_zones(value.get("zones", []))
 	_read_obstacles(value.get("obstacles", []))
+	_read_walls(value.get("walls", []))
 	_read_pickups(value.get("pickups", []))
 	_pinball_active = value.get("pinball_active", false) == true
 	_valid = true
@@ -72,6 +75,7 @@ func _clear() -> void:
 	_enemies.clear()
 	_zones.clear()
 	_obstacles.clear()
+	_walls.clear()
 	_pickups.clear()
 	_pinball_active = false
 
@@ -151,6 +155,24 @@ func _read_obstacles(value: Variant) -> void:
 		var kind: String = "crate" if str(entry.get("kind", "")) == "crate" else "prop"
 		_obstacles.append({"center": center, "radius": float(radius), "kind": kind})
 
+func _read_walls(value: Variant) -> void:
+	if not value is Array:
+		return
+	for index: int in mini(value.size(), WALL_LIMIT):
+		var entry: Variant = value[index]
+		if not entry is Dictionary:
+			continue
+		var a: Vector2 = ArenaObstacles._read_point(entry.get("a"))
+		var b: Vector2 = ArenaObstacles._read_point(entry.get("b"))
+		if not a.is_finite() or not b.is_finite():
+			continue
+		var clipped: Array[PackedVector2Array] = Geometry2D.intersect_polyline_with_polygon(PackedVector2Array([a, b]), PackedVector2Array([_bounds.position, Vector2(_bounds.end.x, _bounds.position.y), _bounds.end, Vector2(_bounds.position.x, _bounds.end.y)]))
+		for line: PackedVector2Array in clipped:
+			for point: int in maxi(0, line.size() - 1):
+				if _walls.size() >= WALL_LIMIT:
+					return
+				_walls.append({"a": line[point], "b": line[point + 1]})
+
 func _read_pickups(value: Variant) -> void:
 	if not value is Array:
 		return
@@ -187,6 +209,7 @@ func presentation_snapshot() -> Dictionary:
 	return {"valid": _valid, "bounds": _bounds, "player": _player, "facing": _facing, "view": _view,
 		"arena_id": _arena_id, "enemies": _enemies.duplicate(true), "zones": _zones.duplicate(true),
 		"obstacles": _obstacles.duplicate(true), "obstacle_count": _obstacles.size(),
+		"walls": _walls.duplicate(true), "wall_count": _walls.size(),
 		"crate_count": crates, "pickups": _pickups.duplicate(true), "pickup_count": _pickups.size(), "pickup_limit": PICKUP_LIMIT, "pinball_active": _pinball_active,
 		"enemy_count": _enemies.size(), "zone_count": _zones.size(), "enemy_limit": ENEMY_LIMIT}
 
@@ -202,6 +225,8 @@ func _draw() -> void:
 	draw_rect(area, Color("d4e3d7"))
 	_draw_zones(area)
 	_draw_obstacles(area)
+	for wall: Dictionary in _walls:
+		draw_line(world_to_map(wall["a"]), world_to_map(wall["b"]), Color(INK, 0.75), 1.0)
 	draw_rect(area, Color(CYAN, 0.65), false, 1.0)
 	_draw_view(area)
 	_draw_pickups(area)

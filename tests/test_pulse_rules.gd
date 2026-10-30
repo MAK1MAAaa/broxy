@@ -47,8 +47,8 @@ func _near(a: Vector2, b: Vector2) -> bool:
 	return a.distance_to(b) < 0.003
 
 func _terrain_center(arena: String) -> Vector2:
-	if arena == "reliquary":
-		return CombatSim.ARENA.get_center()
+	if (ArenaCatalog.definition(arena)["zones"] as Array).is_empty():
+		return ArenaCatalog.play_bounds(arena).get_center()
 	var zone: Dictionary = ArenaCatalog.definition(arena)["zones"][0]
 	return Vector2(float(zone["center"][0]), float(zone["center"][1]))
 
@@ -108,11 +108,17 @@ func _test_coincident_and_boundaries() -> void:
 	for arena: String in ArenaCatalog.IDS:
 		for positive: bool in [false, true]:
 			var sim: CombatSim = _sim(arena)
-			var bounds: Rect2 = CombatSim.ARENA
+			var bounds: Rect2 = ArenaCatalog.play_bounds(arena)
 			sim.player_position = bounds.end - Vector2(20, 20) if positive else bounds.position + Vector2(20, 20)
+			if ArenaCatalog.ORIGINAL_STAGE_IDS.has(arena):
+				sim.player_position = sim.obstacles.free_point(sim.player_position, 16.0, 16.0)
 			var offset: Vector2 = Vector2(10, 10) if positive else Vector2(-10, -10)
 			var enemy: CombatSim.Enemy = _enemy(sim, "tank", sim.player_position + offset)
+			var before: Vector2 = enemy.position
 			sim._try_cast_pulse()
+			if ArenaCatalog.ORIGINAL_STAGE_IDS.has(arena):
+				_check(sim.obstacles.is_free(enemy.position, enemy.radius) and enemy.position.distance_to(before) <= 70.01 and enemy.pulse_hinder_timer == 1.0 and sim.last_pulse_affected == 1, "Original-stage boundary and real walls stop the actual push without losing its control status: " + arena)
+				continue
 			_check(enemy.position == (bounds.end if positive else bounds.position) and enemy.pulse_hinder_timer == 1.0 and sim.last_pulse_affected == 1, "Push clamps to the shared expanded enemy arena bounds in " + arena)
 
 func _test_enemy_actions_and_immunity() -> void:

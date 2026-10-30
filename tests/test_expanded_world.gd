@@ -32,7 +32,7 @@ func _run() -> void:
 	app.set_process(false)
 	app.args = PackedStringArray(["--autoplay"])
 	app.sound.set_volume(0.0)
-	for id: String in ArenaCatalog.IDS:
+	for id: String in ArenaCatalog.LEGACY_IDS:
 		app.ui.set_selected_arena(id)
 		app._begin_run("bone", 20261028)
 		app.world.set_physics_process(false)

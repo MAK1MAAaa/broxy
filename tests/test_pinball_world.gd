@@ -85,8 +85,10 @@ func _run() -> void:
 	_test_frame_boundaries()
 	for id: String in HeroCatalog.IDS:
 		await _test_ball_identity(id)
-	for id: String in ArenaCatalog.IDS:
+	for id: String in ArenaCatalog.LEGACY_IDS:
 		await _test_dynamic_crates(id)
+	for id: String in ArenaCatalog.ORIGINAL_STAGE_IDS:
+		await _test_original_stage_scenery(id)
 	await _test_pickups_and_feedback()
 	await _test_hud_state()
 	print("PinballWorld: %d assertions, %d failures; native=%s" % [_checks, _failures, DisplayServer.get_name() != "headless"])
@@ -168,6 +170,24 @@ func _test_dynamic_crates(arena_id: String) -> void:
 		copy["crates"].clear()
 		map.update_snapshot(world.minimap_snapshot())
 	_check(_signature(world) == before and world.interaction_presentation_snapshot()["crates"].size() == 11, "Render snapshots are detached and repeated map updates cannot revive crates or consume randomness")
+	map.free()
+	await _dispose(world)
+
+func _test_original_stage_scenery(arena_id: String) -> void:
+	var world: ProbeWorld = _world("alk", arena_id)
+	var map := MinimapView.new()
+	map.size = Vector2(192, 126)
+	var before: String = _signature(world)
+	var source: Dictionary = world.sim.interactions.snapshot()
+	var rendered: Dictionary = world.interaction_presentation_snapshot()
+	var wall_count: int = ArenaCatalog.wall_geometry(arena_id).size()
+	_check(world.arena_texture != null and world.arena_texture.resource_path == ArenaCatalog.texture_path(arena_id) and world.sim.obstacles.bounds == ArenaCatalog.play_bounds(arena_id), "Source-stage scenery uses the actual selected world texture and play envelope")
+	_check(source["crates"].is_empty() and rendered["crates"].is_empty() and world._arena_obstacles.is_empty(), "Unknown source props do not become fabricated breakable scenery: " + arena_id)
+	map.update_snapshot(world.minimap_snapshot())
+	_check(int(map.presentation_snapshot()["crate_count"]) == 0 and int(map.presentation_snapshot()["wall_count"]) == wall_count and wall_count > 0, "The original-stage minimap shows every actual wall without fictitious crate markers")
+	world.queue_redraw()
+	await _settle()
+	_check(_signature(world) == before and world.interaction_presentation_snapshot()["crates"].is_empty(), "Actual source-stage redraws and minimap projection preserve combat state and the empty crate collection")
 	map.free()
 	await _dispose(world)
 

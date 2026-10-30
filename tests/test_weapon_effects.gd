@@ -147,8 +147,20 @@ func _test_skill_damage() -> void:
 	_check(is_equal_approx(float(state.active_skill_parameters(state.active_skills[0])["damage"]), float(rear_before["damage"]) * 1.28), "Backpack rear-skill parameters use the same skill multiplier")
 	_check(is_equal_approx(state.weapon_damage(state.loadout[0]), weapon_before), "Skill-only equipment does not strengthen ordinary weapon projectiles")
 	var sim: CombatSim = _sim(state)
+	var expected_damage: float = float(hero_before["damage"]) * 1.28 * 1.2
+	_check(is_equal_approx(float(sim.hero_skill_snapshot()["damage"]), expected_damage), "R prediction includes Parashu and Alk's opening attack buff once each")
+	var enemy: CombatSim.Enemy = sim.spawn_enemy("tank", sim.player_position + Vector2(40, 0))
+	enemy.health = 10000.0
+	enemy.max_health = 10000.0
+	enemy.slow_timer = 1000.0
+	enemy.slow_factor = 0.0
 	_check(sim.try_hero_skill(), "The real R cast accepts the new equipment parameters")
-	_check(is_equal_approx(float(sim._hero_skill_clock["parameters"]["damage"]), float(hero_before["damage"]) * 1.28), "The actual locked cast retains the once-scaled skill damage")
+	_check(is_equal_approx(float(sim._hero_skill_clock["parameters"]["damage"]), expected_damage), "The locked cast retains each skill and attack multiplier exactly once")
+	for frame: int in 43:
+		sim.step(STEP, Vector2.ZERO)
+	_check(enemy.health == 10000.0 and sim.skill_hits == 0, "Equipment cannot turn Alk's pending area into instant damage")
+	sim.step(STEP, Vector2.ZERO)
+	_check(is_equal_approx(10000.0 - enemy.health, expected_damage) and is_equal_approx(float(sim.damage_by_skill.get("hero_alk", 0.0)), expected_damage) and sim.skill_hits == 1, "The first real area hit applies Parashu and the opening buff once to actual damage and contribution")
 
 
 func _test_cast_haste() -> void:

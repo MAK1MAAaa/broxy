@@ -210,7 +210,12 @@ func _test_actual_skill_and_ball_damage() -> void:
 	point = sim.boss_weakpoints()[2]
 	sim.player_position = (point["position"] as Vector2) + Vector2(0, 70)
 	sim.player_direction = Vector2.UP
-	_check(sim.try_hero_skill() and sim.hero_skill_snapshot()["uses"] == 1 and sim.weakpoints_broken == 1, "R uses the selected hero's actual cast geometry and damage against a point")
+	_check(sim.try_hero_skill() and sim.hero_skill_snapshot()["uses"] == 1 and sim.weakpoints_broken == 0, "R reserves the selected hero's real delayed cast without inventing an instant point hit")
+	for frame: int in 43:
+		sim.step(STEP, Vector2.ZERO)
+	_check(sim.weakpoints_broken == 0 and sim.weakpoint_damage == 0.0, "Alk's first43action units cannot damage the selected point")
+	sim.step(STEP, Vector2.ZERO)
+	_check(sim.weakpoints_broken == 1 and sim.weakpoint_damage == float(point["health"]), "The actual44th-unit shockwave uses R geometry and accepted damage against a real point")
 	sim = _fixture()
 	_charge(sim)
 	point = sim.boss_weakpoints()[0]
@@ -281,10 +286,14 @@ func _test_deadline_and_stale_cast() -> void:
 		sim._damage_boss_weakpoint(points[index], 10000.0)
 	sim.player_position = (points[2]["position"] as Vector2) + Vector2(0, 60)
 	sim.player_direction = Vector2.UP
-	sim.step(float(sim.boss_encounter_snapshot()["charge_left"]) - STEP, Vector2.ZERO)
+	sim.step(float(sim.boss_encounter_snapshot()["charge_left"]) - 44.0 * STEP, Vector2.ZERO)
+	_check(sim.try_hero_skill() and sim.hero_skill_snapshot()["uses"] == 1 and sim.boss_interrupts == 0, "R begins its actual44-unit windup early enough to reach the final point's deadline")
+	for frame: int in 43:
+		sim.step(STEP, Vector2.ZERO)
 	_check(sim.boss_encounter_snapshot()["phase"] == "charge" and sim.boss_weakpoints().size() == 1, "A real final living point remains available on the penultimate cast frame")
-	sim.step(STEP, Vector2.ZERO, false, false, [], true)
-	_check(sim.boss_interrupts == 1 and sim.boss_encounter_snapshot()["phase"] == "break" and sim.zones.is_empty(), "The deadline frame accepts actual R damage before releasing the pending attack")
+	_check(is_equal_approx(float(sim.boss_encounter_snapshot()["charge_left"]), STEP) and sim.weakpoints_broken == 2 and sim.zones.is_empty(), "The queued shockwave has not hit or canceled the charge one frame early")
+	sim.step(STEP, Vector2.ZERO)
+	_check(sim.boss_interrupts == 1 and sim.boss_encounter_snapshot()["phase"] == "break" and sim.zones.is_empty(), "The deadline frame accepts the already prepared R shockwave before releasing the pending attack")
 	var old: Dictionary = points[2].duplicate(true)
 	sim._advance_boss_encounter(BossEncounter.BREAK_SECONDS + BossEncounter.AFTER_BREAK_RECOVERY_SECONDS)
 	var current: Dictionary = sim.boss_encounter_snapshot()
@@ -292,6 +301,19 @@ func _test_deadline_and_stale_cast() -> void:
 	_check(current["phase"] == "charge" and int(current["cast_id"]) > int(old["cast_id"]), "A subsequent real cast owns a distinct cast identity")
 	_check(not bool(sim._damage_boss_weakpoint(old, 10000.0).get("hit", false)) and sim.weakpoint_damage == damage, "A stale point record cannot damage or interrupt the new cast")
 	_check(not sim.try_hero_skill() and not sim.try_hero_skill("hanabi"), "The previous R cooldown and selected hero identity still reject stale recasts")
+	sim = _fixture()
+	_charge(sim)
+	points = sim.boss_weakpoints()
+	for index: int in 2:
+		sim._damage_boss_weakpoint(points[index], 10000.0)
+	sim.player_position = (points[2]["position"] as Vector2) + Vector2(0, 60)
+	sim.player_direction = Vector2.UP
+	sim.step(float(sim.boss_encounter_snapshot()["charge_left"]) - STEP, Vector2.ZERO)
+	var before: float = sim.weakpoint_damage
+	_check(sim.boss_weakpoints().size() == 1 and sim.hero_skill_snapshot()["ready"], "The late-input fixture retains a final living point and a genuinely ready R")
+	sim.step(STEP, Vector2.ZERO, false, false, [], true)
+	_check(sim.hero_skill_snapshot()["uses"] == 1 and sim.skill_timeline.snapshot()["occupied"] == 1 and sim.weakpoint_damage == before, "A deadline-frame R request starts its real windup without delivering premature damage")
+	_check(sim.boss_interrupts == 0 and sim.boss_encounter_snapshot()["phase"] == "recovery" and not sim.zones.is_empty(), "Starting R only on the deadline cannot cancel the pending attack before its44-unit windup")
 
 func _release(sim: CombatSim) -> void:
 	sim._advance_boss_encounter(float(sim.boss_encounter_snapshot()["charge_left"]))
@@ -390,14 +412,28 @@ func _test_real_arena_placement_and_snapshot_purity() -> void:
 		for ratio: float in [1.0, 0.4]:
 			for location: Vector2 in [Vector2(-1000, -450), Vector2(640, 208), Vector2(2040, 960)]:
 				var sim: CombatSim = _fixture([], arena, false)
-				_check(sim.obstacles.snapshot().size() == 24, "Every actual authored map retains its24ground colliders during boss placement: " + arena)
-				sim.boss.position = sim.obstacles.free_point(location, sim.boss.radius)
+				var definition: Dictionary = ArenaCatalog.definition(arena)
+				var circle_count: int = definition["obstacles"].size() + definition.get("crates", []).size()
+				var source_walls: Array[Dictionary] = ArenaCatalog.wall_geometry(arena)
+				var walls: Array[Dictionary] = sim.obstacles.walls.snapshot()
+				_check(sim.obstacles.snapshot().size() == circle_count and sim.interactions.snapshot()["crates"].size() == definition.get("crates", []).size(), "Actual map placement retains exactly its authored circular props and crates: " + arena)
+				_check(walls.size() == source_walls.size() and sim.obstacles.bounds == ArenaCatalog.play_bounds(arena), "Actual map placement uses its source WALL count and real playable bounds: " + arena)
+				if ArenaCatalog.LEGACY_IDS.has(arena):
+					_check(circle_count == 24 and source_walls.is_empty(), "Every legacy authored map retains its24ground colliders during boss placement: " + arena)
+				else:
+					_check(circle_count == 0 and walls.size() == int(ArenaCatalog.stage_info(arena)["wall_segment_count"]), "Original stages retain true WALL segments without invented generic circles or crates: " + arena)
+				for index: int in mini(walls.size(), source_walls.size()):
+					_check(walls[index]["id"] == source_walls[index]["id"] and walls[index]["a"] == source_walls[index]["a"] and walls[index]["b"] == source_walls[index]["b"], "Boss placement preserves each exact source WALL segment: " + arena)
+				sim.boss.position = sim.obstacles.free_point(location, sim.boss.radius, sim.boss.radius)
+				_check(sim.obstacles.bounds.encloses(Rect2(sim.boss.position - Vector2.ONE * sim.boss.radius, Vector2.ONE * sim.boss.radius * 2.0)) and sim.obstacles.is_free(sim.boss.position, sim.boss.radius), "The actual boss placement is free inside this map's bounds: " + arena)
 				sim.boss.health = sim.boss.max_health * ratio
 				sim.boss_encounter.begin(sim.boss.position, ratio)
 				var random_state: Array[int] = _rng(sim)
 				_charge(sim)
 				var points: Array[Dictionary] = sim.boss_weakpoints()
 				for point: Dictionary in points:
+					var clearance: float = float(point["radius"]) + 4.0
+					_check(sim.obstacles.bounds.encloses(Rect2((point["position"] as Vector2) - Vector2.ONE * clearance, Vector2.ONE * clearance * 2.0)), "A relocated point stays inside this map's actual playable bounds: " + arena)
 					_check(sim.obstacles.is_free(point["position"], float(point["radius"]) + 4.0), "A relocated living point is outside static props, crates and bumpers: " + arena)
 					for other: Dictionary in points:
 						if int(point["uid"]) != int(other["uid"]):
