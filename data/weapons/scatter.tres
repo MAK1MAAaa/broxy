@@ -6,6 +6,7 @@
 script = ExtResource("1")
 id = "scatter"
 kind = "weapon"
+source_id = "5040026"
 display_name = "海伯利安之弓"
 subtitle = "散射法器 · 扇面清扫"
 description = "同时射出三枚箭矢，适合近距离清理密集敌群。"

@@ -1,0 +1,155 @@
+{
+  "schema_version": 1,
+  "repository": "https://github.com/blead/wf-assets",
+  "commit": "1d45b529ef078ba9b1f876d4588debd0c8a9a214",
+  "commit_date": "2024-02-19T17:09:36Z",
+  "region": "JP",
+  "asset_version": "1.780.40",
+  "scope": "Japanese final online archive; seasonal and collaboration variants retain independent original IDs.",
+  "official_service_end_source": "https://worldflipper.jp/",
+  "official_service_end_date": "2024-02-20",
+  "license_status": "Original game data, no open asset license found. Public archive does not grant an asset license. Copyright Cygames, Inc. / Citail Inc.",
+  "copyright_source": "https://worldflipper.jp/copyright/",
+  "expected_counts": {
+    "characters": 505,
+    "equipment": 426,
+    "skill_groups": 570,
+    "skills": 1062,
+    "switched_skill_groups": 6,
+    "fields": 247,
+    "layouts": 1422,
+    "floor_groups": 89,
+    "chapters": 12
+  },
+  "sources": [
+    {
+      "id": "version",
+      "repository_path": "VERSION",
+      "url": "https://raw.githubusercontent.com/blead/wf-assets/1d45b529ef078ba9b1f876d4588debd0c8a9a214/VERSION",
+      "cache_filename": "version.txt",
+      "format": "text",
+      "sha256": "a6024c6b991d4c0e02b5960c1315ae552ae6169d48e9d188b04579b9d6bed0bf",
+      "bytes": 9
+    },
+    {
+      "id": "characters",
+      "repository_path": "orderedmap/character/character.json",
+      "url": "https://raw.githubusercontent.com/blead/wf-assets/1d45b529ef078ba9b1f876d4588debd0c8a9a214/orderedmap/character/character.json",
+      "cache_filename": "characters.json",
+      "format": "json",
+      "sha256": "0ee76f7acb14a0164579d8824e334f8178a73926d5cf1620ee49b8d3333c7153",
+      "bytes": 286318,
+      "records": 505
+    },
+    {
+      "id": "character_text",
+      "repository_path": "orderedmap/character/character_text.json",
+      "url": "https://raw.githubusercontent.com/blead/wf-assets/1d45b529ef078ba9b1f876d4588debd0c8a9a214/orderedmap/character/character_text.json",
+      "cache_filename": "character_text.json",
+      "format": "json",
+      "sha256": "9c1f49b27f8b53c2ee15a8f3957f67db6f3eaa195aec53c9fdd1f1e7ee058b37",
+      "bytes": 424105,
+      "records": 505
+    },
+    {
+      "id": "character_status",
+      "repository_path": "orderedmap/character/character_status.json",
+      "url": "https://raw.githubusercontent.com/blead/wf-assets/1d45b529ef078ba9b1f876d4588debd0c8a9a214/orderedmap/character/character_status.json",
+      "cache_filename": "character_status.json",
+      "format": "json",
+      "sha256": "b024ff8e087f1cc7324c1cc6e094a993964e3576b78eb75c360bfbc9f05b1a4b",
+      "bytes": 137969,
+      "records": 505
+    },
+    {
+      "id": "equipment",
+      "repository_path": "orderedmap/item/equipment.json",
+      "url": "https://raw.githubusercontent.com/blead/wf-assets/1d45b529ef078ba9b1f876d4588debd0c8a9a214/orderedmap/item/equipment.json",
+      "cache_filename": "equipment.json",
+      "format": "json",
+      "sha256": "f881e55f15cb084a293ef16024b055b486d57ad000fdf91d1340c8e870a39190",
+      "bytes": 173834,
+      "records": 426
+    },
+    {
+      "id": "equipment_status",
+      "repository_path": "orderedmap/item/equipment_status.json",
+      "url": "https://raw.githubusercontent.com/blead/wf-assets/1d45b529ef078ba9b1f876d4588debd0c8a9a214/orderedmap/item/equipment_status.json",
+      "cache_filename": "equipment_status.json",
+      "format": "json",
+      "sha256": "6c38009ba3e3dba0b8a622404a1970f5c6761e17501cecdd0fc647d972e62eec",
+      "bytes": 58380,
+      "records": 426
+    },
+    {
+      "id": "skills",
+      "repository_path": "orderedmap/skill/action_skill.json",
+      "url": "https://raw.githubusercontent.com/blead/wf-assets/1d45b529ef078ba9b1f876d4588debd0c8a9a214/orderedmap/skill/action_skill.json",
+      "cache_filename": "skills.json",
+      "format": "json",
+      "sha256": "1ca56c9174251842671a29cd6646299081beee790b84fce106ec32a6959eebea",
+      "bytes": 693174,
+      "records": 570
+    },
+    {
+      "id": "switched_skills",
+      "repository_path": "orderedmap/skill/switched_action_skill.json",
+      "url": "https://raw.githubusercontent.com/blead/wf-assets/1d45b529ef078ba9b1f876d4588debd0c8a9a214/orderedmap/skill/switched_action_skill.json",
+      "cache_filename": "switched_skills.json",
+      "format": "json",
+      "sha256": "9555293fde8a6c5b3530cb944e282e3b42b028940aa5cc2fb5941d982f630d6b",
+      "bytes": 4121,
+      "records": 6
+    },
+    {
+      "id": "fields",
+      "repository_path": "orderedmap/battle/field.json",
+      "url": "https://raw.githubusercontent.com/blead/wf-assets/1d45b529ef078ba9b1f876d4588debd0c8a9a214/orderedmap/battle/field.json",
+      "cache_filename": "fields.json",
+      "format": "json",
+      "sha256": "07b9a0d9c554cfbc3b68cb51f61710cb277b7f09f675377b9d0481df44511a54",
+      "bytes": 121332,
+      "records": 247
+    },
+    {
+      "id": "layouts",
+      "repository_path": "orderedmap/battle/field_data.json",
+      "url": "https://raw.githubusercontent.com/blead/wf-assets/1d45b529ef078ba9b1f876d4588debd0c8a9a214/orderedmap/battle/field_data.json",
+      "cache_filename": "layouts.json",
+      "format": "json",
+      "sha256": "67d38f9258be5f57558f0364928a1560d55e25861031b8b308bb0d19493b102f",
+      "bytes": 259649,
+      "records": 1422
+    },
+    {
+      "id": "floors",
+      "repository_path": "orderedmap/battle/floor.json",
+      "url": "https://raw.githubusercontent.com/blead/wf-assets/1d45b529ef078ba9b1f876d4588debd0c8a9a214/orderedmap/battle/floor.json",
+      "cache_filename": "floors.json",
+      "format": "json",
+      "sha256": "6679ea6c29335ac1ad296d066a957ec8a2b1c7b29812b7b17c5da73e79272b0b",
+      "bytes": 37962,
+      "records": 89
+    },
+    {
+      "id": "chapters",
+      "repository_path": "orderedmap/quest/main_chapter.json",
+      "url": "https://raw.githubusercontent.com/blead/wf-assets/1d45b529ef078ba9b1f876d4588debd0c8a9a214/orderedmap/quest/main_chapter.json",
+      "cache_filename": "chapters.json",
+      "format": "json",
+      "sha256": "e544cb7c8f45366c9a5b683befa225cb59608edab807d3788889e85333d69669",
+      "bytes": 7033,
+      "records": 12
+    },
+    {
+      "id": "asset_tree",
+      "repository_path": null,
+      "url": "https://api.github.com/repos/blead/wf-assets/git/trees/1d45b529ef078ba9b1f876d4588debd0c8a9a214?recursive=1",
+      "cache_filename": "asset_tree.json",
+      "format": "json",
+      "sha256": "33639bdd5a1e8d072933ab0b0ac6bac2ebf3f02553a8c9b850f9650485a09151",
+      "bytes": 3488009,
+      "records": 11820
+    }
+  ]
+}

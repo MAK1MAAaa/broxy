@@ -69,7 +69,7 @@ func _test_manifest_provenance() -> void:
 	_check(parsed is Dictionary and parsed.get("assets") is Array and parsed.get("sources") is Array, "The shipped original-game resources have a readable source manifest")
 	if not parsed is Dictionary or not parsed.get("assets") is Array or not parsed.get("sources") is Array:
 		return
-	_check(parsed.get("revision") == "world-flipper-fan-07" and AdventureArt.REVISION == parsed["revision"] and (parsed["sources"] as Array).size() == 68 and (parsed["assets"] as Array).size() == 65, "The running art revision matches all sixty-eight sources and sixty-five normalized outputs")
+	_check(parsed.get("revision") == "world-flipper-fan-08" and AdventureArt.REVISION == parsed["revision"] and (parsed["sources"] as Array).size() == 82 and (parsed["assets"] as Array).size() == 79, "The running art revision matches all eighty-two sources and seventy-nine normalized outputs")
 	var sources: Dictionary = {}
 	for source: Dictionary in parsed["sources"]:
 		sources[str(source["id"])] = source

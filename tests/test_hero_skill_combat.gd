@@ -42,13 +42,13 @@ func _run() -> void:
 		var store_random: int = sim.run.rng.state
 		var parameters: Dictionary = sim.run.hero_skill_parameters()
 		_check(sim.try_hero_skill(), "Every selected hero can cast R without a rear item: " + id)
-		_check(is_equal_approx(10000.0 - target.health, float(parameters["damage"])), "Hero damage uses the actual selected hero and party multiplier: " + id)
+		_check(is_equal_approx(10000.0 - target.health, 0.0 if id == "hanabi" else float(parameters["damage"])), "Instant casts use actual damage while bombs must first travel: " + id)
 		_check(untouched.health == 10000.0, "A target beyond the actual cast geometry is not hit: " + id)
 		_check(sim.hero_skill_snapshot()["uses"] == 1 and not sim.hero_skill_snapshot()["ready"], "R owns a real cooldown and use count: " + id)
 		_check(not sim.try_hero_skill() and not sim.try_active_skill(0), "Cooling R cannot recast and never grants a Q item: " + id)
 		_check(JSON.stringify(sim.run.backpack_snapshot()) == inventory and sim.run.active_skills.is_empty(), "Hero skill never occupies or grants a backpack slot: " + id)
 		_check(sim.rng.state == random_state and sim.run.rng.state == store_random, "The deterministic hero cast consumes neither RNG: " + id)
-		_check(is_equal_approx(float(sim.damage_by_skill["hero_" + id]), float(parameters["damage"])) and sim.skill_hits == 1, "Hero damage reaches real skill accounting: " + id)
+		_check(is_equal_approx(float(sim.damage_by_skill.get("hero_" + id, 0.0)), 0.0 if id == "hanabi" else float(parameters["damage"])) and sim.skill_hits == (0 if id == "hanabi" else 12 if id == "clarisse" else 1), "Hero damage reaches real skill accounting: " + id)
 		var saved: String = JSON.stringify(sim.hero_skill_snapshot())
 		sim.step(0.0, Vector2.ZERO, false, false, [], true)
 		sim.step(NAN, Vector2.ZERO, false, false, [], true)
@@ -82,10 +82,10 @@ func _test_shapes() -> void:
 			_check(CombatSim.skill_contains(parameters, origin, Vector2.RIGHT, origin + Vector2(80, half_width)), "Hanabi beam includes its actual side boundary")
 			_check(not CombatSim.skill_contains(parameters, origin, Vector2.RIGHT, origin + Vector2(80, half_width + 1.0)), "Hanabi beam cannot hit beyond its width")
 			_check(not CombatSim.skill_contains(parameters, origin, Vector2.RIGHT, origin + Vector2(-1, 0)), "Hanabi beam cannot hit behind its origin")
-		elif parameters["shape"] == "arc":
+		elif parameters["shape"] in ["arc", "double_arc"]:
 			var angle: float = float(parameters["half_angle_radians"])
-			_check(CombatSim.skill_contains(parameters, origin, Vector2.RIGHT, origin + Vector2.from_angle(angle) * 100.0), "Alk includes the exact arc boundary")
-			_check(not CombatSim.skill_contains(parameters, origin, Vector2.RIGHT, origin + Vector2.from_angle(angle + 0.01) * 100.0), "Alk cannot hit outside the displayed arc")
+			_check(CombatSim.skill_contains(parameters, origin, Vector2.RIGHT, origin + Vector2.from_angle(angle) * 100.0), "Sword cast includes the exact arc boundary")
+			_check(not CombatSim.skill_contains(parameters, origin, Vector2.RIGHT, origin + Vector2.from_angle(angle + 0.01) * 100.0), "Sword cast cannot hit outside the displayed arc")
 
 func _test_rear_independence() -> void:
 	var sim: CombatSim = _sim("alk")
@@ -107,7 +107,8 @@ func _test_effects() -> void:
 	var painter = preload("res://scripts/combat/active_skill_painter.gd").new()
 	for index: int in 24:
 		var hero_id: String = HeroCatalog.IDS[index % HeroCatalog.IDS.size()]
-		_check(painter.add_hero_cast(HeroCatalog.hero_skill_parameters(hero_id, {}), Vector2(640, 360), Vector2.RIGHT, true), "Every hero has a drawable real cast: " + hero_id)
+		if hero_id != "hanabi":
+			_check(painter.add_hero_cast(HeroCatalog.hero_skill_parameters(hero_id, {}), Vector2(640, 360), Vector2.RIGHT, true), "Instant heroes have a drawable cast; actual bombs use their runtime snapshot: " + hero_id)
 	_check(painter.snapshot()["active"] == 8, "Hero casts share the existing bounded effect pool")
 	painter.disable_animation()
 	_check(painter.snapshot()["animated"] == 0, "Flash suppression covers every hero shape")

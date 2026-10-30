@@ -30,6 +30,8 @@ class TrailBatch:
 	var color: Color = Color.WHITE
 	var width: float = 3.0
 	var source: String = ""
+	var width_scale: float = 1.2
+	var last_shot: CombatSim.Shot
 	var style: TrailStyle = TrailStyle.new()
 
 class InstanceBatch:
@@ -44,6 +46,7 @@ class HeadBatch extends InstanceBatch:
 	var source: String = ""
 	var frame: int = 0
 	var base_radius: float = 1.0
+	var texture: Texture2D
 
 var bodies: MultiMesh
 var heads: Dictionary = {}
@@ -59,6 +62,7 @@ var _friendly_keys: Array[String] = []
 var _body_buffer: PackedFloat32Array = PackedFloat32Array()
 var _head_base_radii: Dictionary = {}
 var _head_meshes: Dictionary = {}
+var _head_textures: Dictionary = {}
 
 func _init() -> void:
 	bodies = _multimesh(_disc_mesh(true), LIMIT)
@@ -68,6 +72,7 @@ func _init() -> void:
 		var source: String = HEAD_SOURCES[frame]
 		_head_base_radii[source] = GameCatalog.weapon(source).projectile_radius
 		_head_meshes[source] = _head_mesh(frame)
+		_head_textures[source] = atlas_texture
 
 func rebuild(shots: Array[CombatSim.Shot], view: Rect2 = Rect2()) -> void:
 	friendly_count = 0
@@ -89,6 +94,10 @@ func rebuild(shots: Array[CombatSim.Shot], view: Rect2 = Rect2()) -> void:
 		var key: String = shot.source + ":" + shot.rune
 		_friendly_keys.append(key)
 		family_counts[key] = int(family_counts.get(key, 0)) + 1
+		if not trails.has(key):
+			trails[key] = TrailBatch.new()
+		var trail: TrailBatch = trails[key]
+		trail.last_shot = shot
 		friendly_count += 1
 		if shot.rune == "bounce":
 			var radius: float = shot.radius + 3.0
@@ -109,23 +118,12 @@ func rebuild(shots: Array[CombatSim.Shot], view: Rect2 = Rect2()) -> void:
 		elif shot.source == "comet":
 			trail_length = 29.0
 		var tail: Vector2 = shot.position - direction * trail_length
-		var color: Color = Color("dab779") if shot.source == "ember" else shot.color
-		if shot.rune == "blast":
-			color = color.lerp(Color("dca0fa"), 0.35)
 		var key: String = _friendly_keys[index]
-		if not trails.has(key):
-			trails[key] = TrailBatch.new()
 		var trail: TrailBatch = trails[key]
-		trail.source = shot.source
-		trail.color = color
-		trail.width = shot.radius * 1.2
-		if shot.source == "return_ring":
-			trail.width = shot.radius * 0.25
-		elif shot.source == "crescent" or shot.source == "comet":
-			trail.width = shot.radius * 0.55
+		var width: float = shot.radius * trail.width_scale
 		var start: Vector2 = shot.position - direction * 16.0 if shot.source == "return_ring" else tail - direction * 6.0 if shot.source == "ember" else tail
 		var end: Vector2 = shot.position - direction * 10.0 if shot.source == "return_ring" else shot.position
-		if not view.has_area() or trail_draw_bounds(start, end, trail.width).intersects(view):
+		if not view.has_area() or trail_draw_bounds(start, end, width).intersects(view):
 			trail.points.append(start)
 			trail.points.append(end)
 			if shot.rune == "pierce" or shot.source == "frost":
@@ -137,7 +135,7 @@ func rebuild(shots: Array[CombatSim.Shot], view: Rect2 = Rect2()) -> void:
 				trail.wings.append(wing_tail - wing)
 				trail.wings.append(wing_head - wing if shot.source == "return_ring" else wing_head)
 		if shot.source == "ember":
-			_write_instance(_body_buffer, ember_count, shot.position, shot.radius, color)
+			_write_instance(_body_buffer, ember_count, shot.position, shot.radius, trail.color)
 			ember_count += 1
 		var head: HeadBatch = heads[key]
 		var head_direction: Vector2 = Vector2.RIGHT if direction.is_zero_approx() else direction
@@ -157,8 +155,6 @@ func rebuild(shots: Array[CombatSim.Shot], view: Rect2 = Rect2()) -> void:
 	for key: String in trails.keys():
 		if not family_counts.has(key):
 			trails.erase(key)
-		else:
-			_style_trail(trails[key])
 
 func _reclaim_capacity(batches: Dictionary, counts: Dictionary) -> void:
 	var allocated: int = 0
@@ -202,12 +198,29 @@ func _prepare_heads() -> void:
 		else:
 			head = HeadBatch.new()
 			head.source = key.get_slice(":", 0)
+			var definition: ContentDef = GameCatalog.weapon(head.source)
+			if not _head_meshes.has(head.source) and definition != null:
+				_head_base_radii[head.source] = definition.projectile_radius
+				_head_meshes[head.source] = _head_mesh(0, 1)
+				_head_textures[head.source] = load(AdventureArt.path("res://assets/icons/%s.svg" % definition.icon)) as Texture2D
 			var source: String = head.source if _head_meshes.has(head.source) else "bone"
 			head.frame = HEAD_SOURCES.find(source)
 			head.base_radius = _head_base_radii[source]
+			head.texture = _head_textures[source]
 			head.multimesh = _multimesh(_head_meshes[source], 0)
 			heads[key] = head
 		_resize_batch(head, int(family_counts[key]))
+		_prepare_trail(trails[key])
+
+static func _prepare_trail(trail: TrailBatch) -> void:
+	var shot: CombatSim.Shot = trail.last_shot
+	trail.source = shot.source
+	trail.color = Color("dab779") if shot.source == "ember" else shot.color
+	if shot.rune == "blast":
+		trail.color = trail.color.lerp(Color("dca0fa"), 0.35)
+	trail.width_scale = 0.25 if shot.source == "return_ring" else 0.55 if shot.source in ["crescent", "comet"] else 1.2
+	trail.width = shot.radius * trail.width_scale
+	_style_trail(trail)
 
 func _prepare_rings(ring_counts: Dictionary) -> void:
 	_reclaim_capacity(rings, ring_counts)
@@ -253,7 +266,7 @@ func draw(canvas: CanvasItem) -> void:
 		if not trail.wings.is_empty():
 			canvas.draw_multiline(trail.wings, Color(trail.color, 0.65), 1.0, true)
 		var head: HeadBatch = heads[key]
-		canvas.draw_multimesh(head.multimesh, atlas_texture)
+		canvas.draw_multimesh(head.multimesh, head.texture)
 
 func get_stats() -> Dictionary:
 	var head_capacity: int = 0
@@ -296,13 +309,13 @@ static func _write_head_instance(buffer: PackedFloat32Array, index: int, point: 
 	buffer[offset + 10] = 1.0
 	buffer[offset + 11] = 1.0
 
-static func _head_mesh(frame: int) -> ArrayMesh:
+static func _head_mesh(frame: int, frame_count: int = HEAD_SOURCES.size()) -> ArrayMesh:
 	var half_size: float = HEAD_WORLD_SIZE * 0.5
 	var vertices := PackedVector2Array([
 		Vector2(-half_size, -half_size), Vector2(half_size, -half_size), Vector2(half_size, half_size),
 		Vector2(-half_size, -half_size), Vector2(half_size, half_size), Vector2(-half_size, half_size)])
-	var left: float = float(frame) / float(HEAD_SOURCES.size())
-	var right: float = float(frame + 1) / float(HEAD_SOURCES.size())
+	var left: float = float(frame) / float(frame_count)
+	var right: float = float(frame + 1) / float(frame_count)
 	var uvs := PackedVector2Array([Vector2(left, 0), Vector2(right, 0), Vector2(right, 1),
 		Vector2(left, 0), Vector2(right, 1), Vector2(left, 1)])
 	var arrays: Array = []

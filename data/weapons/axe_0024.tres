@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="ContentDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/content_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "axe_0024"
+kind = "weapon"
+display_name = "帕拉修"
+icon = "axe_0024"
+source_id = "5020024"
+element = "physical"
+subtitle = "神授战斧 · 技能增幅"
+description = "投出穿敌战斧。Ⅰ阶Q／E／R技能伤害增加28%；不增加武器、球化与环境伤害。"
+color = Color(0.82, 0.73, 0.96, 1)
+price = 34
+damage = 22.0
+cooldown = 1.05
+projectile_speed = 360.0
+projectile_radius = 8.0
+range = 600.0
+innate_pierce = 1
+inventory_size = Vector2i(2, 3)
+equipment_bonuses = {"skill_damage": 0.28}

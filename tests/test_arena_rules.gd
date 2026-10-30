@@ -48,7 +48,7 @@ func _radius(zone: Dictionary) -> Vector2:
 
 
 func _test_catalog() -> void:
-	_check(ArenaCatalog.IDS.size() == 4 and ArenaCatalog.normalize_id("unknown") == "reliquary", "The catalog exposes exactly four maps with a safe default")
+	_check(ArenaCatalog.IDS.size() == 7 and ArenaCatalog.normalize_id("unknown") == "reliquary", "The catalog exposes seven maps with a safe default")
 	_check(ArenaCatalog.WORLD_BOUNDS == Rect2(-1082, -535, 3444, 1800) and ArenaCatalog.ART_MARGIN_TOP == 232.0 and ArenaCatalog.art_rect() == Rect2(-1146, -767, 3780, 2192), "The larger top artwork margin preserves the exact playable-world geometry")
 	_check(ArenaCatalog.visible_rect(ArenaCatalog.WORLD_BOUNDS.get_center()).position - ArenaCatalog.art_rect().position == Vector2(1146, 772), "The unchanged central camera maps to the exact new artwork preview crop")
 	var total_zones: int = 0
@@ -80,7 +80,7 @@ func _test_catalog() -> void:
 		definition["name"] = "mutated"
 		(definition["zones"] as Array).clear()
 		_check(ArenaCatalog.definition(id)["name"] != "mutated" and (id == "reliquary" or not (ArenaCatalog.definition(id)["zones"] as Array).is_empty()), "Catalog copies cannot mutate combat data: " + id)
-	_check(total_zones == 34, "Expanded artwork preserves all thirty-four authored terrain patches")
+	_check(total_zones == 52, "Expanded artwork preserves all fifty-two authored terrain patches")
 
 
 func _test_state_lifecycle() -> void:
@@ -146,7 +146,7 @@ func _test_compiled_terrain() -> void:
 		arena["move_multiplier"] = 999.0
 		(arena["zones"] as Array).clear()
 		_compare_terrain(unchanged, Vector2(310, 275))
-	_check(zones == 34, "The exact terrain index compiles all thirty-four ellipses without reducing gameplay coverage")
+	_check(zones == 52, "The exact terrain index compiles all fifty-two ellipses without reducing gameplay coverage")
 	for point: Vector2 in [Vector2.INF, Vector2(NAN, 1.0)]:
 		for id: String in ArenaCatalog.IDS:
 			_check(ArenaCatalog.movement_multiplier(id, point) == 1.0 and ArenaCatalog.terrain_name(id, point).is_empty(), "Invalid positions never enter terrain index arithmetic")

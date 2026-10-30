@@ -44,6 +44,17 @@ static func hero_skill_parameters(id: String, stats: Dictionary) -> Dictionary:
 	if not is_finite(multiplier):
 		multiplier = 1.0
 	result["damage"] = float(result.get("damage", 0.0)) * maxf(0.0, multiplier)
+	var raw_haste: Variant = stats.get("skill_haste", 0.0)
+	var haste: float = float(raw_haste) if raw_haste is float or raw_haste is int else 0.0
+	haste = clampf(haste, 0.0, 2.0) if is_finite(haste) else 0.0
+	result["cooldown"] = float(result.get("cooldown", 1.0)) / (1.0 + haste)
+	if result.get("delivery", "instant") == "bombs":
+		var raw_summon: Variant = stats.get("summon_damage", 1.0)
+		var summon: float = float(raw_summon) if raw_summon is float or raw_summon is int else 1.0
+		result["damage"] *= maxf(0.0, summon) if is_finite(summon) else 1.0
 	result["hero_id"] = hero.id
 	result["rank"] = 1
+	result["source_skill_name"] = hero.source_skill_name
+	result["source_skill_weight"] = hero.source_skill_weight
+	result["adapted"] = true
 	return result

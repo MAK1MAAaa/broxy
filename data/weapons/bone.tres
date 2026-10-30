@@ -6,6 +6,7 @@
 script = ExtResource("1")
 id = "bone"
 kind = "weapon"
+source_id = "3010053"
 display_name = "野营刀"
 subtitle = "迅捷法器 · 精准点杀"
 description = "发射高速飞刃，持续压制最近的敌人。"

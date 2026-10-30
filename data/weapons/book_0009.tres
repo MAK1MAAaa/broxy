@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="ContentDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/content_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "book_0009"
+kind = "weapon"
+display_name = "占事略决"
+icon = "book_0009"
+source_id = "5050009"
+element = "fire"
+subtitle = "阴阳古书 · 弹射强化"
+description = "释放三枚扇形火符。Ⅰ阶球化撞敌伤害增加25%，不增强普通武器与技能。"
+color = Color(0.91, 0.43, 0.2, 1)
+price = 30
+damage = 8.0
+cooldown = 0.92
+projectile_speed = 340.0
+projectile_radius = 5.0
+range = 560.0
+shots = 3
+spread = 0.27
+inventory_size = Vector2i(2, 2)
+equipment_effects = Array[Dictionary]([{"kind": "ball_damage", "amount": 0.25}])

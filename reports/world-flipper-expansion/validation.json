@@ -1,0 +1,759 @@
+{
+  "schema_version": 1,
+  "base_commit": "2d915fd",
+  "branch": "codex/world-flipper-expansion",
+  "platform": "Windows",
+  "headless": {
+    "suites": 119,
+    "diagnostics": 5,
+    "invocations": 124,
+    "assertions": 66500,
+    "python_tests": 108,
+    "failures": 0,
+    "engine_errors": 0,
+    "log_sha256": "c299091908c1a5a7495653ac4fca7c8693d8057ce691e485f29c4f21ae41f6d6"
+  },
+  "native": [
+    {
+      "log": "native-weapon_effects.log",
+      "assertions": 167,
+      "invocations": 1,
+      "sha256": "280fa30a8301b16ce4ae4645c52d6f306db37498beebd49364f6721c137a68c1"
+    },
+    {
+      "log": "native-hero_skill_effects.log",
+      "assertions": 51,
+      "invocations": 1,
+      "sha256": "0908457a797ca512571da3371ae14cee94b1335da92b5dcd05fef45e62402035"
+    },
+    {
+      "log": "native-hero_effect_painter.log",
+      "assertions": 480,
+      "invocations": 1,
+      "sha256": "1b2b8064dd85707c5b8624c569547b656fc7e4e048ae1b874cfb08e7656973db"
+    },
+    {
+      "log": "native-wf_expansion_ui.log",
+      "assertions": 118,
+      "invocations": 1,
+      "sha256": "fdeaa5238ef2eaa3bbc9d9d7a84b31224836b6de50ee2a257410fdda4cc48e08"
+    },
+    {
+      "log": "native-hero_skill_combat.log",
+      "assertions": 95,
+      "invocations": 1,
+      "sha256": "134dd58d88883c434597856083c227d0c3407857be3e335dfa2cb81b4e789263"
+    },
+    {
+      "log": "native-hero_skill_flow.log",
+      "assertions": 83,
+      "invocations": 1,
+      "sha256": "867277a7fcebc10d70be28bf85fe9da9d154ce531b5d51541939e43719b6373a"
+    },
+    {
+      "log": "native-hero_party_ui.log",
+      "assertions": 83,
+      "invocations": 1,
+      "sha256": "ab5658cab2cab08b49c8a371098f126ec39e63e8de000fdb2706cc5c1a1c86ac"
+    },
+    {
+      "log": "native-projectile_painter.log",
+      "assertions": 89,
+      "invocations": 1,
+      "sha256": "1e7dffcf4e90f2472256a77f474ec752e7c636441dd77b4e5e1a78e4891cf408"
+    },
+    {
+      "log": "native-trail_readability.log",
+      "assertions": 212,
+      "invocations": 1,
+      "sha256": "c513f32b5102aa3c2183d81502a4efb27edafcb3e6d57a3246eb1f6bafcadc38"
+    },
+    {
+      "log": "native-world_flipper_art.log",
+      "assertions": 214,
+      "invocations": 1,
+      "sha256": "7a07ed65f569b37d87287c8d89fd2bba6bdb70d3160148de1ded51ee834e7640"
+    },
+    {
+      "log": "native-expanded_world.log",
+      "assertions": 337,
+      "invocations": 1,
+      "sha256": "cc05b60f48b9cd3041cd23c5014c44e3295cf2dff6dee20f7e6b5b8e846bd0dd"
+    },
+    {
+      "log": "native-boss_combat.log",
+      "assertions": 504,
+      "invocations": 1,
+      "sha256": "0cbba96ae2562649a33a20f14a7a680efb7154ccaae0cc56cd0cf02f599e48ef"
+    },
+    {
+      "log": "native-boss_world.log",
+      "assertions": 69,
+      "invocations": 1,
+      "sha256": "e13a0e0e7f25d219d2386af7d69ff65d7173a2889f189d4a570ef7257c825c4c"
+    },
+    {
+      "log": "native-gamepad_reading.log",
+      "assertions": 227,
+      "invocations": 1,
+      "sha256": "2c90a597d25701ab5c5be05637a42950fbf30fe9659d922f71e4e15c250492b8"
+    }
+  ],
+  "source_previews": [
+    {
+      "view": "bomb-burst",
+      "sha256": "34602421d106911b1dd50af895f31dc332d8eb2aa5cc4b3d1705a36e74a961a0",
+      "state_hash": "903ca7bac0fcb6f38325299a5790384ffae3f335c77c44141c7b4439e949a350",
+      "hero": "hanabi",
+      "arena": "town",
+      "wave_time": 0.833333333333334,
+      "physical_window": [
+        1280,
+        720
+      ],
+      "bombs": 0,
+      "explosions": 5
+    },
+    {
+      "view": "bomb-flight",
+      "sha256": "7e34b42de4b02b1b8cba2b193afc2357f07cf81ebec0eb06d67f9b46f6102f22",
+      "state_hash": "efd5335b7a03439941d1485ae220d13a6719d7553703a2af7de9f31ab8845ea0",
+      "hero": "hanabi",
+      "arena": "town",
+      "wave_time": 0.2,
+      "physical_window": [
+        1280,
+        720
+      ],
+      "bombs": 5,
+      "explosions": 0
+    },
+    {
+      "view": "flash-off",
+      "sha256": "0788d8047580e799eb890f12fdb8a9bd903e3583d2461064a2979bd9b09afaca",
+      "state_hash": "5a1ec6809a91a8fb37765e114f4e5cebd8aee9546d04556e3d747f06eee357c2",
+      "hero": "celtie",
+      "arena": "town",
+      "wave_time": 0.116666666666667,
+      "physical_window": [
+        1280,
+        720
+      ],
+      "bombs": 0,
+      "explosions": 0
+    },
+    {
+      "view": "map-ashland",
+      "sha256": "77003273ac86354acc9d8d1a771d325d870d858d87e2496af063f265208008fa",
+      "state_hash": "3f6634a4c9602a9e61913aa6160788ae91c0a79166495195e1c6dcbfcc5870af",
+      "hero": "alk",
+      "arena": "ashland",
+      "wave_time": 0.0,
+      "physical_window": [
+        1280,
+        720
+      ],
+      "bombs": 0,
+      "explosions": 0
+    },
+    {
+      "view": "map-glacier",
+      "sha256": "6f287d751491afad3b76e7854e977dd86a2789ede5a297370cc9f9dc4e2d88ae",
+      "state_hash": "78e866c1d0a1f458de1b1a589b2cd51dfd75a95d292e8c29b4e9e967d06fda20",
+      "hero": "alk",
+      "arena": "glacier",
+      "wave_time": 0.0,
+      "physical_window": [
+        1280,
+        720
+      ],
+      "bombs": 0,
+      "explosions": 0
+    },
+    {
+      "view": "map-mire",
+      "sha256": "39a323b5096e1e424c6629755696897a13740427981979b6eeccb240e3fe8dc8",
+      "state_hash": "ad6683eae43aaa0d65f152a6e826f559d7d871e3ddc20539a08c7c52a3ae718a",
+      "hero": "alk",
+      "arena": "mire",
+      "wave_time": 0.0,
+      "physical_window": [
+        1280,
+        720
+      ],
+      "bombs": 0,
+      "explosions": 0
+    },
+    {
+      "view": "map-reliquary",
+      "sha256": "0cfacfa56cc00fcec0317ca807f852395b6174913329f442e007662412d30cdb",
+      "state_hash": "d4c2a1fa08499593ea52a27d1f5863c310f8b21c6b06b2952740aebf369939bf",
+      "hero": "alk",
+      "arena": "reliquary",
+      "wave_time": 0.0,
+      "physical_window": [
+        1280,
+        720
+      ],
+      "bombs": 0,
+      "explosions": 0
+    },
+    {
+      "view": "map-throne",
+      "sha256": "1f9f24db443d95bed4b30836df9d88a37e2d042e0e8d920fa3d02573a342651b",
+      "state_hash": "5820b8e1d5e63cf26d0c61942d61cd20ec5b205b705727c05acbce401b58f2ec",
+      "hero": "alk",
+      "arena": "throne",
+      "wave_time": 0.0,
+      "physical_window": [
+        1280,
+        720
+      ],
+      "bombs": 0,
+      "explosions": 0
+    },
+    {
+      "view": "map-tower_peak",
+      "sha256": "7b71c09b2d1bc30e617cf244bdda7863e8904913c32de5943666bc23d49364f1",
+      "state_hash": "5a6e8c287b8004b8f3199240d04d43309f8f192cca67f8b61f2e2cd3efdda8d0",
+      "hero": "alk",
+      "arena": "tower_peak",
+      "wave_time": 0.0,
+      "physical_window": [
+        1280,
+        720
+      ],
+      "bombs": 0,
+      "explosions": 0
+    },
+    {
+      "view": "map-town",
+      "sha256": "8f24aed95db1e323da83c13f072e9535fc7469ab6414aa19bd63fe81f88ae447",
+      "state_hash": "105c8fe5e717f8b54c6c8aeab0e27afcb4b7ea94dd13407582078be94a39e8a6",
+      "hero": "alk",
+      "arena": "town",
+      "wave_time": 0.0,
+      "physical_window": [
+        1280,
+        720
+      ],
+      "bombs": 0,
+      "explosions": 0
+    },
+    {
+      "view": "shop",
+      "sha256": "c9ec13290f758ca1da7a498a5af193c40aab057cb10e57a190cf2a77921a43aa",
+      "state_hash": "a1317343db5b10e1cbea776f092d5d93d88f11fd0db2ce27812a95ca22069cf7",
+      "hero": "alk",
+      "arena": "town",
+      "wave_time": 0.0,
+      "physical_window": [
+        1280,
+        720
+      ],
+      "bombs": 0,
+      "explosions": 0
+    },
+    {
+      "view": "skill-alk",
+      "sha256": "3d7792f4c682dcf5b1a0bde194f6aa85a338da2f4a4862e7a98f279b1b93e600",
+      "state_hash": "147e3016f0cc3e65d8edb718ac8853a8dbdd4e39e0e2da08798d1202ce20c13a",
+      "hero": "alk",
+      "arena": "throne",
+      "wave_time": 0.116666666666667,
+      "physical_window": [
+        1280,
+        720
+      ],
+      "bombs": 0,
+      "explosions": 0
+    },
+    {
+      "view": "skill-celtie",
+      "sha256": "a1745587119ed4b6eb5f562b145b073acbf8306ba2a329478dbcb90bbb25b51b",
+      "state_hash": "17c4980d0d0c3d5c28e80579c2c4dabe2c217cb0b50bfb2994c1efbd470a8869",
+      "hero": "celtie",
+      "arena": "throne",
+      "wave_time": 0.116666666666667,
+      "physical_window": [
+        1280,
+        720
+      ],
+      "bombs": 0,
+      "explosions": 0
+    },
+    {
+      "view": "skill-clarisse",
+      "sha256": "4c663321d1d71e5452e73088a9735151729fdc8b9002cbbe01a7d342e330c1d1",
+      "state_hash": "d4b3bf71bb87e5949d9e00320c4c544246cbc986429299157615df4b1318b546",
+      "hero": "clarisse",
+      "arena": "throne",
+      "wave_time": 0.116666666666667,
+      "physical_window": [
+        1280,
+        720
+      ],
+      "bombs": 0,
+      "explosions": 0
+    },
+    {
+      "view": "small-gamepad",
+      "sha256": "4366ccc62b392bde5e7b55de9144047d8f4ae31692901c72ada286730691be2c",
+      "state_hash": "efd5335b7a03439941d1485ae220d13a6719d7553703a2af7de9f31ab8845ea0",
+      "hero": "hanabi",
+      "arena": "town",
+      "wave_time": 0.2,
+      "physical_window": [
+        960,
+        540
+      ],
+      "bombs": 5,
+      "explosions": 0
+    },
+    {
+      "view": "throne-east",
+      "sha256": "0b7b827fba2114cbb1892b7eeea80160c769028e734e43813de4b338e348039a",
+      "state_hash": "d48626714838e7b4c9a00366111e5fcd2819ed312c901e6482a84a0ec557cc7e",
+      "hero": "alk",
+      "arena": "throne",
+      "wave_time": 0.0,
+      "physical_window": [
+        1280,
+        720
+      ],
+      "bombs": 0,
+      "explosions": 0
+    },
+    {
+      "view": "throne-north",
+      "sha256": "55d3b591476f998932e72c9a090b27edc4acca8c82b8630805c22017c89e9912",
+      "state_hash": "88d13a5bf4efe4b6de2e0879b25b639bdf272b75fdfc315ae742221f4870814d",
+      "hero": "alk",
+      "arena": "throne",
+      "wave_time": 0.0,
+      "physical_window": [
+        1280,
+        720
+      ],
+      "bombs": 0,
+      "explosions": 0
+    },
+    {
+      "view": "title",
+      "sha256": "cb6e750fdd2bee4fc63bf047cc909258df5ef1434f9ad4c3120ee40912e16346",
+      "state_hash": "a3956695d8b48e28d46a27321acac68a9dcd6d25f839ed3f8b37b5431f5523da",
+      "hero": "alk",
+      "arena": "town",
+      "wave_time": 0.0,
+      "physical_window": [
+        1280,
+        720
+      ],
+      "bombs": 0,
+      "explosions": 0
+    },
+    {
+      "view": "tower_peak-east",
+      "sha256": "e2682527820e4aa8b84b9131162bf265547e97ed4de9e55d5ed1d88037a624e0",
+      "state_hash": "0ea8fa41f6d968e6c5d109cdff3a4c04f62d65f1eea08fa7491dde2f0b8a909c",
+      "hero": "alk",
+      "arena": "tower_peak",
+      "wave_time": 0.0,
+      "physical_window": [
+        1280,
+        720
+      ],
+      "bombs": 0,
+      "explosions": 0
+    },
+    {
+      "view": "tower_peak-north",
+      "sha256": "e7a6eea33809bc6699542dde1795a4a4028795f6164c9cbb66ba84715b975356",
+      "state_hash": "90bf5aefc451328c540238984b08612250d936d624c02984e1cfd8200f9aa54c",
+      "hero": "alk",
+      "arena": "tower_peak",
+      "wave_time": 0.0,
+      "physical_window": [
+        1280,
+        720
+      ],
+      "bombs": 0,
+      "explosions": 0
+    },
+    {
+      "view": "town-east",
+      "sha256": "4a21b8181006208a3ee76db09af3034f61e89cc4887313f245cc6b408bf0f15a",
+      "state_hash": "f87cbd4a1b4d563e5470a4efbab1e892ede8d03607baba2b70ab1d4c71e7f1a0",
+      "hero": "alk",
+      "arena": "town",
+      "wave_time": 0.0,
+      "physical_window": [
+        1280,
+        720
+      ],
+      "bombs": 0,
+      "explosions": 0
+    },
+    {
+      "view": "town-north",
+      "sha256": "6c0d8da58edaa026fe5921d090249943eedbe00ec1d34f8d442da97ae1d75f21",
+      "state_hash": "15273984df69f5df2e01b74cedbb3d9b360d104b21a91adfc7e1b9159d5c4c03",
+      "hero": "alk",
+      "arena": "town",
+      "wave_time": 0.0,
+      "physical_window": [
+        1280,
+        720
+      ],
+      "bombs": 0,
+      "explosions": 0
+    },
+    {
+      "view": "weapons",
+      "sha256": "c0f35363df2143ad5ad4948fc50fa6861f0c52b856ed0527528cc529d9547166",
+      "state_hash": "105c8fe5e717f8b54c6c8aeab0e27afcb4b7ea94dd13407582078be94a39e8a6",
+      "hero": "alk",
+      "arena": "town",
+      "wave_time": 0.0,
+      "physical_window": [
+        1280,
+        720
+      ],
+      "bombs": 0,
+      "explosions": 0
+    }
+  ],
+  "assets": {
+    "preserved_pngs": 65,
+    "normalized_pngs": 79,
+    "pinned_sources": 82,
+    "manifest_sha256": "33576d518bed52ddc2d7a9c79f58c28959ffee98efdbd4c3e4f4c2da1e13490f"
+  },
+  "verification_scope": "Current claims are partially adapted or adapted-playable game content, not complete original characters, skill ranks, story quests or layouts.",
+  "passed": true,
+  "exported_native": [
+    {
+      "log": "pack-check-weapon_effects.log",
+      "assertions": 167,
+      "invocations": 1,
+      "sha256": "280fa30a8301b16ce4ae4645c52d6f306db37498beebd49364f6721c137a68c1"
+    },
+    {
+      "log": "pack-check-hero_skill_effects.log",
+      "assertions": 51,
+      "invocations": 1,
+      "sha256": "0908457a797ca512571da3371ae14cee94b1335da92b5dcd05fef45e62402035"
+    },
+    {
+      "log": "pack-check-hero_effect_painter.log",
+      "assertions": 480,
+      "invocations": 1,
+      "sha256": "1b2b8064dd85707c5b8624c569547b656fc7e4e048ae1b874cfb08e7656973db"
+    },
+    {
+      "log": "pack-check-wf_expansion_ui.log",
+      "assertions": 118,
+      "invocations": 1,
+      "sha256": "fdeaa5238ef2eaa3bbc9d9d7a84b31224836b6de50ee2a257410fdda4cc48e08"
+    },
+    {
+      "log": "pack-check-hero_skill_combat.log",
+      "assertions": 95,
+      "invocations": 1,
+      "sha256": "134dd58d88883c434597856083c227d0c3407857be3e335dfa2cb81b4e789263"
+    },
+    {
+      "log": "pack-check-hero_skill_flow.log",
+      "assertions": 83,
+      "invocations": 1,
+      "sha256": "867277a7fcebc10d70be28bf85fe9da9d154ce531b5d51541939e43719b6373a"
+    },
+    {
+      "log": "pack-check-hero_party_ui.log",
+      "assertions": 83,
+      "invocations": 1,
+      "sha256": "ab5658cab2cab08b49c8a371098f126ec39e63e8de000fdb2706cc5c1a1c86ac"
+    },
+    {
+      "log": "pack-check-projectile_painter.log",
+      "assertions": 89,
+      "invocations": 1,
+      "sha256": "1e7dffcf4e90f2472256a77f474ec752e7c636441dd77b4e5e1a78e4891cf408"
+    },
+    {
+      "log": "pack-check-trail_readability.log",
+      "assertions": 212,
+      "invocations": 1,
+      "sha256": "c513f32b5102aa3c2183d81502a4efb27edafcb3e6d57a3246eb1f6bafcadc38"
+    },
+    {
+      "log": "pack-check-world_flipper_art.log",
+      "assertions": 214,
+      "invocations": 1,
+      "sha256": "7a07ed65f569b37d87287c8d89fd2bba6bdb70d3160148de1ded51ee834e7640"
+    },
+    {
+      "log": "pack-check-expanded_world.log",
+      "assertions": 337,
+      "invocations": 1,
+      "sha256": "cc05b60f48b9cd3041cd23c5014c44e3295cf2dff6dee20f7e6b5b8e846bd0dd"
+    },
+    {
+      "log": "pack-check-boss_combat.log",
+      "assertions": 504,
+      "invocations": 1,
+      "sha256": "0cbba96ae2562649a33a20f14a7a680efb7154ccaae0cc56cd0cf02f599e48ef"
+    },
+    {
+      "log": "pack-check-boss_world.log",
+      "assertions": 69,
+      "invocations": 1,
+      "sha256": "e13a0e0e7f25d219d2386af7d69ff65d7173a2889f189d4a570ef7257c825c4c"
+    },
+    {
+      "log": "pack-check-gamepad_reading.log",
+      "assertions": 227,
+      "invocations": 1,
+      "sha256": "2c90a597d25701ab5c5be05637a42950fbf30fe9659d922f71e4e15c250492b8"
+    }
+  ],
+  "previews": [
+    {
+      "view": "bomb-burst",
+      "pixels_equal": true,
+      "state_hash_equal": true,
+      "source_sha256": "34602421d106911b1dd50af895f31dc332d8eb2aa5cc4b3d1705a36e74a961a0",
+      "export_sha256": "34602421d106911b1dd50af895f31dc332d8eb2aa5cc4b3d1705a36e74a961a0"
+    },
+    {
+      "view": "bomb-flight",
+      "pixels_equal": true,
+      "state_hash_equal": true,
+      "source_sha256": "7e34b42de4b02b1b8cba2b193afc2357f07cf81ebec0eb06d67f9b46f6102f22",
+      "export_sha256": "7e34b42de4b02b1b8cba2b193afc2357f07cf81ebec0eb06d67f9b46f6102f22"
+    },
+    {
+      "view": "flash-off",
+      "pixels_equal": true,
+      "state_hash_equal": true,
+      "source_sha256": "0788d8047580e799eb890f12fdb8a9bd903e3583d2461064a2979bd9b09afaca",
+      "export_sha256": "0788d8047580e799eb890f12fdb8a9bd903e3583d2461064a2979bd9b09afaca"
+    },
+    {
+      "view": "map-ashland",
+      "pixels_equal": true,
+      "state_hash_equal": true,
+      "source_sha256": "77003273ac86354acc9d8d1a771d325d870d858d87e2496af063f265208008fa",
+      "export_sha256": "77003273ac86354acc9d8d1a771d325d870d858d87e2496af063f265208008fa"
+    },
+    {
+      "view": "map-glacier",
+      "pixels_equal": true,
+      "state_hash_equal": true,
+      "source_sha256": "6f287d751491afad3b76e7854e977dd86a2789ede5a297370cc9f9dc4e2d88ae",
+      "export_sha256": "6f287d751491afad3b76e7854e977dd86a2789ede5a297370cc9f9dc4e2d88ae"
+    },
+    {
+      "view": "map-mire",
+      "pixels_equal": true,
+      "state_hash_equal": true,
+      "source_sha256": "39a323b5096e1e424c6629755696897a13740427981979b6eeccb240e3fe8dc8",
+      "export_sha256": "39a323b5096e1e424c6629755696897a13740427981979b6eeccb240e3fe8dc8"
+    },
+    {
+      "view": "map-reliquary",
+      "pixels_equal": true,
+      "state_hash_equal": true,
+      "source_sha256": "0cfacfa56cc00fcec0317ca807f852395b6174913329f442e007662412d30cdb",
+      "export_sha256": "0cfacfa56cc00fcec0317ca807f852395b6174913329f442e007662412d30cdb"
+    },
+    {
+      "view": "map-throne",
+      "pixels_equal": true,
+      "state_hash_equal": true,
+      "source_sha256": "1f9f24db443d95bed4b30836df9d88a37e2d042e0e8d920fa3d02573a342651b",
+      "export_sha256": "1f9f24db443d95bed4b30836df9d88a37e2d042e0e8d920fa3d02573a342651b"
+    },
+    {
+      "view": "map-tower_peak",
+      "pixels_equal": true,
+      "state_hash_equal": true,
+      "source_sha256": "7b71c09b2d1bc30e617cf244bdda7863e8904913c32de5943666bc23d49364f1",
+      "export_sha256": "7b71c09b2d1bc30e617cf244bdda7863e8904913c32de5943666bc23d49364f1"
+    },
+    {
+      "view": "map-town",
+      "pixels_equal": true,
+      "state_hash_equal": true,
+      "source_sha256": "8f24aed95db1e323da83c13f072e9535fc7469ab6414aa19bd63fe81f88ae447",
+      "export_sha256": "8f24aed95db1e323da83c13f072e9535fc7469ab6414aa19bd63fe81f88ae447"
+    },
+    {
+      "view": "shop",
+      "pixels_equal": true,
+      "state_hash_equal": true,
+      "source_sha256": "c9ec13290f758ca1da7a498a5af193c40aab057cb10e57a190cf2a77921a43aa",
+      "export_sha256": "c9ec13290f758ca1da7a498a5af193c40aab057cb10e57a190cf2a77921a43aa"
+    },
+    {
+      "view": "skill-alk",
+      "pixels_equal": true,
+      "state_hash_equal": true,
+      "source_sha256": "3d7792f4c682dcf5b1a0bde194f6aa85a338da2f4a4862e7a98f279b1b93e600",
+      "export_sha256": "3d7792f4c682dcf5b1a0bde194f6aa85a338da2f4a4862e7a98f279b1b93e600"
+    },
+    {
+      "view": "skill-celtie",
+      "pixels_equal": true,
+      "state_hash_equal": true,
+      "source_sha256": "a1745587119ed4b6eb5f562b145b073acbf8306ba2a329478dbcb90bbb25b51b",
+      "export_sha256": "a1745587119ed4b6eb5f562b145b073acbf8306ba2a329478dbcb90bbb25b51b"
+    },
+    {
+      "view": "skill-clarisse",
+      "pixels_equal": true,
+      "state_hash_equal": true,
+      "source_sha256": "4c663321d1d71e5452e73088a9735151729fdc8b9002cbbe01a7d342e330c1d1",
+      "export_sha256": "4c663321d1d71e5452e73088a9735151729fdc8b9002cbbe01a7d342e330c1d1"
+    },
+    {
+      "view": "small-gamepad",
+      "pixels_equal": true,
+      "state_hash_equal": true,
+      "source_sha256": "4366ccc62b392bde5e7b55de9144047d8f4ae31692901c72ada286730691be2c",
+      "export_sha256": "4366ccc62b392bde5e7b55de9144047d8f4ae31692901c72ada286730691be2c"
+    },
+    {
+      "view": "throne-east",
+      "pixels_equal": true,
+      "state_hash_equal": true,
+      "source_sha256": "0b7b827fba2114cbb1892b7eeea80160c769028e734e43813de4b338e348039a",
+      "export_sha256": "0b7b827fba2114cbb1892b7eeea80160c769028e734e43813de4b338e348039a"
+    },
+    {
+      "view": "throne-north",
+      "pixels_equal": true,
+      "state_hash_equal": true,
+      "source_sha256": "55d3b591476f998932e72c9a090b27edc4acca8c82b8630805c22017c89e9912",
+      "export_sha256": "55d3b591476f998932e72c9a090b27edc4acca8c82b8630805c22017c89e9912"
+    },
+    {
+      "view": "title",
+      "pixels_equal": true,
+      "state_hash_equal": true,
+      "source_sha256": "cb6e750fdd2bee4fc63bf047cc909258df5ef1434f9ad4c3120ee40912e16346",
+      "export_sha256": "cb6e750fdd2bee4fc63bf047cc909258df5ef1434f9ad4c3120ee40912e16346"
+    },
+    {
+      "view": "tower_peak-east",
+      "pixels_equal": true,
+      "state_hash_equal": true,
+      "source_sha256": "e2682527820e4aa8b84b9131162bf265547e97ed4de9e55d5ed1d88037a624e0",
+      "export_sha256": "e2682527820e4aa8b84b9131162bf265547e97ed4de9e55d5ed1d88037a624e0"
+    },
+    {
+      "view": "tower_peak-north",
+      "pixels_equal": true,
+      "state_hash_equal": true,
+      "source_sha256": "e7a6eea33809bc6699542dde1795a4a4028795f6164c9cbb66ba84715b975356",
+      "export_sha256": "e7a6eea33809bc6699542dde1795a4a4028795f6164c9cbb66ba84715b975356"
+    },
+    {
+      "view": "town-east",
+      "pixels_equal": true,
+      "state_hash_equal": true,
+      "source_sha256": "4a21b8181006208a3ee76db09af3034f61e89cc4887313f245cc6b408bf0f15a",
+      "export_sha256": "4a21b8181006208a3ee76db09af3034f61e89cc4887313f245cc6b408bf0f15a"
+    },
+    {
+      "view": "town-north",
+      "pixels_equal": true,
+      "state_hash_equal": true,
+      "source_sha256": "6c0d8da58edaa026fe5921d090249943eedbe00ec1d34f8d442da97ae1d75f21",
+      "export_sha256": "6c0d8da58edaa026fe5921d090249943eedbe00ec1d34f8d442da97ae1d75f21"
+    },
+    {
+      "view": "weapons",
+      "pixels_equal": true,
+      "state_hash_equal": true,
+      "source_sha256": "c0f35363df2143ad5ad4948fc50fa6861f0c52b856ed0527528cc529d9547166",
+      "export_sha256": "c0f35363df2143ad5ad4948fc50fa6861f0c52b856ed0527528cc529d9547166"
+    }
+  ],
+  "canonical_catalog_counts": {
+    "characters": 505,
+    "equipment": 426,
+    "skill_groups": 570,
+    "skills": 1062,
+    "switched_skill_groups": 6,
+    "fields": 247,
+    "layouts": 1422,
+    "floor_groups": 89,
+    "chapters": 12
+  },
+  "coverage": {
+    "fully_complete": false,
+    "implementation_ledger_sha256": "9b34f3f9c8af059bc52b5bba036930143d8ca3cc93b58b6598663a381f5c2f64",
+    "runtime_evidence_sha256": "4b931e6af71f38559abbf9b41ed29d888e309fe46a3601865f91ae00daeeca40",
+    "remaining_by_category": {
+      "characters": 501,
+      "equipment": 410,
+      "skills": 1054,
+      "fields": 243,
+      "layouts": 1422,
+      "chapters": 12
+    }
+  },
+  "performance": {
+    "seconds": 60.0,
+    "average_fps": 64.6416719979243,
+    "p99_frame_ms": 25.139,
+    "minimum_load": {
+      "enemies": 300,
+      "pickups": 200,
+      "projectiles": 600
+    },
+    "checks": {
+      "backpack_skill_fx_pool": true,
+      "backpack_skill_inventory_and_real_casts": true,
+      "backpack_skill_source_coverage": true,
+      "dash_feedback": true,
+      "default_settings_and_no_profile": true,
+      "evasion_feedback": true,
+      "grounding_budget": true,
+      "load": true,
+      "performance": true,
+      "pulse_control": true,
+      "real_main_character_casts": true,
+      "real_pinball_cycles_and_reflections": true
+    },
+    "report_sha256": "6412d1c713aaa3ec06512e56d5afe400701618dd3abfb0a796a10d505f85fa99"
+  },
+  "windows": {
+    "archive": "build/Embers-windows-x86_64.zip",
+    "sha256": "aed52fa4752cb7b00452852516d16d772e2b7fbb04c7f52a5b1e95887a692580",
+    "files": [
+      "licenses/Godot-COPYRIGHT.txt",
+      "licenses/Godot-LICENSE.txt",
+      "licenses/README.md",
+      "licenses/World-Flipper-NOTICE.txt",
+      "licenses/fonts/fusion-pixel/OFL.txt",
+      "licenses/fonts/fusion-pixel/LICENSES/ark-pixel/OFL.txt",
+      "licenses/fonts/fusion-pixel/LICENSES/cubic-11/OFL.txt",
+      "licenses/fonts/fusion-pixel/LICENSES/galmuri/LICENSE.txt",
+      "Embers.exe",
+      "Embers.pck"
+    ],
+    "crc_and_file_bytes_verified": true,
+    "backup": "Embers-windows-before-expansion-2d915fd.zip",
+    "backup_sha256": "e515890964af3183b29174709ca659ff966106bd8cffe7e908e4afb31e20a56b",
+    "exe_smoke_log_sha256": "72f6d114633d9b461c0b6a28a0a1bbe36aef8bc227193ab738d044d6ad367791"
+  },
+  "limitations": [
+    "Original JP completion goal remains active. Canonical records are not implemented original gameplay.",
+    "Native captures use declared real-action fixtures; not natural play or human balance approval.",
+    "Synthetic controller input only; no hardware controller or hardware audio acceptance.",
+    "Pressure scenario uses the existing default Alk hero with explicit Q/E/R and pinball probes; all-hero sustained load and natural-game balance were not measured."
+  ],
+  "macos": "Not built or executed on this Windows host."
+}

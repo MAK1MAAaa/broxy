@@ -2,17 +2,17 @@ extends SceneTree
 ## Real skill definitions constrain every decorative point and the fixed cosmetic budget.
 
 const PAINTER = preload("res://scripts/combat/active_skill_painter.gd")
-const FAMILIES: Dictionary = {"alk": "blade", "clarisse": "alchemy", "celtie": "wind",
-	"hanabi": "firework", "starfall": "meteor", "arc_slash": "crescent"}
-const COLORS: Dictionary = {"alk": Color("ffc86b"), "clarisse": Color("efa54c"), "celtie": Color("87d9ab"),
-	"hanabi": Color("f1875e"), "starfall": Color("ffc86b"), "arc_slash": Color("91e0d1")}
+const FAMILIES: Dictionary = {"alk": "shockwave", "clarisse": "alchemy", "celtie": "wind",
+	"starfall": "meteor", "arc_slash": "crescent"}
+const COLORS: Dictionary = {"alk": Color("f1875e"), "clarisse": Color("efa54c"), "celtie": Color("87d9ab"),
+	"starfall": Color("ffc86b"), "arc_slash": Color("91e0d1")}
 var _checks: int = 0
 var _failures: int = 0
 
 func _initialize() -> void:
 	_test_definition_geometry()
 	_test_identity_and_static_mode()
-	_test_firework_readability()
+	_test_bomb_delivery_separation()
 	_test_budget_and_invalid_input()
 	_test_pure_queries()
 	print("SkillArtPolish: %d assertions, %d failures" % [_checks, _failures])
@@ -81,39 +81,19 @@ func _test_identity_and_static_mode() -> void:
 		_check(later["origin"] == static_record["origin"] and later["direction"] == static_record["direction"] and later["radius"] == static_record["radius"] and later["width"] == static_record["width"] and later["half_angle_radians"] == static_record["half_angle_radians"] and later["polygons"].is_empty() and later["details"].is_empty(), "Suppressed effects fade without rotating, moving fragments or replaying animation: " + id)
 		_check(painter.snapshot()["animated"] == 0, "Reading or advancing a suppressed cast cannot replay it: " + id)
 	var zero_direction = PAINTER.new()
-	_add(zero_direction, "hanabi", Vector2.ZERO, Vector2.ZERO)
+	_add(zero_direction, "alk", Vector2.ZERO, Vector2.ZERO)
 	_check(zero_direction.geometry_snapshot()[0]["direction"] == Vector2.RIGHT, "A zero diagnostic heading retains the existing finite right-facing fallback")
 
-func _test_firework_readability() -> void:
-	var origin := Vector2(640, 360)
+func _test_bomb_delivery_separation() -> void:
 	var spec: Dictionary = HeroCatalog.hero_skill_parameters("hanabi", {})
-	for direction: Vector2 in [Vector2.RIGHT, Vector2.UP, Vector2(-0.6, 0.8)]:
-		for progress: float in [0.0, 0.5, 0.95]:
-			var painter = PAINTER.new()
-			_add(painter, "hanabi", origin, direction)
-			painter.advance(PAINTER.LIFE * progress)
-			var record: Dictionary = painter.geometry_snapshot()[0]
-			var polygons: Array = record["polygons"]
-			var details: PackedVector2Array = record["details"]
-			_check(polygons.size() == 8 and details.size() == 16 and record["detail_width"] == 2.0, "Four enlarged fireworks retain the original pool and exact bounded short-line budget")
-			var side: Vector2 = direction.orthogonal()
-			var all_points: PackedVector2Array = details.duplicate()
-			for index: int in polygons.size():
-				var low: float = INF
-				var high: float = -INF
-				for point: Vector2 in polygons[index]:
-					var along: float = (point - origin).dot(direction)
-					low = minf(low, along)
-					high = maxf(high, along)
-					all_points.append(point)
-				var span: float = high - low
-				_check(span >= (24.0 if index % 2 == 0 else 8.0), "Both the orange burst and warm core stay legible during the sampled fade")
-				_check(span <= float(spec["radius"]) * 0.2, "The line skill uses distinct short bursts rather than a continuous wide fill")
-			var contained: bool = true
-			for point: Vector2 in all_points:
-				var offset: Vector2 = point - origin
-				contained = contained and offset.dot(direction) >= 1.0 and offset.dot(direction) <= float(spec["radius"]) - 1.0 and absf(offset.dot(side)) <= float(spec["width"]) * 0.5 - 1.0
-			_check(contained, "The enlarged flowers, cores and two-pixel trails keep a full stroke margin inside the true rectangle")
+	var painter = PAINTER.new()
+	_add(painter, "alk", Vector2(640, 360), Vector2.RIGHT)
+	var before: String = JSON.stringify(painter.geometry_snapshot())
+	for heading: Vector2 in [Vector2.RIGHT, Vector2.UP, Vector2(-0.6, 0.8)]:
+		_check(not painter.add_hero_cast(spec, Vector2(640, 360), heading, true), "Hanabi's actual bombs never produce an instant cosmetic hit rectangle")
+	_check(JSON.stringify(painter.geometry_snapshot()) == before, "Rejecting bomb delivery leaves existing instant-cast geometry untouched")
+	_check(spec["delivery"] == "bombs" and spec["projectiles"] == 5, "The Hanabi spec explicitly hands five deliveries to the physical runtime")
+
 
 func _test_budget_and_invalid_input() -> void:
 	var painter = PAINTER.new()

@@ -322,6 +322,9 @@ def _wardstone(canvas: Canvas, palette: Palette, kind: str, cx: int, cy: int) ->
 
 def build_maps() -> list[tuple[str, bytes]]:
     definitions: list[dict[str, Any]] = json.loads((ROOT / "data/arenas.json").read_text(encoding="utf-8"))
+    # This generator preserves the archived four-map Starfall family.
+    # Original-game additions use world_flipper_maps.py instead.
+    definitions = [definition for definition in definitions if definition["id"] in IDS]
     if tuple(definition["id"] for definition in definitions) != IDS:
         raise ValueError("Expanded maps require the four existing arena identities in catalog order")
     result: list[tuple[str, bytes]] = []

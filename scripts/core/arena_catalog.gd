@@ -2,7 +2,7 @@ class_name ArenaCatalog
 extends RefCounted
 ## Shared world geometry, authored terrain and source-art resource paths.
 
-const IDS: Array[String] = ["reliquary", "mire", "glacier", "ashland"]
+const IDS: Array[String] = ["reliquary", "mire", "glacier", "ashland", "town", "throne", "tower_peak"]
 const SOURCE_PATH: String = "res://data/arenas.json"
 const WORLD_BOUNDS: Rect2 = Rect2(-1082, -535, 3444, 1800)
 const MAX_VIEW_SIZE: Vector2 = Vector2(1280, 720)
@@ -89,6 +89,9 @@ static func art_rect() -> Rect2:
 static func texture_path(id: String) -> String:
 	return "res://assets/worldflipper/maps/%s.png" % normalize_id(id)
 
+static func preview_path(id: String) -> String:
+	return "res://assets/worldflipper/maps/previews/%s.png" % normalize_id(id)
+
 
 static func camera_center(point: Vector2, view_size: Vector2 = MAX_VIEW_SIZE) -> Vector2:
 	var half: Vector2 = _safe_view_size(view_size) * 0.5
@@ -134,7 +137,7 @@ static func _ensure_loaded() -> void:
 			_definitions[str(item["id"])] = item
 	# Missing exported configuration is a build error, rather than an invisible
 	# switch to a different arena or movement rule.
-	assert(_definitions.size() == IDS.size(), "The arena catalog must contain all four authored maps")
+	assert(_definitions.size() == IDS.size(), "The arena catalog must contain every registered authored map")
 	for id: String in IDS:
 		assert(_definitions.has(id), "Missing arena: " + id)
 		_terrain_indices[id] = TerrainIndex.new(_definitions[id])

@@ -258,7 +258,8 @@ func _run_tests() -> void:
 	_check(_buttons_inside(ui) and _text_inside(ui), "The last-hit line fits beside all eight weapon contributions and the full final loadout")
 	_check(_has_label(ui, "被咒术师的弹幕击倒，最后承伤12.5。"), "Results present the recorded death reason without replacing its source")
 	_check(_has_label(ui, "实际总伤害  971.0"), "Results sum only the actual recorded life loss rather than inventing DPS")
-	for definition: ContentDef in GameCatalog.weapons():
+	for id: String in state.damage_dealt_by_weapon:
+		var definition: ContentDef = GameCatalog.weapon(id)
 		var contribution: Node = ui.find_child("Damage_" + definition.id, true, false)
 		_check(contribution != null and _has_label(contribution, definition.display_name), "A recorded weapon has a visible contribution row: " + definition.id)
 	_check(state.sell_item(int(state.loadout[2]["uid"])), "A real weapon sale supplies the historical-damage result fixture")

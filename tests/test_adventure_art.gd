@@ -114,7 +114,7 @@ func _test_imported_family() -> void:
 	for id: String in ArenaCatalog.IDS:
 		var map_source: String = str(ArenaCatalog.definition(id)["texture"])
 		_check(map_source.begins_with("res://assets/") and not map_source.begins_with(ART_ROOT), "The actual map catalog retains its original resource identity: " + id)
-		var expected: String = AdventureArt.path(map_source)
+		var expected: String = ArenaCatalog.preview_path(id)
 		_expect_texture(load(expected) as Texture2D, expected, Vector2(1280, 720), id)
 	_expect_texture(load(ART_ROOT + "fx/projectile_heads.svg") as Texture2D, ART_ROOT + "fx/projectile_heads.svg", Vector2(512, 64), "eight-frame projectile atlas")
 	for name: String in ["glow", "seal"]:
@@ -310,7 +310,7 @@ func _test_real_inventory_presentation() -> void:
 	_check(starter != null and _count_texture(starter, _expected_icon("bone")) == 1 and _count_texture(starter, HeroCatalog.definition("alk").idle_path) == 1, "The actual character choice shows original character and initial weapon art")
 	for id: String in ArenaCatalog.IDS:
 		var map_source: String = str(ArenaCatalog.definition(id)["texture"])
-		_check(_count_texture(ui._page, AdventureArt.path(map_source)) == 1, "The title's real map thumbnail uses the replacement: " + id)
+		_check(_count_texture(ui._page, ArenaCatalog.preview_path(id)) == 1, "The title's real map thumbnail uses the replacement: " + id)
 	_check(_run_signature(state) == before, "Opening and drawing the title leaves inventory and RNG unchanged")
 	await _test_visible_volume_theme(ui)
 	_check(_run_signature(state) == before, "Opening and closing the actual settings preview changes no inventory or RNG state")

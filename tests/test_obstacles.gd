@@ -67,7 +67,7 @@ func _test_authored_layouts() -> void:
 	var names: Array[String] = ["沙漠遗迹", "和风神社", "魔界高塔", "海盗船"]
 	var terrain: Array[String] = ["石板", "湿苔", "秘纹", "碎木"]
 	var multipliers: Array[float] = [1.0, 0.72, 0.84, 0.88]
-	for index: int in ArenaCatalog.IDS.size():
+	for index: int in names.size():
 		var id: String = ArenaCatalog.IDS[index]
 		var data: Dictionary = ArenaCatalog.definition(id)
 		var sim: CombatSim = _sim(id, false)

@@ -30,7 +30,8 @@ try {
         'obstacles', 'content_identity', 'hero_party', 'hero_party_ui', 'hero_skill_combat', 'hero_skill_flow',
         'arena_interactions', 'pinball_combat', 'pinball_world', 'render_frame_coalescing', 'cosmetic_culling',
         'boss_encounter', 'boss_combat', 'boss_hud', 'boss_intro', 'hud_reflow', 'boss_world',
-        'danger_painter', 'boss_art_painter', 'skill_art_polish'
+        'danger_painter', 'boss_art_painter', 'skill_art_polish',
+        'hero_skill_effects', 'hero_effect_painter', 'weapon_effects', 'wf_expansion_ui'
     )
     foreach ($suite in $suites) {
         & $runner --headless --script "res://tests/test_$suite.gd"

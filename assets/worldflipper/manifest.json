@@ -1,10 +1,10 @@
 {
-  "revision": "world-flipper-fan-07",
+  "revision": "world-flipper-fan-08",
   "original_copyright": "© Cygames, Inc. / Citail Inc.",
   "license_status": "Original game assets; no open asset license found. Unofficial fan-work use is not a claim of authorization.",
   "copyright_source": "https://worldflipper.jp/copyright/",
   "terms_source": "https://worldflipper.jp/about/",
-  "acquired_on": "2026-10-30",
+  "acquired_on": "2026-10-31",
   "sources": [
     {
       "id": "alk_neutral",
@@ -850,6 +850,310 @@
         }
       ],
       "normalization": "Original foreground pixels cropped and quarter-turned when declared; alpha preserved. Geometry clipped exclusively to the art margin, never baked as a fake walkable obstacle."
+    },
+    {
+      "game_id": "town",
+      "filename": "map-town-background.png",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field/world_town/town_street/background/background.png",
+      "source_size": [
+        274,
+        738
+      ],
+      "sha256": "aba512c832eaf339d7febd948466a6cceb97dd712be02240ed7c973cf2741967",
+      "id": "arena_town",
+      "kind": "arena_map",
+      "name": "World Flipper / Town Street",
+      "source_page": "https://worldflipper.jp/demo/",
+      "scale": 2,
+      "crop": [
+        66,
+        425,
+        142,
+        145
+      ],
+      "zone_crop": [
+        100,
+        150,
+        64,
+        40
+      ],
+      "border_crops": {
+        "left": [
+          31,
+          452,
+          24,
+          128
+        ],
+        "right": [
+          220,
+          452,
+          24,
+          128
+        ],
+        "top": [
+          49,
+          13,
+          176,
+          48
+        ]
+      },
+      "normalization": "Original official-demo floor pixels mirror tiled at integer2x. Authored terrain zones use same-source native floor variation. Margins and upright landmarks stay outside playable bounds. This is an authored arena adaptation, not the original pinball stage geometry."
+    },
+    {
+      "game_id": "town",
+      "filename": "map-town-foreground.png",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field/world_town/town_street/foreground/foreground.png",
+      "source_size": [
+        194,
+        462
+      ],
+      "sha256": "bdf2973a1b0831f7fa04d0bcc8bbbbf2605e4652556b4c06513c1e56e165b96f",
+      "variants": {
+        "street_lamp": [
+          1,
+          1,
+          20,
+          145
+        ]
+      },
+      "placements": [
+        {
+          "variant": "street_lamp",
+          "position": [
+            16,
+            400
+          ]
+        },
+        {
+          "variant": "street_lamp",
+          "position": [
+            16,
+            1300
+          ]
+        },
+        {
+          "variant": "street_lamp",
+          "position": [
+            3540,
+            400
+          ]
+        },
+        {
+          "variant": "street_lamp",
+          "position": [
+            3540,
+            1300
+          ]
+        }
+      ],
+      "id": "landmark_town",
+      "kind": "arena_landmark",
+      "name": "World Flipper / town original scenery",
+      "source_page": "https://worldflipper.jp/demo/",
+      "scale": 2,
+      "normalization": "Unmodified original source crop and alpha at native integer2x, composed strictly outside the playable rectangle; not a fake obstacle."
+    },
+    {
+      "game_id": "throne",
+      "filename": "map-throne-background.png",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field/world_light/light_castle_throne/background/background.png",
+      "source_size": [
+        274,
+        415
+      ],
+      "sha256": "514241946888a65b52fff071e2d4fc768c26235a21cfad3c8feb23bdc34c9a9c",
+      "id": "arena_throne",
+      "kind": "arena_map",
+      "name": "World Flipper / Light Castle Throne",
+      "source_page": "https://worldflipper.jp/demo/",
+      "scale": 2,
+      "crop": [
+        58,
+        323,
+        46,
+        48
+      ],
+      "zone_crop": [
+        112,
+        290,
+        48,
+        64
+      ],
+      "border_crops": {
+        "left": [
+          32,
+          195,
+          24,
+          128
+        ],
+        "right": [
+          220,
+          195,
+          24,
+          128
+        ],
+        "top": [
+          49,
+          45,
+          176,
+          48
+        ]
+      },
+      "normalization": "Original official-demo floor pixels mirror tiled at integer2x. Authored terrain zones use same-source native floor variation. Margins and upright landmarks stay outside playable bounds. This is an authored arena adaptation, not the original pinball stage geometry. The central red carpet is a native-pixel mirrored strip sampled from the original throne carpet, aligned with world x640.",
+      "floor_bands": [
+        {
+          "source_crop": [
+            112,
+            286,
+            48,
+            82
+          ],
+          "axis": "vertical",
+          "world_center": 640,
+          "width": 192
+        }
+      ]
+    },
+    {
+      "game_id": "throne",
+      "filename": "map-throne-background.png",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field/world_light/light_castle_throne/background/background.png",
+      "source_size": [
+        274,
+        415
+      ],
+      "sha256": "514241946888a65b52fff071e2d4fc768c26235a21cfad3c8feb23bdc34c9a9c",
+      "variants": {
+        "royal_dais": [
+          88,
+          106,
+          100,
+          80
+        ]
+      },
+      "placements": [
+        {
+          "variant": "royal_dais",
+          "position": [
+            1686,
+            64
+          ]
+        }
+      ],
+      "id": "landmark_throne",
+      "kind": "arena_landmark",
+      "name": "World Flipper / throne original scenery",
+      "source_page": "https://worldflipper.jp/demo/",
+      "scale": 2,
+      "normalization": "Unmodified original source crop and alpha at native integer2x, composed strictly outside the playable rectangle; not a fake obstacle."
+    },
+    {
+      "game_id": "tower_peak",
+      "filename": "map-tower_peak-background.png",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field/world_evil/evil_tower_top/background/background.png",
+      "source_size": [
+        769,
+        274
+      ],
+      "sha256": "8fcf404d61bb87d9817662c1c6631dec7d8922434fe3d6c402ebc630d77f0131",
+      "id": "arena_tower_peak",
+      "kind": "arena_map",
+      "name": "World Flipper / Evil Tower Top",
+      "source_page": "https://worldflipper.jp/demo/",
+      "scale": 2,
+      "crop": [
+        170,
+        78,
+        72,
+        128
+      ],
+      "zone_crop": [
+        475,
+        90,
+        64,
+        96
+      ],
+      "border_crops": {
+        "left": [
+          92,
+          91,
+          24,
+          96
+        ],
+        "right": [
+          322,
+          90,
+          24,
+          96
+        ],
+        "top": [
+          153,
+          32,
+          176,
+          32
+        ]
+      },
+      "normalization": "Original official-demo floor pixels mirror tiled at integer2x. Authored terrain zones use same-source native floor variation. Margins and upright landmarks stay outside playable bounds. This is an authored arena adaptation, not the original pinball stage geometry."
+    },
+    {
+      "game_id": "tower_peak",
+      "filename": "map-tower_peak-foreground.png",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field/world_evil/evil_tower_top/foreground/foreground.png",
+      "source_size": [
+        274,
+        295
+      ],
+      "sha256": "1eeb9a40a80024b4b91c13cf454c1162fe867c9bcb0782397bf99b49379bc94f",
+      "variants": {
+        "balcony_left": [
+          1,
+          90,
+          88,
+          64
+        ],
+        "balcony_right": [
+          186,
+          90,
+          87,
+          64
+        ]
+      },
+      "placements": [
+        {
+          "variant": "balcony_left",
+          "position": [
+            420,
+            70
+          ]
+        },
+        {
+          "variant": "balcony_right",
+          "position": [
+            2980,
+            70
+          ]
+        },
+        {
+          "variant": "balcony_left",
+          "position": [
+            420,
+            2044
+          ]
+        },
+        {
+          "variant": "balcony_right",
+          "position": [
+            2980,
+            2044
+          ]
+        }
+      ],
+      "id": "landmark_tower_peak",
+      "kind": "arena_landmark",
+      "name": "World Flipper / tower_peak original scenery",
+      "source_page": "https://worldflipper.jp/demo/",
+      "scale": 2,
+      "normalization": "Unmodified original source crop and alpha at native integer2x, composed strictly outside the playable rectangle; not a fake obstacle."
     },
     {
       "id": "item_damage",
@@ -2282,6 +2586,246 @@
         }
       },
       "normalization": "Restore original atlas trim/rotation; combine four quarter-circle corners and four cross arms for complete white/red targets; broken is a bounded static authored piece-matrix snapshot. Original colors/alpha retained. Runtime state flashing, scale and break duration are project adaptations, not decoded original timing."
+    },
+    {
+      "id": "weapon_expansion_sword_0012",
+      "kind": "weapon_expansion",
+      "game_id": "sword_0012",
+      "canonical_equipment_id": "5010012",
+      "canonical_dev_name": "sword_0012",
+      "name": "Prometheus Blade",
+      "name_jp": "プロメテウスの剣",
+      "display_name_zh": "普罗米修斯之剑",
+      "filename": "weapon-expansion-sword_0012.png",
+      "url": "https://worldflipper.wiki.gg/images/Prometheus_Blade.png?52081f",
+      "source_page": "https://worldflipper.wiki.gg/wiki/Prometheus_Blade",
+      "redirect_url": "https://worldflipper.wiki.gg/wiki/Special:Redirect/file/Prometheus_Blade.png",
+      "sha256": "c8a8792a3c65f0a534968c2776adb823f291736f6142b6dba6ac2248b880585c",
+      "source_size": [
+        22,
+        22
+      ],
+      "crop": [
+        0,
+        0,
+        22,
+        22
+      ],
+      "scale": 2,
+      "original_element": "fire",
+      "source_category": "Armament sprite images",
+      "identity_verification": "Original JP numeric ID/dev name joined with GL equipment dev name and English name; original base/max HP and ATK match the referenced wiki page. No screenshot or 96px diamond-background image used.",
+      "license_status": "Original game sprite; no open asset license found. Existing fan-work terms and provenance apply."
+    },
+    {
+      "id": "weapon_expansion_spear_0005",
+      "kind": "weapon_expansion",
+      "game_id": "spear_0005",
+      "canonical_equipment_id": "5030005",
+      "canonical_dev_name": "spear_0005",
+      "name": "Maltet",
+      "name_jp": "マルテ",
+      "display_name_zh": "马尔特",
+      "filename": "weapon-expansion-spear_0005.png",
+      "url": "https://worldflipper.wiki.gg/images/Maltet.png?335678",
+      "source_page": "https://worldflipper.wiki.gg/wiki/Maltet",
+      "redirect_url": "https://worldflipper.wiki.gg/wiki/Special:Redirect/file/Maltet.png",
+      "sha256": "2e8e6ab4d8c80ea570c5dd72445bd68c4f6155db2efe5ec571fb208e81903767",
+      "source_size": [
+        22,
+        22
+      ],
+      "crop": [
+        0,
+        0,
+        22,
+        22
+      ],
+      "scale": 2,
+      "original_element": "all",
+      "source_category": "Armament sprite images",
+      "identity_verification": "Original JP numeric ID/dev name joined with GL equipment dev name and English name; original base/max HP and ATK match the referenced wiki page. No screenshot or 96px diamond-background image used.",
+      "license_status": "Original game sprite; no open asset license found. Existing fan-work terms and provenance apply."
+    },
+    {
+      "id": "weapon_expansion_sword_0004",
+      "kind": "weapon_expansion",
+      "game_id": "sword_0004",
+      "canonical_equipment_id": "5010004",
+      "canonical_dev_name": "sword_0004",
+      "name": "Ame-no-Habakiri",
+      "name_jp": "天羽々斬",
+      "display_name_zh": "天羽羽斩",
+      "filename": "weapon-expansion-sword_0004.png",
+      "url": "https://worldflipper.wiki.gg/images/Ame-no-Habakiri.png?8e10de",
+      "source_page": "https://worldflipper.wiki.gg/wiki/Ame-no-Habakiri",
+      "redirect_url": "https://worldflipper.wiki.gg/wiki/Special:Redirect/file/Ame-no-Habakiri.png",
+      "sha256": "228188d02770be0f68f04ce2b747b412cc8764ab81956d3ea985850f504a9d77",
+      "source_size": [
+        20,
+        22
+      ],
+      "crop": [
+        0,
+        0,
+        20,
+        22
+      ],
+      "scale": 2,
+      "original_element": "dark",
+      "source_category": "Armament sprite images",
+      "identity_verification": "Original JP numeric ID/dev name joined with GL equipment dev name and English name; original base/max HP and ATK match the referenced wiki page. No screenshot or 96px diamond-background image used.",
+      "license_status": "Original game sprite; no open asset license found. Existing fan-work terms and provenance apply."
+    },
+    {
+      "id": "weapon_expansion_axe_0009",
+      "kind": "weapon_expansion",
+      "game_id": "axe_0009",
+      "canonical_equipment_id": "5020009",
+      "canonical_dev_name": "axe_0009",
+      "name": "Thor's Hammer",
+      "name_jp": "トールの鎚",
+      "display_name_zh": "雷神之锤",
+      "filename": "weapon-expansion-axe_0009.png",
+      "url": "https://worldflipper.wiki.gg/images/Thor%27s_Hammer.png?8be8a1",
+      "source_page": "https://worldflipper.wiki.gg/wiki/Thor%27s_Hammer",
+      "redirect_url": "https://worldflipper.wiki.gg/wiki/Special:Redirect/file/Thor%27s_Hammer.png",
+      "sha256": "98697d351311c91a644c9133efead92da8f01d8cf7e67b1336bf1b59b034ec22",
+      "source_size": [
+        22,
+        22
+      ],
+      "crop": [
+        0,
+        0,
+        22,
+        22
+      ],
+      "scale": 2,
+      "original_element": "thunder",
+      "source_category": "Armament sprite images",
+      "identity_verification": "Original JP numeric ID/dev name joined with GL equipment dev name and English name; original base/max HP and ATK match the referenced wiki page. No screenshot or 96px diamond-background image used.",
+      "license_status": "Original game sprite; no open asset license found. Existing fan-work terms and provenance apply."
+    },
+    {
+      "id": "weapon_expansion_book_0009",
+      "kind": "weapon_expansion",
+      "game_id": "book_0009",
+      "canonical_equipment_id": "5050009",
+      "canonical_dev_name": "book_0009",
+      "name": "Senji Ryakketsu",
+      "name_jp": "占事略決",
+      "display_name_zh": "占事略决",
+      "filename": "weapon-expansion-book_0009.png",
+      "url": "https://worldflipper.wiki.gg/images/Senji_Ryakketsu.png?e38ee5",
+      "source_page": "https://worldflipper.wiki.gg/wiki/Senji_Ryakketsu",
+      "redirect_url": "https://worldflipper.wiki.gg/wiki/Special:Redirect/file/Senji_Ryakketsu.png",
+      "sha256": "2525247954b767bde2ce9612477a29000818a519a896238e5440082713227396",
+      "source_size": [
+        18,
+        18
+      ],
+      "crop": [
+        0,
+        0,
+        18,
+        18
+      ],
+      "scale": 3,
+      "original_element": "fire",
+      "source_category": "Armament sprite images",
+      "identity_verification": "Original JP numeric ID/dev name joined with GL equipment dev name and English name; original base/max HP and ATK match the referenced wiki page. No screenshot or 96px diamond-background image used.",
+      "license_status": "Original game sprite; no open asset license found. Existing fan-work terms and provenance apply."
+    },
+    {
+      "id": "weapon_expansion_sword_0007",
+      "kind": "weapon_expansion",
+      "game_id": "sword_0007",
+      "canonical_equipment_id": "3010007",
+      "canonical_dev_name": "sword_0007",
+      "name": "Cutlass",
+      "name_jp": "カトラス",
+      "display_name_zh": "弯刀",
+      "filename": "weapon-expansion-sword_0007.png",
+      "url": "https://worldflipper.wiki.gg/images/Cutlass.png?6aaef0",
+      "source_page": "https://worldflipper.wiki.gg/wiki/Cutlass",
+      "redirect_url": "https://worldflipper.wiki.gg/wiki/Special:Redirect/file/Cutlass.png",
+      "sha256": "437db66bdc1a0e2949c64181ba82bdce9bdc18c6c4f9d7e8c077eb3fe1820f5e",
+      "source_size": [
+        15,
+        18
+      ],
+      "crop": [
+        0,
+        0,
+        15,
+        18
+      ],
+      "scale": 3,
+      "original_element": "water",
+      "source_category": "Armament sprite images",
+      "identity_verification": "Original JP numeric ID/dev name joined with GL equipment dev name and English name; original base/max HP and ATK match the referenced wiki page. No screenshot or 96px diamond-background image used.",
+      "license_status": "Original game sprite; no open asset license found. Existing fan-work terms and provenance apply."
+    },
+    {
+      "id": "weapon_expansion_axe_0024",
+      "kind": "weapon_expansion",
+      "game_id": "axe_0024",
+      "canonical_equipment_id": "5020024",
+      "canonical_dev_name": "axe_0024",
+      "name": "Parashu",
+      "name_jp": "パラシュ",
+      "display_name_zh": "帕拉修",
+      "filename": "weapon-expansion-axe_0024.png",
+      "url": "https://worldflipper.wiki.gg/images/Parashu.png?d32d5c",
+      "source_page": "https://worldflipper.wiki.gg/wiki/Parashu",
+      "redirect_url": "https://worldflipper.wiki.gg/wiki/Special:Redirect/file/Parashu.png",
+      "sha256": "7faf58cfae0025b594dd1cf45896fe885a9538fae571a33445319d434a377620",
+      "source_size": [
+        20,
+        20
+      ],
+      "crop": [
+        0,
+        0,
+        20,
+        20
+      ],
+      "scale": 3,
+      "original_element": "all",
+      "source_category": "Armament sprite images",
+      "identity_verification": "Original JP numeric ID/dev name joined with GL equipment dev name and English name; original base/max HP and ATK match the referenced wiki page. No screenshot or 96px diamond-background image used.",
+      "license_status": "Original game sprite; no open asset license found. Existing fan-work terms and provenance apply."
+    },
+    {
+      "id": "weapon_expansion_sword_0011",
+      "kind": "weapon_expansion",
+      "game_id": "sword_0011",
+      "canonical_equipment_id": "5010011",
+      "canonical_dev_name": "sword_0011",
+      "name": "Heimdall's Sword",
+      "name_jp": "ヘイムダルの剣",
+      "display_name_zh": "海姆达尔之剑",
+      "filename": "weapon-expansion-sword_0011.png",
+      "url": "https://worldflipper.wiki.gg/images/Heimdall%27s_Sword.png?c0fffd",
+      "source_page": "https://worldflipper.wiki.gg/wiki/Heimdall%27s_Sword",
+      "redirect_url": "https://worldflipper.wiki.gg/wiki/Special:Redirect/file/Heimdall%27s_Sword.png",
+      "sha256": "1b6235b72511359bcb290d513689fabd2976bf89d8d52945e1bece3168d52db5",
+      "source_size": [
+        22,
+        22
+      ],
+      "crop": [
+        0,
+        0,
+        22,
+        22
+      ],
+      "scale": 2,
+      "original_element": "light",
+      "source_category": "Armament sprite images",
+      "identity_verification": "Original JP numeric ID/dev name joined with GL equipment dev name and English name; original base/max HP and ATK match the referenced wiki page. No screenshot or 96px diamond-background image used.",
+      "license_status": "Original game sprite; no open asset license found. Existing fan-work terms and provenance apply."
     }
   ],
   "references_cached_only": [
@@ -3362,6 +3906,508 @@
         80,
         215,
         112,
+        128
+      ],
+      "source_scale": 2,
+      "normalization": "Unscaled 1280x720 crop of the current start camera from the normalized arena",
+      "arena_crop": [
+        1146,
+        772,
+        1280,
+        720
+      ]
+    },
+    {
+      "id": "arena_town",
+      "path": "assets/worldflipper/maps/town.png",
+      "sha256": "77a9a8e835dcae46f49045c4d0a59f5854e5e11bfd2cea3c1488c1d064ff3db6",
+      "size": [
+        3780,
+        2192
+      ],
+      "alpha_bounds": [
+        0,
+        0,
+        3780,
+        2192
+      ],
+      "filter": "nearest",
+      "source_ids": [
+        "arena_town",
+        "landmark_town"
+      ],
+      "source_crop": [
+        66,
+        425,
+        142,
+        145
+      ],
+      "source_scale": 2,
+      "normalization": "Original official-demo floor pixels mirror tiled at integer2x. Authored terrain zones use same-source native floor variation. Margins and upright landmarks stay outside playable bounds. This is an authored arena adaptation, not the original pinball stage geometry.",
+      "world_origin": [
+        -1146,
+        -767
+      ],
+      "walkable_art_rect": [
+        64,
+        232,
+        3508,
+        2032
+      ],
+      "zone_count": 6,
+      "zone_normalization": "Same-source floor texture through a low-contrast dithered mask; geometry read from data/arenas.json without changing movement values or coordinates",
+      "border_crops": {
+        "left": [
+          31,
+          452,
+          24,
+          128
+        ],
+        "right": [
+          220,
+          452,
+          24,
+          128
+        ],
+        "top": [
+          49,
+          13,
+          176,
+          48
+        ]
+      },
+      "landmarks": [
+        {
+          "source_id": "landmark_town",
+          "source_crop": [
+            1,
+            1,
+            20,
+            145
+          ],
+          "rotation_degrees": 0,
+          "scale": 2,
+          "art_rect": [
+            16,
+            400,
+            40,
+            290
+          ],
+          "alpha_selection": "complete cropped original alpha",
+          "placement": "Strictly outside walkable_art_rect; does not imply a gameplay collider"
+        },
+        {
+          "source_id": "landmark_town",
+          "source_crop": [
+            1,
+            1,
+            20,
+            145
+          ],
+          "rotation_degrees": 0,
+          "scale": 2,
+          "art_rect": [
+            16,
+            1300,
+            40,
+            290
+          ],
+          "alpha_selection": "complete cropped original alpha",
+          "placement": "Strictly outside walkable_art_rect; does not imply a gameplay collider"
+        },
+        {
+          "source_id": "landmark_town",
+          "source_crop": [
+            1,
+            1,
+            20,
+            145
+          ],
+          "rotation_degrees": 0,
+          "scale": 2,
+          "art_rect": [
+            3540,
+            400,
+            40,
+            290
+          ],
+          "alpha_selection": "complete cropped original alpha",
+          "placement": "Strictly outside walkable_art_rect; does not imply a gameplay collider"
+        },
+        {
+          "source_id": "landmark_town",
+          "source_crop": [
+            1,
+            1,
+            20,
+            145
+          ],
+          "rotation_degrees": 0,
+          "scale": 2,
+          "art_rect": [
+            3540,
+            1300,
+            40,
+            290
+          ],
+          "alpha_selection": "complete cropped original alpha",
+          "placement": "Strictly outside walkable_art_rect; does not imply a gameplay collider"
+        }
+      ],
+      "normalized_repeat_size": [
+        568,
+        580
+      ],
+      "zone_source_crop": [
+        100,
+        150,
+        64,
+        40
+      ]
+    },
+    {
+      "id": "arena_town_preview",
+      "path": "assets/worldflipper/maps/previews/town.png",
+      "sha256": "32e01972f87401a1fcacb7096b61d4db28ac3db6fb6e15942ea3b6afeee293bd",
+      "size": [
+        1280,
+        720
+      ],
+      "alpha_bounds": [
+        0,
+        0,
+        1280,
+        720
+      ],
+      "filter": "nearest",
+      "source_ids": [
+        "arena_town",
+        "landmark_town"
+      ],
+      "source_crop": [
+        66,
+        425,
+        142,
+        145
+      ],
+      "source_scale": 2,
+      "normalization": "Unscaled 1280x720 crop of the current start camera from the normalized arena",
+      "arena_crop": [
+        1146,
+        772,
+        1280,
+        720
+      ]
+    },
+    {
+      "id": "arena_throne",
+      "path": "assets/worldflipper/maps/throne.png",
+      "sha256": "f2299e9a2f0eb07cf95dc58f333ec4d46114564c1ce672f202fe68f2146a58da",
+      "size": [
+        3780,
+        2192
+      ],
+      "alpha_bounds": [
+        0,
+        0,
+        3780,
+        2192
+      ],
+      "filter": "nearest",
+      "source_ids": [
+        "arena_throne",
+        "landmark_throne"
+      ],
+      "source_crop": [
+        58,
+        323,
+        46,
+        48
+      ],
+      "source_scale": 2,
+      "normalization": "Original official-demo floor pixels mirror tiled at integer2x. Authored terrain zones use same-source native floor variation. Margins and upright landmarks stay outside playable bounds. This is an authored arena adaptation, not the original pinball stage geometry. The central red carpet is a native-pixel mirrored strip sampled from the original throne carpet, aligned with world x640.",
+      "world_origin": [
+        -1146,
+        -767
+      ],
+      "walkable_art_rect": [
+        64,
+        232,
+        3508,
+        2032
+      ],
+      "zone_count": 6,
+      "zone_normalization": "Same-source floor texture through a low-contrast dithered mask; geometry read from data/arenas.json without changing movement values or coordinates",
+      "border_crops": {
+        "left": [
+          32,
+          195,
+          24,
+          128
+        ],
+        "right": [
+          220,
+          195,
+          24,
+          128
+        ],
+        "top": [
+          49,
+          45,
+          176,
+          48
+        ]
+      },
+      "landmarks": [
+        {
+          "source_id": "landmark_throne",
+          "source_crop": [
+            88,
+            106,
+            100,
+            80
+          ],
+          "rotation_degrees": 0,
+          "scale": 2,
+          "art_rect": [
+            1686,
+            64,
+            200,
+            160
+          ],
+          "alpha_selection": "complete cropped original alpha",
+          "placement": "Strictly outside walkable_art_rect; does not imply a gameplay collider"
+        }
+      ],
+      "normalized_repeat_size": [
+        184,
+        192
+      ],
+      "zone_source_crop": [
+        112,
+        290,
+        48,
+        64
+      ],
+      "floor_bands": [
+        {
+          "source_crop": [
+            112,
+            286,
+            48,
+            82
+          ],
+          "axis": "vertical",
+          "world_center": 640,
+          "width": 192
+        }
+      ]
+    },
+    {
+      "id": "arena_throne_preview",
+      "path": "assets/worldflipper/maps/previews/throne.png",
+      "sha256": "4f8ecabced386e0a233aaa9ff13cf3e6badc168257b3e3c10c7b9397eb5d3540",
+      "size": [
+        1280,
+        720
+      ],
+      "alpha_bounds": [
+        0,
+        0,
+        1280,
+        720
+      ],
+      "filter": "nearest",
+      "source_ids": [
+        "arena_throne",
+        "landmark_throne"
+      ],
+      "source_crop": [
+        58,
+        323,
+        46,
+        48
+      ],
+      "source_scale": 2,
+      "normalization": "Unscaled 1280x720 crop of the current start camera from the normalized arena",
+      "arena_crop": [
+        1146,
+        772,
+        1280,
+        720
+      ]
+    },
+    {
+      "id": "arena_tower_peak",
+      "path": "assets/worldflipper/maps/tower_peak.png",
+      "sha256": "5930e37b968d0a05352b51a9149f0213f99e68727b3a59777d3b6a8d7f506b19",
+      "size": [
+        3780,
+        2192
+      ],
+      "alpha_bounds": [
+        0,
+        0,
+        3780,
+        2192
+      ],
+      "filter": "nearest",
+      "source_ids": [
+        "arena_tower_peak",
+        "landmark_tower_peak"
+      ],
+      "source_crop": [
+        170,
+        78,
+        72,
+        128
+      ],
+      "source_scale": 2,
+      "normalization": "Original official-demo floor pixels mirror tiled at integer2x. Authored terrain zones use same-source native floor variation. Margins and upright landmarks stay outside playable bounds. This is an authored arena adaptation, not the original pinball stage geometry.",
+      "world_origin": [
+        -1146,
+        -767
+      ],
+      "walkable_art_rect": [
+        64,
+        232,
+        3508,
+        2032
+      ],
+      "zone_count": 6,
+      "zone_normalization": "Same-source floor texture through a low-contrast dithered mask; geometry read from data/arenas.json without changing movement values or coordinates",
+      "border_crops": {
+        "left": [
+          92,
+          91,
+          24,
+          96
+        ],
+        "right": [
+          322,
+          90,
+          24,
+          96
+        ],
+        "top": [
+          153,
+          32,
+          176,
+          32
+        ]
+      },
+      "landmarks": [
+        {
+          "source_id": "landmark_tower_peak",
+          "source_crop": [
+            1,
+            90,
+            88,
+            64
+          ],
+          "rotation_degrees": 0,
+          "scale": 2,
+          "art_rect": [
+            420,
+            70,
+            176,
+            128
+          ],
+          "alpha_selection": "complete cropped original alpha",
+          "placement": "Strictly outside walkable_art_rect; does not imply a gameplay collider"
+        },
+        {
+          "source_id": "landmark_tower_peak",
+          "source_crop": [
+            186,
+            90,
+            87,
+            64
+          ],
+          "rotation_degrees": 0,
+          "scale": 2,
+          "art_rect": [
+            2980,
+            70,
+            174,
+            128
+          ],
+          "alpha_selection": "complete cropped original alpha",
+          "placement": "Strictly outside walkable_art_rect; does not imply a gameplay collider"
+        },
+        {
+          "source_id": "landmark_tower_peak",
+          "source_crop": [
+            1,
+            90,
+            88,
+            64
+          ],
+          "rotation_degrees": 0,
+          "scale": 2,
+          "art_rect": [
+            420,
+            2044,
+            176,
+            128
+          ],
+          "alpha_selection": "complete cropped original alpha",
+          "placement": "Strictly outside walkable_art_rect; does not imply a gameplay collider"
+        },
+        {
+          "source_id": "landmark_tower_peak",
+          "source_crop": [
+            186,
+            90,
+            87,
+            64
+          ],
+          "rotation_degrees": 0,
+          "scale": 2,
+          "art_rect": [
+            2980,
+            2044,
+            174,
+            128
+          ],
+          "alpha_selection": "complete cropped original alpha",
+          "placement": "Strictly outside walkable_art_rect; does not imply a gameplay collider"
+        }
+      ],
+      "normalized_repeat_size": [
+        288,
+        512
+      ],
+      "zone_source_crop": [
+        475,
+        90,
+        64,
+        96
+      ]
+    },
+    {
+      "id": "arena_tower_peak_preview",
+      "path": "assets/worldflipper/maps/previews/tower_peak.png",
+      "sha256": "08133d1138b528f56ec204450427206653dd8c755479317548e5e3a740b137c2",
+      "size": [
+        1280,
+        720
+      ],
+      "alpha_bounds": [
+        0,
+        0,
+        1280,
+        720
+      ],
+      "filter": "nearest",
+      "source_ids": [
+        "arena_tower_peak",
+        "landmark_tower_peak"
+      ],
+      "source_crop": [
+        170,
+        78,
+        72,
         128
       ],
       "source_scale": 2,
@@ -5051,6 +6097,278 @@
       ],
       "filter": "nearest",
       "normalization": "Restore original atlas trim/rotation; combine four quarter-circle corners and four cross arms for complete white/red targets; broken is a bounded static authored piece-matrix snapshot. Original colors/alpha retained. Runtime state flashing, scale and break duration are project adaptations, not decoded original timing."
+    },
+    {
+      "id": "sword_0012",
+      "path": "assets/worldflipper/icons/sword_0012.png",
+      "sha256": "c2b9b5802626200c46c6fa5ac57ed62a6254292b26019158170488bb84c6f8b5",
+      "size": [
+        64,
+        64
+      ],
+      "alpha_bounds": [
+        10,
+        10,
+        54,
+        54
+      ],
+      "filter": "nearest",
+      "source_ids": [
+        "weapon_expansion_sword_0012"
+      ],
+      "source_crop": [
+        0,
+        0,
+        22,
+        22
+      ],
+      "source_scale": 2,
+      "offset": [
+        10,
+        10
+      ],
+      "item_kind": "weapon",
+      "canonical_equipment_id": "5010012",
+      "source_name": "Prometheus Blade",
+      "normalization": "2x nearest, full original transparent canvas centered at (10, 10) inside 64x64; original colors and alpha preserved, no cutout, recoloring, labels or added frame"
+    },
+    {
+      "id": "spear_0005",
+      "path": "assets/worldflipper/icons/spear_0005.png",
+      "sha256": "1259b997dcfce552bd5f1088df8ddcd17073daef0feeda7fcf0692ef6d609693",
+      "size": [
+        64,
+        64
+      ],
+      "alpha_bounds": [
+        10,
+        10,
+        54,
+        54
+      ],
+      "filter": "nearest",
+      "source_ids": [
+        "weapon_expansion_spear_0005"
+      ],
+      "source_crop": [
+        0,
+        0,
+        22,
+        22
+      ],
+      "source_scale": 2,
+      "offset": [
+        10,
+        10
+      ],
+      "item_kind": "weapon",
+      "canonical_equipment_id": "5030005",
+      "source_name": "Maltet",
+      "normalization": "2x nearest, full original transparent canvas centered at (10, 10) inside 64x64; original colors and alpha preserved, no cutout, recoloring, labels or added frame"
+    },
+    {
+      "id": "sword_0004",
+      "path": "assets/worldflipper/icons/sword_0004.png",
+      "sha256": "85a38d1e8ba7b9d29154ffc6fd84560d9bf5f1c8eb1baa8cad798046575bf48c",
+      "size": [
+        64,
+        64
+      ],
+      "alpha_bounds": [
+        12,
+        10,
+        52,
+        54
+      ],
+      "filter": "nearest",
+      "source_ids": [
+        "weapon_expansion_sword_0004"
+      ],
+      "source_crop": [
+        0,
+        0,
+        20,
+        22
+      ],
+      "source_scale": 2,
+      "offset": [
+        12,
+        10
+      ],
+      "item_kind": "weapon",
+      "canonical_equipment_id": "5010004",
+      "source_name": "Ame-no-Habakiri",
+      "normalization": "2x nearest, full original transparent canvas centered at (12, 10) inside 64x64; original colors and alpha preserved, no cutout, recoloring, labels or added frame"
+    },
+    {
+      "id": "axe_0009",
+      "path": "assets/worldflipper/icons/axe_0009.png",
+      "sha256": "ede5f540525777ad682ca55b1f843309d9f9e07d1f06db7e608ffc77fac337fd",
+      "size": [
+        64,
+        64
+      ],
+      "alpha_bounds": [
+        10,
+        10,
+        54,
+        54
+      ],
+      "filter": "nearest",
+      "source_ids": [
+        "weapon_expansion_axe_0009"
+      ],
+      "source_crop": [
+        0,
+        0,
+        22,
+        22
+      ],
+      "source_scale": 2,
+      "offset": [
+        10,
+        10
+      ],
+      "item_kind": "weapon",
+      "canonical_equipment_id": "5020009",
+      "source_name": "Thor's Hammer",
+      "normalization": "2x nearest, full original transparent canvas centered at (10, 10) inside 64x64; original colors and alpha preserved, no cutout, recoloring, labels or added frame"
+    },
+    {
+      "id": "book_0009",
+      "path": "assets/worldflipper/icons/book_0009.png",
+      "sha256": "e961cb5f322219e6c64ffb866c1b8735c7a76cdf38d2e48d3a82b3a8bf2c6a44",
+      "size": [
+        64,
+        64
+      ],
+      "alpha_bounds": [
+        5,
+        5,
+        59,
+        59
+      ],
+      "filter": "nearest",
+      "source_ids": [
+        "weapon_expansion_book_0009"
+      ],
+      "source_crop": [
+        0,
+        0,
+        18,
+        18
+      ],
+      "source_scale": 3,
+      "offset": [
+        5,
+        5
+      ],
+      "item_kind": "weapon",
+      "canonical_equipment_id": "5050009",
+      "source_name": "Senji Ryakketsu",
+      "normalization": "3x nearest, full original transparent canvas centered at (5, 5) inside 64x64; original colors and alpha preserved, no cutout, recoloring, labels or added frame"
+    },
+    {
+      "id": "sword_0007",
+      "path": "assets/worldflipper/icons/sword_0007.png",
+      "sha256": "8162972c5087f1f8066b30a89efab27eec8939dd166cc60b4a224b4286a5e8e9",
+      "size": [
+        64,
+        64
+      ],
+      "alpha_bounds": [
+        9,
+        5,
+        54,
+        59
+      ],
+      "filter": "nearest",
+      "source_ids": [
+        "weapon_expansion_sword_0007"
+      ],
+      "source_crop": [
+        0,
+        0,
+        15,
+        18
+      ],
+      "source_scale": 3,
+      "offset": [
+        9,
+        5
+      ],
+      "item_kind": "weapon",
+      "canonical_equipment_id": "3010007",
+      "source_name": "Cutlass",
+      "normalization": "3x nearest, full original transparent canvas centered at (9, 5) inside 64x64; original colors and alpha preserved, no cutout, recoloring, labels or added frame"
+    },
+    {
+      "id": "axe_0024",
+      "path": "assets/worldflipper/icons/axe_0024.png",
+      "sha256": "0d6c9ae178dbb9cf103618b922bcd5821477f079dcbc70663bf3cda7b61c4547",
+      "size": [
+        64,
+        64
+      ],
+      "alpha_bounds": [
+        2,
+        2,
+        62,
+        62
+      ],
+      "filter": "nearest",
+      "source_ids": [
+        "weapon_expansion_axe_0024"
+      ],
+      "source_crop": [
+        0,
+        0,
+        20,
+        20
+      ],
+      "source_scale": 3,
+      "offset": [
+        2,
+        2
+      ],
+      "item_kind": "weapon",
+      "canonical_equipment_id": "5020024",
+      "source_name": "Parashu",
+      "normalization": "3x nearest, full original transparent canvas centered at (2, 2) inside 64x64; original colors and alpha preserved, no cutout, recoloring, labels or added frame"
+    },
+    {
+      "id": "sword_0011",
+      "path": "assets/worldflipper/icons/sword_0011.png",
+      "sha256": "c13fd8c60ca4646661a2f8793651a7744976b570afca1b542fbfc1e2fcf6b1d1",
+      "size": [
+        64,
+        64
+      ],
+      "alpha_bounds": [
+        10,
+        10,
+        54,
+        54
+      ],
+      "filter": "nearest",
+      "source_ids": [
+        "weapon_expansion_sword_0011"
+      ],
+      "source_crop": [
+        0,
+        0,
+        22,
+        22
+      ],
+      "source_scale": 2,
+      "offset": [
+        10,
+        10
+      ],
+      "item_kind": "weapon",
+      "canonical_equipment_id": "5010011",
+      "source_name": "Heimdall's Sword",
+      "normalization": "2x nearest, full original transparent canvas centered at (10, 10) inside 64x64; original colors and alpha preserved, no cutout, recoloring, labels or added frame"
     }
   ],
   "metadata_files": [

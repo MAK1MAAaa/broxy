@@ -60,13 +60,15 @@ func add_cast(id: String, origin: Vector2, direction: Vector2, radius: float, an
 	return true
 
 func add_hero_cast(parameters: Dictionary, origin: Vector2, direction: Vector2, animated: bool) -> bool:
+	if str(parameters.get("delivery", "instant")) == "bombs":
+		return false
 	var radius: float = _number(parameters.get("radius"), 0.0)
 	var shape: String = str(parameters.get("shape", ""))
 	var angle: float = _number(parameters.get("half_angle_radians"), deg_to_rad(50.0))
 	var width: float = _number(parameters.get("width"), 70.0)
-	if shape not in ["arc", "circle", "line"] or not _valid_origin(origin, direction, radius):
+	if shape not in ["arc", "double_arc", "circle", "line"] or not _valid_origin(origin, direction, radius):
 		return false
-	if not is_finite(angle) or not is_finite(width) or width <= 0.0 or (shape == "arc" and (angle <= 0.0 or angle > PI)):
+	if not is_finite(angle) or not is_finite(width) or width <= 0.0 or (shape in ["arc", "double_arc"] and (angle <= 0.0 or angle > PI)):
 		return false
 	var cast: Cast = _take_cast(str(parameters.get("id", "")), origin, direction, radius, animated)
 	cast.shape = shape
@@ -74,8 +76,8 @@ func add_hero_cast(parameters: Dictionary, origin: Vector2, direction: Vector2, 
 	cast.width = width
 	match cast.id:
 		"hero_alk":
-			cast.family = "blade"
-			cast.color = GOLD
+			cast.family = "shockwave"
+			cast.color = FIRE
 		"hero_celtie":
 			cast.family = "wind"
 			cast.color = WIND
@@ -154,8 +156,10 @@ func draw(canvas: CanvasItem) -> void:
 func _draw_range(canvas: CanvasItem, cast: Cast, alpha: float) -> void:
 	var color := Color(cast.color, alpha * (0.18 if cast.animated else 0.8))
 	var line_width: float = 1.0 if cast.animated else 2.0
-	if cast.shape == "arc":
+	if cast.shape in ["arc", "double_arc"]:
 		canvas.draw_arc(Vector2.ZERO, cast.radius, -cast.half_angle, cast.half_angle, 24, color, line_width, false)
+		if cast.shape == "double_arc":
+			canvas.draw_arc(Vector2.ZERO, cast.radius, PI - cast.half_angle, PI + cast.half_angle, 24, color, line_width, false)
 	elif cast.shape == "line":
 		var side := Vector2(0, cast.width * 0.5)
 		var end := Vector2(cast.radius, 0)
@@ -179,16 +183,40 @@ func _draw_interior(canvas: CanvasItem, cast: Cast, alpha: float) -> void:
 func _prepare_geometry(cast: Cast, progress: float) -> void:
 	cast.polygon_count = 0
 	cast.details.clear()
-	if cast.shape == "arc":
+	if cast.shape in ["arc", "double_arc"]:
 		_prepare_slash(cast, progress)
+		if cast.shape == "double_arc":
+			var first: int = cast.polygon_count
+			var details_start: int = cast.details.size()
+			_prepare_slash(cast, progress)
+			for index: int in range(first, cast.polygon_count):
+				for point: int in cast.polygons[index].size():
+					cast.polygons[index][point] = -cast.polygons[index][point]
+				for point: int in cast.borders[index].size():
+					cast.borders[index][point] = -cast.borders[index][point]
+			for point: int in range(details_start, cast.details.size()):
+				cast.details[point] = -cast.details[point]
 	elif cast.shape == "line":
 		_prepare_firework(cast, progress)
 	elif cast.family == "wind":
 		_prepare_wind(cast, progress)
 	elif cast.family == "alchemy":
 		_prepare_alchemy(cast, progress)
+	elif cast.family == "shockwave":
+		_prepare_shockwave(cast, progress)
 	else:
 		_prepare_meteor(cast, progress)
+
+func _prepare_shockwave(cast: Cast, progress: float) -> void:
+	var radius: float = cast.radius * (0.35 + progress * 0.60)
+	var thickness: float = 12.0 * (1.0 - progress * 0.6)
+	for index: int in 3:
+		var angle: float = float(index) * TAU / 3.0
+		_band(cast, radius, angle, PI / 3.1, thickness, 0, true)
+		_band(cast, radius - thickness * 0.4, angle, PI / 3.2, 2.0, 1, false)
+		var direction := Vector2.from_angle(angle)
+		cast.details.append(direction * radius * 0.5)
+		cast.details.append(direction * radius * 0.7)
 
 func _prepare_slash(cast: Cast, progress: float) -> void:
 	var radius: float = cast.radius * (0.76 + progress * 0.20)

@@ -20,7 +20,7 @@ class ExpandedMapAssetTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.generated = build_maps()
-        cls.definitions = json.loads((ROOT / "data/arenas.json").read_text(encoding="utf-8"))
+        cls.definitions = [row for row in json.loads((ROOT / "data/arenas.json").read_text(encoding="utf-8")) if row["id"] in IDS]
         cls.manifest = json.loads((DESTINATION / "manifest.json").read_text(encoding="utf-8"))
 
     def test_checked_in_family_and_world_contract(self) -> None:

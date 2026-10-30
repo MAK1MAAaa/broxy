@@ -40,6 +40,7 @@ const PINBALL_DAMAGE: float = 28.0
 const PINBALL_HIT_INTERVAL: float = 0.15
 const PINBALL_BOUNCE_LIMIT: int = 12
 const PINBALL_STEP_LIMIT: int = 8
+const EXPLOSION_REGION_CACHE_LIMIT: int = 1024
 
 class Enemy:
 	var active: bool = false
@@ -63,6 +64,8 @@ class Enemy:
 	var boss_ghost: bool = false
 	var boss_cast_id: int = 0
 	var damage_scale: float = 1.0
+	var fire_vulnerability_left: float = 0.0
+	var fire_vulnerability: float = 0.0
 
 class Shot:
 	var active: bool = false
@@ -169,6 +172,8 @@ var damage_by_skill: Dictionary = {}
 var skill_hits: int = 0
 var _active_skill_clocks: Dictionary = {}
 var _hero_skill_clock: Dictionary = {}
+var hero_effects: HeroSkillRuntime = HeroSkillRuntime.new()
+var weapon_effects: WeaponEffectRuntime = WeaponEffectRuntime.new()
 var interactions: ArenaInteractions = ArenaInteractions.new()
 var _crate_indices: Dictionary = {}
 var _pinball_time_left: float = 0.0
@@ -183,6 +188,7 @@ var _shot_free: Array[int] = []
 var _soul_free: Array[int] = []
 var _grid: Dictionary = {}
 var _shot_region_candidates: Dictionary = {}
+var _explosion_region_slots: Dictionary = {}
 var _target_points: AStar2D = AStar2D.new()
 var _largest_enemy_radius: float = 0.0
 var _explosion_grid_active: bool = false
@@ -216,6 +222,7 @@ func _init() -> void:
 
 func begin(state: RunState) -> void:
 	run = state
+	_explosion_region_slots.clear()
 	boss_encounter.stop()
 	boss_interrupts = 0
 	weakpoints_broken = 0
@@ -252,6 +259,8 @@ func begin(state: RunState) -> void:
 	pulse_cooldown_left = 0.0
 	_active_skill_clocks.clear()
 	_hero_skill_clock.clear()
+	hero_effects.clear()
+	weapon_effects.begin(run)
 	damage_by_skill.clear()
 	skill_hits = 0
 	pulse_cooldown_total = _current_pulse_cooldown()
@@ -287,6 +296,8 @@ func step(delta: float, movement: Vector2, dash_pressed: bool = false, pulse_pre
 	elapsed += delta
 	run.elapsed += delta
 	invulnerability = maxf(0.0, invulnerability - delta)
+	hero_effects.advance_timers(delta)
+	weapon_effects.advance(self, delta)
 	interactions.advance(delta)
 	_advance_boss_encounter(delta)
 	if _has_movement_direction(movement):
@@ -314,6 +325,8 @@ func step(delta: float, movement: Vector2, dash_pressed: bool = false, pulse_pre
 	_explosion_grid_active = true
 	_update_weapons(delta)
 	_update_shots(delta)
+	if not complete:
+		_advance_hero_bombs(delta)
 	_explosion_grid_active = false
 	if complete:
 		return
@@ -525,12 +538,15 @@ func _collect_world_pickups() -> void:
 				run.gold += int(actual)
 			"health":
 				actual = maxf(0.0, minf(value, run.stat("max_health") - run.health))
-				run.health += actual
 			"charge": actual = _charge_owned_skills(value)
 		if actual <= 0.0:
 			continue
 		if interactions.consume_pickup(int(pickup["uid"])):
-			run.changed.emit()
+			if kind == "health":
+				actual = run.heal(actual)
+				weapon_effects.observe_health(self)
+			else:
+				run.changed.emit()
 			world_pickup_collected.emit(kind, pickup["position"], actual)
 
 func _charge_owned_skills(seconds: float) -> float:
@@ -649,6 +665,7 @@ func try_active_skill(slot: int, expected_uid: int = -1) -> bool:
 	var parameters: Dictionary = run.active_skill_parameters(item).duplicate(true)
 	if parameters.is_empty():
 		return false
+	parameters["damage"] = float(parameters.get("damage", 0.0)) * hero_effects.attack_multiplier()
 	var direction: Vector2 = _skill_direction()
 	var origin: Vector2 = _starfall_origin(direction) if item["id"] == "starfall" else player_position
 	_active_skill_clocks[uid] = {"remaining": parameters["cooldown"], "duration": parameters["cooldown"],
@@ -672,21 +689,42 @@ func try_hero_skill(expected_hero: String = "") -> bool:
 		return false
 	if float(_hero_skill_clock.get("remaining", 0.0)) > 0.0:
 		return false
-	var parameters: Dictionary = run.hero_skill_parameters().duplicate(true)
+	var parameters: Dictionary = _next_hero_skill_parameters()
 	if parameters.is_empty():
 		return false
 	var direction: Vector2 = _skill_direction()
-	var origin: Vector2 = _nearest_skill_origin(direction, float(parameters.get("target_range", 400.0))) if parameters.get("origin_mode", "player") == "nearest" else player_position
+	var origin: Vector2 = player_position
+	if parameters.get("origin_mode", "player") == "nearest":
+		origin = _nearest_skill_origin(direction, float(parameters.get("target_range", 400.0)))
+	elif parameters.get("origin_mode", "player") == "forward":
+		origin = clamp_point(player_position + direction * float(parameters.get("forward_distance", 160.0)))
+	if parameters.get("delivery", "instant") == "bombs" and not hero_effects.spawn_bombs(parameters, origin, direction):
+		return false
 	_hero_skill_clock = {"hero_id": run.hero_id, "remaining": parameters["cooldown"], "duration": parameters["cooldown"],
 		"uses": int(_hero_skill_clock.get("uses", 0)) + 1, "parameters": parameters}
-	var affected: int = _cast_damage_skill(origin, direction, parameters)
+	var affected: int = _cast_hero_delivery(origin, direction, parameters)
+	weapon_effects.on_hero_cast(self)
 	hero_skill_cast.emit(run.hero_id, parameters.duplicate(true), origin, direction, affected)
 	return true
+
+func _next_hero_skill_parameters() -> Dictionary:
+	var parameters: Dictionary = run.hero_skill_parameters().duplicate(true)
+	if parameters.is_empty():
+		return {}
+	var static_haste: float = run.stat("skill_haste")
+	parameters["cooldown"] = float(parameters["cooldown"]) * (1.0 + static_haste) / (1.0 + static_haste + weapon_effects.haste_bonus())
+	parameters["damage"] = float(parameters.get("damage", 0.0)) * hero_effects.attack_multiplier()
+	if parameters.get("shape", "") == "double_arc":
+		var combo_bonus: float = minf(float(parameters.get("combo_bonus_cap", 0.5)), float(_pinball_combo) * float(parameters.get("combo_per_hit", 0.005)))
+		parameters["damage"] *= 1.0 + maxf(0.0, combo_bonus)
+		parameters["combo"] = _pinball_combo
+		parameters["combo_bonus"] = combo_bonus
+	return parameters
 
 func hero_skill_snapshot() -> Dictionary:
 	if run == null:
 		return {"available": false, "ready": false}
-	var next_parameters: Dictionary = run.hero_skill_parameters()
+	var next_parameters: Dictionary = _next_hero_skill_parameters()
 	var remaining: float = float(_hero_skill_clock.get("remaining", 0.0))
 	var parameters: Dictionary = _hero_skill_clock.get("parameters", next_parameters) if remaining > 0.0 else next_parameters
 	var result: Dictionary = parameters.duplicate(true)
@@ -694,6 +732,63 @@ func hero_skill_snapshot() -> Dictionary:
 		"cooldown_remaining": remaining, "cooldown_duration": float(_hero_skill_clock.get("duration", parameters.get("cooldown", 0.0))) if remaining > 0.0 else float(parameters.get("cooldown", 0.0)),
 		"uses": int(_hero_skill_clock.get("uses", 0)), "skill_name": str(parameters.get("name", ""))}, true)
 	return result
+
+func hero_effects_snapshot() -> Dictionary:
+	return hero_effects.snapshot()
+
+func clear_hero_effects() -> void:
+	hero_effects.clear()
+	for enemy: Enemy in enemies:
+		enemy.fire_vulnerability_left = 0.0
+		enemy.fire_vulnerability = 0.0
+
+func _cast_hero_delivery(origin: Vector2, direction: Vector2, parameters: Dictionary) -> int:
+	if parameters.get("delivery", "instant") == "bombs":
+		return 0
+	var hits: int = clampi(int(parameters.get("hits", 1)), 1, 12)
+	var part: Dictionary = parameters.duplicate(true)
+	part["damage"] = float(parameters["damage"]) / float(hits)
+	var affected: int = 0
+	for hit: int in hits:
+		if complete:
+			break
+		affected = maxi(affected, _cast_damage_skill(origin, direction, part))
+	if not complete:
+		var vulnerability: float = float(parameters.get("fire_vulnerability", 0.0))
+		if vulnerability > 0.0:
+			for enemy: Enemy in enemies:
+				if enemy.active and enemy.health > 0.0 and skill_contains(parameters, origin, direction, enemy.position):
+					enemy.fire_vulnerability = clampf(vulnerability, 0.0, 1.0)
+					enemy.fire_vulnerability_left = clampf(float(parameters.get("vulnerability_seconds", 4.0)), 0.0, 30.0)
+		hero_effects.set_attack_buff(float(parameters.get("attack_bonus", 0.0)), float(parameters.get("buff_seconds", 0.0)))
+	return affected
+
+func _advance_hero_bombs(delta: float) -> void:
+	for bomb: HeroSkillRuntime.Bomb in hero_effects.bombs:
+		if complete:
+			return
+		if not bomb.active:
+			continue
+		var travel_time: float = minf(delta, bomb.life)
+		bomb.previous = bomb.position
+		var destination: Vector2 = bomb.position + bomb.velocity * travel_time
+		var obstacle: Dictionary = obstacles.first_hit(bomb.position, destination - bomb.position, bomb.collision_radius)
+		var nearest: float = float(obstacle.get("t", INF))
+		var low: Vector2 = bomb.position.min(destination) - Vector2.ONE * (bomb.collision_radius + _largest_enemy_radius)
+		var high: Vector2 = bomb.position.max(destination) + Vector2.ONE * (bomb.collision_radius + _largest_enemy_radius)
+		for enemy: Enemy in _shot_candidates(Vector2i((low / CELL).floor()), Vector2i((high / CELL).floor())):
+			if enemy.active and enemy.health > 0.0:
+				nearest = minf(nearest, _swept_circle_entry_t(bomb.position, destination, enemy.position, bomb.collision_radius + enemy.radius))
+		var point: Dictionary = _weakpoint_first_hit(bomb.position, destination, bomb.collision_radius, {})
+		if not point.is_empty():
+			nearest = minf(nearest, float(point["t"]))
+		bomb.position = bomb.position.lerp(destination, nearest) if is_finite(nearest) else destination
+		bomb.life = maxf(0.0, bomb.life - delta)
+		if is_finite(nearest) or bomb.life <= 0.0:
+			var blast: Dictionary = {"id": bomb.source, "shape": "circle", "radius": bomb.blast_radius,
+				"damage": bomb.damage, "element": bomb.element}
+			hero_effects.detonate(bomb)
+			_cast_damage_skill(bomb.position, bomb.velocity.normalized(), blast)
 
 func _starfall_origin(direction: Vector2) -> Vector2:
 	return _nearest_skill_origin(direction, 320.0)
@@ -742,7 +837,7 @@ func _cast_damage_skill(origin: Vector2, direction: Vector2, parameters: Diction
 		if not skill_contains(parameters, origin, direction, enemy.position):
 			continue
 		var before: float = enemy.health
-		apply_damage(enemy, float(parameters["damage"]), "skill:" + str(parameters["id"]))
+		apply_damage(enemy, float(parameters["damage"]), "skill:" + str(parameters["id"]), false, 0.0, str(parameters.get("element", "")))
 		if enemy.health < before:
 			affected += 1
 	if not complete:
@@ -773,6 +868,8 @@ static func skill_contains(parameters: Dictionary, origin: Vector2, direction: V
 		return along >= 0.0 and along <= radius and absf(direction.cross(offset)) <= float(parameters.get("width", 70.0)) * 0.5
 	if offset.length_squared() > radius * radius + 0.01:
 		return false
+	if shape == "double_arc":
+		return offset.is_zero_approx() or absf(direction.dot(offset.normalized())) + 0.000001 >= cos(float(parameters.get("half_angle_radians", 0.0)))
 	return shape != "arc" or offset.is_zero_approx() or direction.dot(offset.normalized()) + 0.000001 >= cos(float(parameters.get("half_angle_radians", 0.0)))
 
 func _sync_legacy_pulse_clock() -> void:
@@ -796,6 +893,7 @@ func active_skill_snapshot(slot: int) -> Dictionary:
 	var next_parameters: Dictionary = run.active_skill_parameters(item)
 	if next_parameters.is_empty():
 		return result
+	next_parameters["damage"] = float(next_parameters.get("damage", 0.0)) * hero_effects.attack_multiplier()
 	var uid: int = int(item["uid"])
 	var clock: Dictionary = _active_skill_clocks.get(uid, {})
 	var remaining: float = float(clock.get("remaining", 0.0))
@@ -833,6 +931,7 @@ func spawn_enemy(id: String, position: Vector2 = Vector2.INF, deterministic_time
 	if _enemy_free.is_empty():
 		return null
 	_explosion_grid_active = false
+	_explosion_region_slots.clear()
 	var enemy: Enemy = enemies[_enemy_free.pop_back()]
 	enemy.active = true
 	enemy.definition = GameCatalog.enemy(id)
@@ -856,6 +955,8 @@ func spawn_enemy(id: String, position: Vector2 = Vector2.INF, deterministic_time
 	enemy.boss_ghost = false
 	enemy.boss_cast_id = 0
 	enemy.damage_scale = 1.0
+	enemy.fire_vulnerability_left = 0.0
+	enemy.fire_vulnerability = 0.0
 	enemy_count += 1
 	return enemy
 
@@ -930,6 +1031,10 @@ func _update_enemies(delta: float) -> void:
 		enemy.action_timer -= delta
 		enemy.hurt_timer = maxf(0.0, enemy.hurt_timer - delta)
 		enemy.slow_timer = maxf(0.0, enemy.slow_timer - delta)
+		if enemy.fire_vulnerability_left > 0.0:
+			enemy.fire_vulnerability_left = _skill_timer_after(enemy.fire_vulnerability_left, delta)
+			if enemy.fire_vulnerability_left <= 0.0:
+				enemy.fire_vulnerability = 0.0
 		if is_finite(delta) and delta > 0.0:
 			enemy.pulse_hinder_timer = _skill_timer_after(enemy.pulse_hinder_timer, delta)
 		var direction: Vector2 = (player_position - enemy.position).normalized()
@@ -1155,6 +1260,7 @@ func _damage_boss_points_in_skill(origin: Vector2, direction: Vector2, spec: Dic
 func _clear_boss_ghosts() -> void:
 	for enemy: Enemy in enemies:
 		if enemy.active and enemy.boss_ghost:
+			_explosion_region_slots.clear()
 			enemy.active = false
 			enemy_count -= 1
 			_enemy_free.append(enemy.slot)
@@ -1162,6 +1268,7 @@ func _clear_boss_ghosts() -> void:
 
 func _rebuild_grid() -> void:
 	_shot_region_candidates.clear()
+	_explosion_region_slots.clear()
 	_target_points.clear()
 	_largest_enemy_radius = 0.0
 	for key: Vector2i in _grid:
@@ -1293,7 +1400,7 @@ func fire_weapon(weapon_id: String, rune_id: String, position: Vector2, directio
 	shot.weapon_rank = clampi(weapon_rank, 1, 3)
 	shot.rune_rank = clampi(rune_rank, 1, 3)
 	shot.resonance_bonus = clampf(resonance_bonus, 0.0, BackpackResonance.MAX_BONUS) if is_finite(resonance_bonus) else 0.0
-	shot.damage = definition.damage * run.stat("damage") * BackpackInventory.rank_multiplier(shot.weapon_rank) * (1.0 + shot.resonance_bonus)
+	shot.damage = definition.damage * run.stat("damage") * hero_effects.attack_multiplier() * BackpackInventory.rank_multiplier(shot.weapon_rank) * (1.0 + shot.resonance_bonus)
 	shot.source = weapon_id
 	shot.attacker_id = ""
 	shot.rune = rune_id
@@ -1579,10 +1686,17 @@ static func clamp_point(point: Vector2, inset: float = 0.0) -> Vector2:
 	var bounds: Rect2 = ARENA.grow(-inset)
 	return Vector2(clampf(point.x, bounds.position.x, bounds.end.x), clampf(point.y, bounds.position.y, bounds.end.y))
 
-func apply_damage(enemy: Enemy, amount: float, source: String, secondary: bool = false, slow: float = 0.0) -> void:
+func apply_damage(enemy: Enemy, amount: float, source: String, secondary: bool = false, slow: float = 0.0, element: String = "") -> void:
 	if complete or not enemy.active:
 		return
 	var multiplier: float = float(boss_encounter.snapshot()["damage_multiplier"]) if enemy == boss else 1.0
+	if enemy.fire_vulnerability_left > 0.0:
+		if element.is_empty():
+			var weapon: ContentDef = GameCatalog.weapon(source)
+			element = weapon.element if weapon != null else "physical"
+		if element == "fire":
+			multiplier *= 1.0 + enemy.fire_vulnerability
+	multiplier *= weapon_effects.damage_multiplier(self, source, enemy)
 	var actual: float = minf(enemy.health, maxf(0.0, amount) * multiplier)
 	if actual <= 0.0:
 		return
@@ -1623,16 +1737,21 @@ func _explode(position: Vector2, amount: float, source: String, excluded: Dictio
 		_damage_crates_in_skill(position, Vector2.RIGHT, {"shape": "circle", "radius": radius, "damage": amount})
 
 func _explosion_slots(position: Vector2, radius: float = RuneRules.BLAST_RADIUS) -> PackedInt32Array:
-	var slots: PackedInt32Array = PackedInt32Array()
 	# Only this step's shot phase has stable positions/radii. Direct calls may follow
 	# external edits or an empty/stale grid, so retain their original full scan.
 	if not _explosion_grid_active:
+		var linear_slots := PackedInt32Array()
 		for index: int in enemies.size():
-			slots.append(index)
-		return slots
+			linear_slots.append(index)
+		return linear_slots
 	var reach: Vector2 = Vector2.ONE * (radius + _largest_enemy_radius)
 	var start: Vector2i = Vector2i(((position - reach) / CELL).floor())
 	var end: Vector2i = Vector2i(((position + reach) / CELL).floor())
+	var key := Vector4i(start.x, start.y, end.x, end.y)
+	if _explosion_region_slots.has(key):
+		# Internal consumers only iterate; mutations require their own duplicate.
+		return _explosion_region_slots[key]
+	var slots := PackedInt32Array()
 	for x: int in range(start.x, end.x + 1):
 		for y: int in range(start.y, end.y + 1):
 			var cell: Vector2i = Vector2i(x, y)
@@ -1643,9 +1762,12 @@ func _explosion_slots(position: Vector2, radius: float = RuneRules.BLAST_RADIUS)
 					slots.append(enemy.slot)
 	# Damage/kill/terminal order is observable; preserve the original pool-slot order.
 	slots.sort()
+	if _explosion_region_slots.size() < EXPLOSION_REGION_CACHE_LIMIT:
+		_explosion_region_slots[key] = slots
 	return slots
 
 func _kill_enemy(enemy: Enemy) -> void:
+	_explosion_region_slots.clear()
 	enemy.active = false
 	obstacles.forget_agent(enemy.uid)
 	enemy_count -= 1
@@ -1737,6 +1859,7 @@ func _hurt_player(amount: float, source_id: String = "enemy", kind: String = "co
 	var actual: float = run.take_damage(amount, source_id, kind)
 	if actual <= 0.0:
 		return
+	weapon_effects.observe_health(self)
 	invulnerability = 0.7
 	add_effect(player_position, Color("ffc7a0"), 30.0, 0.25, 1)
 	player_damaged.emit(actual, source_id, kind, player_position if origin == Vector2.INF else origin)
@@ -1789,6 +1912,8 @@ func _finish(won: bool, reason: String) -> void:
 	if complete:
 		return
 	complete = true
+	clear_hero_effects()
+	weapon_effects.clear()
 	boss_encounter.stop()
 	_clear_boss_ghosts()
 	victory = won
@@ -1805,6 +1930,8 @@ func snapshot() -> Dictionary:
 		"pulse": pulse_snapshot(),
 		"skills": active_skill_snapshots(),
 		"hero_skill": hero_skill_snapshot(),
+		"hero_effects": hero_effects_snapshot(),
+		"weapon_effects": weapon_effects.snapshot(),
 		"pinball": pinball_snapshot(),
 		"boss_encounter": boss_encounter_snapshot(),
 		"boss_health": boss.health if boss != null and boss.active else 0.0,

@@ -190,7 +190,7 @@ func _test_hud() -> void:
 	_ui.update_hud(sim.snapshot())
 	var progress: Array = [(_ui._hud["hero_bar"] as ProgressBar).value, (_ui._hud["hero_time"] as Label).text]
 	await _settle()
-	_check(progress == [(_ui._hud["hero_bar"] as ProgressBar).value, (_ui._hud["hero_time"] as Label).text] and sim.active_skill_snapshots() == before["skills"], "HUD never advances cooldowns itself and R leaves both rear skills unchanged")
+	_check(progress == [(_ui._hud["hero_bar"] as ProgressBar).value, (_ui._hud["hero_time"] as Label).text] and _skill_clocks(sim.active_skill_snapshots()) == _skill_clocks(before["skills"]), "HUD never advances cooldowns itself and an attack buff cannot change rear cooldowns or identities")
 	var bindings: Dictionary = ControlBindings.defaults()
 	bindings["hero_skill"] = KEY_NUMLOCK
 	_ui.set_controls(bindings)
@@ -216,3 +216,9 @@ func _test_hud() -> void:
 			_check(abilities.get_global_rect().grow(0.1).encloses(card.get_global_rect()) and root.get_visible_rect().encloses(card.get_global_rect()) and not card.get_global_rect().intersects(slots.get_global_rect()), "Right-hand Q/E/R cards fit without overlapping eight left-hand weapons: " + str(physical_size) + "/" + key)
 	_ui.set_controls(ControlBindings.defaults())
 	root.size = Vector2i(1280, 720)
+
+func _skill_clocks(skills: Array) -> Array:
+	var result: Array = []
+	for skill: Dictionary in skills:
+		result.append([skill.get("id"), skill.get("uid"), skill.get("ready"), skill.get("cooldown_remaining"), skill.get("cooldown_duration"), skill.get("uses")])
+	return result

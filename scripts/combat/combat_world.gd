@@ -283,6 +283,9 @@ func begin(state: RunState) -> void:
 
 func stop() -> void:
 	active = false
+	if sim != null:
+		sim.clear_hero_effects()
+		sim.weapon_effects.clear()
 	_reset_feedback()
 	position = Vector2.ZERO
 	if is_instance_valid(_camera) and _camera.is_current():
@@ -1064,6 +1067,7 @@ func _draw() -> void:
 	_draw_friendly_shots()
 	_draw_effects()
 	_active_skill_painter.draw(self)
+	HeroEffectPainter.draw(self, sim.hero_effects_snapshot(), bool(settings.get("flash", true)))
 	_draw_impact_feedback()
 	_draw_rune_feedback()
 	_draw_boss_weakpoints()
@@ -1504,9 +1508,8 @@ func _draw_effect(effect: CombatSim.Effect) -> void:
 	var color: Color = effect.color
 	color.a = (1.0 - progress) * 0.65
 	if effect.kind == 0:
-		draw_circle(effect.position, effect.radius * (0.5 + progress * 0.5), Color(color, color.a * 0.08))
-		draw_arc(effect.position, effect.radius * (0.3 + progress * 0.7), 0, TAU, 28, color, 2.5 * (1.0 - progress) + 0.5, true)
-		draw_arc(effect.position, effect.radius * (0.12 + progress * 0.55), 0, TAU, 20, Color(color, color.a * 0.45), 1.0, true)
+		draw_arc(effect.position, effect.radius * (0.3 + progress * 0.7), 0, TAU, 28, color, 2.5 * (1.0 - progress) + 0.5)
+		draw_arc(effect.position, effect.radius * (0.12 + progress * 0.55), 0, TAU, 20, Color(color, color.a * 0.45), 1.0)
 	elif effect.kind == 1:
 		draw_arc(effect.position, effect.radius * (0.7 + progress * 0.7), 0, TAU, 12, color, 1.5, true)
 		var ray: float = effect.radius * (0.3 + progress * 0.3)

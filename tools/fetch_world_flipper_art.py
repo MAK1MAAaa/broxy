@@ -17,6 +17,7 @@ from world_flipper_items import item_assets
 from world_flipper_heroes import hero_assets
 from world_flipper_interactions import interaction_assets
 from world_flipper_weakpoints import weakpoint_assets
+from world_flipper_weapon_expansion import weapon_expansion_assets
 
 ROOT = Path(__file__).resolve().parents[1]
 CACHE = ROOT / ".tools/worldflipper/source"
@@ -30,6 +31,7 @@ EXTRA_REGISTRIES = (
     "world_flipper_heroes.json",
     "world_flipper_interactions_sources.json",
     "world_flipper_weakpoints_sources.json",
+    "world_flipper_weapon_expansion_sources.json",
 )
 CELL = (96, 96)
 MAX_DOWNLOAD_BYTES = 8 * 1024 * 1024
@@ -195,16 +197,16 @@ def main() -> None:
     heroes = hero_assets(sources, paths, OUTPUT)
     interactions = interaction_assets(sources, paths, OUTPUT)
     weakpoints = weakpoint_assets(sources, paths, OUTPUT)
-    assets = player + weapons + enemies + cover + maps + items + projectile_assets(weapons) + heroes + interactions + weakpoints
+    assets = player + weapons + enemies + cover + maps + items + projectile_assets(weapons) + heroes + interactions + weakpoints + weapon_expansion_assets(sources, paths, OUTPUT)
     metadata_paths = (("interactions/interaction-art.json", "Runtime frame layout, anchors and explicitly adapted ball/break timing"),
                       ("boss/weakpoint-art.json", "Complete weak-point state layout and project-specific runtime animation contract"))
     manifest = {
-        "revision": "world-flipper-fan-07",
+        "revision": "world-flipper-fan-08",
         "original_copyright": "© Cygames, Inc. / Citail Inc.",
         "license_status": "Original game assets; no open asset license found. Unofficial fan-work use is not a claim of authorization.",
         "copyright_source": "https://worldflipper.jp/copyright/",
         "terms_source": "https://worldflipper.jp/about/",
-        "acquired_on": "2026-10-30",
+        "acquired_on": "2026-10-31",
         "sources": sources,
         "references_cached_only": registry["references"],
         "assets": assets,

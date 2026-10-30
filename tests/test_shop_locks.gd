@@ -253,7 +253,10 @@ func _reference_kind(state: RunState) -> String:
 func _reference_offer(state: RunState, kind: String) -> Dictionary:
 	var pool: Array[ContentDef] = []
 	match kind:
-		"weapon": pool = GameCatalog.weapons()
+		"weapon":
+			for weapon: ContentDef in GameCatalog.weapons():
+				if state.wave > 1 or state.shop_price(weapon) <= 28:
+					pool.append(weapon)
 		"rune": pool = GameCatalog.runes()
 		"relic": pool = GameCatalog.relics()
 		"skill": pool = GameCatalog.skills()

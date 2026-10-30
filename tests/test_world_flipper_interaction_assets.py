@@ -192,7 +192,8 @@ class WorldFlipperInteractionAssets(unittest.TestCase):
         manifest=read(ART/"manifest.json")
         for source in read(ROOT/"tools/world_flipper_maps_sources.json")["sources"]:
             if source["kind"]=="arena_map":
-                self.assertGreater(source["crop"][2]*source["crop"][3],64*64)
+                minimum = 64 * 64 if source["game_id"] in {"reliquary", "mire", "glacier", "ashland"} else 32 * 32
+                self.assertGreater(source["crop"][2]*source["crop"][3],minimum)
                 continue
             if source["kind"]!="arena_landmark":continue
             base=Image.new("RGB",maps.HALF_SIZE,(21,43,65))

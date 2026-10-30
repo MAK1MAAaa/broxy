@@ -47,7 +47,7 @@ func _snapshot(state: RunState) -> Dictionary:
 
 func _test_main_characters() -> void:
 	var starters: Dictionary = {"alk": "bone", "clarisse": "ember", "celtie": "frost", "hanabi": "scatter"}
-	var shapes: Dictionary = {"alk": "arc", "clarisse": "circle", "celtie": "circle", "hanabi": "line"}
+	var shapes: Dictionary = {"alk": "circle", "clarisse": "circle", "celtie": "double_arc", "hanabi": "circle"}
 	var damages: Dictionary = {"alk": 50.0, "clarisse": 60.0, "celtie": 35.0, "hanabi": 45.0}
 	var cooldowns: Dictionary = {"alk": 8.0, "clarisse": 12.0, "celtie": 7.0, "hanabi": 9.0}
 	_check(HeroCatalog.IDS.size() == 4 and HeroCatalog.normalize_id("missing") == "alk", "All four characters are available with a deterministic legacy fallback")
@@ -64,7 +64,7 @@ func _test_main_characters() -> void:
 		var parameters: Dictionary = state.hero_skill_parameters()
 		_check(parameters["id"] == "hero_" + id and parameters["hero_id"] == id and parameters["rank"] == 1 and parameters["shape"] == shapes[id], "R exposes a real character-specific identity and geometry: " + id)
 		_check(is_equal_approx(float(parameters["damage"]), float(damages[id]) * state.stat("damage")) and parameters["cooldown"] == cooldowns[id], "R uses the same actual damage multiplier and independent cooldown: " + id)
-		_check(parameters["origin_mode"] == ("nearest" if id == "clarisse" else "player"), "R origin is explicit for simulation: " + id)
+		_check(parameters["origin_mode"] == ("forward" if id == "clarisse" else "player"), "R origin is explicit for simulation: " + id)
 		parameters["damage"] = -100.0
 		_check(_snapshot(state) == before and state.hero_skill_parameters()["damage"] >= 0.0, "R previews consume neither cells, UID, RNG nor mutable definition state: " + id)
 		_check(state.summary()["hero_id"] == id and state.summary()["hero"]["name"] == hero.display_name, "Summary retains the real selected identity: " + id)

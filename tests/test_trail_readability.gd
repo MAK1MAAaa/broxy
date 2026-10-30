@@ -12,6 +12,7 @@ var _failures: int = 0
 
 func _initialize() -> void:
 	_test_styles()
+	_test_heterogeneous_family()
 	_test_real_combat_purity()
 	_test_pressure_budget()
 	print("TrailReadability: %d assertions, %d failures" % [_checks, _failures])
@@ -75,6 +76,48 @@ func _test_styles() -> void:
 	_check_authored_tail_geometry(sim, painter)
 
 
+func _test_heterogeneous_family() -> void:
+	var state := RunState.new()
+	state.begin(20261031, "bone")
+	var sim := CombatSim.new()
+	sim.begin(state)
+	sim.sandbox = true
+	var large: CombatSim.Shot = sim.fire_weapon("frost", "pierce", Vector2(150, 80), Vector2.RIGHT)
+	large.radius = 20.0
+	large.color = Color.RED
+	var other: CombatSim.Shot = sim.fire_weapon("bone", "", Vector2(150, 150), Vector2.UP)
+	var small: CombatSim.Shot = sim.fire_weapon("frost", "pierce", Vector2(150, 80), Vector2.RIGHT)
+	small.radius = 0.5
+	small.color = Color.GREEN
+	var last: CombatSim.Shot = sim.fire_weapon("frost", "pierce", Vector2(260, 80), Vector2.RIGHT)
+	last.radius = 0.5
+	last.color = Color.BLUE
+	var painter = PAINTER_SCRIPT.new()
+	var view := Rect2(100, 100, 100, 100)
+	var before: String = _signature(sim)
+	painter.rebuild(sim.shots, view)
+	_check(painter.trails.keys() == ["frost:pierce", "bone:"] and painter.heads.keys() == ["frost:pierce", "bone:"], "Interleaved shots preserve the first-seen family order for trails and heads")
+	var direction: Vector2 = large.velocity.normalized()
+	var tail: Vector2 = large.position - direction * 25.0
+	var expected := PackedVector2Array([tail, large.position])
+	var side: Vector2 = direction.orthogonal() * 3.0
+	var tip: Vector2 = large.position + direction * 5.0
+	var wings := PackedVector2Array([tail + side, tip, tail - side, tip])
+	_check(painter.trails["frost:pierce"].points == expected and painter.trails["frost:pierce"].wings == wings, "A large boundary trail uses its own radius for conservative culling even when the last family shot is tiny")
+	_check(painter.trails["frost:pierce"].color == Color.BLUE and is_equal_approx(painter.trails["frost:pierce"].width, 0.6), "The final active shot determines family RGB and width even when that shot's own trail is outside the view")
+	_check(_signature(sim) == before, "Family metadata preparation cannot mutate custom shot radii, colors, ordering or simulation")
+	last.radius = 20.0
+	last.color = Color(0.8, 0.3, 0.6)
+	before = _signature(sim)
+	painter.rebuild(sim.shots, view)
+	_check(painter.trails["frost:pierce"].points == expected and painter.trails["frost:pierce"].wings == wings, "A large final family width cannot make the earlier tiny outside trail falsely visible")
+	_check(painter.trails["frost:pierce"].color == last.color and is_equal_approx(painter.trails["frost:pierce"].width, 24.0), "A repeated rebuild refreshes final-shot custom appearance without changing geometric endpoints")
+	_check(painter.get_stats()["friendly_count"] == 4 and painter.get_stats()["head_instances"] == 4 and _signature(sim) == before, "Culling and family styling retain every actual head and leave the custom simulation intact")
+	other.active = false
+	painter.rebuild(sim.shots, view)
+	_check(painter.trails.keys() == ["frost:pierce"] and painter.heads.keys() == ["frost:pierce"], "Disappearing interleaved families are removed without reordering the survivor")
+
+
 func _test_real_combat_purity() -> void:
 	var painted: CombatSim = _simulation()
 	var oracle: CombatSim = _simulation()
@@ -113,19 +156,19 @@ func _test_pressure_budget() -> void:
 	var painter = PAINTER_SCRIPT.new()
 	painter.rebuild(world.sim.shots)
 	var stats: Dictionary = painter.get_stats()
-	_check(stats["friendly_count"] == 600 and stats["family_counts"].size() == SOURCES.size() * GameCatalog.runes().size(), "The formal pressure fixture retains six hundred shots across all catalog weapon/rune families")
+	_check(stats["friendly_count"] == 600 and stats["family_counts"].size() == GameCatalog.weapons().size() * GameCatalog.runes().size(), "The formal pressure fixture retains six hundred shots across all catalog weapon/rune families")
 	_check(stats["allocated_instances"] <= 4800 and stats["total_visible_instances"] <= 4800, "Trail styling introduces no projectile GPU instances")
 	var trail_commands: int = 0
 	for trail in painter.trails.values():
 		trail_commands += 2 if trail.style.has_halo else 1
 		trail_commands += 0 if trail.wings.is_empty() else 1
-	_check(trail_commands == 55, "The eight-weapon pressure scene retains all fifty-five original tail and wing submissions")
+	_check(trail_commands == 111, "The sixteen-weapon pressure scene retains all one hundred eleven tail and wing submissions")
 	var visible_heads: int = 0
 	var head_commands: int = 0
 	for head in painter.heads.values():
 		visible_heads += head.multimesh.visible_instance_count
 		head_commands += 1 if head.multimesh.visible_instance_count > 0 else 0
-	_check(head_commands == 24 and stats["head_families"] == 24 and visible_heads == 600 and stats["head_instances"] == visible_heads, "The complete pressure population uses twenty-four UV head batches with six hundred genuinely visible instances")
+	_check(head_commands == 48 and stats["head_families"] == 48 and visible_heads == 600 and stats["head_instances"] == visible_heads, "The complete pressure population uses forty-eight texture head batches with six hundred genuinely visible instances")
 	_check(_signature(world.sim) == before, "Preparing the full pressure scene does not advance or modify its simulation")
 	world.free()
 	sound.free()

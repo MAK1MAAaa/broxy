@@ -6,6 +6,7 @@
 script = ExtResource("1")
 id = "ember"
 kind = "weapon"
+source_id = "5060034"
 display_name = "怨嗟之杖"
 subtitle = "追踪法器 · 缓慢索敌"
 description = "放出缓慢飞行的追踪魔弹，逐渐转向附近尚未命中的敌人。"

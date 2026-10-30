@@ -28,3 +28,5 @@ https://worldflipper.jp/about/
 World Flipper Wiki：https://worldflipper.wiki.gg/
 角色素材保存站：https://vivaldi6352.github.io/
 官方公开试玩地图与场景道具：https://worldflipper.jp/demo/
+日服最终版数据归档：https://github.com/blead/wf-assets
+归档版本、固定提交及数据校验值见 tools/world_flipper_catalog_sources.json。

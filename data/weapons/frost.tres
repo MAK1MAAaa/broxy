@@ -6,6 +6,7 @@
 script = ExtResource("1")
 id = "frost"
 kind = "weapon"
+source_id = "5030036"
 display_name = "月之舞"
 subtitle = "寒霜法器 · 减速控场"
 description = "投出的冰枪令命中的敌人减速25%，持续1.5秒。"

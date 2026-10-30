@@ -69,7 +69,7 @@ func _test_authored_layouts() -> void:
 					continue
 				_check(center.distance_to(other["center"]) > radius + float(other["radius"]) + 32.0, "Crates and landmarks retain open traversable gaps: " + id)
 		_check(central == 4 and field.is_free(ArenaCatalog.WORLD_BOUNDS.get_center(), 16.0, 16.0), "Four opening crates leave eight distant finds and a clear actual spawn: " + id)
-	_check(zone_count == 34 and ArenaCatalog.WORLD_BOUNDS == Rect2(-1082, -535, 3444, 1800), "New scenery preserves all thirty-four terrain patches and the established world")
+	_check(zone_count == 52 and ArenaCatalog.WORLD_BOUNDS == Rect2(-1082, -535, 3444, 1800), "New scenery preserves all fifty-two terrain patches and the established world")
 	_check(ArenaCatalog.art_rect() == Rect2(-1146, -767, 3780, 2192), "Art has the requested top extension for the separate boss HUD")
 
 func _field(rows: Array) -> ArenaObstacles:

@@ -6,6 +6,7 @@
 script = ExtResource("1")
 id = "storm"
 kind = "weapon"
+source_id = "4050031"
 display_name = "光芒龙典"
 subtitle = "雷霆法器 · 密集双发"
 description = "同时射出两道高速光束，窄角集火近处目标。搭配弹射可将双束光芒导向敌群。"

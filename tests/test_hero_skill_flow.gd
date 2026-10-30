@@ -75,7 +75,10 @@ func _run() -> void:
 		await _key(KEY_R, false)
 		_app.world._physics_process(STEP)
 		_check(sim.hero_skill_snapshot()["uses"] == 1 and not _app.world._hero_skill_pending, "Held R and cooldown presses never buffer a second cast: " + id)
-		_check(_app.world._active_skill_painter.snapshot()["active"] == 1, "The selected hero produces a bounded cast effect: " + id)
+		_check(_app.world._active_skill_painter.snapshot()["active"] == (0 if id == "hanabi" else 1), "Only instant deliveries enter the cosmetic cast pool: " + id)
+		if id == "hanabi":
+			var delivery: Dictionary = sim.hero_effects_snapshot()
+			_check(int(delivery["active_bombs"]) + int(delivery["explosions"]) == 5, "Actual Hanabi input creates five physical deliveries without a phantom line")
 	var sim: CombatSim = _start("hanabi")
 	await _button(JOY_BUTTON_RIGHT_SHOULDER, true)
 	await _button(JOY_BUTTON_RIGHT_SHOULDER, false)

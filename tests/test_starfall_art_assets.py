@@ -68,6 +68,8 @@ class StarfallArtTests(unittest.TestCase):
     def test_replacement_maps_show_the_actual_slow_ground(self) -> None:
         definitions = json.loads((ROOT / "data/arenas.json").read_text(encoding="utf-8"))
         for definition in definitions:
+            if definition["id"] not in {"reliquary", "mire", "glacier", "ashland"}:
+                continue
             name = "arena.svg" if definition["id"] == "reliquary" else f'maps/{definition["id"]}.svg'
             xml = ElementTree.parse(ROOT / "assets/starfall" / name).getroot()
             ellipses = list(xml.iter(SVG + "ellipse"))

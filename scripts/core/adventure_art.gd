@@ -2,7 +2,7 @@ class_name AdventureArt
 extends RefCounted
 ## Presentation-only resource routing. Catalog IDs and simulation data stay stable.
 
-const REVISION: String = "world-flipper-fan-07"
+const REVISION: String = "world-flipper-fan-08"
 const ROOT: String = "res://assets/starfall/"
 const FAN_ROOT: String = "res://assets/worldflipper/"
 const FAN_OVERRIDES: Dictionary = {
@@ -46,6 +46,14 @@ const FAN_OVERRIDES: Dictionary = {
 	"res://assets/icons/storm.svg": "icons/storm.png",
 	"res://assets/icons/comet.svg": "icons/comet.png",
 	"res://assets/icons/return_ring.svg": "icons/return_ring.png",
+	"res://assets/icons/sword_0012.svg": "icons/sword_0012.png",
+	"res://assets/icons/spear_0005.svg": "icons/spear_0005.png",
+	"res://assets/icons/sword_0004.svg": "icons/sword_0004.png",
+	"res://assets/icons/axe_0009.svg": "icons/axe_0009.png",
+	"res://assets/icons/book_0009.svg": "icons/book_0009.png",
+	"res://assets/icons/sword_0007.svg": "icons/sword_0007.png",
+	"res://assets/icons/axe_0024.svg": "icons/axe_0024.png",
+	"res://assets/icons/sword_0011.svg": "icons/sword_0011.png",
 }
 
 static func path(source: String) -> String:

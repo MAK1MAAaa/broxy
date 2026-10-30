@@ -10,6 +10,14 @@ const WEAPON_DEFS: Array[ContentDef] = [
 	preload("res://data/weapons/storm.tres"),
 	preload("res://data/weapons/comet.tres"),
 	preload("res://data/weapons/return_ring.tres"),
+	preload("res://data/weapons/sword_0012.tres"),
+	preload("res://data/weapons/spear_0005.tres"),
+	preload("res://data/weapons/sword_0004.tres"),
+	preload("res://data/weapons/axe_0009.tres"),
+	preload("res://data/weapons/book_0009.tres"),
+	preload("res://data/weapons/sword_0007.tres"),
+	preload("res://data/weapons/axe_0024.tres"),
+	preload("res://data/weapons/sword_0011.tres"),
 ]
 const RUNE_DEFS: Array[ContentDef] = [
 	preload("res://data/runes/pierce.tres"),
@@ -55,20 +63,33 @@ const WAVE_DEFS: Array[ContentDef] = [
 	preload("res://data/waves/wave_8.tres"),
 ]
 
+static var _weapon_index: Dictionary = {}
+static var _rune_index: Dictionary = {}
+static var _skill_index: Dictionary = {}
+static var _relic_index: Dictionary = {}
+static var _enemy_index: Dictionary = {}
+
+static func _static_init() -> void:
+	_weapon_index = _index(WEAPON_DEFS)
+	_rune_index = _index(RUNE_DEFS)
+	_skill_index = _index(SKILL_DEFS)
+	_relic_index = _index(RELIC_DEFS)
+	_enemy_index = _index(ENEMY_DEFS)
+
 static func weapon(id: String) -> ContentDef:
-	return _find(WEAPON_DEFS, id)
+	return _weapon_index.get(id)
 
 static func rune(id: String) -> ContentDef:
-	return _find(RUNE_DEFS, id)
+	return _rune_index.get(id)
 
 static func relic(id: String) -> ContentDef:
-	return _find(RELIC_DEFS, id)
+	return _relic_index.get(id)
 
 static func skill(id: String) -> ContentDef:
-	return _find(SKILL_DEFS, id)
+	return _skill_index.get(id)
 
 static func enemy(id: String) -> ContentDef:
-	return _find(ENEMY_DEFS, id)
+	return _enemy_index.get(id)
 
 static func wave(number: int) -> ContentDef:
 	if number < 1 or number > WAVE_DEFS.size():
@@ -93,8 +114,9 @@ static func enemies() -> Array[ContentDef]:
 static func waves() -> Array[ContentDef]:
 	return WAVE_DEFS.duplicate()
 
-static func _find(definitions: Array[ContentDef], id: String) -> ContentDef:
+static func _index(definitions: Array[ContentDef]) -> Dictionary:
+	var result: Dictionary = {}
 	for definition: ContentDef in definitions:
-		if definition.id == id:
-			return definition
-	return null
+		if not result.has(definition.id):
+			result[definition.id] = definition
+	return result

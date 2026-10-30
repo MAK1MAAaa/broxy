@@ -11,6 +11,9 @@ const SHOP_LOCK_CAP: int = 2
 const BASE_STATS: Dictionary = {
 	"max_health": 100.0,
 	"damage": 1.0,
+	"skill_damage": 1.0,
+	"skill_haste": 0.0,
+	"summon_damage": 1.0,
 	"attack_speed": 1.0,
 	"move_speed": 220.0,
 	"armor": 0.0,
@@ -36,6 +39,8 @@ var xp: int = 0
 var level: int = 1
 var pending_upgrades: int = 0
 var health: float = 100.0
+var healing_events: int = 0
+var inventory_revision: int = 0
 var kills: int = 0
 var elapsed: float = 0.0
 var damage_dealt_by_weapon: Dictionary = {}
@@ -68,6 +73,7 @@ var _upgrade_options: Array[Dictionary] = []
 var _locked_offers: Dictionary = {}
 var _resonance: Dictionary = {}
 var _rear_bonuses: Dictionary = {}
+var _weapon_bonuses: Dictionary = {}
 
 func begin(seed_value: int, starter: String, selected_arena: String = "reliquary", selected_hero: String = "alk") -> void:
 	_run_seed = seed_value
@@ -80,6 +86,8 @@ func begin(seed_value: int, starter: String, selected_arena: String = "reliquary
 	level = 1
 	pending_upgrades = 0
 	health = 100.0
+	healing_events = 0
+	inventory_revision = 0
 	kills = 0
 	elapsed = 0.0
 	damage_dealt_by_weapon.clear()
@@ -118,10 +126,12 @@ func stat(key: String) -> float:
 
 func active_skill_parameters(item: Dictionary) -> Dictionary:
 	return ActiveSkillRules.parameters(str(item.get("id", "")), int(item.get("rank", 1)),
-		{"damage": stat("damage"), "pulse_radius": stat("pulse_radius"), "pulse_cooldown": stat("pulse_cooldown")})
+		{"damage": stat("damage") * stat("skill_damage"), "skill_haste": stat("skill_haste"),
+		"summon_damage": stat("summon_damage"), "pulse_radius": stat("pulse_radius"), "pulse_cooldown": stat("pulse_cooldown")})
 
 func hero_skill_parameters() -> Dictionary:
-	return HeroCatalog.hero_skill_parameters(hero_id, {"damage": stat("damage")})
+	return HeroCatalog.hero_skill_parameters(hero_id, {"damage": stat("damage") * stat("skill_damage"),
+		"skill_haste": stat("skill_haste"), "summon_damage": stat("summon_damage")})
 
 func choose_core(id: String) -> bool:
 	if not _wave_finished or wave < 1 or wave >= GameCatalog.WAVE_DEFS.size() or not core_id.is_empty():
@@ -219,12 +229,13 @@ func projected_upgrade_stat(key: String, amount: float) -> float:
 	return _stat_with_projected_relic(key, null, amount)
 
 func _stat_with_projected_relic(key: String, additional: ContentDef = null, upgrade_delta: float = 0.0) -> float:
-	return _stat_with_bonuses(key, relic_counts, _rear_bonuses, additional, upgrade_delta)
+	return _stat_with_bonuses(key, relic_counts, _rear_bonuses, additional, upgrade_delta, _weapon_bonuses)
 
-func _stat_with_bonuses(key: String, counts: Dictionary, rear_bonuses: Dictionary, additional: ContentDef = null, upgrade_delta: float = 0.0) -> float:
+func _stat_with_bonuses(key: String, counts: Dictionary, rear_bonuses: Dictionary, additional: ContentDef = null, upgrade_delta: float = 0.0, weapon_bonuses: Dictionary = {}) -> float:
 	var hero: HeroDef = HeroCatalog.definition(hero_id)
 	var value: float = float(BASE_STATS.get(key, 0.0)) + float(_upgrade_bonuses.get(key, 0.0)) + upgrade_delta
 	value += float(hero.base_bonuses.get(key, 0.0)) + float(rear_bonuses.get(key, 0.0))
+	value += float(weapon_bonuses.get(key, 0.0))
 	for relic_id: String in counts:
 		var definition: ContentDef = GameCatalog.relic(relic_id)
 		if definition == null:
@@ -246,17 +257,21 @@ func _stat_with_bonuses(key: String, counts: Dictionary, rear_bonuses: Dictionar
 func _stat_for_items(key: String, entries: Array) -> float:
 	var counts: Dictionary = {}
 	var rear_bonuses: Dictionary = {}
+	var weapon_bonuses: Dictionary = {}
 	for entry: Dictionary in entries:
 		if str(entry.get("kind", "")) == "relic":
 			var id: String = str(entry["id"])
 			counts[id] = int(counts.get(id, 0)) + int(BackpackInventory.rank_multiplier(int(entry.get("rank", 1))))
 		elif str(entry.get("kind", "")) == "skill":
 			_add_bonuses(rear_bonuses, HeroCatalog.rear_bonuses(str(entry["id"]), int(entry.get("rank", 1))))
-	return _stat_with_bonuses(key, counts, rear_bonuses)
+		elif str(entry.get("kind", "")) == "weapon":
+			_add_bonuses(weapon_bonuses, _equipment_bonuses(entry))
+	return _stat_with_bonuses(key, counts, rear_bonuses, null, 0.0, weapon_bonuses)
 
 func _skill_parameters_for_items(item: Dictionary, entries: Array) -> Dictionary:
 	return ActiveSkillRules.parameters(str(item.get("id", "")), int(item.get("rank", 1)),
-		{"damage": _stat_for_items("damage", entries), "pulse_radius": _stat_for_items("pulse_radius", entries),
+		{"damage": _stat_for_items("damage", entries) * _stat_for_items("skill_damage", entries),
+		"skill_haste": _stat_for_items("skill_haste", entries), "summon_damage": _stat_for_items("summon_damage", entries), "pulse_radius": _stat_for_items("pulse_radius", entries),
 		"pulse_cooldown": _stat_for_items("pulse_cooldown", entries)})
 
 func _stat_changes_for_items(entries: Array, keys: Array) -> Array[Dictionary]:
@@ -271,9 +286,22 @@ static func _add_bonuses(target: Dictionary, bonuses: Dictionary) -> void:
 	for key: String in bonuses:
 		target[key] = float(target.get(key, 0.0)) + float(bonuses[key])
 
+static func _equipment_bonuses(item: Dictionary) -> Dictionary:
+	var definition: ContentDef = GameCatalog.weapon(str(item.get("id", "")))
+	var result: Dictionary = {}
+	if definition == null:
+		return result
+	var weight: float = BackpackInventory.rank_multiplier(int(item.get("rank", 1)))
+	for key: String in definition.equipment_bonuses:
+		var amount: Variant = definition.equipment_bonuses[key]
+		if (amount is int or amount is float) and is_finite(float(amount)):
+			result[key] = float(amount) * weight
+	return result
+
 static func _clamp_stat(key: String, value: float) -> float:
 	match key:
-		"damage", "attack_speed": return maxf(0.25, value)
+		"damage", "attack_speed", "skill_damage", "summon_damage": return maxf(0.25, value)
+		"skill_haste": return clampf(value, 0.0, 2.0)
 		"move_speed": return maxf(60.0, value)
 		"max_health": return maxf(1.0, value)
 		"pickup_radius": return maxf(16.0, value)
@@ -357,9 +385,14 @@ func merge_preview(source_uid: int, target_uid: int) -> Dictionary:
 		merged_target["rank"] = result_rank
 		merged_target["resonance_bonus"] = float((projected_resonance.get(target_uid, {}) as Dictionary).get("bonus", 0.0)) if error.is_empty() else float((_resonance.get(target_uid, {}) as Dictionary).get("bonus", 0.0))
 		result["damage_after"] = weapon_damage(merged_target)
+		if error.is_empty():
+			result["damage_after"] = weapon_damage(merged_target, _stat_for_items("damage", projected_items))
+			result["stat_changes"] = _stat_changes_for_items(projected_items, definition.equipment_bonuses.keys())
+			result["health_before"] = health
+			result["health_after"] = minf(health, _stat_for_items("max_health", projected_items))
 		result["resonance_before"] = float((_resonance.get(target_uid, {}) as Dictionary).get("bonus", 0.0))
 		result["resonance_after"] = merged_target["resonance_bonus"]
-		result["interval"] = definition.cooldown / stat("attack_speed")
+		result["interval"] = definition.cooldown / (_stat_for_items("attack_speed", projected_items) if error.is_empty() else stat("attack_speed"))
 	elif definition.kind == "relic":
 		var changes: Array[Dictionary] = []
 		for key: String in [definition.stat, definition.bonus_stat]:
@@ -435,12 +468,15 @@ func _sync_backpack_projection() -> void:
 	rune_bag.clear()
 	relic_counts.clear()
 	_rear_bonuses.clear()
+	_weapon_bonuses.clear()
+	inventory_revision += 1
 	var entries: Array = backpack.snapshot()["items"]
 	_resonance = BackpackResonance.evaluate(entries)
 	entries.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return int(a["uid"]) < int(b["uid"]))
 	for entry: Dictionary in entries:
 		match str(entry["kind"]):
 			"weapon":
+				_add_bonuses(_weapon_bonuses, _equipment_bonuses(entry))
 				var resonance: Dictionary = _resonance.get(int(entry["uid"]), {})
 				loadout.append({"uid": entry["uid"], "id": entry["id"], "rank": entry["rank"], "paid": entry["paid"], "rune": (entry["rune"] as Dictionary).duplicate(true), "resonance_bonus": float(resonance.get("bonus", 0.0)), "resonance_sources": (resonance.get("source_uids", []) as Array).duplicate()})
 			"rune": rune_bag.append({"uid": entry["uid"], "id": entry["id"], "rank": entry["rank"], "paid": entry["paid"]})
@@ -484,9 +520,15 @@ func take_damage(amount: float, source_id: String = "enemy", kind: String = "con
 	changed.emit()
 	return actual_damage
 
-func heal(amount: float) -> void:
-	health = clampf(health + maxf(0.0, amount), 0.0, stat("max_health"))
+func heal(amount: float) -> float:
+	if not is_finite(amount) or amount <= 0.0 or not is_finite(health) or health <= 0.0:
+		return 0.0
+	var before: float = health
+	health = clampf(health + amount, 0.0, stat("max_health"))
+	if health > before:
+		healing_events += 1
 	changed.emit()
+	return maxf(0.0, health - before)
 
 func finish_wave() -> void:
 	if _wave_finished:
@@ -718,7 +760,8 @@ func weapon_purchase_preview(index: int) -> Dictionary:
 	var result: Dictionary = {"id": definition.id, "can_buy": error.is_empty(), "error": error,
 		"has_projection": not placement.is_empty(), "placement_available": not placement.is_empty(),
 		"damage": 0.0, "resonance_bonus": 0.0, "resonance_sources": [], "placement": placement.duplicate(true),
-		"shots": definition.shots, "interval": definition.cooldown / stat("attack_speed")}
+		"shots": definition.shots, "interval": definition.cooldown / stat("attack_speed"),
+		"stat_changes": [], "weapon_changes": [], "health_before": health, "health_after": health}
 	if placement.is_empty():
 		return result
 	var snapshot: Dictionary = backpack.snapshot()
@@ -727,7 +770,11 @@ func weapon_purchase_preview(index: int) -> Dictionary:
 	projected.append(purchased)
 	var resonance: Dictionary = (BackpackResonance.evaluate(projected).get(int(purchased["uid"]), {}) as Dictionary)
 	purchased["resonance_bonus"] = float(resonance.get("bonus", 0.0))
-	result["damage"] = weapon_damage(purchased)
+	result["damage"] = weapon_damage(purchased, _stat_for_items("damage", projected))
+	result["interval"] = definition.cooldown / _stat_for_items("attack_speed", projected)
+	result["stat_changes"] = _stat_changes_for_items(projected, definition.equipment_bonuses.keys())
+	result["weapon_changes"] = _projected_weapon_changes(projected, _stat_for_items("damage", projected), _stat_for_items("attack_speed", projected))
+	result["health_after"] = _health_after_relic_purchase(health, stat("max_health"), _stat_for_items("max_health", projected))
 	result["resonance_bonus"] = purchased["resonance_bonus"]
 	result["resonance_sources"] = (resonance.get("source_uids", []) as Array).duplicate()
 	return result
@@ -818,8 +865,11 @@ func buy_offer(index: int) -> bool:
 		return _fail(backpack.last_error)
 	gold -= price
 	_sync_backpack_projection()
-	if kind == "relic":
+	if kind == "relic" or kind == "weapon":
+		var before: float = health
 		health = _health_after_relic_purchase(health, previous_max, stat("max_health"))
+		if health > before:
+			healing_events += 1
 	else:
 		health = minf(health, stat("max_health"))
 	offer["sold"] = true
@@ -948,7 +998,10 @@ func choose_upgrade(id: String) -> bool:
 		var amount: float = float(option["amount"])
 		_upgrade_bonuses[key] = float(_upgrade_bonuses.get(key, 0.0)) + amount
 		if key == "max_health":
+			var before: float = health
 			health = minf(stat("max_health"), health + amount)
+			if health > before:
+				healing_events += 1
 		pending_upgrades -= 1
 		_upgrade_options.clear()
 		last_error = ""
@@ -997,7 +1050,9 @@ func _random_offer_kind() -> String:
 func _make_offer(kind: String) -> Dictionary:
 	var pool: Array[ContentDef] = []
 	if kind == "weapon":
-		pool = GameCatalog.weapons()
+		for weapon: ContentDef in GameCatalog.weapons():
+			if wave > 1 or shop_price(weapon) <= 28:
+				pool.append(weapon)
 	elif kind == "rune":
 		pool = GameCatalog.runes()
 	elif kind == "relic":

@@ -76,6 +76,7 @@ func _initialize() -> void:
 	_test_blast()
 	_test_rune_activation_guards()
 	_test_explosion_spatial_equivalence()
+	_test_explosion_region_cache()
 	_test_nearest_spatial_equivalence()
 	_test_contact_recoil()
 	_test_caster_aim()
@@ -433,6 +434,72 @@ func _test_explosion_spatial_equivalence() -> void:
 			_check(sim.complete and sim.victory and sim.run.kills == expected_kills and sim.run.gold == expected_kills, "Boss terminal blast retains lower-slot kills/drops only: " + str(boss_slot))
 			outcomes.append(_explosion_digest(sim, events))
 		_check(outcomes[0] == outcomes[1], "Spatial ordering exactly matches the linear Boss terminal sequence: " + str(boss_slot))
+
+func _test_explosion_region_cache() -> void:
+	var sim: CombatSim = _simulation(42031)
+	sim.obstacles.configure([])
+	sim.interactions = ArenaInteractions.new()
+	var a: CombatSim.Enemy = _target(sim, Vector2(390, 320))
+	var b: CombatSim.Enemy = _target(sim, Vector2(470, 320))
+	var c: CombatSim.Enemy = _target(sim, Vector2(400, 400))
+	var far: CombatSim.Enemy = _target(sim, Vector2(1000, 500))
+	for enemy: CombatSim.Enemy in [a, b, c, far]:
+		enemy.radius = 17.0
+	sim._rebuild_grid()
+	sim._explosion_grid_active = true
+	var before_rng: int = sim.rng.state
+	var point := Vector2(400, 320)
+	var first: PackedInt32Array = sim._explosion_slots(point)
+	_check(first == PackedInt32Array([a.slot, b.slot, c.slot]) and sim._explosion_region_slots.size() == 1, "The first rectangle builds exactly one candidate list in original pool-slot order")
+	var same: PackedInt32Array = sim._explosion_slots(point + Vector2(1, 1))
+	_check(same == first and sim._explosion_region_slots.size() == 1, "A different blast center with the same conservative cell rectangle reuses its sorted candidate list")
+	var copied: PackedInt32Array = first.duplicate()
+	copied[0] = far.slot
+	_check(sim._explosion_slots(point) == PackedInt32Array([a.slot, b.slot, c.slot]), "An explicit caller-owned copy can be edited without altering the read-only cached candidates")
+	var other: PackedInt32Array = sim._explosion_slots(Vector2(1000, 500))
+	_check(other == PackedInt32Array([far.slot]) and sim._explosion_region_slots.size() == 2, "A different grid rectangle receives its own independently sorted entry")
+	a.position = Vector2(1100, 500)
+	sim._rebuild_grid()
+	_check(sim._explosion_region_slots.is_empty(), "Rebuilding the authoritative grid invalidates every cached rectangle")
+	_check(sim._explosion_slots(point) == PackedInt32Array([b.slot, c.slot]), "A rebuilt query follows moved enemy positions rather than stale rectangle contents")
+	var retired_slot: int = b.slot
+	var retired_uid: int = b.uid
+	sim.apply_damage(b, b.health, "bone")
+	_check(sim._explosion_region_slots.is_empty() and sim._explosion_grid_active, "A real death invalidates active candidate entries while retaining the same stable grid phase")
+	_check(sim._explosion_slots(point) == PackedInt32Array([c.slot]), "A later cached-region blast cannot return the dead candidate again")
+	_check(sim.rng.state == before_rng, "Cache creation, repeated rectangles and candidate death leave the combat RNG untouched")
+	var recycled: CombatSim.Enemy = _target(sim, point + Vector2(10, 0))
+	before_rng = sim.rng.state
+	_check(recycled.slot == retired_slot and recycled.uid != retired_uid and not sim._explosion_grid_active and sim._explosion_region_slots.is_empty(), "A real pool-slot reuse clears the cache and ends the conservative grid query window")
+	_check(sim._explosion_slots(point).size() == CombatSim.ENEMY_LIMIT, "A direct query after a post-grid spawn preserves the original full-pool fallback")
+	var old_exclusion: Dictionary = {}
+	old_exclusion[retired_uid] = true
+	sim._explode(point, 3.0, "ember", old_exclusion)
+	_check(recycled.health == 9997.0, "The new UID in a reused slot remains hittable despite an old UID exclusion")
+	sim._rebuild_grid()
+	sim._explosion_grid_active = true
+	sim._explosion_slots(point)
+	var cached_regions: int = sim._explosion_region_slots.size()
+	sim._explosion_grid_active = false
+	far.position = point + Vector2(185, 0)
+	far.radius = 120.0
+	var far_health: float = far.health
+	sim._explode(point, 3.0, "ember", {})
+	_check(far.health == far_health - 3.0 and sim._explosion_region_slots.size() == cached_regions, "Direct blasts ignore a warm stale cache and honor external position and radius edits")
+	_check(sim.rng.state == before_rng, "Rectangle reuse, deaths and direct-query fallback do not consume combat RNG beyond the fixture's explicit spawn")
+	sim._rebuild_grid()
+	sim._explosion_grid_active = true
+	sim._explosion_slots(point)
+	c.boss_ghost = true
+	sim._clear_boss_ghosts()
+	_check(not c.active and sim._explosion_region_slots.is_empty() and not sim._explosion_slots(point).has(c.slot), "Nonrewarding ghost removal also invalidates active-region membership")
+	for index: int in CombatSim.EXPLOSION_REGION_CACHE_LIMIT + 1:
+		sim._explosion_slots(Vector2(-100000 + index * 480, 5000), 1.0)
+	_check(sim._explosion_region_slots.size() == CombatSim.EXPLOSION_REGION_CACHE_LIMIT, "A long shot phase cannot retain more than the bounded rectangle-cache budget")
+	var retained_cache: Dictionary = sim._explosion_region_slots.duplicate(true)
+	var uncached: PackedInt32Array = sim._explosion_slots(Vector2(-200000, 5000), 1.0)
+	var repeated: PackedInt32Array = sim._explosion_slots(Vector2(-200000, 5000), 1.0)
+	_check(uncached.is_empty() and repeated.is_empty() and sim._explosion_region_slots == retained_cache, "Uncached queries beyond capacity remain correct fresh queries without evicting or corrupting existing entries")
 
 func _test_nearest_spatial_equivalence() -> void:
 	# Exercise the actual fresh-grid window, with an independent frozen full scan.

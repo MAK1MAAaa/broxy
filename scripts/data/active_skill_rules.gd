@@ -7,6 +7,9 @@ const MAX_RANK: int = 3
 
 static func parameters(id: String, rank: int, stats: Dictionary) -> Dictionary:
 	var result: Dictionary = _parameters(id, rank, stats)
+	if not result.is_empty():
+		result["cooldown"] = float(result["cooldown"]) / (1.0 + clampf(_stat(stats, "skill_haste", 0.0), 0.0, 2.0))
+		result["element"] = "wind" if id == "arc_slash" else "fire"
 	var hero: HeroDef = HeroCatalog.rear_for_skill(id)
 	if hero != null and not result.is_empty():
 		result["skill_name"] = result["name"]

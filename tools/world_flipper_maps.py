@@ -13,7 +13,7 @@ from PIL import Image, ImageDraw, ImageOps
 
 ROOT = Path(__file__).resolve().parents[1]
 REGISTRY = Path(__file__).with_name("world_flipper_maps_sources.json")
-MAP_IDS = frozenset({"reliquary", "mire", "glacier", "ashland"})
+MAP_IDS = frozenset({"reliquary", "mire", "glacier", "ashland", "town", "throne", "tower_peak"})
 PROP_IDS = frozenset({"monument", "planter", "bumper"})
 SIZE = (3780, 2192)
 WORLD_ORIGIN = (-1146, -767)
@@ -86,6 +86,19 @@ def _zone_mask(zone: dict) -> tuple[Image.Image, tuple[int, int]]:
 def _floor(raw: Image.Image, source: dict, definition: dict) -> Image.Image:
     patch = _crop(raw, source["crop"]).convert("RGB")
     image = _mirror_tile(patch, HALF_SIZE)
+    for band in source.get("floor_bands", []):
+        if band.get("axis") != "vertical":
+            raise ValueError("Only vertical native-floor bands are currently authored")
+        width, center = band.get("width"), band.get("world_center")
+        if type(width) is not int or width < SCALE or width % SCALE or type(center) is not int or center % SCALE:
+            raise ValueError("Floor bands must retain integer2x pixel placement")
+        width //= SCALE
+        x = (center - WORLD_ORIGIN[0]) // SCALE - width // 2
+        if x < HALF_WALKABLE[0] or x + width > HALF_WALKABLE[2]:
+            raise ValueError("Floor band leaves the walkable rectangle")
+        top, bottom = HALF_WALKABLE[1], HALF_WALKABLE[3]
+        carpet = _mirror_tile(_crop(raw, band["source_crop"]).convert("RGB"), (width, bottom - top))
+        image.paste(carpet, (x, top))
     zones = definition.get("zones", [])
     if zones:
         if "zone_crop" not in source:
@@ -197,13 +210,13 @@ def _record(image: Image.Image, output: Path, relative: str, source: dict, asset
 
 
 def map_assets(sources: list[dict], paths: dict[str, Path], output: Path) -> list[dict]:
-    """Validate original floor/foreground/prop sources and emit four arenas and props."""
+    """Validate original floor/foreground/prop sources and emit every registered arena and the shared props."""
     selected = [source for source in sources if source.get("kind") in {"arena_map", "arena_prop", "arena_landmark"}]
     maps = [source for source in selected if source["kind"] == "arena_map"]
     props = [source for source in selected if source["kind"] == "arena_prop"]
     landmarks = [source for source in selected if source["kind"] == "arena_landmark"]
     if len(maps) != len(MAP_IDS) or {source["game_id"] for source in maps} != MAP_IDS:
-        raise ValueError("The original map family must cover all four existing arena IDs exactly once")
+        raise ValueError("The original map family must cover every registered arena ID exactly once")
     if len(props) != len(PROP_IDS) or {source["game_id"] for source in props} != PROP_IDS:
         raise ValueError("The original prop family must contain one monument, planter and bumper")
     if len(landmarks) != len(MAP_IDS) or {source["game_id"] for source in landmarks} != MAP_IDS:
@@ -232,6 +245,8 @@ def map_assets(sources: list[dict], paths: dict[str, Path], output: Path) -> lis
         record["source_ids"].append(landmark_source["id"])
         if "zone_crop" in source:
             record["zone_source_crop"] = source["zone_crop"]
+        if "floor_bands" in source:
+            record["floor_bands"] = source["floor_bands"]
         records.append(record)
         x, y, width, height = PREVIEW_CROP
         preview = image.crop((x, y, x + width, y + height))

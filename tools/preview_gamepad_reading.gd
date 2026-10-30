@@ -68,7 +68,8 @@ static func make_result_fixture() -> RunState:
 	target.health = 100000.0
 	target.max_health = 100000.0
 	target.action_timer = 9999.0
-	for definition: ContentDef in GameCatalog.weapons():
+	for owned: Dictionary in state.loadout:
+		var definition: ContentDef = GameCatalog.weapon(str(owned["id"]))
 		simulation.fire_weapon(definition.id, "", simulation.player_position, Vector2.RIGHT)
 		for frame: int in 24:
 			simulation.step(1.0 / 60.0, Vector2.ZERO)

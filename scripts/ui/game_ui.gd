@@ -277,6 +277,10 @@ func _gamepad_reading_target() -> ScrollContainer:
 			target_name = "BackpackDetailsScroll"
 	elif _screen == "result":
 		target_name = "ResultBuildScroll"
+		var damage := surface.find_child("DamageContributionScroll", true, false) as ScrollContainer
+		var focused: Control = get_viewport().gui_get_focus_owner()
+		if damage != null and focused != null and (focused == damage or damage.is_ancestor_of(focused)):
+			target_name = "DamageContributionScroll"
 	if target_name.is_empty() or get_viewport().gui_is_dragging():
 		return null
 	var target := surface.find_child(target_name, true, false) as ScrollContainer
@@ -474,19 +478,17 @@ func _wire_title_focus(start: Button, settings: Button, quit: Button) -> void:
 		characters.append(_page.find_child("Character_" + id, true, false) as Button)
 	for id: String in ArenaCatalog.IDS:
 		arenas.append(_page.find_child("Arena_" + id, true, false) as Button)
-	for index: int in characters.size():
-		var card: Button = characters[index]
-		card.focus_neighbor_left = card.get_path_to(characters[index - 1] if index % 2 == 1 else card)
-		card.focus_neighbor_right = card.get_path_to(characters[index + 1] if index % 2 == 0 else card)
-		card.focus_neighbor_top = card.get_path_to(characters[index - 2] if index >= 2 else card)
-		card.focus_neighbor_bottom = card.get_path_to(characters[index + 2] if index < 2 else arenas[index - 2])
-	for index: int in arenas.size():
-		var card: Button = arenas[index]
-		card.focus_neighbor_left = card.get_path_to(arenas[index - 1] if index % 2 == 1 else card)
-		card.focus_neighbor_right = card.get_path_to(arenas[index + 1] if index % 2 == 0 else card)
-		card.focus_neighbor_top = card.get_path_to(arenas[index - 2] if index >= 2 else characters[index + 2])
-		card.focus_neighbor_bottom = card.get_path_to(arenas[index + 2] if index < 2 else start)
-	start.focus_neighbor_top = start.get_path_to(arenas[2])
+	for group: Array[Button] in [characters, arenas]:
+		for index: int in group.size():
+			var card: Button = group[index]
+			card.focus_neighbor_left = card.get_path_to(group[index - 1] if index % 2 == 1 else card)
+			card.focus_neighbor_right = card.get_path_to(group[index + 1] if index % 2 == 0 and index + 1 < group.size() else card)
+			var above: Control = group[index - 2] if index >= 2 else card if group == characters else characters[characters.size() - 2 + index]
+			var below: Control = group[index + 2] if index + 2 < group.size() else arenas[index % 2] if group == characters else start
+			card.focus_neighbor_top = card.get_path_to(above)
+			card.focus_neighbor_bottom = card.get_path_to(below)
+	var selected: Button = arenas[ArenaCatalog.IDS.find(_arena_id)]
+	start.focus_neighbor_top = start.get_path_to(selected)
 	start.focus_neighbor_bottom = start.get_path_to(settings)
 	settings.focus_neighbor_top = settings.get_path_to(start)
 	settings.focus_neighbor_right = settings.get_path_to(quit)
@@ -512,14 +514,22 @@ func _build_arena_selection(parent: Control) -> void:
 	card.add_theme_stylebox_override("panel", _box(Color(PANEL, 0.96), Color(GOLD, 0.25)))
 	var body := _inside(card, 12)
 	body.add_theme_constant_override("separation", 6)
+	var scroll := ScrollContainer.new()
+	scroll.name = "ArenaChoiceScroll"
+	scroll.custom_minimum_size.y = 162
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+	scroll.follow_focus = true
+	body.add_child(scroll)
 	var grid := GridContainer.new()
 	grid.columns = 2
+	grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	grid.add_theme_constant_override("h_separation", 10)
 	grid.add_theme_constant_override("v_separation", 10)
-	body.add_child(grid)
+	scroll.add_child(grid)
 	for id: String in ArenaCatalog.IDS:
 		var definition: Dictionary = ArenaCatalog.definition(id)
-		var option := _button("", _select_arena.bind(id), Vector2(0, 84))
+		var option := _button("", _select_arena.bind(id), Vector2(0, 76))
 		option.name = "Arena_" + id
 		option.toggle_mode = true
 		option.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -541,7 +551,7 @@ func _build_arena_selection(parent: Control) -> void:
 		image.size_flags_vertical = Control.SIZE_EXPAND_FILL
 		image.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		image.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-		image.texture = load(AdventureArt.path(str(definition["texture"]))) as Texture2D
+		image.texture = load(ArenaCatalog.preview_path(id)) as Texture2D
 		image.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 		image.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		content.add_child(image)
@@ -580,6 +590,13 @@ func _refresh_arena_selection() -> void:
 		if name_label != null:
 			name_label.text = str(ArenaCatalog.definition(id)["name"])
 			name_label.add_theme_color_override("font_color", GOLD if _arena_id == id else BONE)
+	var selected := _page.find_child("Arena_" + _arena_id, true, false) as Button
+	var scroll := _page.find_child("ArenaChoiceScroll", true, false) as ScrollContainer
+	if selected != null and scroll != null:
+		scroll.ensure_control_visible.call_deferred(selected)
+		var start := _page.find_child("StartTrial", true, false) as Button
+		if start != null:
+			start.focus_neighbor_top = start.get_path_to(selected)
 
 
 func show_hud() -> void:
@@ -1133,13 +1150,25 @@ func show_result(victory: bool, reason: String, best: Dictionary) -> void:
 		empty.name = "DamageEmpty"
 		damage_body.add_child(empty)
 	else:
+		var scroll := ScrollContainer.new()
+		scroll.name = "DamageContributionScroll"
+		scroll.custom_minimum_size.y = 120
+		scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+		scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+		scroll.focus_mode = Control.FOCUS_ALL
+		damage_body.add_child(scroll)
+		var rows := VBoxContainer.new()
+		rows.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		rows.add_theme_constant_override("separation", 12)
+		scroll.add_child(rows)
 		for contribution: Dictionary in contributions:
 			var definition: ContentDef = contribution["definition"]
 			var amount := float(contribution["amount"])
 			var row := VBoxContainer.new()
 			row.name = "Damage_" + definition.id
 			row.add_theme_constant_override("separation", 5)
-			damage_body.add_child(row)
+			rows.add_child(row)
 			var heading := HBoxContainer.new()
 			row.add_child(heading)
 			_add_icon(heading, definition, 24)
@@ -1301,7 +1330,7 @@ func _add_shop_symbol(parent: Control, id: String, extent: int) -> void:
 
 func _item_trait(kind: String, definition: ContentDef, rank: int) -> String:
 	if kind == "weapon":
-		return {"bone": "速射", "frost": "寒霜减速", "ember": "追踪", "scatter": "三向散射", "crescent": "穿透", "storm": "双发", "comet": "重击", "return_ring": "往返穿透"}.get(definition.id, "")
+		return {"bone": "速射", "frost": "寒霜减速", "ember": "追踪", "scatter": "三向散射", "crescent": "穿透", "storm": "双发", "comet": "重击", "return_ring": "往返穿透", "sword_0012": "主角回转", "spear_0005": "球化攻势", "sword_0004": "球化连携", "axe_0009": "破防追击", "book_0009": "球化强化", "sword_0007": "生命增幅", "axe_0024": "技伤强化", "sword_0011": "濒危回复"}.get(definition.id, "")
 	if kind == "rune":
 		return "贯穿 +%d目标" % RuneRules.extra_hits(rank) if definition.id == "pierce" else "弹射 +%d跳" % RuneRules.extra_hits(rank) if definition.id == "bounce" else "爆破 %.0f范围" % RuneRules.blast_radius(rank)
 	if kind == "relic":
@@ -2029,12 +2058,12 @@ static func _active_skill_stats_text(parameters: Dictionary) -> String:
 
 
 static func _relic_stat_name(key: String) -> String:
-	var names: Dictionary = {"damage": "伤害", "attack_speed": "攻速", "move_speed": "移速", "max_health": "生命上限", "armor": "护甲", "pickup_radius": "拾取范围", "dash_cooldown": "冲刺冷却", "pulse_radius": "脉冲半径", "pulse_cooldown": "脉冲冷却"}
+	var names: Dictionary = {"damage": "伤害", "attack_speed": "攻速", "move_speed": "移速", "max_health": "生命上限", "armor": "护甲", "pickup_radius": "拾取范围", "dash_cooldown": "冲刺冷却", "pulse_radius": "脉冲半径", "pulse_cooldown": "脉冲冷却", "skill_damage": "技能伤害", "skill_haste": "技能回转", "summon_damage": "协力球伤害"}
 	return str(names.get(key, key))
 
 
 static func _relic_amount_text(key: String, value: float) -> String:
-	if key in ["damage", "attack_speed"]:
+	if key in ["damage", "attack_speed", "skill_damage", "skill_haste", "summon_damage"]:
 		return "%+.0f%%" % (value * 100.0)
 	return "%+.1f秒" % value if key in ["dash_cooldown", "pulse_cooldown"] else "%+.0f" % value
 
@@ -2438,7 +2467,7 @@ func _build_relic_stat_comparison(parent: Control, preview: Dictionary) -> void:
 	parent.add_child(grid)
 	for heading: Array in [["属性", 170], ["当前", 150], ["购后", 150], ["变化", 260]]:
 		_comparison_cell(grid, str(heading[0]), GOLD, float(heading[1]))
-	var names: Dictionary = {"max_health": "生命上限", "damage": "伤害倍率", "attack_speed": "攻击速度倍率", "move_speed": "移动速度", "armor": "护甲", "pickup_radius": "拾取范围", "dash_cooldown": "冲刺冷却", "pulse_radius": "脉冲半径", "pulse_cooldown": "脉冲冷却"}
+	var names: Dictionary = {"max_health": "生命上限", "damage": "伤害倍率", "attack_speed": "攻击速度倍率", "move_speed": "移动速度", "armor": "护甲", "pickup_radius": "拾取范围", "dash_cooldown": "冲刺冷却", "pulse_radius": "脉冲半径", "pulse_cooldown": "脉冲冷却", "skill_damage": "技能伤害", "skill_haste": "技能回转", "summon_damage": "协力球伤害"}
 	for change: Dictionary in preview["stat_changes"]:
 		var key: String = str(change["key"])
 		var delta: float = float(change["delta"])
@@ -3206,6 +3235,9 @@ func _equipment_tooltip(item: Dictionary) -> String:
 	var weapon: ContentDef = GameCatalog.weapon(str(item["id"]))
 	var rune: Dictionary = item.get("rune", {})
 	var details: String = "%s %s阶：%s\n%s\n%s\n邻接共鸣 +%s伤害（上限18%%）。" % [weapon.display_name, _rank_name(int(item.get("rank", 1))), weapon.description, _weapon_stats_text(weapon, int(item.get("rank", 1)), _item_resonance_bonus(item)), _weapon_stats_note(), _rune_percent(_item_resonance_bonus(item))]
+	var passives: String = _weapon_passives_text(weapon, int(item.get("rank", 1)))
+	if not passives.is_empty():
+		details += "\n" + passives
 	if weapon.return_delay > 0.0:
 		details += "\n" + _return_flight_tooltip(weapon)
 	if rune.is_empty():
@@ -3220,6 +3252,24 @@ func _equipment_tooltip(item: Dictionary) -> String:
 	elif weapon.return_delay > 0.0 and definition.id == "blast":
 		effect += "爆破后弹体消失，不再返航。"
 	return "%s\n%s %s阶：%s" % [details, definition.display_name, _rank_name(rune_rank), effect]
+
+
+func _weapon_passives_text(weapon: ContentDef, rank: int) -> String:
+	var lines: PackedStringArray = []
+	var weight: float = BackpackInventory.rank_multiplier(rank)
+	for key: String in weapon.equipment_bonuses:
+		lines.append("%s %s" % [_relic_stat_name(key), _relic_amount_text(key, float(weapon.equipment_bonuses[key]) * weight)])
+	for effect: Dictionary in weapon.equipment_effects:
+		var amount: float = float(effect.get("amount", 0.0)) * weight
+		var cap: float = float(effect.get("cap", 0.0)) * weight
+		match str(effect.get("kind", "")):
+			"cast_haste": lines.append("每次主角技能回转 +%.1f%% / 上限 +%.1f%%" % [amount * 100, cap * 100])
+			"pinball_damage": lines.append("球化期间伤害 +%.0f%%" % (amount * 100))
+			"ball_damage": lines.append("球化碰撞伤害 +%.0f%%" % (amount * 100))
+			"break_damage": lines.append("首领破防追击 +%.0f%%" % (amount * 100))
+			"rescue": lines.append("生命低于%.0f%%：回复%.0f%% / 每波一次" % [float(effect.get("health_ratio", 0.7)) * 100, minf(1.0, float(effect.get("heal_ratio", 0.2)) * weight) * 100])
+			"heal_damage": lines.append("每次有效回复：伤害 +%.0f%% / 上限 +%.0f%%" % [amount * 100, cap * 100])
+	return "\n".join(lines)
 
 
 static func _return_flight_tooltip(weapon: ContentDef) -> String:

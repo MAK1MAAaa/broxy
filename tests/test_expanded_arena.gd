@@ -67,8 +67,8 @@ func _test_authored_terrain() -> void:
 		var definition: Dictionary = ArenaCatalog.definition(id)
 		var zones: Array = definition["zones"]
 		var legacy_count: int = int(definition["legacy_zone_count"])
-		_check(legacy_count == (0 if id == "reliquary" else 4 if id == "ashland" else 3), "Legacy art regions remain explicitly identified: " + id)
-		_check(zones.size() == legacy_count + (0 if id == "reliquary" else 8), "Each terrain map adds eight distant authored patches: " + id)
+		_check(legacy_count == ({"mire": 3, "glacier": 3, "ashland": 4}.get(id, 0)), "Legacy art regions remain explicitly identified: " + id)
+		_check(zones.size() == legacy_count + (0 if id == "reliquary" else 8 if id in ["mire", "glacier", "ashland"] else 6), "Original terrain maps keep eight distant patches and the new scenes add six authored patches: " + id)
 		_check(ArenaCatalog.movement_multiplier(id, CombatSim.ARENA.get_center()) == 1.0, "The unchanged central spawn stays on clear ground: " + id)
 		var valid_bounds: bool = true
 		var disjoint: bool = true
@@ -79,7 +79,7 @@ func _test_authored_terrain() -> void:
 			var patch := Rect2(center - radius, radius * 2.0)
 			valid_bounds = valid_bounds and radius.x > 0.0 and radius.y > 0.0 and CombatSim.ARENA.encloses(patch)
 			_check(ArenaCatalog.movement_multiplier(id, center) == float(definition["move_multiplier"]), "Remote and original terrain centers use the same actual slowdown: " + id)
-			if index >= legacy_count:
+			if index >= legacy_count and id in ["mire", "glacier", "ashland"]:
 				_check(not OLD_ARENA.has_point(center), "The added terrain actually extends beyond the original room: " + id)
 			for previous: int in index:
 				var other: Dictionary = zones[previous]
