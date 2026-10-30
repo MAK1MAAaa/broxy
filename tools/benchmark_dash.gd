@@ -564,6 +564,10 @@ func _source_fingerprint() -> Dictionary:
 	for id: String in ArenaCatalog.IDS:
 		paths.append(ArenaCatalog.texture_path(id))
 	paths.append("res://assets/worldflipper/manifest.json")
+	paths.append("res://assets/worldflipper/roster/manifest.json")
+	for hero_id: String in HeroCatalog.PROFILE_IDS:
+		var hero: HeroDef = HeroCatalog.definition(hero_id)
+		paths.append_array([hero.idle_path, hero.atlas_path, hero.portrait_path])
 	for id: String in ["monument", "planter", "bumper"]:
 		paths.append("res://assets/worldflipper/props/%s.png" % id)
 	for id: String in ["player", "chaser", "rusher", "tank", "caster", "boss"]:

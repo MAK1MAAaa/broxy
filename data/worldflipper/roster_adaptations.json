@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "scope": "Project balance and identity bindings for source-compiled representative R actions; not complete original characters or abilities.",
+  "characters": [
+    {"id": "nasir", "canonical_id": "211012", "profile_id": "magic_sword_girl:2", "name": "娜希尔", "skill_name": "阿耆尼之恼", "starter": "ember", "damage": 90.0, "cooldown": 12.0, "geometry_scale": 0.5, "visual_family": "sword_flame", "source_page": "https://wiki.biligame.com/worldflipper/娜希尔"},
+    {"id": "mordiga", "canonical_id": "221008", "profile_id": "desert_wizard:2", "name": "莫迪亚迦", "skill_name": "雅尼尼·水流", "starter": "frost", "damage": 65.0, "cooldown": 10.0, "geometry_scale": 0.5, "visual_family": "water_strike", "source_page": "https://wiki.biligame.com/worldflipper/莫迪亚迦"},
+    {"id": "falsche", "canonical_id": "361001", "profile_id": "reaper_girl:2", "name": "法露伽", "skill_name": "灵魂收割者", "starter": "crescent", "damage": 100.0, "cooldown": 13.0, "geometry_scale": 0.5, "visual_family": "soul_ring", "source_page": "https://wiki.biligame.com/worldflipper/法露伽"}
+  ],
+  "adaptation_policy": {
+    "clock": "One original action unit maps to 1/60 project seconds; original FPS is not verified.",
+    "geometry": "All three profiles use one uniform scale of 0.5; source negative Y becomes cast-facing forward, source X becomes its orthogonal direction.",
+    "damage": "Project total damage and cooldown, not original multipliers or gauge costs. Original coefficient ranges stay in action_profiles.json.",
+    "movement": "Free movement remains enabled; original StopBall is not replayed.",
+    "conditions": "No leader abilities, character abilities, rank progression, or unimplemented source instructions are inferred."
+  }
+}

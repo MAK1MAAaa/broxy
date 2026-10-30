@@ -378,13 +378,23 @@ func show_title(best: Dictionary) -> void:
 	start_card.name = "StarterAltar"
 	var start_body := _inside(start_card, 12)
 	start_body.add_theme_constant_override("separation", 6)
+	var character_scroll := ScrollContainer.new()
+	character_scroll.name = "CharacterScroll"
+	character_scroll.focus_mode = Control.FOCUS_NONE
+	character_scroll.get_v_scroll_bar().focus_mode = Control.FOCUS_NONE
+	character_scroll.get_h_scroll_bar().focus_mode = Control.FOCUS_NONE
+	character_scroll.custom_minimum_size.y = 160.0
+	character_scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	character_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	character_scroll.follow_focus = true
+	start_body.add_child(character_scroll)
 	var starters := GridContainer.new()
 	starters.name = "CharacterChoices"
 	starters.columns = 2
 	starters.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	starters.add_theme_constant_override("h_separation", 12)
 	starters.add_theme_constant_override("v_separation", 8)
-	start_body.add_child(starters)
+	character_scroll.add_child(starters)
 	for id: String in HeroCatalog.IDS:
 		var hero: HeroDef = HeroCatalog.definition(id)
 		var definition: ContentDef = GameCatalog.weapon(hero.starter_weapon)
@@ -451,6 +461,7 @@ func show_title(best: Dictionary) -> void:
 	quit.name = "TitleQuit"
 	footer.add_child(quit)
 	_wire_title_focus(start, settings, quit)
+	_ensure_selected_character_visible.call_deferred()
 
 
 func selected_hero() -> String:
@@ -471,6 +482,15 @@ func set_selected_hero(id: String) -> void:
 		_refresh_title.call_deferred()
 
 
+func _ensure_selected_character_visible() -> void:
+	if _screen != "title" or not is_instance_valid(_page):
+		return
+	var selected := _page.find_child("Character_" + _hero_id, true, false) as Button
+	var scroll := _page.find_child("CharacterScroll", true, false) as ScrollContainer
+	if selected != null and scroll != null:
+		scroll.ensure_control_visible(selected)
+
+
 func _wire_title_focus(start: Button, settings: Button, quit: Button) -> void:
 	var characters: Array[Button] = []
 	var arenas: Array[Button] = []
@@ -483,7 +503,14 @@ func _wire_title_focus(start: Button, settings: Button, quit: Button) -> void:
 			var card: Button = group[index]
 			card.focus_neighbor_left = card.get_path_to(group[index - 1] if index % 2 == 1 else card)
 			card.focus_neighbor_right = card.get_path_to(group[index + 1] if index % 2 == 0 and index + 1 < group.size() else card)
-			var above: Control = group[index - 2] if index >= 2 else card if group == characters else characters[characters.size() - 2 + index]
+			var above: Control = card
+			if index >= 2:
+				above = group[index - 2]
+			elif group != characters:
+				var last_in_column: int = characters.size() - 1
+				if last_in_column % 2 != index % 2:
+					last_in_column -= 1
+				above = characters[maxi(0, last_in_column)]
 			var below: Control = group[index + 2] if index + 2 < group.size() else arenas[index % 2] if group == characters else start
 			card.focus_neighbor_top = card.get_path_to(above)
 			card.focus_neighbor_bottom = card.get_path_to(below)
@@ -516,6 +543,9 @@ func _build_arena_selection(parent: Control) -> void:
 	body.add_theme_constant_override("separation", 6)
 	var scroll := ScrollContainer.new()
 	scroll.name = "ArenaChoiceScroll"
+	scroll.focus_mode = Control.FOCUS_NONE
+	scroll.get_v_scroll_bar().focus_mode = Control.FOCUS_NONE
+	scroll.get_h_scroll_bar().focus_mode = Control.FOCUS_NONE
 	scroll.custom_minimum_size.y = 162
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
@@ -759,6 +789,8 @@ func update_hud(snapshot: Dictionary) -> void:
 func _clear_hud_skill(key: String) -> void:
 	_hud[key].hide()
 	_hud[key + "_label"].text = ""
+	if key == "hero":
+		_fit_hero_skill_label(_hud[key + "_label"] as Label)
 	_hud[key + "_bar"].value = 0.0
 
 
@@ -861,6 +893,11 @@ func _add_active_skill_slot(parent: BoxContainer, key: String, prefix: String, t
 	label.clip_text = true
 	label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	box.add_child(label)
+	if key == "hero":
+		label.text_overrun_behavior = TextServer.OVERRUN_NO_TRIMMING
+		label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		label.resized.connect(_fit_hero_skill_label.bind(label))
+		_fit_hero_skill_label.call_deferred(label)
 	var meter := ProgressBar.new()
 	meter.name = prefix + "Cooldown"
 	meter.custom_minimum_size.y = 5
@@ -878,6 +915,21 @@ func _add_active_skill_slot(parent: BoxContainer, key: String, prefix: String, t
 	_hud[key + "_icon"] = icon
 	_hud[key + "_time"] = clock
 	card.hide()
+
+
+func _fit_hero_skill_label(label: Label) -> void:
+	if not is_instance_valid(label) or not label.is_inside_tree():
+		return
+	var font: Font = label.get_theme_font("font")
+	if font == null:
+		return
+	label.custom_minimum_size.y = ceilf(font.get_height(24))
+	if label.size.x <= 0.0:
+		return
+	var width: float = font.get_string_size(label.text, HORIZONTAL_ALIGNMENT_LEFT, -1, 24).x
+	var font_size: int = 24 if width <= floorf(label.size.x) else 12
+	if label.get_theme_font_size("font_size") != font_size:
+		label.add_theme_font_size_override("font_size", font_size)
 
 
 func _update_pulse_hud(snapshot: Dictionary) -> void:
@@ -972,6 +1024,7 @@ func _update_hero_hud(snapshot: Dictionary) -> void:
 	icon.modulate = Color.WHITE if ready else Color(0.65, 0.72, 0.70)
 	var label: Label = _hud["hero_label"]
 	label.text = skill_name
+	_fit_hero_skill_label(label)
 	label.add_theme_color_override("font_color", HUD_GOLD if ready else HUD_MUTED)
 	clock.text = "就绪" if ready else "%.1f" % (ceilf(remaining * 10.0) / 10.0) if remaining > 0.0 else "—"
 	clock.add_theme_color_override("font_color", HUD_GOLD if ready else HUD_MUTED)
@@ -2961,6 +3014,7 @@ func _refresh_title() -> void:
 			var mark := button.get_node_or_null("SelectionMark") as Control
 			if mark != null:
 				mark.queue_redraw()
+	_ensure_selected_character_visible.call_deferred()
 
 
 func _start() -> void:

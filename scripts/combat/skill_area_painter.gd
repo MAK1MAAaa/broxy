@@ -8,6 +8,8 @@ const FIRE := Color("f1875e")
 const WIND := Color("87d9ab")
 const AMBER := Color("efa54c")
 const CORE := Color("fff1cf")
+const WATER := Color("67cce5")
+const DARK := Color("b49ce2")
 
 static func draw(canvas: CanvasItem, snapshot: Dictionary, flash: bool) -> void:
 	for command: Dictionary in geometry_snapshot(snapshot, flash)["commands"]:
@@ -30,7 +32,7 @@ static func geometry_snapshot(snapshot: Dictionary, flash: bool) -> Dictionary:
 		var warming: bool = not bool(area["active"])
 		var time: float = maxf(0.0, float(area["age"]) - float(area["delay"]))
 		var fade: float = 1.0 - clampf(time / float(area["duration"]), 0.0, 1.0)
-		var color: Color = WIND if parameters.get("element", "") == "wind" else AMBER if parameters.get("visual_family", "") == "alchemy" else FIRE
+		var color: Color = _element_color(parameters)
 		var alpha: float = 0.35 if warming else 0.3 + fade * 0.5
 		if not flash:
 			alpha = 0.25 if warming else 0.35
@@ -67,6 +69,13 @@ static func geometry_snapshot(snapshot: Dictionary, flash: bool) -> Dictionary:
 					var heading := Vector2.from_angle(float(ray) * TAU / 6.0)
 					commands.append(_line(origin + heading * radius * (0.15 + pulse * 0.3), origin + heading * radius * (0.25 + pulse * 0.3), Color(CORE, fade * 0.7), 2.0))
 	return {"commands": commands, "bounds": bounds}
+
+static func _element_color(parameters: Dictionary) -> Color:
+	match str(parameters.get("element", "")):
+		"wind": return WIND
+		"water": return WATER
+		"dark": return DARK
+	return AMBER if parameters.get("visual_family", "") == "alchemy" else FIRE
 
 static func _arc(center: Vector2, radius: float, start: float, end: float, color: Color, width: float) -> Dictionary:
 	return {"kind": "arc", "center": center, "radius": radius, "start": start, "end": end, "color": color, "width": width}

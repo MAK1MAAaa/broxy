@@ -4,6 +4,7 @@ extends Resource
 
 @export var id: String = ""
 @export var display_name: String = ""
+@export var element: String = "fire"
 @export var starter_weapon: String = "bone"
 @export var idle_path: String = ""
 @export var atlas_path: String = ""

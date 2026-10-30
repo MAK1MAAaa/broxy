@@ -29,6 +29,7 @@ func _initialize() -> void:
 	_test_cosmetic_edges()
 	_test_trail_edges()
 	_test_600_instances_and_purity()
+	_test_enemy_buckets_and_purity()
 	print("CosmeticCulling: %d assertions, %d failures" % [_checks, _failures])
 	quit(0 if _failures == 0 else 1)
 
@@ -75,6 +76,11 @@ func _signature(world: CombatWorld) -> String:
 	for number: CombatWorld.FloatingNumber in world._numbers:
 		data.append([number.position, number.velocity, number.text, number.text_width,
 			number.amount, number.life, number.total, number.font_size, number.player_hit])
+	for enemy: CombatSim.Enemy in sim.enemies:
+		data.append([enemy.slot, enemy.active, enemy.uid, enemy.definition.id if enemy.definition != null else "",
+			enemy.position, enemy.velocity, enemy.health, enemy.max_health, enemy.age, enemy.action_timer,
+			enemy.hurt_timer, enemy.slow_timer, enemy.slow_factor, enemy.pulse_hinder_timer, enemy.radius,
+			enemy.hunter, enemy.mode, enemy.positive_conditions.duplicate(true), enemy.fire_vulnerability_left])
 	return JSON.stringify(data)
 
 func _test_cosmetic_edges() -> void:
@@ -199,3 +205,75 @@ func _test_600_instances_and_purity() -> void:
 	_check(_signature(world) == _signature(oracle), "The next fixed simulation step is identical whether or not offscreen geometry was prepared")
 	world.free()
 	oracle.free()
+
+func _legacy_enemy_order(enemies: Array[CombatSim.Enemy]) -> Array[int]:
+	var result: Array[int] = []
+	for id: String in ["chaser", "rusher", "tank", "caster", "boss"]:
+		for enemy: CombatSim.Enemy in enemies:
+			if enemy.active and enemy.definition.id == id:
+				result.append(enemy.uid)
+	return result
+
+func _prepared_enemy_order(world: CombatWorld) -> Array[int]:
+	var result: Array[int] = []
+	for id: String in CombatWorld.ENEMY_DRAW_IDS:
+		var bucket: CombatWorld.EnemyDrawBucket = world._enemy_draw_buckets[id]
+		for enemy: CombatSim.Enemy in bucket.enemies:
+			result.append(enemy.uid)
+	return result
+
+func _test_enemy_buckets_and_purity() -> void:
+	var world := DrawSpy.new()
+	world.sim = _simulation()
+	var unknown := ContentDef.new()
+	unknown.id = "unknown_visual_family"
+	var fixtures: Array[CombatSim.Enemy] = []
+	var ids: Array[String] = ["caster", "chaser", "rusher", "tank", "chaser", "boss", "caster", "rusher", unknown.id, "tank"]
+	for index: int in ids.size():
+		var enemy := CombatSim.Enemy.new()
+		enemy.slot = index
+		enemy.uid = 101 + index
+		enemy.definition = unknown if ids[index] == unknown.id else GameCatalog.enemy(ids[index])
+		enemy.active = index not in [2, 9]
+		enemy.health = 0.0 if index == 3 else 37.0
+		enemy.max_health = 90.0
+		enemy.position = Vector2(250, 250) if index % 2 == 0 else Vector2(9000 + index, -8000)
+		enemy.radius = 12.0 + float(index)
+		enemy.age = float(index) * 0.13
+		enemy.hurt_timer = 0.08
+		enemy.hunter = index == 4
+		fixtures.append(enemy)
+	world.sim.enemies.assign(fixtures)
+	var buckets: Dictionary = world._enemy_draw_buckets.duplicate()
+	var before: String = _signature(world)
+	for repeat: int in 4:
+		world._rebuild_enemy_draw_buckets()
+		_check(_prepared_enemy_order(world) == [102, 105, 108, 104, 101, 107, 106], "Mixed families preserve original texture order and pool order on every rebuild")
+		_check(_prepared_enemy_order(world) == _legacy_enemy_order(world.sim.enemies), "The prepared draw list equals an independent original five-pass traversal")
+		for id: String in CombatWorld.ENEMY_DRAW_IDS:
+			_check(world._enemy_draw_buckets[id] == buckets[id], "Rebuilding reuses the existing family bucket without replacing or accumulating it: " + id)
+	_check(_prepared_enemy_order(world).has(102) and fixtures[1].position.x > VIEW.end.x and _prepared_enemy_order(world).has(104) and fixtures[3].health == 0.0, "Grouping retains offscreen active enemies and does not add a health-based draw filter")
+	_check(not _prepared_enemy_order(world).has(103) and not _prepared_enemy_order(world).has(109), "Only inactive entities and unknown visual families retain the original skip behavior")
+	_check(_signature(world) == before and CombatWorld.NUMBER_LIMIT == 48, "Repeated enemy presentation preparation preserves all enemy state, feedback, inventory, hit counters and RNG")
+	fixtures[2].active = true
+	fixtures[1].active = false
+	fixtures[8].definition = GameCatalog.enemy("boss")
+	fixtures[6].definition = GameCatalog.enemy("tank")
+	world.sim.enemies.reverse()
+	before = _signature(world)
+	for repeat: int in 3:
+		world._rebuild_enemy_draw_buckets()
+		_check(_prepared_enemy_order(world) == [105, 108, 103, 107, 104, 101, 109, 106] and _prepared_enemy_order(world) == _legacy_enemy_order(world.sim.enemies), "Active flips, family replacement and reversed pool order immediately replace the actual draw sequence")
+	_check(_signature(world) == before, "Rebuilding after real entity changes remains pure and does not retain old entity membership")
+	for enemy: CombatSim.Enemy in fixtures:
+		enemy.active = false
+	world._rebuild_enemy_draw_buckets()
+	_check(_prepared_enemy_order(world).is_empty(), "Deactivating all entities clears every previously populated family")
+	fixtures[8].active = true
+	fixtures[8].definition = unknown
+	world._rebuild_enemy_draw_buckets()
+	_check(_prepared_enemy_order(world).is_empty(), "An unknown-only active pool cannot revive stale known-family entries")
+	fixtures[0].active = true
+	world._rebuild_enemy_draw_buckets()
+	_check(_prepared_enemy_order(world) == [101], "A reused bucket immediately recovers one newly active entity after an empty frame")
+	world.free()

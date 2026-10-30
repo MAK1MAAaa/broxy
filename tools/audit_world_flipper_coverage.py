@@ -27,12 +27,23 @@ HERO_GAPS = {
     "clarisse": ["驱散仅覆盖本作临时正面强化，原作完整强化类型尚未逐项移植", "背包pulse仍为本作击退prototype，尚未与原作炼金爆发对齐", "角色原作能力与技能等级成长尚未完整移植"],
     "celtie": ["原作连击以当前球化连击代理，矩形尺寸为自由移动适配", "背包arc_slash仍为此前prototype，尚未与原作矩形剑斩时序完全对齐", "角色原作能力与技能等级成长尚未完整移植"],
     "hanabi": ["原作协力球的MB反射仍为本作适配，限时炸弹不参加常规弹板反射", "背包starfall仍为此前落星prototype，未复用主角投弹时序", "角色原作能力与技能等级成长尚未完整移植"],
+    "nasir": ["原作StopBall停球与可见性行为未重放，自由移动保留", "原作ShowEffect与镜头震动未重放，目前为本作火焰剑区域表现", "角色原作能力、队长能力与技能等级成长尚未完整移植"],
+    "mordiga": ["仅接入代表性伤害圆区，原作目标过滤与其他未解码参数不推断为已实现", "原作ShowEffect与镜头震动未重放，目前为本作水流区域表现", "角色原作能力、队长能力与技能等级成长尚未完整移植"],
+    "falsche": ["30击按持续时间均分为本作命中节奏，原参数15的Some值23尚未解码，不能视为原作逐击间隔", "原作ShowEffect与镜头震动未重放，目前为本作随身暗属性圆区表现", "角色原作能力、队长能力与技能等级成长尚未完整移植"],
 }
 HERO_NOTES = {
     "alk": "原动作前摇44单位后启用持续20单位的单击圆区，施放时攻击强化已生效；时间按每单位1/60秒适配，攻击增益与R锁定伤害各计算一次。",
     "clarisse": "原动作4击及11击两段爆区共15击、逐次命中火弱点、独立一次临时正面强化驱散及火属性技伤增益已接入；时间、几何和数值为本作适配。",
     "celtie": "原动作前摇25单位后启用持续31单位的前后双向矩形单击区，施放时锁定当前球化连击增伤；矩形范围与时间为本作适配。",
     "hanabi": "前摇55单位、五枚移动炸弹及碰撞后持续30单位的单击爆区已接入；施放时同时预约炸弹和爆区，碰敌、弱点、障碍或到期激活，按真实UID记录命中。",
+    "nasir": "绑定211012与magic_sword_girl:2的原动作，等待28单位后在激活时角色前方启用持续20单位的单击圆区；原半径210及前向偏移220统一缩放0.5，时间每单位1/60秒，90伤害与12秒冷却为本作数值。",
+    "mordiga": "绑定221008与desert_wizard:2的原动作，等待38单位后在施放时锁定的位置启用持续50单位的单击圆区；原半径300及前向偏移120统一缩放0.5，时间每单位1/60秒，65伤害与10秒冷却为本作数值。",
+    "falsche": "绑定361001与reaper_girl:2的原动作，持续600单位、上限30击的随身圆区已接入；原半径200统一缩放0.5，时间每单位1/60秒，100总伤害与13秒冷却为本作数值，命中节奏采用明确的均分适配。",
+}
+PROFILE_TARGETS = {
+    "nasir": ("211012", "magic_sword_girl:2"),
+    "mordiga": ("221008", "desert_wizard:2"),
+    "falsche": ("361001", "reaper_girl:2"),
 }
 LAYOUT_TARGETS = {
     "jp_sand_2_9_5": "main_2_9_5", "jp_shrine_6_6_2": "main_6_6_2", "jp_ship_3_6_2": "main_3_6_2",
@@ -78,6 +89,54 @@ def unique_records(rows: list[dict[str, Any]], label: str) -> dict[str, dict[str
     if len(result) != len(rows):
         raise ValueError("Duplicate " + label + " identity")
     return result
+
+
+def validate_profile_context(catalog: dict[str, Any], root: Path) -> dict[str, dict[str, Any]]:
+    """Bind canonical action bytes, explicit adaptations and exact generated TRES."""
+    document = read_json(root / "data/worldflipper/action_profiles.json")
+    adaptations = read_json(root / "data/worldflipper/roster_adaptations.json")
+    lock = read_json(root / "tools/world_flipper_skill_action_sources.json")
+    commit = catalog["source"]["commit"]
+    clock = document["time_policy"]
+    if document["source_commit"] != commit or lock["commit"] != commit or clock["original_units_verified"] is not False or clock["project_seconds_per_source_unit"] != 1 / 60:
+        raise ValueError("Source profiles must retain the fixed JP commit and explicit unverified 1/60 project clock")
+    bindings = unique_records(adaptations["characters"], "profile adaptation")
+    profiles = {profile["skill_id"]: profile for profile in document["profiles"]}
+    if len(profiles) != len(document["profiles"]) or set(bindings) != set(PROFILE_TARGETS):
+        raise ValueError("The three reviewed representative character bindings are required")
+    sources = {source["path"]: source for source in lock["sources"]}
+    skills = canonical_sets(catalog)["skills"]
+    spec = importlib.util.spec_from_file_location("coverage_roster_builder", root / "tools/build_world_flipper_roster_skills.py")
+    if spec is None or spec.loader is None:
+        raise ValueError("Missing source-profile resource builder")
+    builder = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(builder)
+    checked: dict[str, dict[str, Any]] = {}
+    for game_id, (canonical_id, profile_id) in PROFILE_TARGETS.items():
+        binding = bindings[game_id]
+        profile = profiles[profile_id]
+        skill = skills[profile_id]
+        source = profile["root_source"]
+        action_file = skill["action_file"]
+        locked = sources[action_file["path"]]
+        if binding["canonical_id"] != canonical_id or binding["profile_id"] != profile_id or profile["canonical_id"] != canonical_id or canonical_id not in skill["owner_character_ids"]:
+            raise ValueError("Profile coverage must use canonical character and skill IDs, not display names")
+        if profile["action_ref"] != skill["action_ref"] or source["repository_path"] != action_file["path"] or source["git_blob_sha1"] != action_file["git_blob_sha1"] or any(source[key] != locked[key] for key in ("git_blob_sha1", "sha256", "url")):
+            raise ValueError("Source profile action path/blob/hash differs from the pinned canonical action bytes")
+        if source["url"] != f"https://raw.githubusercontent.com/blead/wf-assets/{commit}/{action_file['path']}" or binding["geometry_scale"] != 0.5:
+            raise ValueError("Source-profile geometry or immutable action URL differs from the reviewed adaptation")
+        for phase in profile["timeline"]:
+            if phase["delay"] != phase["delay_source_units"] / 60 or phase["duration"] != phase["lifetime_source_units"] / 60 or phase["hits"] != phase["maximum_hits"]:
+                raise ValueError("Source-profile time or hit limit differs from its original evidence")
+        expected = builder.resource(binding, profile, skill, commit)
+        resource = root / "data/heroes" / (game_id + ".tres")
+        if resource.read_bytes() != expected:
+            raise ValueError("Playable character differs from its source-profile identity, geometry, time or explicit project balance")
+        checked[game_id] = {"canonical_id": canonical_id, "profile_id": profile_id,
+                            "action_ref": profile["action_ref"], "git_blob_sha1": source["git_blob_sha1"],
+                            "action_sha256": source["sha256"], "source_commit": commit,
+                            "geometry_scale": binding["geometry_scale"], "project_seconds_per_source_unit": 1 / 60}
+    return checked
 
 
 def validate_layout_context(catalog: dict[str, Any], root: Path) -> dict[str, dict[str, Any]]:
@@ -183,6 +242,7 @@ def validate_layout_context(catalog: dict[str, Any], root: Path) -> dict[str, di
 
 def bootstrap(catalog: dict[str, Any], root: Path = ROOT) -> dict[str, Any]:
     original = canonical_sets(catalog)
+    profiles = validate_profile_context(catalog, root)
     claims: dict[str, list[dict[str, Any]]] = {category: [] for category in CATEGORIES}
     for path in sorted((root / "data/heroes").glob("*.tres")):
         game_id = string_property(path, "id")
@@ -192,6 +252,8 @@ def bootstrap(catalog: dict[str, Any], root: Path = ROOT) -> dict[str, Any]:
         common = {"game_id": game_id, "resource": resource, "source": string_property(path, "source_url"),
                   "status": "partial", "runtime_verified": False, "remaining_gaps": gaps,
                   "notes": HERO_NOTES.get(game_id, string_property(path, "adaptation_notes"))}
+        if game_id in profiles:
+            common["source_profile"] = profiles[game_id]
         claims["characters"].append({"canonical_id": canonical_id, **copy.deepcopy(common)})
         skill_group = original["characters"][canonical_id]["main_skill_id"]
         for skill in original["skills"].values():
@@ -245,8 +307,9 @@ def audit(catalog: dict[str, Any], ledger: dict[str, Any], root: Path = ROOT) ->
         raise ValueError("Coverage categories must include every canonical target")
     try:
         layout_bindings = validate_layout_context(catalog, root) if result["claims"]["layouts"] else {}
+        profile_bindings = validate_profile_context(catalog, root)
     except (OSError, KeyError, TypeError, StopIteration) as error:
-        raise ValueError("Original layout evidence is missing or malformed: " + str(error)) from error
+        raise ValueError("Original layout or character-profile evidence is missing or malformed: " + str(error)) from error
     counts = {}
     pending = {}
     for category, items in original.items():
@@ -291,6 +354,12 @@ def audit(catalog: dict[str, Any], ledger: dict[str, Any], root: Path = ROOT) ->
                     raise ValueError("Original-layout adaptations must retain partial status and unresolved source/gameplay differences")
             elif category == "chapters":
                 raise ValueError("Original chapters have no implemented game-resource validator yet; keep their identities pending")
+            if category in ("characters", "skills"):
+                hero_id = string_property(resource, "id")
+                if hero_id in HERO_GAPS and (entry["status"] != "partial" or not set(HERO_GAPS[hero_id]).issubset(entry["remaining_gaps"])):
+                    raise ValueError("Current characters and shared skill-level variants must retain their concrete partial implementation gaps")
+                if hero_id in profile_bindings and entry.get("source_profile") != profile_bindings[hero_id]:
+                    raise ValueError("Character coverage source-profile binding differs from its canonical action evidence")
             status_counts[entry["status"]] += 1
             verified += int(entry["runtime_verified"])
         pending[category] = sorted(set(items) - claimed, key=lambda value: (0, int(value)) if value.isdigit() else (1, value))

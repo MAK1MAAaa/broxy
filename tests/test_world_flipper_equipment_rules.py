@@ -100,7 +100,9 @@ class WorldFlipperEquipmentRulesTests(unittest.TestCase):
 
     def test_elements_have_explicit_secondary_evidence_instead_of_target_guessing(self) -> None:
         expected = {"3010053": "dark", "5030036": "water", "5060034": "dark", "5040026": "light",
-                    "5020037": "dark", "4050031": "light", "5030039": "light", "5090030": "water"}
+                    "5020037": "dark", "4050031": "light", "5030039": "light", "5090030": "water",
+                    "5010012": "fire", "5030005": "all", "5010004": "dark", "5020009": "thunder",
+                    "5050009": "fire", "3010007": "water", "5020024": "all", "5010011": "light"}
         for identifier, element in expected.items():
             self.assertEqual(self.items[identifier]["element"], element)
             self.assertIn("secondary Wiki", self.items[identifier]["element_evidence"]["evidence_level"])
@@ -110,7 +112,7 @@ class WorldFlipperEquipmentRulesTests(unittest.TestCase):
                 self.assertEqual(item["element_evidence"]["status"], "unknown")
 
     def test_unreviewed_original_instructions_never_become_generic_runtime_effects(self) -> None:
-        self.assertEqual(self.data["semantic_coverage"], {"reviewed_equipment": 8, "unsupported_equipment": 418, "reviewed_rows": 21, "unsupported_rows": 865})
+        self.assertEqual(self.data["semantic_coverage"], {"reviewed_equipment": 16, "unsupported_equipment": 410, "reviewed_rows": 35, "unsupported_rows": 851})
         for item in self.items.values():
             for rule in item["rules"]:
                 self.assertEqual(rule["runtime_support"], "not_claimed_by_extractor")
@@ -121,6 +123,88 @@ class WorldFlipperEquipmentRulesTests(unittest.TestCase):
         # Even a recognized opcode is unsupported outside its reviewed context.
         row = self.items["3010053"]["rules"][0]["raw_fields"]
         self.assertIsNone(RULES.parse_rule("not-a-reviewed-equipment", row)["semantic"])
+
+    def test_all_reviewed_semantics_lock_the_entire_original_row_not_only_an_opcode(self) -> None:
+        self.assertEqual(sum(len(rows) for rows in RULES.REVIEWED_ROWS.values()), 35)
+        for identifier in RULES.REVIEWED_IDS:
+            for rule in self.items[identifier]["rules"]:
+                row = rule["raw_fields"]
+                self.assertEqual(rule["source_row_sha256"], RULES.row_fingerprint(row))
+                self.assertEqual(rule["source_row_sha256"], RULES.REVIEWED_ROWS[identifier][f"{rule['slot']}:{rule['unlock_level']}"])
+                for position in (3, 24, 44, 48, 81, 105, 122):
+                    mutated = list(row)
+                    mutated[position] = "unreviewed"
+                    with self.assertRaisesRegex(ValueError, "complete JP equipment row changed"):
+                        RULES.parse_rule(identifier, mutated)
+
+    def test_pierce_during_rules_use_their_own_namespace_and_exact_targets(self) -> None:
+        maltet = self.items["5030005"]["rules"][0]
+        ameno = self.items["5010004"]["rules"][0]
+        for rule in (maltet, ameno):
+            self.assertEqual(rule["trigger_mode"], "during")
+            self.assertEqual(rule["semantic"]["conditions"], [{"kind": "party_piercing_active", "jp_during_trigger_code": 30}])
+            self.assertEqual(rule["semantic"]["effect"]["jp_opcode"], 0)
+            self.assertEqual(rule["semantic"]["effect"]["opcode_namespace"], "during_content")
+        self.assertEqual(maltet["semantic"]["effect"]["target"]["kind"], "owner")
+        self.assertEqual(maltet["semantic"]["effect"]["amount_maximum"], 2.8)
+        self.assertEqual(ameno["semantic"]["effect"]["target"]["kind"], "party")
+        self.assertEqual(ameno["semantic"]["effect"]["amount_base"], 0.25)
+        self.assertEqual(ameno["semantic"]["effect"]["amount_maximum"], 0.5)
+
+    def test_prometheus_preserves_skill_damage_and_ball_flip_gauge_instead_of_haste(self) -> None:
+        skill, gauge = self.items["5010012"]["rules"]
+        self.assertEqual(skill["semantic"]["effect"]["operation"], "skill_damage_ratio")
+        self.assertEqual(skill["semantic"]["effect"]["target"]["group"], "Red")
+        self.assertEqual(skill["semantic"]["effect"]["stack_cap_maximum"], 1.0)
+        self.assertEqual(gauge["semantic"]["event"]["kind"], "ball_flip_count")
+        self.assertEqual(gauge["semantic"]["event"]["count_maximum"], 15.0)
+        self.assertEqual(gauge["semantic"]["event"]["stack_limit"], 10)
+        self.assertEqual(gauge["semantic"]["effect"]["operation"], "skill_gauge_ratio")
+        self.assertEqual(gauge["semantic"]["effect"]["amount_maximum"], 0.1)
+
+    def test_exact_slot_progression_replaces_senji_awakening_without_erasing_independent_slots(self) -> None:
+        book = self.items["5050009"]
+        level_one = RULES.select_reviewed_rules(book, 1)
+        level_three = RULES.select_reviewed_rules(book, 3)
+        level_five = RULES.select_reviewed_rules(book, 5)
+        self.assertEqual(len(level_one), 1)
+        self.assertEqual([row["unlock_level"] for row in level_three], [1, 3])
+        self.assertEqual([row["unlock_level"] for row in level_five], [1, 5])
+        self.assertEqual(level_five[1]["semantic"]["effect"]["target"]["kind"], "leader")
+        self.assertEqual(level_five[1]["semantic"]["effect"]["amount_maximum"], 0.4)
+        self.assertEqual(len(RULES.select_reviewed_rules(self.items["5020037"], 3)), 4)
+        for level in (0, 6, True, 2.5):
+            with self.assertRaises(ValueError):
+                RULES.select_reviewed_rules(book, level)
+        unreviewed = next(item for item in self.items.values() if item["id"] not in RULES.REVIEWED_IDS)
+        with self.assertRaises(ValueError):
+            RULES.select_reviewed_rules(unreviewed, 5)
+
+    def test_new_threshold_health_and_punisher_rules_do_not_waive_original_conditions(self) -> None:
+        thor = self.items["5020009"]["rules"]
+        self.assertEqual(thor[0]["semantic"]["conditions"], [{"kind": "owner_in_group", "group": "Yellow"}])
+        self.assertEqual(thor[0]["semantic"]["effect"]["operation"], "break_down_punisher_ratio")
+        self.assertEqual(thor[1]["semantic"]["conditions"], [])
+        self.assertEqual(thor[1]["semantic"]["effect"]["operation"], "paralysis_punisher_ratio")
+        heal, rescue = self.items["5010011"]["rules"]
+        self.assertEqual(heal["semantic"]["event"]["kind"], "owner_healed_count")
+        self.assertEqual(heal["semantic"]["effect"]["stack_cap_maximum"], 0.5)
+        self.assertEqual(rescue["semantic"]["event"]["comparison"], "<=")
+        self.assertEqual(rescue["semantic"]["event"]["threshold_maximum"], 0.7)
+        self.assertNotIn("count_maximum", rescue["semantic"]["event"])
+        self.assertEqual(rescue["semantic"]["effect"]["amount_maximum"], 0.2)
+        self.assertEqual(self.items["3010007"]["rules"][0]["semantic"]["effect"]["operation"], "max_health_ratio")
+        self.assertEqual(self.items["5020024"]["rules"][0]["semantic"]["effect"]["amount_maximum"], 2.8)
+
+    def test_every_enhancement_remains_explicitly_unsupported_with_full_row_fingerprints(self) -> None:
+        rows = 0
+        for item in self.items.values():
+            enhanced = item["enhancement"]
+            self.assertEqual(enhanced["raw_rule_sha256"], [RULES.row_fingerprint(row) for row in enhanced["raw_rule_rows"]])
+            if enhanced["raw_rule_rows"]:
+                self.assertEqual(enhanced["semantic_status"], "unsupported")
+                rows += len(enhanced["raw_rule_rows"])
+        self.assertEqual(rows, 108)
 
     def test_only_the_active_trigger_branch_is_exposed_for_translation(self) -> None:
         for item in self.items.values():

@@ -207,3 +207,9 @@ reports/world-flipper-actions/*.png
 reports/world-flipper-actions/*.import
 reports/world-flipper-actions/*-raw.json
 reports/world-flipper-actions/*/
+
+reports/world-flipper-roster/*.log
+reports/world-flipper-roster/*.png
+reports/world-flipper-roster/*.import
+reports/world-flipper-roster/*-raw.json
+reports/world-flipper-roster/*/

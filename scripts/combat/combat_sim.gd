@@ -46,6 +46,8 @@ class Enemy:
 	var active: bool = false
 	var slot: int = 0
 	var uid: int = 0
+	var skill_contact_uid: int = -1
+	var skill_contact_key: String = ""
 	var definition: ContentDef
 	var position: Vector2 = Vector2.ZERO
 	var velocity: Vector2 = Vector2.ZERO
@@ -279,6 +281,8 @@ func begin(state: RunState) -> void:
 	last_pulse_affected = 0
 	for enemy: Enemy in enemies:
 		enemy.pulse_hinder_timer = 0.0
+		enemy.skill_contact_uid = -1
+		enemy.skill_contact_key = ""
 	_cooldowns.clear()
 	for index: int in run.loadout.size():
 		_cooldowns.append(float(index) * 0.14)
@@ -853,19 +857,28 @@ func _advance_skill_timeline(delta: float) -> void:
 		var element: String = str(parameters.get("element", ""))
 		var weakness: float = clampf(float(parameters.get("fire_vulnerability", 0.0)), 0.0, 1.0)
 		var weakness_seconds: float = clampf(float(parameters.get("vulnerability_seconds", 0.0)), 0.0, 30.0)
+		var geometry: SkillTimelineRuntime.ContactGeometry = area.contact_geometry
+		geometry.configure(parameters, area.origin, area.direction)
 		for enemy: Enemy in enemies:
 			if complete or not area.occupied or area.serial != area_serial:
 				break
 			if not enemy.active or enemy.health <= 0.0:
 				continue
 			var target_uid: int = enemy.uid
-			var key: String = "enemy:%d" % target_uid
-			if not skill_contains(parameters, area.origin, area.direction, enemy.position):
+			if enemy.skill_contact_uid != target_uid:
+				enemy.skill_contact_uid = target_uid
+				enemy.skill_contact_key = "enemy:%d" % target_uid
+			var key: String = enemy.skill_contact_key
+			var inside: bool = geometry.contains(enemy.position) if geometry.kind != 0 else skill_contains(parameters, area.origin, area.direction, enemy.position)
+			if not inside:
 				skill_timeline.separate(area, key)
 				continue
 			var hits: int = skill_timeline.claim_hits(area, key)
-			if hits > 0 and area.purpose == "dispel":
+			if hits == 0:
+				continue
+			if area.purpose == "dispel":
 				dispel_enemy_condition(enemy)
+				geometry.configure(parameters, area.origin, area.direction)
 				continue
 			var next_contact: float = float(area.next_contacts.get(key, 0.0))
 			for index: int in hits:
@@ -877,6 +890,8 @@ func _advance_skill_timeline(delta: float) -> void:
 					enemy.fire_vulnerability = weakness
 					enemy.fire_vulnerability_left = weakness_seconds
 					weakness_expiries[target_uid] = {"enemy": enemy, "expiry": contact_time + weakness_seconds}
+			# Synchronous damage callbacks may edit the current area's geometry.
+			geometry.configure(parameters, area.origin, area.direction)
 		if complete or not area.occupied or area.serial != area_serial or area.purpose != "damage":
 			continue
 		for point: Dictionary in boss_weakpoints():
@@ -1069,6 +1084,8 @@ func spawn_enemy(id: String, position: Vector2 = Vector2.INF, deterministic_time
 	enemy.velocity = Vector2.ZERO
 	_uid += 1
 	enemy.uid = _uid
+	enemy.skill_contact_uid = enemy.uid
+	enemy.skill_contact_key = "enemy:%d" % enemy.uid
 	var scaling: float = 1.0 if id == "boss" else 1.0 + 0.17 * float(run.wave - 1)
 	enemy.max_health = enemy.definition.health * scaling
 	enemy.health = enemy.max_health

@@ -46,17 +46,34 @@ func _snapshot(state: RunState) -> Dictionary:
 		"rng_state": state.rng.state, "rng_seed": state.rng.seed, "error": state.last_error}
 
 func _test_main_characters() -> void:
-	var starters: Dictionary = {"alk": "bone", "clarisse": "ember", "celtie": "frost", "hanabi": "scatter"}
-	var shapes: Dictionary = {"alk": "circle", "clarisse": "circle", "celtie": "rectangle", "hanabi": "circle"}
-	var damages: Dictionary = {"alk": 50.0, "clarisse": 60.0, "celtie": 35.0, "hanabi": 45.0}
-	var cooldowns: Dictionary = {"alk": 8.0, "clarisse": 12.0, "celtie": 7.0, "hanabi": 9.0}
-	_check(HeroCatalog.IDS.size() == 4 and HeroCatalog.normalize_id("missing") == "alk", "All four characters are available with a deterministic legacy fallback")
+	var starters: Dictionary = {"alk": "bone", "clarisse": "ember", "celtie": "frost", "hanabi": "scatter", "nasir": "ember", "mordiga": "frost", "falsche": "crescent"}
+	var shapes: Dictionary = {"alk": "circle", "clarisse": "circle", "celtie": "rectangle", "hanabi": "circle", "nasir": "circle", "mordiga": "circle", "falsche": "circle"}
+	var damages: Dictionary = {"alk": 50.0, "clarisse": 60.0, "celtie": 35.0, "hanabi": 45.0, "nasir": 90.0, "mordiga": 65.0, "falsche": 100.0}
+	var cooldowns: Dictionary = {"alk": 8.0, "clarisse": 12.0, "celtie": 7.0, "hanabi": 9.0, "nasir": 12.0, "mordiga": 10.0, "falsche": 13.0}
+	var legacy_ids: Array[String] = ["alk", "clarisse", "celtie", "hanabi"]
+	_check(HeroCatalog.IDS == ["alk", "clarisse", "celtie", "hanabi", "nasir", "mordiga", "falsche"] and HeroCatalog.LEGACY_IDS == legacy_ids and HeroCatalog.normalize_id("missing") == "alk", "Seven characters preserve all four legacy identities and a deterministic fallback")
+	var profiles_value: Variant = JSON.parse_string(FileAccess.get_file_as_string("res://data/worldflipper/action_profiles.json"))
+	_check(profiles_value is Dictionary, "The added characters have an actual compiled action-profile registry")
+	var profiles: Dictionary = profiles_value if profiles_value is Dictionary else {}
 	for id: String in HeroCatalog.IDS:
 		var hero: HeroDef = HeroCatalog.definition(id)
 		var state: RunState = _state(id)
 		_check(hero.id == id and hero.starter_weapon == starters[id] and state.hero_id == id and state.loadout[0]["id"] == starters[id], "A selected hero owns the corresponding default weapon: " + id)
-		_check(not hero.display_name.is_empty() and hero.idle_path.begins_with("res://assets/worldflipper/") and hero.atlas_path.ends_with(".png") and hero.portrait_path.ends_with("/" + id + ".png"), "Character identity owns all three source-art paths: " + id)
+		var expected_portrait: String = "res://assets/worldflipper/portraits/" + id + ".png" if id in legacy_ids else "res://assets/worldflipper/roster/" + id + "/portrait.png"
+		_check(not hero.display_name.is_empty() and hero.idle_path.begins_with("res://assets/worldflipper/") and hero.atlas_path.ends_with(".png") and hero.portrait_path == expected_portrait, "Character identity owns all three source-art paths: " + id)
+		for path: String in [hero.idle_path, hero.atlas_path, hero.portrait_path]:
+			_check(ResourceLoader.exists(path, "Texture2D"), "Character art resolves to a real imported resource: " + id + "/" + path)
 		_check(hero.frame_size == (96 if id == "alk" else 128) and hero.foot_anchor == (Vector2(48, 93) if id == "alk" else Vector2(64, 125)), "Per-character art retains its complete frame and foot anchor: " + id)
+		if id not in legacy_ids:
+			var profile: Dictionary = {}
+			for candidate: Dictionary in profiles.get("profiles", []):
+				if str(candidate.get("canonical_id", "")) == hero.source_id:
+					profile = candidate
+					break
+			var source: Dictionary = profile.get("root_source", {})
+			_check(bool(profile.get("runtime_profile_ready", false)) and str(profile.get("skill_id", "")) == str(hero.action_evidence.get("catalog_skill_id", "")) and str(profile.get("action_ref", "")) == str(hero.action_evidence.get("action_ref", "")), "An added character binds its actual canonical compiled action profile: " + id)
+			_check(not source.is_empty() and source.get("sha256") == hero.action_evidence.get("action_sha256") and source.get("git_blob_sha1") == hero.action_evidence.get("git_blob_sha1") and profiles.get("source_commit") == hero.action_evidence.get("source_commit"), "The playable resource preserves its compiled source hashes and fixed commit: " + id)
+			_check(not hero.main_skill.get("timeline", []).is_empty() and hero.main_skill["timeline"].size() == profile.get("timeline", []).size(), "An added character uses its real compiled timeline rather than a fallback skill: " + id)
 		for key: String in RunState.BASE_STATS:
 			_check(is_equal_approx(state.stat(key), float(RunState.BASE_STATS[key]) + float(hero.base_bonuses.get(key, 0.0))), "Main-character bonuses reach actual stats: " + id + "/" + key)
 		_check(state.health == state.stat("max_health") and state.active_skills.is_empty() and state.backpack_snapshot()["items"].size() == 1, "R starts available independently of backpack ownership: " + id)

@@ -1,5 +1,5 @@
 extends SceneTree
-## Real original-trait adaptations: timed power, twelve hits, dual arcs and swept bombs.
+## Real original-trait adaptations: timed power, source-bound areas and swept bombs.
 
 const STEP: float = 1.0 / 60.0
 var _checks: int = 0
@@ -168,10 +168,19 @@ func _test_pool_and_clear() -> void:
 	_check(sim.hero_effects_snapshot()["active_bombs"] == 0 and sim.hero_skill_snapshot()["uses"] == 0, "A new wave starts with no old bombs and a fresh R clock")
 
 func _test_sources_and_scaling() -> void:
-	var names: Dictionary = {"alk": "粉碎流星", "clarisse": "炼金爆发", "celtie": "风神·解放", "hanabi": "红牡丹"}
+	var names: Dictionary = {"alk": "粉碎流星", "clarisse": "炼金爆发", "celtie": "风神·解放", "hanabi": "红牡丹",
+		"nasir": "阿耆尼之恼", "mordiga": "雅尼尼·水流", "falsche": "灵魂收割者"}
+	var source_ids: Dictionary = {"nasir": "211012", "mordiga": "221008", "falsche": "361001"}
+	var source_skills: Dictionary = {"nasir": "magic_sword_girl:2", "mordiga": "desert_wizard:2", "falsche": "reaper_girl:2"}
 	for id: String in HeroCatalog.IDS:
+		_check(names.has(id), "Every registered hero has an explicit skill-name baseline: " + id)
+		if not names.has(id):
+			continue
 		var hero: HeroDef = HeroCatalog.definition(id)
 		var base: Dictionary = HeroCatalog.hero_skill_parameters(id, {})
 		var modified: Dictionary = HeroCatalog.hero_skill_parameters(id, {"damage": 2.0, "skill_haste": 0.25, "summon_damage": 1.5})
 		_check(hero.source_skill_name == names[id] and base["name"] == names[id] and hero.source_url.begins_with("https://wiki.biligame.com/worldflipper/") and hero.source_skill_weight > 0 and not hero.adaptation_notes.is_empty(), "Every adapted skill keeps a checkable source name, source weight and explicit adaptation: " + id)
 		_check(is_equal_approx(float(modified["damage"]), float(base["damage"]) * (3.0 if id == "hanabi" else 2.0)) and is_equal_approx(float(modified["cooldown"]), float(base["cooldown"]) / 1.25), "Skill damage, haste and summon scaling apply exactly once: " + id)
+		if source_ids.has(id):
+			_check(hero.source_id == source_ids[id] and hero.action_evidence.get("catalog_skill_id", "") == source_skills[id] and base.get("delivery", "") == "areas", "The new area skill retains its own canonical character and source action: " + id)
+			_check(modified["timeline"] == base["timeline"], "Stat damage, haste and summon modifiers preserve source phase timing, hit budgets, offsets and anchors: " + id)

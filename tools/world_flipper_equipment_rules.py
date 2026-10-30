@@ -33,11 +33,42 @@ ACTIVE_BLOCKS = {
     "2": ["opening"],
 }
 MODES = {"0": "instant", "1": "during", "2": "opening"}
-REVIEWED_IDS = frozenset({"3010053", "5030036", "5060034", "5040026", "5020037", "4050031", "5030039", "5090030"})
+REVIEWED_ROWS: dict[str, dict[str, str]] = {
+    "3010053": {"0:1": "cf36beb4a0e375cf7401d5580cf8806d8f83244af5f1f210a3af2f5c81bfc9a0", "1:5": "ca9c81655aed5fdc332385b4faeca71c5ec94df91a38f992e8308ea66afa377f"},
+    "5030036": {"0:1": "99f7f57f65c21a53ee80150eb4537eb8ce78d999fd6510e1dcb8490136ccb035"},
+    "5060034": {"0:1": "b846dae0b7a9aff950b58078a1975e8e6991566634faa85d461b020cac2731f2", "1:1": "38c3495bda3d0bf5d579632e7d692c051e464cfddb13db3f0619663ced3ccc58", "2:5": "bdf81e061ddd6bbe7c9f40f9d4a62a9990a998bd31c00d84921190e8ffca3b00", "3:5": "c455b948a35e0e25dac5f6be2e92152ce904f9138bfb2a40e0ee7c4cef877d9e"},
+    "5040026": {"0:1": "30cc0d8b50ab1e0b9a7968d24bb2cbf8ebc27c8467279687b561687d58945fbe", "1:3": "276e02ce9044050a4f68ab27cccf07a5a5782cf10bc00a9bc911a3f2c35b9310", "2:5": "f4b6dd6f7e34d7695768ccbbfae2ae682a5347006376160a083cff12f2eeac5b", "3:5": "85f3ec7ce16a0bb5a1f9fb4d3cc1f273686b012839b49db888d738882d66b0cf"},
+    "5020037": {"0:1": "46770bf5a0753f871e4407d6afce88fede68019595f006e64ee8871d9a826073", "1:3": "154424743c4f33f5b4fdaf367cd3c47161ae7abdada8a5dd168ca35926b2e337", "2:3": "a8be6573b2a29e7e7cf54dec0784377b71ad6d45a058e0c6b645a2da7df3f1d4", "3:3": "c2787e10c01706623f4b6c5d09c608355e0fc2b7ad65f5641bb6e5cb7e769793"},
+    "4050031": {"0:1": "4b680bc331462ba52cc0ba600bc6695ecfcd7e76fe2f7d101b3d478c495d4a56", "1:1": "f83b1cb183266b07295371e8b0dd4e9ee189ea0787d3374882fd2abb62bb4754"},
+    "5030039": {"0:1": "aaa28026b59cb2f07063b326705bde1b36368517d7c599ceb4c484b41f6f3ed6", "1:5": "87c9c9c9524b8b6539d7fbc98bd4bc5692d86f0e927e61e3ce834f9543dfd2fa"},
+    "5090030": {"0:1": "7520485a0cc365d2107559f625ed2bb096ab74c5b8c3828d6af9e1b1be8b0209", "1:5": "aa576f7227fa6e6c960fb9c1728ca21c6018e53fb791c6a8ee8c7e762a7dd078"},
+    "5010012": {"0:1": "9f5ff061da2426366ca82d211bad210e4ec2ab39cf24201ea9231da2fa2d719b", "1:1": "ab98b889ede35ed74712cbfd2fe0a864c29bebcfe9f0e1ccbda248f575197a3d"},
+    "5030005": {"0:1": "ece567cf0e32c358de578b9524884c3e904c4964b0ec26859241d475d7e32e91"},
+    "5010004": {"0:1": "30a6deaa402d28990fccd2bf4ddb6945203f86e1d1144b93308cd80880eda6bf"},
+    "5020009": {"0:1": "1c8095cbaef496b7e6db235c6441a9da7f827ff5ac4d387b115e3fb0ea8805b1", "1:1": "2fd79ed4cbc0063dc63ea4500d848b44cc5c8c712fe1c7c9d87cea311678055e"},
+    "5050009": {"0:1": "8dcf46af1c153338915af43989b4a1f069e97b7b1f52091d7da5f531ed6aa994", "1:3": "5f253814071b455699088f33bf44c8f7e02c19b056580d979325e2509678b04d", "1:5": "070eaa3b26988a2fe25304c278584ea85231737520f018fbff9bb94dae0f07d5"},
+    "3010007": {"0:1": "e1cad829bba03cb560e2924f48037575bdf11dbf2670239923b203358e7ba1db", "1:5": "fd18a44614adf4b9a00ba04c4d1924198c52dc6616a8af64b8f7d501cf242312"},
+    "5020024": {"0:1": "47951767c0ef29d59c6eb89b5418e0468dea0babc6c027aaad596801a5c9a428"},
+    "5010011": {"0:1": "be1b9f30f5c1af8cd27a92ede6fc9434e2cb4bc01227c1d31a802dcd0d347a56", "1:1": "218012e49e772c6ba097d38c648d7985faacf018f4e2ffabd2cfddb312935432"},
+}
+REVIEWED_IDS = frozenset(REVIEWED_ROWS)
 REVIEWED_OPS = {"32": "attack_ratio", "34": "skill_damage_ratio", "35": "skill_charge_speed_ratio",
                 "55": "power_flip_damage_ratio", "67": "dark_resistance_down_immunity", "70": "lethargy_immunity",
-                "209": "deal_max_health_ratio_damage", "211": "skill_gauge_ratio"}
-REVIEWED_EVENTS = {"0": "initial", "2": "power_flip_count", "14": "character_revived", "19": "skill_activation", "53": "party_group_count"}
+                "53": "break_down_punisher_ratio", "118": "paralysis_punisher_ratio", "205": "max_health_ratio",
+                "206": "restore_max_health_ratio", "209": "deal_max_health_ratio_damage", "211": "skill_gauge_ratio"}
+REVIEWED_EVENTS = {"0": "initial", "2": "power_flip_count", "4": "ball_flip_count", "14": "character_revived",
+                   "15": "owner_healed_count", "19": "skill_activation", "21": "owner_health_ratio_at_most",
+                   "53": "party_group_count", "54": "owner_in_group_initial"}
+ADDITIONAL_FACT_CHECKS = {
+    "5010012": ("fire", "Prometheus_Blade", "1029", "e93f8cb871b9e0011069bdd847bf1bf4cc55adbc565a64808151ce4ee009051c"),
+    "5030005": ("all", "Maltet", "5629", "e9a11de9873fc3c4eb9e6e49101df3e2b005c1e11c8a79fe3cf89e933ff80a96"),
+    "5010004": ("dark", "Ame-no-Habakiri", "2832", "103e2e84c1f7c29434f3adbd6aff11b64a8c536e6620d837d54f3fc9b3e7cce4"),
+    "5020009": ("thunder", "Thor%27s_Hammer", "5638", "cfd61cb2cf0252716dd9ce85872c2d87fd802361f6c308b6577eda05fdd4bde6"),
+    "5050009": ("fire", "Senji_Ryakketsu", "4729", "57c1e9d631659c8722f98e7640f822aac247adfa3aeea21f72bffe15f1ce505a"),
+    "3010007": ("water", "Cutlass", "6122", "352d4bc293948f1d9aab4f8ae5f7fb0818e8fb6bdf2e49c33c3295b25c4fccbb"),
+    "5020024": ("all", "Parashu", "1223", "a1b0cd2444931a364ea848447624bbec860e9bf19b80be0ec186e7361375842c"),
+    "5010011": ("light", "Heimdall%27s_Sword", "3166", "b73085fadbabd9d38ad80b558cd92f13627afc470974b35a0ed77142fb67ebf9"),
+}
 
 
 def encoded(value: Any) -> bytes:
@@ -92,11 +123,42 @@ def original_ratio(value: str) -> float | None:
     return int(value) / 100000.0 if value else None
 
 
+def row_fingerprint(row: list[str]) -> str:
+    return hashlib.sha256(json.dumps(row, ensure_ascii=False, separators=(",", ":")).encode("utf-8")).hexdigest()
+
+
+def select_reviewed_rules(item: dict[str, Any], original_level: int) -> list[dict[str, Any]]:
+    """Choose original reviewed slot variants; never translate project ranks here."""
+    if item["id"] not in REVIEWED_IDS or type(original_level) is not int or not 1 <= original_level <= 5:
+        raise ValueError("Rule selection requires a reviewed original equipment and original level 1..5")
+    selected: dict[int, dict[str, Any]] = {}
+    contexts: set[tuple[int, int]] = set()
+    for rule in item["rules"]:
+        identity = (rule["slot"], rule["unlock_level"])
+        if identity in contexts:
+            raise ValueError("Duplicate original equipment slot/unlock context")
+        contexts.add(identity)
+        if rule["unlock_level"] <= original_level and (rule["slot"] not in selected or selected[rule["slot"]]["unlock_level"] < rule["unlock_level"]):
+            selected[rule["slot"]] = rule
+    return [selected[slot] for slot in sorted(selected)]
+
+
 def _reviewed_operation(equipment_id: str, row: list[str]) -> dict[str, Any] | None:
     """Decode only the reviewed JP contexts, never a cross-region enum fallback."""
     if equipment_id not in REVIEWED_IDS:
         return None
-    if row[2] != "0" or row[44] not in REVIEWED_OPS or row[24] not in REVIEWED_EVENTS:
+    context = row[0] + ":" + row[1]
+    if REVIEWED_ROWS[equipment_id].get(context) != row_fingerprint(row):
+        raise ValueError("A reviewed complete JP equipment row changed; inspect its original facts again")
+    if row[2] == "1":
+        return {"conditions": [{"kind": "party_piercing_active", "jp_during_trigger_code": int(row[94])}],
+            "event": {"kind": "while_condition", "accumulation_trigger_raw": row[82:94], "even_if_owner_dead": row[105] == "true"},
+            "effect": {"operation": "attack_ratio", "jp_opcode": int(row[106] or "0"), "opcode_namespace": "during_content",
+                "target": {"kind": "party" if row[107] == "5" else "owner", "group": row[108]},
+                "amount_base": original_ratio(row[110]), "amount_maximum": original_ratio(row[111]), "unit": "ratio"},
+            "evidence": "Exact pinned 123-column row and this equipment's sourced Pierce/penetration ability, not a shared cross-region enum."}
+    opcode, event_code = row[44] or "0", row[24] or "0"
+    if row[2] != "0" or opcode not in REVIEWED_OPS or event_code not in REVIEWED_EVENTS:
         raise ValueError("A reviewed JP equipment instruction changed; manual review is required")
     if row[10] not in ["", "0"] or row[17] not in ["", "0"]:
         raise ValueError("A reviewed instruction gained unsupported extra conditions")
@@ -107,8 +169,10 @@ def _reviewed_operation(equipment_id: str, row: list[str]) -> dict[str, Any] | N
         conditions.append({"kind": "owner_in_group", "group": row[8]})
     elif row[3] not in ["", "0"]:
         raise ValueError("A reviewed instruction gained an unsupported precondition")
+    if event_code == "54":
+        conditions.append({"kind": "owner_in_group", "group": row[33]})
     target_code = row[45] or "0"
-    targets = {"0": "owner", "1": "party_except_owner", "5": "party_group"}
+    targets = {"0": "owner", "1": "party_except_owner", "2": "leader", "5": "party_group"}
     if target_code not in targets:
         raise ValueError("A reviewed instruction gained an unsupported target")
     stacks = int(row[31]) if row[31] else None
@@ -116,13 +180,17 @@ def _reviewed_operation(equipment_id: str, row: list[str]) -> dict[str, Any] | N
     upper = original_ratio(row[49])
     result = {
         "conditions": conditions,
-        "event": {"kind": REVIEWED_EVENTS[row[24]], "puller_code": row[25], "puller_group": row[26],
+        "event": {"kind": REVIEWED_EVENTS[event_code], "puller_code": row[25], "puller_group": row[26],
                   "count_base": original_ratio(row[27]), "count_maximum": original_ratio(row[28]), "stack_limit": stacks},
-        "effect": {"operation": REVIEWED_OPS[row[44]], "jp_opcode": int(row[44]),
+        "effect": {"operation": REVIEWED_OPS[opcode], "jp_opcode": int(opcode),
                    "target": {"kind": targets[target_code], "group": row[46]},
                    "amount_base": lower, "amount_maximum": upper, "unit": "ratio" if lower is not None else "flag"},
         "evidence": "Pinned JP numeric row, cross-checked against this exact equipment's sourced ability and awakening facts.",
     }
+    if event_code == "21":
+        result["event"].update(threshold_base=original_ratio(row[27]), threshold_maximum=original_ratio(row[28]), comparison="<=", threshold_unit="health_ratio")
+        result["event"].pop("count_base")
+        result["event"].pop("count_maximum")
     if stacks is not None and stacks > 0 and lower is not None and upper is not None:
         result["effect"]["stack_cap_base"] = int(row[48]) * stacks / 100000.0
         result["effect"]["stack_cap_maximum"] = int(row[49]) * stacks / 100000.0
@@ -135,6 +203,7 @@ def parse_rule(equipment_id: str, value: Any) -> dict[str, Any]:
     active = ACTIVE_BLOCKS.get(row[2], [])
     return {
         "slot": int(row[0]), "unlock_level": int(row[1]), "trigger_mode_code": row[2],
+        "source_row_sha256": row_fingerprint(row),
         "trigger_mode": MODES.get(row[2], "unsupported"),
         "active_blocks": {name: {"column_start": BLOCKS[name][0], "column_end_exclusive": BLOCKS[name][1],
                                   "raw_fields": row[slice(*BLOCKS[name])]} for name in active},
@@ -158,6 +227,12 @@ def _stats(raw: dict[str, Any]) -> list[dict[str, int]]:
 def normalize(tables: dict[str, Any], lock: dict[str, Any]) -> dict[str, Any]:
     equipment = tables["equipment"]
     secondary = {item["canonical_equipment_id"]: item for item in lock["secondary_identity_checks"]}
+    for identifier, (element, page, revision, digest) in ADDITIONAL_FACT_CHECKS.items():
+        secondary[identifier] = {"game_id": equipment[identifier][0][0], "canonical_equipment_id": identifier,
+            "element": element, "url": "https://worldflipper.wiki.gg/wiki/" + page,
+            "wiki_revision": revision, "revision_url": "https://worldflipper.wiki.gg/wiki/" + page + "?oldid=" + revision,
+            "raw_html_sha256": digest,
+            "evidence_level": "secondary Wiki cross-check; full original JP row fingerprint is pinned before this exact ability context is decoded"}
     if set(equipment) != set(tables["ability_soul"]) or set(equipment) != set(tables["status"]):
         raise ValueError("Equipment, ability_soul and original stats must join without missing IDs")
     results = []
@@ -184,6 +259,7 @@ def normalize(tables: dict[str, Any], lock: dict[str, Any]) -> dict[str, Any]:
             "enhancement": {"present": identifier in tables["enhancement"],
                 "metadata_fields": [{str(index): value for index, value in enumerate(row) if index != 6} for row in tables["enhancement"].get(identifier, [])],
                 "raw_rule_rows": enhanced_rows, "semantic_status": "unsupported" if enhanced_rows else "not_present",
+                "raw_rule_sha256": [row_fingerprint(row) for row in enhanced_rows],
                 "base_stats": _stats(tables["enhancement_status"][identifier]) if identifier in tables["enhancement_status"] else []},
             "stance_metadata_rows": tables["stance_detail"].get(identifier, []),
         })
@@ -205,6 +281,12 @@ def normalize(tables: dict[str, Any], lock: dict[str, Any]) -> dict[str, Any]:
                 "strength_units": "Only reviewed ratio operations divide their original strength by 100000. Unknown commands keep raw strings and no invented units."},
             "equipment_enhancement_ability": {"width": 126, "policy": "Retained unmodified; its column layout is distinct from 123-column equipment rules."},
             "enum_region_warning": "CN instant trigger codes are not JP-compatible; no full CN enum table is applied to JP data."},
+        "semantic_review_policy": {"reviewed_equipment_ids": sorted(REVIEWED_IDS), "reviewed_row_fingerprints": REVIEWED_ROWS,
+            "context": "Only these exact complete 123-column rows are semantically reviewed; an opcode is never sufficient to admit another row.",
+            "original_progression": "For reviewed equipment, choose the highest unlocked original level per slot; original levels are not project backpack ranks.",
+            "during_namespace": "The reviewed Pierce entries use during trigger c94=30 and during content c106=0; these are not instant event/effect enum numbers.",
+            "enhancement": "All 108 enhancement rows remain unsupported; each full 126-column row is fingerprinted without being translated.",
+            "runtime": "Semantic decoding does not grant an equipment item, waive an original condition or claim any gameplay implementation."},
         "counts": counts,
         "semantic_coverage": {"reviewed_equipment": sum(item["semantic_status"] == "reviewed_original_parameters" for item in results),
             "unsupported_equipment": sum(item["semantic_status"] == "unsupported" for item in results),

@@ -62,15 +62,21 @@ func _run() -> void:
 		var source: Dictionary = sim.hero_skill_snapshot()
 		source["damage"] = -99.0
 		_check(sim.hero_skill_snapshot()["damage"] == parameters["damage"], "Public R snapshots cannot mutate the recorded cast: " + id)
-		for frame: int in 179:
+		var delivery_end: float = 0.0
+		for phase: Dictionary in parameters.get("timeline", []):
+			delivery_end = maxf(delivery_end, float(phase["delay"]) + float(phase["duration"]))
+		if parameters.get("delivery", "") == "bombs":
+			delivery_end = float(parameters.get("cast_delay", 0.0)) + float(parameters.get("projectile_life", 0.0)) + float(parameters.get("explosion_duration", 0.0))
+		var delivery_frames: int = maxi(180, ceili(delivery_end / STEP) + 2)
+		for frame: int in delivery_frames - 1:
 			sim.step(STEP, Vector2.ZERO)
 		var expected_damage: float = float(parameters["damage"]) * (1.240625 if id == "clarisse" else 1.0)
 		_check(is_equal_approx(10000.0 - target.health, expected_damage), "Real delivery deals locked damage once, including Clarisse's post-first-hit fire weakness: " + id)
 		_check(untouched.health == 10000.0, "Completed deliveries do not damage targets outside their geometry: " + id)
-		_check(is_equal_approx(float(sim.damage_by_skill.get("hero_" + id, 0.0)), expected_damage) and sim.skill_hits == (5 if id == "hanabi" else 15 if id == "clarisse" else 1), "Every delivered hit reaches authoritative skill accounting: " + id)
+		_check(is_equal_approx(float(sim.damage_by_skill.get("hero_" + id, 0.0)), expected_damage) and sim.skill_hits == (30 if id == "falsche" else 5 if id == "hanabi" else 15 if id == "clarisse" else 1), "Every delivered hit reaches authoritative skill accounting: " + id)
 		var delivered: Dictionary = sim.hero_effects_snapshot()
 		_check(delivered["timeline"]["occupied"] == 0 and delivered["active_bombs"] == 0 and delivered["reserved_bombs"] == 0, "All delivery areas and bombs expire after real steps: " + id)
-		for frame: int in int(round(float(parameters["cooldown"]) / STEP)) - 180:
+		for frame: int in int(round(float(parameters["cooldown"]) / STEP)) - delivery_frames:
 			sim.step(STEP, Vector2.ZERO)
 		_check(sim.hero_skill_snapshot()["ready"] and sim.hero_skill_snapshot()["cooldown_remaining"] == 0.0, "The exact 60Hz cooldown boundary is ready without an extra floating-point frame: " + id)
 		sim.complete = true

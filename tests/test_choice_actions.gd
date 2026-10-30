@@ -1,6 +1,8 @@
 extends SceneTree
 ## Controlled input ordering and stale signals, not claims of natural human OS timing.
 
+const MAIN: PackedScene = preload("res://scenes/main.tscn")
+
 var _checks: int = 0
 var _failures: int = 0
 
@@ -17,6 +19,7 @@ func _test() -> void:
 	await _test_upgrade_under_overlay()
 	await _test_old_controls_after_restart()
 	await _test_starter_refresh_preserves_settings()
+	await _test_saved_character_is_visible_without_focus_theft()
 	paused = false
 	print("ChoiceActions: %d assertions, %d failures" % [_checks, _failures])
 	quit(0 if _failures == 0 else 1)
@@ -181,13 +184,16 @@ func _test_starter_refresh_preserves_settings() -> void:
 	ember.grab_focus()
 	_key(KEY_ENTER)
 	var source: Button = _find_button(ui._page, "设置")
-	# Traverse the actual current title controls without yielding: map cards may
-	# sit between starter and settings, while the starter refresh is still queued.
-	for step: int in 16:
-		if source != null and root.gui_get_focus_owner() == source:
+	# Do not yield: the selected-character refresh must remain queued until Return.
+	var visited: Array[Control] = []
+	while source != null and root.gui_get_focus_owner() != source:
+		var current: Control = root.gui_get_focus_owner()
+		if current == null or current in visited:
 			break
+		visited.append(current)
 		_key(KEY_TAB)
 	_check(source != null and root.gui_get_focus_owner() == source, "Real Tab navigation reaches settings before the queued starter refresh")
+	_check(visited.all(func(control: Control) -> bool: return control is Button and ui._page.is_ancestor_of(control)), "Title Tab traversal visits actionable choices rather than scroll containers or scrollbar-only stops")
 	_key(KEY_ENTER)
 	_check(ui._overlay_mode == "settings_title", "Real Return opens settings before the queued title refresh executes")
 	await _settle()
@@ -201,6 +207,59 @@ func _test_starter_refresh_preserves_settings() -> void:
 	var owner: Control = root.gui_get_focus_owner()
 	_check(owner is Button and owner.text == "设置", "Closing settings after a starter update restores its settings source focus")
 	await _dispose(ui)
+
+
+func _test_saved_character_is_visible_without_focus_theft() -> void:
+	var temporary: DirAccess = DirAccess.create_temp("broxy-title-character", true)
+	_check(temporary != null, "The saved-character title fixture uses an isolated temporary profile")
+	if temporary == null:
+		return
+	var directory: String = temporary.get_current_dir()
+	temporary = null
+	var path: String = directory.path_join("profile.cfg")
+	var saved := ConfigFile.new()
+	saved.set_value("progress", "hero", "falsche")
+	_check(saved.save(path) == OK, "The isolated startup fixture genuinely saves the last-row character")
+	var original: PackedByteArray = FileAccess.get_file_as_bytes(path)
+	var app = MAIN.instantiate()
+	app.store = GameStore.new(path)
+	root.add_child(app)
+	app.set_process(false)
+	app.world.set_physics_process(false)
+	await _settle()
+	var ui: GameUI = app.ui
+	var scroll := ui.find_child("CharacterScroll", true, false) as ScrollContainer
+	var selected := ui.find_child("Character_falsche", true, false) as Button
+	var start := ui.find_child("StartTrial", true, false) as Button
+	_check(app.store.selected_hero == "falsche" and ui.selected_hero() == "falsche" and selected != null and selected.button_pressed, "The actual Main startup loads the persisted canonical character")
+	_check(scroll != null and selected != null and scroll.get_global_rect().grow(0.1).encloses(selected.get_global_rect()) and scroll.scroll_vertical > 0, "A persisted last-row selection is automatically scrolled fully into view")
+	_check(start != null and root.gui_get_focus_owner() == start, "Revealing a persisted character preserves the real initial Start focus")
+	if scroll != null:
+		_check(scroll.focus_mode == Control.FOCUS_NONE and scroll.get_v_scroll_bar().focus_mode == Control.FOCUS_NONE, "The character viewport contributes no inert Tab stop")
+	ui.show_hud()
+	app._title()
+	await _settle()
+	scroll = ui.find_child("CharacterScroll", true, false) as ScrollContainer
+	selected = ui.find_child("Character_falsche", true, false) as Button
+	start = ui.find_child("StartTrial", true, false) as Button
+	_check(scroll != null and selected != null and scroll.get_global_rect().grow(0.1).encloses(selected.get_global_rect()) and root.gui_get_focus_owner() == start, "Returning to the actual Main title reveals the retained character without taking Start focus")
+	ui.set_selected_hero("alk")
+	await _settle()
+	scroll.scroll_vertical = 0
+	var settings: Button = _find_button(ui._page, "设置")
+	settings.grab_focus()
+	ui.set_selected_hero("falsche")
+	_key(KEY_ENTER)
+	_check(ui._overlay_mode == "settings_title", "A queued last-row reveal allows the real settings action to open first")
+	await _settle()
+	_check(ui._overlay_mode == "settings_title" and _overlay_owns_focus(ui), "The deferred character reveal preserves an already-open modal and its focus")
+	_check(ui.handle_back(), "The modal still handles Back after deferred selected-character scrolling")
+	await _settle()
+	_check(root.gui_get_focus_owner() == settings and selected.button_pressed and scroll.get_global_rect().grow(0.1).encloses(selected.get_global_rect()), "Back restores settings focus with the retained last-row character fully visible")
+	_check(FileAccess.get_file_as_bytes(path) == original, "Startup, title scrolling and settings focus leave the isolated saved profile unchanged")
+	app.queue_free()
+	await _settle()
+	_check(DirAccess.remove_absolute(path) == OK and DirAccess.remove_absolute(directory) == OK, "The saved-character title fixture removes its temporary profile and directory")
 
 
 func _snapshot(state: RunState, ui: GameUI) -> Dictionary:

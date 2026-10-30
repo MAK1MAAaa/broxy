@@ -2,12 +2,17 @@ class_name HeroCatalog
 extends RefCounted
 ## Main characters and backpack companions share one explicit character identity.
 
-const IDS: Array[String] = ["alk", "clarisse", "celtie", "hanabi"]
+const LEGACY_IDS: Array[String] = ["alk", "clarisse", "celtie", "hanabi"]
+const PROFILE_IDS: Array[String] = ["nasir", "mordiga", "falsche"]
+const IDS: Array[String] = ["alk", "clarisse", "celtie", "hanabi", "nasir", "mordiga", "falsche"]
 const HERO_DEFS: Array[HeroDef] = [
 	preload("res://data/heroes/alk.tres"),
 	preload("res://data/heroes/clarisse.tres"),
 	preload("res://data/heroes/celtie.tres"),
 	preload("res://data/heroes/hanabi.tres"),
+	preload("res://data/heroes/nasir.tres"),
+	preload("res://data/heroes/mordiga.tres"),
+	preload("res://data/heroes/falsche.tres"),
 ]
 const REAR_IDS: Dictionary = {"pulse": "clarisse", "starfall": "hanabi", "arc_slash": "celtie"}
 const REAR_BONUSES: Dictionary = {

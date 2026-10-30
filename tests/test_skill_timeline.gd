@@ -90,6 +90,8 @@ func _run() -> void:
 	_test_clarisse_late_dispel()
 	_test_dispel_preserves_intrinsic_boss_state()
 	_test_contact_separation()
+	_test_compiled_contact_geometry()
+	_test_contact_geometry_callback_refresh()
 	_test_reentrant_enemy_slot_reuse()
 	_test_reentrant_kill_without_replacement()
 	_test_celtie_rectangle_and_combo()
@@ -236,6 +238,79 @@ func _test_contact_separation() -> void:
 	_check(events.size() == 2, "Reentry grants one new contact without catching up the absent ticks")
 	_step(sim, 2)
 	_check(events.size() == 2, "Reentry resumes contact cadence rather than immediately paying old tick debt")
+
+func _test_compiled_contact_geometry() -> void:
+	var configurations: Array[Dictionary] = [
+		{"shape": "circle", "radius": 1.0},
+		{"shape": "circle", "radius": 100.0},
+		{"shape": "rectangle", "half_length": 300.0, "width": 50.0},
+	]
+	var headings: Array[Vector2] = [Vector2.RIGHT, Vector2(3.1, 4.7).normalized(), Vector2(2.0, -3.0), Vector2.ZERO, Vector2.INF]
+	var centers: Array[Vector2] = [Vector2.ZERO, Vector2(640, 360), Vector2.INF]
+	var offsets: Array[Vector2] = [Vector2.ZERO, Vector2(1.0048, 0), Vector2(1.0052, 0), Vector2(100, 0), Vector2(100.001, 0), Vector2(300, 25), Vector2(-300, -25), Vector2(300.001, 0), Vector2(0, 25.001), Vector2.INF, Vector2(NAN, 0)]
+	for parameters: Dictionary in configurations:
+		for heading: Vector2 in headings:
+			for center: Vector2 in centers:
+				var geometry := SkillTimelineRuntime.ContactGeometry.new()
+				geometry.configure(parameters, center, heading)
+				var matches: bool = true
+				for offset: Vector2 in offsets:
+					var point: Vector2 = center + offset
+					matches = matches and geometry.contains(point) == CombatSim.skill_contains(parameters, center, heading, point)
+				_check(matches, "Compiled timeline geometry exactly matches the original query for boundary/invalid points, including its second normalization: %s/%s/%s" % [parameters["shape"], heading, center])
+	var tolerance := SkillTimelineRuntime.ContactGeometry.new()
+	tolerance.configure(configurations[0], Vector2.ZERO, Vector2.RIGHT)
+	_check(tolerance.contains(Vector2(1.0048, 0)) and not tolerance.contains(Vector2(1.0052, 0)), "A circle retains the original squared-distance plus0.01 boundary tolerance")
+	for parameters: Dictionary in configurations:
+		var sim: CombatSim = _sim("alk")
+		var heading: Vector2 = Vector2(3.1, 4.7).normalized()
+		var phase: Dictionary = parameters.duplicate(true)
+		phase.merge({"delay": 0.0, "duration": 1.0, "hits": 1, "damage_weight": 1.0})
+		var cast: Dictionary = {"id": "geometry_probe", "damage": 12.0, "timeline": [phase]}
+		var targets: Array[CombatSim.Enemy] = []
+		var expected: Array[bool] = []
+		for offset: Vector2 in offsets:
+			if not offset.is_finite():
+				continue
+			var target: CombatSim.Enemy = _target(sim, Vector2.ZERO)
+			target.position = sim.player_position + offset
+			targets.append(target)
+			expected.append(CombatSim.skill_contains(parameters, sim.player_position, heading.normalized(), target.position))
+		_check(sim.skill_timeline.enqueue(cast, sim.player_position, heading), "The real timeline accepts the geometry equivalence fixture")
+		var before: String = JSON.stringify(sim.skill_timeline.snapshot())
+		sim.skill_timeline.areas[0].contact_geometry.configure(parameters, sim.player_position, heading)
+		_check(JSON.stringify(sim.skill_timeline.snapshot()) == before, "Derived geometry never changes the public timeline snapshot bytes")
+		sim._advance_skill_timeline(STEP)
+		for index: int in targets.size():
+			_check((targets[index].health < HEALTH) == expected[index], "The production enemy scan preserves the original circle/rectangle hit result: %s/%d" % [parameters["shape"], index])
+
+func _test_contact_geometry_callback_refresh() -> void:
+	for shape: String in ["circle", "rectangle"]:
+		var sim: CombatSim = _sim("alk")
+		var first: CombatSim.Enemy = _target(sim, Vector2.ZERO)
+		var excluded: CombatSim.Enemy = _target(sim, Vector2(200, 0))
+		var included: CombatSim.Enemy = _target(sim, Vector2(160, 0) if shape == "circle" else Vector2(0, 200))
+		var phase: Dictionary = {"delay": 0.0, "duration": 1.0, "hits": 1, "damage_weight": 1.0, "shape": shape, "radius": 40.0, "half_length": 300.0, "width": 50.0}
+		var reference: WeakRef = weakref(sim)
+		var changed: Array[bool] = [false]
+		sim.damage_dealt.connect(func(_point: Vector2, _amount: float, source: String, _secondary: bool, _uid: int) -> void:
+			if source != "skill:geometry_callback" or changed[0]:
+				return
+			changed[0] = true
+			var current: CombatSim = reference.get_ref() as CombatSim
+			if current == null:
+				return
+			var area: SkillTimelineRuntime.Area = current.skill_timeline.areas[0]
+			if shape == "circle":
+				area.origin += Vector2(160, 0)
+				area.parameters["radius"] = 10.0
+			else:
+				area.direction = Vector2(0, 3)
+				area.parameters["width"] = 20.0
+		)
+		_check(sim.skill_timeline.enqueue({"id": "geometry_callback", "damage": 12.0, "timeline": [phase]}, sim.player_position, Vector2.RIGHT), "The synchronous geometry fixture reserves its actual area: " + shape)
+		sim._advance_skill_timeline(STEP)
+		_check(changed[0] and first.health < HEALTH and excluded.health == HEALTH and included.health < HEALTH and sim.skill_hits == 2, "A synchronous first-hit callback changes origin/shape dimensions/heading before later pool slots are tested: " + shape)
 
 func _test_celtie_rectangle_and_combo() -> void:
 	var sim: CombatSim = _sim("celtie")

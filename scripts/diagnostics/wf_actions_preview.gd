@@ -5,10 +5,12 @@ const MAIN: PackedScene = preload("res://scenes/main.tscn")
 const STEP: float = 1.0 / 60.0
 const SEED: int = 20261031
 const HEALTH: float = 1000000.0
-const VIEWS: Array[String] = ["windup", "first", "second", "bomb-flight", "bomb-impact", "bomb-late", "dispel", "map"]
+const VIEWS: Array[String] = ["windup", "first", "second", "bomb-flight", "bomb-impact", "bomb-late", "dispel", "map", "follow", "aura-late", "aura-end"]
+const AURA_VIEWS: Array[String] = ["follow", "aura-late", "aura-end"]
 const REGIONS: Array[String] = ["center", "north", "south"]
 var _receipts: Array[Dictionary] = []
 var _late_uid: int = -1
+var _view_checks: Dictionary = {}
 
 func _ready() -> void:
 	_preview.call_deferred()
@@ -45,6 +47,8 @@ func _options() -> Dictionary:
 			result["hero"] = "hanabi"
 		elif result["view"] in ["second", "dispel"]:
 			result["hero"] = "clarisse"
+		elif result["view"] in AURA_VIEWS:
+			result["hero"] = "falsche"
 	var destination: String = str(result["capture"])
 	if result["region"] not in REGIONS:
 		return _option_error("Region must be center, north or south", result)
@@ -54,6 +58,10 @@ func _options() -> Dictionary:
 		return _option_error("Hero, arena and view must be existing production IDs", result)
 	if (str(result["view"]).begins_with("bomb-") and result["hero"] != "hanabi") or (result["view"] in ["second", "dispel"] and result["hero"] != "clarisse"):
 		return _option_error("Bomb views require Hanabi; second/dispel require Clarisse", result)
+	if result["view"] in AURA_VIEWS and result["hero"] != "falsche":
+		return _option_error("Follow/aura-late/aura-end require Falsche", result)
+	if result["view"] == "windup" and result["hero"] == "falsche":
+		return _option_error("Falsche has no windup; use first, follow, aura-late or aura-end", result)
 	if destination.is_empty() or not destination.is_absolute_path() or destination.begins_with("res://") or destination.begins_with("user://") or destination.get_extension().to_lower() != "png":
 		return _option_error("--capture requires an absolute filesystem PNG path", result)
 	if DisplayServer.get_name() == "headless":
@@ -108,6 +116,7 @@ func _preview() -> void:
 				return
 			targets.append(enemy)
 	_attach_receipts(sim)
+	_release_movement()
 	var conditions_before: Array[Dictionary] = []
 	if options["view"] == "dispel":
 		if targets.is_empty() or not sim.grant_enemy_condition(targets[0], "defense", 0.5, 10.0):
@@ -152,10 +161,9 @@ func _preview() -> void:
 		result = get_tree().root.get_texture().get_image().save_png(absolute)
 	var late_counts: Array[Dictionary] = _late_counts(sim)
 	var late_hits: int = 0
-	var bounded_late: bool = true
+	var bounded_late: bool = _late_counts_bounded(sim)
 	for contact: Dictionary in late_counts:
 		late_hits += int(contact["hits"])
-		bounded_late = bounded_late and int(contact["hits"]) <= 1
 	var payload: Dictionary = {
 		"debug_build": OS.is_debug_build(), "engine_version": Engine.get_version_info()["string"],
 		"hero": options["hero"], "arena": options["arena"], "view": options["view"], "region": options["region"],
@@ -163,17 +171,32 @@ func _preview() -> void:
 		"small": options["small"], "gamepad_prompts": options["gamepad"], "physical_gamepad_test": false, "flash": options["flash"],
 		"actual_elapsed": sim.elapsed, "R": sim.hero_skill_snapshot(), "effects": sim.hero_effects_snapshot(),
 		"targets": _target_states(targets), "conditions_before": conditions_before, "conditions_after": sim.enemy_conditions_snapshot(),
-		"damage_records": _receipts, "damage_by_skill": sim.damage_by_skill, "late_uid": _late_uid, "late_hits": late_hits, "late_area_hits": late_counts,
+		"damage_records": _receipts, "damage_by_skill": sim.damage_by_skill, "late_uid": _late_uid, "late_hits": late_hits, "late_area_hits": late_counts, "view_checks": _view_checks,
 		"native_frames_before": native_before, "native_frames_after": native_after, "native_frames_drawn": native_after - native_before,
 		"native_warmup_frames": 1, "state_unchanged_after_warmup": warmup_pure,
 		"world_draws_observed": draws[0], "state_unchanged_while_drawing": pure,
 		"state_hash": before.sha256_text(), "state_hash_after": after.sha256_text(),
 		"profile_io": false, "persistent_profile": app.store.persistent, "pure_drawing": pure,
 		"fixed_fixture": true, "natural_gameplay": false, "manual_step_seconds": STEP, "capture": absolute, "result": result,
-		"fixture_interventions": ["legal map-region placement", "disabled automatic weapons", "production map collision and camera"] if options["view"] == "map" else ["static high-health targets", "disabled automatic weapons", "real queued R and manual fixed steps", "production map collision and camera"]}
+		"fixture_interventions": _fixture_interventions(str(options["view"]))}
 	print("WF_ACTION_PREVIEW ", JSON.stringify(payload))
 	world.stop()
-	await app._quit_game(0 if result == OK and pure and bounded_late and draws[0] >= 2 and native_after - native_before >= 2 and not app.store.persistent else 1)
+	await app._quit_game(0 if result == OK and pure and bounded_late and bool(_view_checks.get("passed", true)) and draws[0] >= 2 and native_after - native_before >= 2 and not app.store.persistent else 1)
+
+func _fixture_interventions(view: String) -> Array[String]:
+	if view == "map":
+		return ["legal map-region placement", "disabled automatic weapons", "production map collision and camera"]
+	var result: Array[String] = ["static high-health targets", "disabled automatic weapons", "real queued R and manual fixed steps", "production map collision and camera"]
+	if view == "follow":
+		result.append("real movement Input action for six World fixed steps")
+	elif view == "aura-late":
+		result.append("new production enemy UID staged outside then moved into an already active aura")
+	return result
+
+func _release_movement() -> void:
+	ControlBindings.ensure_installed()
+	for action: String in ["move_left", "move_right", "move_up", "move_down"]:
+		Input.action_release(ControlBindings.PREFIX + action)
 
 func _target_offsets(hero_id: String) -> Array[Vector2]:
 	var offsets: Array[Vector2] = []
@@ -245,6 +268,8 @@ func _attach_receipts(sim: CombatSim) -> void:
 
 func _advance_view(world: CombatWorld, view: String, targets: Array[CombatSim.Enemy]) -> bool:
 	var sim: CombatSim = world.sim
+	if view in AURA_VIEWS:
+		return _advance_aura_view(world, view, targets)
 	var parameters: Dictionary = sim.run.hero_skill_parameters()
 	var delay: float = float(parameters.get("cast_delay", 0.0))
 	if parameters.get("timeline") is Array and not parameters["timeline"].is_empty():
@@ -278,7 +303,168 @@ func _advance_view(world: CombatWorld, view: String, targets: Array[CombatSim.En
 			if area.occupied and area.opened and area.max_hits == 11:
 				return sim.skill_hits > 4
 		return false
+	if view == "first" and sim.run.hero_id in ["nasir", "mordiga", "falsche"]:
+		return _new_hero_first(sim, targets)
 	return not _receipts.is_empty() if sim.run.hero_id != "hanabi" else int(sim.hero_effects_snapshot()["active_bombs"]) == 5
+
+func _new_hero_first(sim: CombatSim, targets: Array[CombatSim.Enemy]) -> bool:
+	var area: SkillTimelineRuntime.Area = _active_hero_area(sim, "hero_" + sim.run.hero_id)
+	if area == null or targets.size() != 2:
+		return false
+	var expected: Array[int] = []
+	var actual: Array[int] = []
+	var passed: bool = true
+	for enemy: CombatSim.Enemy in targets:
+		var inside: bool = CombatSim.skill_contains(area.parameters, area.origin, area.direction, enemy.position)
+		var hits: int = int(area.contacts.get("enemy:%d" % enemy.uid, 0))
+		expected.append(1 if inside else 0)
+		actual.append(hits)
+		passed = passed and hits == (1 if inside else 0)
+	_view_checks = {"passed": passed and actual[0] == 1, "phase": "first", "area_origin": area.origin,
+		"forward_offset": area.follow_offset, "expected_target_hits": expected, "actual_target_hits": actual,
+		"locked_damage": sim.hero_skill_snapshot()["damage"]}
+	return bool(_view_checks["passed"])
+
+func _active_hero_area(sim: CombatSim, source_id: String) -> SkillTimelineRuntime.Area:
+	for area: SkillTimelineRuntime.Area in sim.skill_timeline.areas:
+		if area.occupied and area.opened and not area.held and area.parameters.get("id", "") == source_id:
+			return area
+	return null
+
+func _advance_aura_view(world: CombatWorld, view: String, targets: Array[CombatSim.Enemy]) -> bool:
+	var sim: CombatSim = world.sim
+	world._physics_process(STEP)
+	var area: SkillTimelineRuntime.Area = _active_hero_area(sim, "hero_falsche")
+	if sim.run.hero_id != "falsche" or targets.size() != 2 or area == null:
+		return false
+	if int(sim.hero_skill_snapshot()["uses"]) != 1 or sim.shot_count != 0 or area.anchor != "caster" or area.max_hits != 30:
+		return false
+	if not is_zero_approx(area.delay) or not is_equal_approx(area.duration, 10.0) or not area.follow_offset.is_zero_approx():
+		return false
+	for target: CombatSim.Enemy in targets:
+		if int(area.contacts.get("enemy:%d" % target.uid, 0)) != 1:
+			return false
+	var locked_damage: float = float(sim.hero_skill_snapshot()["damage"])
+	match view:
+		"follow": return _follow_aura(world, area)
+		"aura-late": return _late_aura(world, area, targets)
+		"aura-end": return _finish_aura(world, area, targets, locked_damage)
+	return false
+
+func _follow_aura(world: CombatWorld, area: SkillTimelineRuntime.Area) -> bool:
+	var sim: CombatSim = world.sim
+	var start: Vector2 = sim.player_position
+	var action: String = ""
+	var choices: Dictionary = {"move_down": Vector2.DOWN, "move_up": Vector2.UP, "move_right": Vector2.RIGHT, "move_left": Vector2.LEFT}
+	var distance: float = sim.run.stat("move_speed") * STEP * 6.0
+	for candidate: String in choices:
+		var displacement: Vector2 = choices[candidate] * distance
+		if sim.obstacles.first_hit(start, displacement, 16.0, 16.0).is_empty() and sim.obstacles.is_free(start + displacement, 16.0, 16.0):
+			action = candidate
+			break
+	if action.is_empty():
+		return false
+	Input.action_press(ControlBindings.PREFIX + action)
+	var follows: bool = true
+	for frame: int in 6:
+		world._physics_process(STEP)
+		follows = follows and area.occupied and area.origin.is_equal_approx(sim.player_position)
+	Input.action_release(ControlBindings.PREFIX + action)
+	var moved: bool = start.distance_to(sim.player_position) > 0.1
+	_view_checks = {"passed": follows and moved, "phase": "follow", "movement_action": ControlBindings.PREFIX + action,
+		"movement_steps": 6, "player_before": start, "player_after": sim.player_position,
+		"movement_distance": start.distance_to(sim.player_position), "area_origin": area.origin,
+		"follows_every_step": follows, "actual_movement": moved}
+	return bool(_view_checks["passed"])
+
+func _late_aura(world: CombatWorld, area: SkillTimelineRuntime.Area, targets: Array[CombatSim.Enemy]) -> bool:
+	var sim: CombatSim = world.sim
+	for frame: int in 59:
+		world._physics_process(STEP)
+	if not area.occupied or area.age >= area.duration:
+		return false
+	var initial_hits: Array[int] = []
+	for enemy: CombatSim.Enemy in targets:
+		initial_hits.append(int(area.contacts.get("enemy:%d" % enemy.uid, 0)))
+	var outside: Vector2 = _aura_target_point(sim, area, false)
+	var inside: Vector2 = _aura_target_point(sim, area, true)
+	if not outside.is_finite() or not inside.is_finite():
+		return false
+	var late: CombatSim.Enemy = _spawn_target(sim, outside)
+	if late == null:
+		return false
+	for original: CombatSim.Enemy in targets:
+		if original.uid == late.uid:
+			return false
+	_late_uid = late.uid
+	targets.append(late)
+	var key: String = "enemy:%d" % late.uid
+	world._physics_process(STEP)
+	var outside_hits: int = int(area.contacts.get(key, 0))
+	if outside_hits != 0 or late.health != HEALTH:
+		return false
+	late.position = inside
+	world._physics_process(STEP)
+	var entry_hits: int = int(area.contacts.get(key, 0))
+	if entry_hits != 1 or late.health >= HEALTH:
+		return false
+	for frame: int in 20:
+		world._physics_process(STEP)
+	var late_hits: int = int(area.contacts.get(key, 0))
+	var independent: bool = initial_hits[0] > entry_hits and initial_hits[1] > entry_hits
+	var late_receipts: int = 0
+	for receipt: Dictionary in _receipts:
+		if receipt["source"] == "skill:hero_falsche" and int(receipt["uid"]) == late.uid:
+			late_receipts += 1
+	var bounded: bool = area.occupied and area.max_hits == 30 and _late_counts_bounded(sim)
+	for enemy: CombatSim.Enemy in targets:
+		var hits: int = int(area.contacts.get("enemy:%d" % enemy.uid, 0))
+		bounded = bounded and hits > 0 and hits <= 30
+	_view_checks = {"passed": independent and bounded and late_hits == 2 and late_receipts == late_hits, "phase": "aura-late",
+		"original_target_hits_before_entry": initial_hits, "late_uid": late.uid, "outside": outside, "entry": inside,
+		"outside_hits": outside_hits, "entry_hits": entry_hits, "late_hits_after_interval": late_hits, "late_damage_receipts": late_receipts,
+		"per_uid_max_hits": area.max_hits, "independent_contact_budget": independent,
+		"no_retroactive_hits": entry_hits == 1, "area_still_active": area.occupied, "area_age": area.age}
+	return bool(_view_checks["passed"])
+
+func _aura_target_point(sim: CombatSim, area: SkillTimelineRuntime.Area, inside: bool) -> Vector2:
+	var reach: float = float(area.parameters.get("radius", 0.0))
+	var distance: float = reach * 0.6 if inside else reach + 44.0
+	for heading: Vector2 in [Vector2.UP, Vector2.DOWN, Vector2.RIGHT, Vector2.LEFT]:
+		var point: Vector2 = sim.obstacles.free_point(area.origin + heading * distance, 22.0)
+		if not sim.obstacles.is_free(point, 22.0) or point.distance_to(sim.player_position) < 50.0:
+			continue
+		if CombatSim.skill_contains(area.parameters, area.origin, area.direction, point) == inside:
+			return point
+	return Vector2.INF
+
+func _finish_aura(world: CombatWorld, area: SkillTimelineRuntime.Area, targets: Array[CombatSim.Enemy], locked_damage: float) -> bool:
+	var sim: CombatSim = world.sim
+	for frame: int in 599:
+		world._physics_process(STEP)
+	var records: Array[Dictionary] = []
+	var total: float = 0.0
+	var complete_damage: bool = true
+	for enemy: CombatSim.Enemy in targets:
+		var hits: int = 0
+		var damage: float = 0.0
+		for receipt: Dictionary in _receipts:
+			if receipt["source"] == "skill:hero_falsche" and int(receipt["uid"]) == enemy.uid:
+				hits += 1
+				damage += float(receipt["amount"])
+		records.append({"uid": enemy.uid, "hits": hits, "damage": damage, "health_lost": HEALTH - enemy.health})
+		total += damage
+		complete_damage = complete_damage and hits == 30 and is_equal_approx(damage, locked_damage) and is_equal_approx(HEALTH - enemy.health, locked_damage)
+	var cleared: bool = not area.occupied and area.parameters.is_empty() and area.contacts.is_empty() and area.next_contacts.is_empty()
+	cleared = cleared and int(sim.skill_timeline.snapshot()["occupied"]) == 0 and _active_hero_area(sim, "hero_falsche") == null
+	var expected_total: float = locked_damage * float(targets.size())
+	var passed: bool = complete_damage and cleared and is_equal_approx(sim.elapsed, 600.0 * STEP)
+	passed = passed and sim.skill_hits == 30 * targets.size() and int(sim.hero_skill_snapshot()["uses"]) == 1
+	passed = passed and is_equal_approx(total, expected_total) and is_equal_approx(float(sim.damage_by_skill.get("hero_falsche", 0.0)), expected_total)
+	_view_checks = {"passed": passed, "phase": "aura-end", "fixed_steps": 600, "locked_damage_per_uid": locked_damage,
+		"expected_total_damage": expected_total, "actual_total_damage": total, "per_uid": records,
+		"full_lifetime": sim.elapsed, "complete_damage": complete_damage, "area_cleared": cleared}
+	return passed
 
 func _active_impact(sim: CombatSim) -> SkillTimelineRuntime.Area:
 	for area: SkillTimelineRuntime.Area in sim.skill_timeline.areas:
@@ -317,13 +503,14 @@ func _late_counts(sim: CombatSim) -> Array[Dictionary]:
 		return result
 	var key: String = "enemy:%d" % _late_uid
 	for area: SkillTimelineRuntime.Area in sim.skill_timeline.areas:
-		if area.occupied and area.parameters.get("id", "") == "hero_hanabi" and area.contacts.has(key):
+		if area.occupied and area.parameters.get("id", "") in ["hero_hanabi", "hero_falsche"] and area.contacts.has(key):
 			result.append({"serial": area.serial, "hits": int(area.contacts[key]), "max_hits": area.max_hits})
 	return result
 
 func _late_counts_bounded(sim: CombatSim) -> bool:
+	var maximum: int = 30 if sim.run.hero_id == "falsche" else 1
 	for contact: Dictionary in _late_counts(sim):
-		if int(contact["hits"]) > 1 or int(contact["max_hits"]) != 1:
+		if int(contact["hits"]) < 1 or int(contact["hits"]) > maximum or int(contact["max_hits"]) != maximum:
 			return false
 	return true
 
@@ -338,7 +525,7 @@ func _signature(sim: CombatSim) -> String:
 	var timeline: Array = []
 	for area: SkillTimelineRuntime.Area in sim.skill_timeline.areas:
 		timeline.append([area.occupied, area.serial, area.age, area.previous_age, area.delay, area.duration,
-			area.max_hits, area.interval, area.purpose, area.origin, area.direction, area.anchor,
+			area.max_hits, area.interval, area.purpose, area.origin, area.direction, area.follow_offset, area.anchor,
 			area.parameters, area.contacts, area.next_contacts, area.opened, area.held])
 	var bombs: Array = []
 	for bomb: HeroSkillRuntime.Bomb in sim.hero_effects.bombs:
@@ -380,6 +567,6 @@ func _signature(sim: CombatSim) -> String:
 
 func _fail(app: Node, options: Dictionary, message: String) -> void:
 	push_error(message)
-	print("WF_ACTION_PREVIEW ", JSON.stringify({"hero": options["hero"], "arena": options["arena"], "view": options["view"], "region": options["region"], "error": message, "profile_io": false, "persistent_profile": app.store.persistent}))
+	print("WF_ACTION_PREVIEW ", JSON.stringify({"hero": options["hero"], "arena": options["arena"], "view": options["view"], "region": options["region"], "error": message, "view_checks": _view_checks, "profile_io": false, "persistent_profile": app.store.persistent}))
 	app.world.stop()
 	await app._quit_game(1)

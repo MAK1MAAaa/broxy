@@ -101,6 +101,8 @@ func _test_composition(cover: TitleCover) -> void:
 	var original_focus: Control = root.gui_get_focus_owner()
 	var choice_scroll := _ui.find_child("ArenaChoiceScroll", true, false) as ScrollContainer
 	var original_scroll: int = choice_scroll.scroll_vertical if choice_scroll != null else 0
+	var character_scroll := _ui.find_child("CharacterScroll", true, false) as ScrollContainer
+	var original_character_scroll: int = character_scroll.scroll_vertical if character_scroll != null else 0
 	cover.set_frame(0)
 	var viewport := Rect2(Vector2.ZERO, Vector2(1280, 720))
 	_check(cover.get_global_rect().is_equal_approx(viewport), "The artwork fills the complete logical title without a half-width seam")
@@ -119,7 +121,10 @@ func _test_composition(cover: TitleCover) -> void:
 		_check(_ui.find_child("StarterRole_" + id, true, false) == null, "Character cards do not append explanatory sublabels: " + id)
 		var starter: Button = _button("Character_" + id)
 		var identity := _ui.find_child("CharacterName_" + id, true, false) as Label
-		_check(starter != null and starter.toggle_mode and viewport.encloses(starter.get_global_rect()) and identity != null and identity.text == HeroCatalog.definition(id).display_name, "The actual character choice retains its necessary name and hit region: " + id)
+		if starter != null:
+			starter.grab_focus()
+			await _settle()
+		_check(starter != null and root.gui_get_focus_owner() == starter and starter.toggle_mode and viewport.encloses(starter.get_global_rect()) and character_scroll != null and character_scroll.follow_focus and character_scroll.get_global_rect().grow(0.1).encloses(starter.get_global_rect()) and starter.size.y >= 76.0 and identity != null and identity.text == HeroCatalog.definition(id).display_name, "Each full-size character choice scrolls into view with its necessary name and hit region: " + id)
 	for id: String in ArenaCatalog.IDS:
 		_check(_ui.find_child("ArenaEffect_" + id, true, false) == null, "Map cards do not append explanatory terrain lines: " + id)
 		var option: Button = _button("Arena_" + id)
@@ -133,6 +138,8 @@ func _test_composition(cover: TitleCover) -> void:
 		original_focus.grab_focus()
 	if choice_scroll != null:
 		choice_scroll.scroll_vertical = original_scroll
+	if character_scroll != null:
+		character_scroll.scroll_vertical = original_character_scroll
 	await _settle()
 	var text: String = _visible_text(_ui._page)
 	_check(not text.contains("最高波次") and not text.contains("尚无记录") and not text.contains("方向键移动"), "Even a populated profile does not recreate cover statistics or control instructions")

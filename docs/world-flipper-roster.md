@@ -1,0 +1,57 @@
+# 原作角色技能与来源扩充
+
+本轮在当前游戏中新增娜希尔、莫迪亚迦、法露伽三位可选主角，总计七位。三者从已锁定的日服动作编译计划生成独立资源，真实待机和双向步行来自原GIF。原四位主角、十六件武器和十张竞技场保留。新三位目前作为主角使用，未自动加入背包后排或抽卡系统。
+
+覆盖账本中的七位角色与关联的14个原技能等级变体均为`partial`。14个变体是原作身份关联，不是14个独立可用技能；原作技能等级变体、角色能力与等级成长尚未完整实现。以505角色、1062技能变体为固定目录，仍有498角色与1048技能变体待接入。
+
+## 实际技能
+
+| 主角／原ID | 本作R | 原动作时间与几何 | 本作适配 |
+| --- | --- | --- | --- |
+| 娜希尔／211012 | 阿耆尼之恼 | 等待28单位，Circle210、前偏220、持续20单位、每UID单击 | 激活时捕获角色位置及施放朝向，半径105、前偏110，90伤害／12秒冷却 |
+| 莫迪亚迦／221008 | 雅尼尼·水流 | 施放时固定参照点、等待38单位，Circle300、前偏120、持续50单位、每UID单击 | 半径150、前偏60，区域保持施放位置，65伤害／10秒冷却 |
+| 法露伽／361001 | 灵魂收割者 | Circle200随角色移动，持续600单位、每UID上限30击 | 半径100、10秒随身暗区，100总伤害／13秒冷却，命中节奏按持续时间均分 |
+
+原时间一单位映射本作1/60秒，不是已验证的原作FPS。三位统一0.5几何缩放，原负Y映射施放面向。原倍率及能量值保留在编译计划，伤害与冷却是明确的本作数值。娜希尔原StopBall不重放，保持当前游戏自由移动；原作FX、镜头指令及不透明参数也没有被自动视作已实现，法露伽的原参数15取值23不当作原始逐击间隔。
+
+区域支持固定参照、激活时捕获和持续跟随三类锚点，偏移在锚点更新后仍保留。离区不补算漏掉的接触；死亡后复用对象池槽位的新UID独立计数。现有24区域、每UID至多32击、至多10秒与炸弹20槽的边界保持；暂停冻结，停止、终局和新波清理。
+
+标题角色选择采用双列滚动，不增加解释小字。R技能长名称按实际可用宽度选择24或12像素字号，完整显示名称并保留24像素行高，避免源码与发行版末尾截断差异。奇数行按实际同列角色连接地图焦点；Tab只经过按钮。已选角色在持久化启动与返回标题时自动滚入视口，保留开始按钮或设置弹层的键盘焦点。
+
+## 可复用管线与未完成范围
+
+`compile_world_flipper_actions.py`逐个核对1027份原始动作的blob和SHA，为1062个变体记录节点、依赖与缺项。目前仅六个变体／三个角色可形成上述代表时间轴，其他候选的追踪位移、多实例布局、治疗、充能、状态及条件分支继续阻塞。55种指令里41类仍缺执行原语；已有部分机制族不等于通用解释器。编译计划全部保持`pending`、`complete_original_action=false`，只有游戏资源和运行证据进入覆盖账本。
+
+新角色资源由`roster_adaptations.json`显式给出平衡和名称，再由构建工具绑定profile，不对未知动作生成通用圆形攻击。显示名参考[娜希尔](https://wiki.biligame.com/worldflipper/娜希尔)、[莫迪亚迦](https://wiki.biligame.com/worldflipper/莫迪亚迦)、[法露伽](https://wiki.biligame.com/worldflipper/法露伽)；技能事实以固定日服原始动作而非旧Wiki数值为准。
+
+装备能力核对扩大至16件／35行，完整123列指纹固定，支持原1至5级同槽最高已解锁规则替换。410件／851行基础规则与108行增强规则仍为unsupported。这是语义解码增量，没有自动改写现有装备效果；六人元素队、复活、PF、能量与原状态不可用武器数量、治疗或任意碰撞冒充。逐项差异见[装备语义核对](wf-equipment-semantics.md)。
+
+另取得固定2022镜像的132份原始背景、共10,008,106字节，精确路径对应最终目录198/247个field。49个缺失引用完整记录。该镜像没有terrain，地区与最终客户端版本未验证，不能把路径匹配算作198张可玩地图或最终JP字节一致。神社镜像背景与当前官方试玩源存在同引用、同尺寸但像素不同的版本差异，不直接覆盖当前地图。现有真实布局接入数仍为三份，原85张PNG保持；背景原图仅在忽略缓存，独立注册表记录blob、SHA、PNG CRC、模式与尺寸。
+
+## 素材、重建与验证
+
+新九张PNG由独立[角色素材清单](../assets/worldflipper/roster/manifest.json)记录。九份原GIF及27个原RGBA帧均已验证；128格、4列3行、3倍nearest、完整原canvas、脚锚(64,125)，不逐帧重新抠位。`portrait.png`是原待机像素适配，非原作全身立绘。GIF保留本地缓存，源码只纳规范化PNG与来源。版权和来源声明随Windows包提供。
+
+```powershell
+python tools/compile_world_flipper_actions.py --check
+python tools/build_world_flipper_roster_skills.py --check
+python tools/world_flipper_roster.py --offline --check
+python tools/world_flipper_backgrounds.py --offline
+python tools/world_flipper_equipment_rules.py --offline --check
+./tools/run.ps1 --script res://tools/preview_skill_timelines.gd -- --hero=nasir --view=first --capture=D:/Github/broxy/reports/world-flipper-roster/nasir.png
+./tools/run.ps1 --script res://tools/preview_skill_timelines.gd -- --view=aura-end --capture=D:/Github/broxy/reports/world-flipper-roster/falsche-end.png
+```
+
+编译及资源构建校验需要先准备`tools/world_flipper_skill_actions.py`锁定的1027份本地原始动作缓存；不联网猜测缺失内容。来源和生成文本固定UTF-8 LF。检查入口为`./tools/test.sh`，Bash与PowerShell均注册123套件。原生预览沿用真实Main／World、静止高血量目标和固定60Hz步进，不读个人存档；它是明确的夹具，不替代自然通关、平衡或硬件手柄／音频验收。Windows更新前包备份为`build/Embers-windows-before-roster-12a7a21.zip`，SHA与上一轮发行记录一致。macOS未在本Windows主机上构建运行。
+
+## 本轮验收
+
+123套件及5个诊断入口共72,274项Godot断言通过；完整脚本中的203项Python检查通过，独立复核的203项也全部通过。25项源码原生与25项PCK原生检查无错误，32组源码／PCK／真实发行EXE画面逐像素相同，战斗状态摘要相同，实际发行EXE为非debug构建。
+
+阿尔克与新三位主角各进行60秒原生固定负载测量，平均60.944–64.810 FPS、P99最高27.589毫秒，保留300敌人、600弹体、200掉落以及58 FPS／P99不高于33毫秒门槛。后排通过真实购买落星与月弧装入背包；未声称全部七位重做持续压力、自然通关或新地图压力。
+
+Git索引无缓存副本运行203项Python检查：196项通过，7项原始缓存复核明确跳过；本工作区完整缓存复核无跳过。本轮改动与索引导出字节一致，既有CRLF文件由Git按原约定导出LF，工作区原文件未改写。来源构建器会离线重建并比对1027份已验证原动作；嵌套命中回调等待、伪造来源、身份错绑和非法阶段均拒绝，70个既有阻塞变体补入准确阻塞信息，三位资源字节未变。
+
+Windows ZIP的10个文件已检查CRC和解压目录字节，NOTICE随包；更新前包SHA保持。原85张PNG与上一提交逐字节一致，新9张PNG独立记录。完整[验收记录](../reports/world-flipper-roster/validation.json)和[运行来源证据](../reports/world-flipper-roster/runtime-validation.json)纳入提交，原始日志、截图、缓存与构建包留本地。
+
+持续区优化保留全池扫描、每UID命中节奏、离区清理及回调顺序，预解析几何并缓存真实UID接触键；敌人单次分类后仍按原家族与池顺序绘制，移除一份未使用的时间轴快照。三组各600步的原对象池字段、完整诊断、UID及三条随机流一致，仅排除三个新增派生缓存字段；32个源码画面及战斗状态与优化前相同。CPU扫描均值由586微秒降为316微秒；此为CPU微基准，不等同原生帧率。触发定位的57.527 FPS失败样本、最终测量及限制见[优化验收](../reports/world-flipper-roster/optimization.json)。

@@ -45,6 +45,30 @@
         "notes": "原动作4击及11击两段爆区共15击、逐次命中火弱点、独立一次临时正面强化驱散及火属性技伤增益已接入；时间、几何和数值为本作适配。"
       },
       {
+        "canonical_id": "361001",
+        "game_id": "falsche",
+        "resource": "data/heroes/falsche.tres",
+        "source": "https://wiki.biligame.com/worldflipper/法露伽",
+        "status": "partial",
+        "runtime_verified": true,
+        "remaining_gaps": [
+          "30击按持续时间均分为本作命中节奏，原参数15的Some值23尚未解码，不能视为原作逐击间隔",
+          "原作ShowEffect与镜头震动未重放，目前为本作随身暗属性圆区表现",
+          "角色原作能力、队长能力与技能等级成长尚未完整移植"
+        ],
+        "notes": "绑定361001与reaper_girl:2的原动作，持续600单位、上限30击的随身圆区已接入；原半径200统一缩放0.5，时间每单位1/60秒，100总伤害与13秒冷却为本作数值，命中节奏采用明确的均分适配。",
+        "source_profile": {
+          "canonical_id": "361001",
+          "profile_id": "reaper_girl:2",
+          "action_ref": "battle/action/skill/action/rare3/reaper_girl$reaper_girl_2",
+          "git_blob_sha1": "60e4cdcc28a7b0934edd56f0299271450f2b8967",
+          "action_sha256": "58377f0fddd6598613b7afd5f2d44a1ee7058abbf9722545604e91f1c66cfaf6",
+          "source_commit": "1d45b529ef078ba9b1f876d4588debd0c8a9a214",
+          "geometry_scale": 0.5,
+          "project_seconds_per_source_unit": 0.016666666666666666
+        }
+      },
+      {
         "canonical_id": "211003",
         "game_id": "hanabi",
         "resource": "data/heroes/hanabi.tres",
@@ -57,6 +81,54 @@
           "角色原作能力与技能等级成长尚未完整移植"
         ],
         "notes": "前摇55单位、五枚移动炸弹及碰撞后持续30单位的单击爆区已接入；施放时同时预约炸弹和爆区，碰敌、弱点、障碍或到期激活，按真实UID记录命中。"
+      },
+      {
+        "canonical_id": "221008",
+        "game_id": "mordiga",
+        "resource": "data/heroes/mordiga.tres",
+        "source": "https://wiki.biligame.com/worldflipper/莫迪亚迦",
+        "status": "partial",
+        "runtime_verified": true,
+        "remaining_gaps": [
+          "仅接入代表性伤害圆区，原作目标过滤与其他未解码参数不推断为已实现",
+          "原作ShowEffect与镜头震动未重放，目前为本作水流区域表现",
+          "角色原作能力、队长能力与技能等级成长尚未完整移植"
+        ],
+        "notes": "绑定221008与desert_wizard:2的原动作，等待38单位后在施放时锁定的位置启用持续50单位的单击圆区；原半径300及前向偏移120统一缩放0.5，时间每单位1/60秒，65伤害与10秒冷却为本作数值。",
+        "source_profile": {
+          "canonical_id": "221008",
+          "profile_id": "desert_wizard:2",
+          "action_ref": "battle/action/skill/action/rare4/desert_wizard$desert_wizard_2",
+          "git_blob_sha1": "c7c088f0d075939828d1906ff676a9c165c5f987",
+          "action_sha256": "36733b547498f22af547020d6c76ee0027daa092d873381bbcd7596432b978f9",
+          "source_commit": "1d45b529ef078ba9b1f876d4588debd0c8a9a214",
+          "geometry_scale": 0.5,
+          "project_seconds_per_source_unit": 0.016666666666666666
+        }
+      },
+      {
+        "canonical_id": "211012",
+        "game_id": "nasir",
+        "resource": "data/heroes/nasir.tres",
+        "source": "https://wiki.biligame.com/worldflipper/娜希尔",
+        "status": "partial",
+        "runtime_verified": true,
+        "remaining_gaps": [
+          "原作StopBall停球与可见性行为未重放，自由移动保留",
+          "原作ShowEffect与镜头震动未重放，目前为本作火焰剑区域表现",
+          "角色原作能力、队长能力与技能等级成长尚未完整移植"
+        ],
+        "notes": "绑定211012与magic_sword_girl:2的原动作，等待28单位后在激活时角色前方启用持续20单位的单击圆区；原半径210及前向偏移220统一缩放0.5，时间每单位1/60秒，90伤害与12秒冷却为本作数值。",
+        "source_profile": {
+          "canonical_id": "211012",
+          "profile_id": "magic_sword_girl:2",
+          "action_ref": "battle/action/skill/action/rare4/magic_sword_girl$magic_sword_girl_2",
+          "git_blob_sha1": "f607b56a919ecf5115cdc97aeee8033475d33ecb",
+          "action_sha256": "2109012261006ad698917481e5be90738a7e6202cf9b5726c05f96acfabb05d8",
+          "source_commit": "1d45b529ef078ba9b1f876d4588debd0c8a9a214",
+          "geometry_scale": 0.5,
+          "project_seconds_per_source_unit": 0.016666666666666666
+        }
       }
     ],
     "equipment": [
@@ -337,6 +409,54 @@
         "notes": "同一R技能对应原作技能组；原作等级变体尚未独立实现。原动作4击及11击两段爆区共15击、逐次命中火弱点、独立一次临时正面强化驱散及火属性技伤增益已接入；时间、几何和数值为本作适配。"
       },
       {
+        "canonical_id": "reaper_girl:1",
+        "game_id": "hero_falsche",
+        "resource": "data/heroes/falsche.tres",
+        "source": "https://wiki.biligame.com/worldflipper/法露伽",
+        "status": "partial",
+        "runtime_verified": true,
+        "remaining_gaps": [
+          "30击按持续时间均分为本作命中节奏，原参数15的Some值23尚未解码，不能视为原作逐击间隔",
+          "原作ShowEffect与镜头震动未重放，目前为本作随身暗属性圆区表现",
+          "角色原作能力、队长能力与技能等级成长尚未完整移植"
+        ],
+        "notes": "同一R技能对应原作技能组；原作等级变体尚未独立实现。绑定361001与reaper_girl:2的原动作，持续600单位、上限30击的随身圆区已接入；原半径200统一缩放0.5，时间每单位1/60秒，100总伤害与13秒冷却为本作数值，命中节奏采用明确的均分适配。",
+        "source_profile": {
+          "canonical_id": "361001",
+          "profile_id": "reaper_girl:2",
+          "action_ref": "battle/action/skill/action/rare3/reaper_girl$reaper_girl_2",
+          "git_blob_sha1": "60e4cdcc28a7b0934edd56f0299271450f2b8967",
+          "action_sha256": "58377f0fddd6598613b7afd5f2d44a1ee7058abbf9722545604e91f1c66cfaf6",
+          "source_commit": "1d45b529ef078ba9b1f876d4588debd0c8a9a214",
+          "geometry_scale": 0.5,
+          "project_seconds_per_source_unit": 0.016666666666666666
+        }
+      },
+      {
+        "canonical_id": "reaper_girl:2",
+        "game_id": "hero_falsche",
+        "resource": "data/heroes/falsche.tres",
+        "source": "https://wiki.biligame.com/worldflipper/法露伽",
+        "status": "partial",
+        "runtime_verified": true,
+        "remaining_gaps": [
+          "30击按持续时间均分为本作命中节奏，原参数15的Some值23尚未解码，不能视为原作逐击间隔",
+          "原作ShowEffect与镜头震动未重放，目前为本作随身暗属性圆区表现",
+          "角色原作能力、队长能力与技能等级成长尚未完整移植"
+        ],
+        "notes": "同一R技能对应原作技能组；原作等级变体尚未独立实现。绑定361001与reaper_girl:2的原动作，持续600单位、上限30击的随身圆区已接入；原半径200统一缩放0.5，时间每单位1/60秒，100总伤害与13秒冷却为本作数值，命中节奏采用明确的均分适配。",
+        "source_profile": {
+          "canonical_id": "361001",
+          "profile_id": "reaper_girl:2",
+          "action_ref": "battle/action/skill/action/rare3/reaper_girl$reaper_girl_2",
+          "git_blob_sha1": "60e4cdcc28a7b0934edd56f0299271450f2b8967",
+          "action_sha256": "58377f0fddd6598613b7afd5f2d44a1ee7058abbf9722545604e91f1c66cfaf6",
+          "source_commit": "1d45b529ef078ba9b1f876d4588debd0c8a9a214",
+          "geometry_scale": 0.5,
+          "project_seconds_per_source_unit": 0.016666666666666666
+        }
+      },
+      {
         "canonical_id": "kunoichi:1",
         "game_id": "hero_hanabi",
         "resource": "data/heroes/hanabi.tres",
@@ -363,6 +483,102 @@
           "角色原作能力与技能等级成长尚未完整移植"
         ],
         "notes": "同一R技能对应原作技能组；原作等级变体尚未独立实现。前摇55单位、五枚移动炸弹及碰撞后持续30单位的单击爆区已接入；施放时同时预约炸弹和爆区，碰敌、弱点、障碍或到期激活，按真实UID记录命中。"
+      },
+      {
+        "canonical_id": "desert_wizard:1",
+        "game_id": "hero_mordiga",
+        "resource": "data/heroes/mordiga.tres",
+        "source": "https://wiki.biligame.com/worldflipper/莫迪亚迦",
+        "status": "partial",
+        "runtime_verified": true,
+        "remaining_gaps": [
+          "仅接入代表性伤害圆区，原作目标过滤与其他未解码参数不推断为已实现",
+          "原作ShowEffect与镜头震动未重放，目前为本作水流区域表现",
+          "角色原作能力、队长能力与技能等级成长尚未完整移植"
+        ],
+        "notes": "同一R技能对应原作技能组；原作等级变体尚未独立实现。绑定221008与desert_wizard:2的原动作，等待38单位后在施放时锁定的位置启用持续50单位的单击圆区；原半径300及前向偏移120统一缩放0.5，时间每单位1/60秒，65伤害与10秒冷却为本作数值。",
+        "source_profile": {
+          "canonical_id": "221008",
+          "profile_id": "desert_wizard:2",
+          "action_ref": "battle/action/skill/action/rare4/desert_wizard$desert_wizard_2",
+          "git_blob_sha1": "c7c088f0d075939828d1906ff676a9c165c5f987",
+          "action_sha256": "36733b547498f22af547020d6c76ee0027daa092d873381bbcd7596432b978f9",
+          "source_commit": "1d45b529ef078ba9b1f876d4588debd0c8a9a214",
+          "geometry_scale": 0.5,
+          "project_seconds_per_source_unit": 0.016666666666666666
+        }
+      },
+      {
+        "canonical_id": "desert_wizard:2",
+        "game_id": "hero_mordiga",
+        "resource": "data/heroes/mordiga.tres",
+        "source": "https://wiki.biligame.com/worldflipper/莫迪亚迦",
+        "status": "partial",
+        "runtime_verified": true,
+        "remaining_gaps": [
+          "仅接入代表性伤害圆区，原作目标过滤与其他未解码参数不推断为已实现",
+          "原作ShowEffect与镜头震动未重放，目前为本作水流区域表现",
+          "角色原作能力、队长能力与技能等级成长尚未完整移植"
+        ],
+        "notes": "同一R技能对应原作技能组；原作等级变体尚未独立实现。绑定221008与desert_wizard:2的原动作，等待38单位后在施放时锁定的位置启用持续50单位的单击圆区；原半径300及前向偏移120统一缩放0.5，时间每单位1/60秒，65伤害与10秒冷却为本作数值。",
+        "source_profile": {
+          "canonical_id": "221008",
+          "profile_id": "desert_wizard:2",
+          "action_ref": "battle/action/skill/action/rare4/desert_wizard$desert_wizard_2",
+          "git_blob_sha1": "c7c088f0d075939828d1906ff676a9c165c5f987",
+          "action_sha256": "36733b547498f22af547020d6c76ee0027daa092d873381bbcd7596432b978f9",
+          "source_commit": "1d45b529ef078ba9b1f876d4588debd0c8a9a214",
+          "geometry_scale": 0.5,
+          "project_seconds_per_source_unit": 0.016666666666666666
+        }
+      },
+      {
+        "canonical_id": "magic_sword_girl:1",
+        "game_id": "hero_nasir",
+        "resource": "data/heroes/nasir.tres",
+        "source": "https://wiki.biligame.com/worldflipper/娜希尔",
+        "status": "partial",
+        "runtime_verified": true,
+        "remaining_gaps": [
+          "原作StopBall停球与可见性行为未重放，自由移动保留",
+          "原作ShowEffect与镜头震动未重放，目前为本作火焰剑区域表现",
+          "角色原作能力、队长能力与技能等级成长尚未完整移植"
+        ],
+        "notes": "同一R技能对应原作技能组；原作等级变体尚未独立实现。绑定211012与magic_sword_girl:2的原动作，等待28单位后在激活时角色前方启用持续20单位的单击圆区；原半径210及前向偏移220统一缩放0.5，时间每单位1/60秒，90伤害与12秒冷却为本作数值。",
+        "source_profile": {
+          "canonical_id": "211012",
+          "profile_id": "magic_sword_girl:2",
+          "action_ref": "battle/action/skill/action/rare4/magic_sword_girl$magic_sword_girl_2",
+          "git_blob_sha1": "f607b56a919ecf5115cdc97aeee8033475d33ecb",
+          "action_sha256": "2109012261006ad698917481e5be90738a7e6202cf9b5726c05f96acfabb05d8",
+          "source_commit": "1d45b529ef078ba9b1f876d4588debd0c8a9a214",
+          "geometry_scale": 0.5,
+          "project_seconds_per_source_unit": 0.016666666666666666
+        }
+      },
+      {
+        "canonical_id": "magic_sword_girl:2",
+        "game_id": "hero_nasir",
+        "resource": "data/heroes/nasir.tres",
+        "source": "https://wiki.biligame.com/worldflipper/娜希尔",
+        "status": "partial",
+        "runtime_verified": true,
+        "remaining_gaps": [
+          "原作StopBall停球与可见性行为未重放，自由移动保留",
+          "原作ShowEffect与镜头震动未重放，目前为本作火焰剑区域表现",
+          "角色原作能力、队长能力与技能等级成长尚未完整移植"
+        ],
+        "notes": "同一R技能对应原作技能组；原作等级变体尚未独立实现。绑定211012与magic_sword_girl:2的原动作，等待28单位后在激活时角色前方启用持续20单位的单击圆区；原半径210及前向偏移220统一缩放0.5，时间每单位1/60秒，90伤害与12秒冷却为本作数值。",
+        "source_profile": {
+          "canonical_id": "211012",
+          "profile_id": "magic_sword_girl:2",
+          "action_ref": "battle/action/skill/action/rare4/magic_sword_girl$magic_sword_girl_2",
+          "git_blob_sha1": "f607b56a919ecf5115cdc97aeee8033475d33ecb",
+          "action_sha256": "2109012261006ad698917481e5be90738a7e6202cf9b5726c05f96acfabb05d8",
+          "source_commit": "1d45b529ef078ba9b1f876d4588debd0c8a9a214",
+          "geometry_scale": 0.5,
+          "project_seconds_per_source_unit": 0.016666666666666666
+        }
       }
     ],
     "fields": [
@@ -494,8 +710,8 @@
     }
   ],
   "runtime_evidence": {
-    "report": "reports/world-flipper-actions/runtime-validation.json",
-    "sha256": "ce91ac73ea15d79e28e91b4f730235ec1d4ae7dc672a14dccccc9a2a64eeb550"
+    "report": "reports/world-flipper-roster/runtime-validation.json",
+    "sha256": "be5fa83aba830de760fe53801454bdaed11c1fe0c3d1bdb860eeffbcad940bb9"
   },
   "canonical_source": {
     "commit": "1d45b529ef078ba9b1f876d4588debd0c8a9a214",
@@ -505,11 +721,11 @@
   "counts": {
     "characters": {
       "canonical": 505,
-      "pending": 501,
-      "partial": 4,
+      "pending": 498,
+      "partial": 7,
       "adapted_playable": 0,
       "complete": 0,
-      "runtime_verified": 4
+      "runtime_verified": 7
     },
     "equipment": {
       "canonical": 426,
@@ -521,11 +737,11 @@
     },
     "skills": {
       "canonical": 1062,
-      "pending": 1054,
-      "partial": 8,
+      "pending": 1048,
+      "partial": 14,
       "adapted_playable": 0,
       "complete": 0,
-      "runtime_verified": 8
+      "runtime_verified": 14
     },
     "fields": {
       "canonical": 247,
@@ -797,7 +1013,6 @@
       "211009",
       "211010",
       "211011",
-      "211012",
       "211013",
       "211014",
       "211020",
@@ -817,7 +1032,6 @@
       "221004",
       "221006",
       "221007",
-      "221008",
       "221009",
       "221010",
       "221011",
@@ -1009,7 +1223,6 @@
       "351021",
       "351027",
       "351033",
-      "361001",
       "361002",
       "361003",
       "361004",
@@ -1672,8 +1885,6 @@
       "desert_commander_no_piercing:1",
       "desert_priest:1",
       "desert_priest:2",
-      "desert_wizard:1",
-      "desert_wizard:2",
       "devil_clown:1",
       "devil_clown:2",
       "devil_clown_xm21:1",
@@ -2010,8 +2221,6 @@
       "magic_boy:1",
       "magic_boy:2",
       "magic_laser:1",
-      "magic_sword_girl:1",
-      "magic_sword_girl:2",
       "magical_bayonetter:1",
       "magical_bayonetter:2",
       "marching_conductor:1",
@@ -2205,8 +2414,6 @@
       "punk_warrior:2",
       "ram:1",
       "ram:2",
-      "reaper_girl:1",
-      "reaper_girl:2",
       "reaper_girl_hw20:1",
       "reaper_girl_hw20:2",
       "rec_android:1",

@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "passed": true,
+  "changes": [
+    "Precompute circle/rectangle contact geometry per area step; refresh after callbacks.",
+    "Cache canonical enemy contact keys by actual UID; preserve full scans and separation.",
+    "Skip empty contact work; preserve hit order, budgets and callback guards.",
+    "Remove the unused timeline snapshot sent to the bomb painter.",
+    "Group all active enemies in one pass; retain the original family and pool draw order."
+  ],
+  "cpu_comparison_scope": "CPU-only fixed steps; no FPS or native renderer claim. All original pool fields are compared; only three new derived cache properties are excluded.",
+  "excluded_derived_cache_properties": [
+    "Enemy.skill_contact_uid",
+    "Enemy.skill_contact_key",
+    "Area.contact_geometry"
+  ],
+  "cpu_cases": [
+    {
+      "case": "falsche_without_r",
+      "fixed_steps": 600,
+      "timeline_before_mean_usec": 12.6016666666667,
+      "timeline_after_mean_usec": 12.5383333333333,
+      "checked_snapshot_pairs": 22,
+      "original_pool_fields_equal": true,
+      "full_diagnostic_snapshots_equal": true,
+      "uid_and_three_rng_streams_equal": true,
+      "skill_hits": 0
+    },
+    {
+      "case": "falsche_with_r",
+      "fixed_steps": 600,
+      "timeline_before_mean_usec": 586.103333333333,
+      "timeline_after_mean_usec": 315.743333333333,
+      "checked_snapshot_pairs": 22,
+      "original_pool_fields_equal": true,
+      "full_diagnostic_snapshots_equal": true,
+      "uid_and_three_rng_streams_equal": true,
+      "skill_hits": 1623
+    },
+    {
+      "case": "alk_with_r",
+      "fixed_steps": 600,
+      "timeline_before_mean_usec": 32.0566666666667,
+      "timeline_after_mean_usec": 23.2,
+      "checked_snapshot_pairs": 22,
+      "original_pool_fields_equal": true,
+      "full_diagnostic_snapshots_equal": true,
+      "uid_and_three_rng_streams_equal": true,
+      "skill_hits": 82
+    }
+  ],
+  "source_preview_pixels_and_state_preserved": [
+    "alk-first",
+    "alk-windup",
+    "bomb-flight",
+    "bomb-impact",
+    "bomb-late",
+    "celtie-first",
+    "celtie-windup",
+    "clarisse-dispel",
+    "clarisse-first",
+    "clarisse-second",
+    "clarisse-windup",
+    "falsche-end",
+    "falsche-first",
+    "falsche-follow",
+    "falsche-late",
+    "flash-off",
+    "hanabi-first",
+    "hanabi-windup",
+    "map-jp_sand_2_9_5-center",
+    "map-jp_sand_2_9_5-north",
+    "map-jp_sand_2_9_5-south",
+    "map-jp_ship_3_6_2-center",
+    "map-jp_ship_3_6_2-north",
+    "map-jp_ship_3_6_2-south",
+    "map-jp_shrine_6_6_2-center",
+    "map-jp_shrine_6_6_2-north",
+    "map-jp_shrine_6_6_2-south",
+    "mordiga-first",
+    "mordiga-windup",
+    "nasir-first",
+    "nasir-windup",
+    "small-gamepad"
+  ],
+  "native_before": {
+    "average_fps": 57.5267810329736,
+    "p99_frame_ms": 28.808,
+    "passed": false,
+    "source_hash": "7aa4bd294d006b9c59e0dac2febeafae59a60d4c032cc2bf4b5ee06270fa1c98"
+  },
+  "native_after": {
+    "average_fps": 60.9444347573661,
+    "p99_frame_ms": 27.589,
+    "passed": true,
+    "source_hash": "8928e47d99c0147684237023ec39b4fb3ff3702773b795acfa8f0f4244aed05c"
+  },
+  "unchanged_load": {
+    "enemies": 300,
+    "pickups": 200,
+    "projectiles": 600
+  },
+  "unchanged_thresholds": {
+    "maximum_active_skill_fx": 8,
+    "maximum_p99_frame_ms": 33.0,
+    "minimum_afterimage_peak": 1,
+    "minimum_fps": 58.0,
+    "minimum_sample_dashes": 24,
+    "minimum_sample_hero_skill_uses": 3,
+    "minimum_sample_pinball_cycles": 24,
+    "minimum_sample_positive_control_casts": 0,
+    "minimum_sample_skill_uses": {
+      "arc_slash": 9,
+      "starfall": 5
+    }
+  },
+  "raw_local_evidence": {
+    "before_pressure_sha256": "b27dd0f7dc8fecedad5401d39d36162b0a6ab5f420a631310c20f41c2c41396b",
+    "cpu_before_sha256": "e8b53fe67ebc8054a79357edd403be2e3af55aad2552a6314179c9a98be9f2af",
+    "cpu_after_sha256": "a740f767207d24df9bcd3b49c5a926d9ab109ce7bf1cf2fbdc4cd18962bc8ac6"
+  },
+  "limitations": [
+    "Raw local profiling reports and screenshots are ignored; this compact report records the checked evidence.",
+    "The native comparison measures the combined optimization and ordinary sampling variation; it does not attribute all FPS differences to one change."
+  ]
+}

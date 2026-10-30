@@ -40,6 +40,7 @@ var stress_weapon_ids: PackedStringArray = PackedStringArray(["bone", "frost", "
 var benchmark_time_left: float = 0.0
 
 const NUMBER_LIMIT: int = 48
+const ENEMY_DRAW_IDS: Array[String] = ["chaser", "rusher", "tank", "caster", "boss"]
 const RUNE_FLASH_LIMIT: int = 32
 const RUNE_FLASH_LIFE: float = 0.24
 const RUNE_KINDS: Dictionary = {"pierce": 0, "bounce": 1, "blast": 2}
@@ -145,6 +146,10 @@ class FloatingNumber:
 	var player_hit: bool = false
 	var font_size: int = 12
 
+class EnemyDrawBucket:
+	var enemies: Array[CombatSim.Enemy] = []
+
+var _enemy_draw_buckets: Dictionary = {}
 var _number_pool: Array[FloatingNumber] = []
 var _number_free: Array[FloatingNumber] = []
 var _numbers: Array[FloatingNumber] = []
@@ -166,6 +171,8 @@ const GROUNDING_PAINTER_SCRIPT = preload("res://scripts/combat/grounding_painter
 var _grounding_painter: GROUNDING_PAINTER_SCRIPT = GROUNDING_PAINTER_SCRIPT.new()
 
 func _init() -> void:
+	for id: String in ENEMY_DRAW_IDS:
+		_enemy_draw_buckets[id] = EnemyDrawBucket.new()
 	for index: int in WEAKPOINT_LIMIT:
 		_boss_receipts.append(WeakpointReceipt.new())
 	for index: int in DASH_AFTERIMAGE_LIMIT:
@@ -1067,7 +1074,7 @@ func _draw() -> void:
 	_draw_friendly_shots()
 	_draw_effects()
 	_active_skill_painter.draw(self)
-	HeroEffectPainter.draw(self, sim.hero_effects_snapshot(), bool(settings.get("flash", true)))
+	HeroEffectPainter.draw(self, sim.hero_effects.snapshot(), bool(settings.get("flash", true)))
 	SkillAreaPainter.draw(self, sim.skill_timeline.snapshot(), bool(settings.get("flash", true)))
 	_draw_impact_feedback()
 	_draw_rune_feedback()
@@ -1312,13 +1319,24 @@ func _draw_soul(soul: CombatSim.Soul) -> void:
 	var offset: Vector2 = Vector2(0, sin(soul.age * 3.0 + float(soul.slot)) * 2.0)
 	draw_texture_rect(soul_texture, Rect2(soul.position + offset - Vector2.ONE * size * 0.5, Vector2.ONE * size), false)
 
+func _rebuild_enemy_draw_buckets() -> void:
+	for id: String in ENEMY_DRAW_IDS:
+		var bucket: EnemyDrawBucket = _enemy_draw_buckets[id]
+		bucket.enemies.clear()
+	for enemy: CombatSim.Enemy in sim.enemies:
+		if not enemy.active:
+			continue
+		var bucket: EnemyDrawBucket = _enemy_draw_buckets.get(enemy.definition.id)
+		if bucket != null:
+			bucket.enemies.append(enemy)
+
 func _draw_enemies() -> void:
-	# Grouping textures preserves renderer batching even with hundreds of opponents.
-	for id: String in ["chaser", "rusher", "tank", "caster", "boss"]:
+	_rebuild_enemy_draw_buckets()
+	# Preserve texture-family order and the original pool order inside each family.
+	for id: String in ENEMY_DRAW_IDS:
 		var texture: Texture2D = textures[id]
-		for enemy: CombatSim.Enemy in sim.enemies:
-			if not enemy.active or enemy.definition.id != id:
-				continue
+		var bucket: EnemyDrawBucket = _enemy_draw_buckets[id]
+		for enemy: CombatSim.Enemy in bucket.enemies:
 			var size: float = enemy.radius * 3.0 + 15.0
 			var stride: float = sin(enemy.age * (9.0 if id == "rusher" else 4.0) + float(enemy.uid))
 			var bob: float = stride * (1.0 if id == "tank" else 2.0)

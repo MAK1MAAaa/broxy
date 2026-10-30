@@ -51,6 +51,46 @@ class WorldFlipperCoverageTests(unittest.TestCase):
         for category in ("characters", "skills", "layouts"):
             self.assertTrue(all(not entry["runtime_verified"] for entry in COVERAGE.bootstrap(self.catalog)["claims"][category]))
 
+    def test_new_three_characters_bind_canonical_profiles_without_claiming_original_levels(self) -> None:
+        context = COVERAGE.validate_profile_context(self.catalog, ROOT)
+        self.assertEqual(set(context), {"nasir", "mordiga", "falsche"})
+        characters = {item["game_id"]: item for item in self.ledger["claims"]["characters"]}
+        self.assertEqual(len(characters), 7)
+        expected = {"nasir": ("211012", "magic_sword_girl:2"),
+                    "mordiga": ("221008", "desert_wizard:2"),
+                    "falsche": ("361001", "reaper_girl:2")}
+        for game_id, (canonical_id, profile_id) in expected.items():
+            claim = characters[game_id]
+            self.assertEqual(claim["canonical_id"], canonical_id)
+            self.assertEqual(claim["source_profile"], context[game_id])
+            self.assertEqual(context[game_id]["profile_id"], profile_id)
+            self.assertEqual(context[game_id]["geometry_scale"], 0.5)
+            self.assertEqual(context[game_id]["project_seconds_per_source_unit"], 1 / 60)
+            self.assertIn(canonical_id, claim["notes"])
+            self.assertIn(profile_id, claim["notes"])
+            self.assertEqual(claim["status"], "partial")
+            self.assertTrue(any("等级" in gap for gap in claim["remaining_gaps"]))
+            self.assertTrue(any("ShowEffect" in gap for gap in claim["remaining_gaps"]))
+            skills = [entry for entry in self.ledger["claims"]["skills"] if entry["game_id"] == "hero_" + game_id]
+            self.assertEqual(len(skills), 2)
+            for skill in skills:
+                self.assertEqual(skill["source_profile"], context[game_id])
+                self.assertEqual(skill["status"], "partial")
+                self.assertIn("原作等级变体尚未独立实现", skill["notes"])
+        self.assertTrue(any("StopBall" in gap for gap in characters["nasir"]["remaining_gaps"]))
+        self.assertTrue(any("23尚未解码" in gap for gap in characters["falsche"]["remaining_gaps"]))
+
+    def test_background_preparation_and_equipment_decoding_do_not_expand_playable_claims(self) -> None:
+        claims = COVERAGE.bootstrap(self.catalog)["claims"]
+        self.assertEqual(len(claims["characters"]), 7)
+        self.assertEqual(len(claims["skills"]), 14)
+        self.assertTrue(all(entry["status"] == "partial" for category in ("characters", "skills") for entry in claims[category]))
+        self.assertEqual(len(claims["fields"]), 4)
+        self.assertEqual(len(claims["layouts"]), 3)
+        self.assertEqual(len(claims["equipment"]), 16)
+        self.assertEqual(sum(entry["status"] == "adapted_playable" for entry in claims["equipment"]), 8)
+        self.assertFalse(any("world_flipper_background_sources" in entry["resource"] for entries in claims.values() for entry in entries))
+
     def test_old_weapon_skins_cannot_count_as_implemented_original_equipment_effects(self) -> None:
         claims = {item["game_id"]: item for item in self.ledger["claims"]["equipment"]}
         old = {"bone": "3010053", "frost": "5030036", "ember": "5060034", "scatter": "5040026", "crescent": "5020037", "storm": "4050031", "comet": "5030039", "return_ring": "5090030"}
@@ -102,6 +142,58 @@ class WorldFlipperCoverageTests(unittest.TestCase):
         with mock.patch.object(COVERAGE, "read_json", side_effect=read_json):
             with self.assertRaises(ValueError):
                 COVERAGE.audit(self.catalog, self.ledger)
+
+    def test_profile_identity_action_bytes_geometry_and_time_cannot_drift(self) -> None:
+        def profile(document):
+            return next(row for row in document["profiles"] if row["skill_id"] == "magic_sword_girl:2")
+
+        for mutation in [
+            lambda document: profile(document).update(canonical_id="221008"),
+            lambda document: profile(document).update(action_ref="battle/action/invented"),
+            lambda document: profile(document)["root_source"].update(git_blob_sha1="0" * 40),
+            lambda document: profile(document)["root_source"].update(sha256="0" * 64),
+            lambda document: profile(document).update(runtime_profile_ready=False),
+            lambda document: profile(document)["timeline"][0]["shape_source"][1][0].update(min=200, max=200),
+            lambda document: profile(document)["timeline"][0].update(delay=0.0),
+            lambda document: profile(document)["timeline"][0].update(duration=0.1),
+            lambda document: profile(document)["timeline"][0].update(hits=2),
+            lambda document: document["time_policy"].update(project_seconds_per_source_unit=1 / 30),
+            lambda document: document["time_policy"].update(original_units_verified=True),
+        ]:
+            with self.subTest(mutation=mutation):
+                self._reject_document_change("data/worldflipper/action_profiles.json", mutation)
+        for mutation in [
+            lambda document: document["characters"][0].update(canonical_id="221008"),
+            lambda document: document["characters"][0].update(profile_id="desert_wizard:2"),
+            lambda document: document["characters"][0].update(geometry_scale=0.25),
+            lambda document: document["characters"][0].update(damage=900.0),
+            lambda document: document["characters"][0].update(cooldown=1.0),
+        ]:
+            self._reject_document_change("data/worldflipper/roster_adaptations.json", mutation)
+
+    def test_playable_profile_resource_and_ledger_cannot_hide_changed_bindings(self) -> None:
+        resource = ROOT / "data/heroes/nasir.tres"
+        original_read = Path.read_bytes
+        content = original_read(resource)
+        for old, new in [(b'"radius": 105.0', b'"radius": 205.0'),
+                         (b'"forward_offset": 110.0', b'"forward_offset": 0.0'),
+                         (b'"delay": 0.4666666666666667', b'"delay": 0.0'),
+                         (b'source_id = "211012"', b'source_id = "221008"')]:
+            self.assertIn(old, content)
+            changed = content.replace(old, new, 1)
+
+            def read_bytes(path: Path) -> bytes:
+                return changed if path.resolve() == resource.resolve() else original_read(path)
+
+            with mock.patch.object(Path, "read_bytes", read_bytes), self.assertRaises(ValueError):
+                COVERAGE.audit(self.catalog, self.ledger)
+        for category, game_id in [("characters", "nasir"), ("skills", "hero_nasir")]:
+            for change in [{"status": "adapted_playable"}, {"remaining_gaps": []}, {"source_profile": {}},
+                           {"status": "complete", "remaining_gaps": [], "runtime_verified": True, "notes": "完成"}]:
+                changed_ledger = copy.deepcopy(self.ledger)
+                next(row for row in changed_ledger["claims"][category] if row["game_id"] == game_id).update(change)
+                with self.assertRaises(ValueError):
+                    COVERAGE.audit(self.catalog, changed_ledger)
 
     def test_wrong_real_stage_layout_layer_field_transform_or_wall_count_is_rejected(self) -> None:
         mutations = [

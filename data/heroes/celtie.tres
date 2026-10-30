@@ -6,6 +6,7 @@
 script = ExtResource("1")
 id = "celtie"
 display_name = "希尔媞"
+element = "wind"
 starter_weapon = "frost"
 idle_path = "res://assets/worldflipper/characters/celtie/idle.png"
 atlas_path = "res://assets/worldflipper/characters/celtie/atlas.png"

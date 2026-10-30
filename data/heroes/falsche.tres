@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="HeroDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/hero_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+foot_anchor = Vector2(64, 125)
+id = "falsche"
+display_name = "法露伽"
+element = "dark"
+starter_weapon = "crescent"
+idle_path = "res://assets/worldflipper/roster/falsche/idle.png"
+atlas_path = "res://assets/worldflipper/roster/falsche/atlas.png"
+portrait_path = "res://assets/worldflipper/roster/falsche/portrait.png"
+frame_size = 128
+base_bonuses = {}
+main_skill = {"id": "hero_falsche", "name": "灵魂收割者", "element": "dark", "shape": "circle", "delivery": "areas", "visual_family": "soul_ring", "origin_mode": "player", "radius": 100.0, "damage": 100.0, "cooldown": 13.0, "timeline": [{"delay": 0.0, "duration": 10.0, "hits": 30, "damage_weight": 1.0, "shape": "circle", "radius": 100.0, "anchor": "caster", "forward_offset": -0.0, "lateral_offset": 0.0}]}
+action_evidence = {"catalog_skill_id": "reaper_girl:2", "action_ref": "battle/action/skill/action/rare3/reaper_girl$reaper_girl_2", "git_blob_sha1": "60e4cdcc28a7b0934edd56f0299271450f2b8967", "action_sha256": "58377f0fddd6598613b7afd5f2d44a1ee7058abbf9722545604e91f1c66cfaf6", "source_commit": "1d45b529ef078ba9b1f876d4588debd0c8a9a214", "profile_registry": "data/worldflipper/action_profiles.json", "geometry_scale": 0.5, "time_adaptation": "one source unit = 1/60 project seconds; original FPS unverified", "source_pointers": ["/11/1/0/1"], "source_gauge_parameters": {"gauge_column_4": 470, "gauge_column_5": 420, "unit": "original_skill_gauge"}, "source_command_gaps": [{"opcode": "ShowEffect", "pointer": "/11/1/0/1/20/1/0/1", "reason": "Original effect reference/camera command is not replayed; production presentation needs an explicit project adaptation policy."}, {"opcode": "ShakeCamera", "pointer": "/11/1/0/1/23/1/1/1", "reason": "Original effect reference/camera command is not replayed; production presentation needs an explicit project adaptation policy."}]}
+source_id = "361001"
+source_skill_name = "灵魂收割者"
+source_skill_weight = 420
+source_url = "https://wiki.biligame.com/worldflipper/法露伽"
+adaptation_notes = "原动作时间、命中上限与偏移分别追踪；统一0.5几何缩放、自由移动朝向、伤害和冷却为本作适配。原作能力、等级成长与FX尚未完整移植，StopBall及不透明字段不视为已经实现。"

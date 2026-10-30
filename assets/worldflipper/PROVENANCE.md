@@ -94,3 +94,5 @@
 可运行 `python tools/import_world_flipper_catalog.py --offline --check` 核对离线重建；首次取得原始缓存时去掉 `--offline`。原作技能能量保留原始列值和单位，不当作本作冷却秒数。角色、装备、技能、场景与原关卡布局的逐项进度由 [implementation.json](../../data/worldflipper/implementation.json) 跟踪，`python tools/audit_world_flipper_coverage.py` 校验来源和全部待实现ID；仅收录目录、接入图片、部分改编与运行验证分别记录。素材离线重建不代表全量玩法或性能验收完成，剩余内容与实际性能结果继续以项目实现和验证报告为准。该公开归档同样未提供原作资产的开放许可，不能把归档公开视为授权。
 
 本轮追加三份原作关卡裁片与墙线，使用独立[stages清单](stages/manifest.json)，记录12个实际使用来源与6张PNG；原79张PNG和fan08清单保留。固定JP原始动作、装备能力表、官方demo地形和2022动画镜像分别由 `tools/world_flipper_skill_action_sources.json`、`world_flipper_equipment_rules_sources.json`、`world_flipper_layout_sources.json`、`world_flipper_character_animation_sources.json` 追踪。1122份GIF只在本地缓存，未作为374名新主角发行；131份角色版本缺口明示保留。指令及资源引用已取得不等于全部技能或原关卡已移植，详见[本轮实现和限制](../../docs/world-flipper-actions.md)。
+
+本轮追加娜希尔、莫迪亚迦、法露伽的原作待机与双向步行像素规范化，独立清单位于 assets/worldflipper/roster/manifest.json；像素portrait并非原作全身立绘。132份历史背景仅作本地来源准备，未作为额外可玩布局。原作角色、背景、图像与数据版权归 Cygames, Inc. / Citail Inc.，未发现开放资产许可；当前为用户指定同人用途。

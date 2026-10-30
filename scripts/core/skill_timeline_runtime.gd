@@ -7,6 +7,38 @@ const MAX_PHASES: int = 8
 const MAX_HITS: int = 32
 const EPSILON: float = 0.0000001
 
+class ContactGeometry:
+	var kind: int = 0
+	var valid: bool = false
+	var origin: Vector2 = Vector2.ZERO
+	var direction: Vector2 = Vector2.RIGHT
+	var radius_squared: float = 0.0
+	var half_length: float = 0.0
+	var half_width: float = 0.0
+
+	func configure(parameters: Dictionary, center: Vector2, heading: Vector2) -> void:
+		origin = center
+		valid = center.is_finite() and heading.is_finite() and not heading.is_zero_approx()
+		direction = heading.normalized() if valid else Vector2.ZERO
+		match str(parameters.get("shape", "arc" if parameters.get("id", "") == "arc_slash" else "circle")):
+			"circle":
+				kind = 1
+				var radius: float = float(parameters.get("radius", 0.0))
+				radius_squared = radius * radius + 0.01
+			"rectangle":
+				kind = 2
+				half_length = float(parameters.get("half_length", 0.0))
+				half_width = float(parameters.get("width", 0.0)) * 0.5
+			_: kind = 0
+
+	func contains(point: Vector2) -> bool:
+		if not valid or not point.is_finite():
+			return false
+		var offset: Vector2 = point - origin
+		if kind == 1:
+			return not (offset.length_squared() > radius_squared)
+		return kind == 2 and absf(direction.dot(offset)) <= half_length and absf(direction.cross(offset)) <= half_width
+
 class Area:
 	var occupied: bool = false
 	var serial: int = 0
@@ -19,12 +51,14 @@ class Area:
 	var purpose: String = "damage"
 	var origin: Vector2 = Vector2.ZERO
 	var direction: Vector2 = Vector2.RIGHT
+	var follow_offset: Vector2 = Vector2.ZERO
 	var anchor: String = "fixed"
 	var parameters: Dictionary = {}
 	var contacts: Dictionary = {}
 	var next_contacts: Dictionary = {}
 	var opened: bool = false
 	var held: bool = false
+	var contact_geometry: ContactGeometry = ContactGeometry.new()
 
 var areas: Array[Area] = []
 var _serial: int = 0
@@ -78,8 +112,9 @@ func enqueue(parameters: Dictionary, origin: Vector2, direction: Vector2) -> boo
 		area.max_hits = int(phase.get("hits", 1))
 		area.interval = area.duration / float(area.max_hits)
 		area.purpose = str(phase.get("purpose", "damage"))
-		area.origin = origin
 		area.direction = direction.normalized()
+		area.follow_offset = area.direction * float(phase.get("forward_offset", 0.0)) + area.direction.orthogonal() * float(phase.get("lateral_offset", 0.0))
+		area.origin = origin + area.follow_offset
 		area.anchor = str(phase.get("anchor", "fixed"))
 		area.parameters = parameters.duplicate(true)
 		area.parameters.erase("timeline")
@@ -141,8 +176,8 @@ func advance(delta: float, caster: Vector2) -> void:
 			continue
 		area.previous_age = area.age
 		area.age += delta
-		if not area.opened and area.anchor == "caster_at_activation" and caster.is_finite():
-			area.origin = caster
+		if (area.anchor == "caster" or (not area.opened and area.anchor == "caster_at_activation")) and caster.is_finite():
+			area.origin = caster + area.follow_offset
 		if not area.opened and area.age + EPSILON >= area.delay:
 			area.opened = true
 
@@ -185,13 +220,17 @@ func snapshot() -> Dictionary:
 		if not area.occupied:
 			continue
 		visible.append({"serial": area.serial, "age": area.age, "delay": area.delay,
-			"duration": area.duration, "active": area.opened, "held": area.held, "purpose": area.purpose,
-			"origin": area.origin, "direction": area.direction,
+			"duration": area.duration, "active": area.opened, "held": area.held, "purpose": area.purpose, "anchor": area.anchor,
+			"origin": area.origin, "direction": area.direction, "follow_offset": area.follow_offset,
 			"parameters": area.parameters.duplicate(true), "hits": area.contacts.duplicate(),
 			"max_hits": area.max_hits, "interval": area.interval})
 	return {"areas": visible, "occupied": _occupied, "capacity": LIMIT, "peak": peak}
 
 static func _valid_phase(phase: Dictionary) -> bool:
+	for key: String in ["forward_offset", "lateral_offset"]:
+		var offset: float = _number(phase.get(key, 0.0), INF)
+		if not is_finite(offset) or absf(offset) > 10240.0:
+			return false
 	var delay: float = _number(phase.get("delay"), -1.0)
 	var duration: float = _number(phase.get("duration"), -1.0)
 	var raw_hits: float = _number(phase.get("hits", 1), -1.0)
@@ -199,7 +238,7 @@ static func _valid_phase(phase: Dictionary) -> bool:
 	var weight: float = _number(phase.get("damage_weight", 0.0), -1.0)
 	if delay < 0.0 or delay > 30.0 or duration <= 0.0 or duration > 10.0 or hits < 1 or hits > MAX_HITS or float(hits) != raw_hits or weight < 0.0:
 		return false
-	if phase.get("purpose", "damage") not in ["damage", "dispel"] or phase.get("anchor", "fixed") not in ["fixed", "caster_at_activation"]:
+	if phase.get("purpose", "damage") not in ["damage", "dispel"] or phase.get("anchor", "fixed") not in ["fixed", "caster_at_activation", "caster"]:
 		return false
 	if phase.get("trigger", "clock") not in ["clock", "impact"]:
 		return false
