@@ -3,6 +3,13 @@ set -eu
 BROXY_ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 BROXY_GODOT=${GODOT_BIN:-"$BROXY_ROOT/.tools/godot/Godot.app/Contents/MacOS/Godot"}
 BROXY_APP=${BROXY_APP_PATH:-"$BROXY_ROOT/build/Embers.app"}
+if [ -n "${BROXY_PYTHON:-}" ]; then
+  BROXY_PYTHON_BIN=$BROXY_PYTHON
+elif command -v python3 >/dev/null 2>&1; then
+  BROXY_PYTHON_BIN=python3
+else
+  BROXY_PYTHON_BIN=python
+fi
 case "$BROXY_APP" in
   /*.app) ;;
   *) echo "BROXY_APP_PATH must be an absolute path ending in .app" >&2; exit 1 ;;
@@ -29,8 +36,11 @@ for BROXY_FONT_LICENSE in OFL.txt LICENSES/ark-pixel/OFL.txt LICENSES/cubic-11/O
   fi
 done
 mkdir -p "$BROXY_ROOT/build"
+"$BROXY_PYTHON_BIN" "$BROXY_ROOT/tools/build_dash_benchmark_manifest.py"
 "$BROXY_GODOT" --headless --path "$BROXY_ROOT" --editor --import --quit
+"$BROXY_PYTHON_BIN" "$BROXY_ROOT/tools/build_dash_benchmark_manifest.py" --check
 "$BROXY_GODOT" --headless --path "$BROXY_ROOT" --export-release macOS "$BROXY_APP"
+"$BROXY_PYTHON_BIN" "$BROXY_ROOT/tools/build_dash_benchmark_manifest.py" --check
 # Notices remain directly readable in Finder without unpacking the game's PCK.
 mkdir -p "$BROXY_APP/Contents/Resources/licenses"
 cp "$BROXY_ROOT/assets/licenses/Godot-LICENSE.txt" "$BROXY_ROOT/assets/licenses/Godot-COPYRIGHT.txt" "$BROXY_ROOT/assets/licenses/README.md" "$BROXY_APP/Contents/Resources/licenses/"

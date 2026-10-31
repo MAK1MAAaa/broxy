@@ -3,6 +3,14 @@ $ErrorActionPreference = 'Stop'
 try {
     $projectRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
     $runner = Join-Path $PSScriptRoot 'run.ps1'
+    $pythonCandidates = if ($env:BROXY_PYTHON) { @($env:BROXY_PYTHON) } else { @('python3', 'python', 'py') }
+    $pythonCommand = $null
+    foreach ($candidate in $pythonCandidates) {
+        $command = Get-Command $candidate -ErrorAction SilentlyContinue
+        if ($command) { $pythonCommand = $command.Source; break }
+    }
+    if (-not $pythonCommand) { throw 'Python 3 not found. Install Python 3 or set BROXY_PYTHON to its executable.' }
+    $benchmarkManifestTool = Join-Path $PSScriptRoot 'build_dash_benchmark_manifest.py'
     $template = Join-Path $projectRoot '.tools/windows_release_x86_64.exe'
     if (-not (Test-Path -LiteralPath $template -PathType Leaf)) {
         throw 'Windows export template not found. Run: python tools/fetch_windows_template.py'
@@ -37,9 +45,15 @@ try {
     $archive = Join-Path $projectRoot 'build/Embers-windows-x86_64.zip'
     New-Item -ItemType Directory -Path $outputDirectory -Force | Out-Null
 
+    & $pythonCommand $benchmarkManifestTool
+    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
     & $runner --headless --editor --import --quit
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+    & $pythonCommand $benchmarkManifestTool --check
+    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
     & $runner --headless --export-release 'Windows Desktop' $executable
+    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+    & $pythonCommand $benchmarkManifestTool --check
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
     foreach ($artifact in @($executable, $package)) {
         if (-not (Test-Path -LiteralPath $artifact -PathType Leaf)) {

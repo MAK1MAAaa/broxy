@@ -15,6 +15,7 @@ func _initialize() -> void:
 	_test_filter_and_clear()
 	_test_global_head_order()
 	_test_trails_and_color()
+	_test_reused_shot_families()
 	_test_simulation_unchanged()
 	print("ProjectilePainter: %d assertions, %d failures; native GPU readback=%s" % [_checks, _failures, DisplayServer.get_name() != "headless"])
 	quit(0 if _failures == 0 else 1)
@@ -243,6 +244,66 @@ func _test_trails_and_color() -> void:
 	_check(painter.trails["ember:pierce"].color.is_equal_approx(Color("dab779")), "Friendly ember stays pale gold rather than hostile coral")
 	_check(painter.trails["scatter:blast"].color.is_equal_approx(shots[3].color.lerp(Color("dca0fa"), 0.35)), "Blast tint preserves the previous color blend")
 	_check(is_equal_approx(painter.trails["ember:pierce"].width, shots[0].radius * 1.2), "Batched ember trails retain their source radius width")
+
+func _exact_expected_heads(painter, shots: Array[CombatSim.Shot]) -> PackedFloat32Array:
+	var expected := PackedFloat32Array()
+	expected.resize(painter.head_buffer.size())
+	var cursors: Dictionary = {}
+	for shot: CombatSim.Shot in shots:
+		if not shot.active or shot.hostile:
+			continue
+		var key: String = shot.source + ":" + shot.rune
+		var head = painter.heads[key]
+		var index: int = int(cursors.get(key, 0))
+		cursors[key] = index + 1
+		var direction: Vector2 = shot.velocity.normalized()
+		if direction.is_zero_approx():
+			direction = Vector2.RIGHT
+		var scale: float = shot.radius / GameCatalog.weapon(shot.source).projectile_radius
+		var x: float = direction.x * scale
+		var y: float = direction.y * scale
+		var values: Array[float] = [x, -y, 0.0, shot.position.x, y, x, 0.0, shot.position.y,
+			1.0, 1.0, 1.0, 1.0, float(head.frame) / float(PAINTER_SCRIPT.HEAD_ATLAS_COLUMNS - 1), 0.5, 0.25, 0.0]
+		var offset: int = (int(head.start) + index) * PAINTER_SCRIPT.HEAD_INSTANCE_STRIDE
+		for channel: int in values.size():
+			expected[offset + channel] = values[channel]
+	return expected
+
+func _test_reused_shot_families() -> void:
+	var shots: Array[CombatSim.Shot] = []
+	for definition: ContentDef in GameCatalog.weapons():
+		for rune_id: String in RUNES:
+			var shot: CombatSim.Shot = _shot(definition.id, rune_id, shots.size())
+			shot.velocity = Vector2.ZERO if shots.size() % 4 == 0 else Vector2(17.0, -11.0)
+			shot.radius *= 0.75 if shots.size() % 2 == 0 else 1.25
+			shots.append(shot)
+	var painter = PAINTER_SCRIPT.new()
+	painter.rebuild(shots)
+	_check(var_to_bytes(painter.head_buffer) == var_to_bytes(_exact_expected_heads(painter, shots)), "All catalog/rune heads preserve every original Float32 transform, tint and atlas value byte for byte")
+	var full_heads: PackedByteArray = var_to_bytes(painter.head_buffer)
+	painter.rebuild(shots, Rect2(20000, 20000, 10, 10))
+	_check(var_to_bytes(painter.head_buffer) == full_heads, "Trail view culling changes neither head geometry, color nor instance order")
+	for trail in painter.trails.values():
+		_check(trail.points.is_empty() and trail.wings.is_empty(), "An offscreen trail view excludes only the pre-existing trail geometry")
+	# Simulation pools reuse the same Shot object for different sources and runes.
+	var reused: CombatSim.Shot = shots[0]
+	reused.source = "ember"
+	reused.rune = "bounce"
+	reused.radius = GameCatalog.weapon("ember").projectile_radius
+	reused.color = Color(0.2, 0.4, 0.8, 0.7)
+	shots.reverse()
+	painter.rebuild(shots)
+	_check_head_mapping(painter, shots)
+	_check(var_to_bytes(painter.head_buffer) == var_to_bytes(_exact_expected_heads(painter, shots)), "Reused and reordered Shot objects bind their new family without stale cached heads or altered Float32 values")
+	var trail = painter.trails["ember:bounce"]
+	_check(trail.last_shot == reused and trail.color == Color("dab779"), "Family style still comes from the final current shot and preserves ember's original fixed tint")
+	for key: String in painter.trails:
+		_check(painter.trails[key].head == painter.heads[key], "Each current trail references its matching surviving head family: " + key)
+	for ring in painter.rings.values():
+		for index: int in ring.cursor:
+			var offset: int = index * PAINTER_SCRIPT.INSTANCE_STRIDE + 8
+			var expected := PackedFloat32Array([Color("c7b0f3").r, Color("c7b0f3").g, Color("c7b0f3").b, Color("c7b0f3").a])
+			_check(var_to_bytes(ring.buffer.slice(offset, offset + 4)) == var_to_bytes(expected), "Cached bounce tint preserves the original four Float32 channels byte for byte")
 
 func _simulation() -> CombatSim:
 	var state := RunState.new()

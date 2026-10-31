@@ -76,12 +76,23 @@ static var _wall_geometry: Dictionary = {}
 
 
 static func normalize_id(id: String) -> String:
-	return id if IDS.has(id) else IDS[0]
+	return id if contains(id) else IDS[0]
+
+
+static func contains(id: String) -> bool:
+	return IDS.has(id) or WorldMapCatalog.contains(id)
+
+
+static func is_source_stage(id: String) -> bool:
+	return ORIGINAL_STAGE_IDS.has(id) or WorldMapCatalog.contains(id)
 
 
 static func definition(id: String) -> Dictionary:
 	_ensure_loaded()
-	return (_definitions[normalize_id(id)] as Dictionary).duplicate(true)
+	var known: String = normalize_id(id)
+	if not _definitions.has(known):
+		_definitions[known] = WorldMapCatalog.definition(known)
+	return (_definitions[known] as Dictionary).duplicate(true)
 
 
 static func art_rect() -> Rect2:
@@ -92,28 +103,34 @@ static func art_rect() -> Rect2:
 
 static func texture_path(id: String) -> String:
 	var known: String = normalize_id(id)
+	if WorldMapCatalog.contains(known):
+		return str(WorldMapCatalog.entry(known)["texture_path"])
 	return "res://assets/worldflipper/%s/%s.png" % ["stages" if ORIGINAL_STAGE_IDS.has(known) else "maps", known]
 
 static func preview_path(id: String) -> String:
 	var known: String = normalize_id(id)
+	if WorldMapCatalog.contains(known):
+		return texture_path(known)
 	return "res://assets/worldflipper/%s/previews/%s.png" % ["stages" if ORIGINAL_STAGE_IDS.has(known) else "maps", known]
 
 
 static func stage_info(id: String) -> Dictionary:
-	_ensure_loaded()
-	return (_definitions[normalize_id(id)].get("stage", {}) as Dictionary).duplicate(true)
+	return (definition(id).get("stage", {}) as Dictionary).duplicate(true)
 
 
 static func play_bounds(id: String) -> Rect2:
-	if not ORIGINAL_STAGE_IDS.has(id):
+	if WorldMapCatalog.contains(id):
+		return WorldMapCatalog.play_bounds(id)
+	if not is_source_stage(id):
 		return WORLD_BOUNDS
-	_ensure_loaded()
-	var rect: Array = _definitions[id]["stage"]["play_bounds"]
+	var rect: Array = stage_info(id)["play_bounds"]
 	return Rect2(float(rect[0]), float(rect[1]), float(rect[2]), float(rect[3]))
 
 
 static func wall_geometry(id: String) -> Array[Dictionary]:
 	var result: Array[Dictionary] = []
+	if WorldMapCatalog.contains(id):
+		return WorldMapCatalog.walls(id)
 	if not ORIGINAL_STAGE_IDS.has(id):
 		return result
 	_ensure_loaded()
@@ -161,7 +178,7 @@ static func visible_rect(point: Vector2, view_size: Vector2 = MAX_VIEW_SIZE) -> 
 	return Rect2(camera_center(point, size) - size * 0.5, size)
 
 static func camera_center_for(id: String, point: Vector2, view_size: Vector2 = MAX_VIEW_SIZE) -> Vector2:
-	if not ORIGINAL_STAGE_IDS.has(id):
+	if not is_source_stage(id):
 		return camera_center(point, view_size)
 	var play: Rect2 = play_bounds(id)
 	var size: Vector2 = _safe_view_size(view_size)

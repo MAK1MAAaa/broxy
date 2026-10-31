@@ -80,13 +80,20 @@ class WorldFlipperCoverageTests(unittest.TestCase):
         self.assertTrue(any("StopBall" in gap for gap in characters["nasir"]["remaining_gaps"]))
         self.assertTrue(any("23尚未解码" in gap for gap in characters["falsche"]["remaining_gaps"]))
 
-    def test_background_preparation_and_equipment_decoding_do_not_expand_playable_claims(self) -> None:
+    def test_source_preparation_and_actual_playable_map_bindings_remain_distinct(self) -> None:
         claims = COVERAGE.bootstrap(self.catalog)["claims"]
         self.assertEqual(len(claims["characters"]), 7)
         self.assertEqual(len(claims["skills"]), 14)
         self.assertTrue(all(entry["status"] == "partial" for category in ("characters", "skills") for entry in claims[category]))
-        self.assertEqual(len(claims["fields"]), 4)
-        self.assertEqual(len(claims["layouts"]), 3)
+        library = COVERAGE.map_library_claims(self.catalog, ROOT)
+        for category, existing in (("fields", {"sand_ruins", "japan_shrine", "sea_ship_boss", "common_skill_preview"}),
+                                   ("layouts", set(COVERAGE.LAYOUT_TARGETS.values()))):
+            expected = existing | {row["canonical_id"] for row in library[category]}
+            self.assertEqual({row["canonical_id"] for row in claims[category]}, expected)
+            for row in claims[category]:
+                if row["resource"] == COVERAGE.MAP_LIBRARY_PATH:
+                    self.assertTrue(row["library_layers"])
+                    self.assertEqual(row["status"], "partial")
         self.assertEqual(len(claims["equipment"]), 21)
         self.assertEqual(sum(entry["status"] == "adapted_playable" for entry in claims["equipment"]), 8)
         self.assertFalse(any("world_flipper_background_sources" in entry["resource"] for entries in claims.values() for entry in entries))
@@ -118,7 +125,7 @@ class WorldFlipperCoverageTests(unittest.TestCase):
                     COVERAGE.audit(self.catalog, changed)
         self.assertTrue(any("未证" in gap and "同次" in gap for gap in claims["staff_0001"]["remaining_gaps"]))
         self.assertEqual(self.ledger["counts"]["equipment"]["pending"], 405)
-        self.assertEqual(self.ledger["counts"]["layouts"]["pending"], 1419)
+        self.assertEqual(self.ledger["counts"]["layouts"]["pending"], 1422 - len(self.ledger["claims"]["layouts"]))
 
     def test_map_background_reuse_is_not_reported_as_all_original_layouts(self) -> None:
         mapped = {item["game_id"]: item for item in self.ledger["claims"]["fields"]}
@@ -127,8 +134,10 @@ class WorldFlipperCoverageTests(unittest.TestCase):
         self.assertEqual(mapped["ashland"]["canonical_id"], "sea_ship_boss")
         self.assertEqual(mapped["town"]["canonical_id"], "common_skill_preview")
         self.assertTrue(all(item["status"] == "partial" and item["remaining_gaps"] for item in mapped.values()))
-        self.assertEqual({item["canonical_id"] for item in self.ledger["claims"]["layouts"]}, {"main_2_9_5", "main_3_6_2", "main_6_6_2"})
-        self.assertEqual(self.ledger["counts"]["layouts"]["pending"], 1419)
+        existing = {item["canonical_id"] for item in self.ledger["claims"]["layouts"] if item["resource"] == "data/arenas.json"}
+        self.assertEqual(existing, {"main_2_9_5", "main_3_6_2", "main_6_6_2"})
+        all_layouts = {item["canonical_id"] for item in self.ledger["claims"]["layouts"]}
+        self.assertEqual(self.ledger["counts"]["layouts"]["pending"], 1422 - len(all_layouts))
         unmapped = {item["game_id"] for item in self.ledger["unmapped_game_content"]}
         self.assertEqual(unmapped, {"glacier", "throne", "tower_peak"})
 
@@ -141,12 +150,29 @@ class WorldFlipperCoverageTests(unittest.TestCase):
         self.assertEqual(len(manifest["sources"]), 12)
         self.assertEqual(len(manifest["assets"]), 6)
         for claim in self.ledger["claims"]["layouts"]:
+            if claim["resource"] != "data/arenas.json":
+                continue
             self.assertEqual(claim["canonical_id"], context[claim["game_id"]]["canonical_id"])
             self.assertEqual(claim["source"], context[claim["game_id"]]["source"])
             self.assertEqual(claim["resource"], "data/arenas.json")
             self.assertEqual(claim["status"], "partial")
             for term in ("碰撞", "机关", "敌人", "日服"):
                 self.assertTrue(any(term in gap for gap in claim["remaining_gaps"]))
+
+    def test_library_claims_cannot_add_unplayable_layers_or_hide_original_mechanics(self) -> None:
+        library = COVERAGE.read_json(ROOT / COVERAGE.MAP_LIBRARY_PATH)
+        unavailable = next(row["id"] for row in library["entries"] if not row["playable"])
+        for category in ("fields", "layouts"):
+            claim = next(row for row in self.ledger["claims"][category] if row["resource"] == COVERAGE.MAP_LIBRARY_PATH)
+            for mutation in (
+                {"library_layers": claim["library_layers"] + [unavailable]},
+                {"library_layers": []}, {"source": "https://example.invalid/map"},
+                {"status": "adapted_playable"}, {"remaining_gaps": []},
+            ):
+                changed = copy.deepcopy(self.ledger)
+                next(row for row in changed["claims"][category] if row["game_id"] == claim["game_id"]).update(mutation)
+                with self.assertRaisesRegex(ValueError, "Map-library coverage"):
+                    COVERAGE.audit(self.catalog, changed)
 
     def _reject_document_change(self, relative: str, mutate) -> None:
         original_read = COVERAGE.read_json

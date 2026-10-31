@@ -6,8 +6,11 @@ extends RefCounted
 const SKIN: float = 0.002
 const EPSILON: float = 0.000000001
 const MAX_SLIDES: int = 8
+const POINT_CACHE_LIMIT: int = 1024
+const ROUND_TRIP_RELATIVE_MARGIN: float = 8.881784197001252e-16
 
 var last_error: String = ""
+var last_navigation_blocker: int = -1
 var _items: Array[Dictionary] = []
 var _ax: PackedFloat64Array = PackedFloat64Array()
 var _ay: PackedFloat64Array = PackedFloat64Array()
@@ -16,6 +19,21 @@ var _by: PackedFloat64Array = PackedFloat64Array()
 var _vx: PackedFloat64Array = PackedFloat64Array()
 var _vy: PackedFloat64Array = PackedFloat64Array()
 var _length_squared: PackedFloat64Array = PackedFloat64Array()
+var _bounds_min_x: PackedFloat64Array = PackedFloat64Array()
+var _bounds_min_y: PackedFloat64Array = PackedFloat64Array()
+var _bounds_max_x: PackedFloat64Array = PackedFloat64Array()
+var _bounds_max_y: PackedFloat64Array = PackedFloat64Array()
+var _tree_min_x: PackedFloat64Array = PackedFloat64Array()
+var _tree_min_y: PackedFloat64Array = PackedFloat64Array()
+var _tree_max_x: PackedFloat64Array = PackedFloat64Array()
+var _tree_max_y: PackedFloat64Array = PackedFloat64Array()
+var _nearest_min_x: PackedFloat64Array = PackedFloat64Array()
+var _nearest_min_y: PackedFloat64Array = PackedFloat64Array()
+var _nearest_max_x: PackedFloat64Array = PackedFloat64Array()
+var _nearest_max_y: PackedFloat64Array = PackedFloat64Array()
+var _tree_wall: PackedInt32Array = PackedInt32Array()
+var _tree_escape: PackedInt32Array = PackedInt32Array()
+var _point_query_caches: Dictionary = {}
 
 
 func configure(segments: Array, scale: float = 1.0, offset: Vector2 = Vector2.ZERO) -> bool:
@@ -58,10 +76,20 @@ func configure(segments: Array, scale: float = 1.0, offset: Vector2 = Vector2.ZE
 		_vx.append(float(b[0]) - float(a[0]))
 		_vy.append(float(b[1]) - float(a[1]))
 		_length_squared.append(_vx[-1] * _vx[-1] + _vy[-1] * _vy[-1])
+		_bounds_min_x.append(minf(_ax[-1], _bx[-1]))
+		_bounds_min_y.append(minf(_ay[-1], _by[-1]))
+		_bounds_max_x.append(maxf(_ax[-1], _bx[-1]))
+		_bounds_max_y.append(maxf(_ay[-1], _by[-1]))
+	if not _items.is_empty():
+		var indices: Array[int] = []
+		for index: int in _items.size():
+			indices.append(index)
+		_append_spatial_node(indices)
 	return true
 
 
 func clear() -> void:
+	last_navigation_blocker = -1
 	_items.clear()
 	_ax.clear()
 	_ay.clear()
@@ -70,7 +98,67 @@ func clear() -> void:
 	_vx.clear()
 	_vy.clear()
 	_length_squared.clear()
+	_bounds_min_x.clear()
+	_bounds_min_y.clear()
+	_bounds_max_x.clear()
+	_bounds_max_y.clear()
+	_tree_min_x.clear()
+	_tree_min_y.clear()
+	_tree_max_x.clear()
+	_tree_max_y.clear()
+	_nearest_min_x.clear()
+	_nearest_min_y.clear()
+	_nearest_max_x.clear()
+	_nearest_max_y.clear()
+	_tree_wall.clear()
+	_tree_escape.clear()
+	_point_query_caches.clear()
 	last_error = ""
+
+
+func _append_spatial_node(indices: Array[int]) -> void:
+	var min_x: float = INF
+	var min_y: float = INF
+	var max_x: float = -INF
+	var max_y: float = -INF
+	var nearest_min_x: float = INF
+	var nearest_min_y: float = INF
+	var nearest_max_x: float = -INF
+	var nearest_max_y: float = -INF
+	for index: int in indices:
+		min_x = minf(min_x, _bounds_min_x[index])
+		min_y = minf(min_y, _bounds_min_y[index])
+		max_x = maxf(max_x, _bounds_max_x[index])
+		max_y = maxf(max_y, _bounds_max_y[index])
+		# The original projection reconstructs b as a + (b - a), including rounding.
+		var end_x: float = _ax[index] + _vx[index]
+		var end_y: float = _ay[index] + _vy[index]
+		nearest_min_x = minf(nearest_min_x, minf(_ax[index], end_x))
+		nearest_min_y = minf(nearest_min_y, minf(_ay[index], end_y))
+		nearest_max_x = maxf(nearest_max_x, maxf(_ax[index], end_x))
+		nearest_max_y = maxf(nearest_max_y, maxf(_ay[index], end_y))
+	var node: int = _tree_wall.size()
+	_tree_min_x.append(min_x)
+	_tree_min_y.append(min_y)
+	_tree_max_x.append(max_x)
+	_tree_max_y.append(max_y)
+	_nearest_min_x.append(nearest_min_x)
+	_nearest_min_y.append(nearest_min_y)
+	_nearest_max_x.append(nearest_max_x)
+	_nearest_max_y.append(nearest_max_y)
+	_tree_wall.append(indices[0] if indices.size() == 1 else -1)
+	_tree_escape.append(0)
+	if indices.size() > 1:
+		var split_x: bool = max_x - min_x >= max_y - min_y
+		indices.sort_custom(func(first: int, second: int) -> bool:
+			var first_center: float = _bounds_min_x[first] + (_bounds_max_x[first] - _bounds_min_x[first]) * 0.5 if split_x else _bounds_min_y[first] + (_bounds_max_y[first] - _bounds_min_y[first]) * 0.5
+			var second_center: float = _bounds_min_x[second] + (_bounds_max_x[second] - _bounds_min_x[second]) * 0.5 if split_x else _bounds_min_y[second] + (_bounds_max_y[second] - _bounds_min_y[second]) * 0.5
+			return first_center < second_center or (first_center == second_center and first < second)
+		)
+		var middle: int = indices.size() / 2
+		_append_spatial_node(indices.slice(0, middle))
+		_append_spatial_node(indices.slice(middle))
+	_tree_escape[node] = _tree_wall.size()
 
 
 func snapshot() -> Array[Dictionary]:
@@ -104,8 +192,14 @@ func _fraction(index: int, x: float, y: float) -> float:
 
 func _free_xy(x: float, y: float, radius: float) -> bool:
 	var r2: float = radius * radius
-	for index: int in _items.size():
-		if x < minf(_ax[index], _bx[index]) - radius or x > maxf(_ax[index], _bx[index]) + radius or y < minf(_ay[index], _by[index]) - radius or y > maxf(_ay[index], _by[index]) + radius:
+	var node: int = 0
+	while node < _tree_wall.size():
+		if x < _tree_min_x[node] - radius or x > _tree_max_x[node] + radius or y < _tree_min_y[node] - radius or y > _tree_max_y[node] + radius:
+			node = _tree_escape[node]
+			continue
+		var index: int = _tree_wall[node]
+		node += 1
+		if index < 0:
 			continue
 		var fraction: float = _fraction(index, x, y)
 		var dx: float = x - (_ax[index] + _vx[index] * fraction)
@@ -117,25 +211,57 @@ func _free_xy(x: float, y: float, radius: float) -> bool:
 
 
 func is_free(point: Vector2, radius: float = 0.0, padding: float = 0.0) -> bool:
-	return _valid_query(point, radius, padding) and _free_xy(float(point.x), float(point.y), radius + padding)
+	if not _valid_query(point, radius, padding):
+		return false
+	var clearance: float = radius + padding
+	var cache: Dictionary = _point_cache_for(clearance)
+	var cached: Variant = cache.get(point)
+	if cached is bool:
+		return cached
+	var result: bool = _free_xy(float(point.x), float(point.y), clearance)
+	if cache.size() >= POINT_CACHE_LIMIT:
+		cache.clear()
+	cache[point] = result
+	return result
+
+
+func _point_cache_for(clearance: float) -> Dictionary:
+	var existing: Variant = _point_query_caches.get(clearance)
+	if existing is Dictionary:
+		return existing
+	var cache: Dictionary = {}
+	_point_query_caches[clearance] = cache
+	return cache
 
 
 func nearest_point(point: Vector2) -> Dictionary:
 	if not point.is_finite() or _items.is_empty():
 		return {}
+	var x: float = float(point.x)
+	var y: float = float(point.y)
 	var best_index: int = -1
 	var best_squared: float = INF
 	var best_fraction: float = 0.0
-	for index: int in _items.size():
-		var fraction: float = _fraction(index, float(point.x), float(point.y))
-		var dx: float = float(point.x) - (_ax[index] + _vx[index] * fraction)
-		var dy: float = float(point.y) - (_ay[index] + _vy[index] * fraction)
+	var node: int = 0
+	while node < _tree_wall.size():
+		var low_dx: float = maxf(0.0, maxf(_nearest_min_x[node] - x, x - _nearest_max_x[node]))
+		var low_dy: float = maxf(0.0, maxf(_nearest_min_y[node] - y, y - _nearest_max_y[node]))
+		if low_dx * low_dx + low_dy * low_dy > best_squared:
+			node = _tree_escape[node]
+			continue
+		var index: int = _tree_wall[node]
+		node += 1
+		if index < 0:
+			continue
+		var fraction: float = _fraction(index, x, y)
+		var dx: float = x - (_ax[index] + _vx[index] * fraction)
+		var dy: float = y - (_ay[index] + _vy[index] * fraction)
 		var distance_squared: float = dx * dx + dy * dy
-		if distance_squared < best_squared:
+		if distance_squared < best_squared or (distance_squared == best_squared and index < best_index):
 			best_index = index
 			best_squared = distance_squared
 			best_fraction = fraction
-	return _contact(best_index, float(point.x), float(point.y), 0.0, 0.0, best_fraction, 0.0)
+	return _contact(best_index, x, y, 0.0, 0.0, best_fraction, 0.0)
 
 
 func first_hit(start: Vector2, end: Vector2, radius: float = 0.0, padding: float = 0.0) -> Dictionary:
@@ -146,13 +272,23 @@ func first_hit(start: Vector2, end: Vector2, radius: float = 0.0, padding: float
 	var dx: float = float(end.x) - sx
 	var dy: float = float(end.y) - sy
 	var clearance: float = radius + padding
+	var low_x: float = minf(sx, sx + dx)
+	var high_x: float = maxf(sx, sx + dx)
+	var low_y: float = minf(sy, sy + dy)
+	var high_y: float = maxf(sy, sy + dy)
 	var best: float = INF
 	var winner: int = -1
-	for index: int in _items.size():
-		if maxf(sx, sx + dx) < minf(_ax[index], _bx[index]) - clearance or minf(sx, sx + dx) > maxf(_ax[index], _bx[index]) + clearance or maxf(sy, sy + dy) < minf(_ay[index], _by[index]) - clearance or minf(sy, sy + dy) > maxf(_ay[index], _by[index]) + clearance:
+	var node: int = 0
+	while node < _tree_wall.size():
+		if high_x < _tree_min_x[node] - clearance or low_x > _tree_max_x[node] + clearance or high_y < _tree_min_y[node] - clearance or low_y > _tree_max_y[node] + clearance:
+			node = _tree_escape[node]
+			continue
+		var index: int = _tree_wall[node]
+		node += 1
+		if index < 0:
 			continue
 		var hit: float = _entry_time(index, sx, sy, dx, dy, clearance)
-		if hit < best:
+		if hit < best or (hit == best and index < winner):
 			best = hit
 			winner = index
 	if winner < 0:
@@ -163,7 +299,140 @@ func first_hit(start: Vector2, end: Vector2, radius: float = 0.0, padding: float
 
 
 func segment_clear(start: Vector2, end: Vector2, radius: float = 0.0, padding: float = 0.0) -> bool:
-	return _valid_query(start, radius, padding) and end.is_finite() and first_hit(start, end, radius, padding).is_empty()
+	if not _valid_query(start, radius, padding) or not end.is_finite():
+		return false
+	var sx: float = float(start.x)
+	var sy: float = float(start.y)
+	var dx: float = float(end.x) - sx
+	var dy: float = float(end.y) - sy
+	var clearance: float = radius + padding
+	var low_x: float = minf(sx, sx + dx)
+	var high_x: float = maxf(sx, sx + dx)
+	var low_y: float = minf(sy, sy + dy)
+	var high_y: float = maxf(sy, sy + dy)
+	var node: int = 0
+	while node < _tree_wall.size():
+		if high_x < _tree_min_x[node] - clearance or low_x > _tree_max_x[node] + clearance or high_y < _tree_min_y[node] - clearance or low_y > _tree_max_y[node] + clearance:
+			node = _tree_escape[node]
+			continue
+		var index: int = _tree_wall[node]
+		node += 1
+		if index >= 0 and _entry_time(index, sx, sy, dx, dy, clearance) < INF:
+			return false
+	return true
+
+
+func navigation_clear(start: Vector2, end: Vector2, radius: float = 0.0, padding: float = 0.0) -> bool:
+	last_navigation_blocker = -1
+	if not _valid_query(start, radius, padding) or not end.is_finite():
+		return false
+	var clearance: float = radius + padding
+	var cache: Dictionary = _point_cache_for(clearance)
+	var start_cached: Variant = cache.get(start)
+	var end_cached: Variant = cache.get(end)
+	if (start_cached is bool and not start_cached) or (end_cached is bool and not end_cached):
+		return false
+	var check_start: bool = not (start_cached is bool)
+	var check_end: bool = not (end_cached is bool)
+	var sx: float = float(start.x)
+	var sy: float = float(start.y)
+	var ex: float = float(end.x)
+	var ey: float = float(end.y)
+	var dx: float = ex - sx
+	var dy: float = ey - sy
+	var r2: float = clearance * clearance
+	var segment_low_x: float = minf(sx, sx + dx)
+	var segment_high_x: float = maxf(sx, sx + dx)
+	var segment_low_y: float = minf(sy, sy + dy)
+	var segment_high_y: float = maxf(sy, sy + dy)
+	# The real endpoint may differ from the segment's reconstructed endpoint.
+	var low_x: float = minf(segment_low_x, ex)
+	var high_x: float = maxf(segment_high_x, ex)
+	var low_y: float = minf(segment_low_y, ey)
+	var high_y: float = maxf(segment_high_y, ey)
+	var node: int = 0
+	while node < _tree_wall.size():
+		var min_x: float = _tree_min_x[node] - clearance
+		var max_x: float = _tree_max_x[node] + clearance
+		var min_y: float = _tree_min_y[node] - clearance
+		var max_y: float = _tree_max_y[node] + clearance
+		if high_x < min_x or low_x > max_x or high_y < min_y or low_y > max_y:
+			node = _tree_escape[node]
+			continue
+		var index: int = _tree_wall[node]
+		node += 1
+		if index < 0:
+			continue
+		if check_start and not (sx < min_x or sx > max_x or sy < min_y or sy > max_y):
+			var fraction: float = _fraction(index, sx, sy)
+			var ox: float = sx - (_ax[index] + _vx[index] * fraction)
+			var oy: float = sy - (_ay[index] + _vy[index] * fraction)
+			var distance_squared: float = ox * ox + oy * oy
+			if distance_squared < r2 - EPSILON or (clearance == 0.0 and distance_squared <= EPSILON * EPSILON):
+				last_navigation_blocker = index
+				return false
+		if check_end and not (ex < min_x or ex > max_x or ey < min_y or ey > max_y):
+			var fraction: float = _fraction(index, ex, ey)
+			var ox: float = ex - (_ax[index] + _vx[index] * fraction)
+			var oy: float = ey - (_ay[index] + _vy[index] * fraction)
+			var distance_squared: float = ox * ox + oy * oy
+			if distance_squared < r2 - EPSILON or (clearance == 0.0 and distance_squared <= EPSILON * EPSILON):
+				last_navigation_blocker = index
+				return false
+		if not (segment_high_x < min_x or segment_low_x > max_x or segment_high_y < min_y or segment_low_y > max_y):
+			if _entry_time(index, sx, sy, dx, dy, clearance) < INF:
+				last_navigation_blocker = index
+				return false
+	if check_start or check_end:
+		var additions: int = int(check_start) + int(check_end and end != start)
+		if cache.size() + additions > POINT_CACHE_LIMIT:
+			cache.clear()
+		cache[start] = true
+		cache[end] = true
+	return true
+
+
+func rejects_sweep(index: int, start: Vector2, end: Vector2, radius: float = 0.0, padding: float = 0.0) -> bool:
+	if index < 0 or index >= _items.size() or not _valid_query(start, radius, padding) or not end.is_finite():
+		return false
+	var sx: float = float(start.x)
+	var sy: float = float(start.y)
+	var dx: float = float(end.x) - sx
+	var dy: float = float(end.y) - sy
+	var clearance: float = radius + padding
+	if maxf(sx, sx + dx) < _bounds_min_x[index] - clearance or minf(sx, sx + dx) > _bounds_max_x[index] + clearance \
+		or maxf(sy, sy + dy) < _bounds_min_y[index] - clearance or minf(sy, sy + dy) > _bounds_max_y[index] + clearance:
+		return false
+	return _entry_time(index, sx, sy, dx, dy, clearance) < INF
+
+
+func bounds_clear(region: Rect2, radius: float, padding: float = 0.0) -> bool:
+	if not _valid_query(region.position, radius, padding) or not region.size.is_finite() or region.size.x <= 0.0 or region.size.y <= 0.0:
+		return false
+	var end: Vector2 = region.end
+	if not end.is_finite() or end.x <= region.position.x or end.y <= region.position.y:
+		return false
+	var clearance: float = radius + padding
+	var low_x: float = float(region.position.x)
+	var high_x: float = float(end.x)
+	var low_y: float = float(region.position.y)
+	var high_y: float = float(end.y)
+	# Bound both float64 operations in start + (end - start), including cancellation.
+	var margin_x: float = maxf(absf(low_x), absf(high_x)) * ROUND_TRIP_RELATIVE_MARGIN
+	var margin_y: float = maxf(absf(low_y), absf(high_y)) * ROUND_TRIP_RELATIVE_MARGIN
+	low_x -= margin_x
+	high_x += margin_x
+	low_y -= margin_y
+	high_y += margin_y
+	var node: int = 0
+	while node < _tree_wall.size():
+		if high_x < _tree_min_x[node] - clearance or low_x > _tree_max_x[node] + clearance or high_y < _tree_min_y[node] - clearance or low_y > _tree_max_y[node] + clearance:
+			node = _tree_escape[node]
+			continue
+		if _tree_wall[node] >= 0:
+			return false
+		node += 1
+	return true
 
 
 func _entry_time(index: int, sx: float, sy: float, dx: float, dy: float, radius: float) -> float:

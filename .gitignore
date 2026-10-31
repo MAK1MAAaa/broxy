@@ -9,6 +9,11 @@ reports/*.import
 __pycache__/
 *.py[cod]
 .DS_Store
+reports/world-flipper-map-library/*.log
+reports/world-flipper-map-library/*.png
+reports/world-flipper-map-library/*.import
+reports/world-flipper-map-library/*.jsonl
+reports/world-flipper-map-library/*-raw.json
 reports/windows/*.log
 reports/windows/*.jsonl
 reports/windows/*.png

@@ -46,3 +46,8 @@ Additional original-stage crops and open-wall geometry use verified official-dem
 1230份地形、1422条布局引用及背景配套样本仅作原始来源准备，不构成更多地图已可玩的声明。
 下载范围和证据见 tools/world_flipper_jp_archive_sources.json、docs/world-flipper-jp-archive.md。
 原作图片与数据权利不因公开归档、裁切、签名解码修复或整数缩放而转移；未发现开放资产许可。
+
+原作地图资料库使用同一JP历史生产缓存的精确背景PNG、atlas、parts、timeline和地形。
+原生静态平面共享图、裁切、校验与完整出处见 fields/manifest.json、
+tools/world_flipper_map_library_sources.json 和 data/worldflipper/map_library.json。
+资源缓存仍为1.780.30，未证明最终1.780.40逐字节相同；未解图层与机关未计作完整复现。

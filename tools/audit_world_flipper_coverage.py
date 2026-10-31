@@ -58,6 +58,13 @@ SCOPED_GAPS = [
     "原作等级成长与独立觉醒槽尚未完整移植；背包I/II/III采用本作1/2/4权重",
     "原作装备基础生命攻击数值未移植，自动投射与背包占格采用本作规则",
 ]
+MAP_LIBRARY_PATH = "data/worldflipper/map_library.json"
+MAP_LIBRARY_GAPS = [
+    "原作props碰撞形状与机关交互尚未完整实现，未猜测装饰物碰撞",
+    "各层独立开放；原作机关、阶段切换、门、墓地及敌人关卡序列尚未完整移植",
+    "BOUNDS限场与统一4倍像素为本作适配，不代表原作四面实体封墙",
+    "日服缓存1.780.30源字节已核验；最终1.780.40逐字节一致性未证",
+]
 
 
 def validate_equipment_context(root: Path) -> dict[str, dict[str, Any]]:
@@ -98,6 +105,7 @@ def runtime_inputs(root: Path = ROOT) -> dict[str, str]:
     for directory in ("scripts", "data", "scenes", "shaders"):
         paths.update(path for path in (root / directory).rglob("*") if path.is_file() and path.suffix in (".gd", ".tscn", ".tres", ".json", ".gdshader") and path != root / "data/worldflipper/implementation.json")
     paths.update(path for path in (root / "assets/worldflipper").rglob("*") if path.is_file() and path.suffix in (".png", ".json"))
+    paths.update(path for path in (root / "assets/diagnostics").rglob("*.json") if path.is_file())
     return {path.relative_to(root).as_posix(): hashlib.sha256(path.read_bytes() if path.suffix == ".png" else path.read_text(encoding="utf-8").encode("utf-8")).hexdigest() for path in sorted(paths)}
 
 
@@ -270,6 +278,52 @@ def validate_layout_context(catalog: dict[str, Any], root: Path) -> dict[str, di
     return checked
 
 
+def validate_map_library_context(catalog: dict[str, Any], root: Path) -> dict[str, dict[str, Any]]:
+    """Keep canonical map coverage bound to the compiler's actual playable layers."""
+    path = root / MAP_LIBRARY_PATH
+    if not path.is_file():
+        return {}
+    spec = importlib.util.spec_from_file_location("coverage_map_library", root / "tools/compile_world_flipper_maps.py")
+    if spec is None or spec.loader is None:
+        raise ValueError("Missing compiled map-library auditor")
+    compiler = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(compiler)
+    library = read_json(path)
+    compiler.validate_library(library, root=root)
+    canonical = canonical_sets(catalog)
+    archive = read_json(root / "tools/world_flipper_jp_archive_sources.json")["archive"]["url"]
+    checked = {}
+    for row in library["entries"]:
+        if not row["playable"]:
+            continue
+        layout = canonical["layouts"][row["canonical_layout_id"]]
+        field = canonical["fields"][row["field_id"]]
+        if row["field_id"] != layout["field_id"] or row["stage"]["terrain_ref"] != layout["terrain_ref"]:
+            raise ValueError("Library layer differs from its pinned canonical field/terrain")
+        checked[row["id"]] = {"canonical_id": layout["id"], "field_id": field["id"],
+            "source": archive + "#" + layout["terrain_ref"] + ".amf3.deflate",
+            "field_source": archive + "#" + field["background_ref"] + ".png"}
+    return checked
+
+
+def map_library_claims(catalog: dict[str, Any], root: Path) -> dict[str, list[dict[str, Any]]]:
+    bindings = validate_map_library_context(catalog, root)
+    result: dict[str, list[dict[str, Any]]] = {"fields": [], "layouts": []}
+    for category, key in (("fields", "field_id"), ("layouts", "canonical_id")):
+        grouped: dict[str, list[str]] = {}
+        for game_id, binding in bindings.items():
+            grouped.setdefault(binding[key], []).append(game_id)
+        for canonical_id, ids in sorted(grouped.items()):
+            ids.sort()
+            binding = bindings[ids[0]]
+            result[category].append({"canonical_id": canonical_id, "game_id": ids[0], "library_layers": ids,
+                "resource": MAP_LIBRARY_PATH, "source": binding["source" if category == "layouts" else "field_source"],
+                "status": "partial", "runtime_verified": False,
+                "notes": "已按原作字段绑定静态背景、独立图层BOUNDS与普通WALL；全目录索引中的未解层不可选，原生像素统一4倍，未使用占位场景代替。",
+                "remaining_gaps": list(MAP_LIBRARY_GAPS)})
+    return result
+
+
 def bootstrap(catalog: dict[str, Any], root: Path = ROOT) -> dict[str, Any]:
     original = canonical_sets(catalog)
     profiles = validate_profile_context(catalog, root)
@@ -335,6 +389,9 @@ def bootstrap(catalog: dict[str, Any], root: Path = ROOT) -> dict[str, Any]:
             "source": geometry_sources[stage["source_id"]]["url"], "status": "partial", "runtime_verified": False,
             "notes": "已接入原始layer 0的%d条WALL与BOUNDS、对应完整背景裁切及720×1280可玩区域；原logic坐标统一缩放2/3，对应native像素整数4倍，未叠加其他图层或猜测props碰撞。" % stage["wall_segment_count"],
             "remaining_gaps": list(LAYOUT_GAPS)})
+    for category, entries in map_library_claims(catalog, root).items():
+        existing = {entry["canonical_id"] for entry in claims[category]}
+        claims[category].extend(entry for entry in entries if entry["canonical_id"] not in existing)
     return {"schema_version": 1, "scope": "Japanese final archive coverage; catalogued identities are not implemented gameplay. Runtime verification is recorded separately from adaptation status.",
             "claims": claims, "unmapped_game_content": unmapped, "runtime_evidence": None}
 
@@ -348,6 +405,7 @@ def audit(catalog: dict[str, Any], ledger: dict[str, Any], root: Path = ROOT) ->
         layout_bindings = validate_layout_context(catalog, root) if result["claims"]["layouts"] else {}
         profile_bindings = validate_profile_context(catalog, root)
         equipment_bindings = validate_equipment_context(root)
+        library_claims = map_library_claims(catalog, root)
     except (OSError, KeyError, TypeError, StopIteration) as error:
         raise ValueError("Original layout or character-profile evidence is missing or malformed: " + str(error)) from error
     counts = {}
@@ -382,6 +440,10 @@ def audit(catalog: dict[str, Any], ledger: dict[str, Any], root: Path = ROOT) ->
                 actor = resolve_source(original["characters"], string_property(resource, "source_id"))
                 if actor not in items[identifier]["owner_character_ids"]:
                     raise ValueError("Covered skill is not owned by the mapped original character")
+            elif category in ("fields", "layouts") and entry["resource"] == MAP_LIBRARY_PATH:
+                expected = next((claim for claim in library_claims[category] if claim["canonical_id"] == identifier), None)
+                if expected is None or any(entry.get(key) != expected[key] for key in ("game_id", "library_layers", "source", "status", "remaining_gaps")):
+                    raise ValueError("Map-library coverage differs from its real playable layers or conceals unresolved mechanics")
             elif category == "fields":
                 background_ref = entry["source"].split("/production/")[-1].removesuffix(".png")
                 if items[identifier]["background_ref"] != background_ref:

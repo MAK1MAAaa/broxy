@@ -112,9 +112,9 @@ func _test_geometry_and_projection() -> void:
 	for frame: int in 160:
 		var target: Vector2 = ROCK + Vector2(180, -float(frame) * 0.5)
 		field.next_target(ROCK + Vector2(-180, 0), target, 22.0, 100)
-		var route: Dictionary = field._routes[100]
-		var path: PackedVector2Array = route["path"]
-		follows_target = follows_target and not path.is_empty() and path[-1] == route["goal"] and (route["goal"] as Vector2).distance_to(target) <= 48.0
+		var route: ArenaObstacles.NavigationRoute = field._routes[100]
+		var path: PackedVector2Array = route.path
+		follows_target = follows_target and not path.is_empty() and path[-1] == route.goal and (route.goal as Vector2).distance_to(target) <= 48.0
 	_check(follows_target, "Many small target moves accumulate against the actual route endpoint and trigger a fresh route")
 	var boundary_field := ArenaObstacles.new([{"center": Vector2(0, -435), "radius": 100.0}])
 	var boundary_result: Vector2 = boundary_field.move_body(Vector2(-400, -485), Vector2(900, 0), 16.0, 16.0)
@@ -154,15 +154,15 @@ func _test_shared_route_endpoints() -> void:
 		var start := Vector2(970 + (agent % 12) * 2, 340.0 + float(agent / 12) * 1.5)
 		starts.append(start)
 		var waypoint: Vector2 = field.next_target(start, goal, 13.0, agent)
-		_check(waypoint != goal and waypoint != start and field.segment_clear(start, waypoint, 13.0) and _route_path_safe(field, field._routes[agent]["path"], 13.0), "Every crowded agent receives a real obstacle-safe detour")
+		_check(waypoint != goal and waypoint != start and field.segment_clear(start, waypoint, 13.0) and _route_path_safe(field, field._routes[agent].path, 13.0), "Every crowded agent receives a real obstacle-safe detour")
 	var before: Dictionary = field.navigation_stats()
 	_check(int(before["route_builds"]) == 300 and int(before["goal_refreshes"]) == 1 and int(before["goal_visibility_checks"]) == (field._graph_point_ids[13.0] as PackedInt64Array).size(), "Three hundred agents share one exact goal's full visibility calculation")
 	_check(int(before["full_scan_fallbacks"]) == 0 and int(before["start_visibility_checks"]) <= 300 * ArenaObstacles.LOCAL_ROUTE_CANDIDATES, "Nearby visible anchors bound ordinary per-agent attachment checks")
 	goal = Vector2(1460, 410)
 	for agent: int in 300:
 		var waypoint: Vector2 = field.next_target(starts[agent], goal, 13.0, agent)
-		var route: Dictionary = field._routes[agent]
-		_check(field.segment_clear(starts[agent], waypoint, 13.0) and (route["path"] as PackedVector2Array)[-1] == goal and _route_path_safe(field, route["path"], 13.0), "A moving goal retargets only a safe bounded final segment")
+		var route: ArenaObstacles.NavigationRoute = field._routes[agent]
+		_check(field.segment_clear(starts[agent], waypoint, 13.0) and (route.path as PackedVector2Array)[-1] == goal and _route_path_safe(field, route.path, 13.0), "A moving goal retargets only a safe bounded final segment")
 	var after: Dictionary = field.navigation_stats()
 	_check(after["route_builds"] == before["route_builds"] and int(after["tail_retargets"]) == 300, "A safe goal displacement beyond forty-eight pixels avoids three hundred redundant A-star builds")
 	var positions: Array[Vector2] = starts.duplicate()
@@ -178,7 +178,7 @@ func _test_shared_route_endpoints() -> void:
 			progressed = progressed or positions[agent].distance_to(starts[agent]) > 10.0
 	_check(traversable and progressed, "Actual repeated movement remains legal while a six-hundred-pixel-per-second goal moves across frames")
 	var large: Vector2 = field.next_target(starts[0], goal, 42.0, 1000)
-	_check(field.segment_clear(starts[0], large, 42.0) and field._graph_goals.has(13.0) and field._graph_goals.has(42.0) and _route_path_safe(field, field._routes[1000]["path"], 42.0), "Different body sizes retain separate graph goals and full safe clearance")
+	_check(field.segment_clear(starts[0], large, 42.0) and field._graph_goals.has(13.0) and field._graph_goals.has(42.0) and _route_path_safe(field, field._routes[1000].path, 42.0), "Different body sizes retain separate graph goals and full safe clearance")
 	var stats: Dictionary = field.navigation_stats()
 	stats["route_builds"] = -1
 	_check(int(field.navigation_stats()["route_builds"]) >= 300, "Navigation counters are detached observations")
@@ -255,7 +255,7 @@ func _test_route_fallback() -> void:
 	var start: Vector2 = ROCK + Vector2(-180, 0)
 	var goal: Vector2 = ROCK + Vector2(180, 0)
 	var waypoint: Vector2 = field.next_target(start, goal, 22.0, 1)
-	_check(waypoint != start and waypoint != goal and field.segment_clear(start, waypoint, 22.0) and _route_path_safe(field, field._routes[1]["path"], 22.0), "A missing local candidate set still finds the full reachable safe route")
+	_check(waypoint != start and waypoint != goal and field.segment_clear(start, waypoint, 22.0) and _route_path_safe(field, field._routes[1].path, 22.0), "A missing local candidate set still finds the full reachable safe route")
 	_check(int(field.navigation_stats()["full_scan_fallbacks"]) == 1 and int(field.navigation_stats()["start_visibility_checks"]) == (field._graph_point_ids[22.0] as PackedInt64Array).size(), "A-star failure falls back to every static graph node without dropping navigation")
 	field.set_active("blocking", false)
 	_check(field._graphs.is_empty() and field._graph_point_ids.is_empty() and field._graph_goals.is_empty() and field.next_target(start, goal, 22.0, 1) == goal, "Opening a route discards shared graph endpoints as well as agent paths")

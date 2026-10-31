@@ -390,7 +390,7 @@ func _move_player(delta: float, movement: Vector2, dash_pressed: bool) -> void:
 		var dash_delta: float = minf(delta, dash_time_left)
 		player_velocity = dash_direction * DashRules.SPEED
 		var impact: Dictionary = obstacles.first_hit(player_position, player_velocity * dash_delta, 16.0, 16.0)
-		var source_wall: bool = ArenaCatalog.ORIGINAL_STAGE_IDS.has(run.arena_id) and str(impact.get("id", "")).begins_with("wall:")
+		var source_wall: bool = ArenaCatalog.is_source_stage(run.arena_id) and str(impact.get("id", "")).begins_with("wall:")
 		if not impact.is_empty() and (str(impact.get("art_id", "")) == "bumper" or source_wall):
 			var used: float = dash_delta * clampf(float(impact["t"]), 0.0, 1.0)
 			var normal: Vector2 = impact["normal"]

@@ -12,6 +12,8 @@ var textures: Dictionary = {}
 var _player_atlas: Texture2D
 var _presentation_dirty: bool = true
 var arena_texture: Texture2D
+var _arena_source_rect: Rect2 = Rect2()
+var _arena_play_rect: Rect2 = Rect2()
 var _obstacle_textures: Dictionary = {}
 var _arena_obstacles: Array[Dictionary] = []
 var _interaction_textures: Dictionary = {}
@@ -196,7 +198,7 @@ func _ready() -> void:
 	_number_font = GameTypography.font()
 	_dash_evasion_font = GameTypography.font()
 	_dash_evasion_text_width = _dash_evasion_font.get_string_size(DASH_EVASION_TEXT, HORIZONTAL_ALIGNMENT_LEFT, -1, DASH_EVASION_FONT_SIZE).x
-	arena_texture = load(ArenaCatalog.texture_path(_arena_id)) as Texture2D
+	_load_arena_art()
 	for id: String in ["monument", "planter", "bumper"]:
 		_obstacle_textures[id] = load("res://assets/worldflipper/props/%s.png" % id) as Texture2D
 	for entry: Array in [["ball", "ball-atlas"], ["barrel", "barrel-atlas"], ["chest", "chest"], ["health", "health"], ["charge", "charge"], ["gold", "mana"]]:
@@ -251,7 +253,7 @@ func begin(state: RunState) -> void:
 	# Keep off-tree simulation fixtures free of render resources; _ready handles
 	# a world begun before it is attached, using the same selected arena.
 	if is_node_ready():
-		arena_texture = load(ArenaCatalog.texture_path(_arena_id)) as Texture2D
+		_load_arena_art()
 	_arena_color = Color(str(arena["preview_color"])) if _arena_id != "reliquary" else Color(0.78, 0.67, 0.50)
 	sim = CombatSim.new()
 	sim.begin(state)
@@ -1059,9 +1061,20 @@ func minimap_snapshot() -> Dictionary:
 		"view": camera_view(), "enemies": enemies, "zones": zones, "arena_id": _arena_id,
 		"obstacles": obstacles, "walls": sim.obstacles.walls.snapshot(), "pickups": interactions.get("pickups", []), "pinball_active": bool(sim.pinball_snapshot().get("active", false))}
 
+func _load_arena_art() -> void:
+	arena_texture = load(ArenaCatalog.texture_path(_arena_id)) as Texture2D
+	_arena_source_rect = WorldMapCatalog.source_rect(_arena_id) if WorldMapCatalog.contains(_arena_id) else Rect2()
+	_arena_play_rect = ArenaCatalog.play_bounds(_arena_id) if _arena_source_rect.has_area() else Rect2()
+
+
 func _draw() -> void:
 	if arena_texture != null:
-		draw_texture_rect(arena_texture, ArenaCatalog.art_rect(), false)
+		if _arena_source_rect.has_area():
+			draw_rect(camera_view().grow(4.0), Color("152e40"))
+			draw_rect(_arena_play_rect.grow(12.0), Color("0d202e"))
+			draw_texture_rect_region(arena_texture, _arena_play_rect, _arena_source_rect)
+		else:
+			draw_texture_rect(arena_texture, ArenaCatalog.art_rect(), false)
 	if sim == null:
 		return
 	_draw_atmosphere()

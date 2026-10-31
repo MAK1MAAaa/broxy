@@ -19,6 +19,7 @@ const TRAIL_MAIN_WIDTH_SCALE: float = 0.72
 const TRAIL_HALO_ALPHA: float = 0.10
 const TRAIL_HALO_WIDTH_SCALE: float = 1.55
 const EMBER_TRAIL_ALPHA: float = 0.40
+const BOUNCE_RING_COLOR: Color = Color("c7b0f3")
 
 class TrailStyle:
 	var main_color: Color = Color.WHITE
@@ -38,6 +39,7 @@ class TrailBatch:
 	var width_scale: float = 1.2
 	var last_shot: CombatSim.Shot
 	var style: TrailStyle = TrailStyle.new()
+	var head: HeadBatch
 
 class InstanceBatch:
 	var multimesh: MultiMesh
@@ -53,6 +55,7 @@ class HeadBatch:
 	var start: int = 0
 	var source: String = ""
 	var frame: int = 0
+	var encoded_frame: float = 0.0
 	var base_radius: float = 1.0
 	var texture: Texture2D
 
@@ -71,7 +74,7 @@ var ember_count: int = 0
 var bounce_count: int = 0
 var family_counts: Dictionary = {}
 var _friendly: Array[CombatSim.Shot] = []
-var _friendly_keys: Array[String] = []
+var _friendly_trails: Array[TrailBatch] = []
 var _body_buffer: PackedFloat32Array = PackedFloat32Array()
 var _head_base_radii: Dictionary = {}
 var _head_meshes: Dictionary = {}
@@ -134,8 +137,11 @@ func rebuild(shots: Array[CombatSim.Shot], view: Rect2 = Rect2()) -> void:
 	bounce_count = 0
 	family_counts.clear()
 	_friendly.clear()
-	_friendly_keys.clear()
+	_friendly_trails.clear()
 	var ring_counts: Dictionary = {}
+	var cull_trails: bool = view.has_area()
+	var endpoint_view_safe: bool = cull_trails and view.position.is_finite() and view.size.is_finite() and view.end.is_finite() \
+		and view.position.x >= -1048576.0 and view.position.y >= -1048576.0 and view.end.x <= 1048576.0 and view.end.y <= 1048576.0
 	for shot: CombatSim.Shot in shots:
 		if not shot.active or shot.hostile:
 			continue
@@ -143,12 +149,12 @@ func rebuild(shots: Array[CombatSim.Shot], view: Rect2 = Rect2()) -> void:
 			break
 		_friendly.append(shot)
 		var key: String = shot.source + ":" + shot.rune
-		_friendly_keys.append(key)
 		family_counts[key] = int(family_counts.get(key, 0)) + 1
 		if not trails.has(key):
 			trails[key] = TrailBatch.new()
 		var trail: TrailBatch = trails[key]
 		trail.last_shot = shot
+		_friendly_trails.append(trail)
 		friendly_count += 1
 		if shot.rune == "bounce":
 			var radius: float = shot.radius + 3.0
@@ -169,12 +175,12 @@ func rebuild(shots: Array[CombatSim.Shot], view: Rect2 = Rect2()) -> void:
 		elif shot.source == "comet":
 			trail_length = 29.0
 		var tail: Vector2 = shot.position - direction * trail_length
-		var key: String = _friendly_keys[index]
-		var trail: TrailBatch = trails[key]
+		var trail: TrailBatch = _friendly_trails[index]
 		var width: float = shot.radius * trail.width_scale
 		var start: Vector2 = shot.position - direction * 16.0 if shot.source == "return_ring" else tail - direction * 6.0 if shot.source == "ember" else tail
 		var end: Vector2 = shot.position - direction * 10.0 if shot.source == "return_ring" else shot.position
-		if not view.has_area() or trail_draw_bounds(start, end, width).intersects(view):
+		if not cull_trails or (endpoint_view_safe and start.is_finite() and end.is_finite() and is_finite(width) \
+			and view.has_point(start) and view.has_point(end)) or trail_draw_bounds(start, end, width).intersects(view):
 			trail.points[trail.point_cursor] = start
 			trail.points[trail.point_cursor + 1] = end
 			trail.point_cursor += 2
@@ -190,15 +196,15 @@ func rebuild(shots: Array[CombatSim.Shot], view: Rect2 = Rect2()) -> void:
 		if shot.source == "ember":
 			_write_instance(_body_buffer, ember_count, shot.position, shot.radius, trail.color)
 			ember_count += 1
-		var head: HeadBatch = heads[key]
+		var head: HeadBatch = trail.head
 		var head_direction: Vector2 = Vector2.RIGHT if direction.is_zero_approx() else direction
 		var head_index: int = head.start + head.cursor
 		_write_head_instance(head_buffer, head_index, shot.position, head_direction, shot.radius / head.base_radius, HEAD_INSTANCE_STRIDE)
-		head_buffer[head_index * HEAD_INSTANCE_STRIDE + 12] = float(head.frame) / float(HEAD_ATLAS_COLUMNS - 1)
+		head_buffer[head_index * HEAD_INSTANCE_STRIDE + 12] = head.encoded_frame
 		head.cursor += 1
 		if shot.rune == "bounce":
 			var ring: RingBatch = rings[shot.radius + 3.0]
-			_write_instance(ring.buffer, ring.cursor, shot.position, 1.0, Color("c7b0f3"))
+			_write_instance(ring.buffer, ring.cursor, shot.position, 1.0, BOUNCE_RING_COLOR)
 			ring.cursor += 1
 	if ember_count > 0:
 		bodies.buffer = _body_buffer
@@ -284,9 +290,11 @@ func _prepare_heads() -> void:
 			head.texture = _head_textures[source]
 			heads[key] = head
 		var count: int = int(family_counts[key])
+		head.encoded_frame = float(head.frame) / float(HEAD_ATLAS_COLUMNS - 1)
 		head.capacity = maxi(head.capacity, count)
 		head.cursor = 0
 		var trail: TrailBatch = trails[key]
+		trail.head = head
 		_prepare_trail(trail)
 		trail.points.resize(count * 2)
 		trail.wings.resize(count * 4 if trail.last_shot.rune == "pierce" or trail.source == "frost" else 0)

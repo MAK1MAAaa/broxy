@@ -5,7 +5,7 @@ const MAIN: PackedScene = preload("res://scenes/main.tscn")
 const STEP: float = 1.0 / 60.0
 const SEED: int = 20261031
 const HEALTH: float = 1000000.0
-const VIEWS: Array[String] = ["windup", "first", "second", "bomb-flight", "bomb-impact", "bomb-late", "dispel", "map", "follow", "aura-late", "aura-end"]
+const VIEWS: Array[String] = ["windup", "first", "second", "bomb-flight", "bomb-impact", "bomb-late", "dispel", "map", "follow", "aura-late", "aura-end", "world-maps", "world-maps-empty"]
 const AURA_VIEWS: Array[String] = ["follow", "aura-late", "aura-end"]
 const REGIONS: Array[String] = ["center", "north", "south"]
 var _receipts: Array[Dictionary] = []
@@ -54,7 +54,7 @@ func _options() -> Dictionary:
 		return _option_error("Region must be center, north or south", result)
 	if explicit_region and result["view"] != "map":
 		return _option_error("--region is only supported with --view=map", result)
-	if result["hero"] not in HeroCatalog.IDS or result["arena"] not in ArenaCatalog.IDS or result["view"] not in VIEWS:
+	if result["hero"] not in HeroCatalog.IDS or not ArenaCatalog.contains(str(result["arena"])) or result["view"] not in VIEWS:
 		return _option_error("Hero, arena and view must be existing production IDs", result)
 	if (str(result["view"]).begins_with("bomb-") and result["hero"] != "hanabi") or (result["view"] in ["second", "dispel"] and result["hero"] != "clarisse"):
 		return _option_error("Bomb views require Hanabi; second/dispel require Clarisse", result)
@@ -92,6 +92,9 @@ func _preview() -> void:
 	app.sound.set_volume(0.0)
 	app.ui.set_selected_arena(str(options["arena"]))
 	app.ui.set_selected_hero(str(options["hero"]))
+	if options["view"] in ["world-maps", "world-maps-empty"]:
+		await _browser_preview(app, options)
+		return
 	app._begin_run("bone", SEED)
 	var world: CombatWorld = app.world
 	world.set_physics_process(false)
@@ -157,8 +160,11 @@ func _preview() -> void:
 	var pure: bool = warmup_pure and before == after
 	var absolute: String = str(options["capture"])
 	var result: Error = DirAccess.make_dir_recursive_absolute(absolute.get_base_dir())
+	var capture_size := Vector2i.ZERO
 	if result == OK:
-		result = get_tree().root.get_texture().get_image().save_png(absolute)
+		var capture_image: Image = get_tree().root.get_texture().get_image()
+		capture_size = capture_image.get_size()
+		result = capture_image.save_png(absolute)
 	var late_counts: Array[Dictionary] = _late_counts(sim)
 	var late_hits: int = 0
 	var bounded_late: bool = _late_counts_bounded(sim)
@@ -169,6 +175,7 @@ func _preview() -> void:
 		"hero": options["hero"], "arena": options["arena"], "view": options["view"], "region": options["region"],
 		"player": sim.player_position, "play_bounds": sim.obstacles.bounds, "camera_view": world.camera_view(), "wall_segments": sim.obstacles.walls.snapshot().size(),
 		"small": options["small"], "gamepad_prompts": options["gamepad"], "physical_gamepad_test": false, "flash": options["flash"],
+		"presentation": _window_state(), "render_size": [capture_size.x, capture_size.y],
 		"actual_elapsed": sim.elapsed, "R": sim.hero_skill_snapshot(), "effects": sim.hero_effects_snapshot(),
 		"targets": _target_states(targets), "conditions_before": conditions_before, "conditions_after": sim.enemy_conditions_snapshot(),
 		"damage_records": _receipts, "damage_by_skill": sim.damage_by_skill, "late_uid": _late_uid, "late_hits": late_hits, "late_area_hits": late_counts, "view_checks": _view_checks,
@@ -182,6 +189,99 @@ func _preview() -> void:
 	print("WF_ACTION_PREVIEW ", JSON.stringify(payload))
 	world.stop()
 	await app._quit_game(0 if result == OK and pure and bounded_late and bool(_view_checks.get("passed", true)) and draws[0] >= 2 and native_after - native_before >= 2 and not app.store.persistent else 1)
+
+
+func _settle() -> void:
+	for frame: int in 5:
+		await get_tree().process_frame
+
+
+func _browser_preview(app: Node, options: Dictionary) -> void:
+	app.run.begin(SEED, "bone", str(options["arena"]), str(options["hero"]))
+	var art := app.ui.find_child("MenuArtwork", true, false) as TitleCover
+	if art != null:
+		art.set_frame(0)
+	app.ui._show_world_maps()
+	var browser := app.ui.find_child("WorldMapBrowser", true, false) as WorldMapBrowser
+	if browser == null:
+		await _fail(app, options, "The production world-map browser did not open")
+		return
+	if options["view"] == "world-maps-empty":
+		browser._search.text = "no-such-map-20261031"
+		browser._search.text_changed.emit(browser._search.text)
+	app.ui._on_input_device_changed("gamepad" if bool(options["gamepad"]) else "keyboard", 0 if bool(options["gamepad"]) else -1)
+	get_tree().root.warp_mouse(Vector2(20, 20))
+	await _settle()
+	var cards: Array[Dictionary] = []
+	var visible: bool = true
+	var viewport := Rect2(Vector2.ZERO, Vector2(1280, 720))
+	for card: Node in browser._grid.get_children():
+		if card is Button:
+			cards.append({"id": str(card.name).trim_prefix("WorldMap_"), "rect": card.get_global_rect()})
+			visible = visible and viewport.encloses(card.get_global_rect())
+	var before: String = _browser_signature(app, browser)
+	var native_before: int = Engine.get_frames_drawn()
+	for frame: int in 2:
+		browser.queue_redraw()
+		await get_tree().process_frame
+		await RenderingServer.frame_post_draw
+	var after: String = _browser_signature(app, browser)
+	var pure: bool = before == after
+	var capture: String = str(options["capture"])
+	var result: Error = DirAccess.make_dir_recursive_absolute(capture.get_base_dir())
+	var capture_size := Vector2i.ZERO
+	if result == OK:
+		var capture_image: Image = get_tree().root.get_texture().get_image()
+		capture_size = capture_image.get_size()
+		result = capture_image.save_png(capture)
+	var native_frames: int = Engine.get_frames_drawn() - native_before
+	var passed: bool = result == OK and pure and visible and native_frames >= 2 and cards.size() <= WorldMapCatalog.PAGE_SIZE and not app.store.persistent
+	if options["view"] == "world-maps-empty":
+		passed = passed and cards.is_empty() and browser._matches.is_empty()
+	else:
+		passed = passed and not cards.is_empty()
+	print("WF_ACTION_PREVIEW ", JSON.stringify({"debug_build": OS.is_debug_build(), "view": options["view"], "arena": options["arena"],
+		"cards": cards, "page": browser._page, "matches": browser._matches.size(), "small": options["small"],
+		"presentation": _window_state(), "render_size": [capture_size.x, capture_size.y],
+		"gamepad_prompts": options["gamepad"], "physical_gamepad_test": false, "cards_inside_viewport": visible,
+		"native_frames_drawn": native_frames, "profile_io": false, "persistent_profile": app.store.persistent,
+		"state_hash": before.sha256_text(), "state_hash_after": after.sha256_text(), "pure_drawing": pure, "fixed_fixture": true, "natural_gameplay": false,
+		"capture": capture, "result": result, "passed": passed}))
+	await app._quit_game(0 if passed else 1)
+
+
+func _browser_signature(app: Node, browser: WorldMapBrowser) -> String:
+	var cards: Array[Dictionary] = []
+	for card: Node in browser._grid.get_children():
+		cards.append({"id": str(card.name), "rect": (card as Control).get_global_rect()})
+	var focus: Control = get_tree().root.gui_get_focus_owner()
+	return JSON.stringify([_window_state(), app.run.summary(), str(app.run.rng.state), app.ui.selected_arena(), app.ui._overlay_mode,
+		browser._page, browser._epoch, browser._search.text, browser._group.selected, browser._matches, cards,
+		_browser_focus_signature(browser, focus)])
+
+
+func _browser_focus_signature(browser: WorldMapBrowser, focus: Control) -> Dictionary:
+	if not is_instance_valid(focus):
+		return {"scope": "none"}
+	var state: Dictionary = {"scope": "outside", "control": str(focus.name), "class": focus.get_class()}
+	if not browser.is_ancestor_of(focus):
+		return state
+	var indices: Array[int] = []
+	var current: Node = focus
+	while current != browser:
+		indices.push_front(current.get_index())
+		current = current.get_parent()
+	state["scope"] = "browser"
+	state["child_indices"] = indices
+	return state
+
+
+func _window_state() -> Dictionary:
+	var window: Window = get_tree().root
+	var client: Vector2i = DisplayServer.window_get_size(window.get_window_id()) if DisplayServer.get_name() != "headless" else Vector2i.ZERO
+	return {"window_size": [window.size.x, window.size.y], "client_size": [client.x, client.y],
+		"content_scale_size": [window.content_scale_size.x, window.content_scale_size.y],
+		"content_scale_mode": window.content_scale_mode, "content_scale_aspect": window.content_scale_aspect}
 
 func _fixture_interventions(view: String) -> Array[String]:
 	if view == "map":

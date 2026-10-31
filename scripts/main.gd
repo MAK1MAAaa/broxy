@@ -28,6 +28,12 @@ var _combat_upgrade_generation: int = -1
 var _wf_actions_preview_redirecting: bool = false
 
 func _ready() -> void:
+	if "--wf-dash-benchmark" in OS.get_cmdline_user_args() and not has_meta("wf_dash_benchmark_child"):
+		store.persistent = false
+		_wf_actions_preview_redirecting = true
+		process_mode = Node.PROCESS_MODE_DISABLED
+		_start_wf_dash_benchmark.call_deferred()
+		return
 	if "--wf-equipment-preview" in OS.get_cmdline_user_args() and not has_meta("wf_equipment_preview_child"):
 		store.persistent = false
 		_wf_actions_preview_redirecting = true
@@ -46,7 +52,7 @@ func _ready() -> void:
 	args = OS.get_cmdline_user_args()
 	var selected_arena: String = _arena_from_args(args)
 	if selected_arena.is_empty():
-		push_error("--arena requires one of: " + ", ".join(ArenaCatalog.IDS))
+		push_error("--arena requires an authored arena or a playable JP map-layer ID")
 		get_tree().quit(2)
 		return
 	# Direct CLI validation must be as isolated as the standalone preview fixtures.
@@ -113,6 +119,16 @@ func _ready() -> void:
 	for argument: String in args:
 		if argument.begins_with("--capture-delay="):
 			_screenshot_clock = maxf(0.5, argument.trim_prefix("--capture-delay=").to_float())
+
+func _start_wf_dash_benchmark() -> void:
+	var diagnostic_script := load("res://scripts/diagnostics/dash_benchmark.gd") as Script
+	if diagnostic_script == null or not diagnostic_script.can_instantiate():
+		push_error("The embedded dash benchmark diagnostic is unavailable")
+		get_tree().quit(2)
+		return
+	var diagnostic: Node = diagnostic_script.new()
+	get_tree().root.add_child(diagnostic)
+	queue_free()
 
 func _start_wf_actions_preview() -> void:
 	# Runtime loading avoids a preload cycle: the diagnostic instantiates MAIN.
@@ -435,7 +451,7 @@ static func _arena_from_args(arguments: PackedStringArray) -> String:
 			return ""
 		if argument.begins_with("--arena="):
 			selected = argument.trim_prefix("--arena=")
-			if not ArenaCatalog.IDS.has(selected):
+			if not ArenaCatalog.contains(selected):
 				return ""
 	return selected
 

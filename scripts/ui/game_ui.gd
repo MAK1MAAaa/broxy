@@ -464,7 +464,11 @@ func show_title(best: Dictionary) -> void:
 	var quit := _button("退出游戏", _quit, Vector2(140, 40))
 	quit.name = "TitleQuit"
 	footer.add_child(quit)
+	var maps := _button("世界地图", _show_world_maps, Vector2(240, 40))
+	maps.name = "TitleWorldMaps"
+	footer.add_child(maps)
 	_wire_title_focus(start, settings, quit)
+	_refresh_arena_selection()
 	_ensure_selected_character_visible.call_deferred()
 
 
@@ -518,13 +522,19 @@ func _wire_title_focus(start: Button, settings: Button, quit: Button) -> void:
 			var below: Control = group[index + 2] if index + 2 < group.size() else arenas[index % 2] if group == characters else start
 			card.focus_neighbor_top = card.get_path_to(above)
 			card.focus_neighbor_bottom = card.get_path_to(below)
-	var selected: Button = arenas[ArenaCatalog.IDS.find(_arena_id)]
+	var selected: Button = _page.find_child("TitleWorldMaps", true, false) as Button
+	if ArenaCatalog.IDS.has(_arena_id):
+		selected = arenas[ArenaCatalog.IDS.find(_arena_id)]
 	start.focus_neighbor_top = start.get_path_to(selected)
 	start.focus_neighbor_bottom = start.get_path_to(settings)
 	settings.focus_neighbor_top = settings.get_path_to(start)
 	settings.focus_neighbor_right = settings.get_path_to(quit)
 	quit.focus_neighbor_top = quit.get_path_to(start)
 	quit.focus_neighbor_left = quit.get_path_to(settings)
+	var maps := _page.find_child("TitleWorldMaps", true, false) as Button
+	quit.focus_neighbor_right = quit.get_path_to(maps)
+	maps.focus_neighbor_left = maps.get_path_to(quit)
+	maps.focus_neighbor_top = maps.get_path_to(start)
 
 
 func selected_arena() -> String:
@@ -606,7 +616,7 @@ func _add_title_choice_mark(button: Button) -> void:
 
 
 func _select_arena(id: String) -> void:
-	if _screen != "title" or not _overlay_mode.is_empty() or not ArenaCatalog.IDS.has(id):
+	if _screen != "title" or not _overlay_mode.is_empty() or not ArenaCatalog.contains(id):
 		return
 	_arena_id = id
 	_refresh_arena_selection()
@@ -631,6 +641,35 @@ func _refresh_arena_selection() -> void:
 		var start := _page.find_child("StartTrial", true, false) as Button
 		if start != null:
 			start.focus_neighbor_top = start.get_path_to(selected)
+	var maps := _page.find_child("TitleWorldMaps", true, false) as Button
+	if maps != null:
+		maps.text = str(ArenaCatalog.definition(_arena_id)["name"]) if WorldMapCatalog.contains(_arena_id) else "世界地图"
+		maps.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		maps.tooltip_text = maps.text
+		if WorldMapCatalog.contains(_arena_id):
+			var start := _page.find_child("StartTrial", true, false) as Button
+			if start != null:
+				start.focus_neighbor_top = start.get_path_to(maps)
+
+
+func _show_world_maps() -> void:
+	if _screen != "title" or not _overlay_mode.is_empty():
+		return
+	_begin_overlay("world_maps")
+	var body := _modal("世界地图", Vector2(940, 604))
+	var browser := WorldMapBrowser.new()
+	browser.selected_id = _arena_id
+	browser.selected.connect(_choose_world_map)
+	browser.closed.connect(hide_pause)
+	body.add_child(browser)
+
+
+func _choose_world_map(id: String) -> void:
+	if _screen != "title" or _overlay_mode != "world_maps" or not WorldMapCatalog.contains(id):
+		return
+	_arena_id = id
+	hide_pause()
+	_refresh_arena_selection()
 
 
 func show_hud() -> void:
@@ -1105,7 +1144,7 @@ func handle_back() -> bool:
 	if _overlay_mode in ["controls_title", "controls_pause"]:
 		_show_settings(_overlay_mode == "controls_pause")
 		return true
-	if _overlay_mode in ["relic_details", "relic_comparison", "rune_equip_comparison", "rogue_choices", "item_record"]:
+	if _overlay_mode in ["relic_details", "relic_comparison", "rune_equip_comparison", "rogue_choices", "item_record", "world_maps"]:
 		hide_pause()
 		return true
 	if _overlay_mode == "settings_pause":
