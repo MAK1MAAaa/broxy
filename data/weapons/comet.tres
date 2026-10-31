@@ -6,9 +6,10 @@
 script = ExtResource("1")
 id = "comet"
 kind = "weapon"
-display_name = "星陨"
+source_id = "5030039"
+display_name = "怨嗟逆枪"
 subtitle = "重击法器 · 陨星坠击"
-description = "凝聚缓慢飞行的大型陨星，单次造成54点重击。搭配爆破可将重击转为范围伤害。"
+description = "凝聚缓慢飞行的大型能量弹，单次造成54点重击。搭配爆破可将重击转为范围伤害。"
 icon = "comet"
 color = Color(0.84, 0.71, 0.43, 1)
 price = 28

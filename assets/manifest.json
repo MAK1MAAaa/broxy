@@ -4,6 +4,8 @@
   "art_revision": "engraved-07",
   "projectile_visual_revision": "arsenal-atlas-v5",
   "terrain_revision": "biomes-01",
+  "skill_icon_revision": "skill-relics-01",
+  "skill_audio_revision": "skill-feedback-01",
   "license": "CC0-1.0",
   "generator": "python3 tools/generate_assets.py",
   "external_sources": [],
@@ -585,6 +587,42 @@
       "status": "authored; engine visual QA pending"
     },
     {
+      "id": "icons_fold_clasp",
+      "path": "assets/icons/fold_clasp.svg",
+      "type": "vector",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "engraved occult fold_clasp icon; transparent; readable at 24–48px",
+      "source": "tools/art_icons.py",
+      "creator": "Project original procedural vector artwork",
+      "license": "CC0-1.0",
+      "status": "authored; engine visual QA pending"
+    },
+    {
+      "id": "icons_echo_stone",
+      "path": "assets/icons/echo_stone.svg",
+      "type": "vector",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "engraved occult echo_stone icon; transparent; readable at 24–48px",
+      "source": "tools/art_icons.py",
+      "creator": "Project original procedural vector artwork",
+      "license": "CC0-1.0",
+      "status": "authored; engine visual QA pending"
+    },
+    {
       "id": "fx_glow",
       "path": "assets/fx/glow.svg",
       "type": "vector",
@@ -884,6 +922,54 @@
       "creator": "Project original procedural vector artwork",
       "license": "CC0-1.0",
       "status": "authored; engine visual QA pending"
+    },
+    {
+      "id": "audio_dash",
+      "path": "assets/audio/dash.wav",
+      "type": "audio",
+      "duration_seconds": 0.18,
+      "sample_rate": 22050,
+      "loop": false,
+      "source": "tools/audio_skills.py",
+      "creator": "Project original deterministic skill synthesis",
+      "license": "CC0-1.0",
+      "status": "authored; in-game mix QA pending"
+    },
+    {
+      "id": "audio_pulse",
+      "path": "assets/audio/pulse.wav",
+      "type": "audio",
+      "duration_seconds": 0.28,
+      "sample_rate": 22050,
+      "loop": false,
+      "source": "tools/audio_skills.py",
+      "creator": "Project original deterministic skill synthesis",
+      "license": "CC0-1.0",
+      "status": "authored; in-game mix QA pending"
+    },
+    {
+      "id": "audio_pulse_hit",
+      "path": "assets/audio/pulse_hit.wav",
+      "type": "audio",
+      "duration_seconds": 0.34,
+      "sample_rate": 22050,
+      "loop": false,
+      "source": "tools/audio_skills.py",
+      "creator": "Project original deterministic skill synthesis",
+      "license": "CC0-1.0",
+      "status": "authored; in-game mix QA pending"
+    },
+    {
+      "id": "audio_evade",
+      "path": "assets/audio/evade.wav",
+      "type": "audio",
+      "duration_seconds": 0.22,
+      "sample_rate": 22050,
+      "loop": false,
+      "source": "tools/audio_skills.py",
+      "creator": "Project original deterministic skill synthesis",
+      "license": "CC0-1.0",
+      "status": "authored; in-game mix QA pending"
     }
   ]
 }

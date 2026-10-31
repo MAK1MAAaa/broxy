@@ -3,6 +3,7 @@ extends SceneTree
 
 const PROJECTILE_SCRIPT = preload("res://scripts/combat/projectile_painter.gd")
 const IMPACT_SCRIPT = preload("res://scripts/combat/impact_painter.gd")
+const HEAD_GPU_STRIDE: int = 16
 const NEW_IDS: PackedStringArray = ["crescent", "storm", "comet", "moon_charm", "pilgrim", "bulwark", "hourglass", "return_ring", "blood_pact", "grave_candle"]
 
 var _checks: int = 0
@@ -55,8 +56,8 @@ func _test_projectile_signatures() -> void:
 			if not painter.heads.has(key):
 				continue
 			var head = painter.heads[key]
-			_check(head.source == id and head.multimesh.visible_instance_count == int(painter.family_counts[key]), "Every projectile receives its source-specific atlas head: " + key)
-			_check(head.frame == PROJECTILE_SCRIPT.HEAD_SOURCES.find(id) and head.cursor == head.multimesh.visible_instance_count, "The prepared family uses its correct texture frame and complete visible instance range: " + key)
+			_check(head.source == id and head.cursor == int(painter.family_counts[key]), "Every projectile receives its source-specific atlas head: " + key)
+			_check(head.frame == PROJECTILE_SCRIPT.HEAD_SOURCES.find(id) and head.capacity >= head.cursor and head.start >= 0 and head.start + head.cursor <= painter.head_multimesh.visible_instance_count, "The prepared family uses its correct texture frame and complete physical instance range: " + key)
 	var stats: Dictionary = painter.get_stats()
 	_check(stats["allocated_instances"] <= CombatSim.SHOT_LIMIT * 3 and stats["head_instances"] == stats["friendly_count"], "New silhouettes use real head instances within the original GPU budget")
 	var empty: Array[CombatSim.Shot] = []
@@ -71,14 +72,14 @@ func _test_impact_aliases() -> void:
 		painter.add_hit(Vector2(500, 300), source, 15)
 	_check(painter.active_count() == 6, "Shared impact shapes retain distinct weapon sources while merging repeat hits from the same source and target")
 	painter.rebuild()
-	_check(painter.get_stats()["draw_commands"] == 3, "Six weapon sources share three compatible shape batches")
+	_check(painter.get_stats()["draw_commands"] == 6, "Six weapon sources share three compatible outlined shape batches")
 	for phase: int in 2:
 		painter.advance(0.045)
 		for source: String in ["bone", "crescent", "frost", "storm", "ember", "scatter", "comet"]:
 			painter.add_hit(Vector2(500, 300), source, 16 + phase)
 	painter.rebuild()
 	_check(painter.active_count() == 20, "Impact aliases retain marks independently at all three fade stages")
-	_check(painter.get_stats()["draw_commands"] <= 12, "All seven weapons remain within the existing twelve impact draw commands")
+	_check(painter.get_stats()["draw_commands"] <= 24, "All seven weapons remain within twenty-four outlined impact draw commands")
 	painter.clear()
 	_check(painter.get_stats()["free_marks"] == 32 and painter.active_count() == 0, "Impact aliases reuse the original bounded pool")
 
@@ -112,6 +113,14 @@ func _test_atlas_frames_and_transforms() -> void:
 	var painter = PROJECTILE_SCRIPT.new()
 	painter.rebuild(shots)
 	_check(painter.atlas_texture != null and painter.atlas_texture.get_width() == 512 and painter.atlas_texture.get_height() == 64, "The real shared texture resolves all eight complete atlas cells")
+	_check(PROJECTILE_SCRIPT.HEAD_INSTANCE_STRIDE == HEAD_GPU_STRIDE and painter.head_multimesh.use_colors and painter.head_multimesh.use_custom_data and painter.head_multimesh.mesh == painter.head_mesh and painter.head_multimesh.visible_instance_count == shots.size(), "Every legacy head uses the one sixteen-float physical GPU pool and shared quad")
+	_check(painter.head_atlas_texture != null and painter.head_atlas_texture.get_size() == Vector2(2048, 64), "The runtime head atlas has exactly thirty-two native sixty-four-pixel columns")
+	var shader: Shader = painter.head_material.shader
+	var shader_code: String = shader.code.replace(" ", "").replace("\t", "").replace("\n", "").replace("\r", "")
+	_check(shader.resource_path == "res://shaders/projectile_heads.gdshader" and shader_code.contains("round(INSTANCE_CUSTOM.x*31.0)") and shader_code.contains("floor(UV*64.0)") and shader_code.contains("head_column*64.0+texel.x+0.5,texel.y+0.5") and shader_code.contains("vec2(2048.0,64.0)") and shader_code.contains("texture(TEXTURE,atlas_uv)") and shader_code.contains("INSTANCE_CUSTOM.y") and shader_code.contains("INSTANCE_CUSTOM.z"), "The production shader decodes physical custom data and samples the exact pixel centers of its thirty-two source columns")
+	var source_image: Image = painter.atlas_texture.get_image()
+	var runtime_image: Image = painter.head_atlas_texture.get_image()
+	_check(runtime_image.get_region(Rect2i(0, 0, 512, 64)).get_data() == source_image.get_data(), "The runtime atlas preserves every pixel of the original eight-frame source PNG")
 	for source: String in expected_sources:
 		var key: String = source + ":"
 		_check(painter.heads.has(key), "Atlas transform fixture retains source " + source)
@@ -120,25 +129,37 @@ func _test_atlas_frames_and_transforms() -> void:
 		var head = painter.heads[key]
 		var frame: int = expected_sources.find(source)
 		_check(head.frame == frame and head.source == source and is_equal_approx(head.base_radius, GameCatalog.weapon(source).projectile_radius), "Source frame and scaling baseline come from the matching definition: " + source)
-		_check(head.cursor == 16 and head.multimesh.visible_instance_count == 16, "All fifteen rotated/scaled heads plus a zero-speed head are genuinely visible: " + source)
-		var arrays: Array = head.multimesh.mesh.surface_get_arrays(0)
+		_check(head.cursor == 16 and head.capacity >= 16 and head.start >= 0 and head.start + 16 <= painter.head_multimesh.visible_instance_count, "All fifteen rotated/scaled heads plus a zero-speed head occupy real visible instances: " + source)
+		var arrays: Array = painter.head_mesh.surface_get_arrays(0)
 		var vertices = arrays[Mesh.ARRAY_VERTEX]
 		var uvs: PackedVector2Array = arrays[Mesh.ARRAY_TEX_UV]
+		var legacy_arrays: Array = painter._head_meshes[source].surface_get_arrays(0)
+		var legacy_vertices = legacy_arrays[Mesh.ARRAY_VERTEX]
+		var legacy_uvs: PackedVector2Array = legacy_arrays[Mesh.ARRAY_TEX_UV]
 		var correct_uvs: bool = vertices.size() >= 4 and vertices.size() == uvs.size()
+		correct_uvs = correct_uvs and legacy_vertices == vertices and legacy_uvs.size() == vertices.size()
 		var bounds := Rect2(Vector2.INF, Vector2.ZERO)
 		for index: int in vertices.size():
 			var point := Vector2(vertices[index].x, vertices[index].y)
-			var uv := Vector2((float(frame) + point.x / 32.0 + 0.5) / 8.0, point.y / 32.0 + 0.5)
-			correct_uvs = correct_uvs and point.is_finite() and absf(point.x) == 16.0 and absf(point.y) == 16.0 and uvs[index].is_equal_approx(uv)
+			var unit_uv := Vector2(point.x / 32.0 + 0.5, point.y / 32.0 + 0.5)
+			var original_uv := Vector2((float(frame) + unit_uv.x) / 8.0, unit_uv.y)
+			var runtime_uv := Vector2((float(frame) + unit_uv.x) / 32.0, unit_uv.y)
+			correct_uvs = correct_uvs and point.is_finite() and absf(point.x) == 16.0 and absf(point.y) == 16.0 and uvs[index].is_equal_approx(unit_uv)
+			correct_uvs = correct_uvs and legacy_uvs[index].is_equal_approx(original_uv) and (runtime_uv * Vector2(2048, 64)).is_equal_approx(original_uv * Vector2(512, 64))
 			bounds = Rect2(point, Vector2.ZERO) if index == 0 else bounds.expand(point)
-		_check(correct_uvs and bounds.is_equal_approx(Rect2(-16, -16, 32, 32)), "Quad vertices map only to their own complete UV cell without frame bleed: " + source)
+		_check(correct_uvs and bounds.is_equal_approx(Rect2(-16, -16, 32, 32)), "The unified zero-to-one quad and thirty-two-column sampling preserve each original eight-frame UV cell: " + source)
 		for index: int in head.cursor:
-			var transform: Transform2D = _head_transform(head.buffer, index)
+			var physical_index: int = head.start + index
+			var transform: Transform2D = _head_transform(painter.head_buffer, physical_index)
 			_check(transform.is_equal_approx(expected[key][index]), "Real head buffer preserves position, rotation and radius scale, including zero-speed RIGHT: %s/%d" % [source, index])
-			var offset: int = index * PROJECTILE_SCRIPT.INSTANCE_STRIDE
-			_check(Color(head.buffer[offset + 8], head.buffer[offset + 9], head.buffer[offset + 10], head.buffer[offset + 11]).is_equal_approx(Color.WHITE), "Baked source colors and white cores stay untinted: %s/%d" % [source, index])
+			var offset: int = physical_index * HEAD_GPU_STRIDE
+			_check(Color(painter.head_buffer[offset + 8], painter.head_buffer[offset + 9], painter.head_buffer[offset + 10], painter.head_buffer[offset + 11]).is_equal_approx(Color.WHITE), "Baked source colors and white cores stay untinted: %s/%d" % [source, index])
+			var custom := Color(painter.head_buffer[offset + 12], painter.head_buffer[offset + 13], painter.head_buffer[offset + 14], painter.head_buffer[offset + 15])
+			_check(custom.is_equal_approx(Color(float(frame) / 31.0, 0.5, 0.25, 0.0)) and int(round(custom.r * 31.0)) == frame, "Physical custom data identifies the exact original source column and both shader sentinels: %s/%d" % [source, index])
 			if DisplayServer.get_name() != "headless":
-				_check(head.multimesh.get_instance_transform_2d(index).is_equal_approx(transform), "Native visible head transform matches the prepared buffer: %s/%d" % [source, index])
+				_check(painter.head_multimesh.get_instance_transform_2d(physical_index).is_equal_approx(transform), "Native visible head transform matches the prepared buffer: %s/%d" % [source, index])
+				var gpu_custom: Color = painter.head_multimesh.get_instance_custom_data(physical_index)
+				_check(painter.head_multimesh.get_instance_color(physical_index).is_equal_approx(Color.WHITE) and int(round(gpu_custom.r * 31.0)) == frame and gpu_custom.g == 0.5 and gpu_custom.b == 0.25 and gpu_custom.a == 0.0, "Native GPU readback preserves the original tint, decoded source column and exact binary sentinels: %s/%d" % [source, index])
 	var before: String = _head_signature(painter)
 	for repeat: int in 3:
 		painter.rebuild(shots)
@@ -146,7 +167,7 @@ func _test_atlas_frames_and_transforms() -> void:
 
 
 static func _head_transform(buffer: PackedFloat32Array, index: int) -> Transform2D:
-	var offset: int = index * PROJECTILE_SCRIPT.INSTANCE_STRIDE
+	var offset: int = index * HEAD_GPU_STRIDE
 	return Transform2D(Vector2(buffer[offset], buffer[offset + 4]), Vector2(buffer[offset + 1], buffer[offset + 5]), Vector2(buffer[offset + 3], buffer[offset + 7]))
 
 
@@ -154,7 +175,8 @@ static func _head_signature(painter) -> String:
 	var result: Dictionary = {}
 	for key: String in painter.heads:
 		var head = painter.heads[key]
-		result[key] = [head.frame, head.base_radius, head.buffer, head.multimesh.mesh.surface_get_arrays(0)]
+		result[key] = [head.frame, head.base_radius, head.start, head.cursor, head.capacity, painter._head_meshes[head.source].surface_get_arrays(0)]
+	result["physical"] = [painter.head_buffer, painter.head_multimesh.visible_instance_count, painter.head_mesh.surface_get_arrays(0)]
 	return JSON.stringify(result)
 
 
@@ -186,8 +208,16 @@ func _test_content_stress() -> void:
 	painter.rebuild(world.sim.shots)
 	var stats: Dictionary = painter.get_stats()
 	_check(stats["friendly_count"] == 600 and stats["family_counts"].size() == GameCatalog.weapons().size() * GameCatalog.runes().size(), "The projectile painter retains all catalog weapon/rune pressure families")
+	for weapon: ContentDef in GameCatalog.weapons():
+		for rune: ContentDef in GameCatalog.runes():
+			_check(int(stats["family_counts"].get(weapon.id + ":" + rune.id, 0)) > 0, "The pressure fixture covers the real Cartesian product even when the weapon count is divisible by three: " + weapon.id + "/" + rune.id)
 	_check(stats["allocated_instances"] <= 4800 and stats["total_visible_instances"] <= 4800, "The full content pressure fixture preserves the original 4800-instance budget")
 	_check(_signature(world.sim) == before, "Content pressure render preparation does not mutate RNG, shots, or simulation")
+	var retired: CombatSim.Shot = world.sim.shots[0]
+	world.sim._release_shot(retired)
+	world._maintain_stress()
+	_check(world.sim.shot_count == 600 and world._content_stress_shot_serial == 601, "Replenishment continues the complete content sequence instead of restarting from the remaining population count")
+	_check(retired.active and retired.source == "book_0009" and retired.rune == "bounce", "The601st pressure projectile keeps the independent Cartesian sequence across pool reuse")
 	world.queue_free()
 	sound.queue_free()
 	await _settle()
@@ -204,7 +234,7 @@ func _test_full_shop() -> void:
 		var id: String = ["pierce", "bounce", "blast"][index]
 		_check(_purchase(state, "rune", GameCatalog.rune(id)) and state.equip_rune(0, index), "The fixture formally sockets its purchased rune: " + id)
 	for definition: ContentDef in GameCatalog.relics():
-		_check(_purchase(state, "relic", definition), "All twelve original relic kinds can be represented by real occupied boxes: " + definition.id)
+		_check(_purchase(state, "relic", definition), "All fourteen catalog relic kinds can be represented by real occupied boxes: " + definition.id)
 	for id: String in ["bounce", "blast"]:
 		_check(_purchase(state, "rune", GameCatalog.rune(id)), "A loose rune occupies its own physical cell: " + id)
 	while state.backpack.can_add("relic", "armor"):
@@ -261,7 +291,7 @@ func _test_full_shop() -> void:
 		await _settle()
 		var title: Label = ui.find_child("BackpackItemTitle", true, false) as Label
 		var details: Label = ui.find_child("BackpackItemEffect", true, false) as Label
-		_check(title != null and title.text.contains(GameCatalog.relic("grave_candle").display_name) and details != null and details.text.contains("拾取范围 +38") and details.text.contains("移速 -8"), "Keyboard inspection exposes the selected relic's positive and negative ranked effects")
+		_check(title != null and title.text.contains(GameCatalog.relic("grave_candle").display_name) and details != null and details.text.contains("拾取范围 +38") and details.text.contains("移速 -8") and details.tooltip_text.contains("拾取范围 +38") and details.tooltip_text.contains("移速 -8") and details.tooltip_text.contains("正上方") and details.tooltip_text.contains("不叠加"), "Keyboard inspection exposes ranked tradeoffs while its tooltip retains the relic's full linking rule")
 		_check(state.summary() == before and str(ui._screen) == "shop" and str(ui._overlay_mode).is_empty(), "Inline backpack inspection is read-only and stays in the shop")
 		var sale: Button = ui.find_child("SellBackpackItem", true, false) as Button
 		_check(sale != null, "The selected item's action remains keyboard reachable through its details viewport")
@@ -271,7 +301,7 @@ func _test_full_shop() -> void:
 			_check(scroll.get_global_rect().grow(1).encloses(sale.get_global_rect()), "Following keyboard focus brings an item action into the visible details viewport")
 	var offer: Control = ui.find_child("Offer1", true, false)
 	var description: Label = offer.find_child("OfferDescription", true, false) if offer != null else null
-	_check(description != null and description.text.contains("首目标") and description.text.contains("第二") and description.tooltip_text == GameCatalog.weapon("crescent").description, "The compact moon-scythe card preserves first-target and second-hit rules with its full formal tooltip")
+	_check(description != null and description.text.contains("法器") and description.text.contains("穿透") and description.tooltip_text.contains("首目标") and description.tooltip_text.contains("第二") and description.tooltip_text == GameCatalog.weapon("crescent").description, "The compact moon-scythe trait retains first-target and second-hit rules in its full formal tooltip")
 	_check(offer != null and root.get_visible_rect().encloses(offer.get_global_rect()), "The moon-scythe shop card fits inside the full native layout")
 	for index: int in range(1, 5):
 		_check(ui.find_child("Offer%d" % index, true, false) != null, "The backpack redesign retains each of the four formal shop quotes")

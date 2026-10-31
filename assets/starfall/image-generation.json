@@ -1,0 +1,12 @@
+{
+  "tool": "image_gen.imagegen built-in",
+  "mode": "edit",
+  "output": "menu_art.png",
+  "purpose": "Presentation reskin of existing Embers of the Occult, preserving masked caster identity",
+  "prompt": "Edit target is Image 1 (the bright pixel-art menu illustration just generated). Image 2 (current game screenshot) is IDENTITY AND CONTENT REFERENCE for the existing hooded masked spellcaster. This is a reskin of the SAME existing game called Embers of the Occult, not a new game. Keep Image1's vertical composition, crisp illustrated pixel look, bright teal / navy / cream / warm-gold palette and left 25 percent quiet breathing space. REPLACE the human boy with the existing game's original small hooded spellcaster: hood and flowing short robe in bright teal and blue-violet, distinctive BONE-WHITE LONG BIRD-BEAK MASK covering the entire face, two dark narrow eye openings, a small gold ritual chain and pendant, leather book at belt, a floating bone wand beside one hand. No exposed human face, no brown hair, no orange scarf. Preserve chibi proportions and readable silhouette of Image2's player, show a dynamic confident standing pose on the RIGHT. Replace the floating-island world scenery with a bright stylized interpretation of the CURRENT game's ancient occult courtyard: mossy pale stone arches, teal runic stone floor, an elegant huge golden moon-ring astrolabe behind the figure, a floating spellbook, tiny warm candle lights and open cyan sky visible through ruined arches. Keep the courtyard inviting and colorful, not grimdark. This is key-art for the existing occult caster and relic game, no new narrative or new characters. No text, logo, labels, UI, screenshots, typography, watermark, or border. Full-bleed opaque illustration. True crisp pixel-like clusters, carefully shaded, no smooth cartoon vector look.",
+  "reference_roles": [
+    "Generated draft used only for palette and composition; unused human character replaced",
+    "Current game's reports/skill-feedback/hit.png used for masked caster identity"
+  ],
+  "external_game_assets_embedded": false
+}

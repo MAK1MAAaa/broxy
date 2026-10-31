@@ -3,6 +3,14 @@ $ErrorActionPreference = 'Stop'
 try {
     $projectRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
     $runner = Join-Path $PSScriptRoot 'run.ps1'
+    $pythonCandidates = if ($env:BROXY_PYTHON) { @($env:BROXY_PYTHON) } else { @('python3', 'python', 'py') }
+    $pythonCommand = $null
+    foreach ($candidate in $pythonCandidates) {
+        $command = Get-Command $candidate -ErrorAction SilentlyContinue
+        if ($command) { $pythonCommand = $command.Source; break }
+    }
+    if (-not $pythonCommand) { throw 'Python 3 not found. Install Python 3 or set BROXY_PYTHON to its executable.' }
+    $benchmarkManifestTool = Join-Path $PSScriptRoot 'build_dash_benchmark_manifest.py'
     $template = Join-Path $projectRoot '.tools/windows_release_x86_64.exe'
     if (-not (Test-Path -LiteralPath $template -PathType Leaf)) {
         throw 'Windows export template not found. Run: python tools/fetch_windows_template.py'
@@ -13,6 +21,22 @@ try {
             throw "Missing distribution notice: assets/licenses/$notice"
         }
     }
+    $worldFlipperNotice = Join-Path $projectRoot 'assets/worldflipper/NOTICE.txt'
+    if (-not (Test-Path -LiteralPath $worldFlipperNotice -PathType Leaf)) {
+        throw 'Missing distribution notice: assets/worldflipper/NOTICE.txt'
+    }
+    $fontLicenseSource = Join-Path $projectRoot 'assets/fonts/licenses/fusion-pixel'
+    $fontNotices = @(
+        'OFL.txt',
+        'LICENSES/ark-pixel/OFL.txt',
+        'LICENSES/cubic-11/OFL.txt',
+        'LICENSES/galmuri/LICENSE.txt'
+    )
+    foreach ($notice in $fontNotices) {
+        if (-not (Test-Path -LiteralPath (Join-Path $fontLicenseSource $notice) -PathType Leaf)) {
+            throw "Missing distribution notice: assets/fonts/licenses/fusion-pixel/$notice"
+        }
+    }
 
     $outputDirectory = Join-Path $projectRoot 'build/Embers-windows-x86_64'
     $executable = Join-Path $outputDirectory 'Embers.exe'
@@ -21,9 +45,15 @@ try {
     $archive = Join-Path $projectRoot 'build/Embers-windows-x86_64.zip'
     New-Item -ItemType Directory -Path $outputDirectory -Force | Out-Null
 
+    & $pythonCommand $benchmarkManifestTool
+    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
     & $runner --headless --editor --import --quit
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+    & $pythonCommand $benchmarkManifestTool --check
+    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
     & $runner --headless --export-release 'Windows Desktop' $executable
+    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+    & $pythonCommand $benchmarkManifestTool --check
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
     foreach ($artifact in @($executable, $package)) {
         if (-not (Test-Path -LiteralPath $artifact -PathType Leaf)) {
@@ -34,6 +64,13 @@ try {
     New-Item -ItemType Directory -Path $licenseDirectory -Force | Out-Null
     foreach ($notice in $notices) {
         Copy-Item -LiteralPath (Join-Path $projectRoot "assets/licenses/$notice") -Destination $licenseDirectory -Force
+    }
+    Copy-Item -LiteralPath $worldFlipperNotice -Destination (Join-Path $licenseDirectory 'World-Flipper-NOTICE.txt') -Force
+    $fontLicenseDirectory = Join-Path $licenseDirectory 'fonts/fusion-pixel'
+    foreach ($notice in $fontNotices) {
+        $destination = Join-Path $fontLicenseDirectory $notice
+        New-Item -ItemType Directory -Path (Split-Path -Parent $destination) -Force | Out-Null
+        Copy-Item -LiteralPath (Join-Path $fontLicenseSource $notice) -Destination $destination -Force
     }
     Compress-Archive -LiteralPath @($executable, $package, $licenseDirectory) -DestinationPath $archive -Force
     Write-Output "Built: $outputDirectory"

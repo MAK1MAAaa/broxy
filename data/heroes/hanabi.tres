@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="HeroDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/hero_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "hanabi"
+display_name = "花火"
+starter_weapon = "scatter"
+idle_path = "res://assets/worldflipper/characters/hanabi/idle.png"
+atlas_path = "res://assets/worldflipper/characters/hanabi/atlas.png"
+portrait_path = "res://assets/worldflipper/portraits/hanabi.png"
+frame_size = 128
+foot_anchor = Vector2(64, 125)
+base_bonuses = {"max_health": 8.0}
+main_skill = {"id": "hero_hanabi", "name": "红牡丹", "element": "fire", "shape": "circle", "delivery": "bombs", "visual_family": "firework", "origin_mode": "player", "radius": 64.0, "damage": 45.0, "cooldown": 9.0, "projectiles": 5, "projectile_speed": 280.0, "projectile_life": 1.2, "spread": 1.0, "cast_delay": 0.9166666666666666, "explosion_duration": 0.5}
+action_evidence = {"catalog_skill_id": "kunoichi:2", "action_ref": "battle/action/skill/action/rare4/kunoichi$kunoichi_2", "git_blob_sha1": "37376d81aa4b914d008166a5a9409a08aa241a4f", "source_commit": "1d45b529ef078ba9b1f876d4588debd0c8a9a214", "time_adaptation": "one original action unit = 1/60 project seconds; not a verified original FPS", "geometry_adaptation": "uniform scale chosen per skill for free movement; no original area size claim"}
+source_id = "211003"
+source_skill_name = "红牡丹"
+source_skill_weight = 290
+source_url = "https://wiki.biligame.com/worldflipper/花火"
+adaptation_notes = "五枚独立移动炸弹在碰敌、弱点、障碍或到期时爆炸，范围火伤归属本角色。协力球简化为有寿命炸弹，不参加常规弹板反射；伤害、范围和冷却为本作数值。"

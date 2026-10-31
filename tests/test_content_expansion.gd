@@ -11,6 +11,7 @@ var _failures: int = 0
 func _initialize() -> void:
 	_test_catalog_and_affordability()
 	_test_weapon_rune_matrix()
+	_test_fist_targeting()
 	_test_crescent_penetration()
 	_test_crescent_rune_order()
 	_test_pool_reuse()
@@ -67,7 +68,7 @@ func _activations(sim: CombatSim) -> Array[Dictionary]:
 	return records
 
 func _test_catalog_and_affordability() -> void:
-	_check(GameCatalog.weapons().size() == 8 and GameCatalog.relics().size() == 12, "Catalog exposes eight weapons and twelve relics")
+	_check(GameCatalog.weapons().size() == 21 and GameCatalog.relics().size() == 14, "Catalog exposes twenty-one weapons and fourteen relics")
 	var ids: Dictionary = {}
 	for group: Array in [GameCatalog.weapons(), GameCatalog.relics()]:
 		for definition: ContentDef in group:
@@ -130,6 +131,18 @@ func _test_weapon_rune_matrix() -> void:
 			_check(not events.is_empty(), "Every weapon executes its equipped rune: " + weapon.id + "/" + rune.id)
 			for event: Dictionary in events:
 				_check(event["id"] == rune.id, "Feedback corresponds only to the equipped rune")
+
+func _test_fist_targeting() -> void:
+	for distance: float in [140.0, 240.0, 340.0]:
+		var sim: CombatSim = _simulation("fist_0006")
+		sim.player_position = Vector2(200, 300)
+		var enemy: CombatSim.Enemy = _target(sim, sim.player_position + Vector2.RIGHT * distance)
+		sim._cooldowns[0] = 0.0
+		sim.step(STEP, Vector2.ZERO)
+		_check((sim.shot_count == 2) == (distance < 260.0), "Automatic short-range targeting only releases the two flame blades for a target in acquisition range: " + str(distance))
+		sim._cooldowns.fill(9999.0)
+		_advance(sim)
+		_check((enemy.health < enemy.max_health) == (distance < 260.0), "The two flame blades hit the acquired nearby target without firing at a distant target: " + str(distance))
 
 func _test_crescent_penetration() -> void:
 	for rune: String in ["", "pierce"]:

@@ -49,34 +49,41 @@ func _run_tests() -> void:
 	_check(_buttons_inside(ui), "Title buttons fit in 1280 by 720")
 	_check(_text_inside(ui), "Title text remains inside the reference viewport without vertical clipping")
 	var illustration_space: Control = ui.find_child("IllustrationBreathingSpace", true, false)
-	_check(illustration_space != null and illustration_space.size.x >= 400 and illustration_space.size.y >= 260, "Title reserves an unobstructed illustration area above the two-row map selector")
+	_check(illustration_space != null and illustration_space.size.x >= 400 and illustration_space.size.y >= 260, "Title reserves an unobstructed right-hand illustration area beside its compact selectors")
 	_check(_decorations_ignore_input(ui), "Title ornamentation never intercepts input or runs per-frame processing")
-	_press(ui, GameCatalog.weapon("ember").display_name)
-	await _settle()
+	var character := ui.find_child("Character_clarisse", true, false) as Button
+	_check(character != null, "The title exposes the actual Clarisse character selection")
+	if character != null:
+		character.grab_focus()
+		await _accept_focus()
 	_press(ui, "进入试炼")
-	_check(_started == "ember", "Selected starter is emitted when starting a run")
+	_check(_started == "ember" and ui.selected_hero() == "clarisse", "The selected character's initial weapon is emitted when starting a run")
 
 	ui.show_hud()
 	ui.update_hud({"health": 100, "max_health": 100, "wave": 1, "time_left": 305.0, "benchmark": true, "enemies": 300, "projectiles": 600, "loadout": state.loadout})
-	_check(_has_label(ui, "性能测试") and _has_label(ui, "采样  05:05"), "Benchmark HUD names the performance test and shows the real sampling countdown")
-	_check(_has_label(ui, "敌人  300") and _has_label(ui, "投射物  600"), "Benchmark HUD displays pressure-test entity counts")
-	_check(not _has_label(ui, "剩余  00:45") and not _has_label(ui, "波次  1 / 8"), "Benchmark HUD does not masquerade as a normal 45-second wave")
+	_check(_has_label(ui, "05:05") and _has_label(ui, "魂屑  0"), "Benchmark HUD retains only its real countdown and soul quantity")
+	_check(not _has_label(ui, "敌人  300") and not _has_label(ui, "投射物  600") and not _has_label(ui, "性能测试"), "Performance diagnostics cannot add extra top HUD fields")
+	_check(not _has_label(ui, "00:45") and not _has_label(ui, "波次  1 / 8"), "Benchmark HUD shows the real sampling countdown without wave copy")
 	ui.update_hud({"health": 100, "max_health": 100, "wave": 1, "time_left": 45.0, "loadout": state.loadout})
-	_check(_has_label(ui, "波次  1 / 8") and _has_label(ui, "剩余  00:45") and not _has_label(ui, "性能测试"), "Normal-wave snapshots restore the ordinary wave and timer labels")
+	_check(_has_label(ui, "00:45") and not _has_label(ui, "波次  1 / 8") and not _has_label(ui, "性能测试"), "Normal-wave snapshots retain only the actual countdown")
 	await _settle()
 	var status: Control = ui.find_child("RitualStatus", true, false)
 	var equipment: Control = ui.find_child("RitualEquipment", true, false)
 	_check(status != null and status.get_global_rect().end.y <= 100, "Restyled status panel stays within the original top HUD footprint")
-	_check(equipment != null and equipment.get_global_rect().position.y >= 616, "Restyled equipment panel does not cover more of the combat area")
+	_check(equipment != null and equipment.get_global_rect().end.x <= 220, "Equipment occupies its compact frame at the left edge")
 	_check(_text_inside(ui), "HUD text stays inside the reference viewport without clipping")
 	await _test_boss_hud(ui, state.loadout)
-	ui.update_hud({"health": 100, "max_health": 100, "wave": 8, "time_left": 45.0, "loadout": state.loadout, "boss_health": 100.0, "boss_max_health": 200.0})
+	ui.update_hud({"health": 100, "max_health": 100, "wave": 8, "time_left": 45.0, "loadout": state.loadout,
+		"boss_encounter": {"active": true, "health": 100.0, "max_health": 200.0, "display_name": GameCatalog.enemy("boss").display_name, "phase": "recovery"}})
 	ui.notify("这是用于验证战斗提示固定宽度的长文本。".repeat(30))
 	await _settle()
 	var hud_notice: Label = ui.get("_toast")
 	var boss_status: Control = ui.get("_hud")["boss"]
 	_check(not hud_notice.visible and hud_notice.text.is_empty(), "Battle notifications leave no visible or retained text below the health bar")
-	_check(boss_status.visible and not boss_status.get_global_rect().intersects(CombatSim.ARENA), "Suppressing battle notifications preserves the visible Boss status above the playable arena")
+	var top_center: Vector2 = CombatSim.clamp_point(CombatSim.ARENA.position, 16.0)
+	var screen_center: Vector2 = top_center - ArenaCatalog.visible_rect(top_center).position
+	var art_extent: float = maxf(52.0 + 34.0 * sin(0.045), 39.0 + 3.0 + 15.0) + 4.0
+	_check(boss_status.visible and boss_status.get_global_rect().end.y <= screen_center.y - art_extent, "Suppressing battle notifications preserves the Boss status above the complete camera-projected player art")
 	_check(ui._toast_timer.is_stopped() and is_zero_approx(ui._toast_timer.time_left), "Ignored long battle notifications never start a timer")
 	_check(hud_notice.mouse_filter == Control.MOUSE_FILTER_IGNORE, "Battle notifications never intercept movement or targeting input")
 	ui.show_pause()
@@ -108,7 +115,7 @@ func _run_tests() -> void:
 	await _settle()
 	_started = ""
 	_press(ui, "再次试炼")
-	_check(_started == "ember", "Result restart preserves the chosen starting weapon")
+	_check(_started == "ember" and ui.selected_hero() == "clarisse", "Result restart preserves the selected character and its starting weapon")
 	_check(_buttons_inside(ui), "Result buttons fit in 1280 by 720")
 
 	state.gold = 1000
@@ -122,7 +129,7 @@ func _run_tests() -> void:
 	await _settle()
 	ui.notify("商店改装提示")
 	await _settle()
-	_check(hud_notice.get_global_rect() == Rect2(210, 502, 860, 40) and hud_notice.get_theme_font_size("font_size") == 16, "Shop notifications restore their original centered size and font after leaving combat")
+	_check(hud_notice.get_global_rect() == Rect2(210, 502, 860, 40) and hud_notice.get_theme_font_size("font_size") == 12, "Shop notifications restore their centered size and native pixel font after leaving combat")
 	_check(hud_notice.mouse_filter == Control.MOUSE_FILTER_IGNORE, "Restored shop notifications remain noninteractive")
 	_check(_buttons_inside(ui), "Shop buttons fit in 1280 by 720")
 	_check(_text_inside(ui), "Shop item and price text fits with the full-size icons")
@@ -137,7 +144,8 @@ func _run_tests() -> void:
 	_check(state.rune_bag.size() == 1, "Purchased runes appear in the reserve bag")
 	var rune_uid: int = int(state.rune_bag[0]["uid"])
 	_check(_focus_id() == "bag_equip:%d" % starter_uid, "Buying a loose rune selects its box and focuses the first real weapon target")
-	_check(_has_label_containing(ui, GameCatalog.rune("pierce").display_name) and _has_label_containing(ui, ui._rune_rank_text("pierce", 1)), "The selected rune's current-rank effect stays visible with its install instruction")
+	var selected_rune_guide := ui.find_child("RuneGuide", true, false) as Label
+	_check(_has_label_containing(ui, GameCatalog.rune("pierce").display_name) and selected_rune_guide != null and selected_rune_guide.text.contains("+%d目标" % RuneRules.extra_hits(1)) and selected_rune_guide.tooltip_text == ui._rune_rank_text("pierce", 1), "The selected rune exposes its current-rank target count and retains its complete rules in its tooltip")
 	await _accept_focus()
 	_check(state.rune_bag.is_empty() and state.loadout[0]["rune"].get("id", "") == "pierce", "Selecting a reserve rune and a weapon equips it")
 	_check(_sounds.back() == "buy", "Installing a backpack rune requests transaction feedback")
@@ -250,7 +258,8 @@ func _run_tests() -> void:
 	_check(_buttons_inside(ui) and _text_inside(ui), "The last-hit line fits beside all eight weapon contributions and the full final loadout")
 	_check(_has_label(ui, "被咒术师的弹幕击倒，最后承伤12.5。"), "Results present the recorded death reason without replacing its source")
 	_check(_has_label(ui, "实际总伤害  971.0"), "Results sum only the actual recorded life loss rather than inventing DPS")
-	for definition: ContentDef in GameCatalog.weapons():
+	for id: String in state.damage_dealt_by_weapon:
+		var definition: ContentDef = GameCatalog.weapon(id)
 		var contribution: Node = ui.find_child("Damage_" + definition.id, true, false)
 		_check(contribution != null and _has_label(contribution, definition.display_name), "A recorded weapon has a visible contribution row: " + definition.id)
 	_check(state.sell_item(int(state.loadout[2]["uid"])), "A real weapon sale supplies the historical-damage result fixture")
@@ -289,7 +298,7 @@ func _run_tests() -> void:
 	await _settle()
 	await _accept_focus()
 	_check(state.damage_dealt_by_weapon.is_empty() and is_zero_approx(state.damage_taken) and state.hits_taken == 0 and state.last_hit.is_empty(), "Accepting the focused restart emits a real start signal and clears all prior-run combat statistics")
-	_check(_has_label(ui, "波次  1 / 8") and not _has_label(ui, "实际总伤害  10.0"), "Restarted HUD contains no stale result statistics")
+	_check(_has_label(ui, "00:45") and not _has_label(ui, "实际总伤害  10.0"), "Restarted HUD contains no stale result statistics")
 	ui.start_requested.disconnect(restart_run)
 	ui.show_result(false, "新局尚未交战", {})
 	await _settle()
@@ -304,68 +313,67 @@ func _test_boss_hud(ui: GameUI, loadout: Array) -> void:
 	var status_before: Rect2 = ui.find_child("RitualStatus", true, false).get_global_rect()
 	var equipment_before: Rect2 = ui.find_child("RitualEquipment", true, false).get_global_rect()
 	var boss_snapshot: Dictionary = {"health": 100, "max_health": 100, "wave": 3, "time_left": 45.0,
-		"loadout": loadout, "boss_health": 150.0, "boss_max_health": 300.0}
-	var wave_label: Label = ui._hud["wave"]
+		"loadout": loadout, "boss_encounter": {"active": true, "health": 150.0, "max_health": 300.0,
+			"display_name": GameCatalog.enemy("boss").display_name, "phase": "recovery"}}
 	var timer_label: Label = ui._hud["time"]
 	var boss_status: Control = ui._hud["boss"]
 	var boss_bar: ProgressBar = ui._hud["boss_bar"]
 	_check(GameUI.CORAL.is_equal_approx(Color("ed9a86")), "Boss urgency uses the specified stable coral color")
 	ui.update_hud(boss_snapshot)
-	_check(wave_label.text == "击败首领" and timer_label.text == "限时  00:45", "A living boss changes the objective and timer even outside wave eight")
+	_check(not ui._hud.has("wave") and timer_label.text == "00:45", "A living boss retains a compact countdown without a second objective label")
 	_check(boss_status.visible and boss_bar.value == 150.0 and boss_bar.max_value == 300.0, "Boss objective uses actual positive health and maximum health")
-	_check(timer_label.get_theme_color("font_color").is_equal_approx(GameUI.BONE), "Boss time above ten seconds keeps the ordinary bone color")
+	_check(timer_label.get_theme_color("font_color").is_equal_approx(GameUI.HUD_TEXT), "Boss time above ten seconds keeps the ordinary light HUD color")
 	ui.notify("首领限时验证提示")
 	await _settle()
 	_check(ui.find_child("RitualStatus", true, false).get_global_rect() == status_before and ui.find_child("RitualEquipment", true, false).get_global_rect() == equipment_before and _text_inside(ui), "Boss instructions keep the original readable HUD footprint")
 	var notice: Label = ui._toast
 	_check(not notice.visible and notice.text.is_empty() and ui._toast_timer.is_stopped(), "Boss instructions leave no notification text or timer in the clean HUD")
-	for boundary: Array in [[10.001, "限时  00:11", false], [10.0, "限时  00:10", true], [9.99, "限时  00:10", true], [0.0, "限时  00:00", true]]:
+	for boundary: Array in [[10.001, "00:11", false], [10.0, "00:10", true], [9.99, "00:10", true], [0.0, "00:00", true]]:
 		boss_snapshot["time_left"] = float(boundary[0])
 		ui.update_hud(boss_snapshot)
 		_check(timer_label.text == boundary[1], "Boss timer rounds upward at the actual-time boundary: " + str(boundary[0]))
-		var expected: Color = GameUI.CORAL if boundary[2] else GameUI.BONE
+		var expected: Color = GameUI.CORAL if boundary[2] else GameUI.HUD_TEXT
 		_check(timer_label.get_theme_color("font_color").is_equal_approx(expected), "Urgency uses actual remaining seconds rather than the rounded label: " + str(boundary[0]))
 	for repeat: int in 3:
 		ui.update_hud(boss_snapshot)
-	_check(timer_label.get_theme_color("font_color").is_equal_approx(GameUI.CORAL) and timer_label.text == "限时  00:00", "Repeated identical boss snapshots preserve a stable urgency color and timer")
+	_check(timer_label.get_theme_color("font_color").is_equal_approx(GameUI.CORAL) and timer_label.text == "00:00", "Repeated identical boss snapshots preserve a stable urgency color and timer")
 	boss_snapshot["time_left"] = 45.0
 	ui.update_hud(boss_snapshot)
-	_check(timer_label.get_theme_color("font_color").is_equal_approx(GameUI.BONE), "A later nonurgent boss snapshot resets the previous urgency color")
+	_check(timer_label.get_theme_color("font_color").is_equal_approx(GameUI.HUD_TEXT), "A later nonurgent boss snapshot resets the previous urgency color")
 	boss_snapshot["wave"] = 8
 	boss_snapshot["time_left"] = 9.99
 	ui.update_hud(boss_snapshot)
-	boss_snapshot["boss_health"] = 0.0
+	boss_snapshot["boss_encounter"]["health"] = 0.0
 	ui.update_hud(boss_snapshot)
-	_check(not boss_status.visible and wave_label.text == "波次  8 / 8" and timer_label.text == "剩余  00:10", "Zero boss health restores the ordinary objective and timer even on wave eight")
-	_check(timer_label.get_theme_color("font_color").is_equal_approx(GameUI.BONE), "A defeated boss cannot leave urgency color on the normal-wave timer")
-	boss_snapshot["boss_health"] = 150.0
+	_check(not boss_status.visible and not ui._hud.has("wave") and timer_label.text == "00:10", "Zero boss health hides its bar while preserving the actual countdown")
+	_check(timer_label.get_theme_color("font_color").is_equal_approx(GameUI.HUD_TEXT), "A defeated boss cannot leave urgency color on the normal-wave timer")
+	boss_snapshot["boss_encounter"]["health"] = 150.0
 	ui.update_hud(boss_snapshot)
-	boss_snapshot["boss_max_health"] = 0.0
+	boss_snapshot["boss_encounter"]["max_health"] = 0.0
 	ui.update_hud(boss_snapshot)
-	_check(not boss_status.visible and wave_label.text == "波次  8 / 8" and timer_label.text == "剩余  00:10" and timer_label.get_theme_color("font_color").is_equal_approx(GameUI.BONE), "Positive current health without a positive maximum is not a living-boss HUD")
-	boss_snapshot["boss_max_health"] = 300.0
+	_check(not boss_status.visible and timer_label.text == "00:10" and timer_label.get_theme_color("font_color").is_equal_approx(GameUI.HUD_TEXT), "Positive current health without a positive maximum is not a living-boss HUD")
+	boss_snapshot["boss_encounter"]["max_health"] = 300.0
 	ui.update_hud(boss_snapshot)
 	boss_snapshot["benchmark"] = true
 	ui.update_hud(boss_snapshot)
-	_check(wave_label.text == "性能测试" and timer_label.text == "采样  00:10", "Benchmark labels take priority over a live boss and its short remaining time")
-	_check(timer_label.get_theme_color("font_color").is_equal_approx(GameUI.BONE), "Benchmark sampling never inherits the boss failure-countdown color")
+	_check(not ui._hud.has("wave") and timer_label.text == "00:10", "Benchmark mode preserves the compact two-field top group")
+	_check(timer_label.get_theme_color("font_color").is_equal_approx(GameUI.HUD_TEXT), "Benchmark sampling never inherits the boss failure-countdown color")
 	boss_snapshot.erase("benchmark")
 	boss_snapshot["time_left"] = -0.25
 	ui.update_hud(boss_snapshot)
-	_check(timer_label.text == "限时  00:00" and timer_label.get_theme_color("font_color").is_equal_approx(GameUI.CORAL), "Negative remaining boss time clamps to the visible zero-second boundary")
+	_check(timer_label.text == "00:00" and timer_label.get_theme_color("font_color").is_equal_approx(GameUI.CORAL), "Negative remaining boss time clamps to the visible zero-second boundary")
 	ui.show_hud()
-	wave_label = ui._hud["wave"]
 	timer_label = ui._hud["time"]
 	boss_status = ui._hud["boss"]
-	_check(wave_label.text == "波次  1 / 8" and timer_label.text == "剩余  00:45" and not boss_status.visible and timer_label.get_theme_color("font_color").is_equal_approx(GameUI.BONE), "A rebuilt HUD starts with ordinary labels and no stale boss urgency")
+	_check(not ui._hud.has("wave") and timer_label.text == "00:45" and not boss_status.visible and timer_label.get_theme_color("font_color").is_equal_approx(GameUI.HUD_TEXT), "A rebuilt HUD starts with the compact countdown and no stale boss urgency")
 	boss_snapshot["time_left"] = 10.0
 	ui.update_hud(boss_snapshot)
-	_check(wave_label.text == "击败首领" and timer_label.text == "限时  00:10" and boss_status.visible and timer_label.get_theme_color("font_color").is_equal_approx(GameUI.CORAL), "A fresh boss snapshot restores urgency after HUD reconstruction")
+	_check(timer_label.text == "00:10" and boss_status.visible and timer_label.get_theme_color("font_color").is_equal_approx(GameUI.CORAL), "A fresh boss snapshot restores urgency after HUD reconstruction")
 	ui.notify("重建后的首领提示")
 	await _settle()
 	_check(ui.find_child("RitualStatus", true, false).get_global_rect() == status_before and ui.find_child("RitualEquipment", true, false).get_global_rect() == equipment_before and not notice.visible and notice.text.is_empty() and ui._toast_timer.is_stopped(), "HUD reconstruction retains the original panel layout and suppresses Boss notification text")
 	ui.update_hud({"health": 100, "max_health": 100, "wave": 1, "time_left": 45.0, "loadout": loadout})
-	_check(wave_label.text == "波次  1 / 8" and timer_label.text == "剩余  00:45" and timer_label.get_theme_color("font_color").is_equal_approx(GameUI.BONE), "Ordinary snapshots fully restore timer labels and color after the boss sequence")
+	_check(not ui._hud.has("wave") and timer_label.text == "00:45" and timer_label.get_theme_color("font_color").is_equal_approx(GameUI.HUD_TEXT), "Ordinary snapshots fully restore timer labels and color after the boss sequence")
 
 
 func _settle() -> void:
@@ -567,7 +575,7 @@ func _inside_scroll(node: Node) -> bool:
 
 
 func _decorations_ignore_input(node: Node) -> bool:
-	if node.name == "RitualFrame" or node.name == "PageOrnament":
+	if node.name in ["RitualFrame", "PageOrnament", "ShopPanelFinish", "WorkbenchSurfaceFinish", "ShopWorkbenchBackdrop"]:
 		if not node is Control or node.mouse_filter != Control.MOUSE_FILTER_IGNORE or node.focus_mode != Control.FOCUS_NONE or node.is_processing():
 			return false
 	for child: Node in node.get_children():

@@ -1,55 +1,1224 @@
 [
   {
     "id": "reliquary",
-    "name": "秘仪祭坛",
-    "subtitle": "古石回廊 · 平坦地面",
+    "name": "沙漠遗迹",
+    "subtitle": "古代石庭",
     "texture": "res://assets/arena.svg",
     "preview_color": "8c819c",
     "terrain_name": "石板",
     "move_multiplier": 1.0,
-    "zones": []
+    "legacy_zone_count": 0,
+    "crates": [
+      {"id": "court_west", "center": [360, 160], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "court_east", "center": [950, 160], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "court_southwest", "center": [440, 620], "radius": 18, "art_id": "chest", "max_health": 40},
+      {"id": "court_southeast", "center": [840, 620], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "west_passage", "center": [-800, 40], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "northwest_cache", "center": [-280, -350], "radius": 18, "art_id": "chest", "max_health": 40},
+      {"id": "north_cache", "center": [360, -330], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "northeast_cache", "center": [1770, -300], "radius": 18, "art_id": "chest", "max_health": 40},
+      {"id": "east_passage", "center": [2170, 230], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "southeast_cache", "center": [1990, 950], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "south_cache", "center": [970, 1090], "radius": 18, "art_id": "chest", "max_health": 40},
+      {"id": "southwest_cache", "center": [-750, 1020], "radius": 18, "art_id": "barrel", "max_health": 24}
+    ],
+    "zones": [],
+    "obstacles": [
+      {"id": "southwest", "center": [200, 560], "radius": 30, "art_id": "monument"},
+      {"id": "southeast", "center": [1120, 560], "radius": 30, "art_id": "bumper"},
+      {"id": "northwest", "center": [-650, -230], "radius": 42, "art_id": "monument"},
+      {"id": "north", "center": [-80, -280], "radius": 36, "art_id": "planter"},
+      {"id": "northeast", "center": [1330, -240], "radius": 44, "art_id": "monument"},
+      {"id": "east_north", "center": [2030, -180], "radius": 36, "art_id": "bumper"},
+      {"id": "east", "center": [2050, 650], "radius": 40, "art_id": "monument"},
+      {"id": "east_south", "center": [1510, 1000], "radius": 38, "art_id": "planter"},
+      {"id": "south", "center": [510, 1000], "radius": 44, "art_id": "bumper"},
+      {"id": "west_south", "center": [-500, 900], "radius": 42, "art_id": "monument"},
+      {"id": "west_bumper", "center": [80, 360], "radius": 28, "art_id": "bumper"},
+      {"id": "east_bumper", "center": [1200, 360], "radius": 28, "art_id": "bumper"}
+    ]
   },
   {
     "id": "mire",
-    "name": "沉沼遗庭",
-    "subtitle": "苔石与泥潭 · 泥潭移速 −28%",
+    "name": "和风神社",
+    "subtitle": "苔石参道",
     "texture": "res://assets/maps/mire.svg",
     "preview_color": "83a894",
-    "terrain_name": "泥潭",
+    "terrain_name": "湿苔",
     "move_multiplier": 0.72,
+    "legacy_zone_count": 3,
+    "crates": [
+      {"id": "court_west", "center": [360, 160], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "court_east", "center": [950, 160], "radius": 18, "art_id": "chest", "max_health": 40},
+      {"id": "court_southwest", "center": [440, 620], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "court_southeast", "center": [840, 620], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "west_passage", "center": [-800, 40], "radius": 18, "art_id": "chest", "max_health": 40},
+      {"id": "northwest_cache", "center": [-280, -350], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "north_cache", "center": [360, -330], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "northeast_cache", "center": [1770, -300], "radius": 18, "art_id": "chest", "max_health": 40},
+      {"id": "east_passage", "center": [2170, 230], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "southeast_cache", "center": [1990, 950], "radius": 18, "art_id": "chest", "max_health": 40},
+      {"id": "south_cache", "center": [970, 1090], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "southwest_cache", "center": [-750, 1020], "radius": 18, "art_id": "barrel", "max_health": 24}
+    ],
     "zones": [
       {"center": [310, 275], "radius": [150, 68]},
       {"center": [970, 440], "radius": [155, 78]},
-      {"center": [500, 505], "radius": [125, 55]}
+      {"center": [500, 505], "radius": [125, 55]},
+      {"center": [-670, -200], "radius": [210, 110]},
+      {"center": [250, -300], "radius": [240, 90]},
+      {"center": [1410, -220], "radius": [230, 110]},
+      {"center": [2010, 200], "radius": [190, 125]},
+      {"center": [-720, 660], "radius": [190, 115]},
+      {"center": [90, 1000], "radius": [240, 125]},
+      {"center": [1110, 1010], "radius": [225, 120]},
+      {"center": [2010, 940], "radius": [190, 140]}
+    ],
+    "obstacles": [
+      {"id": "southwest", "center": [200, 560], "radius": 30, "art_id": "planter"},
+      {"id": "southeast", "center": [1120, 560], "radius": 30, "art_id": "monument"},
+      {"id": "northwest", "center": [-650, -220], "radius": 36, "art_id": "planter"},
+      {"id": "north", "center": [-80, -270], "radius": 40, "art_id": "monument"},
+      {"id": "northeast", "center": [1380, -230], "radius": 38, "art_id": "planter"},
+      {"id": "east_north", "center": [2040, -170], "radius": 42, "art_id": "bumper"},
+      {"id": "east", "center": [2010, 650], "radius": 36, "art_id": "planter"},
+      {"id": "east_south", "center": [1520, 1000], "radius": 44, "art_id": "monument"},
+      {"id": "south", "center": [530, 1000], "radius": 38, "art_id": "planter"},
+      {"id": "west_south", "center": [-510, 900], "radius": 40, "art_id": "bumper"},
+      {"id": "west_bumper", "center": [80, 360], "radius": 28, "art_id": "bumper"},
+      {"id": "east_bumper", "center": [1200, 360], "radius": 28, "art_id": "bumper"}
     ]
   },
   {
     "id": "glacier",
-    "name": "苍霜圣庭",
-    "subtitle": "霜裂石台 · 霜砂移速 −16%",
+    "name": "魔界高塔",
+    "subtitle": "秘纹回廊",
     "texture": "res://assets/maps/glacier.svg",
     "preview_color": "8ab4c7",
-    "terrain_name": "霜砂",
+    "terrain_name": "秘纹",
     "move_multiplier": 0.84,
+    "legacy_zone_count": 3,
+    "crates": [
+      {"id": "court_west", "center": [360, 160], "radius": 18, "art_id": "chest", "max_health": 40},
+      {"id": "court_east", "center": [950, 160], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "court_southwest", "center": [440, 620], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "court_southeast", "center": [840, 620], "radius": 18, "art_id": "chest", "max_health": 40},
+      {"id": "west_passage", "center": [-800, 40], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "northwest_cache", "center": [-280, -350], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "north_cache", "center": [360, -330], "radius": 18, "art_id": "chest", "max_health": 40},
+      {"id": "northeast_cache", "center": [1770, -300], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "east_passage", "center": [2170, 230], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "southeast_cache", "center": [1990, 950], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "south_cache", "center": [970, 1090], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "southwest_cache", "center": [-750, 1020], "radius": 18, "art_id": "chest", "max_health": 40}
+    ],
     "zones": [
       {"center": [340, 455], "radius": [170, 78]},
       {"center": [760, 220], "radius": [170, 52]},
-      {"center": [1030, 400], "radius": [115, 72]}
+      {"center": [1030, 400], "radius": [115, 72]},
+      {"center": [-720, -250], "radius": [210, 95]},
+      {"center": [180, -310], "radius": [230, 100]},
+      {"center": [1250, -220], "radius": [200, 115]},
+      {"center": [2080, 260], "radius": [155, 125]},
+      {"center": [-720, 670], "radius": [220, 115]},
+      {"center": [230, 1020], "radius": [240, 110]},
+      {"center": [1240, 1030], "radius": [220, 100]},
+      {"center": [2060, 980], "radius": [170, 130]}
+    ],
+    "obstacles": [
+      {"id": "southwest", "center": [200, 560], "radius": 30, "art_id": "bumper"},
+      {"id": "southeast", "center": [1120, 560], "radius": 30, "art_id": "monument"},
+      {"id": "northwest", "center": [-640, -230], "radius": 44, "art_id": "monument"},
+      {"id": "north", "center": [-60, -280], "radius": 36, "art_id": "bumper"},
+      {"id": "northeast", "center": [1350, -220], "radius": 42, "art_id": "monument"},
+      {"id": "east_north", "center": [2040, -150], "radius": 38, "art_id": "planter"},
+      {"id": "east", "center": [2030, 650], "radius": 44, "art_id": "monument"},
+      {"id": "east_south", "center": [1510, 1000], "radius": 36, "art_id": "bumper"},
+      {"id": "south", "center": [530, 1000], "radius": 42, "art_id": "monument"},
+      {"id": "west_south", "center": [-490, 900], "radius": 38, "art_id": "planter"},
+      {"id": "west_bumper", "center": [80, 360], "radius": 28, "art_id": "bumper"},
+      {"id": "east_bumper", "center": [1200, 360], "radius": 28, "art_id": "bumper"}
     ]
   },
   {
     "id": "ashland",
-    "name": "余烬荒原",
-    "subtitle": "玄武岩与松灰 · 松灰移速 −12%",
+    "name": "海盗船",
+    "subtitle": "破浪甲板",
     "texture": "res://assets/maps/ashland.svg",
     "preview_color": "ba9172",
-    "terrain_name": "松灰",
+    "terrain_name": "碎木",
     "move_multiplier": 0.88,
+    "legacy_zone_count": 4,
+    "crates": [
+      {"id": "court_west", "center": [360, 160], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "court_east", "center": [950, 160], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "court_southwest", "center": [440, 620], "radius": 18, "art_id": "chest", "max_health": 40},
+      {"id": "court_southeast", "center": [840, 620], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "west_passage", "center": [-800, 40], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "northwest_cache", "center": [-280, -350], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "north_cache", "center": [360, -330], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "northeast_cache", "center": [1770, -300], "radius": 18, "art_id": "chest", "max_health": 40},
+      {"id": "east_passage", "center": [2170, 230], "radius": 18, "art_id": "chest", "max_health": 40},
+      {"id": "southeast_cache", "center": [1990, 950], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "south_cache", "center": [970, 1090], "radius": 18, "art_id": "barrel", "max_health": 24},
+      {"id": "southwest_cache", "center": [-750, 1020], "radius": 18, "art_id": "chest", "max_health": 40}
+    ],
     "zones": [
       {"center": [245, 230], "radius": [110, 50]},
       {"center": [490, 480], "radius": [140, 64]},
       {"center": [900, 285], "radius": [150, 75]},
-      {"center": [1090, 515], "radius": [95, 45]}
+      {"center": [1090, 515], "radius": [95, 45]},
+      {"center": [-740, -260], "radius": [180, 95]},
+      {"center": [300, -320], "radius": [210, 90]},
+      {"center": [1390, -210], "radius": [230, 100]},
+      {"center": [2040, 290], "radius": [190, 125]},
+      {"center": [-710, 680], "radius": [210, 120]},
+      {"center": [210, 1010], "radius": [220, 120]},
+      {"center": [1160, 1030], "radius": [230, 100]},
+      {"center": [2020, 990], "radius": [190, 130]}
+    ],
+    "obstacles": [
+      {"id": "southwest", "center": [200, 560], "radius": 30, "art_id": "bumper"},
+      {"id": "southeast", "center": [1120, 560], "radius": 30, "art_id": "planter"},
+      {"id": "northwest", "center": [-660, -230], "radius": 38, "art_id": "monument"},
+      {"id": "north", "center": [-70, -270], "radius": 42, "art_id": "bumper"},
+      {"id": "northeast", "center": [1360, -230], "radius": 36, "art_id": "planter"},
+      {"id": "east_north", "center": [2050, -160], "radius": 44, "art_id": "bumper"},
+      {"id": "east", "center": [2040, 660], "radius": 38, "art_id": "monument"},
+      {"id": "east_south", "center": [1520, 1010], "radius": 42, "art_id": "planter"},
+      {"id": "south", "center": [520, 1000], "radius": 36, "art_id": "bumper"},
+      {"id": "west_south", "center": [-500, 890], "radius": 44, "art_id": "monument"},
+      {"id": "west_bumper", "center": [80, 360], "radius": 28, "art_id": "bumper"},
+      {"id": "east_bumper", "center": [1200, 360], "radius": 28, "art_id": "bumper"}
     ]
+  },
+  {
+    "id": "town",
+    "name": "星见镇",
+    "subtitle": "星纹街庭",
+    "texture": "res://assets/worldflipper/maps/town.png",
+    "preview_color": "a5cbbb",
+    "terrain_name": "魔纹",
+    "move_multiplier": 0.9,
+    "legacy_zone_count": 0,
+    "crates": [
+      {
+        "id": "court_west",
+        "center": [
+          360,
+          160
+        ],
+        "radius": 18,
+        "art_id": "chest",
+        "max_health": 40
+      },
+      {
+        "id": "court_east",
+        "center": [
+          950,
+          160
+        ],
+        "radius": 18,
+        "art_id": "barrel",
+        "max_health": 24
+      },
+      {
+        "id": "court_southwest",
+        "center": [
+          440,
+          620
+        ],
+        "radius": 18,
+        "art_id": "barrel",
+        "max_health": 24
+      },
+      {
+        "id": "court_southeast",
+        "center": [
+          840,
+          620
+        ],
+        "radius": 18,
+        "art_id": "chest",
+        "max_health": 40
+      },
+      {
+        "id": "west_passage",
+        "center": [
+          -800,
+          40
+        ],
+        "radius": 18,
+        "art_id": "barrel",
+        "max_health": 24
+      },
+      {
+        "id": "northwest_cache",
+        "center": [
+          -280,
+          -350
+        ],
+        "radius": 18,
+        "art_id": "barrel",
+        "max_health": 24
+      },
+      {
+        "id": "north_cache",
+        "center": [
+          360,
+          -330
+        ],
+        "radius": 18,
+        "art_id": "chest",
+        "max_health": 40
+      },
+      {
+        "id": "northeast_cache",
+        "center": [
+          1770,
+          -300
+        ],
+        "radius": 18,
+        "art_id": "barrel",
+        "max_health": 24
+      },
+      {
+        "id": "east_passage",
+        "center": [
+          2170,
+          230
+        ],
+        "radius": 18,
+        "art_id": "barrel",
+        "max_health": 24
+      },
+      {
+        "id": "southeast_cache",
+        "center": [
+          1990,
+          950
+        ],
+        "radius": 18,
+        "art_id": "chest",
+        "max_health": 40
+      },
+      {
+        "id": "south_cache",
+        "center": [
+          970,
+          1090
+        ],
+        "radius": 18,
+        "art_id": "barrel",
+        "max_health": 24
+      },
+      {
+        "id": "southwest_cache",
+        "center": [
+          -750,
+          1020
+        ],
+        "radius": 18,
+        "art_id": "barrel",
+        "max_health": 24
+      }
+    ],
+    "zones": [
+      {
+        "center": [
+          280,
+          450
+        ],
+        "radius": [
+          120,
+          70
+        ]
+      },
+      {
+        "center": [
+          1000,
+          240
+        ],
+        "radius": [
+          130,
+          70
+        ]
+      },
+      {
+        "center": [
+          -350,
+          -200
+        ],
+        "radius": [
+          180,
+          90
+        ]
+      },
+      {
+        "center": [
+          1870,
+          650
+        ],
+        "radius": [
+          150,
+          100
+        ]
+      },
+      {
+        "center": [
+          -700,
+          800
+        ],
+        "radius": [
+          170,
+          110
+        ]
+      },
+      {
+        "center": [
+          1480,
+          1030
+        ],
+        "radius": [
+          190,
+          90
+        ]
+      }
+    ],
+    "obstacles": [
+      {
+        "id": "southwest",
+        "center": [
+          200,
+          560
+        ],
+        "radius": 30,
+        "art_id": "planter"
+      },
+      {
+        "id": "southeast",
+        "center": [
+          1120,
+          560
+        ],
+        "radius": 30,
+        "art_id": "monument"
+      },
+      {
+        "id": "northwest",
+        "center": [
+          -650,
+          -220
+        ],
+        "radius": 36,
+        "art_id": "bumper"
+      },
+      {
+        "id": "north",
+        "center": [
+          -80,
+          -270
+        ],
+        "radius": 40,
+        "art_id": "planter"
+      },
+      {
+        "id": "northeast",
+        "center": [
+          1380,
+          -230
+        ],
+        "radius": 38,
+        "art_id": "monument"
+      },
+      {
+        "id": "east_north",
+        "center": [
+          2040,
+          -170
+        ],
+        "radius": 42,
+        "art_id": "bumper"
+      },
+      {
+        "id": "east",
+        "center": [
+          2010,
+          650
+        ],
+        "radius": 36,
+        "art_id": "planter"
+      },
+      {
+        "id": "east_south",
+        "center": [
+          1520,
+          1000
+        ],
+        "radius": 44,
+        "art_id": "monument"
+      },
+      {
+        "id": "south",
+        "center": [
+          530,
+          1000
+        ],
+        "radius": 38,
+        "art_id": "bumper"
+      },
+      {
+        "id": "west_south",
+        "center": [
+          -510,
+          900
+        ],
+        "radius": 40,
+        "art_id": "planter"
+      },
+      {
+        "id": "west_bumper",
+        "center": [
+          80,
+          360
+        ],
+        "radius": 28,
+        "art_id": "bumper"
+      },
+      {
+        "id": "east_bumper",
+        "center": [
+          1200,
+          360
+        ],
+        "radius": 28,
+        "art_id": "bumper"
+      }
+    ]
+  },
+  {
+    "id": "throne",
+    "name": "光之王座",
+    "subtitle": "辉光礼殿",
+    "texture": "res://assets/worldflipper/maps/throne.png",
+    "preview_color": "c7a6c9",
+    "terrain_name": "礼毯",
+    "move_multiplier": 0.92,
+    "legacy_zone_count": 0,
+    "crates": [
+      {
+        "id": "court_west",
+        "center": [
+          360,
+          160
+        ],
+        "radius": 18,
+        "art_id": "barrel",
+        "max_health": 24
+      },
+      {
+        "id": "court_east",
+        "center": [
+          950,
+          160
+        ],
+        "radius": 18,
+        "art_id": "barrel",
+        "max_health": 24
+      },
+      {
+        "id": "court_southwest",
+        "center": [
+          440,
+          620
+        ],
+        "radius": 18,
+        "art_id": "chest",
+        "max_health": 40
+      },
+      {
+        "id": "court_southeast",
+        "center": [
+          840,
+          620
+        ],
+        "radius": 18,
+        "art_id": "barrel",
+        "max_health": 24
+      },
+      {
+        "id": "west_passage",
+        "center": [
+          -800,
+          40
+        ],
+        "radius": 18,
+        "art_id": "barrel",
+        "max_health": 24
+      },
+      {
+        "id": "northwest_cache",
+        "center": [
+          -280,
+          -350
+        ],
+        "radius": 18,
+        "art_id": "chest",
+        "max_health": 40
+      },
+      {
+        "id": "north_cache",
+        "center": [
+          360,
+          -330
+        ],
+        "radius": 18,
+        "art_id": "barrel",
+        "max_health": 24
+      },
+      {
+        "id": "northeast_cache",
+        "center": [
+          1770,
+          -300
+        ],
+        "radius": 18,
+        "art_id": "barrel",
+        "max_health": 24
+      },
+      {
+        "id": "east_passage",
+        "center": [
+          2170,
+          230
+        ],
+        "radius": 18,
+        "art_id": "chest",
+        "max_health": 40
+      },
+      {
+        "id": "southeast_cache",
+        "center": [
+          1990,
+          950
+        ],
+        "radius": 18,
+        "art_id": "barrel",
+        "max_health": 24
+      },
+      {
+        "id": "south_cache",
+        "center": [
+          970,
+          1090
+        ],
+        "radius": 18,
+        "art_id": "barrel",
+        "max_health": 24
+      },
+      {
+        "id": "southwest_cache",
+        "center": [
+          -750,
+          1020
+        ],
+        "radius": 18,
+        "art_id": "chest",
+        "max_health": 40
+      }
+    ],
+    "zones": [
+      {
+        "center": [
+          200,
+          300
+        ],
+        "radius": [
+          120,
+          90
+        ]
+      },
+      {
+        "center": [
+          1000,
+          450
+        ],
+        "radius": [
+          150,
+          70
+        ]
+      },
+      {
+        "center": [
+          -650,
+          -230
+        ],
+        "radius": [
+          190,
+          100
+        ]
+      },
+      {
+        "center": [
+          1490,
+          -190
+        ],
+        "radius": [
+          180,
+          80
+        ]
+      },
+      {
+        "center": [
+          -650,
+          1000
+        ],
+        "radius": [
+          180,
+          100
+        ]
+      },
+      {
+        "center": [
+          1900,
+          900
+        ],
+        "radius": [
+          200,
+          100
+        ]
+      }
+    ],
+    "obstacles": [
+      {
+        "id": "southwest",
+        "center": [
+          200,
+          560
+        ],
+        "radius": 30,
+        "art_id": "monument"
+      },
+      {
+        "id": "southeast",
+        "center": [
+          1120,
+          560
+        ],
+        "radius": 30,
+        "art_id": "bumper"
+      },
+      {
+        "id": "northwest",
+        "center": [
+          -640,
+          -230
+        ],
+        "radius": 44,
+        "art_id": "planter"
+      },
+      {
+        "id": "north",
+        "center": [
+          -60,
+          -280
+        ],
+        "radius": 36,
+        "art_id": "monument"
+      },
+      {
+        "id": "northeast",
+        "center": [
+          1350,
+          -220
+        ],
+        "radius": 42,
+        "art_id": "bumper"
+      },
+      {
+        "id": "east_north",
+        "center": [
+          2040,
+          -150
+        ],
+        "radius": 38,
+        "art_id": "planter"
+      },
+      {
+        "id": "east",
+        "center": [
+          2030,
+          650
+        ],
+        "radius": 44,
+        "art_id": "monument"
+      },
+      {
+        "id": "east_south",
+        "center": [
+          1510,
+          1000
+        ],
+        "radius": 36,
+        "art_id": "bumper"
+      },
+      {
+        "id": "south",
+        "center": [
+          530,
+          1000
+        ],
+        "radius": 42,
+        "art_id": "planter"
+      },
+      {
+        "id": "west_south",
+        "center": [
+          -490,
+          900
+        ],
+        "radius": 38,
+        "art_id": "monument"
+      },
+      {
+        "id": "west_bumper",
+        "center": [
+          80,
+          360
+        ],
+        "radius": 28,
+        "art_id": "bumper"
+      },
+      {
+        "id": "east_bumper",
+        "center": [
+          1200,
+          360
+        ],
+        "radius": 28,
+        "art_id": "bumper"
+      }
+    ]
+  },
+  {
+    "id": "tower_peak",
+    "name": "魔塔之巅",
+    "subtitle": "秘能天台",
+    "texture": "res://assets/worldflipper/maps/tower_peak.png",
+    "preview_color": "8077bb",
+    "terrain_name": "能量纹",
+    "move_multiplier": 0.8,
+    "legacy_zone_count": 0,
+    "crates": [
+      {
+        "id": "court_west",
+        "center": [
+          360,
+          160
+        ],
+        "radius": 18,
+        "art_id": "barrel",
+        "max_health": 24
+      },
+      {
+        "id": "court_east",
+        "center": [
+          950,
+          160
+        ],
+        "radius": 18,
+        "art_id": "chest",
+        "max_health": 40
+      },
+      {
+        "id": "court_southwest",
+        "center": [
+          440,
+          620
+        ],
+        "radius": 18,
+        "art_id": "barrel",
+        "max_health": 24
+      },
+      {
+        "id": "court_southeast",
+        "center": [
+          840,
+          620
+        ],
+        "radius": 18,
+        "art_id": "barrel",
+        "max_health": 24
+      },
+      {
+        "id": "west_passage",
+        "center": [
+          -800,
+          40
+        ],
+        "radius": 18,
+        "art_id": "chest",
+        "max_health": 40
+      },
+      {
+        "id": "northwest_cache",
+        "center": [
+          -280,
+          -350
+        ],
+        "radius": 18,
+        "art_id": "barrel",
+        "max_health": 24
+      },
+      {
+        "id": "north_cache",
+        "center": [
+          360,
+          -330
+        ],
+        "radius": 18,
+        "art_id": "barrel",
+        "max_health": 24
+      },
+      {
+        "id": "northeast_cache",
+        "center": [
+          1770,
+          -300
+        ],
+        "radius": 18,
+        "art_id": "chest",
+        "max_health": 40
+      },
+      {
+        "id": "east_passage",
+        "center": [
+          2170,
+          230
+        ],
+        "radius": 18,
+        "art_id": "barrel",
+        "max_health": 24
+      },
+      {
+        "id": "southeast_cache",
+        "center": [
+          1990,
+          950
+        ],
+        "radius": 18,
+        "art_id": "barrel",
+        "max_health": 24
+      },
+      {
+        "id": "south_cache",
+        "center": [
+          970,
+          1090
+        ],
+        "radius": 18,
+        "art_id": "chest",
+        "max_health": 40
+      },
+      {
+        "id": "southwest_cache",
+        "center": [
+          -750,
+          1020
+        ],
+        "radius": 18,
+        "art_id": "barrel",
+        "max_health": 24
+      }
+    ],
+    "zones": [
+      {
+        "center": [
+          350,
+          500
+        ],
+        "radius": [
+          130,
+          60
+        ]
+      },
+      {
+        "center": [
+          980,
+          260
+        ],
+        "radius": [
+          130,
+          70
+        ]
+      },
+      {
+        "center": [
+          -640,
+          -250
+        ],
+        "radius": [
+          170,
+          95
+        ]
+      },
+      {
+        "center": [
+          1450,
+          -220
+        ],
+        "radius": [
+          190,
+          80
+        ]
+      },
+      {
+        "center": [
+          -650,
+          900
+        ],
+        "radius": [
+          180,
+          100
+        ]
+      },
+      {
+        "center": [
+          2040,
+          1020
+        ],
+        "radius": [
+          170,
+          110
+        ]
+      }
+    ],
+    "obstacles": [
+      {
+        "id": "southwest",
+        "center": [
+          200,
+          560
+        ],
+        "radius": 30,
+        "art_id": "bumper"
+      },
+      {
+        "id": "southeast",
+        "center": [
+          1120,
+          560
+        ],
+        "radius": 30,
+        "art_id": "planter"
+      },
+      {
+        "id": "northwest",
+        "center": [
+          -660,
+          -230
+        ],
+        "radius": 38,
+        "art_id": "monument"
+      },
+      {
+        "id": "north",
+        "center": [
+          -70,
+          -270
+        ],
+        "radius": 42,
+        "art_id": "bumper"
+      },
+      {
+        "id": "northeast",
+        "center": [
+          1360,
+          -230
+        ],
+        "radius": 36,
+        "art_id": "planter"
+      },
+      {
+        "id": "east_north",
+        "center": [
+          2050,
+          -160
+        ],
+        "radius": 44,
+        "art_id": "monument"
+      },
+      {
+        "id": "east",
+        "center": [
+          2040,
+          660
+        ],
+        "radius": 38,
+        "art_id": "bumper"
+      },
+      {
+        "id": "east_south",
+        "center": [
+          1520,
+          1010
+        ],
+        "radius": 42,
+        "art_id": "planter"
+      },
+      {
+        "id": "south",
+        "center": [
+          520,
+          1000
+        ],
+        "radius": 36,
+        "art_id": "monument"
+      },
+      {
+        "id": "west_south",
+        "center": [
+          -500,
+          890
+        ],
+        "radius": 44,
+        "art_id": "bumper"
+      },
+      {
+        "id": "west_bumper",
+        "center": [
+          80,
+          360
+        ],
+        "radius": 28,
+        "art_id": "bumper"
+      },
+      {
+        "id": "east_bumper",
+        "center": [
+          1200,
+          360
+        ],
+        "radius": 28,
+        "art_id": "bumper"
+      }
+    ]
+  },
+  {
+    "id": "jp_sand_2_9_5",
+    "name": "沙漠遗迹 2-9-5",
+    "texture": "res://assets/worldflipper/stages/jp_sand_2_9_5.png",
+    "preview_color": "9b9066",
+    "terrain_name": "",
+    "move_multiplier": 1.0,
+    "legacy_zone_count": 0,
+    "zones": [],
+    "obstacles": [],
+    "crates": [],
+    "stage": {
+      "layout_id": "main_2_9_5",
+      "demo_layout_id": "main_2_9_5",
+      "field_id": "sand_ruins",
+      "layer_index": 0,
+      "source_id": "terrain_main_chapter_02_09_05",
+      "logic_scale": 0.6666666666666666,
+      "logic_offset": [
+        96.0,
+        -275.0
+      ],
+      "native_bounds": [
+        46,
+        0,
+        180,
+        320
+      ],
+      "play_bounds": [
+        280.0,
+        -275.0,
+        720,
+        1280
+      ],
+      "wall_segment_count": 3,
+      "source_label": "main_2_9_5",
+      "unresolved_prop_count": 4
+    }
+  },
+  {
+    "id": "jp_shrine_6_6_2",
+    "name": "竹林神社 6-6-2",
+    "texture": "res://assets/worldflipper/stages/jp_shrine_6_6_2.png",
+    "preview_color": "7c9c78",
+    "terrain_name": "",
+    "move_multiplier": 1.0,
+    "legacy_zone_count": 0,
+    "zones": [],
+    "obstacles": [],
+    "crates": [],
+    "stage": {
+      "layout_id": "main_6_6_2",
+      "demo_layout_id": "main_6_6_2",
+      "field_id": "japan_shrine",
+      "layer_index": 0,
+      "source_id": "terrain_main_chapter_06_06_02",
+      "logic_scale": 0.6666666666666666,
+      "logic_offset": [
+        96.0,
+        -275.0
+      ],
+      "native_bounds": [
+        46,
+        0,
+        180,
+        320
+      ],
+      "play_bounds": [
+        280.0,
+        -275.0,
+        720,
+        1280
+      ],
+      "wall_segment_count": 6,
+      "source_label": "main_6_6_2",
+      "unresolved_prop_count": 4
+    }
+  },
+  {
+    "id": "jp_ship_3_6_2",
+    "name": "海盗船 3-6-2",
+    "texture": "res://assets/worldflipper/stages/jp_ship_3_6_2.png",
+    "preview_color": "729799",
+    "terrain_name": "",
+    "move_multiplier": 1.0,
+    "legacy_zone_count": 0,
+    "zones": [],
+    "obstacles": [],
+    "crates": [],
+    "stage": {
+      "layout_id": "main_3_6_2",
+      "demo_layout_id": "main_3_6_2_trial",
+      "field_id": "sea_ship_boss",
+      "layer_index": 0,
+      "source_id": "terrain_main_chapter_03_06_02-trial",
+      "logic_scale": 0.6666666666666666,
+      "logic_offset": [
+        96.0,
+        -811.0
+      ],
+      "native_bounds": [
+        46,
+        134,
+        180,
+        320
+      ],
+      "play_bounds": [
+        280.0,
+        -275.0,
+        720,
+        1280
+      ],
+      "wall_segment_count": 8,
+      "source_label": "main_3_6_2",
+      "unresolved_prop_count": 17
+    }
   }
 ]

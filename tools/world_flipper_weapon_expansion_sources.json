@@ -1,0 +1,248 @@
+{
+  "schema_version": 1,
+  "sources": [
+    {
+      "id": "weapon_expansion_sword_0012",
+      "kind": "weapon_expansion",
+      "game_id": "sword_0012",
+      "canonical_equipment_id": "5010012",
+      "canonical_dev_name": "sword_0012",
+      "name": "Prometheus Blade",
+      "name_jp": "プロメテウスの剣",
+      "display_name_zh": "普罗米修斯之剑",
+      "filename": "weapon-expansion-sword_0012.png",
+      "url": "https://worldflipper.wiki.gg/images/Prometheus_Blade.png?52081f",
+      "source_page": "https://worldflipper.wiki.gg/wiki/Prometheus_Blade",
+      "redirect_url": "https://worldflipper.wiki.gg/wiki/Special:Redirect/file/Prometheus_Blade.png",
+      "sha256": "c8a8792a3c65f0a534968c2776adb823f291736f6142b6dba6ac2248b880585c",
+      "source_size": [
+        22,
+        22
+      ],
+      "crop": [
+        0,
+        0,
+        22,
+        22
+      ],
+      "scale": 2,
+      "original_element": "fire",
+      "source_category": "Armament sprite images",
+      "identity_verification": "Original JP numeric ID/dev name joined with GL equipment dev name and English name; original base/max HP and ATK match the referenced wiki page. No screenshot or 96px diamond-background image used.",
+      "license_status": "Original game sprite; no open asset license found. Existing fan-work terms and provenance apply."
+    },
+    {
+      "id": "weapon_expansion_spear_0005",
+      "kind": "weapon_expansion",
+      "game_id": "spear_0005",
+      "canonical_equipment_id": "5030005",
+      "canonical_dev_name": "spear_0005",
+      "name": "Maltet",
+      "name_jp": "マルテ",
+      "display_name_zh": "马尔特",
+      "filename": "weapon-expansion-spear_0005.png",
+      "url": "https://worldflipper.wiki.gg/images/Maltet.png?335678",
+      "source_page": "https://worldflipper.wiki.gg/wiki/Maltet",
+      "redirect_url": "https://worldflipper.wiki.gg/wiki/Special:Redirect/file/Maltet.png",
+      "sha256": "2e8e6ab4d8c80ea570c5dd72445bd68c4f6155db2efe5ec571fb208e81903767",
+      "source_size": [
+        22,
+        22
+      ],
+      "crop": [
+        0,
+        0,
+        22,
+        22
+      ],
+      "scale": 2,
+      "original_element": "all",
+      "source_category": "Armament sprite images",
+      "identity_verification": "Original JP numeric ID/dev name joined with GL equipment dev name and English name; original base/max HP and ATK match the referenced wiki page. No screenshot or 96px diamond-background image used.",
+      "license_status": "Original game sprite; no open asset license found. Existing fan-work terms and provenance apply."
+    },
+    {
+      "id": "weapon_expansion_sword_0004",
+      "kind": "weapon_expansion",
+      "game_id": "sword_0004",
+      "canonical_equipment_id": "5010004",
+      "canonical_dev_name": "sword_0004",
+      "name": "Ame-no-Habakiri",
+      "name_jp": "天羽々斬",
+      "display_name_zh": "天羽羽斩",
+      "filename": "weapon-expansion-sword_0004.png",
+      "url": "https://worldflipper.wiki.gg/images/Ame-no-Habakiri.png?8e10de",
+      "source_page": "https://worldflipper.wiki.gg/wiki/Ame-no-Habakiri",
+      "redirect_url": "https://worldflipper.wiki.gg/wiki/Special:Redirect/file/Ame-no-Habakiri.png",
+      "sha256": "228188d02770be0f68f04ce2b747b412cc8764ab81956d3ea985850f504a9d77",
+      "source_size": [
+        20,
+        22
+      ],
+      "crop": [
+        0,
+        0,
+        20,
+        22
+      ],
+      "scale": 2,
+      "original_element": "dark",
+      "source_category": "Armament sprite images",
+      "identity_verification": "Original JP numeric ID/dev name joined with GL equipment dev name and English name; original base/max HP and ATK match the referenced wiki page. No screenshot or 96px diamond-background image used.",
+      "license_status": "Original game sprite; no open asset license found. Existing fan-work terms and provenance apply."
+    },
+    {
+      "id": "weapon_expansion_axe_0009",
+      "kind": "weapon_expansion",
+      "game_id": "axe_0009",
+      "canonical_equipment_id": "5020009",
+      "canonical_dev_name": "axe_0009",
+      "name": "Thor's Hammer",
+      "name_jp": "トールの鎚",
+      "display_name_zh": "雷神之锤",
+      "filename": "weapon-expansion-axe_0009.png",
+      "url": "https://worldflipper.wiki.gg/images/Thor%27s_Hammer.png?8be8a1",
+      "source_page": "https://worldflipper.wiki.gg/wiki/Thor%27s_Hammer",
+      "redirect_url": "https://worldflipper.wiki.gg/wiki/Special:Redirect/file/Thor%27s_Hammer.png",
+      "sha256": "98697d351311c91a644c9133efead92da8f01d8cf7e67b1336bf1b59b034ec22",
+      "source_size": [
+        22,
+        22
+      ],
+      "crop": [
+        0,
+        0,
+        22,
+        22
+      ],
+      "scale": 2,
+      "original_element": "thunder",
+      "source_category": "Armament sprite images",
+      "identity_verification": "Original JP numeric ID/dev name joined with GL equipment dev name and English name; original base/max HP and ATK match the referenced wiki page. No screenshot or 96px diamond-background image used.",
+      "license_status": "Original game sprite; no open asset license found. Existing fan-work terms and provenance apply."
+    },
+    {
+      "id": "weapon_expansion_book_0009",
+      "kind": "weapon_expansion",
+      "game_id": "book_0009",
+      "canonical_equipment_id": "5050009",
+      "canonical_dev_name": "book_0009",
+      "name": "Senji Ryakketsu",
+      "name_jp": "占事略決",
+      "display_name_zh": "占事略决",
+      "filename": "weapon-expansion-book_0009.png",
+      "url": "https://worldflipper.wiki.gg/images/Senji_Ryakketsu.png?e38ee5",
+      "source_page": "https://worldflipper.wiki.gg/wiki/Senji_Ryakketsu",
+      "redirect_url": "https://worldflipper.wiki.gg/wiki/Special:Redirect/file/Senji_Ryakketsu.png",
+      "sha256": "2525247954b767bde2ce9612477a29000818a519a896238e5440082713227396",
+      "source_size": [
+        18,
+        18
+      ],
+      "crop": [
+        0,
+        0,
+        18,
+        18
+      ],
+      "scale": 3,
+      "original_element": "fire",
+      "source_category": "Armament sprite images",
+      "identity_verification": "Original JP numeric ID/dev name joined with GL equipment dev name and English name; original base/max HP and ATK match the referenced wiki page. No screenshot or 96px diamond-background image used.",
+      "license_status": "Original game sprite; no open asset license found. Existing fan-work terms and provenance apply."
+    },
+    {
+      "id": "weapon_expansion_sword_0007",
+      "kind": "weapon_expansion",
+      "game_id": "sword_0007",
+      "canonical_equipment_id": "3010007",
+      "canonical_dev_name": "sword_0007",
+      "name": "Cutlass",
+      "name_jp": "カトラス",
+      "display_name_zh": "弯刀",
+      "filename": "weapon-expansion-sword_0007.png",
+      "url": "https://worldflipper.wiki.gg/images/Cutlass.png?6aaef0",
+      "source_page": "https://worldflipper.wiki.gg/wiki/Cutlass",
+      "redirect_url": "https://worldflipper.wiki.gg/wiki/Special:Redirect/file/Cutlass.png",
+      "sha256": "437db66bdc1a0e2949c64181ba82bdce9bdc18c6c4f9d7e8c077eb3fe1820f5e",
+      "source_size": [
+        15,
+        18
+      ],
+      "crop": [
+        0,
+        0,
+        15,
+        18
+      ],
+      "scale": 3,
+      "original_element": "water",
+      "source_category": "Armament sprite images",
+      "identity_verification": "Original JP numeric ID/dev name joined with GL equipment dev name and English name; original base/max HP and ATK match the referenced wiki page. No screenshot or 96px diamond-background image used.",
+      "license_status": "Original game sprite; no open asset license found. Existing fan-work terms and provenance apply."
+    },
+    {
+      "id": "weapon_expansion_axe_0024",
+      "kind": "weapon_expansion",
+      "game_id": "axe_0024",
+      "canonical_equipment_id": "5020024",
+      "canonical_dev_name": "axe_0024",
+      "name": "Parashu",
+      "name_jp": "パラシュ",
+      "display_name_zh": "帕拉修",
+      "filename": "weapon-expansion-axe_0024.png",
+      "url": "https://worldflipper.wiki.gg/images/Parashu.png?d32d5c",
+      "source_page": "https://worldflipper.wiki.gg/wiki/Parashu",
+      "redirect_url": "https://worldflipper.wiki.gg/wiki/Special:Redirect/file/Parashu.png",
+      "sha256": "7faf58cfae0025b594dd1cf45896fe885a9538fae571a33445319d434a377620",
+      "source_size": [
+        20,
+        20
+      ],
+      "crop": [
+        0,
+        0,
+        20,
+        20
+      ],
+      "scale": 3,
+      "original_element": "all",
+      "source_category": "Armament sprite images",
+      "identity_verification": "Original JP numeric ID/dev name joined with GL equipment dev name and English name; original base/max HP and ATK match the referenced wiki page. No screenshot or 96px diamond-background image used.",
+      "license_status": "Original game sprite; no open asset license found. Existing fan-work terms and provenance apply."
+    },
+    {
+      "id": "weapon_expansion_sword_0011",
+      "kind": "weapon_expansion",
+      "game_id": "sword_0011",
+      "canonical_equipment_id": "5010011",
+      "canonical_dev_name": "sword_0011",
+      "name": "Heimdall's Sword",
+      "name_jp": "ヘイムダルの剣",
+      "display_name_zh": "海姆达尔之剑",
+      "filename": "weapon-expansion-sword_0011.png",
+      "url": "https://worldflipper.wiki.gg/images/Heimdall%27s_Sword.png?c0fffd",
+      "source_page": "https://worldflipper.wiki.gg/wiki/Heimdall%27s_Sword",
+      "redirect_url": "https://worldflipper.wiki.gg/wiki/Special:Redirect/file/Heimdall%27s_Sword.png",
+      "sha256": "1b6235b72511359bcb290d513689fabd2976bf89d8d52945e1bece3168d52db5",
+      "source_size": [
+        22,
+        22
+      ],
+      "crop": [
+        0,
+        0,
+        22,
+        22
+      ],
+      "scale": 2,
+      "original_element": "light",
+      "source_category": "Armament sprite images",
+      "identity_verification": "Original JP numeric ID/dev name joined with GL equipment dev name and English name; original base/max HP and ATK match the referenced wiki page. No screenshot or 96px diamond-background image used.",
+      "license_status": "Original game sprite; no open asset license found. Existing fan-work terms and provenance apply."
+    }
+  ],
+  "canonical_commit": "1d45b529ef078ba9b1f876d4588debd0c8a9a214",
+  "original_copyright": "© Cygames, Inc. / Citail Inc.",
+  "normalization": "Full original transparent canvas, integer nearest scaling at most 3x, centered inside 64x64, no cutout, recoloring or added frames."
+}

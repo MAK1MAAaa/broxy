@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="ContentDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/content_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "sword_0005"
+kind = "weapon"
+display_name = "杜兰德尔"
+icon = "sword_0005"
+source_id = "5010005"
+element = "physical"
+subtitle = "主角 · 攻击与生命"
+description = "释放沉重贯穿剑锋。主角攻击Ⅰ/Ⅱ/Ⅲ阶增加160%/320%/640%，最大生命增加15%/30%/60%；装备不会回复生命，后排攻击不受此项加成。"
+color = Color(0.94, 0.82, 0.49, 1)
+price = 76
+damage = 24.0
+cooldown = 1.25
+projectile_speed = 280.0
+projectile_radius = 9.0
+range = 330.0
+shots = 1
+innate_pierce = 2
+inventory_size = Vector2i(3, 2)
+equipment_owner = "main"
+equipment_modifiers = Array[Dictionary]([{"stat": "damage", "target": "owner", "amount_by_rank": [1.6, 3.2, 6.4]}, {"stat": "max_health_ratio", "target": "owner", "amount_by_rank": [0.15, 0.3, 0.6]}])

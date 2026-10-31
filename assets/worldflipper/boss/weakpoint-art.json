@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "revision": "world-flipper-fan-07",
+  "original_copyright": "© Cygames, Inc. / Citail Inc.",
+  "assets": {
+    "weakpoint": {
+      "id": "boss_weakpoint_states",
+      "path": "res://assets/worldflipper/boss/weakpoint-atlas.png",
+      "size": [
+        288,
+        96
+      ],
+      "frame_size": [
+        96,
+        96
+      ],
+      "columns": 3,
+      "frame_count": 3,
+      "states": [
+        "white",
+        "red",
+        "broken"
+      ],
+      "center_anchor": [
+        48,
+        48
+      ],
+      "filter": "nearest",
+      "normalization": "Restore original atlas trim/rotation; combine four quarter-circle corners and four cross arms for complete white/red targets; broken is a bounded static authored piece-matrix snapshot. Original colors/alpha retained. Runtime state flashing, scale and break duration are project adaptations, not decoded original timing."
+    }
+  },
+  "timing_note": "White/red flashing, charging progress and broken lifetime are project runtime adaptations. These are static complete states from original pieces; no original FPS or time remapping is claimed.",
+  "centering_note": "The authored inner-ring scale is quantized to an even68px centered cell; no half-pixel drift between white/red states."
+}

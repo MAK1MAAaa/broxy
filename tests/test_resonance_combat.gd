@@ -54,6 +54,7 @@ func _shot(sim: CombatSim, source: String) -> CombatSim.Shot:
 func _test_dispatch_and_movement() -> void:
 	for definition: ContentDef in GameCatalog.weapons():
 		var state: RunState = _state(definition.id)
+		var personal_attack: float = 2.6 if definition.id == "sword_0005" else 1.0
 		var relic: int = _buy(state, "relic", "armor")
 		var size: Vector2i = definition.inventory_size
 		_check(state.move_item(relic, Vector2i(size.x, 0), false), "A support relic is placed on the weapon's exact edge")
@@ -63,7 +64,7 @@ func _test_dispatch_and_movement() -> void:
 		var shot: CombatSim.Shot = _shot(sim, definition.id)
 		_check(shot != null and is_equal_approx(shot.resonance_bonus, 0.03), "Every weapon receives its own cached support bonus: " + definition.id)
 		if shot != null:
-			_check(is_equal_approx(shot.damage, definition.damage * 1.03) and is_equal_approx(shot.damage, state.weapon_damage(state.loadout[0])), "Real dispatch and the projected per-hit damage agree")
+			_check(is_equal_approx(shot.damage, definition.damage * personal_attack * 1.03) and is_equal_approx(shot.damage, state.weapon_damage(state.loadout[0])), "Real dispatch preserves owner attack, edge resonance and projected per-hit damage")
 		_check(is_equal_approx(sim._cooldowns[0], definition.cooldown), "Resonance leaves the existing nominal firing interval intact")
 		_check(state.move_item(relic, Vector2i(5, 3), false), "Moving the support away commits through the real grid")
 		for active: CombatSim.Shot in sim.shots:
@@ -72,7 +73,7 @@ func _test_dispatch_and_movement() -> void:
 		sim._cooldowns.fill(0.0)
 		sim.step(STEP, Vector2.ZERO)
 		shot = _shot(sim, definition.id)
-		_check(shot != null and shot.resonance_bonus == 0.0 and is_equal_approx(shot.damage, definition.damage), "Later shots use the newly arranged layout rather than a stale bonus")
+		_check(shot != null and shot.resonance_bonus == 0.0 and is_equal_approx(shot.damage, definition.damage * personal_attack), "Moving the support removes only resonance while retaining Durendal's owner attack")
 
 func _test_runes_and_pool() -> void:
 	var state: RunState = _state()

@@ -153,7 +153,7 @@ func _state(seed_value: int, prior: Array[String] = []) -> RunState:
 			_fixture_valid = state.merge_items(item_uids[1], item_uids[0]) and state.merge_items(item_uids[3], item_uids[2]) and state.merge_items(item_uids[2], item_uids[0]) and _fixture_valid
 			_fixture_valid = int(state.backpack_item(item_uids[0]).get("rank", 0)) == 3 and int(state.relic_counts.get(definition.id, 0)) == 4 and _fixture_valid
 	var backpack: Dictionary = state.backpack_snapshot()
-	_fixture_valid = int(backpack["used_cells"]) == 21 and int(backpack["total_cells"]) == 36 and _fixture_valid
+	_fixture_valid = int(backpack["used_cells"]) == 23 and int(backpack["total_cells"]) == 36 and _fixture_valid
 	state.collect_souls(102)
 	for id: String in prior:
 		state.upgrade_choices()

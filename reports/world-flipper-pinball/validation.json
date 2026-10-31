@@ -1,0 +1,298 @@
+{
+  "schema_version": 1,
+  "base_commit": "329d15e",
+  "branch": "codex/pinball-arena",
+  "platform": "Windows",
+  "scope": {
+    "arena_count": 4,
+    "terrain_zones_preserved": 34,
+    "fixed_props_per_arena": 12,
+    "original_props_per_arena_preserved": 10,
+    "crates_per_arena": 12,
+    "ground_colliders_per_arena": 24,
+    "independent_drop_stream": true,
+    "pinball_form": true,
+    "old_nonmap_pngs_preserved": 50
+  },
+  "headless": {
+    "invocations": 111,
+    "suites": 106,
+    "diagnostics": 5,
+    "assertions": 48625,
+    "python_tests": 74,
+    "failures": 0,
+    "engine_errors": 0,
+    "log_sha256": "3411a191c24332f48d4d3c75f08d81595980004f1a62f355835ff2158f2d23cd"
+  },
+  "native": [
+    {
+      "log": "native-pinball_combat.log",
+      "assertions": 56,
+      "sha256": "4182bdce387ec1406942539ed3009543601ceab481e9cbe38a9c8e57ffa335b9"
+    },
+    {
+      "log": "native-pinball_world.log",
+      "assertions": 164,
+      "sha256": "83b0caf2d63545cf1f738dec4fd9fa408d85a1959e28244bfb1ff0d71ef28095"
+    },
+    {
+      "log": "native-arena_interactions.log",
+      "assertions": 3027,
+      "sha256": "9f066d8eeedc51c6b24435ced1e92fa5a24ec7b3ed2f8fcc182dd7617ec1fe5d"
+    },
+    {
+      "log": "native-obstacles.log",
+      "assertions": 4106,
+      "sha256": "c8da8ce0ecae708562963278738205dda917bd8e14f20b587f979da7d96af2cd"
+    },
+    {
+      "log": "native-minimap_ui.log",
+      "assertions": 55,
+      "sha256": "0cebe797f3070e4c5691c165e06ee19d1f985d8af23467eb9fdeba3ae40bcab9"
+    },
+    {
+      "log": "native-expanded_world.log",
+      "assertions": 193,
+      "sha256": "dd3a4542bda77dafcdd3597110f14a5e33fd99dfd46553a84d0385b036dc8c30"
+    },
+    {
+      "log": "native-arena_rules.log",
+      "assertions": 5151,
+      "sha256": "a6a195e4a5000c1ddb8f9986178b2eb93bdf2f28126ba99715e4b102f75a67bc"
+    },
+    {
+      "log": "native-world_flipper_art.log",
+      "assertions": 196,
+      "sha256": "d1b61e332890e8c587cb0cf839231b63b61cae9aa9696cc2f2fbb5eb189e115b"
+    },
+    {
+      "log": "native-adventure_art.log",
+      "assertions": 291,
+      "sha256": "844c9b9d1f70f69544424f0a4154ebd1d73d5cd9e57c88e59b2077b2084f0f39"
+    },
+    {
+      "log": "native-hero_skill_flow.log",
+      "assertions": 82,
+      "sha256": "9aa404193a12da00e3af3afd0ddb862ea482c5278291ac1dddabc009a1a55c5f"
+    },
+    {
+      "log": "native-render_frame_coalescing.log",
+      "assertions": 9,
+      "sha256": "74493863b9b4839d37bdd93ba4d57f008f49b07f27c914177211ae3825142259"
+    },
+    {
+      "log": "native-cosmetic_culling.log",
+      "assertions": 128,
+      "sha256": "2a001e95e5693149528bd24a43ceb489465d15b5f9112f4ae537a83c5c8305c2"
+    }
+  ],
+  "exported_native": [
+    {
+      "log": "pack-check-pinball_combat.log",
+      "assertions": 56,
+      "sha256": "4182bdce387ec1406942539ed3009543601ceab481e9cbe38a9c8e57ffa335b9"
+    },
+    {
+      "log": "pack-check-pinball_world.log",
+      "assertions": 164,
+      "sha256": "83b0caf2d63545cf1f738dec4fd9fa408d85a1959e28244bfb1ff0d71ef28095"
+    },
+    {
+      "log": "pack-check-arena_interactions.log",
+      "assertions": 3027,
+      "sha256": "9f066d8eeedc51c6b24435ced1e92fa5a24ec7b3ed2f8fcc182dd7617ec1fe5d"
+    },
+    {
+      "log": "pack-check-obstacles.log",
+      "assertions": 4106,
+      "sha256": "c8da8ce0ecae708562963278738205dda917bd8e14f20b587f979da7d96af2cd"
+    },
+    {
+      "log": "pack-check-minimap_ui.log",
+      "assertions": 55,
+      "sha256": "0cebe797f3070e4c5691c165e06ee19d1f985d8af23467eb9fdeba3ae40bcab9"
+    },
+    {
+      "log": "pack-check-expanded_world.log",
+      "assertions": 193,
+      "sha256": "dd3a4542bda77dafcdd3597110f14a5e33fd99dfd46553a84d0385b036dc8c30"
+    },
+    {
+      "log": "pack-check-arena_rules.log",
+      "assertions": 5151,
+      "sha256": "a6a195e4a5000c1ddb8f9986178b2eb93bdf2f28126ba99715e4b102f75a67bc"
+    },
+    {
+      "log": "pack-check-world_flipper_art.log",
+      "assertions": 196,
+      "sha256": "d1b61e332890e8c587cb0cf839231b63b61cae9aa9696cc2f2fbb5eb189e115b"
+    },
+    {
+      "log": "pack-check-adventure_art.log",
+      "assertions": 291,
+      "sha256": "844c9b9d1f70f69544424f0a4154ebd1d73d5cd9e57c88e59b2077b2084f0f39"
+    },
+    {
+      "log": "pack-check-hero_skill_flow.log",
+      "assertions": 82,
+      "sha256": "9aa404193a12da00e3af3afd0ddb862ea482c5278291ac1dddabc009a1a55c5f"
+    },
+    {
+      "log": "pack-check-render_frame_coalescing.log",
+      "assertions": 9,
+      "sha256": "74493863b9b4839d37bdd93ba4d57f008f49b07f27c914177211ae3825142259"
+    },
+    {
+      "log": "pack-check-cosmetic_culling.log",
+      "assertions": 128,
+      "sha256": "2a001e95e5693149528bd24a43ceb489465d15b5f9112f4ae537a83c5c8305c2"
+    }
+  ],
+  "previews": [
+    {
+      "view": "ashland",
+      "size": [
+        1280,
+        720
+      ],
+      "pixels_equal": true,
+      "source_sha256": "962ce705e20d1133a8f95d6c8a67cd923bed03089037fba12449fb78f6ce6ca8",
+      "export_sha256": "962ce705e20d1133a8f95d6c8a67cd923bed03089037fba12449fb78f6ce6ca8"
+    },
+    {
+      "view": "ball",
+      "size": [
+        1280,
+        720
+      ],
+      "pixels_equal": true,
+      "source_sha256": "3af6b26da2c07b44c583ee9c76ea778bb897463232b46ad0ccd4f720f65ad641",
+      "export_sha256": "3af6b26da2c07b44c583ee9c76ea778bb897463232b46ad0ccd4f720f65ad641"
+    },
+    {
+      "view": "break",
+      "size": [
+        1280,
+        720
+      ],
+      "pixels_equal": true,
+      "source_sha256": "9a8627bed270febe3b62fe8738be02ba791ee81c2f938b958179f7e37d5dbef8",
+      "export_sha256": "9a8627bed270febe3b62fe8738be02ba791ee81c2f938b958179f7e37d5dbef8"
+    },
+    {
+      "view": "glacier",
+      "size": [
+        1280,
+        720
+      ],
+      "pixels_equal": true,
+      "source_sha256": "a04683d1648c5d3831cc39ce9414b1adb951b1544b81abc8341a399b0b7dd013",
+      "export_sha256": "a04683d1648c5d3831cc39ce9414b1adb951b1544b81abc8341a399b0b7dd013"
+    },
+    {
+      "view": "mire",
+      "size": [
+        1280,
+        720
+      ],
+      "pixels_equal": true,
+      "source_sha256": "f7a53da1950c6c9d014300a60f005aa08d6daea3e34036ac6b32c109f8108993",
+      "export_sha256": "f7a53da1950c6c9d014300a60f005aa08d6daea3e34036ac6b32c109f8108993"
+    },
+    {
+      "view": "reliquary",
+      "size": [
+        1280,
+        720
+      ],
+      "pixels_equal": true,
+      "source_sha256": "2a1a90fd61a2280eb0a8684b6c958e4e4a552528e39ed1d5c77da6c11c68de7f",
+      "export_sha256": "2a1a90fd61a2280eb0a8684b6c958e4e4a552528e39ed1d5c77da6c11c68de7f"
+    },
+    {
+      "view": "small",
+      "size": [
+        1280,
+        720
+      ],
+      "pixels_equal": true,
+      "source_sha256": "3af6b26da2c07b44c583ee9c76ea778bb897463232b46ad0ccd4f720f65ad641",
+      "export_sha256": "3af6b26da2c07b44c583ee9c76ea778bb897463232b46ad0ccd4f720f65ad641"
+    }
+  ],
+  "assets": {
+    "pinned_sources": 67,
+    "normalized_pngs": 64,
+    "new_interaction_pngs": 6,
+    "metadata_files": 1,
+    "manifest_sha256": "efc09f621cef2f6bb1094ad415d92e1fda6af766a0790e9dee9a41ba80c75038",
+    "source_qa": {
+      "status": "passed",
+      "candidate_checks_previously_passed": 105,
+      "production_checks": 235,
+      "hero_sources": 12,
+      "hero_outputs": 9,
+      "master_sources": 67,
+      "master_outputs": 64,
+      "full_offline_rebuilds": 2,
+      "failures": 0
+    },
+    "qa_sha256": "e746dd010c5c9d467bc10538dd46a842c0fcd23bc75242f9474709c9ed0ad16c"
+  },
+  "performance": {
+    "seconds": 60.0,
+    "average_fps": 61.7880543095,
+    "p99_frame_ms": 26.333,
+    "minimum_load": {
+      "enemies": 300,
+      "pickups": 200,
+      "projectiles": 600
+    },
+    "sample_hero_skill_uses": 8,
+    "pinball_cycles": 25,
+    "pinball_bounces": 170,
+    "checks": {
+      "backpack_skill_fx_pool": true,
+      "backpack_skill_inventory_and_real_casts": true,
+      "backpack_skill_source_coverage": true,
+      "dash_feedback": true,
+      "default_settings_and_no_profile": true,
+      "evasion_feedback": true,
+      "grounding_budget": true,
+      "load": true,
+      "performance": true,
+      "pulse_control": true,
+      "real_main_character_casts": true,
+      "real_pinball_cycles_and_reflections": true
+    },
+    "source_hash": "0e0e88fb7bd5b75dd987006abe239aed8aae61e2ce72a0666f77238fb1030913",
+    "report_sha256": "9e92a2e94c8fb3bf747b2df9e728864847f2a2d1876d7bae406c680bd03a4a32"
+  },
+  "windows": {
+    "archive": "build/Embers-windows-x86_64.zip",
+    "sha256": "96efff4b394a4f6b0cdf751156936de8e665e65cbc3f57834368f72fd8d01003",
+    "zip_files": [
+      "licenses/Godot-COPYRIGHT.txt",
+      "licenses/Godot-LICENSE.txt",
+      "licenses/README.md",
+      "licenses/World-Flipper-NOTICE.txt",
+      "licenses/fonts/fusion-pixel/OFL.txt",
+      "licenses/fonts/fusion-pixel/LICENSES/ark-pixel/OFL.txt",
+      "licenses/fonts/fusion-pixel/LICENSES/cubic-11/OFL.txt",
+      "licenses/fonts/fusion-pixel/LICENSES/galmuri/LICENSE.txt",
+      "Embers.exe",
+      "Embers.pck"
+    ],
+    "crc_and_file_bytes_verified": true,
+    "backup": "Embers-windows-before-pinball-329d15e.zip",
+    "backup_sha256": "bad71b2d6451c7df6c10e2479ff3f428690c7a8fbda35c9fe3499330685b68d5",
+    "exe_smoke_log_sha256": "53a3f8d9480bc9eed41a7e46bfa161440da5405048126db8eee9ccfe7374a3b1"
+  },
+  "macos": "Not built or executed on this Windows host; export include filters updated for both platforms.",
+  "limitations": [
+    "Input tests use real parsed keyboard/gamepad events; no physical controller acceptance was performed.",
+    "Synthetic pressure and fixed captures do not establish human playability, balance, or hardware audio quality.",
+    "Earlier native pressure runs failed the unchanged FPS gate; final code coalesces redraws by presentation frame, conservatively skips fully offscreen cosmetics, and retains exact collision/terrain queries. Failed raw evidence remains local."
+  ],
+  "passed": true
+}

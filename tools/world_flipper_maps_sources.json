@@ -1,0 +1,756 @@
+{
+  "sources": [
+    {
+      "id": "arena_reliquary",
+      "kind": "arena_map",
+      "game_id": "reliquary",
+      "name": "World Flipper / Sand Ruins",
+      "filename": "map-sand-ruins-background.png",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field/world_sand/sand_ruins/background/background.png",
+      "source_page": "https://worldflipper.jp/demo/",
+      "sha256": "1a9a875cf22db4cce19a053e914725ef715dc3f9eeb0ed4d6dc63c996591a98f",
+      "source_size": [
+        274,
+        738
+      ],
+      "crop": [
+        65,
+        91,
+        144,
+        128
+      ],
+      "scale": 2,
+      "border_crops": {
+        "left": [
+          38,
+          88,
+          24,
+          128
+        ],
+        "right": [
+          212,
+          88,
+          24,
+          128
+        ],
+        "top": [
+          49,
+          11,
+          176,
+          48
+        ]
+      },
+      "normalization": "Large original native floor patch, mirror tiled at integer2x. Existing slow-zone geometry uses a same-source floor variation. Upright landmarks stay entirely outside the walkable rectangle. This is an authored adaptation, not an intact original map."
+    },
+    {
+      "id": "arena_mire",
+      "kind": "arena_map",
+      "game_id": "mire",
+      "name": "World Flipper / Japan Shrine",
+      "filename": "map-japan-shrine-background.png",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field/world_japan/japan_shrine/background/background.png",
+      "source_page": "https://worldflipper.jp/demo/",
+      "sha256": "61e23df1ec118aba1ada9e97c19c790eb30e09ef7180e3757ee8f0d546569f32",
+      "source_size": [
+        274,
+        738
+      ],
+      "crop": [
+        74,
+        92,
+        126,
+        128
+      ],
+      "zone_crop": [
+        80,
+        450,
+        64,
+        64
+      ],
+      "scale": 2,
+      "border_crops": {
+        "left": [
+          9,
+          452,
+          24,
+          128
+        ],
+        "right": [
+          241,
+          452,
+          24,
+          128
+        ],
+        "top": [
+          49,
+          4,
+          176,
+          48
+        ]
+      },
+      "normalization": "Large original native floor patch, mirror tiled at integer2x. Existing slow-zone geometry uses a same-source floor variation. Upright landmarks stay entirely outside the walkable rectangle. This is an authored adaptation, not an intact original map."
+    },
+    {
+      "id": "arena_glacier",
+      "kind": "arena_map",
+      "game_id": "glacier",
+      "name": "World Flipper / Evil Tower",
+      "filename": "map-evil-tower-background.png",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field/world_evil/evil_tower/background/background.png",
+      "source_page": "https://worldflipper.jp/demo/",
+      "sha256": "b318b4867364f892dea4de757f57b603690fb3bc7a9e9879c2c1c2170a30dbca",
+      "source_size": [
+        274,
+        752
+      ],
+      "crop": [
+        78,
+        92,
+        118,
+        132
+      ],
+      "zone_crop": [
+        104,
+        180,
+        64,
+        32
+      ],
+      "scale": 2,
+      "border_crops": {
+        "left": [
+          24,
+          94,
+          24,
+          128
+        ],
+        "right": [
+          226,
+          94,
+          24,
+          128
+        ],
+        "top": [
+          49,
+          1,
+          176,
+          48
+        ]
+      },
+      "normalization": "Large original native floor patch, mirror tiled at integer2x. Existing slow-zone geometry uses a same-source floor variation. Upright landmarks stay entirely outside the walkable rectangle. This is an authored adaptation, not an intact original map."
+    },
+    {
+      "id": "arena_ashland",
+      "kind": "arena_map",
+      "game_id": "ashland",
+      "name": "World Flipper / Sea Ship Boss",
+      "filename": "map-sea-ship-background.png",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field/world_sea/sea_ship_boss/background/background.png",
+      "source_page": "https://worldflipper.jp/demo/",
+      "sha256": "d46b919f710220018302d9ce12b2db18069ac068bfe514a6cc8c042f2979af4a",
+      "source_size": [
+        274,
+        1002
+      ],
+      "crop": [
+        80,
+        215,
+        112,
+        128
+      ],
+      "zone_crop": [
+        112,
+        585,
+        32,
+        16
+      ],
+      "scale": 2,
+      "border_crops": {
+        "left": [
+          28,
+          244,
+          24,
+          128
+        ],
+        "right": [
+          222,
+          244,
+          24,
+          128
+        ],
+        "top": [
+          49,
+          112,
+          176,
+          48
+        ]
+      },
+      "normalization": "Large original native floor patch, mirror tiled at integer2x. Existing slow-zone geometry uses a same-source floor variation. Upright landmarks stay entirely outside the walkable rectangle. This is an authored adaptation, not an intact original map."
+    },
+    {
+      "id": "prop_monument",
+      "kind": "arena_prop",
+      "game_id": "monument",
+      "name": "World Flipper / Evil Tower Monument",
+      "filename": "prop-monument.png",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field_object/world_evil/evil_tower/yakumono/block/monument_a/monument_a.png",
+      "source_page": "https://worldflipper.jp/demo/",
+      "sha256": "25e92ebcd91a6bbb79f1c9ce85f9c2107cc5d3b3a45288040545d8efc0f8becd",
+      "source_size": [
+        13,
+        19
+      ],
+      "crop": [
+        1,
+        1,
+        11,
+        17
+      ],
+      "scale": 4,
+      "normalization": "Original atlas frame, unmodified source colors and transparency; 4x nearest; centered on a 96x96 canvas with the foot at y84."
+    },
+    {
+      "id": "prop_planter",
+      "kind": "arena_prop",
+      "game_id": "planter",
+      "name": "World Flipper / Town Street Planter",
+      "filename": "prop-planter.png",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field_object/world_town/town_street/yakumono/decoration/planter_a/planter_a.png",
+      "source_page": "https://worldflipper.jp/demo/",
+      "sha256": "9c1652b2952dc1ec0ea66f3e2a918dbdaeaad34bbe03ad039190732dda01ae44",
+      "source_size": [
+        20,
+        24
+      ],
+      "crop": [
+        1,
+        1,
+        18,
+        22
+      ],
+      "scale": 3,
+      "normalization": "Original atlas frame, unmodified source colors and transparency; 3x nearest; centered on a 96x96 canvas with the foot at y84."
+    },
+    {
+      "id": "prop_bumper",
+      "kind": "arena_prop",
+      "game_id": "bumper",
+      "name": "World Flipper / Common Bumper A",
+      "filename": "prop-bumper.png",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field_object/common/yakumono/bumper/bumper_big/bumper_big.png",
+      "source_page": "https://worldflipper.jp/demo/",
+      "sha256": "35cb5cdc632465d02ee684d0e1ccd5ef159ae4df9e513ac5a22648c153a70dee",
+      "source_size": [
+        50,
+        28
+      ],
+      "crop": [
+        1,
+        1,
+        23,
+        26
+      ],
+      "scale": 3,
+      "normalization": "Original atlas a frame, unmodified source colors and transparency; 3x nearest; centered on a 96x96 canvas with the foot at y84."
+    },
+    {
+      "id": "landmark_reliquary",
+      "kind": "arena_landmark",
+      "name": "World Flipper / sand original foreground",
+      "filename": "landmark-sand-foreground.png",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field/world_sand/sand_ruins/foreground/foreground.png",
+      "source_page": "https://worldflipper.jp/demo/",
+      "sha256": "86096d489fea876807177d0b210d92305d2a001be2bb21dd8a933e043b3840eb",
+      "source_size": [
+        168,
+        566
+      ],
+      "game_id": "reliquary",
+      "scale": 2,
+      "variants": {
+        "arch": [
+          61,
+          279,
+          46,
+          30
+        ]
+      },
+      "placements": [
+        {
+          "variant": "arch",
+          "position": [
+            420,
+            112
+          ]
+        },
+        {
+          "variant": "arch",
+          "position": [
+            1720,
+            112
+          ]
+        },
+        {
+          "variant": "arch",
+          "position": [
+            2980,
+            112
+          ]
+        },
+        {
+          "variant": "arch",
+          "position": [
+            1720,
+            2060
+          ]
+        }
+      ],
+      "normalization": "Original foreground pixels cropped and quarter-turned when declared; alpha preserved. Geometry clipped exclusively to the art margin, never baked as a fake walkable obstacle."
+    },
+    {
+      "id": "landmark_mire",
+      "kind": "arena_landmark",
+      "name": "World Flipper / shrine original foreground",
+      "filename": "landmark-shrine-foreground.png",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field/world_japan/japan_shrine/foreground/foreground.png",
+      "source_page": "https://worldflipper.jp/demo/",
+      "sha256": "c61a08cd1fe58b07579c82cf27e80bded3aa3f3439b2dc0991dbeff4312deea5",
+      "source_size": [
+        274,
+        632
+      ],
+      "game_id": "mire",
+      "scale": 2,
+      "variants": {
+        "gate_skyline": [
+          64,
+          296,
+          146,
+          116
+        ]
+      },
+      "placements": [
+        {
+          "variant": "gate_skyline",
+          "position": [
+            630,
+            0
+          ]
+        },
+        {
+          "variant": "gate_skyline",
+          "position": [
+            1770,
+            0
+          ]
+        },
+        {
+          "variant": "gate_skyline",
+          "position": [
+            2890,
+            0
+          ]
+        }
+      ],
+      "normalization": "Original foreground pixels cropped and quarter-turned when declared; alpha preserved. Geometry clipped exclusively to the art margin, never baked as a fake walkable obstacle."
+    },
+    {
+      "id": "landmark_glacier",
+      "kind": "arena_landmark",
+      "name": "World Flipper / tower original foreground",
+      "filename": "landmark-tower-foreground.png",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field/world_evil/evil_tower/foreground/foreground.png",
+      "source_page": "https://worldflipper.jp/demo/",
+      "sha256": "544248a821b6825bd5d24cef87c6f2f53b162d4a71b75c2057a864bfb1aa3236",
+      "source_size": [
+        274,
+        556
+      ],
+      "game_id": "glacier",
+      "scale": 2,
+      "variants": {
+        "balcony_left": [
+          1,
+          1,
+          89,
+          67
+        ],
+        "balcony_right": [
+          184,
+          1,
+          89,
+          67
+        ]
+      },
+      "placements": [
+        {
+          "variant": "balcony_left",
+          "position": [
+            420,
+            70
+          ]
+        },
+        {
+          "variant": "balcony_right",
+          "position": [
+            2980,
+            70
+          ]
+        },
+        {
+          "variant": "balcony_left",
+          "position": [
+            420,
+            2044
+          ]
+        },
+        {
+          "variant": "balcony_right",
+          "position": [
+            2980,
+            2044
+          ]
+        }
+      ],
+      "normalization": "Original foreground pixels cropped and quarter-turned when declared; alpha preserved. Geometry clipped exclusively to the art margin, never baked as a fake walkable obstacle."
+    },
+    {
+      "id": "landmark_ashland",
+      "kind": "arena_landmark",
+      "name": "World Flipper / ship original foreground",
+      "filename": "landmark-ship-foreground.png",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field/world_sea/sea_ship_boss/foreground/foreground.png",
+      "source_page": "https://worldflipper.jp/demo/",
+      "sha256": "c49c5cb51c3b3a3c231d9022b9f9d79c37e5e8d2b9da4ca8240a215c86b0dacb",
+      "source_size": [
+        274,
+        539
+      ],
+      "game_id": "ashland",
+      "scale": 2,
+      "variants": {
+        "mast": [
+          1,
+          361,
+          272,
+          125
+        ]
+      },
+      "placements": [
+        {
+          "variant": "mast",
+          "position": [
+            3518,
+            800
+          ],
+          "rotation_degrees": 90,
+          "largest_component": true
+        }
+      ],
+      "normalization": "Original foreground pixels cropped and quarter-turned when declared; alpha preserved. Geometry clipped exclusively to the art margin, never baked as a fake walkable obstacle."
+    },
+    {
+      "game_id": "town",
+      "filename": "map-town-background.png",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field/world_town/town_street/background/background.png",
+      "source_size": [
+        274,
+        738
+      ],
+      "sha256": "aba512c832eaf339d7febd948466a6cceb97dd712be02240ed7c973cf2741967",
+      "id": "arena_town",
+      "kind": "arena_map",
+      "name": "World Flipper / Town Street",
+      "source_page": "https://worldflipper.jp/demo/",
+      "scale": 2,
+      "crop": [
+        66,
+        425,
+        142,
+        145
+      ],
+      "zone_crop": [
+        100,
+        150,
+        64,
+        40
+      ],
+      "border_crops": {
+        "left": [
+          31,
+          452,
+          24,
+          128
+        ],
+        "right": [
+          220,
+          452,
+          24,
+          128
+        ],
+        "top": [
+          49,
+          13,
+          176,
+          48
+        ]
+      },
+      "normalization": "Original official-demo floor pixels mirror tiled at integer2x. Authored terrain zones use same-source native floor variation. Margins and upright landmarks stay outside playable bounds. This is an authored arena adaptation, not the original pinball stage geometry."
+    },
+    {
+      "game_id": "town",
+      "filename": "map-town-foreground.png",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field/world_town/town_street/foreground/foreground.png",
+      "source_size": [
+        194,
+        462
+      ],
+      "sha256": "bdf2973a1b0831f7fa04d0bcc8bbbbf2605e4652556b4c06513c1e56e165b96f",
+      "variants": {
+        "street_lamp": [
+          1,
+          1,
+          20,
+          145
+        ]
+      },
+      "placements": [
+        {
+          "variant": "street_lamp",
+          "position": [
+            16,
+            400
+          ]
+        },
+        {
+          "variant": "street_lamp",
+          "position": [
+            16,
+            1300
+          ]
+        },
+        {
+          "variant": "street_lamp",
+          "position": [
+            3540,
+            400
+          ]
+        },
+        {
+          "variant": "street_lamp",
+          "position": [
+            3540,
+            1300
+          ]
+        }
+      ],
+      "id": "landmark_town",
+      "kind": "arena_landmark",
+      "name": "World Flipper / town original scenery",
+      "source_page": "https://worldflipper.jp/demo/",
+      "scale": 2,
+      "normalization": "Unmodified original source crop and alpha at native integer2x, composed strictly outside the playable rectangle; not a fake obstacle."
+    },
+    {
+      "game_id": "throne",
+      "filename": "map-throne-background.png",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field/world_light/light_castle_throne/background/background.png",
+      "source_size": [
+        274,
+        415
+      ],
+      "sha256": "514241946888a65b52fff071e2d4fc768c26235a21cfad3c8feb23bdc34c9a9c",
+      "id": "arena_throne",
+      "kind": "arena_map",
+      "name": "World Flipper / Light Castle Throne",
+      "source_page": "https://worldflipper.jp/demo/",
+      "scale": 2,
+      "crop": [
+        58,
+        323,
+        46,
+        48
+      ],
+      "zone_crop": [
+        112,
+        290,
+        48,
+        64
+      ],
+      "border_crops": {
+        "left": [
+          32,
+          195,
+          24,
+          128
+        ],
+        "right": [
+          220,
+          195,
+          24,
+          128
+        ],
+        "top": [
+          49,
+          45,
+          176,
+          48
+        ]
+      },
+      "normalization": "Original official-demo floor pixels mirror tiled at integer2x. Authored terrain zones use same-source native floor variation. Margins and upright landmarks stay outside playable bounds. This is an authored arena adaptation, not the original pinball stage geometry. The central red carpet is a native-pixel mirrored strip sampled from the original throne carpet, aligned with world x640.",
+      "floor_bands": [
+        {
+          "source_crop": [
+            112,
+            286,
+            48,
+            82
+          ],
+          "axis": "vertical",
+          "world_center": 640,
+          "width": 192
+        }
+      ]
+    },
+    {
+      "game_id": "throne",
+      "filename": "map-throne-background.png",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field/world_light/light_castle_throne/background/background.png",
+      "source_size": [
+        274,
+        415
+      ],
+      "sha256": "514241946888a65b52fff071e2d4fc768c26235a21cfad3c8feb23bdc34c9a9c",
+      "variants": {
+        "royal_dais": [
+          88,
+          106,
+          100,
+          80
+        ]
+      },
+      "placements": [
+        {
+          "variant": "royal_dais",
+          "position": [
+            1686,
+            64
+          ]
+        }
+      ],
+      "id": "landmark_throne",
+      "kind": "arena_landmark",
+      "name": "World Flipper / throne original scenery",
+      "source_page": "https://worldflipper.jp/demo/",
+      "scale": 2,
+      "normalization": "Unmodified original source crop and alpha at native integer2x, composed strictly outside the playable rectangle; not a fake obstacle."
+    },
+    {
+      "game_id": "tower_peak",
+      "filename": "map-tower_peak-background.png",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field/world_evil/evil_tower_top/background/background.png",
+      "source_size": [
+        769,
+        274
+      ],
+      "sha256": "8fcf404d61bb87d9817662c1c6631dec7d8922434fe3d6c402ebc630d77f0131",
+      "id": "arena_tower_peak",
+      "kind": "arena_map",
+      "name": "World Flipper / Evil Tower Top",
+      "source_page": "https://worldflipper.jp/demo/",
+      "scale": 2,
+      "crop": [
+        170,
+        78,
+        72,
+        128
+      ],
+      "zone_crop": [
+        475,
+        90,
+        64,
+        96
+      ],
+      "border_crops": {
+        "left": [
+          92,
+          91,
+          24,
+          96
+        ],
+        "right": [
+          322,
+          90,
+          24,
+          96
+        ],
+        "top": [
+          153,
+          32,
+          176,
+          32
+        ]
+      },
+      "normalization": "Original official-demo floor pixels mirror tiled at integer2x. Authored terrain zones use same-source native floor variation. Margins and upright landmarks stay outside playable bounds. This is an authored arena adaptation, not the original pinball stage geometry."
+    },
+    {
+      "game_id": "tower_peak",
+      "filename": "map-tower_peak-foreground.png",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field/world_evil/evil_tower_top/foreground/foreground.png",
+      "source_size": [
+        274,
+        295
+      ],
+      "sha256": "1eeb9a40a80024b4b91c13cf454c1162fe867c9bcb0782397bf99b49379bc94f",
+      "variants": {
+        "balcony_left": [
+          1,
+          90,
+          88,
+          64
+        ],
+        "balcony_right": [
+          186,
+          90,
+          87,
+          64
+        ]
+      },
+      "placements": [
+        {
+          "variant": "balcony_left",
+          "position": [
+            420,
+            70
+          ]
+        },
+        {
+          "variant": "balcony_right",
+          "position": [
+            2980,
+            70
+          ]
+        },
+        {
+          "variant": "balcony_left",
+          "position": [
+            420,
+            2044
+          ]
+        },
+        {
+          "variant": "balcony_right",
+          "position": [
+            2980,
+            2044
+          ]
+        }
+      ],
+      "id": "landmark_tower_peak",
+      "kind": "arena_landmark",
+      "name": "World Flipper / tower_peak original scenery",
+      "source_page": "https://worldflipper.jp/demo/",
+      "scale": 2,
+      "normalization": "Unmodified original source crop and alpha at native integer2x, composed strictly outside the playable rectangle; not a fake obstacle."
+    }
+  ]
+}

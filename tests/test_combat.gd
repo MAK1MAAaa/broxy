@@ -76,6 +76,7 @@ func _initialize() -> void:
 	_test_blast()
 	_test_rune_activation_guards()
 	_test_explosion_spatial_equivalence()
+	_test_explosion_region_cache()
 	_test_nearest_spatial_equivalence()
 	_test_contact_recoil()
 	_test_caster_aim()
@@ -85,6 +86,7 @@ func _initialize() -> void:
 	_test_terminal_damage_freeze()
 	_test_slow_states()
 	_test_swept_collision_order()
+	_test_projectile_broadphase_equivalence()
 	_test_soul_accounting()
 	_test_wave_outcomes()
 	_test_outcome_ordering()
@@ -142,6 +144,7 @@ func _test_weapon_rune_matrix() -> void:
 			var first: CombatSim.Enemy = _target(simulation, Vector2(340, 300))
 			_target(simulation, Vector2(395, 300))
 			_target(simulation, Vector2(450, 300))
+			_target(simulation, Vector2(505, 300))
 			simulation._cooldowns[0] = 0.0
 			simulation.step(DELTA, Vector2.ZERO)
 			_check(simulation.shot_count == weapon.shots, "Weapon emits its configured shot count: " + weapon.id + "/" + rune.id)
@@ -149,7 +152,7 @@ func _test_weapon_rune_matrix() -> void:
 			_advance(simulation, 60)
 			_check(simulation.primary_hits > 0, "Weapon/rune combination hits an enemy: " + weapon.id + "/" + rune.id)
 			_check(float(simulation.damage_by_weapon.get(weapon.id, 0.0)) > 0.0, "Combination accounts damage under its weapon")
-			_check(not activations.is_empty(), "All four weapons report an executed rune behavior: " + weapon.id + "/" + rune.id)
+			_check(not activations.is_empty(), "Every registered weapon reports an executed rune behavior after its native penetration budget: " + weapon.id + "/" + rune.id)
 			if weapon.id == "frost":
 				_check(first.slow_timer > 0.0 and is_equal_approx(first.slow_factor, 0.75), "Frost applies its advertised 25% slow")
 
@@ -433,6 +436,72 @@ func _test_explosion_spatial_equivalence() -> void:
 			outcomes.append(_explosion_digest(sim, events))
 		_check(outcomes[0] == outcomes[1], "Spatial ordering exactly matches the linear Boss terminal sequence: " + str(boss_slot))
 
+func _test_explosion_region_cache() -> void:
+	var sim: CombatSim = _simulation(42031)
+	sim.obstacles.configure([])
+	sim.interactions = ArenaInteractions.new()
+	var a: CombatSim.Enemy = _target(sim, Vector2(390, 320))
+	var b: CombatSim.Enemy = _target(sim, Vector2(470, 320))
+	var c: CombatSim.Enemy = _target(sim, Vector2(400, 400))
+	var far: CombatSim.Enemy = _target(sim, Vector2(1000, 500))
+	for enemy: CombatSim.Enemy in [a, b, c, far]:
+		enemy.radius = 17.0
+	sim._rebuild_grid()
+	sim._explosion_grid_active = true
+	var before_rng: int = sim.rng.state
+	var point := Vector2(400, 320)
+	var first: PackedInt32Array = sim._explosion_slots(point)
+	_check(first == PackedInt32Array([a.slot, b.slot, c.slot]) and sim._explosion_region_slots.size() == 1, "The first rectangle builds exactly one candidate list in original pool-slot order")
+	var same: PackedInt32Array = sim._explosion_slots(point + Vector2(1, 1))
+	_check(same == first and sim._explosion_region_slots.size() == 1, "A different blast center with the same conservative cell rectangle reuses its sorted candidate list")
+	var copied: PackedInt32Array = first.duplicate()
+	copied[0] = far.slot
+	_check(sim._explosion_slots(point) == PackedInt32Array([a.slot, b.slot, c.slot]), "An explicit caller-owned copy can be edited without altering the read-only cached candidates")
+	var other: PackedInt32Array = sim._explosion_slots(Vector2(1000, 500))
+	_check(other == PackedInt32Array([far.slot]) and sim._explosion_region_slots.size() == 2, "A different grid rectangle receives its own independently sorted entry")
+	a.position = Vector2(1100, 500)
+	sim._rebuild_grid()
+	_check(sim._explosion_region_slots.is_empty(), "Rebuilding the authoritative grid invalidates every cached rectangle")
+	_check(sim._explosion_slots(point) == PackedInt32Array([b.slot, c.slot]), "A rebuilt query follows moved enemy positions rather than stale rectangle contents")
+	var retired_slot: int = b.slot
+	var retired_uid: int = b.uid
+	sim.apply_damage(b, b.health, "bone")
+	_check(sim._explosion_region_slots.is_empty() and sim._explosion_grid_active, "A real death invalidates active candidate entries while retaining the same stable grid phase")
+	_check(sim._explosion_slots(point) == PackedInt32Array([c.slot]), "A later cached-region blast cannot return the dead candidate again")
+	_check(sim.rng.state == before_rng, "Cache creation, repeated rectangles and candidate death leave the combat RNG untouched")
+	var recycled: CombatSim.Enemy = _target(sim, point + Vector2(10, 0))
+	before_rng = sim.rng.state
+	_check(recycled.slot == retired_slot and recycled.uid != retired_uid and not sim._explosion_grid_active and sim._explosion_region_slots.is_empty(), "A real pool-slot reuse clears the cache and ends the conservative grid query window")
+	_check(sim._explosion_slots(point).size() == CombatSim.ENEMY_LIMIT, "A direct query after a post-grid spawn preserves the original full-pool fallback")
+	var old_exclusion: Dictionary = {}
+	old_exclusion[retired_uid] = true
+	sim._explode(point, 3.0, "ember", old_exclusion)
+	_check(recycled.health == 9997.0, "The new UID in a reused slot remains hittable despite an old UID exclusion")
+	sim._rebuild_grid()
+	sim._explosion_grid_active = true
+	sim._explosion_slots(point)
+	var cached_regions: int = sim._explosion_region_slots.size()
+	sim._explosion_grid_active = false
+	far.position = point + Vector2(185, 0)
+	far.radius = 120.0
+	var far_health: float = far.health
+	sim._explode(point, 3.0, "ember", {})
+	_check(far.health == far_health - 3.0 and sim._explosion_region_slots.size() == cached_regions, "Direct blasts ignore a warm stale cache and honor external position and radius edits")
+	_check(sim.rng.state == before_rng, "Rectangle reuse, deaths and direct-query fallback do not consume combat RNG beyond the fixture's explicit spawn")
+	sim._rebuild_grid()
+	sim._explosion_grid_active = true
+	sim._explosion_slots(point)
+	c.boss_ghost = true
+	sim._clear_boss_ghosts()
+	_check(not c.active and sim._explosion_region_slots.is_empty() and not sim._explosion_slots(point).has(c.slot), "Nonrewarding ghost removal also invalidates active-region membership")
+	for index: int in CombatSim.EXPLOSION_REGION_CACHE_LIMIT + 1:
+		sim._explosion_slots(Vector2(-100000 + index * 480, 5000), 1.0)
+	_check(sim._explosion_region_slots.size() == CombatSim.EXPLOSION_REGION_CACHE_LIMIT, "A long shot phase cannot retain more than the bounded rectangle-cache budget")
+	var retained_cache: Dictionary = sim._explosion_region_slots.duplicate(true)
+	var uncached: PackedInt32Array = sim._explosion_slots(Vector2(-200000, 5000), 1.0)
+	var repeated: PackedInt32Array = sim._explosion_slots(Vector2(-200000, 5000), 1.0)
+	_check(uncached.is_empty() and repeated.is_empty() and sim._explosion_region_slots == retained_cache, "Uncached queries beyond capacity remain correct fresh queries without evicting or corrupting existing entries")
+
 func _test_nearest_spatial_equivalence() -> void:
 	# Exercise the actual fresh-grid window, with an independent frozen full scan.
 	# Test-only frozen positions also cover negative/out-of-arena grid cells.
@@ -648,21 +717,39 @@ func _test_contact_recoil() -> void:
 			_check(is_equal_approx(recoil.length(), 18.0) and recoil.normalized().dot((origin - sim.player_position).normalized()) > 0.9999, "Contact recoil moves radially away, independently of pursuit/retreat/charge: " + behavior)
 			_check(enemy.position.distance_to(sim.player_position) > origin.distance_to(sim.player_position), "Contact recoil increases separation from the player: " + behavior)
 			_check(hits[0]["source"] == id and hits[0]["kind"] == "contact" and is_equal_approx(float(hits[0]["amount"]), enemy.definition.damage * 1.18), "Contact feedback keeps source, origin and scaled damage: " + behavior)
+	var arena_bounds: Rect2 = CombatSim.ARENA
+	var arena_center: Vector2 = arena_bounds.get_center()
 	var edge_cases: Array[Dictionary] = [
-		{"player": Vector2(82, 365), "enemy": Vector2(67, 365)},
-		{"player": Vector2(1198, 365), "enemy": Vector2(1213, 365)},
-		{"player": Vector2(640, 156), "enemy": Vector2(640, 141)},
-		{"player": Vector2(640, 574), "enemy": Vector2(640, 589)},
+		{"edge": Vector2(arena_bounds.position.x, arena_center.y), "outward": Vector2.LEFT},
+		{"edge": Vector2(arena_bounds.end.x, arena_center.y), "outward": Vector2.RIGHT},
+		{"edge": Vector2(arena_center.x, arena_bounds.position.y), "outward": Vector2.UP},
+		{"edge": Vector2(arena_center.x, arena_bounds.end.y), "outward": Vector2.DOWN},
 	]
 	for fixture: Dictionary in edge_cases:
 		var sim: CombatSim = _simulation()
-		sim.player_position = fixture["player"]
-		var enemy: CombatSim.Enemy = sim.spawn_enemy("chaser", fixture["enemy"])
+		var edge: Vector2 = fixture["edge"]
+		var outward: Vector2 = fixture["outward"]
+		sim.player_position = edge - outward * 42.0
+		var enemy_origin: Vector2 = edge - outward * 27.0
+		var enemy: CombatSim.Enemy = sim.spawn_enemy("chaser", enemy_origin)
+		_check(enemy.position == enemy_origin and is_equal_approx(enemy.position.distance_to(sim.player_position), 15.0) and is_equal_approx((enemy.position - edge).dot(outward), -27.0), "The contact fixture uses the real world edge without authored-cover spawn projection")
 		enemy.action_timer = 9999.0
 		sim.step(DELTA, Vector2.ZERO)
 		var bounds: Rect2 = CombatSim.ARENA
 		_check(enemy.position.x >= bounds.position.x and enemy.position.x <= bounds.end.x and enemy.position.y >= bounds.position.y and enemy.position.y <= bounds.end.y, "Post-contact recoil remains inside every arena edge")
+		_check((enemy.position - enemy_origin).dot(outward) > 0.0, "Real edge contact recoils outward toward its corresponding world boundary")
 		_check(sim.run.hits_taken == 1 and sim.run.health == 92.0, "Arena clamping does not cancel contact damage")
+		var clamped: CombatSim = _simulation()
+		clamped.player_position = edge - outward * 16.0
+		var clamped_enemy: CombatSim.Enemy = clamped.spawn_enemy("chaser", edge - outward * 27.0)
+		clamped_enemy.position = edge - outward
+		clamped_enemy.action_timer = 9999.0
+		clamped_enemy.slow_timer = 9999.0
+		clamped_enemy.slow_factor = 0.0
+		_check(clamped_enemy.position.distance_to(clamped.player_position) == 15.0 and (clamped_enemy.position - edge).dot(outward) == -1.0, "The isolated contact fixture starts one pixel inside the actual boundary")
+		clamped.step(DELTA, Vector2.ZERO)
+		_check(clamped_enemy.position.is_equal_approx(edge) and clamped.player_position == edge - outward * 16.0, "An eighteen-pixel contact recoil reaches and clamps exactly to its corresponding world edge")
+		_check(clamped.run.hits_taken == 1 and clamped.run.health == 92.0 and clamped.run.damage_taken == 8.0, "Actual boundary clamping retains one real contact hit and its full health loss")
 	var overlap: CombatSim = _simulation()
 	overlap.player_position = Vector2(640, 365)
 	var coincident: CombatSim.Enemy = overlap.spawn_enemy("chaser", overlap.player_position)
@@ -926,3 +1013,54 @@ func _test_swept_collision_order() -> void:
 		sim.fire_weapon("bone", "", Vector2(307, 300), Vector2.RIGHT)
 		sim.step(DELTA, Vector2.ZERO)
 		_check(is_equal_approx(tank.health, tank.max_health - 14.0) and chaser.health == chaser.max_health, "First physical collision is independent of entity pool order")
+
+func _test_projectile_broadphase_equivalence() -> void:
+	var overlap: CombatSim = _simulation(9126)
+	var first: CombatSim.Enemy = _target(overlap, Vector2(305, 300))
+	var second: CombatSim.Enemy = _target(overlap, Vector2(310, 300))
+	var later: CombatSim.Enemy = _target(overlap, Vector2(400, 300))
+	overlap._rebuild_grid()
+	var crossing := CombatSim.Shot.new()
+	crossing.previous = Vector2(307, 300)
+	crossing.position = Vector2(450, 300)
+	crossing.radius = 4.0
+	_check(overlap._first_collision(crossing) == first, "Equal immediate overlaps preserve the original first candidate rather than a later positive entry")
+	crossing.hit_ids[first.uid] = true
+	_check(overlap._first_collision(crossing) == second, "An excluded first overlap leaves the next immediate candidate hittable")
+	second.active = false
+	_check(overlap._first_collision(crossing) == later, "Exclusions and inactive overlaps never hide the next positive-time collision")
+	var sim: CombatSim = _simulation(9127)
+	var random := RandomNumberGenerator.new()
+	random.seed = 720649
+	for index: int in 120:
+		var enemy: CombatSim.Enemy = sim.spawn_enemy("tank" if index % 3 == 0 else "chaser", Vector2(300, 300))
+		enemy.position = Vector2(random.randf_range(-500, 1800), random.randf_range(-300, 1100))
+		enemy.radius = random.randf_range(4.0, 42.0)
+	sim._rebuild_grid()
+	var before: int = sim.rng.state
+	for index: int in 840:
+		sim._explosion_grid_active = index % 3 != 0
+		var shot := CombatSim.Shot.new()
+		shot.previous = Vector2(random.randf_range(-700, 1900), random.randf_range(-450, 1200))
+		shot.position = shot.previous + Vector2(random.randf_range(-800, 800), random.randf_range(-700, 700)) * (0.01 if index % 2 == 0 else 1.0)
+		if index % 31 == 0:
+			shot.position = shot.previous
+		shot.radius = [0.0, 4.0, 16.0, 64.0][index % 4]
+		for enemy: CombatSim.Enemy in sim.enemies:
+			if enemy.active and (enemy.uid + index) % 11 == 0:
+				shot.hit_ids[enemy.uid] = true
+		var best: float = INF
+		var expected: Array[int] = []
+		for enemy: CombatSim.Enemy in sim.enemies:
+			if not enemy.active or shot.hit_ids.has(enemy.uid):
+				continue
+			var t: float = CombatSim._swept_circle_entry_t(shot.previous, shot.position, enemy.position, enemy.radius + shot.radius)
+			if t < best:
+				best = t
+				expected.assign([enemy.uid])
+			elif is_finite(t) and t == best:
+				expected.append(enemy.uid)
+		var actual: CombatSim.Enemy = sim._first_collision(shot)
+		_check((actual == null and expected.is_empty()) or (actual != null and expected.has(actual.uid)), "Projectile broadphase matches full-pool quadratic oracle for query %d" % index)
+		_check(sim._first_collision(shot) == actual, "Repeated projectile region query retains collision order")
+	_check(sim.rng.state == before, "Projectile collision optimization does not consume combat randomness")

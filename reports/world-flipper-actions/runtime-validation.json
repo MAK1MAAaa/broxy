@@ -1,0 +1,724 @@
+{
+  "schema_version": 1,
+  "base_commit": "e8f0d27",
+  "branch": "codex/world-flipper-expansion",
+  "platform": "Windows",
+  "headless": {
+    "suites": 122,
+    "diagnostics": 5,
+    "invocations": 127,
+    "assertions": 71207,
+    "python_tests": 155,
+    "failures": 0,
+    "engine_errors": 0,
+    "log_sha256": "be08ebca9cd619d47b2c12f4d51f7c3af0a25112aeba70732c16bef94e6e5911"
+  },
+  "native": [
+    {
+      "log": "native-skill_timeline.log",
+      "assertions": 234,
+      "invocations": 1,
+      "sha256": "bc85527f82d1c18d6cec8cd41153408e52e974e9392995fb49d55739ebd3c049"
+    },
+    {
+      "log": "native-terrain_walls.log",
+      "assertions": 481,
+      "invocations": 1,
+      "sha256": "205646d0dd32227dd002532c45f7fcbd1eedd714f09694decd2fc2223c72a172"
+    },
+    {
+      "log": "native-original_stages.log",
+      "assertions": 1048,
+      "invocations": 1,
+      "sha256": "554bba5311c8a2b38023610acfa0fbca3a6c185b737ff893228e7f53dd0b8028"
+    },
+    {
+      "log": "native-hero_skill_effects.log",
+      "assertions": 54,
+      "invocations": 1,
+      "sha256": "132f3e7925ad19849e41f0d917e34f5bbdb3949de9dad45b3c52e35c9fdad3d2"
+    },
+    {
+      "log": "native-hero_effect_painter.log",
+      "assertions": 363,
+      "invocations": 1,
+      "sha256": "3b2d0dbdc86d072a56d8d0d78014376c7584780abd6789189758e81ef850aa3d"
+    },
+    {
+      "log": "native-hero_skill_combat.log",
+      "assertions": 161,
+      "invocations": 1,
+      "sha256": "7a0a1d60d31603a8f8065eacab63f6a95506698b01be04764ccd1fc296befe4a"
+    },
+    {
+      "log": "native-hero_skill_flow.log",
+      "assertions": 94,
+      "invocations": 1,
+      "sha256": "714dcc058097ccbce29961e7b7e7c261ed5486f9664dfd91e3a88235a075c98e"
+    },
+    {
+      "log": "native-skill_art_polish.log",
+      "assertions": 819,
+      "invocations": 1,
+      "sha256": "5f4b5729f37fa8e52d9b2beb5c4b13829b5882b79ecd2430ba78d323f8ee4c1c"
+    },
+    {
+      "log": "native-boss_combat.log",
+      "assertions": 1115,
+      "invocations": 1,
+      "sha256": "1edfaf301110919935e403a8954fc492d519a9386ecb3687b2231a62df84ea3c"
+    },
+    {
+      "log": "native-boss_world.log",
+      "assertions": 69,
+      "invocations": 1,
+      "sha256": "e13a0e0e7f25d219d2386af7d69ff65d7173a2889f189d4a570ef7257c825c4c"
+    },
+    {
+      "log": "native-boss_hud.log",
+      "assertions": 41,
+      "invocations": 1,
+      "sha256": "c5a5f68c554c005028adba62e0eea19b32e42c770fab109361d5168aba009a97"
+    },
+    {
+      "log": "native-wf_expansion_ui.log",
+      "assertions": 136,
+      "invocations": 1,
+      "sha256": "192b02b08bd4923471a5011c92b6a5cf8b9908bbaa6cac3a4455bfad4bbd7759"
+    },
+    {
+      "log": "native-hero_party_ui.log",
+      "assertions": 89,
+      "invocations": 1,
+      "sha256": "f2a204ddcfb94f41a8e98cf95ec1dd3cb8575e590c19641ead47846fb34826fd"
+    },
+    {
+      "log": "native-minimap_ui.log",
+      "assertions": 55,
+      "invocations": 1,
+      "sha256": "0cebe797f3070e4c5691c165e06ee19d1f985d8af23467eb9fdeba3ae40bcab9"
+    },
+    {
+      "log": "native-expanded_world.log",
+      "assertions": 337,
+      "invocations": 1,
+      "sha256": "cc05b60f48b9cd3041cd23c5014c44e3295cf2dff6dee20f7e6b5b8e846bd0dd"
+    },
+    {
+      "log": "native-pinball_combat.log",
+      "assertions": 60,
+      "invocations": 1,
+      "sha256": "1e63f5af75045656285e83a1c22972cb86753ee1d45fdfe64397fd574b34b7db"
+    },
+    {
+      "log": "native-pinball_world.log",
+      "assertions": 233,
+      "invocations": 1,
+      "sha256": "a53a598a5a9b1529dba116ca7402d3377a815d4386e8cf136cc2d9bcfebf44ba"
+    },
+    {
+      "log": "native-obstacles.log",
+      "assertions": 4472,
+      "invocations": 1,
+      "sha256": "90902c8403ae20588d85426c106bd461b7cba1499b9414e5529c0fd74cba5202"
+    },
+    {
+      "log": "native-gamepad_reading.log",
+      "assertions": 227,
+      "invocations": 1,
+      "sha256": "2c90a597d25701ab5c5be05637a42950fbf30fe9659d922f71e4e15c250492b8"
+    },
+    {
+      "log": "native-art_grounding.log",
+      "assertions": 53,
+      "invocations": 1,
+      "sha256": "0a2d8c287d9ab289316c31513d453c6bca6c9a3be460a1bf2df323c200f1c9a4"
+    },
+    {
+      "log": "native-title_cover.log",
+      "assertions": 109,
+      "invocations": 1,
+      "sha256": "9edd60753a5fb9ad331abdd52897667da7e6cc6c96350aa9cec3c1788b8edf0a"
+    },
+    {
+      "log": "native-weapon_effects.log",
+      "assertions": 170,
+      "invocations": 1,
+      "sha256": "ad8d9e321c1546b195cee775dd77459a05f9e575bb348bf4a250dff40572151b"
+    }
+  ],
+  "source_previews": [
+    {
+      "view": "alk-first",
+      "sha256": "56e5259efc3666d36aa3dbc1738dae5524891067b95344d22b29419098909627",
+      "state_hash": "7b0217a5955515bb5d64a3efcd289310cddcc380db43994586ccf440f394f818",
+      "hero": "alk",
+      "arena": "throne",
+      "region": "center",
+      "wall_segments": 0,
+      "elapsed": 0.816666666666668,
+      "physical_window": [
+        1280,
+        720
+      ],
+      "native_frames": 2,
+      "observed_world_draws": 2,
+      "damage_receipts": 2,
+      "reserved_bombs": 0,
+      "active_bombs": 0,
+      "explosions": 0,
+      "active_areas": 1
+    },
+    {
+      "view": "alk-windup",
+      "sha256": "a62a16307f0c583d08dc0c0737ca3a7c616f363339fc512b6ad0a4879a94975e",
+      "state_hash": "9da5993f671b646dfc8e6b8320faf6ff2b8de9d211f68108bc7d1387c18748ec",
+      "hero": "alk",
+      "arena": "throne",
+      "region": "center",
+      "wall_segments": 0,
+      "elapsed": 0.366666666666667,
+      "physical_window": [
+        1280,
+        720
+      ],
+      "native_frames": 2,
+      "observed_world_draws": 2,
+      "damage_receipts": 0,
+      "reserved_bombs": 0,
+      "active_bombs": 0,
+      "explosions": 0,
+      "active_areas": 1
+    },
+    {
+      "view": "bomb-flight",
+      "sha256": "a54d4e1bf9d6309673c6ac626cb52be59dcf1bacd10266f0dc429f7ba919ac52",
+      "state_hash": "79279088df524c242a6c4d93515d3846c0500c7fb9ab807c5931a6350298327f",
+      "hero": "hanabi",
+      "arena": "throne",
+      "region": "center",
+      "wall_segments": 0,
+      "elapsed": 1.11666666666667,
+      "physical_window": [
+        1280,
+        720
+      ],
+      "native_frames": 2,
+      "observed_world_draws": 2,
+      "damage_receipts": 0,
+      "reserved_bombs": 0,
+      "active_bombs": 5,
+      "explosions": 0,
+      "active_areas": 5
+    },
+    {
+      "view": "bomb-impact",
+      "sha256": "bcb498c948f3c78aadef59222b8dd96d8003344919eed68b43891f9d5fa73dc4",
+      "state_hash": "3cd47719b0b2e668b5b50b1af9ef75fbd171c370ea9f6c5d251cf6b389d68c82",
+      "hero": "hanabi",
+      "arena": "throne",
+      "region": "center",
+      "wall_segments": 0,
+      "elapsed": 1.15,
+      "physical_window": [
+        1280,
+        720
+      ],
+      "native_frames": 2,
+      "observed_world_draws": 2,
+      "damage_receipts": 19,
+      "reserved_bombs": 0,
+      "active_bombs": 0,
+      "explosions": 5,
+      "active_areas": 5
+    },
+    {
+      "view": "bomb-late",
+      "sha256": "0766a4fe5821721884c6bcd4b40624a44731244a2dd53eaf1fb1a594b3d6e891",
+      "state_hash": "c1f8389e3de419009a98af9db25bc7199266e72709f32361a79c89f792a605cd",
+      "hero": "hanabi",
+      "arena": "throne",
+      "region": "center",
+      "wall_segments": 0,
+      "elapsed": 1.16666666666667,
+      "physical_window": [
+        1280,
+        720
+      ],
+      "native_frames": 2,
+      "observed_world_draws": 2,
+      "damage_receipts": 23,
+      "reserved_bombs": 0,
+      "active_bombs": 0,
+      "explosions": 5,
+      "active_areas": 5
+    },
+    {
+      "view": "celtie-first",
+      "sha256": "4b48038e2d4c061503bb45fcd5fe64561f0a277ac45a765a8c90851dc82269c0",
+      "state_hash": "1fa3527ac73c359635acbe6bffb4e2a12e054aaec9dd6bb4c7a42d924da8f6ce",
+      "hero": "celtie",
+      "arena": "throne",
+      "region": "center",
+      "wall_segments": 0,
+      "elapsed": 0.5,
+      "physical_window": [
+        1280,
+        720
+      ],
+      "native_frames": 2,
+      "observed_world_draws": 2,
+      "damage_receipts": 2,
+      "reserved_bombs": 0,
+      "active_bombs": 0,
+      "explosions": 0,
+      "active_areas": 1
+    },
+    {
+      "view": "celtie-windup",
+      "sha256": "1ac3c9d9a303f4d93852c49a111bb641c82eac6765bc43973ce946d528b2de9e",
+      "state_hash": "fce265aa5f275ae7a70fe77f7b753518fd87221d2e254588b5e2ef58b1e1afcd",
+      "hero": "celtie",
+      "arena": "throne",
+      "region": "center",
+      "wall_segments": 0,
+      "elapsed": 0.2,
+      "physical_window": [
+        1280,
+        720
+      ],
+      "native_frames": 2,
+      "observed_world_draws": 2,
+      "damage_receipts": 0,
+      "reserved_bombs": 0,
+      "active_bombs": 0,
+      "explosions": 0,
+      "active_areas": 1
+    },
+    {
+      "view": "clarisse-dispel",
+      "sha256": "1a223546f8d989ba4b70bd76d5dc520f70a7cdf4c6912cce9246a129570d005a",
+      "state_hash": "90806d6ef774d2819e7f60fa433a9c9183b0b1fda2b5c2ffb19fdc06b4052552",
+      "hero": "clarisse",
+      "arena": "throne",
+      "region": "center",
+      "wall_segments": 0,
+      "elapsed": 0.783333333333334,
+      "physical_window": [
+        1280,
+        720
+      ],
+      "native_frames": 2,
+      "observed_world_draws": 2,
+      "damage_receipts": 2,
+      "reserved_bombs": 0,
+      "active_bombs": 0,
+      "explosions": 0,
+      "active_areas": 3
+    },
+    {
+      "view": "clarisse-first",
+      "sha256": "bae6ecb3cd7ca9075b5afe33fa282e1e4fbc09f998995911f29ac3b9ffd447c5",
+      "state_hash": "906073fb7ce9e51365c3a72316ad99fc1989d15e863b85305ea2baa59d2b3220",
+      "hero": "clarisse",
+      "arena": "throne",
+      "region": "center",
+      "wall_segments": 0,
+      "elapsed": 0.783333333333334,
+      "physical_window": [
+        1280,
+        720
+      ],
+      "native_frames": 2,
+      "observed_world_draws": 2,
+      "damage_receipts": 2,
+      "reserved_bombs": 0,
+      "active_bombs": 0,
+      "explosions": 0,
+      "active_areas": 3
+    },
+    {
+      "view": "clarisse-second",
+      "sha256": "263557d3dea6f0286ef4171bacd6daf0a7c1d52450fb6b31e8edf4bacc561988",
+      "state_hash": "98d12cb4621e9e58b4d578bb2d83ca9650a16b33681bf54f8e77867491bd3300",
+      "hero": "clarisse",
+      "arena": "throne",
+      "region": "center",
+      "wall_segments": 0,
+      "elapsed": 1.43333333333333,
+      "physical_window": [
+        1280,
+        720
+      ],
+      "native_frames": 2,
+      "observed_world_draws": 2,
+      "damage_receipts": 6,
+      "reserved_bombs": 0,
+      "active_bombs": 0,
+      "explosions": 0,
+      "active_areas": 2
+    },
+    {
+      "view": "clarisse-windup",
+      "sha256": "02fa89562a27a48c27e89aac46cda8e5bdf2bb9041475281982ff2a86542c939",
+      "state_hash": "3172f5f21aa70c292fd75a1595c0b29e8b3dd1cb4a52401249f3276695731bdc",
+      "hero": "clarisse",
+      "arena": "throne",
+      "region": "center",
+      "wall_segments": 0,
+      "elapsed": 0.35,
+      "physical_window": [
+        1280,
+        720
+      ],
+      "native_frames": 2,
+      "observed_world_draws": 2,
+      "damage_receipts": 0,
+      "reserved_bombs": 0,
+      "active_bombs": 0,
+      "explosions": 0,
+      "active_areas": 3
+    },
+    {
+      "view": "flash-off",
+      "sha256": "126b25f77b47f4c8b905d7f680e0389a0ff41e2905d64a5847a9ddf6c1522b53",
+      "state_hash": "1fa3527ac73c359635acbe6bffb4e2a12e054aaec9dd6bb4c7a42d924da8f6ce",
+      "hero": "celtie",
+      "arena": "throne",
+      "region": "center",
+      "wall_segments": 0,
+      "elapsed": 0.5,
+      "physical_window": [
+        1280,
+        720
+      ],
+      "native_frames": 2,
+      "observed_world_draws": 2,
+      "damage_receipts": 2,
+      "reserved_bombs": 0,
+      "active_bombs": 0,
+      "explosions": 0,
+      "active_areas": 1
+    },
+    {
+      "view": "hanabi-first",
+      "sha256": "5706db97679edb537a42cb268a083d33ba5a4d9182959a26500e0d34b1e44704",
+      "state_hash": "96d5ade845039aa6fcc2beaaa9181ee26d3f89c666886188197fd8969b265629",
+      "hero": "hanabi",
+      "arena": "throne",
+      "region": "center",
+      "wall_segments": 0,
+      "elapsed": 1.0,
+      "physical_window": [
+        1280,
+        720
+      ],
+      "native_frames": 2,
+      "observed_world_draws": 2,
+      "damage_receipts": 0,
+      "reserved_bombs": 0,
+      "active_bombs": 5,
+      "explosions": 0,
+      "active_areas": 5
+    },
+    {
+      "view": "hanabi-windup",
+      "sha256": "c940f2edda0b112dfe80eb5b4efd208cd3465ca16b39b6a0a120dea62cb4c720",
+      "state_hash": "6bba26a79238f22bfbade075aa008010a45573be3fba0bd8ad1dfe2a0d0ebc0b",
+      "hero": "hanabi",
+      "arena": "throne",
+      "region": "center",
+      "wall_segments": 0,
+      "elapsed": 0.45,
+      "physical_window": [
+        1280,
+        720
+      ],
+      "native_frames": 2,
+      "observed_world_draws": 2,
+      "damage_receipts": 0,
+      "reserved_bombs": 5,
+      "active_bombs": 0,
+      "explosions": 0,
+      "active_areas": 5
+    },
+    {
+      "view": "map-jp_sand_2_9_5-center",
+      "sha256": "39d5b353be1d510c414e931db75b32a3557bf26d37b9bc16b2c8cac810eda648",
+      "state_hash": "3e4021f94f9a086a37461143130ea0217ed2f39e449bc82ce8476307d4e5c33e",
+      "hero": "alk",
+      "arena": "jp_sand_2_9_5",
+      "region": "center",
+      "wall_segments": 3,
+      "elapsed": 0.0,
+      "physical_window": [
+        1280,
+        720
+      ],
+      "native_frames": 2,
+      "observed_world_draws": 2,
+      "damage_receipts": 0,
+      "reserved_bombs": 0,
+      "active_bombs": 0,
+      "explosions": 0,
+      "active_areas": 0
+    },
+    {
+      "view": "map-jp_sand_2_9_5-north",
+      "sha256": "bc04224c72c64d53ac5b891a6fade173d3a9736405d7701da661f6f934dc63b9",
+      "state_hash": "8b91291407cec1eded2708452460733c9261d622ea97ca5b69c41fea853c4a7a",
+      "hero": "alk",
+      "arena": "jp_sand_2_9_5",
+      "region": "north",
+      "wall_segments": 3,
+      "elapsed": 0.0,
+      "physical_window": [
+        1280,
+        720
+      ],
+      "native_frames": 2,
+      "observed_world_draws": 2,
+      "damage_receipts": 0,
+      "reserved_bombs": 0,
+      "active_bombs": 0,
+      "explosions": 0,
+      "active_areas": 0
+    },
+    {
+      "view": "map-jp_sand_2_9_5-south",
+      "sha256": "6bbd05483cf77382a045b495f22fd96cd6b058e3f7866a6f851ba2babe4eeb2e",
+      "state_hash": "6882855348fb53b238305d3a2c211faccd3f47c7ae100f712bf3b976121b946a",
+      "hero": "alk",
+      "arena": "jp_sand_2_9_5",
+      "region": "south",
+      "wall_segments": 3,
+      "elapsed": 0.0,
+      "physical_window": [
+        1280,
+        720
+      ],
+      "native_frames": 2,
+      "observed_world_draws": 2,
+      "damage_receipts": 0,
+      "reserved_bombs": 0,
+      "active_bombs": 0,
+      "explosions": 0,
+      "active_areas": 0
+    },
+    {
+      "view": "map-jp_ship_3_6_2-center",
+      "sha256": "4ecb4fedf21d5fd9b563f51d1703b6b6ddafdc5d271b9f41e2d36b4b21c7ee36",
+      "state_hash": "84faf99e1a216be3ca52021c3af7846d4b6b1d30c65284b68c5c359da45488ed",
+      "hero": "alk",
+      "arena": "jp_ship_3_6_2",
+      "region": "center",
+      "wall_segments": 8,
+      "elapsed": 0.0,
+      "physical_window": [
+        1280,
+        720
+      ],
+      "native_frames": 2,
+      "observed_world_draws": 2,
+      "damage_receipts": 0,
+      "reserved_bombs": 0,
+      "active_bombs": 0,
+      "explosions": 0,
+      "active_areas": 0
+    },
+    {
+      "view": "map-jp_ship_3_6_2-north",
+      "sha256": "c0ce3380909903fa0310d3b0addba9bc02809feb7ef928341a8cbc728f5c4c88",
+      "state_hash": "9d76ff7fe759cc405a4c9afff34aaad26f7c4b33f82c18087a403c771a355009",
+      "hero": "alk",
+      "arena": "jp_ship_3_6_2",
+      "region": "north",
+      "wall_segments": 8,
+      "elapsed": 0.0,
+      "physical_window": [
+        1280,
+        720
+      ],
+      "native_frames": 2,
+      "observed_world_draws": 2,
+      "damage_receipts": 0,
+      "reserved_bombs": 0,
+      "active_bombs": 0,
+      "explosions": 0,
+      "active_areas": 0
+    },
+    {
+      "view": "map-jp_ship_3_6_2-south",
+      "sha256": "67be81971a0f472fdc78f87634156203be482be0d30960d2d21be9fb879c9784",
+      "state_hash": "ec3c5d8c6a496df14e0dbc6cf4f87c7a02beac95803a32c97a01a765cb8c2e0c",
+      "hero": "alk",
+      "arena": "jp_ship_3_6_2",
+      "region": "south",
+      "wall_segments": 8,
+      "elapsed": 0.0,
+      "physical_window": [
+        1280,
+        720
+      ],
+      "native_frames": 2,
+      "observed_world_draws": 2,
+      "damage_receipts": 0,
+      "reserved_bombs": 0,
+      "active_bombs": 0,
+      "explosions": 0,
+      "active_areas": 0
+    },
+    {
+      "view": "map-jp_shrine_6_6_2-center",
+      "sha256": "0c3a31420cb7016304418c6c182af9ee61cb747536c90e7062a1e5bc8b0dae74",
+      "state_hash": "6dfee11ca1f2c141405e276ffaa3a3e5987a08364826fba52bc1c97a1218a97e",
+      "hero": "alk",
+      "arena": "jp_shrine_6_6_2",
+      "region": "center",
+      "wall_segments": 6,
+      "elapsed": 0.0,
+      "physical_window": [
+        1280,
+        720
+      ],
+      "native_frames": 2,
+      "observed_world_draws": 2,
+      "damage_receipts": 0,
+      "reserved_bombs": 0,
+      "active_bombs": 0,
+      "explosions": 0,
+      "active_areas": 0
+    },
+    {
+      "view": "map-jp_shrine_6_6_2-north",
+      "sha256": "c62ced3f18e80efda91b8403ea3c95279ed9db4acff7692f56c11f414c5b19f2",
+      "state_hash": "440633659310dce8cd75e2311e4677b6e822e1f64e40a4b7e156f48204fef6ce",
+      "hero": "alk",
+      "arena": "jp_shrine_6_6_2",
+      "region": "north",
+      "wall_segments": 6,
+      "elapsed": 0.0,
+      "physical_window": [
+        1280,
+        720
+      ],
+      "native_frames": 2,
+      "observed_world_draws": 2,
+      "damage_receipts": 0,
+      "reserved_bombs": 0,
+      "active_bombs": 0,
+      "explosions": 0,
+      "active_areas": 0
+    },
+    {
+      "view": "map-jp_shrine_6_6_2-south",
+      "sha256": "369a7471f6679dab083461e1c61b1aa8ec0a5c00ea7d287d6ece63da60c801dc",
+      "state_hash": "8628934d232ce6e0109a747f528033a8b004846d5bb21d09370e829372bce844",
+      "hero": "alk",
+      "arena": "jp_shrine_6_6_2",
+      "region": "south",
+      "wall_segments": 6,
+      "elapsed": 0.0,
+      "physical_window": [
+        1280,
+        720
+      ],
+      "native_frames": 2,
+      "observed_world_draws": 2,
+      "damage_receipts": 0,
+      "reserved_bombs": 0,
+      "active_bombs": 0,
+      "explosions": 0,
+      "active_areas": 0
+    },
+    {
+      "view": "small-gamepad",
+      "sha256": "b95acbf3fd2adbe188d789d2955309184405a02ec3aa15b66ae8b1eb448c4a10",
+      "state_hash": "79279088df524c242a6c4d93515d3846c0500c7fb9ab807c5931a6350298327f",
+      "hero": "hanabi",
+      "arena": "throne",
+      "region": "center",
+      "wall_segments": 0,
+      "elapsed": 1.11666666666667,
+      "physical_window": [
+        960,
+        540
+      ],
+      "native_frames": 2,
+      "observed_world_draws": 2,
+      "damage_receipts": 0,
+      "reserved_bombs": 0,
+      "active_bombs": 5,
+      "explosions": 0,
+      "active_areas": 5
+    }
+  ],
+  "assets": {
+    "preserved_previous_pngs": 79,
+    "preserved_previous_manifest": true,
+    "new_original_stage_pngs": 6,
+    "new_stage_sources": 12,
+    "global_manifest_sha256": "33576d518bed52ddc2d7a9c79f58c28959ffee98efdbd4c3e4f4c2da1e13490f",
+    "stage_manifest_sha256": "49e6172924531c080973219f1d4966fb7734ffec54e42b6c5c50fac25da367eb"
+  },
+  "datasets": {
+    "scripts/main.gd": "6e4aef7bf29c31b52a5d8591ab3d8baa3d599c17bbd12da421718266b355037a",
+    "scripts/diagnostics/wf_actions_preview.gd": "a55a1165a4e65837835cb20229885d99f41875e5544f8269c8d673c87dcd4f5e",
+    "tools/preview_skill_timelines.gd": "c89fbbc9ba597061fab97712c932d48a4094b1e5156d8c58efc13916ce07ff4b",
+    "data/worldflipper/skill_actions.json": "f6fc62aab10127ccff49e9fd9c4a7aeaed91e9718063af4356b8f76564f4188f",
+    "data/worldflipper/equipment_rules.json": "9f33d2414bc7ce5f308be4e1a93f8367bc3cdbacfbad053f88bbfe3a4cd9cf17",
+    "data/worldflipper/layouts.json": "a2ab5d9efd542015189228fc1097a613bb191de29246ea181ee734d52a21e7a1",
+    "tools/world_flipper_skill_action_sources.json": "904bf37e2996fb3a53a8a57fcbaf72c0e31ab28c879a02bd5d076ed08205ce81",
+    "tools/world_flipper_equipment_rules_sources.json": "84855d3c163c61e64f14dbef3773ea4d7ddca25ee292fb3627870df90de7fb33",
+    "tools/world_flipper_layout_sources.json": "8fc238a6f7ca57a8278358790dc6aff014123b061ef0cbbadf2ad33e6848056d",
+    "tools/world_flipper_character_animation_sources.json": "6e1a62b24ea3f2dd04ee2c9b3e9c1b24a23c0da7c39331815f48d18a9d9220e0"
+  },
+  "lf_normalization": {
+    "policy": "UTF-8 LF",
+    "full_gate_precedes_line_endings_only_normalization": true,
+    "post_normalization_runtime": [
+      {
+        "log": "target-skill_timeline.log",
+        "assertions": 234,
+        "invocations": 1,
+        "sha256": "380bcc2f3fac8403d1678722e015315bffa56da38cda05704e1e37fde40d1856"
+      },
+      {
+        "log": "target-terrain_walls.log",
+        "assertions": 481,
+        "invocations": 1,
+        "sha256": "75523be038ebfbfe4686df19fb4c4e586957fb27cd5458609d09788b7540bff0"
+      },
+      {
+        "log": "target-original_stages.log",
+        "assertions": 1048,
+        "invocations": 1,
+        "sha256": "5520ff5288764a5312ba6e06e8f8a53216cdc65806aef8231b2a9adc3de90775"
+      },
+      {
+        "log": "target-profile_modes.log",
+        "assertions": 25,
+        "invocations": 1,
+        "sha256": "0bac0cca6668dc5c751d5282aa79f9dbf0e925606fff017a7b23e54b4220c12f"
+      }
+    ]
+  },
+  "source_preparation": {
+    "action_files": 1027,
+    "rank_variants": 1062,
+    "equipment": 426,
+    "equipment_rule_rows": 886,
+    "decoded_old_equipment_rules": 21,
+    "enhanced_equipment_rule_rows": 108,
+    "prepared_character_variants": 374,
+    "prepared_gifs": 1122,
+    "unavailable_exact_animation_variants": 131,
+    "demo_terrains": 8,
+    "demo_terrain_layers": 11,
+    "demo_open_wall_segments": 176,
+    "playable_original_layout_adaptations": 3,
+    "playable_original_wall_segments": 17
+  },
+  "verification_scope": "Partially adapted current four heroes, timed R actions and three demo layout adaptations with exact final-JP refs. Parsed source data and prepared animation files do not count as implemented gameplay.",
+  "passed": true
+}

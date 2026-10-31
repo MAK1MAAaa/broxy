@@ -1,0 +1,472 @@
+{
+  "sources": [
+    {
+      "id": "interaction_ball",
+      "kind": "interaction_art",
+      "name": "World Flipper / original thunder orb",
+      "filename": "interaction-ball.png",
+      "url": "https://worldflipper.jp/demo/src/assets/production/character/magic_boy_thunderball/pixelart/sprite_sheet.png",
+      "source_page": "https://worldflipper.jp/demo/",
+      "sha256": "87e664f2c8476d38933260b2c585ce6325af018b589bd24721b377690b709e9e",
+      "source_size": [
+        164,
+        24
+      ],
+      "game_id": "ball",
+      "atlas": {
+        "url": "https://worldflipper.jp/demo/src/assets/production/character/magic_boy_thunderball/pixelart/sprite_sheet.atlas.json",
+        "sha256": "9592474b55607c5cc378467b32e18ca86f4bdd5e3603ce0282d1527cf2267c9d"
+      },
+      "frames": [
+        {
+          "n": "character/magic_boy_thunderball/pixelart/pixelart0002",
+          "w": 21,
+          "h": 21,
+          "x": 121,
+          "y": 0,
+          "fx": -22,
+          "fy": -13,
+          "fw": 64,
+          "fh": 64
+        },
+        {
+          "n": "character/magic_boy_thunderball/pixelart/pixelart0004",
+          "w": 21,
+          "h": 21,
+          "x": 143,
+          "y": 0,
+          "fx": -22,
+          "fy": -13,
+          "fw": 64,
+          "fh": 64
+        },
+        {
+          "n": "character/magic_boy_thunderball/pixelart/pixelart0005",
+          "w": 21,
+          "h": 23,
+          "x": 99,
+          "y": 0,
+          "fx": -22,
+          "fy": -13,
+          "fw": 64,
+          "fh": 64
+        },
+        {
+          "n": "character/magic_boy_thunderball/pixelart/pixelart0006",
+          "w": 25,
+          "h": 24,
+          "x": 0,
+          "y": 0,
+          "fx": -19,
+          "fy": -12,
+          "fw": 64,
+          "fh": 64
+        },
+        {
+          "n": "character/magic_boy_thunderball/pixelart/pixelart0007",
+          "w": 25,
+          "h": 24,
+          "x": 26,
+          "y": 0,
+          "r": true,
+          "fx": -20,
+          "fy": -12,
+          "fw": 64,
+          "fh": 64
+        },
+        {
+          "n": "character/magic_boy_thunderball/pixelart/pixelart0008",
+          "w": 23,
+          "h": 24,
+          "x": 52,
+          "y": 0,
+          "fx": -21,
+          "fy": -12,
+          "fw": 64,
+          "fh": 64
+        },
+        {
+          "n": "character/magic_boy_thunderball/pixelart/pixelart0009",
+          "w": 22,
+          "h": 23,
+          "x": 76,
+          "y": 0,
+          "fx": -22,
+          "fy": -11,
+          "fw": 64,
+          "fh": 64
+        }
+      ],
+      "scale": 2,
+      "original_canvas": [
+        64,
+        64
+      ],
+      "canvas_crop": [
+        16,
+        8,
+        32,
+        32
+      ],
+      "cell_size": [
+        64,
+        64
+      ],
+      "columns": 7,
+      "frame_ends_seconds": [
+        0.12,
+        0.18,
+        0.24,
+        0.3,
+        0.36,
+        0.42,
+        0.48
+      ],
+      "center_anchor": [
+        32,
+        32
+      ],
+      "timing_note": "Project adaptation: .12s then six .06s frames, .48s cycle. Original FPS and exact game timing are not asserted.",
+      "timeline": {
+        "url": "https://worldflipper.jp/demo/src/assets/production/character/magic_boy_thunderball/pixelart/pixelart.timeline.json",
+        "sha256": "7355f47a81f339dc825ba10b02acb19b89eea2eab2047ffbdf9138542cc18552"
+      }
+    },
+    {
+      "id": "interaction_barrel",
+      "kind": "interaction_art",
+      "name": "World Flipper / original ship barrel",
+      "filename": "interaction-barrel.png",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field_object/world_sea/sea_ship_boss/yakumono/breakable_decoration/barrel/barrel.png",
+      "source_page": "https://worldflipper.jp/demo/",
+      "sha256": "07bda8f1ce2a95aee81e201b2110b4ae1ae0ef216152df0d04a647680752dfca",
+      "source_size": [
+        122,
+        73
+      ],
+      "game_id": "barrel",
+      "atlas": {
+        "url": "https://worldflipper.jp/demo/src/assets/production/battle/field_object/world_sea/sea_ship_boss/yakumono/breakable_decoration/barrel/barrel.atlas.json",
+        "sha256": "e64013c148495f9d9e0c800322d1a047d70a5f0177c42532cf799ebde03c56cd"
+      },
+      "frames": [
+        {
+          "n": "battle/field_object/world_sea/sea_ship_boss/yakumono/breakable_decoration/barrel/.gen/barrel/f0022",
+          "w": 1,
+          "h": 1,
+          "x": 74,
+          "y": 47,
+          "fx": 0,
+          "fy": 0,
+          "fw": 53,
+          "fh": 36
+        },
+        {
+          "n": "battle/field_object/world_sea/sea_ship_boss/yakumono/breakable_decoration/barrel/.gen/barrel/f0032",
+          "w": 16,
+          "h": 12,
+          "x": 104,
+          "y": 26,
+          "r": true,
+          "fx": -19,
+          "fy": -14,
+          "fw": 53,
+          "fh": 36
+        },
+        {
+          "n": "battle/field_object/world_sea/sea_ship_boss/yakumono/breakable_decoration/barrel/.gen/barrel/f0035",
+          "w": 28,
+          "h": 19,
+          "x": 74,
+          "y": 26,
+          "fx": -13,
+          "fy": -7,
+          "fw": 53,
+          "fh": 36
+        },
+        {
+          "n": "battle/field_object/world_sea/sea_ship_boss/yakumono/breakable_decoration/barrel/.gen/barrel/f0038",
+          "w": 32,
+          "h": 20,
+          "x": 1,
+          "y": 52,
+          "fx": -12,
+          "fy": -4,
+          "fw": 53,
+          "fh": 36
+        },
+        {
+          "n": "battle/field_object/world_sea/sea_ship_boss/yakumono/breakable_decoration/barrel/.gen/barrel/f0041",
+          "w": 38,
+          "h": 21,
+          "x": 35,
+          "y": 50,
+          "fx": -9,
+          "fy": -3,
+          "fw": 53,
+          "fh": 36
+        },
+        {
+          "n": "battle/field_object/world_sea/sea_ship_boss/yakumono/breakable_decoration/barrel/.gen/barrel/f0044",
+          "w": 43,
+          "h": 24,
+          "x": 77,
+          "y": 47,
+          "fx": -6,
+          "fy": -2,
+          "fw": 53,
+          "fh": 36
+        },
+        {
+          "n": "battle/field_object/world_sea/sea_ship_boss/yakumono/breakable_decoration/barrel/.gen/barrel/f0047",
+          "w": 26,
+          "h": 49,
+          "x": 1,
+          "y": 1,
+          "r": true,
+          "fx": -2,
+          "fy": -4,
+          "fw": 53,
+          "fh": 36
+        },
+        {
+          "n": "battle/field_object/world_sea/sea_ship_boss/yakumono/breakable_decoration/barrel/.gen/barrel/f0050",
+          "w": 25,
+          "h": 47,
+          "x": 29,
+          "y": 1,
+          "r": true,
+          "fx": -3,
+          "fy": -8,
+          "fw": 53,
+          "fh": 36
+        },
+        {
+          "n": "battle/field_object/world_sea/sea_ship_boss/yakumono/breakable_decoration/barrel/.gen/barrel/f0053",
+          "w": 46,
+          "h": 23,
+          "x": 75,
+          "y": 1,
+          "fx": -4,
+          "fy": -12,
+          "fw": 53,
+          "fh": 36
+        },
+        {
+          "n": "battle/field_object/world_sea/sea_ship_boss/yakumono/breakable_decoration/barrel/.gen/barrel/f0056",
+          "w": 16,
+          "h": 47,
+          "x": 56,
+          "y": 1,
+          "r": true,
+          "fx": -4,
+          "fy": -16,
+          "fw": 53,
+          "fh": 36
+        },
+        {
+          "n": "battle/field_object/world_sea/sea_ship_boss/yakumono/breakable_decoration/barrel/.gen/barrel/f0087",
+          "w": 1,
+          "h": 1,
+          "x": 74,
+          "y": 47,
+          "fx": 0,
+          "fy": 0,
+          "fw": 53,
+          "fh": 36
+        }
+      ],
+      "scale": 2,
+      "original_canvas": [
+        53,
+        36
+      ],
+      "cell_size": [
+        128,
+        128
+      ],
+      "columns": 4,
+      "canvas_offset": [
+        14,
+        52
+      ],
+      "foot_anchor": [
+        64,
+        112
+      ],
+      "idle_frame": 1,
+      "break_first_frame": 2,
+      "break_last_frame": 9,
+      "break_frame_duration": 0.04,
+      "timing_note": "Project adaptation: frames2..9 at .04s each (.32s), not original barrel timeline or frame timing. Frames0/10 are empty.",
+      "timeline": {
+        "url": "https://worldflipper.jp/demo/src/assets/production/battle/field_object/world_sea/sea_ship_boss/yakumono/breakable_decoration/barrel/barrel.timeline.json",
+        "sha256": "e83941b959b68014dfbefa10d26f6462bbcfca6c5d4d8a57a7d3004b5d4091b3"
+      }
+    },
+    {
+      "id": "interaction_chest",
+      "kind": "interaction_art",
+      "name": "World Flipper / original treasure chest",
+      "filename": "interaction-chest.png",
+      "url": "https://worldflipper.jp/demo/src/assets/production/scene/quest_result/sprite_sheet.png",
+      "source_page": "https://worldflipper.jp/demo/",
+      "sha256": "6b2e44bf4a1c5a0f4c339f262297ff1caf2efc0e2160fc5b2f79a98d089f5d0f",
+      "source_size": [
+        1148,
+        1017
+      ],
+      "game_id": "chest",
+      "atlas": {
+        "url": "https://worldflipper.jp/demo/src/assets/production/scene/quest_result/sprite_sheet.atlas.json",
+        "sha256": "d813e3e083479a87f4e6da851b846d8094a967d5d3b12a357d4abecb4308922c"
+      },
+      "frames": [
+        {
+          "n": "scene/quest_result/.gen/quest_result_treasure_box/d",
+          "w": 22,
+          "h": 20,
+          "x": 1125,
+          "y": 722,
+          "fx": -21,
+          "fy": -8,
+          "fw": 64,
+          "fh": 64
+        }
+      ],
+      "scale": 3,
+      "cell_size": [
+        96,
+        96
+      ],
+      "columns": 1,
+      "foot_anchor": [
+        48,
+        88
+      ],
+      "normalization": "Complete original22x20 chest at3x nearest, centered horizontally and aligned at footy88. Shared barrel fragments may provide project-specific break feedback; these are not claimed as the original chest animation."
+    },
+    {
+      "id": "interaction_health",
+      "kind": "interaction_art",
+      "name": "World Flipper / HP recovery item",
+      "filename": "interaction-health.png",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field_object/common/yakumono/instant_item/hp_recovery_middle/hp_recovery_middle.png",
+      "source_page": "https://worldflipper.jp/demo/",
+      "sha256": "39c1c64483d60d78033a6a0a059cc6ea9ca5897ceed1c059b08c81966620e6d2",
+      "source_size": [
+        15,
+        21
+      ],
+      "game_id": "health",
+      "atlas": {
+        "url": "https://worldflipper.jp/demo/src/assets/production/battle/field_object/common/yakumono/instant_item/hp_recovery_middle/hp_recovery_middle.atlas.json",
+        "sha256": "ea64ceafdcf6435906da90b53c851ac084b251ba26b37e0982bdc6784ba66b4e"
+      },
+      "frames": [
+        {
+          "n": "battle/field_object/common/yakumono/instant_item/hp_recovery_middle/.gen/hp_recovery_middle/a",
+          "w": 13,
+          "h": 19,
+          "x": 1,
+          "y": 1,
+          "fx": -9,
+          "fy": -6,
+          "fw": 32,
+          "fh": 32
+        }
+      ],
+      "scale": 2,
+      "cell_size": [
+        64,
+        64
+      ],
+      "columns": 1,
+      "foot_anchor": [
+        32,
+        61
+      ],
+      "normalization": "Complete original native atlas face, integer2x nearest, centered horizontally at footy61; no atlas border or recoloring."
+    },
+    {
+      "id": "interaction_charge",
+      "kind": "interaction_art",
+      "name": "World Flipper / skill charge item",
+      "filename": "interaction-charge.png",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field_object/common/yakumono/instant_item/skill_charge_middle/skill_charge_middle.png",
+      "source_page": "https://worldflipper.jp/demo/",
+      "sha256": "093198088b8db310d6de1cc8612437afbaeac0b5104a3bb3b791cb02e7a36b7b",
+      "source_size": [
+        15,
+        21
+      ],
+      "game_id": "charge",
+      "atlas": {
+        "url": "https://worldflipper.jp/demo/src/assets/production/battle/field_object/common/yakumono/instant_item/skill_charge_middle/skill_charge_middle.atlas.json",
+        "sha256": "9ef5bf3b2bbbe17b2021efeb0197382c89617bd610539e3cc758b889101f4eff"
+      },
+      "frames": [
+        {
+          "n": "battle/field_object/common/yakumono/instant_item/skill_charge_middle/.gen/skill_charge_middle/a",
+          "w": 13,
+          "h": 19,
+          "x": 1,
+          "y": 1,
+          "fx": -9,
+          "fy": -6,
+          "fw": 32,
+          "fh": 32
+        }
+      ],
+      "scale": 2,
+      "cell_size": [
+        64,
+        64
+      ],
+      "columns": 1,
+      "foot_anchor": [
+        32,
+        61
+      ],
+      "normalization": "Complete original native atlas face, integer2x nearest, centered horizontally at footy61; no atlas border or recoloring."
+    },
+    {
+      "id": "interaction_mana",
+      "kind": "interaction_art",
+      "name": "World Flipper / mana pickup",
+      "filename": "interaction-mana.png",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field_object/common/yakumono/instant_item/obtainable_mana/obtainable_mana.png",
+      "source_page": "https://worldflipper.jp/demo/",
+      "sha256": "d33eba83c17983e767198b2386d9dc4cf23743b7e1772bf642f6c5cb8fbad28c",
+      "source_size": [
+        32,
+        32
+      ],
+      "game_id": "mana",
+      "atlas": {
+        "url": "https://worldflipper.jp/demo/src/assets/production/battle/field_object/common/yakumono/instant_item/obtainable_mana/obtainable_mana.atlas.json",
+        "sha256": "98a6849b00a2cead49bb5e227b3a86388ee5bbcf2979ae7bc9e6ff28fd6a4d88"
+      },
+      "frames": [
+        {
+          "n": "battle/field_object/common/yakumono/instant_item/obtainable_mana/.gen/obtainable_mana/a",
+          "w": 12,
+          "h": 12,
+          "x": 1,
+          "y": 7
+        }
+      ],
+      "scale": 2,
+      "cell_size": [
+        64,
+        64
+      ],
+      "columns": 1,
+      "foot_anchor": [
+        32,
+        61
+      ],
+      "normalization": "One complete native atlas face, integer2x nearest, centered horizontally at footy61; original colors and transparent silhouette retained. Mana is a static face in this adaptation, not the original five-frame pickup animation."
+    }
+  ]
+}

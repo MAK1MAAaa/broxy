@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="ContentDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/content_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "echo_stone"
+kind = "relic"
+display_name = "回响石"
+subtitle = "脉冲取舍 · 背包合成升阶"
+description = "脉冲半径 +18，脉冲冷却 +0.8秒。Ⅰ／Ⅱ／Ⅲ阶属性权重为1／2／4；半径最高216，冷却最高16秒。击退、减速与首领免疫规则不变。"
+shop_summary = "脉冲半径 +18，冷却 +0.8秒；半径最高216。"
+icon = "echo_stone"
+color = Color(0.74, 0.66, 0.88, 1)
+price = 22
+stat = "pulse_radius"
+amount = 18.0
+bonus_stat = "pulse_cooldown"
+bonus_amount = 0.8
+inventory_size = Vector2i(1, 1)

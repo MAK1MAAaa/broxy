@@ -25,15 +25,34 @@ var _upgrade_request_sim: CombatSim
 var _upgrade_request_generation: int = -1
 var _combat_upgrade_sim: CombatSim
 var _combat_upgrade_generation: int = -1
+var _wf_actions_preview_redirecting: bool = false
 
 func _ready() -> void:
+	if "--wf-dash-benchmark" in OS.get_cmdline_user_args() and not has_meta("wf_dash_benchmark_child"):
+		store.persistent = false
+		_wf_actions_preview_redirecting = true
+		process_mode = Node.PROCESS_MODE_DISABLED
+		_start_wf_dash_benchmark.call_deferred()
+		return
+	if "--wf-equipment-preview" in OS.get_cmdline_user_args() and not has_meta("wf_equipment_preview_child"):
+		store.persistent = false
+		_wf_actions_preview_redirecting = true
+		process_mode = Node.PROCESS_MODE_DISABLED
+		_start_wf_equipment_preview.call_deferred()
+		return
+	if "--wf-actions-preview" in OS.get_cmdline_user_args() and not has_meta("wf_actions_preview_child"):
+		store.persistent = false
+		_wf_actions_preview_redirecting = true
+		process_mode = Node.PROCESS_MODE_DISABLED
+		_start_wf_actions_preview.call_deferred()
+		return
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	# VSync schedules presentation; a second 60 Hz software limiter can miss vblank.
 	Engine.max_fps = 0
 	args = OS.get_cmdline_user_args()
 	var selected_arena: String = _arena_from_args(args)
 	if selected_arena.is_empty():
-		push_error("--arena requires reliquary, mire, glacier, or ashland")
+		push_error("--arena requires an authored arena or a playable JP map-layer ID")
 		get_tree().quit(2)
 		return
 	# Direct CLI validation must be as isolated as the standalone preview fixtures.
@@ -43,6 +62,8 @@ func _ready() -> void:
 			store.persistent = false
 			break
 	store.load_profile()
+	ControlBindings.install(store.controls)
+	Input.joy_connection_changed.connect(_on_joy_connection_changed)
 	sound = SoundBank.new()
 	add_child(sound)
 	sound.set_volume(float(store.settings["volume"]))
@@ -56,13 +77,16 @@ func _ready() -> void:
 	ui.bind(run)
 	ui.set_selected_arena(selected_arena)
 	ui.set_settings(store.settings)
+	ui.set_controls(store.controls)
 	ui.set_progress(store.unlocked_starters)
+	ui.set_selected_hero(store.selected_hero)
 	ui.start_requested.connect(_start_run)
 	ui.next_wave_requested.connect(_next_wave)
 	ui.resume_requested.connect(_resume)
 	ui.menu_requested.connect(_title)
 	ui.quit_requested.connect(_quit_game)
 	ui.setting_changed.connect(_setting_changed)
+	ui.controls_changed.connect(_controls_changed)
 	ui.feedback.connect(func(name: String) -> void: sound.play(name, -12.0))
 	ui.upgrades_finished.connect(_upgrades_finished)
 	world.hud_changed.connect(ui.update_hud)
@@ -96,8 +120,39 @@ func _ready() -> void:
 		if argument.begins_with("--capture-delay="):
 			_screenshot_clock = maxf(0.5, argument.trim_prefix("--capture-delay=").to_float())
 
+func _start_wf_dash_benchmark() -> void:
+	var diagnostic_script := load("res://scripts/diagnostics/dash_benchmark.gd") as Script
+	if diagnostic_script == null or not diagnostic_script.can_instantiate():
+		push_error("The embedded dash benchmark diagnostic is unavailable")
+		get_tree().quit(2)
+		return
+	var diagnostic: Node = diagnostic_script.new()
+	get_tree().root.add_child(diagnostic)
+	queue_free()
+
+func _start_wf_actions_preview() -> void:
+	# Runtime loading avoids a preload cycle: the diagnostic instantiates MAIN.
+	var diagnostic_script := load("res://scripts/diagnostics/wf_actions_preview.gd") as Script
+	if diagnostic_script == null:
+		push_error("The embedded World Flipper preview diagnostic is unavailable")
+		get_tree().quit(2)
+		return
+	var diagnostic: Node = diagnostic_script.new()
+	get_tree().root.add_child(diagnostic)
+	queue_free()
+
+func _start_wf_equipment_preview() -> void:
+	var diagnostic_script := load("res://scripts/diagnostics/wf_equipment_preview.gd") as Script
+	if diagnostic_script == null:
+		push_error("The embedded equipment preview diagnostic is unavailable")
+		get_tree().quit(2)
+		return
+	var diagnostic: Node = diagnostic_script.new()
+	get_tree().root.add_child(diagnostic)
+	queue_free()
+
 func _start_run(starter: String) -> void:
-	if not store.starter_unlocked(starter):
+	if not store.starter_unlocked(starter) and starter != HeroCatalog.definition(ui.selected_hero()).starter_weapon:
 		ui.notify("此起始法器尚未解锁。")
 		return
 	_begin_run(starter)
@@ -106,7 +161,9 @@ func _begin_run(starter: String, seed_value: int = 0) -> void:
 	_invalidate_combat_upgrades()
 	get_tree().paused = false
 	paused = false
-	run.begin(seed_value if seed_value > 0 else int(Time.get_unix_time_from_system()) ^ Time.get_ticks_usec(), starter, ui.selected_arena())
+	store.selected_hero = HeroCatalog.normalize_id(ui.selected_hero())
+	store.save_profile()
+	run.begin(seed_value if seed_value > 0 else int(Time.get_unix_time_from_system()) ^ Time.get_ticks_usec(), starter, ui.selected_arena(), store.selected_hero)
 	screen = Screen.COMBAT
 	ui.show_hud()
 	world.begin(run)
@@ -204,6 +261,7 @@ func _open_combat_upgrades(simulation: CombatSim, generation: int) -> void:
 	_combat_upgrade_sim = simulation
 	_combat_upgrade_generation = generation
 	screen = Screen.UPGRADE
+	world.clear_pending_actions()
 	get_tree().paused = true
 	ui.show_upgrades(true)
 	sound.play("level", -12.0)
@@ -232,6 +290,8 @@ func _upgrades_finished() -> void:
 
 func _invalidate_combat_upgrades() -> void:
 	_run_generation += 1
+	if world != null:
+		world.clear_pending_actions()
 	_upgrade_request_sim = null
 	_upgrade_request_generation = -1
 	_combat_upgrade_sim = null
@@ -253,6 +313,7 @@ func _title() -> void:
 func _pause() -> void:
 	if screen == Screen.TITLE or screen == Screen.RESULT or _benchmark:
 		return
+	world.clear_pending_actions()
 	paused = true
 	get_tree().paused = true
 	ui.show_pause()
@@ -270,21 +331,92 @@ func _setting_changed(key: String, value: Variant) -> void:
 		sound.set_volume(float(value))
 	store.save_profile()
 
+func _controls_changed(value: Dictionary) -> void:
+	store.controls = ControlBindings.normalize(value)
+	ControlBindings.install(store.controls)
+	ui.set_controls(store.controls)
+	world.clear_pending_actions()
+	store.save_profile()
+
 func _unhandled_key_input(event: InputEvent) -> void:
-	if event is InputEventKey and event.pressed and not event.echo:
+	if event is InputEventKey:
+		_handle_control_input(event)
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventJoypadButton:
+		_handle_control_input(event)
+
+func _handle_control_input(event: InputEvent) -> void:
+	if event is InputEventKey:
+		if not event.pressed or event.echo:
+			return
 		if event.keycode == KEY_ESCAPE:
-			if ui.handle_back():
-				pass
-			elif paused:
+			_handle_back_input(true)
+			return
+		if event.keycode == KEY_F11 or (event.keycode == KEY_F and event.alt_pressed):
+			var fullscreen: bool = DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN
+			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED if fullscreen else DisplayServer.WINDOW_MODE_FULLSCREEN)
+			return
+	elif event is InputEventJoypadButton:
+		if not event.pressed:
+			return
+		if event.button_index == JOY_BUTTON_B:
+			_handle_back_input(false)
+			return
+		if event.button_index == JOY_BUTTON_START:
+			if paused:
 				_resume()
 			else:
 				_pause()
 			get_viewport().set_input_as_handled()
-		elif event.keycode == KEY_F11 or (event.keycode == KEY_F and event.alt_pressed):
-			var fullscreen: bool = DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN
-			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED if fullscreen else DisplayServer.WINDOW_MODE_FULLSCREEN)
+			return
+	else:
+		return
+	if not _can_request_combat_skill():
+		return
+	if ControlBindings.pressed(event, "dash"):
+		world.request_dash()
+		get_viewport().set_input_as_handled()
+	elif ControlBindings.pressed(event, "pulse"):
+		world.request_pulse()
+		get_viewport().set_input_as_handled()
+	elif ControlBindings.pressed(event, "skill_secondary"):
+		world.request_skill(1)
+		get_viewport().set_input_as_handled()
+	elif ControlBindings.pressed(event, "hero_skill"):
+		world.request_hero_skill()
+		get_viewport().set_input_as_handled()
+
+func _handle_back_input(allow_pause: bool) -> void:
+	if ui.handle_back():
+		pass
+	elif paused:
+		_resume()
+	elif allow_pause:
+		_pause()
+	else:
+		return
+	get_viewport().set_input_as_handled()
+
+func _on_joy_connection_changed(_device: int, connected: bool) -> void:
+	if connected or _benchmark or screen != Screen.COMBAT or world == null or not world.active or world.sim == null or world.sim.complete:
+		return
+	world.clear_pending_actions()
+	if not paused:
+		_pause()
+
+func _can_request_combat_skill() -> bool:
+	return (
+		screen == Screen.COMBAT and not paused and not get_tree().paused and not _benchmark
+		and world != null and world.active and world.sim != null and not world.sim.complete
+		and run.health > 0.0
+	)
 
 func _notification(what: int) -> void:
+	if _wf_actions_preview_redirecting:
+		if what == NOTIFICATION_WM_CLOSE_REQUEST:
+			get_tree().quit()
+		return
 	if what == NOTIFICATION_APPLICATION_FOCUS_OUT and (screen == Screen.COMBAT or _combat_upgrades_active()) and not paused and not _benchmark and not ("--smoke" in args) and not ("--autoplay" in args):
 		_pause()
 	elif what == NOTIFICATION_WM_CLOSE_REQUEST:
@@ -319,7 +451,7 @@ static func _arena_from_args(arguments: PackedStringArray) -> String:
 			return ""
 		if argument.begins_with("--arena="):
 			selected = argument.trim_prefix("--arena=")
-			if not ArenaCatalog.IDS.has(selected):
+			if not ArenaCatalog.contains(selected):
 				return ""
 	return selected
 

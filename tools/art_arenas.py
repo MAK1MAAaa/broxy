@@ -245,6 +245,8 @@ def generate(save_svg: SaveSVG) -> None:
         "ashland": "brown charcoal basalt plates, dormant fissures and perimeter outcrops; exact loose-ash ellipses shared with data/arenas.json",
     }
     for definition in definitions:
+        definition = dict(definition)
+        definition["zones"] = definition["zones"][:definition.get("legacy_zone_count", len(definition["zones"]))]
         id = definition["id"]
         if id in builders:
             save_svg(f"maps/{id}.svg",1280,720,builders[id](definition),roles[id] + "; fixed unobstructed combat Rect2(66,140,1148,450), quiet center spawn, no baked typography")

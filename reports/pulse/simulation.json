@@ -1,0 +1,82 @@
+{
+  "scenario": "three matched rune lanes, same seed/arena/core/route/altar; ordinary shipped transactions",
+  "arena": "mire",
+  "core": "bone_chorus",
+  "seed": 20261028,
+  "route": "balanced",
+  "altar": "accept",
+  "policies": [
+    {
+      "mode": "default-policy",
+      "runs": 3,
+      "wins": 3,
+      "pulses_used": 0,
+      "pulse_affected": 0,
+      "core_versions": [
+        "prototype-0.1.0+cd36d8ba8fc2"
+      ],
+      "policy_versions": [
+        "orbit-avoid-v1/backpack-shop-v2/upgrade-timing-v2/rogue-choices-v1/bone_chorus/balanced/accept+50ec63992513"
+      ],
+      "log_sha256": "e1719d103890fd6c60b33c0e403affb7538771bbd06209b9d84b55b58cfa3328",
+      "per_rune": [
+        {
+          "rune": "pierce",
+          "won": true,
+          "end_wave": 8,
+          "pulses": 0
+        },
+        {
+          "rune": "bounce",
+          "won": true,
+          "end_wave": 8,
+          "pulses": 0
+        },
+        {
+          "rune": "blast",
+          "won": true,
+          "end_wave": 8,
+          "pulses": 0
+        }
+      ]
+    },
+    {
+      "mode": "pulse-policy",
+      "runs": 3,
+      "wins": 3,
+      "pulses_used": 17,
+      "pulse_affected": 75,
+      "core_versions": [
+        "prototype-0.1.0+cd36d8ba8fc2"
+      ],
+      "policy_versions": [
+        "orbit-avoid-v1/backpack-shop-v2/upgrade-timing-v2/rogue-choices-v1/pulse-peel-v1/bone_chorus/balanced/accept+50ec63992513"
+      ],
+      "log_sha256": "0abc7ab7ac1999326d3f76cd7b6dc58dcb5373a73644d48747df5d25c9d564bb",
+      "per_rune": [
+        {
+          "rune": "pierce",
+          "won": true,
+          "end_wave": 8,
+          "pulses": 7
+        },
+        {
+          "rune": "bounce",
+          "won": true,
+          "end_wave": 8,
+          "pulses": 5
+        },
+        {
+          "rune": "blast",
+          "won": true,
+          "end_wave": 8,
+          "pulses": 5
+        }
+      ]
+    }
+  ],
+  "default_bot_unchanged": true,
+  "no_automatic_dash": true,
+  "human_win_rate_claim": false,
+  "limits": "Explicit pulse policy changes trajectories and later random consumption; six runs do not establish balance or causality."
+}

@@ -1,0 +1,384 @@
+{
+  "schema_version": 1,
+  "revision": "world-flipper-scoped-equipment-01",
+  "catalog_commit": "1d45b529ef078ba9b1f876d4588debd0c8a9a214",
+  "normalization": {
+    "canvas": [
+      64,
+      64
+    ],
+    "scale": 2,
+    "filter": "nearest",
+    "preserve_full_sprite_canvas": true
+  },
+  "identity_evidence": {
+    "repository": "poswords/EliyaBot",
+    "commit": "788d0180c03826ce238ef162a02c73117425998a",
+    "path": "datagl/equips.json",
+    "git_blob_sha1": "8266d12bc4aa2816245dc1406c12260429b31a24",
+    "sha256": "29bce1e31d8d3ebea629d70f87627ffceb8c11002038baa65dedfde2629a22d4",
+    "scope": "English name/dev/image-path/canonical ID correspondence only; no GL amounts substituted for JP rules."
+  },
+  "license_status": "Original game art; no open asset license found. Public mirrors and archives do not imply asset authorization. Existing fan-work provenance restrictions apply.",
+  "scope": "Five original armament identities; icons and names only. Source ability decoding and project runtime effects are independently tracked.",
+  "sources": [
+    {
+      "id": "scoped_equipment_bow_0006",
+      "game_id": "bow_0006",
+      "canonical_id": "3040006",
+      "dev_name": "bow_0006",
+      "english_name": "Crossbow",
+      "display_name_zh": "十字弓",
+      "image_resource_ref": "item/equipment/general/bow_0006",
+      "name_evidence": {
+        "title": "十字弓",
+        "url": "https://wiki.biligame.com/worldflipper/%E5%8D%81%E5%AD%97%E5%BC%93",
+        "revision_url": "https://wiki.biligame.com/worldflipper/%E5%8D%81%E5%AD%97%E5%BC%93?oldid=10479",
+        "wiki_revision": "10479",
+        "raw_html_sha256": "22d9d0b4a06237c44dbd367159e2cde0b8596383e7afa2777defb9247c2e1070",
+        "identity_match": "Original equip image/dev identity and maximum HP/ATK match the fixed JP numeric ID and pinned GL equipment metadata. Community localized name, not an invented literal translation."
+      },
+      "semantic_evidence": {
+        "url": "https://worldflipper.wiki.gg/wiki/Crossbow",
+        "wiki_revision": "5852",
+        "sha256": "b5e0244b54f747cbb8738220e657e42bda3a886fb56c3e2d6347cd2739f9eda7"
+      },
+      "original_ability_row_sha256": [
+        "fe743a54fdbcbc31d8360229270486130e7f26290c3779baf32961c7cc7fce35",
+        "ca9c81655aed5fdc332385b4faeca71c5ec94df91a38f992e8308ea66afa377f"
+      ],
+      "availability": "verified_original",
+      "filename": "bow_0006.png",
+      "url": "https://worldflipper.wiki.gg/images/Crossbow.png?fd2bd9",
+      "redirect_url": "https://worldflipper.wiki.gg/wiki/Special:Redirect/file/Crossbow.png",
+      "bytes": 448,
+      "sha256": "900ab7c5a73ce50b4db450df3d4497118cd61d8da8f9bdc98657bfd3a5da33a4",
+      "source_mode": "RGBA",
+      "source_size": [
+        18,
+        18
+      ],
+      "crop": [
+        0,
+        0,
+        18,
+        18
+      ],
+      "source_rgba_sha256": "d8d5fe7bb3a0694f3b2071fbdf86c52ad2c62760415c28586d5c9cb8a00b0f3a",
+      "alpha_bounds": [
+        0,
+        0,
+        18,
+        18
+      ]
+    },
+    {
+      "id": "scoped_equipment_sword_0005",
+      "game_id": "sword_0005",
+      "canonical_id": "5010005",
+      "dev_name": "sword_0005",
+      "english_name": "Durendal",
+      "display_name_zh": "杜兰德尔",
+      "image_resource_ref": "item/equipment/general/sword_0005",
+      "name_evidence": {
+        "title": "杜兰德尔",
+        "url": "https://wiki.biligame.com/worldflipper/%E6%9D%9C%E5%85%B0%E5%BE%B7%E5%B0%94",
+        "revision_url": "https://wiki.biligame.com/worldflipper/%E6%9D%9C%E5%85%B0%E5%BE%B7%E5%B0%94?oldid=18156",
+        "wiki_revision": "18156",
+        "raw_html_sha256": "22632a86b9fd934ffc46f654f63087df0987e1dfdf6d712e6e19bd8e03390fe2",
+        "identity_match": "Original equip image/dev identity and maximum HP/ATK match the fixed JP numeric ID and pinned GL equipment metadata. Community localized name, not an invented literal translation."
+      },
+      "semantic_evidence": {
+        "url": "https://worldflipper.wiki.gg/wiki/Durendal",
+        "wiki_revision": "3311",
+        "sha256": "9469bbbde80bba1e08efe61327de4169078062b182e47dc99ded921b040886bb"
+      },
+      "original_ability_row_sha256": [
+        "f1dcc31f05e19d85311d1449cb78b843d2d27cb191afea028e33a0ea2e3a9d55",
+        "23a423b17684e399912ace0928c13775e85c0886afd9ac07c31b8dede3abf38c"
+      ],
+      "availability": "verified_original",
+      "filename": "sword_0005.png",
+      "url": "https://worldflipper.wiki.gg/images/Durendal.png?74dcb9",
+      "redirect_url": "https://worldflipper.wiki.gg/wiki/Special:Redirect/file/Durendal.png",
+      "bytes": 406,
+      "sha256": "5eff80f74b98ee071641dcb9424a352e2ab71eca94809641282564eede6c659d",
+      "source_mode": "RGBA",
+      "source_size": [
+        22,
+        22
+      ],
+      "crop": [
+        0,
+        0,
+        22,
+        22
+      ],
+      "source_rgba_sha256": "ea0f080fb78287b077e62c5bdf8293ced4cd12577f36b953d2636f8077657001",
+      "alpha_bounds": [
+        0,
+        0,
+        22,
+        22
+      ]
+    },
+    {
+      "id": "scoped_equipment_book_0002",
+      "game_id": "book_0002",
+      "canonical_id": "3050002",
+      "dev_name": "book_0002",
+      "english_name": "Rohonc Codex",
+      "display_name_zh": "谎言之书",
+      "image_resource_ref": "item/equipment/general/book_0002",
+      "name_evidence": {
+        "title": "谎言之书",
+        "url": "https://wiki.biligame.com/worldflipper/%E8%B0%8E%E8%A8%80%E4%B9%8B%E4%B9%A6",
+        "revision_url": "https://wiki.biligame.com/worldflipper/%E8%B0%8E%E8%A8%80%E4%B9%8B%E4%B9%A6?oldid=10481",
+        "wiki_revision": "10481",
+        "raw_html_sha256": "e794eb2de47a1261e0c046ad86c12b44472aa07c8b201758581f4edd72115a27",
+        "identity_match": "Original equip image/dev identity and maximum HP/ATK match the fixed JP numeric ID and pinned GL equipment metadata. Community localized name, not an invented literal translation."
+      },
+      "semantic_evidence": {
+        "url": "https://worldflipper.wiki.gg/wiki/Rohonc_Codex",
+        "wiki_revision": "1231",
+        "sha256": "6fa9f2c2e66233f5e8203fad921e445ddaceb0d895761ec87dd75bded7aadb40"
+      },
+      "original_ability_row_sha256": [
+        "e7e5ed7970d6b420966a1b7f8941faed6762c7bacb9f98f5ee949df4d95e3551",
+        "d273623479684ebb13786a9cd08fb34a4e54f1ce5e89feb1106218edd7fe808c"
+      ],
+      "availability": "verified_original",
+      "filename": "book_0002.png",
+      "url": "https://worldflipper.wiki.gg/images/Rohonc_Codex.png?62dceb",
+      "redirect_url": "https://worldflipper.wiki.gg/wiki/Special:Redirect/file/Rohonc_Codex.png",
+      "bytes": 347,
+      "sha256": "1e938abd73fee8a2516ee99f2b0251b21665e0ee37f929338a2f37c8659cdd62",
+      "source_mode": "RGBA",
+      "source_size": [
+        15,
+        18
+      ],
+      "crop": [
+        0,
+        0,
+        15,
+        18
+      ],
+      "source_rgba_sha256": "28afd896e41461d13e7dbf7833523635bed0a5abdbd79bc786be1522385696c7",
+      "alpha_bounds": [
+        0,
+        0,
+        15,
+        18
+      ]
+    },
+    {
+      "id": "scoped_equipment_fist_0006",
+      "game_id": "fist_0006",
+      "canonical_id": "3070006",
+      "dev_name": "fist_0006",
+      "english_name": "Moonblade Knuckles",
+      "display_name_zh": "半月拳刃",
+      "image_resource_ref": "item/equipment/general/fist_0006",
+      "name_evidence": {
+        "title": "半月拳刃",
+        "url": "https://wiki.biligame.com/worldflipper/%E5%8D%8A%E6%9C%88%E6%8B%B3%E5%88%83",
+        "revision_url": "https://wiki.biligame.com/worldflipper/%E5%8D%8A%E6%9C%88%E6%8B%B3%E5%88%83?oldid=10487",
+        "wiki_revision": "10487",
+        "raw_html_sha256": "e95ba339aaf5a1f376f0413447e06b89e54f92faff94c0476f413f5ff6456a4e",
+        "identity_match": "Original equip image/dev identity and maximum HP/ATK match the fixed JP numeric ID and pinned GL equipment metadata. Community localized name, not an invented literal translation."
+      },
+      "semantic_evidence": {
+        "url": "https://worldflipper.wiki.gg/wiki/Moonblade_Knuckles",
+        "wiki_revision": "16",
+        "sha256": "8cbba0edd0cbe78494ed9d28631b485114ac7f213d64d0d2bd5d74ff8fa4ca2e"
+      },
+      "original_ability_row_sha256": [
+        "8df4763ca2c1c43dff94d893cca2ebb07eee2dc3707a678a4a301ad2c7cf6609",
+        "6a35b7cdbe3f45da9ffba52c9d40e1b98e06ce627f4fa998656c2304f6bc3234"
+      ],
+      "availability": "verified_original",
+      "source_kind": "authored_atlas_frame",
+      "filename": "item-sprite_sheet.original-png",
+      "url": "https://archive.org/download/gacha-archive/Online/World%20Flipper/air.jp.co.cygames.worldflipper-1.780.0.1780000.zip",
+      "bytes": 363167,
+      "sha256": "fc4ab64dcdbdbbbdac4cdaf331dc8df67355361fb3796797cddfdfbfe42a11ab",
+      "transport": {
+        "kind": "archive_zip_range",
+        "archive_identifier": "gacha-archive",
+        "archive_filename": "Online/World Flipper/air.jp.co.cygames.worldflipper-1.780.0.1780000.zip",
+        "archive_bytes": 6861267373,
+        "archive_sha1_from_uploader_metadata": "5deab495db065f61729b9f6198e5a7e2a4c74eb2",
+        "whole_archive_checksum_verified": false,
+        "zip_entry": "data/data/air.jp.co.cygames.worldflipper/jp.co.cygames.worldflipper/Local Store/asset_download/production/download/production/upload/6d/4d576b424178c5b2b253a2dd5aa3d78fa74ef3",
+        "zip_header_offset": 6396778382,
+        "zip_compression_method": 8,
+        "zip_compressed_bytes": 355396,
+        "zip_crc32": "d15fc26e",
+        "range": [
+          6396778382,
+          6397134801
+        ],
+        "range_sha256": "ae85c023445f2be9a6a7ec812e078b18934e9d118b1b36a8a408f9ac47fb9d84",
+        "source_asset_version": null,
+        "final_jp_byte_identity_verified": false,
+        "logical_path": "item/sprite_sheet.png",
+        "salted_sha1": "6d4d576b424178c5b2b253a2dd5aa3d78fa74ef3"
+      },
+      "atlas_source": {
+        "filename": "item-sprite_sheet.atlas.amf3.deflate",
+        "url": "https://archive.org/download/gacha-archive/Online/World%20Flipper/air.jp.co.cygames.worldflipper-1.780.0.1780000.zip",
+        "bytes": 14059,
+        "sha256": "226341b121ecc92d2d5f6f6850a2c1310b79157b017af3c64adf4ece90067f5c",
+        "transport": {
+          "kind": "archive_zip_range",
+          "archive_identifier": "gacha-archive",
+          "archive_filename": "Online/World Flipper/air.jp.co.cygames.worldflipper-1.780.0.1780000.zip",
+          "archive_bytes": 6861267373,
+          "archive_sha1_from_uploader_metadata": "5deab495db065f61729b9f6198e5a7e2a4c74eb2",
+          "whole_archive_checksum_verified": false,
+          "zip_entry": "data/data/air.jp.co.cygames.worldflipper/jp.co.cygames.worldflipper/Local Store/asset_download/production/download/production/upload/7b/5e0efc0e0691038ca52fe282501dfd3a1b5ae3",
+          "zip_header_offset": 6400043391,
+          "zip_compression_method": 0,
+          "zip_compressed_bytes": 14059,
+          "zip_crc32": "e8b7d1eb",
+          "range": [
+            6400043391,
+            6400058473
+          ],
+          "range_sha256": "a69236d4da696eca8c0574fde7f12288450c5c5394873e3f33e4dabb9363419d",
+          "source_asset_version": null,
+          "final_jp_byte_identity_verified": false,
+          "logical_path": "item/sprite_sheet.atlas.amf3.deflate",
+          "salted_sha1": "7b5e0efc0e0691038ca52fe282501dfd3a1b5ae3"
+        }
+      },
+      "source_mode": "RGBA",
+      "source_size": [
+        20,
+        20
+      ],
+      "crop": [
+        0,
+        0,
+        20,
+        20
+      ],
+      "frame": {
+        "n": "item/equipment/general/fist_0006",
+        "w": 18,
+        "h": 18,
+        "x": 1260,
+        "y": 310,
+        "fx": -1,
+        "fy": -1,
+        "fw": 20,
+        "fh": 20
+      },
+      "atlas_frame_count": 1382,
+      "atlas_image_size": [
+        2032,
+        372
+      ],
+      "atlas_rgba_sha256": "7efccc77bfac5a9b4c898d6615f97bdb9563bece26094e9060ebfa063721e072",
+      "signature_repaired_sha256": "664dea4f5a046609475b04db888520a1e95d0df4f19d96c22ce99ed49a33a448",
+      "signature_repair": {
+        "indices": [
+          1,
+          2,
+          3
+        ],
+        "from": "706e67",
+        "to": "504e47",
+        "source": "https://github.com/PhoenixICE/IcyPhoenix.WorldFlipper.Extractor/blob/fe4784b8454bd1bce2d5e38bd6608bdf22fe857b/IcyPhoenix.WorldFlipper.Extractor/Program.cs",
+        "source_method": "ParsePng; fixed commit source inspected; line number not asserted",
+        "reference_sha256": "3362c2b7187f4d9c5eaaf618982e53c27edb587baad1b99b101b4dd038ce6c54"
+      },
+      "source_rgba_sha256": "fbace1544166ada21a832e3b338a6ed65048660433bc8e65e7d354c82de80e81",
+      "alpha_bounds": [
+        1,
+        1,
+        19,
+        19
+      ],
+      "cache_metadata_declared_version": "1.780.30",
+      "source_object_final_jp_byte_identity_verified": false,
+      "cache_metadata_source": {
+        "filename": "asset-cache-production-info.json",
+        "url": "https://archive.org/download/gacha-archive/Online/World%20Flipper/air.jp.co.cygames.worldflipper-1.780.0.1780000.zip",
+        "bytes": 226,
+        "sha256": "96991a8f2ff0531b0b8b50fd564c0245721493c85cb2cf3605e6a5830a1861fb",
+        "evidence_scope": "Same-archive production cache metadata declaration only; not each asset object version.",
+        "transport": {
+          "kind": "archive_zip_range",
+          "archive_identifier": "gacha-archive",
+          "archive_filename": "Online/World Flipper/air.jp.co.cygames.worldflipper-1.780.0.1780000.zip",
+          "archive_bytes": 6861267373,
+          "archive_sha1_from_uploader_metadata": "5deab495db065f61729b9f6198e5a7e2a4c74eb2",
+          "whole_archive_checksum_verified": false,
+          "zip_entry": "data/data/air.jp.co.cygames.worldflipper/jp.co.cygames.worldflipper/Local Store/asset_download/production/info.json",
+          "zip_header_offset": 6818337402,
+          "zip_compression_method": 8,
+          "zip_compressed_bytes": 189,
+          "zip_crc32": "bdb5b23f",
+          "range": [
+            6818337402,
+            6818338614
+          ],
+          "range_sha256": "e56b0fe5d16baaebc2d35de827528e7bed65425d419148657265af39be0c5104",
+          "source_asset_version": null,
+          "final_jp_byte_identity_verified": false
+        }
+      }
+    },
+    {
+      "id": "scoped_equipment_staff_0001",
+      "game_id": "staff_0001",
+      "canonical_id": "1060001",
+      "dev_name": "staff_0001",
+      "english_name": "Old Staff",
+      "display_name_zh": "老旧法杖",
+      "image_resource_ref": "item/equipment/general/staff_0001",
+      "name_evidence": {
+        "title": "老旧法杖",
+        "url": "https://wiki.biligame.com/worldflipper/%E8%80%81%E6%97%A7%E6%B3%95%E6%9D%96",
+        "revision_url": "https://wiki.biligame.com/worldflipper/%E8%80%81%E6%97%A7%E6%B3%95%E6%9D%96?oldid=10503",
+        "wiki_revision": "10503",
+        "raw_html_sha256": "448c18469b39aea546399f7acfe9c2dc5bcd1cb116a35cc5c57c1b3a27a5bc39",
+        "identity_match": "Original equip image/dev identity and maximum HP/ATK match the fixed JP numeric ID and pinned GL equipment metadata. Community localized name, not an invented literal translation."
+      },
+      "semantic_evidence": {
+        "url": "https://worldflipper.wiki.gg/wiki/Old_Staff",
+        "wiki_revision": "5180",
+        "sha256": "58d622788b2660ff682fa8b41f52296a2fdf17c4eec80438366637e7702ab718"
+      },
+      "original_ability_row_sha256": [
+        "b9e27806c7cabacb487f791b47371ecdd8bcffe46b264af10157082ea86a443d"
+      ],
+      "availability": "verified_original",
+      "filename": "staff_0001.png",
+      "url": "https://worldflipper.wiki.gg/images/Old_Staff.png?c6b13a",
+      "redirect_url": "https://worldflipper.wiki.gg/wiki/Special:Redirect/file/Old_Staff.png",
+      "bytes": 188,
+      "sha256": "09c6d3e36ca50e3448601398c5739ea337bf12f8a4dcc9ac2862c944f72a77e2",
+      "source_mode": "P",
+      "source_size": [
+        18,
+        18
+      ],
+      "crop": [
+        0,
+        0,
+        18,
+        18
+      ],
+      "source_rgba_sha256": "5bf141488c370d7ed1ed70a3afe0dcc9071d4081aa3919ca13ae56cd5d8de0f9",
+      "alpha_bounds": [
+        0,
+        0,
+        18,
+        18
+      ]
+    }
+  ]
+}

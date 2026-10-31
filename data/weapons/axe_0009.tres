@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="ContentDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/content_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "axe_0009"
+kind = "weapon"
+display_name = "雷神之锤"
+icon = "axe_0009"
+source_id = "5020009"
+element = "thunder"
+subtitle = "雷霆重锤 · 破防追击"
+description = "投出缓慢的雷霆重锤。Ⅰ阶首领破防时，对首领造成的伤害增加15%。"
+color = Color(0.95, 0.81, 0.32, 1)
+price = 32
+damage = 38.0
+cooldown = 1.3
+projectile_speed = 260.0
+projectile_radius = 9.0
+range = 590.0
+inventory_size = Vector2i(2, 2)
+equipment_effects = Array[Dictionary]([{"kind": "break_damage", "amount": 0.15}])

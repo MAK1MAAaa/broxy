@@ -36,8 +36,8 @@ func _run_tests() -> void:
 func _test_combat_geometry(ui: GameUI, state: RunState) -> void:
 	ui.show_hud()
 	var snapshot: Dictionary = _snapshot(state)
-	snapshot["boss_health"] = 150.0
-	snapshot["boss_max_health"] = 300.0
+	snapshot["boss_encounter"] = {"active": true, "health": 150.0, "max_health": 300.0,
+		"display_name": GameCatalog.enemy("boss").display_name, "phase": "recovery"}
 	ui.update_hud(snapshot)
 	await _settle()
 	var hud: Dictionary = ui.get("_hud")
@@ -48,7 +48,7 @@ func _test_combat_geometry(ui: GameUI, state: RunState) -> void:
 	var status_before: Rect2 = status.get_global_rect()
 	var equipment_before: Rect2 = equipment.get_global_rect()
 	var occupied_before: Dictionary = {}
-	for key: String in ["health", "health_bar", "wave", "time", "gold", "level", "xp_bar", "slots"]:
+	for key: String in ["health", "health_bar", "time", "gold", "level", "xp_bar", "slots"]:
 		occupied_before[key] = hud[key].get_global_rect()
 	var focused_before: Control = root.gui_get_focus_owner()
 	var reachable_art: Rect2 = _reachable_player_art_bounds()
@@ -65,14 +65,16 @@ func _test_combat_geometry(ui: GameUI, state: RunState) -> void:
 	var boss: Control = hud["boss"]
 	var boss_bar: ProgressBar = hud["boss_bar"]
 	_check(boss.visible and boss_bar.value == 150.0 and boss_bar.max_value == 300.0, "The clean combat HUD retains an accurate visible Boss health bar")
+	_check(boss is BossHUD and boss.get_global_rect().end.y < 160.0 and boss.get_global_rect().get_center().x == 640.0, "Boss health occupies its own centered upper region")
 	_check(_viewport_contains(boss.get_global_rect()) and not boss.get_global_rect().intersects(reachable_art), "The full Boss status clears the reachable player drawing bounds")
 	for key: String in occupied_before:
 		var control: Control = hud[key]
 		var painted: Rect2 = _label_text_bounds(control) if control is Label else control.get_global_rect()
 		_check(painted.has_area() and not boss.get_global_rect().intersects(painted), "Boss status preserves the painted HUD field: " + key)
-	for node: Node in boss.get_children():
-		if node is Label:
-			_check(_label_text_bounds(node).has_area() and _rect_contains(boss.get_global_rect(), _label_text_bounds(node)), "Boss name fits completely inside its status region")
+	for node_name: String in ["BossHealthValue", "BossPhase", "BossSkillName", "BossCharge", "BossBreak"]:
+		_check(boss.find_child(node_name, true, false) == null, "Boss health has no persistent number, phase or cast widget: " + node_name)
+	var boss_name := boss.find_child("BossArrivalName", true, false) as Label
+	_check(boss_name != null and not boss_name.visible, "An ordinary snapshot cannot repeat the arrival name")
 	_check(_rect_contains(boss.get_global_rect(), boss_bar.get_global_rect()) and boss_bar.size.y >= 6.0, "The complete Boss health meter fits inside its status region")
 	_check(notice.mouse_filter == Control.MOUSE_FILTER_IGNORE and notice.focus_mode == Control.FOCUS_NONE, "The hidden notification control never intercepts pointer or keyboard input")
 	var probe := MovementKeyProbe.new()
@@ -88,7 +90,7 @@ func _test_combat_geometry(ui: GameUI, state: RunState) -> void:
 	movement.pressed = false
 	root.push_input(movement)
 	probe.queue_free()
-	snapshot["boss_health"] = 0.0
+	snapshot["boss_encounter"]["health"] = 0.0
 	ui.update_hud(snapshot)
 	_check(not boss.visible and not notice.visible and notice.text.is_empty(), "Defeating the Boss hides only its own status and never reveals a notification")
 
@@ -101,7 +103,7 @@ func _test_lifetime_and_transitions(ui: GameUI, state: RunState) -> void:
 	ui.notify("购买失败：魂屑不足。")
 	_check(notice.visible and notice.text == "购买失败：魂屑不足。", "The shop still displays an actionable transaction failure")
 	_check(timer.one_shot and is_equal_approx(timer.wait_time, 2.8) and timer.time_left > 2.7, "Shop notifications keep their one-shot 2.8-second lifetime")
-	_check(notice.get_theme_font_size("font_size") == 16 and notice.get_global_rect().size.x == 860, "Shop feedback retains its established full-size presentation")
+	_check(notice.get_theme_font_size("font_size") == 12 and notice.get_global_rect().size.x == 860, "Shop feedback uses the native pixel font size within its established width")
 	_check(notice.mouse_filter == Control.MOUSE_FILTER_IGNORE and notice.focus_mode == Control.FOCUS_NONE, "Shop feedback remains noninteractive")
 	await create_timer(0.18).timeout
 	ui.show_pause()
@@ -159,10 +161,12 @@ func _snapshot(state: RunState) -> Dictionary:
 
 
 func _reachable_player_art_bounds() -> Rect2:
-	# CombatSim clamps the body center with a 16 px inset. The rendered texture
-	# extends 50 px above that center; checking ARENA alone misses the masked face.
-	var centers: Rect2 = Rect2(CombatSim.clamp_point(Vector2(-10000, -10000), 16.0), Vector2.ZERO)
-	centers.end = CombatSim.clamp_point(Vector2(10000, 10000), 16.0)
+	# Axis-clamped camera projection is bounded by its four reachable corners.
+	var first: Vector2 = CombatSim.clamp_point(CombatSim.ARENA.position, 16.0)
+	var last: Vector2 = CombatSim.clamp_point(CombatSim.ARENA.end, 16.0)
+	var centers := Rect2(first - ArenaCatalog.visible_rect(first).position, Vector2.ZERO)
+	for point: Vector2 in [first, Vector2(last.x, first.y), last, Vector2(first.x, last.y)]:
+		centers = centers.expand(point - ArenaCatalog.visible_rect(point).position)
 	# Conservative continuous envelope for CombatWorld._draw_player: texture
 	# x +/-34, y -50..18; bob +/-2, lean +/-0.045, world shake +/-4.
 	var body_x: float = 34.0 + 52.0 * sin(0.045)

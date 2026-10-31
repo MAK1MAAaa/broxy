@@ -1,0 +1,671 @@
+{
+  "schema_version": 1,
+  "art_revision": "starfall-01",
+  "sprite_material_revision": "upper-left-light-02",
+  "purpose": "Reskin of the existing Embers of the Occult game",
+  "generator": "python tools/generate_starfall_art.py",
+  "filter": "nearest for art; existing antialiased UI font",
+  "legacy_manifest": "assets/manifest.json",
+  "assets": [
+    {
+      "path": "assets/starfall/sprites/player.svg",
+      "size": [
+        96,
+        96
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "original pixel sprite; existing beaked ivory mask, violet pointed hood, teal cape and gold ritual chain; centered canvas; decorative silhouette",
+      "source": "tools/starfall_sprites.py",
+      "license": "CC0-1.0",
+      "sha256": "80497b724a6f9d6e93ab18d4c91a96254d1e83b236682e7d139864fe4e7c7fbf"
+    },
+    {
+      "path": "assets/starfall/sprites/chaser.svg",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "original pixel sprite; existing tattered ghost; ivory hollow face; teal shroud and separated rag strips; centered canvas; decorative silhouette",
+      "source": "tools/starfall_sprites.py",
+      "license": "CC0-1.0",
+      "sha256": "ba224a94d3d129600b5bfed46a3193924bef2f9a9714761598d39b691f6b3e71"
+    },
+    {
+      "path": "assets/starfall/sprites/rusher.svg",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "original pixel sprite; existing low violet beast; angular bone mask and paired pale claws; centered canvas; decorative silhouette",
+      "source": "tools/starfall_sprites.py",
+      "license": "CC0-1.0",
+      "sha256": "91fedad5c2dc0217621c4570572b2276aec4f50d5a6f9e943b56201d3e5eab4a"
+    },
+    {
+      "path": "assets/starfall/sprites/tank.svg",
+      "size": [
+        80,
+        80
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "original pixel sprite; broad blue stone guardian; inset teal shield and gold star core; centered canvas; decorative silhouette",
+      "source": "tools/starfall_sprites.py",
+      "license": "CC0-1.0",
+      "sha256": "25a733fd6d50ae6796af908ba3e6750eea69fedeadcc4f4559aa74e5dd95bc60"
+    },
+    {
+      "path": "assets/starfall/sprites/caster.svg",
+      "size": [
+        72,
+        72
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "original pixel sprite; existing violet ritual mage; hooded eyes; separate carved skull staff; centered canvas; decorative silhouette",
+      "source": "tools/starfall_sprites.py",
+      "license": "CC0-1.0",
+      "sha256": "37ec2e89c22b4d3125f7cdff90ac8b36eae75a5e0a921c255bd8a51643fd5068"
+    },
+    {
+      "path": "assets/starfall/sprites/boss.svg",
+      "size": [
+        160,
+        160
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "original pixel sprite; existing floating-crown priest; ivory idol face and detached hands; teal ceremonial robe; centered canvas; decorative silhouette",
+      "source": "tools/starfall_sprites.py",
+      "license": "CC0-1.0",
+      "sha256": "f8bcaabf6229e55ee92d3f9f52833c78bf00743040cd113fe9501b1d70754cec"
+    },
+    {
+      "path": "assets/starfall/arena.svg",
+      "size": [
+        1280,
+        720
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "pixel reskin of existing reliquary arena; exact walkable terrain; decorative rim",
+      "source": "tools/starfall_environment.py",
+      "license": "CC0-1.0",
+      "sha256": "8933853ab7dc1a011e7faab9a7d8e5825ba9a6c93b87aa2b48cdf1622d56006f"
+    },
+    {
+      "path": "assets/starfall/maps/mire.svg",
+      "size": [
+        1280,
+        720
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "pixel reskin of existing mire arena; exact walkable terrain; decorative rim",
+      "source": "tools/starfall_environment.py",
+      "license": "CC0-1.0",
+      "sha256": "4ada975d075e22b44e2bc3f85209b120ed6363f321987a98dcf99cdfc2fce973"
+    },
+    {
+      "path": "assets/starfall/maps/glacier.svg",
+      "size": [
+        1280,
+        720
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "pixel reskin of existing glacier arena; exact walkable terrain; decorative rim",
+      "source": "tools/starfall_environment.py",
+      "license": "CC0-1.0",
+      "sha256": "fb273d2ad3e999e85fdc4960b49a4bdc0b2b3140750c015d03fbd39c85c0b1e1"
+    },
+    {
+      "path": "assets/starfall/maps/ashland.svg",
+      "size": [
+        1280,
+        720
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "pixel reskin of existing ashland arena; exact walkable terrain; decorative rim",
+      "source": "tools/starfall_environment.py",
+      "license": "CC0-1.0",
+      "sha256": "c53bcbef0cb6b2bc5ab24674fdb6073e90f8b5554d048dc2b1f1fbb42ac801bb"
+    },
+    {
+      "path": "assets/starfall/icons/bone.svg",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "original pixel bone icon; transparent; 32px grid; navy outline; readable at 24–48px",
+      "source": "tools/starfall_icons.py",
+      "license": "CC0-1.0",
+      "sha256": "09183eddc3c5ad78c5895c9412bb37210e9bb107158ee9f2662436f7e82896c0"
+    },
+    {
+      "path": "assets/starfall/icons/frost.svg",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "original pixel frost icon; transparent; 32px grid; navy outline; readable at 24–48px",
+      "source": "tools/starfall_icons.py",
+      "license": "CC0-1.0",
+      "sha256": "18726c0db712e664461bf2f6c456a8350221bf0b9574466fcb10a1cef2ee9198"
+    },
+    {
+      "path": "assets/starfall/icons/ember.svg",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "original pixel ember icon; transparent; 32px grid; navy outline; readable at 24–48px",
+      "source": "tools/starfall_icons.py",
+      "license": "CC0-1.0",
+      "sha256": "ad145818f07d23696c57928024ab02763f00a7d75ba8d27a5e16996b6e10b447"
+    },
+    {
+      "path": "assets/starfall/icons/scatter.svg",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "original pixel scatter icon; transparent; 32px grid; navy outline; readable at 24–48px",
+      "source": "tools/starfall_icons.py",
+      "license": "CC0-1.0",
+      "sha256": "2913ddebfee6ce9daf8579e5c764309e0830ece0b6410dfa55f86af29df20cbf"
+    },
+    {
+      "path": "assets/starfall/icons/crescent.svg",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "original pixel crescent icon; transparent; 32px grid; navy outline; readable at 24–48px",
+      "source": "tools/starfall_icons.py",
+      "license": "CC0-1.0",
+      "sha256": "499705af9f6749b63bb421ccfeba858fcdb2a9d9d2f8483dc1adf40dddb075d4"
+    },
+    {
+      "path": "assets/starfall/icons/storm.svg",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "original pixel storm icon; transparent; 32px grid; navy outline; readable at 24–48px",
+      "source": "tools/starfall_icons.py",
+      "license": "CC0-1.0",
+      "sha256": "1fbcf3dfb20ee223d0f087da4728c45ac8c0d9dd14987dac40586b03ffa000d2"
+    },
+    {
+      "path": "assets/starfall/icons/comet.svg",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "original pixel comet icon; transparent; 32px grid; navy outline; readable at 24–48px",
+      "source": "tools/starfall_icons.py",
+      "license": "CC0-1.0",
+      "sha256": "3bd559bc19f6df01b0b5a0d56c62156f7b0d440390a5aab12ba07c4d803a9d7c"
+    },
+    {
+      "path": "assets/starfall/icons/pierce.svg",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "original pixel pierce icon; transparent; 32px grid; navy outline; readable at 24–48px",
+      "source": "tools/starfall_icons.py",
+      "license": "CC0-1.0",
+      "sha256": "28b661aa24d734acfa51b501088d35a99f4a58bef3d96d8ede2e3353c188817b"
+    },
+    {
+      "path": "assets/starfall/icons/bounce.svg",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "original pixel bounce icon; transparent; 32px grid; navy outline; readable at 24–48px",
+      "source": "tools/starfall_icons.py",
+      "license": "CC0-1.0",
+      "sha256": "4f0ecfe9e10f57d22f4e074f7392e496b610175b85275da865d3625d00443039"
+    },
+    {
+      "path": "assets/starfall/icons/blast.svg",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "original pixel blast icon; transparent; 32px grid; navy outline; readable at 24–48px",
+      "source": "tools/starfall_icons.py",
+      "license": "CC0-1.0",
+      "sha256": "9bf45ba0e85406defd00c5db4b40c5c85074e89f854b001e341ff10086dc00fe"
+    },
+    {
+      "path": "assets/starfall/icons/damage.svg",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "original pixel damage icon; transparent; 32px grid; navy outline; readable at 24–48px",
+      "source": "tools/starfall_icons.py",
+      "license": "CC0-1.0",
+      "sha256": "2b5380d0b0cbb48df8fbc73357c7311f2ba5e71859175c1f6736c92801959178"
+    },
+    {
+      "path": "assets/starfall/icons/haste.svg",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "original pixel haste icon; transparent; 32px grid; navy outline; readable at 24–48px",
+      "source": "tools/starfall_icons.py",
+      "license": "CC0-1.0",
+      "sha256": "45ca1872e94c04ba1823e6646da9968892aa5cfdebe2fa94b2a5d69cc284d9e7"
+    },
+    {
+      "path": "assets/starfall/icons/speed.svg",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "original pixel speed icon; transparent; 32px grid; navy outline; readable at 24–48px",
+      "source": "tools/starfall_icons.py",
+      "license": "CC0-1.0",
+      "sha256": "35a039cc9099cd697b242ca782baaa595526a830a64fd1c8de2cfe127f581d35"
+    },
+    {
+      "path": "assets/starfall/icons/vitality.svg",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "original pixel vitality icon; transparent; 32px grid; navy outline; readable at 24–48px",
+      "source": "tools/starfall_icons.py",
+      "license": "CC0-1.0",
+      "sha256": "207702974d7723dc51edbae335e3e981d38ac6106b3fd29e6f662a419c1ff9b8"
+    },
+    {
+      "path": "assets/starfall/icons/armor.svg",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "original pixel armor icon; transparent; 32px grid; navy outline; readable at 24–48px",
+      "source": "tools/starfall_icons.py",
+      "license": "CC0-1.0",
+      "sha256": "451f585980f164245a79db550239d53589c8da8f5f750cbdccce651e99ea5543"
+    },
+    {
+      "path": "assets/starfall/icons/magnet.svg",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "original pixel magnet icon; transparent; 32px grid; navy outline; readable at 24–48px",
+      "source": "tools/starfall_icons.py",
+      "license": "CC0-1.0",
+      "sha256": "1ad8ee7af327cd39120c2e96c32e58c6991ac86ab5728d345318e282843b03fb"
+    },
+    {
+      "path": "assets/starfall/icons/moon_charm.svg",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "original pixel moon_charm icon; transparent; 32px grid; navy outline; readable at 24–48px",
+      "source": "tools/starfall_icons.py",
+      "license": "CC0-1.0",
+      "sha256": "debeb185a3d4b86f97fa479dad39a5d6410e3d5623405476b3c508760f924fca"
+    },
+    {
+      "path": "assets/starfall/icons/pilgrim.svg",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "original pixel pilgrim icon; transparent; 32px grid; navy outline; readable at 24–48px",
+      "source": "tools/starfall_icons.py",
+      "license": "CC0-1.0",
+      "sha256": "251ca235cf4139ae2ca7186805fe78a184364f8e24d556d59d2628d41c952e63"
+    },
+    {
+      "path": "assets/starfall/icons/bulwark.svg",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "original pixel bulwark icon; transparent; 32px grid; navy outline; readable at 24–48px",
+      "source": "tools/starfall_icons.py",
+      "license": "CC0-1.0",
+      "sha256": "8ce773b2183525516e37d4afa7b23a128fcebb96a26af1e16c84f5a6f1f9cab3"
+    },
+    {
+      "path": "assets/starfall/icons/hourglass.svg",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "original pixel hourglass icon; transparent; 32px grid; navy outline; readable at 24–48px",
+      "source": "tools/starfall_icons.py",
+      "license": "CC0-1.0",
+      "sha256": "944e23e697847ebc8ef72acbbacf48e9944bd63b291c6faeac7c8c6ac0990ebd"
+    },
+    {
+      "path": "assets/starfall/icons/soul.svg",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "original pixel soul icon; transparent; 32px grid; navy outline; readable at 24–48px",
+      "source": "tools/starfall_icons.py",
+      "license": "CC0-1.0",
+      "sha256": "3b48cde2ca2fe1d7104cb8a2604f9910f7cdf3ebae1043078a34c1b3dd712ceb"
+    },
+    {
+      "path": "assets/starfall/icons/return_ring.svg",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "original pixel return_ring icon; transparent; 32px grid; navy outline; readable at 24–48px",
+      "source": "tools/starfall_icons.py",
+      "license": "CC0-1.0",
+      "sha256": "25b0019f166b8b4191c56627d8e6f896e3a6d194583a9d5a50a7919bc3bc0944"
+    },
+    {
+      "path": "assets/starfall/icons/blood_pact.svg",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "original pixel blood_pact icon; transparent; 32px grid; navy outline; readable at 24–48px",
+      "source": "tools/starfall_icons.py",
+      "license": "CC0-1.0",
+      "sha256": "dd1d09a76b5be034ac455138ed2d1c91f7ce1dacc676ebbbcbb9dd748d6a97dd"
+    },
+    {
+      "path": "assets/starfall/icons/grave_candle.svg",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "original pixel grave_candle icon; transparent; 32px grid; navy outline; readable at 24–48px",
+      "source": "tools/starfall_icons.py",
+      "license": "CC0-1.0",
+      "sha256": "8611fb5458523ce3edc75f9c905059aadb3b01af10d9aa0672dd97896491069e"
+    },
+    {
+      "path": "assets/starfall/icons/fold_clasp.svg",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "original pixel fold_clasp icon; transparent; 32px grid; navy outline; readable at 24–48px",
+      "source": "tools/starfall_icons.py",
+      "license": "CC0-1.0",
+      "sha256": "b885f0fee1b8aa1a061bd31e1125fd16c1522402ab16483f60ccb16f48bd5282"
+    },
+    {
+      "path": "assets/starfall/icons/echo_stone.svg",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "original pixel echo_stone icon; transparent; 32px grid; navy outline; readable at 24–48px",
+      "source": "tools/starfall_icons.py",
+      "license": "CC0-1.0",
+      "sha256": "9b39ae65cbfa041c81d3586e35c6adf1352ad64cd110faa9a1e388112ef6b95d"
+    },
+    {
+      "path": "assets/starfall/fx/glow.svg",
+      "size": [
+        96,
+        96
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "low-opacity stepped white light; runtime tint; decoration only",
+      "source": "tools/starfall_icons.py",
+      "license": "CC0-1.0",
+      "sha256": "d5d6c8c175f1326671e6210052d8a3098de63aa701f3fe72d4b3ffb293974b55"
+    },
+    {
+      "path": "assets/starfall/fx/seal.svg",
+      "size": [
+        96,
+        96
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "stepped star-compass ground seal; transparent; decorative, no collision",
+      "source": "tools/starfall_icons.py",
+      "license": "CC0-1.0",
+      "sha256": "ffb2d32c8e3b6a40b2d86215f4db69ad2f9d4d8e452b53e1d2b9b2e44ca41681"
+    },
+    {
+      "path": "assets/starfall/fx/projectile_heads.svg",
+      "size": [
+        512,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "eight pixel projectile heads; established source ordering; 64px cells; hollow return-ring center",
+      "source": "tools/starfall_icons.py",
+      "license": "CC0-1.0",
+      "sha256": "85b806b9037159c4e3d0baba3d0e164d16a069ce90b74c2b8994af1d38f1fa17"
+    },
+    {
+      "path": "assets/starfall/icon.svg",
+      "size": [
+        256,
+        256
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "pixel reinterpretation of the existing eclipse and ritual-flame application emblem; navy field",
+      "source": "tools/starfall_icons.py",
+      "license": "CC0-1.0",
+      "sha256": "62ecc622a41a9a4c755ed8b2b8c7b10efcc7cf5f9e878acf52f6c9c3b4fc4ec2"
+    },
+    {
+      "path": "assets/starfall/icons/skill_pulse.svg",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "Hand-drawn pixel skill book: pulse",
+      "source": "assets/starfall/PROVENANCE.md",
+      "license": "CC0-1.0",
+      "sha256": "748f83c7502fb4447db0c3074c1c9c83c8e48103641bb912af9c3f736885f20c"
+    },
+    {
+      "path": "assets/starfall/icons/skill_starfall.svg",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "Hand-drawn pixel skill book: starfall",
+      "source": "assets/starfall/PROVENANCE.md",
+      "license": "CC0-1.0",
+      "sha256": "234506b3e122c2e61652a85a34adf1136e9d9dbe91dff6b4887da29d0883be5b"
+    },
+    {
+      "path": "assets/starfall/icons/skill_arc_slash.svg",
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "Hand-drawn pixel skill book: arc_slash",
+      "source": "assets/starfall/PROVENANCE.md",
+      "license": "CC0-1.0",
+      "sha256": "cc0aa1d41e99732a41174a1abc38b42fe9589a7d4375c7385b9bf1f078ebfe6b"
+    },
+    {
+      "path": "assets/starfall/menu_art.png",
+      "size": [
+        1182,
+        1330
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "role": "Existing masked caster and ritual courtyard menu illustration",
+      "source": "image-generation.json",
+      "license": "Project generated artwork; see PROVENANCE.md",
+      "sha256": "785c94ce22e3c672360da4f5a69c2bee67215b598121c00b09bd1ba0e5671129"
+    }
+  ]
+}

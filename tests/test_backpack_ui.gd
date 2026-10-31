@@ -298,7 +298,8 @@ func _test_stale_actions_and_layout() -> void:
 	_ui.show_hud()
 	_ui.update_hud({"loadout": state.loadout, "health": state.health, "max_health": state.stat("max_health")})
 	await _settle()
-	_check(_ui.find_child("AdditionalWeapons", true, false) != null and _ui.find_child("AdditionalWeapons", true, false).text.contains("另2件") and state.loadout.size() == 10, "HUD retains the extra-weapons indicator for all ten active weapons without a lower-right description")
+	var additional := _ui.find_child("AdditionalWeapons", true, false) as Label
+	_check(additional != null and additional.text == "+2" and additional.tooltip_text.contains(GameCatalog.weapon("bone").display_name) and state.loadout.size() == 10, "The compact HUD retains an exact extra-weapons count and full weapon identity in its tooltip for all ten active weapons")
 	_ui.show_result(false, "背包排版固定验证", {})
 	await _settle()
 	_check(_ui.find_child("ResultBuildScroll", true, false) != null and _enclosed(_ui.find_child("ResultBuildScroll", true, false)), "Long ranked builds remain in a bounded result scroll area")

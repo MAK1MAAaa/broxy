@@ -17,7 +17,22 @@ try {
         'rogue_state', 'rogue_combat', 'rogue_ui', 'rogue_progress',
         'resonance_rules', 'resonance_combat', 'resonance_grid', 'resonance_ui',
         'rogue_resonance_state', 'rogue_resonance_combat', 'rogue_resonance_ui',
-        'arena_rules', 'arena_flow', 'concise_ui'
+        'arena_rules', 'arena_flow', 'concise_ui',
+        'dash_rules', 'dash_world', 'dash_flow', 'dash_ui',
+        'dash_evasion', 'dash_evasion_world', 'dash_evasion_audio',
+        'pulse_rules', 'pulse_world', 'pulse_flow', 'pulse_ui',
+        'skill_relics', 'skill_relic_combat', 'skill_relic_ui',
+        'control_bindings', 'controls_flow', 'controls_ui', 'gamepad_backpack',
+        'input_devices', 'input_prompts_ui', 'input_prompts_flow', 'analog_dash', 'gamepad_reading', 'backpack_focus',
+        'skill_audio', 'skill_feedback', 'adventure_art', 'title_cover',
+        'active_skill_inventory', 'active_skill_combat', 'active_skill_world',
+        'expanded_arena', 'expanded_world', 'minimap_ui', 'grounding_painter', 'art_grounding', 'shop_workbench', 'pixel_typography', 'world_flipper_art',
+        'obstacles', 'content_identity', 'hero_party', 'hero_party_ui', 'hero_skill_combat', 'hero_skill_flow',
+        'arena_interactions', 'pinball_combat', 'pinball_world', 'render_frame_coalescing', 'cosmetic_culling',
+        'boss_encounter', 'boss_combat', 'boss_hud', 'boss_intro', 'hud_reflow', 'boss_world',
+        'danger_painter', 'boss_art_painter', 'skill_art_polish',
+        'hero_skill_effects', 'hero_effect_painter', 'weapon_effects', 'wf_expansion_ui', 'skill_timeline', 'terrain_walls', 'original_stages', 'roster_skills',
+        'equipment_scopes', 'equipment_casts', 'equipment_ui', 'world_map_library', 'wall_navigation_cache', 'terrain_wall_queries', 'dash_benchmark_launcher'
     )
     foreach ($suite in $suites) {
         & $runner --headless --script "res://tests/test_$suite.gd"

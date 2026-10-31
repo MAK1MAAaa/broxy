@@ -5,10 +5,12 @@ const CAPACITY: int = 32
 const LIFE: float = 0.12
 const MERGE_WINDOW: float = 0.05
 const STAGES: int = 3
+const DRAW_COMMAND_BUDGET: int = 24
 const KINDS: Dictionary = {"bone": 0, "frost": 1, "ember": 2, "scatter": 3,
 	"crescent": 0, "storm": 1, "comet": 3, "return_ring": 0}
-const COLORS: Array[Color] = [Color("decfad"), Color("9ec5dc"), Color("dec08b"), Color("bca4cf")]
-const ALPHAS: Array[float] = [0.80, 0.52, 0.26]
+const COLORS: Array[Color] = [Color("fff3c4"), Color("d5f9ff"), Color("ffe69b"), Color("e9ddff")]
+const ALPHAS: Array[float] = [0.98, 0.64, 0.30]
+const OUTLINE: Color = Color("203b62")
 
 class ImpactMark:
 	var origin: Vector2 = Vector2.ZERO
@@ -22,6 +24,8 @@ class LineBatch:
 	var points: PackedVector2Array = PackedVector2Array()
 	var color: Color = Color.WHITE
 	var width: float = 1.5
+	var outline_color: Color = OUTLINE
+	var outline_width: float = 3.5
 
 var peak_active: int = 0
 var _pool: Array[ImpactMark] = []
@@ -48,6 +52,7 @@ func _init() -> void:
 		for stage: int in STAGES:
 			var batch := LineBatch.new()
 			batch.color = Color(COLORS[kind], ALPHAS[stage])
+			batch.outline_color = Color(OUTLINE, ALPHAS[stage])
 			_batches.append(batch)
 	clear()
 
@@ -109,14 +114,16 @@ func rebuild(enabled: bool = true) -> void:
 	for mark: ImpactMark in _marks:
 		var stage: int = mini(STAGES - 1, int(mark.age / LIFE * STAGES))
 		var batch: LineBatch = _batches[mark.kind * STAGES + stage]
+		var scale: float = lerpf(0.92, 1.34, mark.age / 0.04) if mark.age < 0.04 else lerpf(1.34, 0.68, (mark.age - 0.04) / (LIFE - 0.04))
 		for offset: Vector2 in _shapes[mark.kind]:
-			batch.points.append(mark.origin + offset)
+			batch.points.append(mark.origin + offset * scale)
 
 
 func draw(canvas: CanvasItem) -> void:
-	# At most one draw per weapon/fade stage; all geometry was prepared by rebuild.
+	# Four families and three fade stages, each with one outline and one bright core.
 	for batch: LineBatch in _batches:
 		if not batch.points.is_empty():
+			canvas.draw_multiline(batch.points, batch.outline_color, batch.outline_width, true)
 			canvas.draw_multiline(batch.points, batch.color, batch.width, true)
 
 
@@ -128,7 +135,7 @@ func get_stats() -> Dictionary:
 	var commands: int = 0
 	for batch: LineBatch in _batches:
 		if not batch.points.is_empty():
-			commands += 1
+			commands += 2
 	return {"capacity": CAPACITY, "active_marks": _marks.size(), "free_marks": _free.size(),
 		"allocated_marks": _pool.size(), "draw_commands": commands, "peak_active": peak_active}
 

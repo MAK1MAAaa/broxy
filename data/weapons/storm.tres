@@ -6,9 +6,10 @@
 script = ExtResource("1")
 id = "storm"
 kind = "weapon"
-display_name = "雷灯"
+source_id = "4050031"
+display_name = "光芒龙典"
 subtitle = "雷霆法器 · 密集双发"
-description = "同时射出两道高速雷束，窄角集火近处目标。搭配弹射可将双束雷光导向敌群。"
+description = "同时射出两道高速光束，窄角集火近处目标。搭配弹射可将双束光芒导向敌群。"
 icon = "storm"
 color = Color(0.72, 0.9, 0.88, 1)
 price = 28

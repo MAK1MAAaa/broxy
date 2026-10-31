@@ -53,6 +53,34 @@ def _grave_candle() -> str:
     return body
 
 
+def _fold_clasp() -> str:
+    body = path("M16 7 L47 12 51 53 18 58 11 47Z", "url(#robe)", "#080c16", 2)
+    body += path("M17 10 L24 14 22 53 18 55 14 46Z M43 15 L47 17 49 50 43 52Z", "#182130", "#596477", 1)
+    body += path("M13 20 L29 15 35 22 27 32 30 39 16 45 10 36Z", "url(#steel)", "#0d1522", 1.8)
+    body += path("M51 19 L35 24 29 33 37 42 48 46 55 35Z", "url(#bone)", "#18212b", 1.8)
+    body += path("M16 23 L27 19 30 22 22 32 25 37 17 40 14 35Z", "#263346", "#aebdbd", 1)
+    body += path("M47 24 L37 27 34 32 40 38 47 41 51 34Z", "#3a4a53", "#cbd6c7", 1)
+    body += path("M30 19 L35 23 28 33 35 40 31 45", "none", "#e7c88f", 2)
+    body += path("M20 10 L25 11 M38 13 L43 14 M22 52 L27 53 M37 51 L43 50", "none", "#c2a276", 1.2)
+    body += circle(17, 26, 1.5, "#e6c58d") + circle(46, 35, 1.5, "#e6c58d")
+    return body
+
+
+def _echo_stone() -> str:
+    body = path("M28 4 L36 4 40 12 37 17H27 L24 12Z M27 48H37 L41 56 36 60H28 L23 56Z", "url(#gold)", "#15202a", 1.5)
+    body += path("M20 11 C5 18 5 46 20 53 M44 11 C59 18 59 46 44 53", "none", "#15202a", 7)
+    body += path("M20 11 C5 18 5 46 20 53 M44 11 C59 18 59 46 44 53", "none", "#b6bdac", 2.8)
+    body += path("M23 18 C14 24 14 40 23 46 M41 18 C50 24 50 40 41 46", "none", "#72999c", 1.8)
+    body += path("M25 21 L34 16 43 27 40 42 30 49 22 38 21 28Z", "#263b49", "#d3d8bc", 1.6)
+    body += path("M25 22 L34 18 32 33 22 29Z", "#c0dacc", "none", 0)
+    body += path("M34 18 L41 28 32 33Z", "#7bb5b0", "none", 0)
+    body += path("M22 30 L32 34 30 47 23 38Z", "#608d95", "none", 0)
+    body += path("M32 34 L40 29 38 41 30 47Z", "#3d6276", "none", 0)
+    body += path("M26 27 L32 25 36 29 33 36 27 37 29 32Z", "none", "#e8e6c9", 1.2)
+    body += path("M12 29 L9 32 12 35 M52 29 L55 32 52 35", "none", "#dbbd88", 1.5)
+    return body
+
+
 def generate(save_svg) -> None:
     icons: dict[str, str] = {}
     # A needle rather than a club: the long ivory point is readable at HUD scale.
@@ -186,6 +214,8 @@ def generate(save_svg) -> None:
     icons["return_ring"] = _return_ring()
     icons["blood_pact"] = _blood_pact()
     icons["grave_candle"] = _grave_candle()
+    icons["fold_clasp"] = _fold_clasp()
+    icons["echo_stone"] = _echo_stone()
 
     for name, body in icons.items():
         save_svg(f"icons/{name}.svg", 64, 64, body, f"engraved occult {name} icon; transparent; readable at 24–48px")

@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="ContentDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/content_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "sword_0004"
+kind = "weapon"
+display_name = "天羽羽斩"
+icon = "sword_0004"
+source_id = "5010004"
+element = "dark"
+subtitle = "斩蛇暗剑 · 球化连携"
+description = "挥出两道暗色剑气。Ⅰ阶球化期间对敌伤害增加10%；球化结束立即恢复。"
+color = Color(0.72, 0.62, 0.96, 1)
+price = 32
+damage = 11.0
+cooldown = 0.85
+projectile_speed = 410.0
+projectile_radius = 5.0
+range = 600.0
+shots = 2
+spread = 0.14
+inventory_size = Vector2i(1, 3)
+equipment_effects = Array[Dictionary]([{"kind": "pinball_damage", "amount": 0.1}])

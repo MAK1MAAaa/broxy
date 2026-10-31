@@ -244,14 +244,28 @@ func _endpoint_hash(painter: RefCounted) -> String:
 
 func _head_layout_hash(painter: RefCounted) -> String:
 	var has_heads: bool = false
+	var has_global_heads: bool = false
 	for property: Dictionary in painter.get_property_list():
 		if property["name"] == "heads":
 			has_heads = true
-			break
+		elif property["name"] == "head_multimesh":
+			has_global_heads = true
 	if not has_heads:
 		return ""
 	var heads: Dictionary = painter.get("heads")
 	var result: Dictionary = {}
+	if has_global_heads:
+		var multimesh: MultiMesh = painter.get("head_multimesh")
+		var buffer: PackedFloat32Array = painter.get("head_buffer")
+		result["physical"] = [multimesh.instance_count, multimesh.visible_instance_count,
+			multimesh.use_colors, multimesh.use_custom_data, buffer, multimesh.buffer,
+			multimesh.mesh.surface_get_arrays(0)]
+		for key: String in heads:
+			var head = heads[key]
+			result[key] = [head.source, head.frame, head.base_radius, head.cursor, head.start, head.capacity,
+				buffer.slice(head.start * CURRENT_PAINTER.HEAD_INSTANCE_STRIDE,
+					(head.start + head.cursor) * CURRENT_PAINTER.HEAD_INSTANCE_STRIDE)]
+		return JSON.stringify(result).sha256_text()
 	for key: String in heads:
 		var head = heads[key]
 		var visible: int = head.multimesh.visible_instance_count

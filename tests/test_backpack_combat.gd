@@ -98,7 +98,8 @@ func _test_ranked_dispatch() -> void:
 			var shot: CombatSim.Shot = _active_shot(simulation)
 			_check(shot != null and simulation.shot_count == definition.shots, "All configured pellets are dispatched from the ranked backpack weapon: %s/%d" % [definition.id, rank])
 			if shot != null:
-				_check(shot.weapon_rank == rank and is_equal_approx(shot.damage, definition.damage * pow(2.0, rank - 1)), "The real dispatcher applies rank damage exactly once: %s/%d" % [definition.id, rank])
+				var personal_attack: float = 1.0 + 1.6 * pow(2.0, rank - 1) if definition.id == "sword_0005" else 1.0
+				_check(shot.weapon_rank == rank and is_equal_approx(shot.damage, definition.damage * pow(2.0, rank - 1) * personal_attack), "The real dispatcher applies rank damage and the independently configured Durendal owner attack exactly once: %s/%d" % [definition.id, rank])
 				_check(is_equal_approx(shot.velocity.length(), definition.projectile_speed) and is_equal_approx(shot.radius, definition.projectile_radius), "Rank does not silently change speed or collision size: %s/%d" % [definition.id, rank])
 			_check(is_equal_approx(simulation._cooldowns[0], definition.cooldown / state.stat("attack_speed")), "Rank preserves the formal cooldown: %s/%d" % [definition.id, rank])
 

@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="HeroDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/hero_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "alk"
+display_name = "阿尔克"
+starter_weapon = "bone"
+idle_path = "res://assets/worldflipper/sprites/player.png"
+atlas_path = "res://assets/worldflipper/sprites/player-atlas.png"
+portrait_path = "res://assets/worldflipper/portraits/alk.png"
+frame_size = 96
+foot_anchor = Vector2(48, 93)
+base_bonuses = {}
+main_skill = {"id": "hero_alk", "name": "粉碎流星", "element": "fire", "shape": "circle", "delivery": "areas", "visual_family": "shockwave", "origin_mode": "player", "radius": 180.0, "damage": 50.0, "cooldown": 8.0, "attack_bonus": 0.2, "buff_seconds": 5.0, "timeline": [{"delay": 0.7333333333333333, "duration": 0.3333333333333333, "hits": 1, "damage_weight": 1.0, "shape": "circle", "radius": 180.0, "anchor": "caster_at_activation"}]}
+action_evidence = {"catalog_skill_id": "alk:2", "action_ref": "battle/action/skill/action/rare4/alk$alk_2", "git_blob_sha1": "07f845d5825084d39353c7086c42386e6f20e224", "source_commit": "1d45b529ef078ba9b1f876d4588debd0c8a9a214", "time_adaptation": "one original action unit = 1/60 project seconds; not a verified original FPS", "geometry_adaptation": "uniform scale chosen per skill for free movement; no original area size claim"}
+source_id = "1"
+source_skill_name = "粉碎流星"
+source_skill_weight = 450
+source_url = "https://wiki.biligame.com/worldflipper/阿尔克"
+adaptation_notes = "周围火伤与限时攻击强化已适配；原作参战者多队伍效果改为本作单人攻击增益。冷却、伤害及强化量为本作数值，不是原作倍率或能量。"

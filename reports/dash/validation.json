@@ -1,0 +1,425 @@
+{
+  "schema_version": 1,
+  "created_at_utc": "2026-10-28T03:17:06.542209+00:00",
+  "source_base_commit": "b15ad72f4d55e7dadb73fe539597b101606a23ea",
+  "scope": "Windows verification of latest main and first active dash skill; continuing game-feel goal remains active",
+  "engine": "4.7.2.stable.official.ed1daf0bf",
+  "baseline": {
+    "godot_suites": 56,
+    "additional_profile_invocations": 5,
+    "godot_assertions": 25916,
+    "python_tests": 32,
+    "native_assertions": {
+      "arena_rules": 168,
+      "arena_flow": 69,
+      "rogue_resonance_ui": 32,
+      "concise_ui": 257,
+      "enemy_telegraphs": 134,
+      "relic_comparison": 226
+    },
+    "all_four_maps_captured": true,
+    "native_export_smoke": true
+  },
+  "tests": {
+    "godot_suites": 60,
+    "additional_profile_invocations": 5,
+    "godot_assertions": 26135,
+    "python_tests": 32,
+    "native_assertions": {
+      "dash_rules": 82,
+      "dash_world": 69,
+      "dash_flow": 20,
+      "dash_ui": 49,
+      "arena_flow": 69,
+      "combat_upgrades": 76,
+      "concise_ui": 257,
+      "enemy_telegraphs": 134
+    },
+    "all_passed": true
+  },
+  "rules": {
+    "duration_seconds": 0.2,
+    "speed": 660,
+    "full_distance": 132,
+    "cooldown_seconds": 2.4,
+    "initial_protection_seconds": 0.12,
+    "original_hit_protection_independent": true,
+    "terrain_independent": true,
+    "damage": 0,
+    "cooldown_input_buffered": false,
+    "held_repeat": false
+  },
+  "visual": {
+    "fixtures": {
+      "ready-mire": {
+        "dash": {
+          "active": false,
+          "cooldown_left": 0.0,
+          "cooldown_total": 2.4,
+          "direction": "(1.0, 0.0)",
+          "ready": true,
+          "remaining": 0.0,
+          "uses": 0
+        },
+        "position": [
+          400.0,
+          275.0
+        ],
+        "capture_sha256": "fc5dcadda5b21235e32fe7d7ad1938680c49f35807bc9a7f9da8356a6d972b09"
+      },
+      "dash-mire": {
+        "dash": {
+          "active": true,
+          "cooldown_left": 2.3,
+          "cooldown_total": 2.4,
+          "direction": "(1.0, 0.0)",
+          "ready": false,
+          "remaining": 0.1,
+          "uses": 1
+        },
+        "position": [
+          466.0,
+          275.0
+        ],
+        "capture_sha256": "ceaf78de4ed6c5d686635023aab7c658be578e3965f5efece20e47bf2d2f6437"
+      },
+      "cooldown-mire": {
+        "dash": {
+          "active": false,
+          "cooldown_left": 2.03333333333333,
+          "cooldown_total": 2.4,
+          "direction": "(1.0, 0.0)",
+          "ready": false,
+          "remaining": 0.0,
+          "uses": 1
+        },
+        "position": [
+          532.0,
+          275.0
+        ],
+        "capture_sha256": "e8d80721ee9b55441f34e4b1d73bda614b1767e49003c8fc93e4320c27564f6c"
+      },
+      "danger-ashland": {
+        "dash": {
+          "active": true,
+          "cooldown_left": 2.3,
+          "cooldown_total": 2.4,
+          "direction": "(1.0, 0.0)",
+          "ready": false,
+          "remaining": 0.1,
+          "uses": 1
+        },
+        "position": [
+          377.0,
+          230.0
+        ],
+        "capture_sha256": "81471f10ab0597a7f4de0be0b48ee8a27df763036c8c7722aedfe761daaeae6e"
+      },
+      "dash-glacier": {
+        "dash": {
+          "active": true,
+          "cooldown_left": 2.3,
+          "cooldown_total": 2.4,
+          "direction": "(1.0, 0.0)",
+          "ready": false,
+          "remaining": 0.1,
+          "uses": 1
+        },
+        "position": [
+          508.0,
+          455.0
+        ],
+        "capture_sha256": "b71472dee2a3b56814ae54aebd1e8586f1de19990b14bff5df4c9cb2dd772c08"
+      },
+      "dash-reliquary": {
+        "dash": {
+          "active": true,
+          "cooldown_left": 2.3,
+          "cooldown_total": 2.4,
+          "direction": "(1.0, 0.0)",
+          "ready": false,
+          "remaining": 0.1,
+          "uses": 1
+        },
+        "position": [
+          706.0,
+          365.0
+        ],
+        "capture_sha256": "0ab1a70b8e48a7d240919606d5e337ece43d5530473b7c26178f157ff7b44b17"
+      }
+    },
+    "root_and_independent_agent_reviewed": true,
+    "blocking_findings": 0,
+    "native_draw_order_verified": true,
+    "minimum_window_layout_asserted": [
+      960,
+      540
+    ],
+    "new_static_assets": 0
+  },
+  "native_release_input": {
+    "method": "computer-use skill / @oai/sky on exported Embers.exe -- --capture-only --arena=mire; ordinary Main, no preview script",
+    "persistent_profile": false,
+    "observations": [
+      "Started selected mire map from title using a physical click",
+      "Fresh Space moved player from about x=641 to x=773 and displayed 2.1s cooldown",
+      "Esc paused; Space activated Resume without moving the player or starting dash",
+      "A subsequent fresh Space displayed active dash with afterimages; final position about x=905",
+      "Exited using pause-menu Quit; process exit=0 and no engine errors"
+    ],
+    "manual_observation_is_not_a_human_balance_study": true,
+    "log_sha256": "4422cba5ca768deb6a5afd3b09f53194718766500ef3170c3ace7696bf5d3dae"
+  },
+  "simulation": {
+    "runs": 12,
+    "wins": 12,
+    "core_versions": [
+      "prototype-0.1.0+5443e4cbc358"
+    ],
+    "per_arena": {
+      "reliquary": {
+        "runs": 3,
+        "wins": 3
+      },
+      "mire": {
+        "runs": 3,
+        "wins": 3
+      },
+      "glacier": {
+        "runs": 3,
+        "wins": 3
+      },
+      "ashland": {
+        "runs": 3,
+        "wins": 3
+      }
+    },
+    "dash_policy": "Unchanged BotPolicy uses ordinary two-argument step; never activates dash. These runs validate ordinary flow, not dash balance or human success rates.",
+    "log_sha256": {
+      "simulation-reliquary.jsonl": "07ba950dd86636a4e4e24d88643536a9bc3d230bec61a7c7bbed2b4f2c209a26",
+      "simulation-mire.jsonl": "f465199016cf8e83b444bf296b1d79b2ec7d74591b167eccfd93935acd640ed8",
+      "simulation-glacier.jsonl": "9772ccf3046b077b19252bdaa6bfb4f214f1c670d38979af20b996fa3af68548",
+      "simulation-ashland.jsonl": "7da4c18fb7bb53269133b7c63d12108239d41754e216d71e749e253c279a5689"
+    }
+  },
+  "performance": {
+    "actual_duration_seconds": 60.001484,
+    "actual_warmup_seconds": 5.009,
+    "after_step_counts_at_end": {
+      "enemies": 300,
+      "pickups": 200,
+      "projectiles": 598
+    },
+    "afterimage_capacity": 6,
+    "afterimage_peak": 6,
+    "arena_id": "mire",
+    "average_fps": 111.830567390633,
+    "checks": {
+      "dash_feedback": true,
+      "default_settings_and_no_profile": true,
+      "load": true,
+      "performance": true
+    },
+    "core_activations": {
+      "bone_chorus": 46,
+      "frostfire": 0
+    },
+    "core_id": "bone_chorus",
+    "counter_scope": "total dash/feedback/hit/damage/core counters include warmup; sample-prefixed counters exclude it",
+    "counts_measurement_phase": "physics_frame_before_combat_world",
+    "damage_by_weapon": {
+      "bone": 103214.299999993,
+      "comet": 1049216.6249998,
+      "crescent": 1321798.49999921,
+      "ember": 300149.999999995,
+      "frost": 322245.13749969,
+      "return_ring": 1213046.20000292,
+      "scatter": 94395.4000000045,
+      "storm": 137544.749999999
+    },
+    "dash_rules": {
+      "cooldown": 2.4,
+      "duration": 0.2,
+      "invulnerability": 0.12,
+      "speed": 660.0
+    },
+    "dashes_used": 28,
+    "display_server": "Windows",
+    "duration_seconds": 60.0,
+    "enemies": 300,
+    "engine": "4.7.2-stable (official)",
+    "fixture_overrides": [
+      "300 enemies with synthetic high health",
+      "600 real content/rune projectiles replenished before each World step",
+      "200 synthetic pickups replenished before each World step",
+      "full player health restored before each World step",
+      "bone_chorus core assigned directly",
+      "earned-upgrade modals suppressed by Main._benchmark while Main._process is disabled",
+      "facing alternates right/left on real dash readiness; no synthetic movement input",
+      "autoplay argument only prevents focus-loss pause; World autopilot remains disabled"
+    ],
+    "internal_resolution": "1280x720",
+    "load_targets": {
+      "enemies": 300,
+      "pickups": 200,
+      "projectiles": 600
+    },
+    "main_benchmark_upgrade_suppression": true,
+    "main_process_enabled": false,
+    "minimum_pre_step_counts": {
+      "enemies": 300,
+      "pickups": 200,
+      "projectiles": 600
+    },
+    "natural_run": false,
+    "os": "Windows",
+    "p99_frame_ms": 18.3,
+    "passed": true,
+    "persistent_profile": false,
+    "physics_steps": 3906,
+    "physics_ticks_per_second": 60,
+    "pickups": 200,
+    "primary_hits": 77322,
+    "projectile_families_at_end": {
+      "bone:bounce": 10,
+      "comet:blast": 4,
+      "comet:bounce": 170,
+      "crescent:blast": 106,
+      "crescent:pierce": 1,
+      "ember:pierce": 36,
+      "frost:blast": 28,
+      "return_ring:blast": 55,
+      "return_ring:pierce": 2,
+      "scatter:blast": 1,
+      "scatter:bounce": 60,
+      "storm:bounce": 1,
+      "storm:pierce": 124
+    },
+    "projectiles": 600,
+    "renderer": "gl_compatibility",
+    "run_seed": 20261028,
+    "rune_visual_peak": 32,
+    "sample_afterimage_peak": 6,
+    "sample_dashes_used": 25,
+    "sample_physics_steps": 3600,
+    "samples": 6710,
+    "scenario": "dash-content-pressure",
+    "secondary_hits": 313437,
+    "seed": 20261028,
+    "settings": {
+      "flash": true,
+      "shake": true,
+      "volume": 0.65
+    },
+    "source_hash": "5afa74a73b336e5036d8b481d3f1ffa5e36f5a61e838a06dd2ddf12b618482d6",
+    "source_hash_algorithm": "sha256-path-and-content-manifest",
+    "thresholds": {
+      "maximum_p99_frame_ms": 33.0,
+      "minimum_afterimage_peak": 1,
+      "minimum_fps": 58.0,
+      "minimum_sample_dashes": 11
+    },
+    "warmup_dashes_used": 3,
+    "warmup_seconds": 5.0,
+    "weapon_ids": [
+      "bone",
+      "frost",
+      "ember",
+      "scatter",
+      "crescent",
+      "storm",
+      "comet",
+      "return_ring"
+    ],
+    "window_size": [
+      1280,
+      720
+    ],
+    "window_visible": true,
+    "world_autopilot": false,
+    "world_stress_mode": false,
+    "source_file_count": 60,
+    "source_files_start_end_current_equal": true,
+    "raw_report_sha256": "3e370957a2fa3c4bf84aca660b8b0eca4af2c5a6e2a65152cb94640609018b5e",
+    "raw_log_sha256": "3b71038aa961e74bf995c7ddbedf5bc589a1ebdc5a9b18609fca049282b5de23",
+    "native_visible_window_observed_during_sampling": true
+  },
+  "preserved_assets_data_and_historical_reports": 409,
+  "distribution": {
+    "zip_crc_passed": true,
+    "pe_x86_64_valid": true,
+    "native_exe_smoke_passed": true,
+    "prior_two_packages_preserved": true,
+    "sha256": {
+      "build/Embers-windows-x86_64/Embers.exe": "d34d36f3be1a6c49c56525ae86469b92e4f417ddf0b43cf00dd80c385c4b0562",
+      "build/Embers-windows-x86_64/Embers.pck": "ef551976e58979800f268376312b473f099ee75e57e7d53168bf695942bce01f",
+      "build/Embers-windows-x86_64.zip": "858c6a5a25940f151f3c76aa312ea7a9b4d3592e62db4479487a830cf349ed1a",
+      "build/Embers-windows-before-dash-632cd06.zip": "d7d8ea1d634ae2d775cf2ef87dfaf44735d10b1c0f4aa4fc3abcbaeab9db59f9",
+      "build/Embers-windows-latest-main-b15ad72.zip": "6e7b97eaa27107abed46cb23e18278abd77d4c8083bd082923d5642b1db7d9b9"
+    }
+  },
+  "source_sha256": {
+    ".gitignore": "0f22780ba3909648ad2b2691595a692bf1461f6f40b569c11f750a3fd9babf03",
+    "README.md": "c95f3e815e6b500385b20d8bf9ea577f31cfbd01bca4eea3b44e6938f4765141",
+    "docs/dash.md": "e14e70ac415b1536c79b1312579202b294822b51e8d0f4378673a46c6b25e241",
+    "scripts/combat/combat_sim.gd": "ed3f734621fb9f537b4835c931c310312c9ba54b3d08a5dd5bc5bef55ba0edd7",
+    "scripts/combat/combat_world.gd": "e513bcf5850441df17bdf7a6e97420c70586c422410b5eb9a72918e82bc08f0d",
+    "scripts/data/dash_rules.gd": "26003591cd1c1270120db13dcd2f8563280935631517b10981cbab1b264f5113",
+    "scripts/data/dash_rules.gd.uid": "aa352d9758ca043c2f0ab11b7d161aa5c87f51acb6454a10050d28a5f04de497",
+    "scripts/main.gd": "f02cf04c796a77cf59ab9087721ac0e7530c0eff969168f8479e383f9983c567",
+    "scripts/ui/game_ui.gd": "0b72afd08a5dd1e2953848d8fd606569de5a70b07e9dc1cd7c57a9a52f81c19c",
+    "tests/simulate_runs.gd": "ce3b3b0c27c34251e97bfc8c730f590c412446cf84fccbcdd6198e8619990887",
+    "tests/test_dash_flow.gd": "3468ce1a473189d597eeed355b7281c77ca41c20898cc7614a0666ff9c130941",
+    "tests/test_dash_flow.gd.uid": "e084fa43dc8fc820384f76c48ac2f9b34ca345e053b99468d7962e5a63422c65",
+    "tests/test_dash_rules.gd": "a0521a9c5e9ef33c0ceefb24726f82e124f7326fa8f927b25ceaf938aa7c146f",
+    "tests/test_dash_rules.gd.uid": "fea55113b62fbdf6e236dad1b329592ea32cd5e8589257c247d402f4b9ead8df",
+    "tests/test_dash_ui.gd": "3f824eccd7783f11c8af2fd3cb64df8e72d733c4486b66fbdac3b78a702a6074",
+    "tests/test_dash_ui.gd.uid": "49935664ce60bdceeaa236574327976c2ae027fca3cf23da6936906ae4bc0392",
+    "tests/test_dash_world.gd": "698e8ff2560f3b21a1ee51e0a5bd2ef6e06c5f5b5cb4a858d13133ee91e1cd70",
+    "tests/test_dash_world.gd.uid": "46de144ec529e97aea749bdfc94c7225e0c65fca5a66bd19422747b2781a2547",
+    "tools/benchmark_dash.gd": "0f9e25284a75f97676895bb68d6140165c521b9b3932d50b724595228361b97c",
+    "tools/benchmark_dash.gd.uid": "465d0e64ffdb89cf7bbc772168b63adcf181e189408e4e8ad22a3905800de6a4",
+    "tools/preview_dash.gd": "bccbbb274ae259bd272043ad66dbd58c07bb8141a2772cbb79808010cd809e74",
+    "tools/preview_dash.gd.uid": "3506bad2da76f25fa5fe82023fdcbab5c2e551ba8c7d817cd67adcd2aeb38e6b",
+    "tools/test.ps1": "59ecbeb177e3992e50d1d6a354e4e5f9f7be39b443d0a8d2b7741afa740c1da4",
+    "tools/test.sh": "3b196698049b58957cf3f66d7b5bfdf369efb957e788745edaba3df86443d827"
+  },
+  "evidence_sha256": {
+    "regression.log": "1104e19c17d08ceb98781b0ff2468e1d45c522be6ee4711ed2e312c63d411431",
+    "baseline-tests.log": "69579b9c31be17095968f6228df94a20e99c503a4d227d537d7f3e8517b54d6e",
+    "import.log": "3785f8d7fc15c50a9741cd05225b67013372d5812b0144607b375b955a969115",
+    "build.log": "66f3c6960fff4b1e2caa26717c1706130060fc76dd7d2f5c12b46ad65cd15bc2",
+    "build-smoke.log": "bb4c3097de656fd3b62ddefcaa8dc9e08e607ef32f004a396deb69d0d5ec3d48",
+    "release-interactive.log": "4422cba5ca768deb6a5afd3b09f53194718766500ef3170c3ace7696bf5d3dae",
+    "performance.log": "3b71038aa961e74bf995c7ddbedf5bc589a1ebdc5a9b18609fca049282b5de23",
+    "performance-raw.json": "3e370957a2fa3c4bf84aca660b8b0eca4af2c5a6e2a65152cb94640609018b5e",
+    "performance-start-raw.json": "44e24c201d229b7f3fa47fc5a5912acafd9e97c1033e9ab7d97c256d364e2d1e",
+    "dash_rules-native.log": "1f72e4f6a25a53489f09a6095fcb618d69f2dc6cf60f0606431df94878daf221",
+    "dash_world-native.log": "3fbfaec03743f43444a4e0c5b73f2a4c033d9af8d378f466f55d0076b88c361e",
+    "dash_flow-native.log": "c3c6771b330f73578fef87439c6c9d2a89eb1006013684c2731fee504fd1f62d",
+    "dash_ui-native.log": "60fc112387eff1bedb6b6220011331b8d93d20028a50520d70ca9e881af5c2a2",
+    "arena_flow-native.log": "033aab2a71ef468ec23b36530e257e1fc856d7d20fdd4704ee8e3d4faf88b29a",
+    "combat_upgrades-native.log": "2571b028e8841d5bcc84b43701726f0d9cc9d17b5dcfbb8bb3e76945f0162fa3",
+    "concise_ui-native.log": "be235975a862e6db7e6a3403becf6dc835c4b39b128549ad479f60870757b532",
+    "enemy_telegraphs-native.log": "7fc4353ac36749acbbb184c1f7bec68c2dcbfb3eb1d58faed3fe3bb3845604fc",
+    "ready-mire.log": "24c55442f29039b366360dfbc595ed5b9736de23fb5276180eda721773a55044",
+    "dash-mire.log": "48f866d8e2da681e4328628dcffd0acb039963ee7f3de1ac7c272e5b5bcec7d2",
+    "cooldown-mire.log": "df0f5a5c624843346569b0e69b93d073243fa39b691e06078bcb127baf308c55",
+    "danger-ashland.log": "ce8f4aa6d32625d74eb8e8eb129f732d7da5399dda3f953e9c72fb82dbf4ce70",
+    "dash-glacier.log": "040adfdbb426768211dcc69ddee03c882bf70c81e52a4f7cc392ce0b5065c1e4",
+    "dash-reliquary.log": "e2ee3fec1ba59cd76872475a2296a3bf29d16a08177bfe63ec52fd38e3f421a1"
+  },
+  "not_run": [
+    "macOS build on Windows",
+    "gamepad-only play or rebinding",
+    "human balance playtest",
+    "new 300-second pressure sample"
+  ],
+  "limits": [
+    "Initial shield collision checks use fixed-step end times; no substep collision claim",
+    "Native screenshots use sparse fixed fixtures; UI tests separately cover Boss and 960x540 layout",
+    "Automated seeded runs never dash",
+    "Performance is one synthetic pressure fixture, not a normal game or all builds"
+  ],
+  "passed": true
+}

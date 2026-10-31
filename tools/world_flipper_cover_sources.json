@@ -1,0 +1,25 @@
+{
+  "sources": [
+    {
+      "id": "cover_background",
+      "kind": "cover_background",
+      "name": "World Flipper official character-page background",
+      "filename": "cover-background.png",
+      "url": "https://worldflipper.jp/assets/images/top_char_bg.png",
+      "source_page": "https://worldflipper.jp/",
+      "sha256": "02aae14ad9789b3e1a57f7073922cd097d3e83fd26b5e10dff0b3d0deb4c93a6",
+      "source_size": [1851, 989]
+    },
+    {
+      "id": "portrait_alk",
+      "kind": "cover_portrait",
+      "character_id": "alk",
+      "name": "Alk / 阿尔克 original portrait",
+      "filename": "alk-full.png",
+      "url": "https://patchwiki.biligame.com/images/worldflipper/d/d3/qep7a45zkk1v3lu70tg3s3gad5mu3gn.png",
+      "source_page": "https://wiki.biligame.com/worldflipper/阿尔克",
+      "sha256": "dd4ffd62af0330633000e2beefca43b07f1adc225d0c8db8b2c9eca6a497d58c",
+      "source_size": [939, 1727]
+    }
+  ]
+}

@@ -1,0 +1,1531 @@
+{
+  "revision": "world-flipper-original-stages-01",
+  "archive": {
+    "repository": "https://github.com/blead/wf-assets",
+    "commit": "1d45b529ef078ba9b1f876d4588debd0c8a9a214",
+    "commit_date": "2024-02-19T17:09:36Z",
+    "region": "JP",
+    "asset_version": "1.780.40",
+    "license_status": "Original game data, no open asset license found. Public archive does not grant an asset license. Copyright Cygames, Inc. / Citail Inc."
+  },
+  "geometry_registry": "data/worldflipper/layouts.json",
+  "source_registry": "tools/world_flipper_layout_sources.json",
+  "scope": "Three playable adaptations of actual official-demo layer-0 geometry whose terrain refs exactly match the pinned JP catalog; not all JP maps.",
+  "adaptation": {
+    "logic_scale": 0.6666666666666666,
+    "source_pixel_scale": 4,
+    "world_center": [
+      640,
+      365
+    ],
+    "native_crop": "Verified layer-0 BOUNDS; no tiling, stretching, or wall closure",
+    "outside_crop": "Theme-derived dark pixel mat and decorative frame; not playable original terrain",
+    "props": "Source anchors only. Collision/interactive definitions are unresolved and no substitute obstacles or crates are generated."
+  },
+  "sources": [
+    {
+      "id": "arena_reliquary",
+      "kind": "arena_map",
+      "game_id": "reliquary",
+      "name": "World Flipper / Sand Ruins",
+      "filename": "map-sand-ruins-background.png",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field/world_sand/sand_ruins/background/background.png",
+      "source_page": "https://worldflipper.jp/demo/",
+      "sha256": "1a9a875cf22db4cce19a053e914725ef715dc3f9eeb0ed4d6dc63c996591a98f",
+      "source_size": [
+        274,
+        738
+      ],
+      "crop": [
+        65,
+        91,
+        144,
+        128
+      ],
+      "scale": 2,
+      "border_crops": {
+        "left": [
+          38,
+          88,
+          24,
+          128
+        ],
+        "right": [
+          212,
+          88,
+          24,
+          128
+        ],
+        "top": [
+          49,
+          11,
+          176,
+          48
+        ]
+      },
+      "normalization": "Large original native floor patch, mirror tiled at integer2x. Existing slow-zone geometry uses a same-source floor variation. Upright landmarks stay entirely outside the walkable rectangle. This is an authored adaptation, not an intact original map."
+    },
+    {
+      "id": "terrain_main_chapter_02_09_05",
+      "role": "terrain",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/terrain/main_quest/chapter_02/main_chapter_02_09_05.json",
+      "cache_filename": "main_chapter_02_09_05.json",
+      "sha256": "990cfe273bb673fc0b5195a3b5219ae23d3c9e97c9fc7e42bfbc09e7316293f6",
+      "bytes": 3305,
+      "terrain_ref": "battle/terrain/main_quest/chapter_02/main_chapter_02_09_05"
+    },
+    {
+      "id": "demo_field_data",
+      "role": "field_data",
+      "url": "https://worldflipper.jp/demo/src/assets/trial/production/master/battle/field_data.orderedmap",
+      "cache_filename": "field_data.orderedmap",
+      "sha256": "3b66dbbbaff2de8939dbbeb3301cc22900931b481ba59b245aeb55d19350b37f",
+      "bytes": 271
+    },
+    {
+      "id": "demo_field",
+      "role": "field",
+      "url": "https://worldflipper.jp/demo/src/assets/trial/production/master/battle/field.orderedmap",
+      "cache_filename": "field.orderedmap",
+      "sha256": "d3b2b2e63c23c648e631fe2ba957849c7bf068928f31c19a51ecbd69f07766fe",
+      "bytes": 724
+    },
+    {
+      "id": "background_sand_ruins_atlas",
+      "role": "atlas",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field/world_sand/sand_ruins/background/background.atlas.json",
+      "cache_filename": "sand_ruins-background.atlas.json",
+      "sha256": "e20cc2788bcc23312683ec8858751353ce5247a8a5e7fe41d971c3c98857d904",
+      "bytes": 101,
+      "field_id": "sand_ruins"
+    },
+    {
+      "id": "demo_runtime",
+      "role": "runtime",
+      "url": "https://worldflipper.jp/demo/src/world-flipper.js",
+      "cache_filename": "world-flipper.js",
+      "sha256": "db5f3806599510ed3b6783ce5c4ccdac764eccbf4d297299af12eb902a814315",
+      "bytes": 28990839
+    },
+    {
+      "id": "arena_mire",
+      "kind": "arena_map",
+      "game_id": "mire",
+      "name": "World Flipper / Japan Shrine",
+      "filename": "map-japan-shrine-background.png",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field/world_japan/japan_shrine/background/background.png",
+      "source_page": "https://worldflipper.jp/demo/",
+      "sha256": "61e23df1ec118aba1ada9e97c19c790eb30e09ef7180e3757ee8f0d546569f32",
+      "source_size": [
+        274,
+        738
+      ],
+      "crop": [
+        74,
+        92,
+        126,
+        128
+      ],
+      "zone_crop": [
+        80,
+        450,
+        64,
+        64
+      ],
+      "scale": 2,
+      "border_crops": {
+        "left": [
+          9,
+          452,
+          24,
+          128
+        ],
+        "right": [
+          241,
+          452,
+          24,
+          128
+        ],
+        "top": [
+          49,
+          4,
+          176,
+          48
+        ]
+      },
+      "normalization": "Large original native floor patch, mirror tiled at integer2x. Existing slow-zone geometry uses a same-source floor variation. Upright landmarks stay entirely outside the walkable rectangle. This is an authored adaptation, not an intact original map."
+    },
+    {
+      "id": "terrain_main_chapter_06_06_02",
+      "role": "terrain",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/terrain/main_quest/chapter_06/main_chapter_06_06_02.json",
+      "cache_filename": "main_chapter_06_06_02.json",
+      "sha256": "a8d9f5a5075383b3d9fade0b4e43164d8ecb41add8b902e4d5f22fe063a81b01",
+      "bytes": 4390,
+      "terrain_ref": "battle/terrain/main_quest/chapter_06/main_chapter_06_06_02"
+    },
+    {
+      "id": "background_japan_shrine_atlas",
+      "role": "atlas",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field/world_japan/japan_shrine/background/background.atlas.json",
+      "cache_filename": "japan_shrine-background.atlas.json",
+      "sha256": "4db8ce99e5034807e0fd90fd1d59c49420c969442d7deccda9a8b0ad4fee9423",
+      "bytes": 104,
+      "field_id": "japan_shrine"
+    },
+    {
+      "id": "arena_ashland",
+      "kind": "arena_map",
+      "game_id": "ashland",
+      "name": "World Flipper / Sea Ship Boss",
+      "filename": "map-sea-ship-background.png",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field/world_sea/sea_ship_boss/background/background.png",
+      "source_page": "https://worldflipper.jp/demo/",
+      "sha256": "d46b919f710220018302d9ce12b2db18069ac068bfe514a6cc8c042f2979af4a",
+      "source_size": [
+        274,
+        1002
+      ],
+      "crop": [
+        80,
+        215,
+        112,
+        128
+      ],
+      "zone_crop": [
+        112,
+        585,
+        32,
+        16
+      ],
+      "scale": 2,
+      "border_crops": {
+        "left": [
+          28,
+          244,
+          24,
+          128
+        ],
+        "right": [
+          222,
+          244,
+          24,
+          128
+        ],
+        "top": [
+          49,
+          112,
+          176,
+          48
+        ]
+      },
+      "normalization": "Large original native floor patch, mirror tiled at integer2x. Existing slow-zone geometry uses a same-source floor variation. Upright landmarks stay entirely outside the walkable rectangle. This is an authored adaptation, not an intact original map."
+    },
+    {
+      "id": "terrain_main_chapter_03_06_02-trial",
+      "role": "terrain",
+      "url": "https://worldflipper.jp/demo/src/assets/trial/production/battle/terrain/main_quest/chapter_03/main_chapter_03_06_02.json",
+      "cache_filename": "main_chapter_03_06_02-trial.json",
+      "sha256": "dd949f2f36e5cf02c4170adf7fced4265270355d9132eaa83c07b39025dc1d5f",
+      "bytes": 7733,
+      "terrain_ref": "battle/terrain/main_quest/chapter_03/main_chapter_03_06_02"
+    },
+    {
+      "id": "background_sea_ship_boss_atlas",
+      "role": "atlas",
+      "url": "https://worldflipper.jp/demo/src/assets/production/battle/field/world_sea/sea_ship_boss/background/background.atlas.json",
+      "cache_filename": "sea_ship_boss-background.atlas.json",
+      "sha256": "1f570ddfbfc5ff4dbf5161e9ef4a35b8dc7136094b27a4b2511f88cffef71d16",
+      "bytes": 104,
+      "field_id": "sea_ship_boss"
+    }
+  ],
+  "stages": [
+    {
+      "layout_id": "main_2_9_5",
+      "demo_layout_id": "main_2_9_5",
+      "field_id": "sand_ruins",
+      "layer_index": 0,
+      "source_id": "terrain_main_chapter_02_09_05",
+      "logic_scale": 0.6666666666666666,
+      "logic_offset": [
+        96.0,
+        -275.0
+      ],
+      "native_bounds": [
+        46,
+        0,
+        180,
+        320
+      ],
+      "play_bounds": [
+        280.0,
+        -275.0,
+        720,
+        1280
+      ],
+      "wall_segment_count": 3,
+      "source_label": "main_2_9_5",
+      "unresolved_prop_count": 4,
+      "id": "jp_sand_2_9_5",
+      "props": [
+        {
+          "id": "0:863",
+          "object_id": 863,
+          "kind": "DASH_PANEL_SMART",
+          "resource_id": "fever",
+          "center": [
+            800.0,
+            -19.0
+          ],
+          "collision_geometry": null
+        },
+        {
+          "id": "0:864",
+          "object_id": 864,
+          "kind": "DASH_PANEL_SMART",
+          "resource_id": "fever",
+          "center": [
+            480.0,
+            -19.0
+          ],
+          "collision_geometry": null
+        },
+        {
+          "id": "0:865",
+          "object_id": 865,
+          "kind": "DASH_PANEL_SMART",
+          "resource_id": "fever",
+          "center": [
+            360.0,
+            545.0
+          ],
+          "collision_geometry": null
+        },
+        {
+          "id": "0:866",
+          "object_id": 866,
+          "kind": "DASH_PANEL_SMART",
+          "resource_id": "fever",
+          "center": [
+            914.0,
+            545.0
+          ],
+          "collision_geometry": null
+        }
+      ],
+      "markers": [
+        {
+          "id": "0:438",
+          "object_id": 438,
+          "kind": "TRANSIT",
+          "name": "",
+          "center": [
+            640.0,
+            401.0
+          ],
+          "recognized_zone": true
+        },
+        {
+          "id": "0:439",
+          "object_id": 439,
+          "kind": "GATE",
+          "name": "",
+          "center": [
+            644.0,
+            -67.0
+          ],
+          "recognized_zone": true
+        },
+        {
+          "id": "0:453",
+          "object_id": 453,
+          "kind": "COFFIN",
+          "name": "",
+          "center": [
+            388.3348,
+            322.0
+          ],
+          "recognized_zone": true
+        },
+        {
+          "id": "0:455",
+          "object_id": 455,
+          "kind": "COFFIN",
+          "name": "",
+          "center": [
+            867.0,
+            290.0
+          ],
+          "recognized_zone": true
+        },
+        {
+          "id": "0:456",
+          "object_id": 456,
+          "kind": "COFFIN",
+          "name": "",
+          "center": [
+            517.0,
+            197.336
+          ],
+          "recognized_zone": true
+        },
+        {
+          "id": "0:459",
+          "object_id": 459,
+          "kind": "RETURN_LANE_GUIDE",
+          "name": "",
+          "center": [
+            1259.636,
+            535.544
+          ],
+          "recognized_zone": false
+        },
+        {
+          "id": "0:802",
+          "object_id": 802,
+          "kind": "CUSTOM_POSITION",
+          "name": "p0",
+          "center": [
+            636.0,
+            197.0
+          ],
+          "recognized_zone": true
+        },
+        {
+          "id": "0:803",
+          "object_id": 803,
+          "kind": "CUSTOM_POSITION",
+          "name": "p1",
+          "center": [
+            636.0,
+            613.0
+          ],
+          "recognized_zone": true
+        },
+        {
+          "id": "0:804",
+          "object_id": 804,
+          "kind": "CUSTOM_POSITION",
+          "name": "p2",
+          "center": [
+            636.0,
+            385.0
+          ],
+          "recognized_zone": true
+        },
+        {
+          "id": "0:857",
+          "object_id": 857,
+          "kind": "FUNNEL_SPAWN1",
+          "name": "",
+          "center": [
+            784.0,
+            369.0
+          ],
+          "recognized_zone": true
+        },
+        {
+          "id": "0:858",
+          "object_id": 858,
+          "kind": "FUNNEL_SPAWN1",
+          "name": "",
+          "center": [
+            760.0,
+            89.0
+          ],
+          "recognized_zone": true
+        },
+        {
+          "id": "0:859",
+          "object_id": 859,
+          "kind": "FUNNEL_SPAWN1",
+          "name": "",
+          "center": [
+            920.0,
+            189.0
+          ],
+          "recognized_zone": true
+        },
+        {
+          "id": "0:860",
+          "object_id": 860,
+          "kind": "FUNNEL_SPAWN1",
+          "name": "",
+          "center": [
+            360.0,
+            189.0
+          ],
+          "recognized_zone": true
+        },
+        {
+          "id": "0:861",
+          "object_id": 861,
+          "kind": "FUNNEL_SPAWN1",
+          "name": "",
+          "center": [
+            512.0,
+            89.0
+          ],
+          "recognized_zone": true
+        },
+        {
+          "id": "0:862",
+          "object_id": 862,
+          "kind": "FUNNEL_SPAWN1",
+          "name": "",
+          "center": [
+            488.0,
+            369.0
+          ],
+          "recognized_zone": true
+        }
+      ]
+    },
+    {
+      "layout_id": "main_6_6_2",
+      "demo_layout_id": "main_6_6_2",
+      "field_id": "japan_shrine",
+      "layer_index": 0,
+      "source_id": "terrain_main_chapter_06_06_02",
+      "logic_scale": 0.6666666666666666,
+      "logic_offset": [
+        96.0,
+        -275.0
+      ],
+      "native_bounds": [
+        46,
+        0,
+        180,
+        320
+      ],
+      "play_bounds": [
+        280.0,
+        -275.0,
+        720,
+        1280
+      ],
+      "wall_segment_count": 6,
+      "source_label": "main_6_6_2",
+      "unresolved_prop_count": 4,
+      "id": "jp_shrine_6_6_2",
+      "props": [
+        {
+          "id": "0:1195",
+          "object_id": 1195,
+          "kind": "DASH_PANEL_SMART",
+          "resource_id": "fever",
+          "center": [
+            892.0,
+            153.0
+          ],
+          "collision_geometry": null
+        },
+        {
+          "id": "0:1196",
+          "object_id": 1196,
+          "kind": "DASH_PANEL_SMART",
+          "resource_id": "fever",
+          "center": [
+            388.0,
+            153.0
+          ],
+          "collision_geometry": null
+        },
+        {
+          "id": "0:1197",
+          "object_id": 1197,
+          "kind": "DASH_PANEL_SMART",
+          "resource_id": "fever",
+          "center": [
+            391.0,
+            417.0
+          ],
+          "collision_geometry": null
+        },
+        {
+          "id": "0:1203",
+          "object_id": 1203,
+          "kind": "DASH_PANEL_SMART",
+          "resource_id": "fever",
+          "center": [
+            899.0,
+            417.0
+          ],
+          "collision_geometry": null
+        }
+      ],
+      "markers": [
+        {
+          "id": "0:1179",
+          "object_id": 1179,
+          "kind": "COFFIN",
+          "name": "",
+          "center": [
+            505.66799999999995,
+            8.666799999999967
+          ],
+          "recognized_zone": true
+        },
+        {
+          "id": "0:1182",
+          "object_id": 1182,
+          "kind": "RETURN_LANE_GUIDE",
+          "name": "",
+          "center": [
+            1259.636,
+            535.544
+          ],
+          "recognized_zone": false
+        },
+        {
+          "id": "0:1185",
+          "object_id": 1185,
+          "kind": "CUSTOM_POSITION",
+          "name": "p0",
+          "center": [
+            636.0,
+            333.0
+          ],
+          "recognized_zone": true
+        },
+        {
+          "id": "0:1186",
+          "object_id": 1186,
+          "kind": "CUSTOM_POSITION",
+          "name": "p1",
+          "center": [
+            820.0,
+            137.0
+          ],
+          "recognized_zone": true
+        },
+        {
+          "id": "0:1187",
+          "object_id": 1187,
+          "kind": "FUNNEL_SPAWN2",
+          "name": "",
+          "center": [
+            816.0,
+            309.0
+          ],
+          "recognized_zone": true
+        },
+        {
+          "id": "0:1188",
+          "object_id": 1188,
+          "kind": "CUSTOM_POSITION",
+          "name": "p2",
+          "center": [
+            460.0,
+            137.0
+          ],
+          "recognized_zone": true
+        },
+        {
+          "id": "0:1189",
+          "object_id": 1189,
+          "kind": "CUSTOM_POSITION",
+          "name": "p3",
+          "center": [
+            636.0,
+            81.0
+          ],
+          "recognized_zone": true
+        },
+        {
+          "id": "0:1190",
+          "object_id": 1190,
+          "kind": "FUNNEL_SPAWN4",
+          "name": "",
+          "center": [
+            476.0,
+            309.0
+          ],
+          "recognized_zone": true
+        },
+        {
+          "id": "0:1191",
+          "object_id": 1191,
+          "kind": "CUSTOM_POSITION",
+          "name": "fp1",
+          "center": [
+            816.0,
+            309.0
+          ],
+          "recognized_zone": true
+        },
+        {
+          "id": "0:1192",
+          "object_id": 1192,
+          "kind": "CUSTOM_POSITION",
+          "name": "fp2",
+          "center": [
+            636.0,
+            465.0
+          ],
+          "recognized_zone": true
+        },
+        {
+          "id": "0:1193",
+          "object_id": 1193,
+          "kind": "CUSTOM_POSITION",
+          "name": "fp3",
+          "center": [
+            476.0,
+            309.0
+          ],
+          "recognized_zone": true
+        },
+        {
+          "id": "0:1194",
+          "object_id": 1194,
+          "kind": "CUSTOM_POSITION",
+          "name": "fp4",
+          "center": [
+            636.0,
+            137.0
+          ],
+          "recognized_zone": true
+        },
+        {
+          "id": "0:1198",
+          "object_id": 1198,
+          "kind": "FUNNEL_SPAWN7",
+          "name": "",
+          "center": [
+            832.0,
+            181.0
+          ],
+          "recognized_zone": true
+        },
+        {
+          "id": "0:1199",
+          "object_id": 1199,
+          "kind": "FUNNEL_SPAWN5",
+          "name": "",
+          "center": [
+            444.0,
+            181.0
+          ],
+          "recognized_zone": true
+        },
+        {
+          "id": "0:1200",
+          "object_id": 1200,
+          "kind": "FUNNEL_SPAWN6",
+          "name": "",
+          "center": [
+            636.0,
+            81.0
+          ],
+          "recognized_zone": true
+        },
+        {
+          "id": "0:1201",
+          "object_id": 1201,
+          "kind": "FUNNEL_SPAWN10",
+          "name": "",
+          "center": [
+            746.0,
+            383.0
+          ],
+          "recognized_zone": true
+        },
+        {
+          "id": "0:1202",
+          "object_id": 1202,
+          "kind": "FUNNEL_SPAWN8",
+          "name": "",
+          "center": [
+            526.0,
+            383.0
+          ],
+          "recognized_zone": true
+        },
+        {
+          "id": "0:1204",
+          "object_id": 1204,
+          "kind": "CUSTOM_POSITION",
+          "name": "p5",
+          "center": [
+            832.0,
+            181.0
+          ],
+          "recognized_zone": true
+        },
+        {
+          "id": "0:1205",
+          "object_id": 1205,
+          "kind": "FUNNEL_SPAWN1",
+          "name": "",
+          "center": [
+            636.0,
+            137.0
+          ],
+          "recognized_zone": true
+        },
+        {
+          "id": "0:1206",
+          "object_id": 1206,
+          "kind": "FUNNEL_SPAWN3",
+          "name": "",
+          "center": [
+            636.0,
+            465.0
+          ],
+          "recognized_zone": true
+        },
+        {
+          "id": "0:1210",
+          "object_id": 1210,
+          "kind": "COFFIN",
+          "name": "",
+          "center": [
+            389.0,
+            263.0
+          ],
+          "recognized_zone": true
+        },
+        {
+          "id": "0:1211",
+          "object_id": 1211,
+          "kind": "COFFIN",
+          "name": "",
+          "center": [
+            887.0,
+            288.332
+          ],
+          "recognized_zone": true
+        }
+      ]
+    },
+    {
+      "layout_id": "main_3_6_2",
+      "demo_layout_id": "main_3_6_2_trial",
+      "field_id": "sea_ship_boss",
+      "layer_index": 0,
+      "source_id": "terrain_main_chapter_03_06_02-trial",
+      "logic_scale": 0.6666666666666666,
+      "logic_offset": [
+        96.0,
+        -811.0
+      ],
+      "native_bounds": [
+        46,
+        134,
+        180,
+        320
+      ],
+      "play_bounds": [
+        280.0,
+        -275.0,
+        720,
+        1280
+      ],
+      "wall_segment_count": 8,
+      "source_label": "main_3_6_2",
+      "unresolved_prop_count": 17,
+      "id": "jp_ship_3_6_2",
+      "props": [
+        {
+          "id": "0:988",
+          "object_id": 988,
+          "kind": "BREAKABLE_DECORATION",
+          "resource_id": "world_sea/sea_ship_boss@barrel/barrel",
+          "center": [
+            828.0,
+            -74.63599999999997
+          ],
+          "collision_geometry": null
+        },
+        {
+          "id": "0:989",
+          "object_id": 989,
+          "kind": "BREAKABLE_DECORATION",
+          "resource_id": "world_sea/sea_ship_boss@barrel/barrel",
+          "center": [
+            888.0,
+            -74.63599999999997
+          ],
+          "collision_geometry": null
+        },
+        {
+          "id": "0:990",
+          "object_id": 990,
+          "kind": "BREAKABLE_DECORATION",
+          "resource_id": "world_sea/sea_ship_boss@barrel/barrel",
+          "center": [
+            768.0,
+            -74.63599999999997
+          ],
+          "collision_geometry": null
+        },
+        {
+          "id": "0:991",
+          "object_id": 991,
+          "kind": "BREAKABLE_DECORATION",
+          "resource_id": "world_sea/sea_ship_boss@barrel/barrel",
+          "center": [
+            848.0,
+            -14.635999999999967
+          ],
+          "collision_geometry": null
+        },
+        {
+          "id": "0:992",
+          "object_id": 992,
+          "kind": "BREAKABLE_DECORATION",
+          "resource_id": "world_sea/sea_ship_boss@barrel/barrel",
+          "center": [
+            908.0,
+            -14.635999999999967
+          ],
+          "collision_geometry": null
+        },
+        {
+          "id": "0:995",
+          "object_id": 995,
+          "kind": "BREAKABLE_DECORATION",
+          "resource_id": "world_sea/sea_ship_boss@barrel/barrel",
+          "center": [
+            392.0,
+            -74.63599999999997
+          ],
+          "collision_geometry": null
+        },
+        {
+          "id": "0:996",
+          "object_id": 996,
+          "kind": "BREAKABLE_DECORATION",
+          "resource_id": "world_sea/sea_ship_boss@barrel/barrel",
+          "center": [
+            372.0,
+            -14.635999999999967
+          ],
+          "collision_geometry": null
+        },
+        {
+          "id": "0:997",
+          "object_id": 997,
+          "kind": "BREAKABLE_DECORATION",
+          "resource_id": "world_sea/sea_ship_boss@barrel/barrel",
+          "center": [
+            512.0,
+            -74.63599999999997
+          ],
+          "collision_geometry": null
+        },
+        {
+          "id": "0:998",
+          "object_id": 998,
+          "kind": "BREAKABLE_DECORATION",
+          "resource_id": "world_sea/sea_ship_boss@barrel/barrel",
+          "center": [
+            452.0,
+            -74.63599999999997
+          ],
+          "collision_geometry": null
+        },
+        {
+          "id": "0:999",
+          "object_id": 999,
+          "kind": "BREAKABLE_DECORATION",
+          "resource_id": "world_sea/sea_ship_boss@barrel/barrel",
+          "center": [
+            432.0,
+            -14.635999999999967
+          ],
+          "collision_geometry": null
+        },
+        {
+          "id": "0:1054",
+          "object_id": 1054,
+          "kind": "YUREMONO",
+          "resource_id": "world_sea/sea_ship_boss@shipboard_puddle_01/shipboard_puddle_01_back",
+          "center": [
+            938.6679999999999,
+            467.6679999999999
+          ],
+          "collision_geometry": null
+        },
+        {
+          "id": "0:1053",
+          "object_id": 1053,
+          "kind": "YUREMONO",
+          "resource_id": "world_sea/sea_ship_boss@shipboard_puddle_02/shipboard_puddle_02_back",
+          "center": [
+            416.0,
+            463.6679999999999
+          ],
+          "collision_geometry": null
+        },
+        {
+          "id": "0:1057",
+          "object_id": 1057,
+          "kind": "YUREMONO",
+          "resource_id": "world_sea/sea_ship_boss@shipboard_puddle_03/shipboard_puddle_03_back",
+          "center": [
+            326.0,
+            393.0
+          ],
+          "collision_geometry": null
+        },
+        {
+          "id": "0:1058",
+          "object_id": 1058,
+          "kind": "YUREMONO",
+          "resource_id": "world_sea/sea_ship_boss@shipboard_puddle_02/shipboard_puddle_02_back",
+          "center": [
+            862.0,
+            467.0
+          ],
+          "collision_geometry": null
+        },
+        {
+          "id": "0:1059",
+          "object_id": 1059,
+          "kind": "YUREMONO",
+          "resource_id": "world_sea/sea_ship_boss@shipboard_puddle_02/shipboard_puddle_02_back",
+          "center": [
+            800.0,
+            161.0
+          ],
+          "collision_geometry": null
+        },
+        {
+          "id": "0:1085",
+          "object_id": 1085,
+          "kind": "DIRECT_INSTANT_ITEM",
+          "resource_id": "hp_recovery_middle_fever",
+          "center": [
+            352.0,
+            193.0
+          ],
+          "collision_geometry": null
+        },
+        {
+          "id": "0:1086",
+          "object_id": 1086,
+          "kind": "DIRECT_INSTANT_ITEM",
+          "resource_id": "skill_charge_middle_fever",
+          "center": [
+            925.0,
+            193.0
+          ],
+          "collision_geometry": null
+        }
+      ],
+      "markers": [
+        {
+          "id": "0:841",
+          "object_id": 841,
+          "kind": "RETURN_LANE_GUIDE",
+          "name": "",
+          "center": [
+            1259.636,
+            527.56
+          ],
+          "recognized_zone": false
+        },
+        {
+          "id": "0:851",
+          "object_id": 851,
+          "kind": "COFFIN",
+          "name": "",
+          "center": [
+            879.332,
+            207.0
+          ],
+          "recognized_zone": true
+        },
+        {
+          "id": "0:856",
+          "object_id": 856,
+          "kind": "COFFIN",
+          "name": "",
+          "center": [
+            640.6679999999999,
+            422.6679999999999
+          ],
+          "recognized_zone": true
+        },
+        {
+          "id": "0:858",
+          "object_id": 858,
+          "kind": "COFFIN",
+          "name": "",
+          "center": [
+            394.3348,
+            365.664
+          ],
+          "recognized_zone": true
+        },
+        {
+          "id": "0:977",
+          "object_id": 977,
+          "kind": "CUSTOM_POSITION",
+          "name": "initial_position",
+          "center": [
+            642.0,
+            174.332
+          ],
+          "recognized_zone": true
+        },
+        {
+          "id": "0:964",
+          "object_id": 964,
+          "kind": "CUSTOM_POSITION",
+          "name": "tentacle_point11",
+          "center": [
+            409.2124,
+            138.51199999999994
+          ],
+          "recognized_zone": true
+        },
+        {
+          "id": "0:979",
+          "object_id": 979,
+          "kind": "CUSTOM_POSITION",
+          "name": "tentacle_point12",
+          "center": [
+            848.908,
+            41.24000000000001
+          ],
+          "recognized_zone": true
+        },
+        {
+          "id": "0:972",
+          "object_id": 972,
+          "kind": "CUSTOM_POSITION",
+          "name": "tentacle_point13",
+          "center": [
+            478.78759999999994,
+            353.17999999999984
+          ],
+          "recognized_zone": true
+        },
+        {
+          "id": "0:982",
+          "object_id": 982,
+          "kind": "CUSTOM_POSITION",
+          "name": "tentacle_point14",
+          "center": [
+            807.396,
+            395.9079999999999
+          ],
+          "recognized_zone": true
+        },
+        {
+          "id": "0:965",
+          "object_id": 965,
+          "kind": "CUSTOM_POSITION",
+          "name": "tentacle_point21",
+          "center": [
+            416.0,
+            281.0
+          ],
+          "recognized_zone": true
+        },
+        {
+          "id": "0:966",
+          "object_id": 966,
+          "kind": "CUSTOM_POSITION",
+          "name": "tentacle_point22",
+          "center": [
+            860.0,
+            281.0
+          ],
+          "recognized_zone": true
+        },
+        {
+          "id": "0:969",
+          "object_id": 969,
+          "kind": "CUSTOM_POSITION",
+          "name": "tentacle_point23",
+          "center": [
+            548.0,
+            381.0
+          ],
+          "recognized_zone": true
+        },
+        {
+          "id": "0:978",
+          "object_id": 978,
+          "kind": "CUSTOM_POSITION",
+          "name": "tentacle_point24",
+          "center": [
+            728.0,
+            381.0
+          ],
+          "recognized_zone": true
+        },
+        {
+          "id": "0:968",
+          "object_id": 968,
+          "kind": "CUSTOM_POSITION",
+          "name": "tentacle_point31",
+          "center": [
+            441.45439999999996,
+            52.455999999999904
+          ],
+          "recognized_zone": true
+        },
+        {
+          "id": "0:970",
+          "object_id": 970,
+          "kind": "CUSTOM_POSITION",
+          "name": "tentacle_point32",
+          "center": [
+            857.4559999999999,
+            102.87599999999986
+          ],
+          "recognized_zone": true
+        },
+        {
+          "id": "0:967",
+          "object_id": 967,
+          "kind": "CUSTOM_POSITION",
+          "name": "tentacle_point33",
+          "center": [
+            806.424,
+            347.24
+          ],
+          "recognized_zone": true
+        },
+        {
+          "id": "0:973",
+          "object_id": 973,
+          "kind": "CUSTOM_POSITION",
+          "name": "tentacle_point34",
+          "center": [
+            516.6664,
+            396.424
+          ],
+          "recognized_zone": true
+        },
+        {
+          "id": "0:974",
+          "object_id": 974,
+          "kind": "CUSTOM_POSITION",
+          "name": "tentacle_point41",
+          "center": [
+            416.0,
+            69.0
+          ],
+          "recognized_zone": true
+        },
+        {
+          "id": "0:976",
+          "object_id": 976,
+          "kind": "CUSTOM_POSITION",
+          "name": "tentacle_point42",
+          "center": [
+            860.0,
+            69.0
+          ],
+          "recognized_zone": true
+        },
+        {
+          "id": "0:975",
+          "object_id": 975,
+          "kind": "CUSTOM_POSITION",
+          "name": "tentacle_point43",
+          "center": [
+            416.0,
+            281.0
+          ],
+          "recognized_zone": true
+        },
+        {
+          "id": "0:981",
+          "object_id": 981,
+          "kind": "CUSTOM_POSITION",
+          "name": "tentacle_point44",
+          "center": [
+            860.0,
+            281.0
+          ],
+          "recognized_zone": true
+        },
+        {
+          "id": "0:983",
+          "object_id": 983,
+          "kind": "CUSTOM_POSITION",
+          "name": "tentacle_point45",
+          "center": [
+            506.6668,
+            -19.0
+          ],
+          "recognized_zone": true
+        },
+        {
+          "id": "0:980",
+          "object_id": 980,
+          "kind": "CUSTOM_POSITION",
+          "name": "tentacle_point46",
+          "center": [
+            784.0,
+            -19.0
+          ],
+          "recognized_zone": true
+        },
+        {
+          "id": "0:963",
+          "object_id": 963,
+          "kind": "CUSTOM_POSITION",
+          "name": "tentacle_point47",
+          "center": [
+            548.0,
+            381.0
+          ],
+          "recognized_zone": true
+        },
+        {
+          "id": "0:971",
+          "object_id": 971,
+          "kind": "CUSTOM_POSITION",
+          "name": "tentacle_point48",
+          "center": [
+            728.0,
+            381.0
+          ],
+          "recognized_zone": true
+        }
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "id": "jp_sand_2_9_5",
+      "path": "assets/worldflipper/stages/jp_sand_2_9_5.png",
+      "game_id": "jp_sand_2_9_5",
+      "size": [
+        3780,
+        2192
+      ],
+      "sha256": "ea27b682273991ca60e8d06f36edf2b9958e2577f9771a5cb73c86c40835c101",
+      "source_ids": [
+        "arena_reliquary",
+        "terrain_main_chapter_02_09_05",
+        "demo_field_data",
+        "demo_field",
+        "background_sand_ruins_atlas",
+        "demo_runtime"
+      ],
+      "world_origin": [
+        -1146,
+        -767
+      ],
+      "play_bounds": [
+        280.0,
+        -275.0,
+        720,
+        1280
+      ],
+      "native_bounds": [
+        46,
+        0,
+        180,
+        320
+      ],
+      "source_pixel_scale": 4,
+      "preview_crop": null
+    },
+    {
+      "id": "jp_sand_2_9_5_preview",
+      "path": "assets/worldflipper/stages/previews/jp_sand_2_9_5.png",
+      "game_id": "jp_sand_2_9_5",
+      "size": [
+        1280,
+        720
+      ],
+      "sha256": "b5119df86c637f97e0884f26eb763ac7378664ea0393dc5f0afb34e83c325a85",
+      "source_ids": [
+        "arena_reliquary",
+        "terrain_main_chapter_02_09_05",
+        "demo_field_data",
+        "demo_field",
+        "background_sand_ruins_atlas",
+        "demo_runtime"
+      ],
+      "world_origin": [
+        -1146,
+        -767
+      ],
+      "play_bounds": [
+        280.0,
+        -275.0,
+        720,
+        1280
+      ],
+      "native_bounds": [
+        46,
+        0,
+        180,
+        320
+      ],
+      "source_pixel_scale": 4,
+      "preview_crop": [
+        1146,
+        772,
+        1280,
+        720
+      ]
+    },
+    {
+      "id": "jp_shrine_6_6_2",
+      "path": "assets/worldflipper/stages/jp_shrine_6_6_2.png",
+      "game_id": "jp_shrine_6_6_2",
+      "size": [
+        3780,
+        2192
+      ],
+      "sha256": "96fe98365a6208df6108a9fa0e76fb87225988973ea2a58f6b7423ada31e7b20",
+      "source_ids": [
+        "arena_mire",
+        "terrain_main_chapter_06_06_02",
+        "demo_field_data",
+        "demo_field",
+        "background_japan_shrine_atlas",
+        "demo_runtime"
+      ],
+      "world_origin": [
+        -1146,
+        -767
+      ],
+      "play_bounds": [
+        280.0,
+        -275.0,
+        720,
+        1280
+      ],
+      "native_bounds": [
+        46,
+        0,
+        180,
+        320
+      ],
+      "source_pixel_scale": 4,
+      "preview_crop": null
+    },
+    {
+      "id": "jp_shrine_6_6_2_preview",
+      "path": "assets/worldflipper/stages/previews/jp_shrine_6_6_2.png",
+      "game_id": "jp_shrine_6_6_2",
+      "size": [
+        1280,
+        720
+      ],
+      "sha256": "7679df23d7899bbdc1b53915d1fdecafc1133418c876d8afad9ce07809b324b0",
+      "source_ids": [
+        "arena_mire",
+        "terrain_main_chapter_06_06_02",
+        "demo_field_data",
+        "demo_field",
+        "background_japan_shrine_atlas",
+        "demo_runtime"
+      ],
+      "world_origin": [
+        -1146,
+        -767
+      ],
+      "play_bounds": [
+        280.0,
+        -275.0,
+        720,
+        1280
+      ],
+      "native_bounds": [
+        46,
+        0,
+        180,
+        320
+      ],
+      "source_pixel_scale": 4,
+      "preview_crop": [
+        1146,
+        772,
+        1280,
+        720
+      ]
+    },
+    {
+      "id": "jp_ship_3_6_2",
+      "path": "assets/worldflipper/stages/jp_ship_3_6_2.png",
+      "game_id": "jp_ship_3_6_2",
+      "size": [
+        3780,
+        2192
+      ],
+      "sha256": "c01d5797b4ffaa83a87464cc7ee736a4270fff32c04f6be3b306e9fe22187087",
+      "source_ids": [
+        "arena_ashland",
+        "terrain_main_chapter_03_06_02-trial",
+        "demo_field_data",
+        "demo_field",
+        "background_sea_ship_boss_atlas",
+        "demo_runtime"
+      ],
+      "world_origin": [
+        -1146,
+        -767
+      ],
+      "play_bounds": [
+        280.0,
+        -275.0,
+        720,
+        1280
+      ],
+      "native_bounds": [
+        46,
+        134,
+        180,
+        320
+      ],
+      "source_pixel_scale": 4,
+      "preview_crop": null
+    },
+    {
+      "id": "jp_ship_3_6_2_preview",
+      "path": "assets/worldflipper/stages/previews/jp_ship_3_6_2.png",
+      "game_id": "jp_ship_3_6_2",
+      "size": [
+        1280,
+        720
+      ],
+      "sha256": "2fb6d242fb8c632ac3f46a672965d7262bde66f8b838e881ff5b3ac19b11d6f1",
+      "source_ids": [
+        "arena_ashland",
+        "terrain_main_chapter_03_06_02-trial",
+        "demo_field_data",
+        "demo_field",
+        "background_sea_ship_boss_atlas",
+        "demo_runtime"
+      ],
+      "world_origin": [
+        -1146,
+        -767
+      ],
+      "play_bounds": [
+        280.0,
+        -275.0,
+        720,
+        1280
+      ],
+      "native_bounds": [
+        46,
+        134,
+        180,
+        320
+      ],
+      "source_pixel_scale": 4,
+      "preview_crop": [
+        1146,
+        772,
+        1280,
+        720
+      ]
+    }
+  ]
+}

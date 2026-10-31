@@ -124,16 +124,35 @@ func _test_geometry_and_readonly(painter: RefCounted) -> void:
 		for batch: RefCounted in painter.get("_batches"):
 			var batch_points: PackedVector2Array = batch.get("points")
 			var width: float = float(batch.get("width"))
+			var outline_width: float = float(batch.get("outline_width"))
 			var color: Color = batch.get("color")
-			safe = safe and batch_points.size() % 2 == 0 and is_finite(width) and width > 0.0
+			var outline_color: Color = batch.get("outline_color")
+			safe = safe and batch_points.size() % 2 == 0 and is_finite(width) and width > 0.0 and is_finite(outline_width) and outline_width > width
 			safe = safe and is_finite(color.r) and is_finite(color.g) and is_finite(color.b) and is_finite(color.a)
+			safe = safe and outline_color.is_equal_approx(Color(Color("203b62"), color.a))
 			for vertex: Vector2 in batch_points:
-				safe = safe and vertex.is_finite() and vertex.distance_to(point) + width * 0.5 <= 10.0
+				safe = safe and vertex.is_finite() and vertex.distance_to(point) + outline_width * 0.5 <= 14.0
 				points.append(vertex - point)
-		_check(not points.is_empty() and safe, "Finite paired strokes including their width stay within a 10px impact radius: " + source)
-		_check(int(painter.call("get_stats")["draw_commands"]) == 1, "One source and fade stage need one drawing command: " + source)
+		_check(not points.is_empty() and safe, "Dark blue outlines and finite paired bright cores stay within a 14px impact radius: " + source)
+		_check(int(painter.call("get_stats")["draw_commands"]) == 2, "One source and fade stage need an outline and a core drawing command: " + source)
 		shapes[str(points)] = true
 	_check(shapes.size() == 4, "The four weapon sources produce four distinguishable local shape families")
+	for source: String in SOURCES:
+		var radii: Array[float] = []
+		painter.call("clear")
+		painter.call("add_hit", point, source, 1)
+		var previous_age: float = 0.0
+		for age: float in [0.0, 0.02, 0.04, 0.08, 0.119]:
+			painter.call("advance", age - previous_age)
+			previous_age = age
+			painter.call("rebuild")
+			var radius: float = 0.0
+			for batch: RefCounted in painter.get("_batches"):
+				for vertex: Vector2 in batch.get("points"):
+					radius = maxf(radius, vertex.distance_to(point) + float(batch.get("outline_width")) * 0.5)
+			radii.append(radius)
+		_check(radii[0] < radii[1] and radii[1] < radii[2] and radii[2] > radii[3] and radii[3] > radii[4] and radii.max() <= 14.0,
+			"The first forty milliseconds open the spark before its bounded geometry recedes: " + source)
 
 	painter.call("clear")
 	for cohort: int in 3:
@@ -144,8 +163,8 @@ func _test_geometry_and_readonly(painter: RefCounted) -> void:
 	var before: Dictionary = _marks_snapshot(painter)
 	painter.call("rebuild", true)
 	var batches_before: Array = _batch_snapshot(painter)
-	_check(int(painter.call("active_count")) == 12 and int(painter.call("get_stats")["draw_commands"]) == 12,
-		"All four sources at all three fade stages exercise the complete 12-command budget")
+	_check(int(painter.call("active_count")) == 12 and int(painter.call("get_stats")["draw_commands"]) == 24,
+		"All four sources at all three fade stages exercise the complete 24-command budget")
 	_check((painter.get("_batches") as Array).size() == 12 and _marks_snapshot(painter) == before,
 		"Fade batching is fixed-size and independent from mark lifetime state")
 	for kind: int in 4:
@@ -154,6 +173,7 @@ func _test_geometry_and_readonly(painter: RefCounted) -> void:
 		var middle: Color = batches[kind * 3 + 1].get("color")
 		var last: Color = batches[kind * 3 + 2].get("color")
 		_check(first.a > middle.a and middle.a > last.a and last.a > 0.0, "The three visible fade stages decrease opacity: " + SOURCES[kind])
+		_check(first.get_luminance() > Color("203b62").get_luminance() + 0.5, "Every bright core contrasts with its deep blue outline: " + SOURCES[kind])
 	painter.call("rebuild", true)
 	_check(_batch_snapshot(painter) == batches_before and _marks_snapshot(painter) == before, "Repeated rebuilds are deterministic and read-only for active marks")
 	var probe := DrawProbe.new()
@@ -435,7 +455,8 @@ func _marks_snapshot(painter: RefCounted) -> Dictionary:
 func _batch_snapshot(painter: RefCounted) -> Array:
 	var result: Array = []
 	for batch: RefCounted in painter.get("_batches"):
-		result.append({"points": (batch.get("points") as PackedVector2Array).duplicate(), "color": batch.get("color"), "width": batch.get("width")})
+		result.append({"points": (batch.get("points") as PackedVector2Array).duplicate(), "color": batch.get("color"), "width": batch.get("width"),
+			"outline_color": batch.get("outline_color"), "outline_width": batch.get("outline_width")})
 	return result
 
 

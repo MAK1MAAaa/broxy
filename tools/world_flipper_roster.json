@@ -1,0 +1,809 @@
+{
+  "schema_version": 1,
+  "upstream_registry": "tools/world_flipper_character_animation_sources.json",
+  "upstream_registry_sha256": "6e1a62b24ea3f2dd04ee2c9b3e9c1b24a23c0da7c39331815f48d18a9d9220e0",
+  "mirror_commit": "24935f8731f134cb9ec6da9c126ca38ae8c8ae1f",
+  "catalog_commit": "1d45b529ef078ba9b1f876d4588debd0c8a9a214",
+  "normalization": {
+    "cell_size": 128,
+    "columns": 4,
+    "rows": 3,
+    "scale": 3,
+    "foot_anchor": [
+      64,
+      125
+    ],
+    "portrait_policy": "pixel_idle_adaptation_not_original_fullshot"
+  },
+  "license_status": "Original game GIFs; no open asset license found. Public mirror access is not a claim of asset authorization.",
+  "heroes": [
+    {
+      "game_id": "nasir",
+      "canonical_id": "211012",
+      "dev_name": "magic_sword_girl",
+      "rarity": 4,
+      "element": "fire",
+      "display_name": "娜希尔",
+      "name_jp": "ナシール",
+      "source_page": "https://wiki.biligame.com/worldflipper/娜希尔",
+      "source_ids": {
+        "neutral": "character_211012_neutral",
+        "walk_front": "character_211012_walk_front",
+        "walk_back": "character_211012_walk_back"
+      }
+    },
+    {
+      "game_id": "mordiga",
+      "canonical_id": "221008",
+      "dev_name": "desert_wizard",
+      "rarity": 4,
+      "element": "water",
+      "display_name": "莫迪亚迦",
+      "name_jp": "モルディアーガ",
+      "source_page": "https://wiki.biligame.com/worldflipper/莫迪亚迦",
+      "source_ids": {
+        "neutral": "character_221008_neutral",
+        "walk_front": "character_221008_walk_front",
+        "walk_back": "character_221008_walk_back"
+      }
+    },
+    {
+      "game_id": "falsche",
+      "canonical_id": "361001",
+      "dev_name": "reaper_girl",
+      "rarity": 3,
+      "element": "dark",
+      "display_name": "法露伽",
+      "name_jp": "ファルチェ",
+      "source_page": "https://wiki.biligame.com/worldflipper/法露伽",
+      "source_ids": {
+        "neutral": "character_361001_neutral",
+        "walk_front": "character_361001_walk_front",
+        "walk_back": "character_361001_walk_back"
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "character_211012_neutral",
+      "kind": "character_animation_archive",
+      "canonical_character_id": "211012",
+      "dev_name": "magic_sword_girl",
+      "rarity": 4,
+      "pose": "neutral",
+      "filename": "211012-neutral.gif",
+      "repository_path": "assets/rarity4/magic_sword_girl/neutral.gif",
+      "url": "https://raw.githubusercontent.com/vivaldi6352/vivaldi6352.github.io/24935f8731f134cb9ec6da9c126ca38ae8c8ae1f/assets/rarity4/magic_sword_girl/neutral.gif",
+      "mirror_url": "https://vivaldi6352.github.io/assets/rarity4/magic_sword_girl/neutral.gif",
+      "git_blob_sha1": "11f63eeb627ab168e227f0539f9f372ccafaf60d",
+      "expected_bytes": 1097,
+      "availability": "verified_original",
+      "source_size": [
+        30,
+        26
+      ],
+      "frame_count": 1,
+      "durations_ms": [
+        20
+      ],
+      "unique_rgba_frames": 1,
+      "genuine_transparency": true,
+      "motion": "original_static",
+      "foot_measurement": "lowest opaque row span, not an anatomical foot anchor",
+      "frames": [
+        {
+          "duration_ms": 20,
+          "alpha_bounds": [
+            0,
+            0,
+            30,
+            26
+          ],
+          "opaque_bottom_span": [
+            8,
+            25,
+            22,
+            26
+          ],
+          "rgba_sha256": "e2298c103aa07309d6a870d112c5f5a8854755babfa6ec0be0243ff94ceb3c1a"
+        }
+      ],
+      "sha256": "d3d08f6e571abc74e4ff7b83c67a0c89c0084feef0a152849df5eb20154044c0",
+      "bytes": 1097
+    },
+    {
+      "id": "character_211012_walk_front",
+      "kind": "character_animation_archive",
+      "canonical_character_id": "211012",
+      "dev_name": "magic_sword_girl",
+      "rarity": 4,
+      "pose": "walk_front",
+      "filename": "211012-walk_front.gif",
+      "repository_path": "assets/rarity4/magic_sword_girl/walk_front.gif",
+      "url": "https://raw.githubusercontent.com/vivaldi6352/vivaldi6352.github.io/24935f8731f134cb9ec6da9c126ca38ae8c8ae1f/assets/rarity4/magic_sword_girl/walk_front.gif",
+      "mirror_url": "https://vivaldi6352.github.io/assets/rarity4/magic_sword_girl/walk_front.gif",
+      "git_blob_sha1": "56c1867df70360a2106a8406f1775a322717edd5",
+      "expected_bytes": 4271,
+      "availability": "verified_original",
+      "source_size": [
+        30,
+        26
+      ],
+      "frame_count": 4,
+      "durations_ms": [
+        80,
+        100,
+        100,
+        100
+      ],
+      "unique_rgba_frames": 3,
+      "genuine_transparency": true,
+      "motion": "animated_distinct",
+      "foot_measurement": "lowest opaque row span, not an anatomical foot anchor",
+      "frames": [
+        {
+          "duration_ms": 80,
+          "alpha_bounds": [
+            0,
+            0,
+            30,
+            26
+          ],
+          "opaque_bottom_span": [
+            8,
+            25,
+            22,
+            26
+          ],
+          "rgba_sha256": "e2298c103aa07309d6a870d112c5f5a8854755babfa6ec0be0243ff94ceb3c1a"
+        },
+        {
+          "duration_ms": 100,
+          "alpha_bounds": [
+            0,
+            2,
+            30,
+            26
+          ],
+          "opaque_bottom_span": [
+            8,
+            25,
+            22,
+            26
+          ],
+          "rgba_sha256": "a007027d20c3a4e823647e11519671f2f08fa0ea19244baa2f69cb45fffe8a33"
+        },
+        {
+          "duration_ms": 100,
+          "alpha_bounds": [
+            0,
+            0,
+            30,
+            26
+          ],
+          "opaque_bottom_span": [
+            8,
+            25,
+            22,
+            26
+          ],
+          "rgba_sha256": "e2298c103aa07309d6a870d112c5f5a8854755babfa6ec0be0243ff94ceb3c1a"
+        },
+        {
+          "duration_ms": 100,
+          "alpha_bounds": [
+            0,
+            2,
+            30,
+            26
+          ],
+          "opaque_bottom_span": [
+            8,
+            25,
+            22,
+            26
+          ],
+          "rgba_sha256": "700ef56e266183bcd6dcc6752af90394edf9bbf5ee3098ed66043d8753e5376b"
+        }
+      ],
+      "sha256": "297144476396da0d7120affe6a48748eeb90efe340b059c93106c5a294220108",
+      "bytes": 4271,
+      "identical_to_neutral_bytes": false,
+      "only_neutral_rgba_frames": false
+    },
+    {
+      "id": "character_211012_walk_back",
+      "kind": "character_animation_archive",
+      "canonical_character_id": "211012",
+      "dev_name": "magic_sword_girl",
+      "rarity": 4,
+      "pose": "walk_back",
+      "filename": "211012-walk_back.gif",
+      "repository_path": "assets/rarity4/magic_sword_girl/walk_back.gif",
+      "url": "https://raw.githubusercontent.com/vivaldi6352/vivaldi6352.github.io/24935f8731f134cb9ec6da9c126ca38ae8c8ae1f/assets/rarity4/magic_sword_girl/walk_back.gif",
+      "mirror_url": "https://vivaldi6352.github.io/assets/rarity4/magic_sword_girl/walk_back.gif",
+      "git_blob_sha1": "9ad0651c9e23aad94b42a6cde91f5b378490e221",
+      "expected_bytes": 3964,
+      "availability": "verified_original",
+      "source_size": [
+        30,
+        26
+      ],
+      "frame_count": 4,
+      "durations_ms": [
+        80,
+        100,
+        100,
+        100
+      ],
+      "unique_rgba_frames": 3,
+      "genuine_transparency": true,
+      "motion": "animated_distinct",
+      "foot_measurement": "lowest opaque row span, not an anatomical foot anchor",
+      "frames": [
+        {
+          "duration_ms": 80,
+          "alpha_bounds": [
+            0,
+            0,
+            30,
+            26
+          ],
+          "opaque_bottom_span": [
+            8,
+            25,
+            22,
+            26
+          ],
+          "rgba_sha256": "ebe397bc3d336bb2ff64e2d5631b6c0d90854eba8bc3f093d07818e13874856f"
+        },
+        {
+          "duration_ms": 100,
+          "alpha_bounds": [
+            0,
+            2,
+            30,
+            26
+          ],
+          "opaque_bottom_span": [
+            8,
+            25,
+            22,
+            26
+          ],
+          "rgba_sha256": "dd87114c498fc6739c6860f432916d2839b988a64b1fb87e040e8bd0a40bec84"
+        },
+        {
+          "duration_ms": 100,
+          "alpha_bounds": [
+            0,
+            0,
+            30,
+            26
+          ],
+          "opaque_bottom_span": [
+            8,
+            25,
+            22,
+            26
+          ],
+          "rgba_sha256": "ebe397bc3d336bb2ff64e2d5631b6c0d90854eba8bc3f093d07818e13874856f"
+        },
+        {
+          "duration_ms": 100,
+          "alpha_bounds": [
+            0,
+            2,
+            30,
+            26
+          ],
+          "opaque_bottom_span": [
+            8,
+            25,
+            22,
+            26
+          ],
+          "rgba_sha256": "982b317bbaf3b8e40c7a91f94ec5255723db11ee63f90e8347dfea4816809a0f"
+        }
+      ],
+      "sha256": "d45c138a13821fbe854299026f72bff992f6f33cfc04277d924397793ee4aa0c",
+      "bytes": 3964,
+      "identical_to_neutral_bytes": false,
+      "only_neutral_rgba_frames": false
+    },
+    {
+      "id": "character_221008_neutral",
+      "kind": "character_animation_archive",
+      "canonical_character_id": "221008",
+      "dev_name": "desert_wizard",
+      "rarity": 4,
+      "pose": "neutral",
+      "filename": "221008-neutral.gif",
+      "repository_path": "assets/rarity4/desert_wizard/neutral.gif",
+      "url": "https://raw.githubusercontent.com/vivaldi6352/vivaldi6352.github.io/24935f8731f134cb9ec6da9c126ca38ae8c8ae1f/assets/rarity4/desert_wizard/neutral.gif",
+      "mirror_url": "https://vivaldi6352.github.io/assets/rarity4/desert_wizard/neutral.gif",
+      "git_blob_sha1": "d96ee82741dffc4e49c8d4c8793829dd9ebf6c72",
+      "expected_bytes": 1078,
+      "availability": "verified_original",
+      "source_size": [
+        22,
+        28
+      ],
+      "frame_count": 1,
+      "durations_ms": [
+        20
+      ],
+      "unique_rgba_frames": 1,
+      "genuine_transparency": true,
+      "motion": "original_static",
+      "foot_measurement": "lowest opaque row span, not an anatomical foot anchor",
+      "frames": [
+        {
+          "duration_ms": 20,
+          "alpha_bounds": [
+            0,
+            0,
+            22,
+            28
+          ],
+          "opaque_bottom_span": [
+            4,
+            27,
+            18,
+            28
+          ],
+          "rgba_sha256": "3089a73eab9ffd25d65e269b656d24b97c9c8589ed616a673ce8a6d1280d3a18"
+        }
+      ],
+      "sha256": "98fd77cb998f2f9883974b4b1ee401bb70f2a90ea958c2da1952bc34febca875",
+      "bytes": 1078
+    },
+    {
+      "id": "character_221008_walk_front",
+      "kind": "character_animation_archive",
+      "canonical_character_id": "221008",
+      "dev_name": "desert_wizard",
+      "rarity": 4,
+      "pose": "walk_front",
+      "filename": "221008-walk_front.gif",
+      "repository_path": "assets/rarity4/desert_wizard/walk_front.gif",
+      "url": "https://raw.githubusercontent.com/vivaldi6352/vivaldi6352.github.io/24935f8731f134cb9ec6da9c126ca38ae8c8ae1f/assets/rarity4/desert_wizard/walk_front.gif",
+      "mirror_url": "https://vivaldi6352.github.io/assets/rarity4/desert_wizard/walk_front.gif",
+      "git_blob_sha1": "7fc445757fd73fcf08d981af5f5408c79d1efb3d",
+      "expected_bytes": 4193,
+      "availability": "verified_original",
+      "source_size": [
+        22,
+        28
+      ],
+      "frame_count": 4,
+      "durations_ms": [
+        80,
+        100,
+        100,
+        100
+      ],
+      "unique_rgba_frames": 3,
+      "genuine_transparency": true,
+      "motion": "animated_distinct",
+      "foot_measurement": "lowest opaque row span, not an anatomical foot anchor",
+      "frames": [
+        {
+          "duration_ms": 80,
+          "alpha_bounds": [
+            0,
+            0,
+            22,
+            28
+          ],
+          "opaque_bottom_span": [
+            4,
+            27,
+            18,
+            28
+          ],
+          "rgba_sha256": "3089a73eab9ffd25d65e269b656d24b97c9c8589ed616a673ce8a6d1280d3a18"
+        },
+        {
+          "duration_ms": 100,
+          "alpha_bounds": [
+            0,
+            2,
+            22,
+            28
+          ],
+          "opaque_bottom_span": [
+            4,
+            27,
+            20,
+            28
+          ],
+          "rgba_sha256": "25e3a0886371e4d69bb275df561e9f1c2aa59c6da96d2f0349b0c38f314a85f1"
+        },
+        {
+          "duration_ms": 100,
+          "alpha_bounds": [
+            0,
+            0,
+            22,
+            28
+          ],
+          "opaque_bottom_span": [
+            4,
+            27,
+            18,
+            28
+          ],
+          "rgba_sha256": "3089a73eab9ffd25d65e269b656d24b97c9c8589ed616a673ce8a6d1280d3a18"
+        },
+        {
+          "duration_ms": 100,
+          "alpha_bounds": [
+            0,
+            2,
+            22,
+            28
+          ],
+          "opaque_bottom_span": [
+            2,
+            27,
+            18,
+            28
+          ],
+          "rgba_sha256": "b1d75bbd96cb59549f5f974e0ec0014ffbf9217e772862353e090272e20558ea"
+        }
+      ],
+      "sha256": "e64b5aed3343d75daa363941bbff2b0b65c4b4a142c7f2b70387bdbacde99e86",
+      "bytes": 4193,
+      "identical_to_neutral_bytes": false,
+      "only_neutral_rgba_frames": false
+    },
+    {
+      "id": "character_221008_walk_back",
+      "kind": "character_animation_archive",
+      "canonical_character_id": "221008",
+      "dev_name": "desert_wizard",
+      "rarity": 4,
+      "pose": "walk_back",
+      "filename": "221008-walk_back.gif",
+      "repository_path": "assets/rarity4/desert_wizard/walk_back.gif",
+      "url": "https://raw.githubusercontent.com/vivaldi6352/vivaldi6352.github.io/24935f8731f134cb9ec6da9c126ca38ae8c8ae1f/assets/rarity4/desert_wizard/walk_back.gif",
+      "mirror_url": "https://vivaldi6352.github.io/assets/rarity4/desert_wizard/walk_back.gif",
+      "git_blob_sha1": "f2cae558d93d43ca53660432f754e28325b3def2",
+      "expected_bytes": 3958,
+      "availability": "verified_original",
+      "source_size": [
+        22,
+        28
+      ],
+      "frame_count": 4,
+      "durations_ms": [
+        80,
+        100,
+        100,
+        100
+      ],
+      "unique_rgba_frames": 3,
+      "genuine_transparency": true,
+      "motion": "animated_distinct",
+      "foot_measurement": "lowest opaque row span, not an anatomical foot anchor",
+      "frames": [
+        {
+          "duration_ms": 80,
+          "alpha_bounds": [
+            0,
+            0,
+            22,
+            28
+          ],
+          "opaque_bottom_span": [
+            4,
+            27,
+            18,
+            28
+          ],
+          "rgba_sha256": "f417232adc12e5196292de1b9802a58222e7a239fc6832656c67cd53aa07008b"
+        },
+        {
+          "duration_ms": 100,
+          "alpha_bounds": [
+            0,
+            2,
+            22,
+            28
+          ],
+          "opaque_bottom_span": [
+            2,
+            27,
+            20,
+            28
+          ],
+          "rgba_sha256": "6601f61fb986509042ecda9e383aab0c81a9cc46229a4c8909104eb477e56182"
+        },
+        {
+          "duration_ms": 100,
+          "alpha_bounds": [
+            0,
+            0,
+            22,
+            28
+          ],
+          "opaque_bottom_span": [
+            4,
+            27,
+            18,
+            28
+          ],
+          "rgba_sha256": "f417232adc12e5196292de1b9802a58222e7a239fc6832656c67cd53aa07008b"
+        },
+        {
+          "duration_ms": 100,
+          "alpha_bounds": [
+            0,
+            2,
+            22,
+            28
+          ],
+          "opaque_bottom_span": [
+            2,
+            27,
+            20,
+            28
+          ],
+          "rgba_sha256": "2bacf1ead6517dbf3045b7c27213819104095d350bb1deb05b07a609d151bd6a"
+        }
+      ],
+      "sha256": "f5df801ddfd0b1cc82572edd86bd32631f7f2d8e2214d7c4032d0f613a31766a",
+      "bytes": 3958,
+      "identical_to_neutral_bytes": false,
+      "only_neutral_rgba_frames": false
+    },
+    {
+      "id": "character_361001_neutral",
+      "kind": "character_animation_archive",
+      "canonical_character_id": "361001",
+      "dev_name": "reaper_girl",
+      "rarity": 3,
+      "pose": "neutral",
+      "filename": "361001-neutral.gif",
+      "repository_path": "assets/rarity3/reaper_girl/neutral.gif",
+      "url": "https://raw.githubusercontent.com/vivaldi6352/vivaldi6352.github.io/24935f8731f134cb9ec6da9c126ca38ae8c8ae1f/assets/rarity3/reaper_girl/neutral.gif",
+      "mirror_url": "https://vivaldi6352.github.io/assets/rarity3/reaper_girl/neutral.gif",
+      "git_blob_sha1": "e813c6e1ffb57ec2c86a57eb8a82b06d5930fa40",
+      "expected_bytes": 1070,
+      "availability": "verified_original",
+      "source_size": [
+        26,
+        26
+      ],
+      "frame_count": 1,
+      "durations_ms": [
+        20
+      ],
+      "unique_rgba_frames": 1,
+      "genuine_transparency": true,
+      "motion": "original_static",
+      "foot_measurement": "lowest opaque row span, not an anatomical foot anchor",
+      "frames": [
+        {
+          "duration_ms": 20,
+          "alpha_bounds": [
+            0,
+            0,
+            26,
+            26
+          ],
+          "opaque_bottom_span": [
+            6,
+            25,
+            20,
+            26
+          ],
+          "rgba_sha256": "88bdd3943763f36554905bb239c135b92266b635807bea2ba32bb23dd638fb37"
+        }
+      ],
+      "sha256": "92adc4dd58e1731ea36839a90bf84c606ce0747aeeaf7287d527d8a3353b3db8",
+      "bytes": 1070
+    },
+    {
+      "id": "character_361001_walk_front",
+      "kind": "character_animation_archive",
+      "canonical_character_id": "361001",
+      "dev_name": "reaper_girl",
+      "rarity": 3,
+      "pose": "walk_front",
+      "filename": "361001-walk_front.gif",
+      "repository_path": "assets/rarity3/reaper_girl/walk_front.gif",
+      "url": "https://raw.githubusercontent.com/vivaldi6352/vivaldi6352.github.io/24935f8731f134cb9ec6da9c126ca38ae8c8ae1f/assets/rarity3/reaper_girl/walk_front.gif",
+      "mirror_url": "https://vivaldi6352.github.io/assets/rarity3/reaper_girl/walk_front.gif",
+      "git_blob_sha1": "30288b850682e0e75a7b07a30564406c532ec273",
+      "expected_bytes": 4164,
+      "availability": "verified_original",
+      "source_size": [
+        26,
+        26
+      ],
+      "frame_count": 4,
+      "durations_ms": [
+        80,
+        100,
+        100,
+        100
+      ],
+      "unique_rgba_frames": 3,
+      "genuine_transparency": true,
+      "motion": "animated_distinct",
+      "foot_measurement": "lowest opaque row span, not an anatomical foot anchor",
+      "frames": [
+        {
+          "duration_ms": 80,
+          "alpha_bounds": [
+            0,
+            0,
+            26,
+            26
+          ],
+          "opaque_bottom_span": [
+            6,
+            25,
+            20,
+            26
+          ],
+          "rgba_sha256": "88bdd3943763f36554905bb239c135b92266b635807bea2ba32bb23dd638fb37"
+        },
+        {
+          "duration_ms": 100,
+          "alpha_bounds": [
+            0,
+            2,
+            26,
+            26
+          ],
+          "opaque_bottom_span": [
+            6,
+            25,
+            22,
+            26
+          ],
+          "rgba_sha256": "d0a675ddfe1c95fa0b3441dc22f847c50e2037a27f9f53ddb6d0b01aa885235d"
+        },
+        {
+          "duration_ms": 100,
+          "alpha_bounds": [
+            0,
+            0,
+            26,
+            26
+          ],
+          "opaque_bottom_span": [
+            6,
+            25,
+            20,
+            26
+          ],
+          "rgba_sha256": "88bdd3943763f36554905bb239c135b92266b635807bea2ba32bb23dd638fb37"
+        },
+        {
+          "duration_ms": 100,
+          "alpha_bounds": [
+            0,
+            2,
+            26,
+            26
+          ],
+          "opaque_bottom_span": [
+            4,
+            25,
+            20,
+            26
+          ],
+          "rgba_sha256": "4f1656c083140fc59f1cdc911ac9c8fdfa5168186e8f5fbbfb3aadf358742c6d"
+        }
+      ],
+      "sha256": "4bfb05d73b29ce21e38af7819fa4f425421a5b4b1a0abee5035c2c0e605000b5",
+      "bytes": 4164,
+      "identical_to_neutral_bytes": false,
+      "only_neutral_rgba_frames": false
+    },
+    {
+      "id": "character_361001_walk_back",
+      "kind": "character_animation_archive",
+      "canonical_character_id": "361001",
+      "dev_name": "reaper_girl",
+      "rarity": 3,
+      "pose": "walk_back",
+      "filename": "361001-walk_back.gif",
+      "repository_path": "assets/rarity3/reaper_girl/walk_back.gif",
+      "url": "https://raw.githubusercontent.com/vivaldi6352/vivaldi6352.github.io/24935f8731f134cb9ec6da9c126ca38ae8c8ae1f/assets/rarity3/reaper_girl/walk_back.gif",
+      "mirror_url": "https://vivaldi6352.github.io/assets/rarity3/reaper_girl/walk_back.gif",
+      "git_blob_sha1": "cc73d74c2318670b1f552ae71e423e5e4c2000ab",
+      "expected_bytes": 3983,
+      "availability": "verified_original",
+      "source_size": [
+        26,
+        26
+      ],
+      "frame_count": 4,
+      "durations_ms": [
+        80,
+        100,
+        100,
+        100
+      ],
+      "unique_rgba_frames": 3,
+      "genuine_transparency": true,
+      "motion": "animated_distinct",
+      "foot_measurement": "lowest opaque row span, not an anatomical foot anchor",
+      "frames": [
+        {
+          "duration_ms": 80,
+          "alpha_bounds": [
+            0,
+            0,
+            26,
+            26
+          ],
+          "opaque_bottom_span": [
+            6,
+            25,
+            20,
+            26
+          ],
+          "rgba_sha256": "afbc6418afffc2d41a20afd1b831f2c818afd7b44a7464dc0248d5f3c1a88070"
+        },
+        {
+          "duration_ms": 100,
+          "alpha_bounds": [
+            0,
+            2,
+            26,
+            26
+          ],
+          "opaque_bottom_span": [
+            6,
+            25,
+            22,
+            26
+          ],
+          "rgba_sha256": "4065a19fe1e37e62a8af8659a6b8b03425421be0368292bc7c697ccf0de3a57a"
+        },
+        {
+          "duration_ms": 100,
+          "alpha_bounds": [
+            0,
+            0,
+            26,
+            26
+          ],
+          "opaque_bottom_span": [
+            6,
+            25,
+            20,
+            26
+          ],
+          "rgba_sha256": "afbc6418afffc2d41a20afd1b831f2c818afd7b44a7464dc0248d5f3c1a88070"
+        },
+        {
+          "duration_ms": 100,
+          "alpha_bounds": [
+            0,
+            2,
+            26,
+            26
+          ],
+          "opaque_bottom_span": [
+            4,
+            25,
+            20,
+            26
+          ],
+          "rgba_sha256": "bdcda59453105ae9bf46b5d3737054463caf9105d7e2b10d8d292c2953a9ade1"
+        }
+      ],
+      "sha256": "7a2ffb1ae0002fec8356e930f68be44b8d423cfc223b1791429c747b623a34ba",
+      "bytes": 3983,
+      "identical_to_neutral_bytes": false,
+      "only_neutral_rgba_frames": false
+    }
+  ]
+}

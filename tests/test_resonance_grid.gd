@@ -69,7 +69,8 @@ func _test_material_and_socket_family() -> void:
 			var rank_label := button.find_child("ItemRank", false, false) as Label
 			_check(rank_label != null and rank_label.text == ["", "Ⅰ", "Ⅱ", "Ⅲ"][rank], "Engraved marks retain the explicit rank numeral")
 			var badge := button.find_child("SocketRuneBadge", false, false) as TextureRect
-			_check(badge != null and badge.texture != null and badge.texture.resource_path.ends_with("/%s.svg" % GameCatalog.rune(rune_id).icon), "Each socket badge uses its real rune family's supplied art: " + rune_id)
+			var expected_rune_path: String = AdventureArt.FAN_ROOT + "icons/%s.png" % GameCatalog.rune(rune_id).icon
+			_check(badge != null and badge.texture != null and badge.texture.resource_path == expected_rune_path, "Each socket badge uses its real rune family's supplied PNG art: " + rune_id)
 			_check(str(badge.get_meta("rune_id", "")) == rune_id and int(badge.get_meta("rune_rank", 0)) == rank, "The socket identity and engraving rank match the attached rune")
 			_check(badge.get_rect().size == Vector2(16, 16) and Rect2(Vector2.ZERO, button.size).encloses(badge.get_rect()), "The actual socket control remains sixteen pixels and cannot escape its parent box")
 			_check(button.get_global_rect().encloses(badge.get_global_rect()), "The settled socket badge is enclosed by its weapon in native viewport coordinates")

@@ -1,0 +1,259 @@
+{
+  "sources": [
+    {
+      "id": "hero_clarisse_neutral",
+      "kind": "hero_animation",
+      "character_id": "clarisse",
+      "pose": "neutral",
+      "name": "Clarisse / 克拉莉丝",
+      "filename": "hero-clarisse-neutral.gif",
+      "url": "https://vivaldi6352.github.io/assets/rarity5/clarisse/neutral.gif",
+      "source_page": "https://wiki.biligame.com/worldflipper/克拉莉丝",
+      "mirror_page": "https://vivaldi6352.github.io/",
+      "sha256": "2cd1d553ed0b1cbd7d10f4c4440b8e60cf53cb6a02218e03076acae717357857",
+      "source_size": [
+        30,
+        32
+      ],
+      "frame_count": 1,
+      "durations_ms": [
+        20
+      ]
+    },
+    {
+      "id": "hero_clarisse_walk_front",
+      "kind": "hero_animation",
+      "character_id": "clarisse",
+      "pose": "walk_front",
+      "name": "Clarisse / 克拉莉丝",
+      "filename": "hero-clarisse-walk_front.gif",
+      "url": "https://vivaldi6352.github.io/assets/rarity5/clarisse/walk_front.gif",
+      "source_page": "https://wiki.biligame.com/worldflipper/克拉莉丝",
+      "mirror_page": "https://vivaldi6352.github.io/",
+      "sha256": "9fda49135f569635fcb713c09f96b4bb648ac36d4ce741af749cdd00e5306a92",
+      "source_size": [
+        30,
+        34
+      ],
+      "frame_count": 4,
+      "durations_ms": [
+        80,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "id": "hero_clarisse_walk_back",
+      "kind": "hero_animation",
+      "character_id": "clarisse",
+      "pose": "walk_back",
+      "name": "Clarisse / 克拉莉丝",
+      "filename": "hero-clarisse-walk_back.gif",
+      "url": "https://vivaldi6352.github.io/assets/rarity5/clarisse/walk_back.gif",
+      "source_page": "https://wiki.biligame.com/worldflipper/克拉莉丝",
+      "mirror_page": "https://vivaldi6352.github.io/",
+      "sha256": "a5ae622d50463a9553657b089ddbc9026cac516e05a12eed6a45b9f9b9b4f182",
+      "source_size": [
+        30,
+        36
+      ],
+      "frame_count": 4,
+      "durations_ms": [
+        80,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "id": "portrait_clarisse",
+      "kind": "hero_portrait",
+      "character_id": "clarisse",
+      "pose": "portrait",
+      "name": "Clarisse / 克拉莉丝",
+      "filename": "hero-clarisse-portrait.png",
+      "url": "https://patchwiki.biligame.com/images/worldflipper/d/d3/fr4crd3jty36p4uq83kbpfjjcjot5rp.png",
+      "source_page": "https://wiki.biligame.com/worldflipper/克拉莉丝",
+      "sha256": "d46b2fdf911f56e2f9af8be1afaf95061589eb3c64a33228fc389ac02d4a3c89",
+      "source_size": [
+        1778,
+        1951
+      ],
+      "frame_count": 1,
+      "durations_ms": [
+        0
+      ]
+    },
+    {
+      "id": "hero_celtie_neutral",
+      "kind": "hero_animation",
+      "character_id": "celtie",
+      "pose": "neutral",
+      "name": "Celtie / 希尔媞",
+      "filename": "hero-celtie-neutral.gif",
+      "url": "https://vivaldi6352.github.io/assets/rarity5/wind_spgirl/neutral.gif",
+      "source_page": "https://wiki.biligame.com/worldflipper/希尔媞",
+      "mirror_page": "https://vivaldi6352.github.io/",
+      "sha256": "2a267fd82094e923ea0cd89d5a832075b7947c0d339414fdc11c4e46ade058a4",
+      "source_size": [
+        30,
+        30
+      ],
+      "frame_count": 1,
+      "durations_ms": [
+        20
+      ]
+    },
+    {
+      "id": "hero_celtie_walk_front",
+      "kind": "hero_animation",
+      "character_id": "celtie",
+      "pose": "walk_front",
+      "name": "Celtie / 希尔媞",
+      "filename": "hero-celtie-walk_front.gif",
+      "url": "https://vivaldi6352.github.io/assets/rarity5/wind_spgirl/walk_front.gif",
+      "source_page": "https://wiki.biligame.com/worldflipper/希尔媞",
+      "mirror_page": "https://vivaldi6352.github.io/",
+      "sha256": "2a8435cc8fb2b723d64aed598fdbae430060a4809f261b4bd5e3a6f68ce61d27",
+      "source_size": [
+        30,
+        32
+      ],
+      "frame_count": 4,
+      "durations_ms": [
+        80,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "id": "hero_celtie_walk_back",
+      "kind": "hero_animation",
+      "character_id": "celtie",
+      "pose": "walk_back",
+      "name": "Celtie / 希尔媞",
+      "filename": "hero-celtie-walk_back.gif",
+      "url": "https://vivaldi6352.github.io/assets/rarity5/wind_spgirl/walk_back.gif",
+      "source_page": "https://wiki.biligame.com/worldflipper/希尔媞",
+      "mirror_page": "https://vivaldi6352.github.io/",
+      "sha256": "3fa1fcfcb9aa62edcfc5ff8ef9705aae6e9dacfc5191c0899f94a22f9d97d578",
+      "source_size": [
+        30,
+        32
+      ],
+      "frame_count": 4,
+      "durations_ms": [
+        80,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "id": "portrait_celtie",
+      "kind": "hero_portrait",
+      "character_id": "celtie",
+      "pose": "portrait",
+      "name": "Celtie / 希尔媞",
+      "filename": "hero-celtie-portrait.png",
+      "url": "https://patchwiki.biligame.com/images/worldflipper/8/88/86tu1o8u8jc2m06rtphz9dazy05p0k0.png",
+      "source_page": "https://wiki.biligame.com/worldflipper/希尔媞",
+      "sha256": "c6c716649e460c9e79ea0937a64d4c8d2c1971d4e6487413c7e1c3aabf23df63",
+      "source_size": [
+        1562,
+        1841
+      ],
+      "frame_count": 1,
+      "durations_ms": [
+        0
+      ]
+    },
+    {
+      "id": "hero_hanabi_neutral",
+      "kind": "hero_animation",
+      "character_id": "hanabi",
+      "pose": "neutral",
+      "name": "Hanabi / 花火",
+      "filename": "hero-hanabi-neutral.gif",
+      "url": "https://vivaldi6352.github.io/assets/rarity4/kunoichi/neutral.gif",
+      "source_page": "https://wiki.biligame.com/worldflipper/花火",
+      "mirror_page": "https://vivaldi6352.github.io/",
+      "sha256": "3f669c85fe4bcbc1013a7f9b5c88d3873a32e3ff4c8c151afa0f4e87a9763ca0",
+      "source_size": [
+        22,
+        32
+      ],
+      "frame_count": 1,
+      "durations_ms": [
+        0
+      ]
+    },
+    {
+      "id": "hero_hanabi_walk_front",
+      "kind": "hero_animation",
+      "character_id": "hanabi",
+      "pose": "walk_front",
+      "name": "Hanabi / 花火",
+      "filename": "hero-hanabi-walk_front.gif",
+      "url": "https://vivaldi6352.github.io/assets/rarity4/kunoichi/walk_front.gif",
+      "source_page": "https://wiki.biligame.com/worldflipper/花火",
+      "mirror_page": "https://vivaldi6352.github.io/",
+      "sha256": "681e67541e8b765e430dee2f303fa66f82fb44316df52b848ff9a158d5766fb9",
+      "source_size": [
+        22,
+        34
+      ],
+      "frame_count": 4,
+      "durations_ms": [
+        80,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "id": "hero_hanabi_walk_back",
+      "kind": "hero_animation",
+      "character_id": "hanabi",
+      "pose": "walk_back",
+      "name": "Hanabi / 花火",
+      "filename": "hero-hanabi-walk_back.gif",
+      "url": "https://vivaldi6352.github.io/assets/rarity4/kunoichi/walk_back.gif",
+      "source_page": "https://wiki.biligame.com/worldflipper/花火",
+      "mirror_page": "https://vivaldi6352.github.io/",
+      "sha256": "9b98b20e5aff3d0e4abca7200f0ee58873804565e0bd8b5dad37f731623c29aa",
+      "source_size": [
+        22,
+        34
+      ],
+      "frame_count": 4,
+      "durations_ms": [
+        80,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "id": "portrait_hanabi",
+      "kind": "hero_portrait",
+      "character_id": "hanabi",
+      "pose": "portrait",
+      "name": "Hanabi / 花火",
+      "filename": "hero-hanabi-portrait.png",
+      "url": "https://patchwiki.biligame.com/images/worldflipper/f/fc/40tox4t2sll6t1sc12z2a8t4zujsizy.png",
+      "source_page": "https://wiki.biligame.com/worldflipper/花火",
+      "sha256": "fd42a33bf998e96fdcd1585e47c25140bdba9c57d768809e23db5d3c8f44bc21",
+      "source_size": [
+        1227,
+        1679
+      ],
+      "frame_count": 1,
+      "durations_ms": [
+        0
+      ]
+    }
+  ]
+}

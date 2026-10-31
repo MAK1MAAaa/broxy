@@ -241,7 +241,7 @@ func _purchased_build(all_relics: bool) -> void:
 		if all_relics or definition.id in NEW_RELICS:
 			if not _purchase("relic", definition.id):
 				return
-	var expected_cells: int = 32 if all_relics else 29
+	var expected_cells: int = 34 if all_relics else 29
 	if int(_app.run.backpack_snapshot()["used_cells"]) != expected_cells:
 		_fixture_failed = true
 		push_error("Content fixture does not match its declared physical backpack occupancy")
@@ -252,7 +252,7 @@ func _build_shop() -> void:
 	_purchased_build(true)
 	if _fixture_failed:
 		return
-	for id: String in ["pierce", "bounce", "blast", "pierce"]:
+	for id: String in ["pierce", "bounce"]:
 		if not _purchase("rune", id):
 			return
 	if int(_app.run.backpack_snapshot()["used_cells"]) != 36:

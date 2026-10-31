@@ -1,0 +1,259 @@
+{
+  "schema_version": 1,
+  "created_at_utc": "2026-10-28T05:33:20.065081+00:00",
+  "source_base_commit": "07e9b537e8944b586b95f79ff9b9b5c93a098e88",
+  "scope": "Input-device-aware title/HUD/backpack prompts and stable inventory signal argument snapshots; continuous game-feel goal remains active.",
+  "tests": {
+    "godot_suites": 77,
+    "additional_profile_invocations": 5,
+    "godot_assertions": 29056,
+    "python_tests": 32,
+    "native_assertions": {
+      "input_devices": 81,
+      "input_prompts_ui": 60,
+      "input_prompts_flow": 80,
+      "controls_flow": 38,
+      "controls_ui": 113,
+      "gamepad_backpack": 42,
+      "dash_ui": 49,
+      "pulse_ui": 77,
+      "backpack_targets": 86,
+      "rogue_ui": 63
+    },
+    "all_passed": true
+  },
+  "fixtures": {
+    "keyboard": {
+      "capture_sha256": "4bb0fb477b2470c274a8b2702772bab9cef44472bd353d83059a646c8404ad22",
+      "device": {
+        "gamepad_id": -1,
+        "kind": "keyboard"
+      },
+      "dash_label": "冲刺 · E",
+      "pulse_label": "脉冲 · R",
+      "backpack_hint": "",
+      "engine_native_drag": false,
+      "connected_gamepads": []
+    },
+    "gamepad": {
+      "capture_sha256": "0dc9ff385093fc2756cac17361fa691bf5d863fa10bc0c14e7caa0c9272bbd6d",
+      "device": {
+        "gamepad_id": 0,
+        "kind": "gamepad"
+      },
+      "dash_label": "冲刺 · A",
+      "pulse_label": "脉冲 · X",
+      "backpack_hint": "",
+      "engine_native_drag": false,
+      "connected_gamepads": []
+    },
+    "keyboard_return": {
+      "capture_sha256": "4bb0fb477b2470c274a8b2702772bab9cef44472bd353d83059a646c8404ad22",
+      "device": {
+        "gamepad_id": -1,
+        "kind": "keyboard"
+      },
+      "dash_label": "冲刺 · E",
+      "pulse_label": "脉冲 · R",
+      "backpack_hint": "",
+      "engine_native_drag": false,
+      "connected_gamepads": []
+    },
+    "paused": {
+      "capture_sha256": "448bb5e8d1e16a35489eba9b46cf30272c4a3a16c99341b203311cea32e186cc",
+      "device": {
+        "gamepad_id": 0,
+        "kind": "gamepad"
+      },
+      "dash_label": "冲刺 · A",
+      "pulse_label": "脉冲 · X",
+      "backpack_hint": "",
+      "engine_native_drag": false,
+      "connected_gamepads": []
+    },
+    "backpack": {
+      "capture_sha256": "fb6d8f47f3cd7eeb56b2053e05ba69ad07d1377066ce880b464048dcab40e6e3",
+      "device": {
+        "gamepad_id": 0,
+        "kind": "gamepad"
+      },
+      "dash_label": "",
+      "pulse_label": "",
+      "backpack_hint": "A放置骨针；X旋转，B取消。暂无合成或装符候选。",
+      "engine_native_drag": false,
+      "connected_gamepads": []
+    },
+    "drag": {
+      "capture_sha256": "105a124ac03c6da96bd1edfa6d36e2c182fee1680d8c9e255d299c3d3b6ab303",
+      "device": {
+        "gamepad_id": 0,
+        "kind": "gamepad"
+      },
+      "dash_label": "",
+      "pulse_label": "",
+      "backpack_hint": "骨针超出已解锁背包，请拖回背包范围后松手。暂无合成或装符候选。",
+      "engine_native_drag": true,
+      "connected_gamepads": []
+    },
+    "pack-gamepad": {
+      "capture_sha256": "0dc9ff385093fc2756cac17361fa691bf5d863fa10bc0c14e7caa0c9272bbd6d",
+      "device": {
+        "gamepad_id": 0,
+        "kind": "gamepad"
+      },
+      "dash_label": "冲刺 · A",
+      "pulse_label": "脉冲 · X",
+      "backpack_hint": "",
+      "engine_native_drag": false,
+      "connected_gamepads": []
+    },
+    "pack-keyboard_return": {
+      "capture_sha256": "4bb0fb477b2470c274a8b2702772bab9cef44472bd353d83059a646c8404ad22",
+      "device": {
+        "gamepad_id": -1,
+        "kind": "keyboard"
+      },
+      "dash_label": "冲刺 · E",
+      "pulse_label": "脉冲 · R",
+      "backpack_hint": "",
+      "engine_native_drag": false,
+      "connected_gamepads": []
+    },
+    "pack-backpack": {
+      "capture_sha256": "fb6d8f47f3cd7eeb56b2053e05ba69ad07d1377066ce880b464048dcab40e6e3",
+      "device": {
+        "gamepad_id": 0,
+        "kind": "gamepad"
+      },
+      "dash_label": "",
+      "pulse_label": "",
+      "backpack_hint": "A放置骨针；X旋转，B取消。暂无合成或装符候选。",
+      "engine_native_drag": false,
+      "connected_gamepads": []
+    },
+    "pack-drag": {
+      "capture_sha256": "105a124ac03c6da96bd1edfa6d36e2c182fee1680d8c9e255d299c3d3b6ab303",
+      "device": {
+        "gamepad_id": 0,
+        "kind": "gamepad"
+      },
+      "dash_label": "",
+      "pulse_label": "",
+      "backpack_hint": "骨针超出已解锁背包，请拖回背包范围后松手。暂无合成或装符候选。",
+      "engine_native_drag": true,
+      "connected_gamepads": []
+    }
+  },
+  "visual_review": {
+    "native_size": [
+      1280,
+      720
+    ],
+    "independent_review": true,
+    "blocking_findings": [],
+    "actual_960_by_540_window": "New UI suite verifies prompt labels, bars, boss layout and focus",
+    "timing_evidence": "Static ready screenshots show prompt visibility; cached partial cooldown arrays and real pause tests prove no extra timer progress"
+  },
+  "performance": {
+    "summary": "reports/input-prompts/performance.json",
+    "average_fps": 114.685029780779,
+    "p99_frame_ms": 16.998,
+    "source_files": 65,
+    "window_observed_at_sample_seconds": 5,
+    "sample_prompt_switches": 117,
+    "drift_events_including_warmup": 3906,
+    "drift_changed_device": false
+  },
+  "simulation": {
+    "summary": "reports/input-prompts/simulation.json",
+    "runs": 6,
+    "wins": 6,
+    "all_result_fields_match_previous_build": true
+  },
+  "distribution": {
+    "path": "build/Embers-windows-x86_64.zip",
+    "sha256": "d3b52fbc29f6ef6daca0597937c82959d66b7d50f12a0f1cd7f156da84bc5d4b",
+    "previous_package": "build/Embers-windows-before-input-prompts-07e9b53.zip",
+    "previous_sha256": "a5038a5706561555cf2a89ba38297afeaf648c7e084f0d42b33796bd68953481",
+    "zip_crc_members_and_pe_x64_passed": true,
+    "actual_release_exe_smoke": true,
+    "compiled_pack_external_fixture": "Matching Windows engine loads shipped PCK plus external fixture; separate from EXE smoke",
+    "system_mouse": {
+      "initial": "gamepad A/X from parsed Y event",
+      "actual_click_result": "keyboard E/R",
+      "skills_used": 0,
+      "normal_window_close_exit": 0
+    }
+  },
+  "regression_details": {
+    "controls_ui_keyboard_scenarios": "Send a real parsed keyboard event before asserting keyboard text after prior gamepad navigation; exact labels/tooltips and layout assertions retained",
+    "signal_argument_bug": "First GUI listener cancels held_uid; snapshot source/target/cell/rotation before emit keeps later listeners stable, with actual transactions and adversarial first-listener tests"
+  },
+  "preservation": {
+    "files_checked": 429,
+    "all_previous_assets_data_reports_identical": true,
+    "asset_count": 51
+  },
+  "source_sha256": {
+    ".gitignore": "c993dbc8cd3831aa1de87fa8ad14796c1a9838bebf47a336874a3e2c3a839710",
+    "README.md": "26a40061f1bb81790df652e0788c5c9c6af1daf54acf4e17e1de535c7c371cee",
+    "docs/backpack.md": "d76c953f6e741fed55a52e7f64c8d637a84d906d79692f3b9a5fb825a03c71be",
+    "docs/controls.md": "74ffdaabf2faf3f43434d8f54c35e36d27b7bca2f112594477371adfd4dc024c",
+    "docs/input-prompts.md": "178fe3b39c2c1355d5c0bf821acc2f0277d402098e92ef74ab7fab3ff42e77fa",
+    "scripts/core/input_device_tracker.gd": "2a7b98d19c64706167e6ea5c2afa29a55eb0105241e3d8d4dd4b0aaa62a01327",
+    "scripts/core/input_device_tracker.gd.uid": "33c12e01f0409bba65819607e084ea276555527c32c9d7df5fd8de9abb145051",
+    "scripts/ui/backpack_grid.gd": "168c62428356df3e60534e9fdbe0712b481f76eec822ddeeb15722ca3b325d0f",
+    "scripts/ui/game_ui.gd": "8e11c42c77e6803938cb03328ac5860409cbe46be8b891d1b6339a131e178956",
+    "tests/test_controls_ui.gd": "6646ea3560a0c2ea37cedab9a909f797b169e79e22f6eb4b2483a029cc65959e",
+    "tests/test_input_devices.gd": "82e50c122f3d7e474558a6daa9170ed794bc63cb3db82567513a2a5155a1bb63",
+    "tests/test_input_devices.gd.uid": "76af9b7cf9d7b136f427908d84dd3be82b8d0b5d57bb7a39b92bb3281c4a16ea",
+    "tests/test_input_prompts_flow.gd": "c80664e132c082af8cc9a6598cc040a1a5a3c97dd252025a96bd3c0ef8643e2b",
+    "tests/test_input_prompts_flow.gd.uid": "8cd3296a3ee9252c7471577883080f7d2f7bfa1bf4c5bf7fb2aeafdc9cdf9558",
+    "tests/test_input_prompts_ui.gd": "d2542cd8cc07864b0ed244524bb5d327f82a316f6b163e0bc09b87fbe904e766",
+    "tests/test_input_prompts_ui.gd.uid": "e35a4b9bd37a163c84d9fc6b6f52c9eab2a041d8bbf39de4cc13aa21ba2d5d94",
+    "tools/benchmark_dash.gd": "069cb132feb338fca6f64ac3bbf4b9e3b7b80f7804fd0a4a1ca4bd9b99fd2dde",
+    "tools/preview_input_prompts.gd": "6a0c7d8ad4f2a2e36cf29d5aff0e7d8cd8693947e9726c8c332227bce6e32d5e",
+    "tools/preview_input_prompts.gd.uid": "c0b89c4ec19ed69e2d44aa3b95134cffafb3c78a265ec91f696d120bf1c628de",
+    "tools/test.ps1": "975a713e060a87e59b949e2b406ebec0840e834f743146179cc0c2f9a408675c",
+    "tools/test.sh": "4ba69a4f5ffd6ea211fa2ca736e15a620b4be2519b3533be43ea310b400485f1"
+  },
+  "evidence_sha256": {
+    "import.log": "984814af263a9129154588701dcdf908bef5dfeb8c48e2f16a2eb943d4d45a42",
+    "regression.log": "1bb470592964ce27551aa7f0c0653af81ca033c4c26168ec15e3fcace921d1d4",
+    "performance.log": "b5e0cfb0b24dbd043e9692b88f22928d5c2efea5434298d546f154d81f710dc1",
+    "performance-raw.json": "888563e8774498ad139009f5365bb96fe1210753f5ef31140cdab5f728e7b93b",
+    "performance-start-raw.json": "c0af9682b704a20290b5cdfa8ef814f8ba73e205237801abcae07c3c783add98",
+    "default-policy.jsonl": "53b4aadd440abb00c113d9c3aa4c18d085aca3eebf45dcff7cebf5880650b9bb",
+    "pulse-policy.jsonl": "20f5dd3bf27b89563494a1d057a60cd0d95189ee16cfc9b05177fbc1473c187e",
+    "build.log": "2dad048640140427e42faead0b1673b12a36c410bb1879a92f965c338b7a72b4",
+    "export-smoke.log": "dc853198e0b4cee49e84fadba9ebdbce511f8f2e69379619a5ba425402924d84",
+    "pack-interactive.log": "3f15663599d0fa863eb00af7e126897f272d6b379c1cbb23ce556dea111e0c13",
+    "input_devices-native.log": "fd43915b5fc5d3ce8a844c23794adaca4ab22fa3f6308db7e6c094697502e898",
+    "input_prompts_ui-native.log": "0cc3387c369de6179d830a1c8b398e0dff2b6f2fb00dee3906dfacec6f38f48b",
+    "input_prompts_flow-native.log": "ec3967c414b2606854e7c7e1743ac3cd15224f104ae4f8ec16c6b23ec1d79985",
+    "controls_flow-native.log": "b81acf48e80c4ae86947948631ae854d39d1bb052ce5e340d729f490f4c810b9",
+    "controls_ui-native.log": "fbb7a797c60fd30bbf04df7852937317ffaefea06c5f3ecf2100ee0ae8324e0f",
+    "gamepad_backpack-native.log": "e7799b224fe1e0ffe53aed01322268cbcc6e5945bd310144aa07595e7a14e2e6",
+    "dash_ui-native.log": "60fc112387eff1bedb6b6220011331b8d93d20028a50520d70ca9e881af5c2a2",
+    "pulse_ui-native.log": "121313491d6aa97c9ba669ae1a5358c842aff3af7753efcab02218a78987e9cf",
+    "backpack_targets-native.log": "58d4d678610b5525483bcb39cb4691d6291463642b49a94e321104ee0d45eba7",
+    "rogue_ui-native.log": "1831866a07dad9557a1ea0af4a067dd92823fd18a440ea860a71953af079e25f",
+    "keyboard.log": "e3950ac3cba25efdba8b4efc06a0cb4d1cd5651a3394323e6434dfdf3bd6cb38",
+    "gamepad.log": "9cf5e569f7f62aba54e4d7b85a4c1c62ae5eeb94586351248d88e0f0e242f1a6",
+    "keyboard_return.log": "81d4683a90b6e27c4dca78d96ff336fb700d977928f581b895b93fe5effb1aba",
+    "paused.log": "0f9197bce128c42ef0ca449c5b950ab63158ef472c9f1183284ec98fd3550157",
+    "backpack.log": "8c928a5de728c7eaf4eb96eea6025f751fe0caee939e3ad3cdca36d5d4f29239",
+    "drag.log": "bc770dafba9f629ef55f934516781e6416c5f82e97df9f1081b28fc2f869d3b4",
+    "pack-gamepad.log": "9cf5e569f7f62aba54e4d7b85a4c1c62ae5eeb94586351248d88e0f0e242f1a6",
+    "pack-keyboard_return.log": "81d4683a90b6e27c4dca78d96ff336fb700d977928f581b895b93fe5effb1aba",
+    "pack-backpack.log": "8c928a5de728c7eaf4eb96eea6025f751fe0caee939e3ad3cdca36d5d4f29239",
+    "pack-drag.log": "bc770dafba9f629ef55f934516781e6416c5f82e97df9f1081b28fc2f869d3b4"
+  },
+  "limits": [
+    "No physical gamepad connected; software button and axis events only",
+    "System verification here uses mouse; prior e/F6 injection identity limitation remains unresolved",
+    "No macOS rebuild on Windows",
+    "60-second pressure, no repeated 300-second sample",
+    "No human controller difficulty/balance trial or vendor glyph compatibility claim"
+  ]
+}

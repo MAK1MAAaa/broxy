@@ -1,0 +1,1398 @@
+{
+  "created_utc": "2026-10-28T17:26:46.085836+00:00",
+  "base_commit": "8ed662bd60342f94ee89c3b47435cee9700cdef3",
+  "scope": "Four-map materials, six sprite material passes and static batched actor/pickup grounding; gameplay unchanged",
+  "engine": "Godot 4.7.2 ed1daf0bf",
+  "platform": "Windows x86_64",
+  "godot_suites": 92,
+  "diagnostic_entries": 5,
+  "regression": {
+    "invocations": 97,
+    "assertions": 31899,
+    "failures": 0,
+    "log_sha256": "3c414e630d6e6df3a9f49d8f793b9e92adf432faa9aa51d3c0b788a53b19b375"
+  },
+  "python_tests": 49,
+  "native": {
+    "grounding_painter": {
+      "invocations": 1,
+      "assertions": 33,
+      "failures": 0,
+      "log_sha256": "2a2954e9141791a38a53741986bc1888ffd6d475af896e062f715513a289b989"
+    },
+    "art_grounding": {
+      "invocations": 1,
+      "assertions": 20,
+      "failures": 0,
+      "log_sha256": "d03d7aebab29167f7d76d417df8fa182b2d64c65d9274334d0d0e5ccf12d1940"
+    },
+    "player_foreground": {
+      "invocations": 1,
+      "assertions": 50,
+      "failures": 0,
+      "log_sha256": "fa1cf28db97a77c79f349a79004faf10026960b2b1fd5fd617dae01181266807"
+    },
+    "enemy_telegraphs": {
+      "invocations": 1,
+      "assertions": 134,
+      "failures": 0,
+      "log_sha256": "7fc4353ac36749acbbb184c1f7bec68c2dcbfb3eb1d58faed3fe3bb3845604fc"
+    },
+    "impact_feedback": {
+      "invocations": 1,
+      "assertions": 109,
+      "failures": 0,
+      "log_sha256": "06c09c52b4d16c0937ff181846cb3183795fc23a854e1c5de22f841c8615eb9e"
+    },
+    "enemy_hit_style": {
+      "invocations": 1,
+      "assertions": 513,
+      "failures": 0,
+      "log_sha256": "350e6db39d21d3e02e66940b6dbbe49626680d2cc611acd49de2688a4a5e7847"
+    },
+    "adventure_art": {
+      "invocations": 1,
+      "assertions": 194,
+      "failures": 0,
+      "log_sha256": "64e87a86a1879818ed57f01aec0c89a57cb7a769cba6e04cede678966825d9c6"
+    },
+    "expanded_world": {
+      "invocations": 1,
+      "assertions": 189,
+      "failures": 0,
+      "log_sha256": "9f5fbd301219e00fb3aa6a23f3ac5ffde380f324ad1bbfdce5ae051b4deaafa0"
+    },
+    "skill_feedback": {
+      "invocations": 1,
+      "assertions": 91,
+      "failures": 0,
+      "log_sha256": "50c4b20b5475831621ec70454915761b4a2979ff19d7f1f93176d282a17d63dd"
+    }
+  },
+  "compiled_pck": {
+    "grounding_painter": {
+      "invocations": 1,
+      "assertions": 33,
+      "failures": 0,
+      "log_sha256": "6efec868a14b0fc8c83b866a2cf8dabec296523531e7f64774e55bb868a9b5e9"
+    },
+    "art_grounding": {
+      "invocations": 1,
+      "assertions": 20,
+      "failures": 0,
+      "log_sha256": "4e332345235ef5c360b225325fd2184199096eb8b4d1b1aaeb38ffc5aae5c97d"
+    },
+    "player_foreground": {
+      "invocations": 1,
+      "assertions": 50,
+      "failures": 0,
+      "log_sha256": "c944a83308a74c80079af83e167de7b29121f8eca8e1fbcac204a3eb2439b4bd"
+    },
+    "enemy_telegraphs": {
+      "invocations": 1,
+      "assertions": 121,
+      "failures": 0,
+      "log_sha256": "48386413575a985772d9719546e6bd49748957d06a42ea15970877589a75fa0a"
+    },
+    "impact_feedback": {
+      "invocations": 1,
+      "assertions": 109,
+      "failures": 0,
+      "log_sha256": "19b8c45c21e052df5bec30b6e8385498e9f6e24728fc93747d104e5aa8ab1252"
+    },
+    "enemy_hit_style": {
+      "invocations": 1,
+      "assertions": 513,
+      "failures": 0,
+      "log_sha256": "3e8b9ba262cff0d7680a428831a54cc112f26c93298e5ff0279596ca2bf63e93"
+    },
+    "adventure_art": {
+      "invocations": 1,
+      "assertions": 194,
+      "failures": 0,
+      "log_sha256": "d44593b17c93f28ce8f0558cd0d97378259f9aa07a6ec6a4d1ad8272a296d771"
+    },
+    "expanded_world": {
+      "invocations": 1,
+      "assertions": 189,
+      "failures": 0,
+      "log_sha256": "fa48343d24d1dad03b5ad1efe775b8a0c98f0e8f790fddb9c50afe7c65089ae5"
+    },
+    "skill_feedback": {
+      "invocations": 1,
+      "assertions": 91,
+      "failures": 0,
+      "log_sha256": "9a9fd5ff55a8b35eb8728f7ba791c5209ed8f640f4b0c9088667757a0cbb0aab"
+    }
+  },
+  "previews": {
+    "preview": {
+      "center": {
+        "arena_id": "mire",
+        "player": [
+          640.0,
+          365.0
+        ],
+        "camera_center": [
+          640.0,
+          365.0
+        ],
+        "window_size": [
+          1280,
+          720
+        ],
+        "enemy_markers": 14,
+        "terrain_markers": 11,
+        "grounding": {
+          "active_count": 20,
+          "capacity": 761,
+          "draw_commands": 1,
+          "enemy_count": 14,
+          "pickup_count": 5,
+          "player_count": 1
+        },
+        "capture_size": [
+          1280,
+          720
+        ],
+        "png_sha256": "84f8c1770f021df74b0d2eb7eaa1b27a6832c18b1cf9c0b3371a5ae3ec4319b0"
+      },
+      "northwest": {
+        "arena_id": "mire",
+        "player": [
+          -1066.0,
+          -519.0
+        ],
+        "camera_center": [
+          -506.0,
+          -319.0
+        ],
+        "window_size": [
+          1280,
+          720
+        ],
+        "enemy_markers": 14,
+        "terrain_markers": 11,
+        "grounding": {
+          "active_count": 20,
+          "capacity": 761,
+          "draw_commands": 1,
+          "enemy_count": 14,
+          "pickup_count": 5,
+          "player_count": 1
+        },
+        "capture_size": [
+          1280,
+          720
+        ],
+        "png_sha256": "074cd4b1c702673daefca1a1706abd1ada4d2406dc4ff3e7ad4bebc8a4456e01"
+      },
+      "northeast": {
+        "arena_id": "mire",
+        "player": [
+          2346.0,
+          -519.0
+        ],
+        "camera_center": [
+          1994.0,
+          -319.0
+        ],
+        "window_size": [
+          1280,
+          720
+        ],
+        "enemy_markers": 14,
+        "terrain_markers": 11,
+        "grounding": {
+          "active_count": 20,
+          "capacity": 761,
+          "draw_commands": 1,
+          "enemy_count": 14,
+          "pickup_count": 5,
+          "player_count": 1
+        },
+        "capture_size": [
+          1280,
+          720
+        ],
+        "png_sha256": "68e3bcccfe5f5c23d847fcd78ef3edc4d2cafac136393549a9cf5543e0b9d06d"
+      },
+      "southeast": {
+        "arena_id": "mire",
+        "player": [
+          2346.0,
+          1249.0
+        ],
+        "camera_center": [
+          1994.0,
+          1065.0
+        ],
+        "window_size": [
+          1280,
+          720
+        ],
+        "enemy_markers": 14,
+        "terrain_markers": 11,
+        "grounding": {
+          "active_count": 19,
+          "capacity": 761,
+          "draw_commands": 1,
+          "enemy_count": 14,
+          "pickup_count": 4,
+          "player_count": 1
+        },
+        "capture_size": [
+          1280,
+          720
+        ],
+        "png_sha256": "9c6a04354df7cea6c51e8701b56365fae73bfd8c8319a7d29d1bbc40584ff7a7"
+      },
+      "distant": {
+        "arena_id": "mire",
+        "player": [
+          1880.0,
+          910.0
+        ],
+        "camera_center": [
+          1880.0,
+          910.0
+        ],
+        "window_size": [
+          1280,
+          720
+        ],
+        "enemy_markers": 14,
+        "terrain_markers": 11,
+        "grounding": {
+          "active_count": 20,
+          "capacity": 761,
+          "draw_commands": 1,
+          "enemy_count": 14,
+          "pickup_count": 5,
+          "player_count": 1
+        },
+        "capture_size": [
+          1280,
+          720
+        ],
+        "png_sha256": "d43539a5aa5cff4a78f57dd498644915aef0bdefa9b79c588acf9f1b3b05606c"
+      },
+      "boss": {
+        "arena_id": "mire",
+        "player": [
+          1880.0,
+          910.0
+        ],
+        "camera_center": [
+          1880.0,
+          910.0
+        ],
+        "window_size": [
+          1280,
+          720
+        ],
+        "enemy_markers": 15,
+        "terrain_markers": 11,
+        "grounding": {
+          "active_count": 21,
+          "capacity": 761,
+          "draw_commands": 1,
+          "enemy_count": 15,
+          "pickup_count": 5,
+          "player_count": 1
+        },
+        "capture_size": [
+          1280,
+          720
+        ],
+        "png_sha256": "5c9eca65eff45dd0b7d566a2ff5597ebc1a54ddcdb26fa943fe5074343787b6d"
+      },
+      "small": {
+        "arena_id": "mire",
+        "player": [
+          1880.0,
+          910.0
+        ],
+        "camera_center": [
+          1880.0,
+          910.0
+        ],
+        "window_size": [
+          960,
+          540
+        ],
+        "enemy_markers": 14,
+        "terrain_markers": 11,
+        "grounding": {
+          "active_count": 20,
+          "capacity": 761,
+          "draw_commands": 1,
+          "enemy_count": 14,
+          "pickup_count": 5,
+          "player_count": 1
+        },
+        "capture_size": [
+          1280,
+          720
+        ],
+        "png_sha256": "d43539a5aa5cff4a78f57dd498644915aef0bdefa9b79c588acf9f1b3b05606c"
+      },
+      "reliquary": {
+        "arena_id": "reliquary",
+        "player": [
+          1880.0,
+          910.0
+        ],
+        "camera_center": [
+          1880.0,
+          910.0
+        ],
+        "window_size": [
+          1280,
+          720
+        ],
+        "enemy_markers": 14,
+        "terrain_markers": 0,
+        "grounding": {
+          "active_count": 20,
+          "capacity": 761,
+          "draw_commands": 1,
+          "enemy_count": 14,
+          "pickup_count": 5,
+          "player_count": 1
+        },
+        "capture_size": [
+          1280,
+          720
+        ],
+        "png_sha256": "0800b3f24a763965a565c73d0f4c3dde81824e37f159929e9274183a98357d13"
+      },
+      "mire": {
+        "arena_id": "mire",
+        "player": [
+          1880.0,
+          910.0
+        ],
+        "camera_center": [
+          1880.0,
+          910.0
+        ],
+        "window_size": [
+          1280,
+          720
+        ],
+        "enemy_markers": 14,
+        "terrain_markers": 11,
+        "grounding": {
+          "active_count": 20,
+          "capacity": 761,
+          "draw_commands": 1,
+          "enemy_count": 14,
+          "pickup_count": 5,
+          "player_count": 1
+        },
+        "capture_size": [
+          1280,
+          720
+        ],
+        "png_sha256": "d43539a5aa5cff4a78f57dd498644915aef0bdefa9b79c588acf9f1b3b05606c"
+      },
+      "glacier": {
+        "arena_id": "glacier",
+        "player": [
+          1880.0,
+          910.0
+        ],
+        "camera_center": [
+          1880.0,
+          910.0
+        ],
+        "window_size": [
+          1280,
+          720
+        ],
+        "enemy_markers": 14,
+        "terrain_markers": 11,
+        "grounding": {
+          "active_count": 20,
+          "capacity": 761,
+          "draw_commands": 1,
+          "enemy_count": 14,
+          "pickup_count": 5,
+          "player_count": 1
+        },
+        "capture_size": [
+          1280,
+          720
+        ],
+        "png_sha256": "9dd81004f9b358de2729dcc0de8d17885e446953ba322adeac0fb7111e2f7b1b"
+      },
+      "ashland": {
+        "arena_id": "ashland",
+        "player": [
+          1880.0,
+          910.0
+        ],
+        "camera_center": [
+          1880.0,
+          910.0
+        ],
+        "window_size": [
+          1280,
+          720
+        ],
+        "enemy_markers": 14,
+        "terrain_markers": 12,
+        "grounding": {
+          "active_count": 20,
+          "capacity": 761,
+          "draw_commands": 1,
+          "enemy_count": 14,
+          "pickup_count": 5,
+          "player_count": 1
+        },
+        "capture_size": [
+          1280,
+          720
+        ],
+        "png_sha256": "bc453b448051bc3a621b8020ff1244a6c65023cca14c8a51ad229740105041bd"
+      },
+      "reliquary_inlay": {
+        "arena_id": "reliquary",
+        "player": [
+          1540.0,
+          365.0
+        ],
+        "camera_center": [
+          1540.0,
+          365.0
+        ],
+        "window_size": [
+          1280,
+          720
+        ],
+        "enemy_markers": 14,
+        "terrain_markers": 0,
+        "grounding": {
+          "active_count": 20,
+          "capacity": 761,
+          "draw_commands": 1,
+          "enemy_count": 14,
+          "pickup_count": 5,
+          "player_count": 1
+        },
+        "capture_size": [
+          1280,
+          720
+        ],
+        "png_sha256": "b03a70f3509e77e8711004132602f49f678d10ec7bce9b8d6ea063ccf998437c"
+      },
+      "mire_inlay": {
+        "arena_id": "mire",
+        "player": [
+          1540.0,
+          365.0
+        ],
+        "camera_center": [
+          1540.0,
+          365.0
+        ],
+        "window_size": [
+          1280,
+          720
+        ],
+        "enemy_markers": 14,
+        "terrain_markers": 11,
+        "grounding": {
+          "active_count": 20,
+          "capacity": 761,
+          "draw_commands": 1,
+          "enemy_count": 14,
+          "pickup_count": 5,
+          "player_count": 1
+        },
+        "capture_size": [
+          1280,
+          720
+        ],
+        "png_sha256": "147db7dab85d78f3da34c6812f56c0cff48619a8d4388eefd0796c0bd20dd8d0"
+      },
+      "glacier_inlay": {
+        "arena_id": "glacier",
+        "player": [
+          1540.0,
+          365.0
+        ],
+        "camera_center": [
+          1540.0,
+          365.0
+        ],
+        "window_size": [
+          1280,
+          720
+        ],
+        "enemy_markers": 14,
+        "terrain_markers": 11,
+        "grounding": {
+          "active_count": 20,
+          "capacity": 761,
+          "draw_commands": 1,
+          "enemy_count": 14,
+          "pickup_count": 5,
+          "player_count": 1
+        },
+        "capture_size": [
+          1280,
+          720
+        ],
+        "png_sha256": "b2c83e4c0261a80248171a2a328ae5e9c485c9b16de193f6905c6f64553a3f73"
+      },
+      "ashland_inlay": {
+        "arena_id": "ashland",
+        "player": [
+          1540.0,
+          365.0
+        ],
+        "camera_center": [
+          1540.0,
+          365.0
+        ],
+        "window_size": [
+          1280,
+          720
+        ],
+        "enemy_markers": 14,
+        "terrain_markers": 12,
+        "grounding": {
+          "active_count": 20,
+          "capacity": 761,
+          "draw_commands": 1,
+          "enemy_count": 14,
+          "pickup_count": 5,
+          "player_count": 1
+        },
+        "capture_size": [
+          1280,
+          720
+        ],
+        "png_sha256": "6d045b027e7e101ddb148c67bcb24aa9ee6baaba35a9b32225bf1a58e778ee14"
+      }
+    },
+    "pack-preview": {
+      "center": {
+        "arena_id": "mire",
+        "player": [
+          640.0,
+          365.0
+        ],
+        "camera_center": [
+          640.0,
+          365.0
+        ],
+        "window_size": [
+          1280,
+          720
+        ],
+        "enemy_markers": 14,
+        "terrain_markers": 11,
+        "grounding": {
+          "active_count": 20,
+          "capacity": 761,
+          "draw_commands": 1,
+          "enemy_count": 14,
+          "pickup_count": 5,
+          "player_count": 1
+        },
+        "capture_size": [
+          1280,
+          720
+        ],
+        "png_sha256": "84f8c1770f021df74b0d2eb7eaa1b27a6832c18b1cf9c0b3371a5ae3ec4319b0",
+        "source_pixels_match": true
+      },
+      "northwest": {
+        "arena_id": "mire",
+        "player": [
+          -1066.0,
+          -519.0
+        ],
+        "camera_center": [
+          -506.0,
+          -319.0
+        ],
+        "window_size": [
+          1280,
+          720
+        ],
+        "enemy_markers": 14,
+        "terrain_markers": 11,
+        "grounding": {
+          "active_count": 20,
+          "capacity": 761,
+          "draw_commands": 1,
+          "enemy_count": 14,
+          "pickup_count": 5,
+          "player_count": 1
+        },
+        "capture_size": [
+          1280,
+          720
+        ],
+        "png_sha256": "074cd4b1c702673daefca1a1706abd1ada4d2406dc4ff3e7ad4bebc8a4456e01",
+        "source_pixels_match": true
+      },
+      "northeast": {
+        "arena_id": "mire",
+        "player": [
+          2346.0,
+          -519.0
+        ],
+        "camera_center": [
+          1994.0,
+          -319.0
+        ],
+        "window_size": [
+          1280,
+          720
+        ],
+        "enemy_markers": 14,
+        "terrain_markers": 11,
+        "grounding": {
+          "active_count": 20,
+          "capacity": 761,
+          "draw_commands": 1,
+          "enemy_count": 14,
+          "pickup_count": 5,
+          "player_count": 1
+        },
+        "capture_size": [
+          1280,
+          720
+        ],
+        "png_sha256": "68e3bcccfe5f5c23d847fcd78ef3edc4d2cafac136393549a9cf5543e0b9d06d",
+        "source_pixels_match": true
+      },
+      "southeast": {
+        "arena_id": "mire",
+        "player": [
+          2346.0,
+          1249.0
+        ],
+        "camera_center": [
+          1994.0,
+          1065.0
+        ],
+        "window_size": [
+          1280,
+          720
+        ],
+        "enemy_markers": 14,
+        "terrain_markers": 11,
+        "grounding": {
+          "active_count": 19,
+          "capacity": 761,
+          "draw_commands": 1,
+          "enemy_count": 14,
+          "pickup_count": 4,
+          "player_count": 1
+        },
+        "capture_size": [
+          1280,
+          720
+        ],
+        "png_sha256": "9c6a04354df7cea6c51e8701b56365fae73bfd8c8319a7d29d1bbc40584ff7a7",
+        "source_pixels_match": true
+      },
+      "distant": {
+        "arena_id": "mire",
+        "player": [
+          1880.0,
+          910.0
+        ],
+        "camera_center": [
+          1880.0,
+          910.0
+        ],
+        "window_size": [
+          1280,
+          720
+        ],
+        "enemy_markers": 14,
+        "terrain_markers": 11,
+        "grounding": {
+          "active_count": 20,
+          "capacity": 761,
+          "draw_commands": 1,
+          "enemy_count": 14,
+          "pickup_count": 5,
+          "player_count": 1
+        },
+        "capture_size": [
+          1280,
+          720
+        ],
+        "png_sha256": "d43539a5aa5cff4a78f57dd498644915aef0bdefa9b79c588acf9f1b3b05606c",
+        "source_pixels_match": true
+      },
+      "boss": {
+        "arena_id": "mire",
+        "player": [
+          1880.0,
+          910.0
+        ],
+        "camera_center": [
+          1880.0,
+          910.0
+        ],
+        "window_size": [
+          1280,
+          720
+        ],
+        "enemy_markers": 15,
+        "terrain_markers": 11,
+        "grounding": {
+          "active_count": 21,
+          "capacity": 761,
+          "draw_commands": 1,
+          "enemy_count": 15,
+          "pickup_count": 5,
+          "player_count": 1
+        },
+        "capture_size": [
+          1280,
+          720
+        ],
+        "png_sha256": "5c9eca65eff45dd0b7d566a2ff5597ebc1a54ddcdb26fa943fe5074343787b6d",
+        "source_pixels_match": true
+      },
+      "small": {
+        "arena_id": "mire",
+        "player": [
+          1880.0,
+          910.0
+        ],
+        "camera_center": [
+          1880.0,
+          910.0
+        ],
+        "window_size": [
+          960,
+          540
+        ],
+        "enemy_markers": 14,
+        "terrain_markers": 11,
+        "grounding": {
+          "active_count": 20,
+          "capacity": 761,
+          "draw_commands": 1,
+          "enemy_count": 14,
+          "pickup_count": 5,
+          "player_count": 1
+        },
+        "capture_size": [
+          1280,
+          720
+        ],
+        "png_sha256": "d43539a5aa5cff4a78f57dd498644915aef0bdefa9b79c588acf9f1b3b05606c",
+        "source_pixels_match": true
+      },
+      "reliquary": {
+        "arena_id": "reliquary",
+        "player": [
+          1880.0,
+          910.0
+        ],
+        "camera_center": [
+          1880.0,
+          910.0
+        ],
+        "window_size": [
+          1280,
+          720
+        ],
+        "enemy_markers": 14,
+        "terrain_markers": 0,
+        "grounding": {
+          "active_count": 20,
+          "capacity": 761,
+          "draw_commands": 1,
+          "enemy_count": 14,
+          "pickup_count": 5,
+          "player_count": 1
+        },
+        "capture_size": [
+          1280,
+          720
+        ],
+        "png_sha256": "0800b3f24a763965a565c73d0f4c3dde81824e37f159929e9274183a98357d13",
+        "source_pixels_match": true
+      },
+      "mire": {
+        "arena_id": "mire",
+        "player": [
+          1880.0,
+          910.0
+        ],
+        "camera_center": [
+          1880.0,
+          910.0
+        ],
+        "window_size": [
+          1280,
+          720
+        ],
+        "enemy_markers": 14,
+        "terrain_markers": 11,
+        "grounding": {
+          "active_count": 20,
+          "capacity": 761,
+          "draw_commands": 1,
+          "enemy_count": 14,
+          "pickup_count": 5,
+          "player_count": 1
+        },
+        "capture_size": [
+          1280,
+          720
+        ],
+        "png_sha256": "d43539a5aa5cff4a78f57dd498644915aef0bdefa9b79c588acf9f1b3b05606c",
+        "source_pixels_match": true
+      },
+      "glacier": {
+        "arena_id": "glacier",
+        "player": [
+          1880.0,
+          910.0
+        ],
+        "camera_center": [
+          1880.0,
+          910.0
+        ],
+        "window_size": [
+          1280,
+          720
+        ],
+        "enemy_markers": 14,
+        "terrain_markers": 11,
+        "grounding": {
+          "active_count": 20,
+          "capacity": 761,
+          "draw_commands": 1,
+          "enemy_count": 14,
+          "pickup_count": 5,
+          "player_count": 1
+        },
+        "capture_size": [
+          1280,
+          720
+        ],
+        "png_sha256": "9dd81004f9b358de2729dcc0de8d17885e446953ba322adeac0fb7111e2f7b1b",
+        "source_pixels_match": true
+      },
+      "ashland": {
+        "arena_id": "ashland",
+        "player": [
+          1880.0,
+          910.0
+        ],
+        "camera_center": [
+          1880.0,
+          910.0
+        ],
+        "window_size": [
+          1280,
+          720
+        ],
+        "enemy_markers": 14,
+        "terrain_markers": 12,
+        "grounding": {
+          "active_count": 20,
+          "capacity": 761,
+          "draw_commands": 1,
+          "enemy_count": 14,
+          "pickup_count": 5,
+          "player_count": 1
+        },
+        "capture_size": [
+          1280,
+          720
+        ],
+        "png_sha256": "bc453b448051bc3a621b8020ff1244a6c65023cca14c8a51ad229740105041bd",
+        "source_pixels_match": true
+      },
+      "reliquary_inlay": {
+        "arena_id": "reliquary",
+        "player": [
+          1540.0,
+          365.0
+        ],
+        "camera_center": [
+          1540.0,
+          365.0
+        ],
+        "window_size": [
+          1280,
+          720
+        ],
+        "enemy_markers": 14,
+        "terrain_markers": 0,
+        "grounding": {
+          "active_count": 20,
+          "capacity": 761,
+          "draw_commands": 1,
+          "enemy_count": 14,
+          "pickup_count": 5,
+          "player_count": 1
+        },
+        "capture_size": [
+          1280,
+          720
+        ],
+        "png_sha256": "b03a70f3509e77e8711004132602f49f678d10ec7bce9b8d6ea063ccf998437c",
+        "source_pixels_match": true
+      },
+      "mire_inlay": {
+        "arena_id": "mire",
+        "player": [
+          1540.0,
+          365.0
+        ],
+        "camera_center": [
+          1540.0,
+          365.0
+        ],
+        "window_size": [
+          1280,
+          720
+        ],
+        "enemy_markers": 14,
+        "terrain_markers": 11,
+        "grounding": {
+          "active_count": 20,
+          "capacity": 761,
+          "draw_commands": 1,
+          "enemy_count": 14,
+          "pickup_count": 5,
+          "player_count": 1
+        },
+        "capture_size": [
+          1280,
+          720
+        ],
+        "png_sha256": "147db7dab85d78f3da34c6812f56c0cff48619a8d4388eefd0796c0bd20dd8d0",
+        "source_pixels_match": true
+      },
+      "glacier_inlay": {
+        "arena_id": "glacier",
+        "player": [
+          1540.0,
+          365.0
+        ],
+        "camera_center": [
+          1540.0,
+          365.0
+        ],
+        "window_size": [
+          1280,
+          720
+        ],
+        "enemy_markers": 14,
+        "terrain_markers": 11,
+        "grounding": {
+          "active_count": 20,
+          "capacity": 761,
+          "draw_commands": 1,
+          "enemy_count": 14,
+          "pickup_count": 5,
+          "player_count": 1
+        },
+        "capture_size": [
+          1280,
+          720
+        ],
+        "png_sha256": "b2c83e4c0261a80248171a2a328ae5e9c485c9b16de193f6905c6f64553a3f73",
+        "source_pixels_match": true
+      },
+      "ashland_inlay": {
+        "arena_id": "ashland",
+        "player": [
+          1540.0,
+          365.0
+        ],
+        "camera_center": [
+          1540.0,
+          365.0
+        ],
+        "window_size": [
+          1280,
+          720
+        ],
+        "enemy_markers": 14,
+        "terrain_markers": 12,
+        "grounding": {
+          "active_count": 20,
+          "capacity": 761,
+          "draw_commands": 1,
+          "enemy_count": 14,
+          "pickup_count": 5,
+          "player_count": 1
+        },
+        "capture_size": [
+          1280,
+          720
+        ],
+        "png_sha256": "6d045b027e7e101ddb148c67bcb24aa9ee6baaba35a9b32225bf1a58e778ee14",
+        "source_pixels_match": true
+      }
+    }
+  },
+  "feedback_previews": {
+    "feedback": {
+      "danger": {
+        "png_sha256": "371a31a667b93bfd9cea657f32fd27fa290a558373c1a9be29dfbb1e2c0c8401",
+        "flash": true,
+        "hostiles": 1,
+        "zones": 1
+      },
+      "flash_off": {
+        "png_sha256": "9fa80f2900c92a0376b8a4cc9d85dbc40c727f29578e0c56611b23494b2e145e",
+        "flash": false,
+        "hostiles": 0,
+        "zones": 0
+      }
+    },
+    "pack-feedback": {
+      "danger": {
+        "png_sha256": "371a31a667b93bfd9cea657f32fd27fa290a558373c1a9be29dfbb1e2c0c8401",
+        "flash": true,
+        "hostiles": 1,
+        "zones": 1
+      },
+      "flash_off": {
+        "png_sha256": "9fa80f2900c92a0376b8a4cc9d85dbc40c727f29578e0c56611b23494b2e145e",
+        "flash": false,
+        "hostiles": 0,
+        "zones": 0
+      }
+    }
+  },
+  "sprites": {
+    "player": {
+      "canvas": [
+        96,
+        96
+      ],
+      "changed_pixels": 594,
+      "alpha_sha256": "ae0bb7c0734df815db68c8dad0a6d4457797b9087a1cf92207f9501e6462175c",
+      "svg_sha256": "80497b724a6f9d6e93ab18d4c91a96254d1e83b236682e7d139864fe4e7c7fbf",
+      "transparent_silhouette_matches_base": true
+    },
+    "chaser": {
+      "canvas": [
+        64,
+        64
+      ],
+      "changed_pixels": 192,
+      "alpha_sha256": "d4b0c667fb2b88bd2960cfa2020355ee28706aefee87c01f72843f78c12efe77",
+      "svg_sha256": "ba224a94d3d129600b5bfed46a3193924bef2f9a9714761598d39b691f6b3e71",
+      "transparent_silhouette_matches_base": true
+    },
+    "rusher": {
+      "canvas": [
+        64,
+        64
+      ],
+      "changed_pixels": 128,
+      "alpha_sha256": "154abcc314bfcb23ecb57b2493208d8543c01a5522254958a80de97409fd09ac",
+      "svg_sha256": "91fedad5c2dc0217621c4570572b2276aec4f50d5a6f9e943b56201d3e5eab4a",
+      "transparent_silhouette_matches_base": true
+    },
+    "tank": {
+      "canvas": [
+        80,
+        80
+      ],
+      "changed_pixels": 244,
+      "alpha_sha256": "2ca90ecb60b5a8d33d5cf72ac5517a3c0e1d6b56e25966c170cbaebd7ae2d2f9",
+      "svg_sha256": "25a733fd6d50ae6796af908ba3e6750eea69fedeadcc4f4559aa74e5dd95bc60",
+      "transparent_silhouette_matches_base": true
+    },
+    "caster": {
+      "canvas": [
+        72,
+        72
+      ],
+      "changed_pixels": 140,
+      "alpha_sha256": "ea4aa60cf125eff898d0271abb376890f4ba7b0844931598510895b940491010",
+      "svg_sha256": "37ec2e89c22b4d3125f7cdff90ac8b36eae75a5e0a921c255bd8a51643fd5068",
+      "transparent_silhouette_matches_base": true
+    },
+    "boss": {
+      "canvas": [
+        160,
+        160
+      ],
+      "changed_pixels": 1328,
+      "alpha_sha256": "759858e678ea69c0eca69991f4e175008a72bef214b3c4c352b55ad128d6d6ad",
+      "svg_sha256": "f8bcaabf6229e55ee92d3f9f52833c78bf00743040cd113fe9501b1d70754cec",
+      "transparent_silhouette_matches_base": true
+    }
+  },
+  "pressure": {
+    "scenario": "backpack-skill-content-pressure",
+    "natural_run": false,
+    "duration_seconds": 60.0,
+    "actual_duration_seconds": 60.006597,
+    "warmup_seconds": 5.0,
+    "samples": 5031,
+    "average_fps": 83.8407817060514,
+    "p99_frame_ms": 18.427,
+    "sample_active_skill_uses": {
+      "arc_slash": 10,
+      "starfall": 6
+    },
+    "grounding": {
+      "capacity": 761,
+      "draw_command_peak": 1,
+      "peak_including_warmup": 501,
+      "sample_peak": 501
+    },
+    "minimum_pre_step_counts": {
+      "enemies": 300,
+      "pickups": 200,
+      "projectiles": 600
+    },
+    "settings": {
+      "flash": true,
+      "shake": true,
+      "volume": 0.65
+    },
+    "persistent_profile": false,
+    "source_hash": "3bd162d53408d36536e93d257fb5ab6514a4eacc3edc46dbc745129c37d25ff6",
+    "source_hash_algorithm": "sha256-path-and-content-manifest",
+    "checks": {
+      "backpack_skill_fx_pool": true,
+      "backpack_skill_inventory_and_real_casts": true,
+      "backpack_skill_source_coverage": true,
+      "dash_feedback": true,
+      "default_settings_and_no_profile": true,
+      "evasion_feedback": true,
+      "grounding_budget": true,
+      "load": true,
+      "performance": true,
+      "pulse_control": true
+    },
+    "passed": true
+  },
+  "source_files": {
+    "res://assets/starfall/icons/skill_arc_slash.svg": "cc0aa1d41e99732a41174a1abc38b42fe9589a7d4375c7385b9bf1f078ebfe6b",
+    "res://assets/starfall/icons/skill_pulse.svg": "748f83c7502fb4447db0c3074c1c9c83c8e48103641bb912af9c3f736885f20c",
+    "res://assets/starfall/icons/skill_starfall.svg": "234506b3e122c2e61652a85a34adf1136e9d9dbe91dff6b4887da29d0883be5b",
+    "res://assets/starfall/manifest.json": "a8534eaed70e7fefb46ce10edfbf336632f7cccf5e6331a0a29e120c79ebf4f3",
+    "res://assets/starfall/maps/expanded/ashland.svg": "b975a144b4173fb00ce16d0230585670d81cbad0370c611f613f8ec002852fb9",
+    "res://assets/starfall/maps/expanded/glacier.svg": "467de42f5e1db7d0bac6aa5c8fa3d231dfc0d4dd3bf2ec360524f20f8729eed5",
+    "res://assets/starfall/maps/expanded/manifest.json": "7e03f9b4054b486f3cd41bb71dbc5d0c23535c2bc8e9668f258931d8a6fa5665",
+    "res://assets/starfall/maps/expanded/mire.svg": "11b337a8474ec0d81a2dad9afcde5c2f242c67ffe1cfa2e4aaa57df120312b9c",
+    "res://assets/starfall/maps/expanded/reliquary.svg": "3e8699704e8b0da7dc6a3496701840a534f60c0f6b00ed4e4e4cdc31654df549",
+    "res://assets/starfall/sprites/boss.svg": "f8bcaabf6229e55ee92d3f9f52833c78bf00743040cd113fe9501b1d70754cec",
+    "res://assets/starfall/sprites/caster.svg": "37ec2e89c22b4d3125f7cdff90ac8b36eae75a5e0a921c255bd8a51643fd5068",
+    "res://assets/starfall/sprites/chaser.svg": "ba224a94d3d129600b5bfed46a3193924bef2f9a9714761598d39b691f6b3e71",
+    "res://assets/starfall/sprites/player.svg": "80497b724a6f9d6e93ab18d4c91a96254d1e83b236682e7d139864fe4e7c7fbf",
+    "res://assets/starfall/sprites/rusher.svg": "91fedad5c2dc0217621c4570572b2276aec4f50d5a6f9e943b56201d3e5eab4a",
+    "res://assets/starfall/sprites/tank.svg": "25a733fd6d50ae6796af908ba3e6750eea69fedeadcc4f4559aa74e5dd95bc60",
+    "res://data/arenas.json": "42cd428c8db69d572a9962bc20f4385d7790b3858aa60508daf722594f71edf1",
+    "res://data/enemies/boss.tres": "d8832c910af8845821579d29d5fb8ff4b30ba1333a53004347b1c6272fe934cb",
+    "res://data/enemies/caster.tres": "c2f1dffc0aaeb4b74837ef109d78a0bb536c583a9efc9cc5347b3b55ddb67e86",
+    "res://data/enemies/chaser.tres": "67b655cd3ad1919cfe4eea86cbc50ae32ee4ae8dcc426b70341b013a055b4c11",
+    "res://data/enemies/rusher.tres": "85f4a04a54297ccf16e4caf9f39444b97ec0fbfe4d5516263e322f953635e3aa",
+    "res://data/enemies/tank.tres": "7901efcd7ec48940d8bce6559dea80daf9c2d911ddd12257ed72d1fe80100b1a",
+    "res://data/relics/armor.tres": "dcff8f80667fbb41ef9f73669d122cd36e062f23281110bf1306e3a59178c142",
+    "res://data/relics/blood_pact.tres": "78d71d0242e87303c96429c5766862bbdd58243519422421a5d101f15fe85c73",
+    "res://data/relics/bulwark.tres": "9547c7b55bfff53664a2e982aaeffa07fb963c6452bc0461926d9d1a24d72fba",
+    "res://data/relics/damage.tres": "ad40db04c89e9ca4f77af604f4f9cb8b5d84c9f4a999e452a89082485fb2a9be",
+    "res://data/relics/echo_stone.tres": "fc11c36280d836528a3342403135554d32c0b55ad9e90790b4fb08a89cfa95b8",
+    "res://data/relics/fold_clasp.tres": "34d35a7c0650dc7d5be69a90531ecccd9a781ddeb13a2ccc4a4a7d10674ff929",
+    "res://data/relics/grave_candle.tres": "18509fdec8e9ae5bd11db3af139d8dcfd2f81b9f5db9037a037b35b4886e6072",
+    "res://data/relics/haste.tres": "064b75700f47e2dec990d09b320d2917e25cf1641fe2d753d4a6668591487c19",
+    "res://data/relics/hourglass.tres": "bf6298b13ed0010305b4ae5c8ead9140751858684d62d777997e69a1e20f8a4e",
+    "res://data/relics/magnet.tres": "beec14d470e303e96c08c6320abd256ec70bec60dbedf23b5cb89a7db23f021d",
+    "res://data/relics/moon_charm.tres": "7993bed835ff329f61cedf09f80842ebe3ffd511e3c4739a1b3c8366fc236c5c",
+    "res://data/relics/pilgrim.tres": "d7b566785fdd6d5506d6a4eb07da7e3148ab63eb7eb8a3050cd05877bb5652a8",
+    "res://data/relics/speed.tres": "d1d0536ad44c075d4519d9d20f9828655142fe67f13ffc8cb1131ee03918f0b6",
+    "res://data/relics/vitality.tres": "317a224d39c0d6642ae001106335fcfa68569d7cddb115facc0ea7c0d38855df",
+    "res://data/runes/blast.tres": "9aec7ae27721861b85b14354e6bb56ca4b4a5a365960ea7aa9bb8f33bfb67a54",
+    "res://data/runes/bounce.tres": "dba33aea9f6750ce5de9e318e1c22c6b671f416e7f59c3698af24c7dcfc95028",
+    "res://data/runes/pierce.tres": "23d69bda5fb1464befb7f89ef012f6980c0775e8e65644b7d16078919a3f540b",
+    "res://data/skills/arc_slash.tres": "2c31ccb6ff43c09eb57435222a9c1170e6195d5b688e07504a21eb208b2d5123",
+    "res://data/skills/pulse.tres": "58dd1a1f86535ac3593dc8c6134bac864996271e902eae9b1bf63da038d4feb3",
+    "res://data/skills/starfall.tres": "c3f98549e73cc880d5fc712bb0d326bc43fdbc402750f4c2e837d89b8b5b7219",
+    "res://data/waves/wave_1.tres": "0806ec860e50ff356f2446e0d36c26f7421bd54b4caef77c2c6b52c87d77f897",
+    "res://data/waves/wave_2.tres": "c215ce4849981a33e6f143e510ec4b29e5559efdc168e6c888f8ffa42a57dd70",
+    "res://data/waves/wave_3.tres": "40a1d88ca1d4e1b6fb6473eaa77c3f3a49b01b9ad39b6d642d10d275c7da5dfc",
+    "res://data/waves/wave_4.tres": "962f10a533021cca45e6227f42dedc58789558e8bccf21bd35802db18d732861",
+    "res://data/waves/wave_5.tres": "1da70e90df8b263cf7f17b22d64994bdd1849782629c9b69bbf05f0846349582",
+    "res://data/waves/wave_6.tres": "eacf2c8c19f344b7e16e3c1e253b30d0f789d60f3c23c508bd4cad85df963803",
+    "res://data/waves/wave_7.tres": "41e6b80f98711486684b71d3d086bfc6c7199596d4a085c6cd56f4afb7ac36ff",
+    "res://data/waves/wave_8.tres": "2a810cf965bb95c7c62d49528557863a923d9e4e66842df9c40de8c7a8ca7474",
+    "res://data/weapons/bone.tres": "8075b8056b9bbea735851b14bdac72df5caef4284d3ce6fc50da2440864a2429",
+    "res://data/weapons/comet.tres": "6d302e805adcf88fe9f58fd5b9ab9d4a055020ec183de3cd2f1cd805722f1a88",
+    "res://data/weapons/crescent.tres": "0a6eb02322bff3b3e45dc345067baec13a96344cd1c34c0997cc42ba766c019b",
+    "res://data/weapons/ember.tres": "06839bc5d88aae315b5b5b1a55025b26b57e520027bbf62723e24b523b1c9d0f",
+    "res://data/weapons/frost.tres": "59e51fdc531e50a935c17da464ccd7c98877c0f84d757603b16c523a72c7356b",
+    "res://data/weapons/return_ring.tres": "431a26a2448b5a3c5423bb27886eeb3d4d5cb74bfc2852901de019f1f1dc734e",
+    "res://data/weapons/scatter.tres": "6e946abd218cbf513afd70326fe09a6bc3f9430885104190d389cb7cf3e81992",
+    "res://data/weapons/storm.tres": "dfa9ddc32abfe9026d8253fe97c7fa0254e9d9bdbcb28f1fb25d6cea54c058ca",
+    "res://project.godot": "1f5418f6b3f7be4dec17318adc96bfb899fa3b9f75541c35a269e391e0ba1cdc",
+    "res://scenes/main.tscn": "0d1a22532da1a02ae8891b362b96d8c1493c66fa67d6a87a7f12dcd79186dfc0",
+    "res://scripts/combat/active_skill_painter.gd": "a412f3d346d8331956a6bcc0335df51d7c34c43aa53a590985c728d806251a76",
+    "res://scripts/combat/bot_policy.gd": "814d8cf96fd89b6b3ca8a9fdf7243f42fa6ca765eb83cd8a6bc4f8deeee6d075",
+    "res://scripts/combat/combat_sim.gd": "1d6665e2f71063df62ef9ee4b613103e0d686e5bf1fa33272b0df08ca27a60a8",
+    "res://scripts/combat/combat_world.gd": "0a7c005f320b383afd2e589e295942463cf0504680d79bd6f70e7407d5c8bfce",
+    "res://scripts/combat/enemy_telegraph_painter.gd": "4750e8c434ef2eac723d1cb6cb3bef5386734cd369a80f001b0467a3211af2e6",
+    "res://scripts/combat/grounding_painter.gd": "f5edc536bcaaaf8802d3b677d4b802f145d533da5c1e34d08594f1087f1e29a5",
+    "res://scripts/combat/impact_painter.gd": "0366327196c07f810e77869db84161cc1c633f466f15586d5035d50f3a0e006b",
+    "res://scripts/combat/projectile_painter.gd": "6b9395f66e4f99269388848edbad628d0436973d9e33fbd9e06b5093d6ff48e9",
+    "res://scripts/core/adventure_art.gd": "ebd51ea889d2b3e2b5399ca280176136594170ea2909aa2a9591f5f99b36f6b0",
+    "res://scripts/core/arena_catalog.gd": "90eee3ac64e1893f9240017e547444774c3c2130c2597e65a2b6bd8699be9ebe",
+    "res://scripts/core/backpack_inventory.gd": "e490c0f1b00f548ee3e0baf3c64077a2fd47ffa5397e00def564857cb46a7a4e",
+    "res://scripts/core/backpack_resonance.gd": "29d937b97ba2a076acc4439d6fd42b7d785f6353af0bd12da249ae44a5c4b17f",
+    "res://scripts/core/control_bindings.gd": "a8c72d831274fad22c893af38335219322262e4e94bdb5742c7bd51cc1bc2312",
+    "res://scripts/core/game_store.gd": "390ac85b2f79b71b901b1008f1e4160e9f5c4d81eefc72fcf7625d75651e19a4",
+    "res://scripts/core/input_device_tracker.gd": "e41bb3b998cf86ef57f35fff1eed8dd62d1151e0c6bd86f561818057973bae64",
+    "res://scripts/core/run_state.gd": "315fc98ede39d467193bdef028cb94dd36d42c619ffef4e9f7bcddbdfcaf4040",
+    "res://scripts/core/sound_bank.gd": "aafab1b8c70fb3d0bd39cb6df798cfc4dd9cd8e936f5c36bc66fb9d309ea201e",
+    "res://scripts/data/active_skill_rules.gd": "59282fbb05de10eefe9aa45c1b88b530c8efd353b65d41a6b5123afce04cccef",
+    "res://scripts/data/content_def.gd": "64c9867d89c19021d38c1b4015c7a2777a35d7116411697a01bd0a152b821f94",
+    "res://scripts/data/dash_rules.gd": "385b45260f8014ac41c4f39a449f63d1a3568b9c88d0151799557aa0443db416",
+    "res://scripts/data/game_catalog.gd": "932ed2e437e6c25514b0101a1de39c3dba3d33664df41fd92798239c9318076b",
+    "res://scripts/data/pulse_rules.gd": "d3bdb993eceaea0f954defa08675bfb4b42281ed05a3dd542973d615b95339f5",
+    "res://scripts/data/rogue_rules.gd": "42d48acedb56d88a3d59cf74e416288b9a63b489ba66bab8b41298156df706ea",
+    "res://scripts/data/rune_rules.gd": "66a9dbcec6adbca30ef9c43848ccc905a5bd43bd91c5906b88ae38833fe4fce4",
+    "res://scripts/main.gd": "ccf7c94b60b8c03312236d5bcb57abd03f3c7edb6b2942c16de7aa75206a4ce2",
+    "res://scripts/ui/backpack_grid.gd": "4d15e130b35adf3f2a00a88d968ea654441c588b56a4cc4458c1b516db065f33",
+    "res://scripts/ui/button_skin.gd": "59667ddeb55b8133c03ac587a64f237c25a80dea01af2c601139abd8b67b6d97",
+    "res://scripts/ui/game_ui.gd": "babb97e0540d304c228b9a7e1ce13105b902aa75b103e3129dc16802c2e36e55",
+    "res://scripts/ui/minimap_view.gd": "fc6b76f86c751c26fae2444b0a35f863699e198239116c2435168428a4aca883",
+    "res://scripts/ui/title_cover.gd": "5b5006cbca602ce105e20340f7e82dd71610f7c5d5b355c02b797be7e7b2c56c",
+    "res://tools/benchmark_dash.gd": "b415b1b117656952e57512e8f2aeddc08e2c4d078cc78579aa57772c37ff4f7b"
+  },
+  "source_files_match_after_checks": true,
+  "simulation": {
+    "default": {
+      "log_sha256": "4fa1ae3ee8ad0179546d9cf7f902f28539bb9e393d92208c00c758274702d4f2",
+      "previous_log_sha256": "4fa1ae3ee8ad0179546d9cf7f902f28539bb9e393d92208c00c758274702d4f2",
+      "all_fields_except_version_metadata_match_previous": true,
+      "runs": [
+        {
+          "seed": 2026,
+          "rune": "pierce",
+          "won": true,
+          "wave": 8,
+          "kills": 1876,
+          "elapsed": 318.167,
+          "active_skills": []
+        },
+        {
+          "seed": 2026,
+          "rune": "bounce",
+          "won": true,
+          "wave": 8,
+          "kills": 1912,
+          "elapsed": 317.9,
+          "active_skills": []
+        },
+        {
+          "seed": 2026,
+          "rune": "blast",
+          "won": true,
+          "wave": 8,
+          "kills": 1812,
+          "elapsed": 318.567,
+          "active_skills": []
+        }
+      ]
+    },
+    "pulse": {
+      "log_sha256": "a5c4aa90a0962d35423312ef2ad1285212feea8136e4140bcc5efa6712d59da5",
+      "previous_log_sha256": "a5c4aa90a0962d35423312ef2ad1285212feea8136e4140bcc5efa6712d59da5",
+      "all_fields_except_version_metadata_match_previous": true,
+      "runs": [
+        {
+          "seed": 2026,
+          "rune": "pierce",
+          "won": true,
+          "wave": 8,
+          "kills": 1887,
+          "elapsed": 317.1,
+          "active_skills": [
+            {
+              "id": "pulse",
+              "kind": "skill",
+              "paid": 20,
+              "rank": 1,
+              "rotated": false,
+              "rune": {},
+              "uid": 3,
+              "x": 1,
+              "y": 0
+            }
+          ]
+        },
+        {
+          "seed": 2026,
+          "rune": "bounce",
+          "won": true,
+          "wave": 8,
+          "kills": 1893,
+          "elapsed": 317.9,
+          "active_skills": [
+            {
+              "id": "pulse",
+              "kind": "skill",
+              "paid": 20,
+              "rank": 1,
+              "rotated": false,
+              "rune": {},
+              "uid": 3,
+              "x": 1,
+              "y": 0
+            }
+          ]
+        },
+        {
+          "seed": 2026,
+          "rune": "blast",
+          "won": true,
+          "wave": 8,
+          "kills": 1805,
+          "elapsed": 318.3,
+          "active_skills": [
+            {
+              "id": "pulse",
+              "kind": "skill",
+              "paid": 20,
+              "rank": 1,
+              "rotated": false,
+              "rune": {},
+              "uid": 3,
+              "x": 1,
+              "y": 0
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "distribution": {
+    "build/Embers-windows-x86_64/Embers.exe": "d34d36f3be1a6c49c56525ae86469b92e4f417ddf0b43cf00dd80c385c4b0562",
+    "build/Embers-windows-x86_64/Embers.pck": "dc5165534dbaf608c2a544c7e22b9eb53093f05e58ffa365b56ee825037cd7a7",
+    "build/Embers-windows-x86_64.zip": "d85058ae1af282b970f02aa68809ab65674087e450d97cde6fc87074b94cef6c",
+    "build/Embers-windows-before-art-polish-8ed662b.zip": "b3fecc2720761b75292ab4cb64e346ce347dd816026f239be794cc7c7676688d"
+  },
+  "limitations": [
+    "Native pressure retains the central synthetic 300/600/200 layout",
+    "No physical gamepad, hardware audio approval or repeated 300-second pressure claim",
+    "macOS build_macos.sh not run in Windows"
+  ],
+  "raw_reports": "Logs, PNG captures and performance-raw.json remain local and ignored"
+}

@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "tool": "image_gen.imagegen built-in",
+  "mode": "edit",
+  "character_id": "alk",
+  "edit_request_summary": "Restore the existing panoramic sky-ruins cover composition. Replace its bird-beaked caster, floating book and wand with World Flipper protagonist Alk, referenced from the original portrait. Preserve the sky, floating ruins, golden astrolabe, ivy and candles. No added text or interface.",
+  "references": [
+    {
+      "id": "original_cover",
+      "path": "assets/title/cover.png",
+      "sha256": "1edd0ddc8105aa1529f3dbdf1925f5808430cc57cf9a37822092ed3ba79443c5",
+      "size": [
+        1280,
+        720
+      ]
+    },
+    {
+      "id": "alk_portrait",
+      "path": "assets/worldflipper/portraits/alk.png",
+      "sha256": "dd4ffd62af0330633000e2beefca43b07f1adc225d0c8db8b2c9eca6a497d58c",
+      "size": [
+        939,
+        1727
+      ]
+    }
+  ],
+  "external_game_character_reference": true,
+  "generated_output": {
+    "filename": "exec-967800bb-65a6-4299-9981-00ecc5b3c86a.png",
+    "local_archive": ".tools/worldflipper/cover-alk-generated.png",
+    "sha256": "bd09720b5b67266beced1473a33965282a73a267a74e669340ad8c9c20351ac9",
+    "size": [
+      1672,
+      941
+    ]
+  },
+  "normalized_output": {
+    "path": "assets/title/cover-alk.png",
+    "sha256": "c292081566c07b9e65a227126e36a118d89e69eb2898a066fe18d3c8d381bb91",
+    "size": [
+      1280,
+      720
+    ],
+    "mode": "RGB"
+  },
+  "technical_normalization": {
+    "tool": "Pillow 12.3.0",
+    "operation": "ImageOps.fit",
+    "resample": "LANCZOS",
+    "centering": [
+      0.5,
+      0.5
+    ],
+    "source_crop": [
+      0.0,
+      0.25,
+      1672.0,
+      940.75
+    ],
+    "description": "Preserve aspect ratio, crop one half source pixel from total height, then downsample to 1280x720; no content repaint."
+  },
+  "preserved_assets": [
+    {
+      "path": "assets/title/cover.png",
+      "sha256": "1edd0ddc8105aa1529f3dbdf1925f5808430cc57cf9a37822092ed3ba79443c5"
+    },
+    {
+      "path": "assets/title/cover.gif",
+      "sha256": "76fed25179b9a78e903ac3cf1e28c9cceace5df0e5309f27744a9e7186086804"
+    },
+    {
+      "path": "assets/title/animation.json",
+      "sha256": "f3f3f117a22a763b467ad2e06dff9672b75cc121ee52c8d937ad04879498aa5e"
+    },
+    {
+      "path": "assets/title/image-generation.json",
+      "sha256": "9b351ea6bb51c0b5a5c8ede384b4b9402562f4b90e84ec61d49ba642a7ccc3ba"
+    },
+    {
+      "path": "assets/worldflipper/title/cover.png",
+      "sha256": "4b11f31bfdf0916473b18739144ffe3eebd1d7caaa364ec05dd9555f75157dfe"
+    },
+    {
+      "path": "assets/worldflipper/title/cover.gif",
+      "sha256": "d3a163b8534016e09301d7936bcb325be0286550560f660f44049d355dcba4da"
+    },
+    {
+      "path": "assets/worldflipper/title/animation.json",
+      "sha256": "6ed88f38d323eff75f01c653ed122367c53c7914c6cc9562e638cd6e2d4c4acb"
+    }
+  ]
+}

@@ -5,6 +5,7 @@ var _failures: int = 0
 
 func _initialize() -> void:
 	_test_catalog()
+	_test_catalog_index_semantics()
 	_test_income_and_seed()
 	_test_weapon_transactions()
 	_test_rune_inventory()
@@ -30,9 +31,9 @@ func _buy(state: RunState, kind: String, id: String, price: int = 20) -> bool:
 	return state.buy_offer(0)
 
 func _test_catalog() -> void:
-	_check(GameCatalog.weapons().size() == 8, "Catalog has eight weapons")
+	_check(GameCatalog.weapons().size() == 21, "Catalog has twenty-one weapons")
 	_check(GameCatalog.runes().size() == 3, "Catalog has three runes")
-	_check(GameCatalog.relics().size() == 12, "Catalog has twelve relics")
+	_check(GameCatalog.relics().size() == 14, "Catalog has fourteen relics including both active-skill tradeoffs")
 	_check(GameCatalog.enemies().size() == 5, "Catalog has four enemies and one boss")
 	_check(GameCatalog.waves().size() == 8, "Catalog has eight waves")
 	var groups: Array = [GameCatalog.weapons(), GameCatalog.runes(), GameCatalog.relics(), GameCatalog.enemies(), GameCatalog.waves()]
@@ -43,7 +44,7 @@ func _test_catalog() -> void:
 			_check(not identifiers.has(definition.id), "Content ids are unique: " + definition.id)
 			identifiers[definition.id] = true
 	for definition: ContentDef in GameCatalog.weapons():
-		_check(definition.price <= 28 and definition.damage > 0.0 and definition.cooldown > 0.0, "Every first-wave weapon is affordable and functional")
+		_check(definition.price > 0 and definition.damage > 0.0 and definition.cooldown > 0.0, "Every weapon has a valid price and functional attack; first-shop eligibility is checked on generated offers")
 	for number: int in range(1, 9):
 		var definition: ContentDef = GameCatalog.wave(number)
 		_check(definition.duration == (90.0 if number == 8 else 45.0), "Wave duration matches prototype contract")
@@ -55,7 +56,41 @@ func _test_catalog() -> void:
 	_check(GameCatalog.wave(0) == null and GameCatalog.wave(9) == null, "Out-of-range waves return null")
 	var copy: Array[ContentDef] = GameCatalog.weapons()
 	copy.clear()
-	_check(GameCatalog.weapons().size() == 8, "Catalog list callers cannot clear the catalog")
+	_check(GameCatalog.weapons().size() == 21, "Catalog list callers cannot clear the catalog")
+
+func _test_catalog_index_semantics() -> void:
+	var families: Array[Dictionary] = [
+		{"lookup": GameCatalog.weapon, "enumerate": GameCatalog.weapons, "definitions": GameCatalog.WEAPON_DEFS},
+		{"lookup": GameCatalog.rune, "enumerate": GameCatalog.runes, "definitions": GameCatalog.RUNE_DEFS},
+		{"lookup": GameCatalog.skill, "enumerate": GameCatalog.skills, "definitions": GameCatalog.SKILL_DEFS},
+		{"lookup": GameCatalog.relic, "enumerate": GameCatalog.relics, "definitions": GameCatalog.RELIC_DEFS},
+		{"lookup": GameCatalog.enemy, "enumerate": GameCatalog.enemies, "definitions": GameCatalog.ENEMY_DEFS},
+	]
+	for family: Dictionary in families:
+		var lookup: Callable = family["lookup"]
+		var enumerate: Callable = family["enumerate"]
+		var expected: Array = family["definitions"]
+		for definition: ContentDef in expected:
+			_check(lookup.call(definition.id) == definition and lookup.call(definition.id) == lookup.call(definition.id), "Known IDs return the exact stable catalog resource: " + definition.kind + "/" + definition.id)
+		_check(lookup.call("__missing_catalog_id__") == null and lookup.call("") == null, "Empty and unknown identifiers return null in every content family")
+		var caller_array: Array = enumerate.call()
+		caller_array.reverse()
+		caller_array[0] = ContentDef.new()
+		caller_array.clear()
+		_check(enumerate.call() == expected and lookup.call(expected[0].id) == expected[0], "Mutating an enumerated array preserves declared order and the indexed resource references")
+	_check(GameCatalog.weapon("bone") != null and GameCatalog.rune("bone") == null and GameCatalog.skill("bone") == null and GameCatalog.relic("bone") == null and GameCatalog.enemy("bone") == null, "The same ID query stays isolated across content families")
+	_check(GameCatalog.relic("damage") != null and GameCatalog.weapon("damage") == null and GameCatalog.skill("pulse") != null and GameCatalog.relic("pulse") == null, "Relic and skill identifiers cannot leak into the weapon or other typed catalogs")
+	var weapon := ContentDef.new()
+	weapon.id = "shared_external_id"
+	weapon.kind = "weapon"
+	var relic := ContentDef.new()
+	relic.id = weapon.id
+	relic.kind = "relic"
+	var weapons: Array[ContentDef] = [weapon]
+	var relics: Array[ContentDef] = [relic]
+	var weapon_index: Dictionary = GameCatalog._index(weapons)
+	var relic_index: Dictionary = GameCatalog._index(relics)
+	_check(weapon_index[weapon.id] == weapon and relic_index[relic.id] == relic and weapon_index[weapon.id] != relic_index[relic.id], "Two source families may define the same external ID while retaining different typed resource identities")
 
 func _test_income_and_seed() -> void:
 	var state: RunState = _new_run()

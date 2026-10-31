@@ -1,0 +1,1064 @@
+{
+  "date": "2026-10-29",
+  "branch": "codex/ui-refinement",
+  "base_commit": "9663b6e",
+  "gate": {
+    "log": "reports/ui-refinement/test.log",
+    "sha256": "63641d15be4d8198ac50bee381d77343de797c8f951b57198266c51456b26df5",
+    "suites": 97,
+    "assertions": 31899,
+    "python_tests": 49,
+    "godot_suites": 92,
+    "diagnostic_entries": 5
+  },
+  "specialized": {
+    "native": [
+      {
+        "log": "reports/ui-refinement/native-ui.log",
+        "sha256": "00e669d1da680a57ddb372bc5e7d824497a97c852888cc52307d8344cfd41a72",
+        "suites": 1,
+        "assertions": 223
+      },
+      {
+        "log": "reports/ui-refinement/native-backpack_focus.log",
+        "sha256": "bf2ce622af166906667a42f0117d9f0226642729356088b8ec64259567a893f3",
+        "suites": 1,
+        "assertions": 126
+      },
+      {
+        "log": "reports/ui-refinement/native-gamepad_backpack.log",
+        "sha256": "af3ca1a9c31845ee31746868e7a123537c367a8bd4d2c983da715e3c99a24988",
+        "suites": 1,
+        "assertions": 42
+      },
+      {
+        "log": "reports/ui-refinement/native-shop_lock_ui.log",
+        "sha256": "b273aabf86a71d77e8c90e4a3182d056cfb49f5160204e6b231be1daf0a50f75",
+        "suites": 1,
+        "assertions": 63
+      },
+      {
+        "log": "reports/ui-refinement/native-content_presentation.log",
+        "sha256": "b4b562e19f1982e3a4ea6f9b53355bcb1be58b1910ed7cefdff69b5e18581684",
+        "suites": 1,
+        "assertions": 565
+      }
+    ],
+    "pack-check": [
+      {
+        "log": "reports/ui-refinement/pack-check-ui.log",
+        "sha256": "00e669d1da680a57ddb372bc5e7d824497a97c852888cc52307d8344cfd41a72",
+        "suites": 1,
+        "assertions": 223
+      },
+      {
+        "log": "reports/ui-refinement/pack-check-backpack_focus.log",
+        "sha256": "bf2ce622af166906667a42f0117d9f0226642729356088b8ec64259567a893f3",
+        "suites": 1,
+        "assertions": 126
+      },
+      {
+        "log": "reports/ui-refinement/pack-check-gamepad_backpack.log",
+        "sha256": "af3ca1a9c31845ee31746868e7a123537c367a8bd4d2c983da715e3c99a24988",
+        "suites": 1,
+        "assertions": 42
+      },
+      {
+        "log": "reports/ui-refinement/pack-check-shop_lock_ui.log",
+        "sha256": "b273aabf86a71d77e8c90e4a3182d056cfb49f5160204e6b231be1daf0a50f75",
+        "suites": 1,
+        "assertions": 63
+      },
+      {
+        "log": "reports/ui-refinement/pack-check-content_presentation.log",
+        "sha256": "b4b562e19f1982e3a4ea6f9b53355bcb1be58b1910ed7cefdff69b5e18581684",
+        "suites": 1,
+        "assertions": 565
+      }
+    ]
+  },
+  "previews": [
+    {
+      "view": "shop",
+      "pixel_equal": true,
+      "source_sha256": "bae7517c8c8975a44a99cab92a2410c0951e11a343766443a0b770950098fe7f",
+      "pack_sha256": "bae7517c8c8975a44a99cab92a2410c0951e11a343766443a0b770950098fe7f",
+      "preview": {
+        "actual_button_draw_mode": -1,
+        "bag_state": {},
+        "capture": "D:\\Github\\broxy\\reports\\ui-refinement\\preview-shop.png",
+        "capture_result": 0,
+        "fixed_fixture": true,
+        "personal_profile_io": false,
+        "state_unchanged_while_drawing": true,
+        "view": "shop",
+        "viewport_capture_size": [
+          1280,
+          720
+        ],
+        "window_size": [
+          1280,
+          720
+        ]
+      },
+      "pack-preview": {
+        "actual_button_draw_mode": -1,
+        "bag_state": {},
+        "capture": "D:\\Github\\broxy\\reports\\ui-refinement\\pack-preview-shop.png",
+        "capture_result": 0,
+        "fixed_fixture": true,
+        "personal_profile_io": false,
+        "state_unchanged_while_drawing": true,
+        "view": "shop",
+        "viewport_capture_size": [
+          1280,
+          720
+        ],
+        "window_size": [
+          1280,
+          720
+        ]
+      }
+    },
+    {
+      "view": "poor",
+      "pixel_equal": true,
+      "source_sha256": "47c3189abb89aabed6766e3c5c4359651876a9e97caebe617eec963ecb696c3c",
+      "pack_sha256": "47c3189abb89aabed6766e3c5c4359651876a9e97caebe617eec963ecb696c3c",
+      "preview": {
+        "actual_button_draw_mode": -1,
+        "bag_state": {},
+        "capture": "D:\\Github\\broxy\\reports\\ui-refinement\\preview-poor.png",
+        "capture_result": 0,
+        "fixed_fixture": true,
+        "personal_profile_io": false,
+        "state_unchanged_while_drawing": true,
+        "view": "poor",
+        "viewport_capture_size": [
+          1280,
+          720
+        ],
+        "window_size": [
+          1280,
+          720
+        ]
+      },
+      "pack-preview": {
+        "actual_button_draw_mode": -1,
+        "bag_state": {},
+        "capture": "D:\\Github\\broxy\\reports\\ui-refinement\\pack-preview-poor.png",
+        "capture_result": 0,
+        "fixed_fixture": true,
+        "personal_profile_io": false,
+        "state_unchanged_while_drawing": true,
+        "view": "poor",
+        "viewport_capture_size": [
+          1280,
+          720
+        ],
+        "window_size": [
+          1280,
+          720
+        ]
+      }
+    },
+    {
+      "view": "locked",
+      "pixel_equal": true,
+      "source_sha256": "c689563bcd49be0403403bb44e4a967058eebfe7d9e5c7e06df8a8c5c4dfd322",
+      "pack_sha256": "c689563bcd49be0403403bb44e4a967058eebfe7d9e5c7e06df8a8c5c4dfd322",
+      "preview": {
+        "actual_button_draw_mode": -1,
+        "bag_state": {},
+        "capture": "D:\\Github\\broxy\\reports\\ui-refinement\\preview-locked.png",
+        "capture_result": 0,
+        "fixed_fixture": true,
+        "personal_profile_io": false,
+        "state_unchanged_while_drawing": true,
+        "view": "locked",
+        "viewport_capture_size": [
+          1280,
+          720
+        ],
+        "window_size": [
+          1280,
+          720
+        ]
+      },
+      "pack-preview": {
+        "actual_button_draw_mode": -1,
+        "bag_state": {},
+        "capture": "D:\\Github\\broxy\\reports\\ui-refinement\\pack-preview-locked.png",
+        "capture_result": 0,
+        "fixed_fixture": true,
+        "personal_profile_io": false,
+        "state_unchanged_while_drawing": true,
+        "view": "locked",
+        "viewport_capture_size": [
+          1280,
+          720
+        ],
+        "window_size": [
+          1280,
+          720
+        ]
+      }
+    },
+    {
+      "view": "sold",
+      "pixel_equal": true,
+      "source_sha256": "dd0186cb64c14470fad4c4ece58dd91fc7f39d52eafbd108c7b951fb24773262",
+      "pack_sha256": "dd0186cb64c14470fad4c4ece58dd91fc7f39d52eafbd108c7b951fb24773262",
+      "preview": {
+        "actual_button_draw_mode": -1,
+        "bag_state": {},
+        "capture": "D:\\Github\\broxy\\reports\\ui-refinement\\preview-sold.png",
+        "capture_result": 0,
+        "fixed_fixture": true,
+        "personal_profile_io": false,
+        "state_unchanged_while_drawing": true,
+        "view": "sold",
+        "viewport_capture_size": [
+          1280,
+          720
+        ],
+        "window_size": [
+          1280,
+          720
+        ]
+      },
+      "pack-preview": {
+        "actual_button_draw_mode": -1,
+        "bag_state": {},
+        "capture": "D:\\Github\\broxy\\reports\\ui-refinement\\pack-preview-sold.png",
+        "capture_result": 0,
+        "fixed_fixture": true,
+        "personal_profile_io": false,
+        "state_unchanged_while_drawing": true,
+        "view": "sold",
+        "viewport_capture_size": [
+          1280,
+          720
+        ],
+        "window_size": [
+          1280,
+          720
+        ]
+      }
+    },
+    {
+      "view": "bag_focus",
+      "pixel_equal": true,
+      "source_sha256": "ad11e191f50b2bd212f4fb9ab1e67fb88c3f7bd8a00f181b9ad6a156cec71fd6",
+      "pack_sha256": "ad11e191f50b2bd212f4fb9ab1e67fb88c3f7bd8a00f181b9ad6a156cec71fd6",
+      "preview": {
+        "actual_button_draw_mode": -1,
+        "bag_state": {
+          "focus": "BackpackItem1",
+          "held_uid": -1,
+          "placement": {},
+          "selected_uid": 1
+        },
+        "capture": "D:\\Github\\broxy\\reports\\ui-refinement\\preview-bag_focus.png",
+        "capture_result": 0,
+        "fixed_fixture": true,
+        "personal_profile_io": false,
+        "state_unchanged_while_drawing": true,
+        "view": "bag_focus",
+        "viewport_capture_size": [
+          1280,
+          720
+        ],
+        "window_size": [
+          1280,
+          720
+        ]
+      },
+      "pack-preview": {
+        "actual_button_draw_mode": -1,
+        "bag_state": {
+          "focus": "BackpackItem1",
+          "held_uid": -1,
+          "placement": {},
+          "selected_uid": 1
+        },
+        "capture": "D:\\Github\\broxy\\reports\\ui-refinement\\pack-preview-bag_focus.png",
+        "capture_result": 0,
+        "fixed_fixture": true,
+        "personal_profile_io": false,
+        "state_unchanged_while_drawing": true,
+        "view": "bag_focus",
+        "viewport_capture_size": [
+          1280,
+          720
+        ],
+        "window_size": [
+          1280,
+          720
+        ]
+      }
+    },
+    {
+      "view": "bag_selected",
+      "pixel_equal": true,
+      "source_sha256": "a75ab9d70f3054cffebea4d19b71bdf8b63a959e7f77e45278267ec2efe49760",
+      "pack_sha256": "a75ab9d70f3054cffebea4d19b71bdf8b63a959e7f77e45278267ec2efe49760",
+      "preview": {
+        "actual_button_draw_mode": -1,
+        "bag_state": {
+          "focus": "",
+          "held_uid": -1,
+          "placement": {},
+          "selected_uid": 1
+        },
+        "capture": "D:\\Github\\broxy\\reports\\ui-refinement\\preview-bag_selected.png",
+        "capture_result": 0,
+        "fixed_fixture": true,
+        "personal_profile_io": false,
+        "state_unchanged_while_drawing": true,
+        "view": "bag_selected",
+        "viewport_capture_size": [
+          1280,
+          720
+        ],
+        "window_size": [
+          1280,
+          720
+        ]
+      },
+      "pack-preview": {
+        "actual_button_draw_mode": -1,
+        "bag_state": {
+          "focus": "",
+          "held_uid": -1,
+          "placement": {},
+          "selected_uid": 1
+        },
+        "capture": "D:\\Github\\broxy\\reports\\ui-refinement\\pack-preview-bag_selected.png",
+        "capture_result": 0,
+        "fixed_fixture": true,
+        "personal_profile_io": false,
+        "state_unchanged_while_drawing": true,
+        "view": "bag_selected",
+        "viewport_capture_size": [
+          1280,
+          720
+        ],
+        "window_size": [
+          1280,
+          720
+        ]
+      }
+    },
+    {
+      "view": "bag_valid",
+      "pixel_equal": true,
+      "source_sha256": "22ce1ad99565a6b25bd6260c257b95e4096ca6e481fa767e732551702ad69e2d",
+      "pack_sha256": "22ce1ad99565a6b25bd6260c257b95e4096ca6e481fa767e732551702ad69e2d",
+      "preview": {
+        "actual_button_draw_mode": -1,
+        "bag_state": {
+          "focus": "BackpackGrid",
+          "held_uid": 1,
+          "placement": {
+            "error": "点击或Enter放置骨针；R旋转，Esc取消。暂无合成或装符候选。",
+            "kind": "move",
+            "valid": true
+          },
+          "selected_uid": 1
+        },
+        "capture": "D:\\Github\\broxy\\reports\\ui-refinement\\preview-bag_valid.png",
+        "capture_result": 0,
+        "fixed_fixture": true,
+        "personal_profile_io": false,
+        "state_unchanged_while_drawing": true,
+        "view": "bag_valid",
+        "viewport_capture_size": [
+          1280,
+          720
+        ],
+        "window_size": [
+          1280,
+          720
+        ]
+      },
+      "pack-preview": {
+        "actual_button_draw_mode": -1,
+        "bag_state": {
+          "focus": "BackpackGrid",
+          "held_uid": 1,
+          "placement": {
+            "error": "点击或Enter放置骨针；R旋转，Esc取消。暂无合成或装符候选。",
+            "kind": "move",
+            "valid": true
+          },
+          "selected_uid": 1
+        },
+        "capture": "D:\\Github\\broxy\\reports\\ui-refinement\\pack-preview-bag_valid.png",
+        "capture_result": 0,
+        "fixed_fixture": true,
+        "personal_profile_io": false,
+        "state_unchanged_while_drawing": true,
+        "view": "bag_valid",
+        "viewport_capture_size": [
+          1280,
+          720
+        ],
+        "window_size": [
+          1280,
+          720
+        ]
+      }
+    },
+    {
+      "view": "bag_invalid",
+      "pixel_equal": true,
+      "source_sha256": "04e6d1b424e785196b66bdf4a6d1d7d52c2c6dc44329ed38a6a1260a55a4750e",
+      "pack_sha256": "04e6d1b424e785196b66bdf4a6d1d7d52c2c6dc44329ed38a6a1260a55a4750e",
+      "preview": {
+        "actual_button_draw_mode": -1,
+        "bag_state": {
+          "focus": "BackpackGrid",
+          "held_uid": 1,
+          "placement": {
+            "error": "骨针超出已解锁背包，R可旋转。暂无合成或装符候选。",
+            "valid": false
+          },
+          "selected_uid": 1
+        },
+        "capture": "D:\\Github\\broxy\\reports\\ui-refinement\\preview-bag_invalid.png",
+        "capture_result": 0,
+        "fixed_fixture": true,
+        "personal_profile_io": false,
+        "state_unchanged_while_drawing": true,
+        "view": "bag_invalid",
+        "viewport_capture_size": [
+          1280,
+          720
+        ],
+        "window_size": [
+          1280,
+          720
+        ]
+      },
+      "pack-preview": {
+        "actual_button_draw_mode": -1,
+        "bag_state": {
+          "focus": "BackpackGrid",
+          "held_uid": 1,
+          "placement": {
+            "error": "骨针超出已解锁背包，R可旋转。暂无合成或装符候选。",
+            "valid": false
+          },
+          "selected_uid": 1
+        },
+        "capture": "D:\\Github\\broxy\\reports\\ui-refinement\\pack-preview-bag_invalid.png",
+        "capture_result": 0,
+        "fixed_fixture": true,
+        "personal_profile_io": false,
+        "state_unchanged_while_drawing": true,
+        "view": "bag_invalid",
+        "viewport_capture_size": [
+          1280,
+          720
+        ],
+        "window_size": [
+          1280,
+          720
+        ]
+      }
+    },
+    {
+      "view": "small",
+      "pixel_equal": true,
+      "source_sha256": "bae7517c8c8975a44a99cab92a2410c0951e11a343766443a0b770950098fe7f",
+      "pack_sha256": "bae7517c8c8975a44a99cab92a2410c0951e11a343766443a0b770950098fe7f",
+      "preview": {
+        "actual_button_draw_mode": -1,
+        "bag_state": {},
+        "capture": "D:\\Github\\broxy\\reports\\ui-refinement\\preview-small.png",
+        "capture_result": 0,
+        "fixed_fixture": true,
+        "personal_profile_io": false,
+        "state_unchanged_while_drawing": true,
+        "view": "shop",
+        "viewport_capture_size": [
+          1280,
+          720
+        ],
+        "window_size": [
+          960,
+          540
+        ]
+      },
+      "pack-preview": {
+        "actual_button_draw_mode": -1,
+        "bag_state": {},
+        "capture": "D:\\Github\\broxy\\reports\\ui-refinement\\pack-preview-small.png",
+        "capture_result": 0,
+        "fixed_fixture": true,
+        "personal_profile_io": false,
+        "state_unchanged_while_drawing": true,
+        "view": "shop",
+        "viewport_capture_size": [
+          1280,
+          720
+        ],
+        "window_size": [
+          960,
+          540
+        ]
+      }
+    },
+    {
+      "view": "filled",
+      "pixel_equal": true,
+      "source_sha256": "479cd0d9e0d886176f0537ff21601663e541a2d29106e9106cdfc44d56ae9cc2",
+      "pack_sha256": "479cd0d9e0d886176f0537ff21601663e541a2d29106e9106cdfc44d56ae9cc2",
+      "preview": {
+        "backpack": {
+          "can_expand": true,
+          "expansion_cost": 48,
+          "expansion_error": "",
+          "height": 5,
+          "items": [
+            {
+              "id": "bone",
+              "kind": "weapon",
+              "paid": 24,
+              "rank": 2,
+              "rotated": false,
+              "rune": {
+                "id": "pierce",
+                "paid": 24,
+                "rank": 1,
+                "uid": 10
+              },
+              "uid": 1,
+              "x": 0,
+              "y": 0
+            },
+            {
+              "id": "ember",
+              "kind": "weapon",
+              "paid": 33,
+              "rank": 1,
+              "rotated": false,
+              "rune": {},
+              "uid": 3,
+              "x": 1,
+              "y": 0
+            },
+            {
+              "id": "return_ring",
+              "kind": "weapon",
+              "paid": 38,
+              "rank": 1,
+              "rotated": false,
+              "rune": {},
+              "uid": 4,
+              "x": 3,
+              "y": 0
+            },
+            {
+              "id": "frost",
+              "kind": "weapon",
+              "paid": 33,
+              "rank": 1,
+              "rotated": false,
+              "rune": {},
+              "uid": 5,
+              "x": 5,
+              "y": 0
+            },
+            {
+              "id": "scatter",
+              "kind": "weapon",
+              "paid": 35,
+              "rank": 1,
+              "rotated": false,
+              "rune": {},
+              "uid": 6,
+              "x": 1,
+              "y": 2
+            },
+            {
+              "id": "damage",
+              "kind": "relic",
+              "paid": 27,
+              "rank": 1,
+              "rotated": false,
+              "rune": {},
+              "uid": 7,
+              "x": 3,
+              "y": 2
+            },
+            {
+              "id": "haste",
+              "kind": "relic",
+              "paid": 27,
+              "rank": 1,
+              "rotated": false,
+              "rune": {},
+              "uid": 8,
+              "x": 4,
+              "y": 2
+            },
+            {
+              "id": "grave_candle",
+              "kind": "relic",
+              "paid": 24,
+              "rank": 1,
+              "rotated": false,
+              "rune": {},
+              "uid": 9,
+              "x": 3,
+              "y": 3
+            },
+            {
+              "id": "bounce",
+              "kind": "rune",
+              "paid": 27,
+              "rank": 1,
+              "rotated": false,
+              "rune": {},
+              "uid": 11,
+              "x": 0,
+              "y": 3
+            }
+          ],
+          "linked_weapons": [],
+          "max_height": 6,
+          "next_uid": 12,
+          "resonance": {
+            "1": {
+              "bonus": 0.0,
+              "raw_bonus": 0.0,
+              "source_uids": [],
+              "weight": 0
+            },
+            "3": {
+              "bonus": 0.0,
+              "raw_bonus": 0.0,
+              "source_uids": [],
+              "weight": 0
+            },
+            "4": {
+              "bonus": 0.06,
+              "raw_bonus": 0.06,
+              "source_uids": [
+                7,
+                8
+              ],
+              "weight": 2
+            },
+            "5": {
+              "bonus": 0.03,
+              "raw_bonus": 0.03,
+              "source_uids": [
+                8
+              ],
+              "weight": 1
+            },
+            "6": {
+              "bonus": 0.06,
+              "raw_bonus": 0.06,
+              "source_uids": [
+                7,
+                9
+              ],
+              "weight": 2
+            }
+          },
+          "total_cells": 30,
+          "used_cells": 23,
+          "width": 6
+        },
+        "capture": "D:\\Github\\broxy\\reports\\ui-refinement\\preview-filled.png",
+        "capture_result": 0,
+        "case": "filled",
+        "fixed_fixture": true,
+        "fixture_passed": true,
+        "formal_transactions": true,
+        "hold": false,
+        "loadout": [
+          {
+            "id": "bone",
+            "paid": 24,
+            "rank": 2,
+            "resonance_bonus": 0.0,
+            "resonance_sources": [],
+            "rune": {
+              "id": "pierce",
+              "paid": 24,
+              "rank": 1,
+              "uid": 10
+            },
+            "uid": 1
+          },
+          {
+            "id": "ember",
+            "paid": 33,
+            "rank": 1,
+            "resonance_bonus": 0.0,
+            "resonance_sources": [],
+            "rune": {},
+            "uid": 3
+          },
+          {
+            "id": "return_ring",
+            "paid": 38,
+            "rank": 1,
+            "resonance_bonus": 0.06,
+            "resonance_sources": [
+              7,
+              8
+            ],
+            "rune": {},
+            "uid": 4
+          },
+          {
+            "id": "frost",
+            "paid": 33,
+            "rank": 1,
+            "resonance_bonus": 0.03,
+            "resonance_sources": [
+              8
+            ],
+            "rune": {},
+            "uid": 5
+          },
+          {
+            "id": "scatter",
+            "paid": 35,
+            "rank": 1,
+            "resonance_bonus": 0.06,
+            "resonance_sources": [
+              7,
+              9
+            ],
+            "rune": {},
+            "uid": 6
+          }
+        ],
+        "persistent_profile": false,
+        "rune_bag": [
+          {
+            "id": "bounce",
+            "paid": 27,
+            "rank": 1,
+            "uid": 11
+          }
+        ],
+        "selected_uid": 11,
+        "test_budget": 1200,
+        "viewport": [
+          1280,
+          720
+        ]
+      },
+      "pack-preview": {
+        "backpack": {
+          "can_expand": true,
+          "expansion_cost": 48,
+          "expansion_error": "",
+          "height": 5,
+          "items": [
+            {
+              "id": "bone",
+              "kind": "weapon",
+              "paid": 24,
+              "rank": 2,
+              "rotated": false,
+              "rune": {
+                "id": "pierce",
+                "paid": 24,
+                "rank": 1,
+                "uid": 10
+              },
+              "uid": 1,
+              "x": 0,
+              "y": 0
+            },
+            {
+              "id": "ember",
+              "kind": "weapon",
+              "paid": 33,
+              "rank": 1,
+              "rotated": false,
+              "rune": {},
+              "uid": 3,
+              "x": 1,
+              "y": 0
+            },
+            {
+              "id": "return_ring",
+              "kind": "weapon",
+              "paid": 38,
+              "rank": 1,
+              "rotated": false,
+              "rune": {},
+              "uid": 4,
+              "x": 3,
+              "y": 0
+            },
+            {
+              "id": "frost",
+              "kind": "weapon",
+              "paid": 33,
+              "rank": 1,
+              "rotated": false,
+              "rune": {},
+              "uid": 5,
+              "x": 5,
+              "y": 0
+            },
+            {
+              "id": "scatter",
+              "kind": "weapon",
+              "paid": 35,
+              "rank": 1,
+              "rotated": false,
+              "rune": {},
+              "uid": 6,
+              "x": 1,
+              "y": 2
+            },
+            {
+              "id": "damage",
+              "kind": "relic",
+              "paid": 27,
+              "rank": 1,
+              "rotated": false,
+              "rune": {},
+              "uid": 7,
+              "x": 3,
+              "y": 2
+            },
+            {
+              "id": "haste",
+              "kind": "relic",
+              "paid": 27,
+              "rank": 1,
+              "rotated": false,
+              "rune": {},
+              "uid": 8,
+              "x": 4,
+              "y": 2
+            },
+            {
+              "id": "grave_candle",
+              "kind": "relic",
+              "paid": 24,
+              "rank": 1,
+              "rotated": false,
+              "rune": {},
+              "uid": 9,
+              "x": 3,
+              "y": 3
+            },
+            {
+              "id": "bounce",
+              "kind": "rune",
+              "paid": 27,
+              "rank": 1,
+              "rotated": false,
+              "rune": {},
+              "uid": 11,
+              "x": 0,
+              "y": 3
+            }
+          ],
+          "linked_weapons": [],
+          "max_height": 6,
+          "next_uid": 12,
+          "resonance": {
+            "1": {
+              "bonus": 0.0,
+              "raw_bonus": 0.0,
+              "source_uids": [],
+              "weight": 0
+            },
+            "3": {
+              "bonus": 0.0,
+              "raw_bonus": 0.0,
+              "source_uids": [],
+              "weight": 0
+            },
+            "4": {
+              "bonus": 0.06,
+              "raw_bonus": 0.06,
+              "source_uids": [
+                7,
+                8
+              ],
+              "weight": 2
+            },
+            "5": {
+              "bonus": 0.03,
+              "raw_bonus": 0.03,
+              "source_uids": [
+                8
+              ],
+              "weight": 1
+            },
+            "6": {
+              "bonus": 0.06,
+              "raw_bonus": 0.06,
+              "source_uids": [
+                7,
+                9
+              ],
+              "weight": 2
+            }
+          },
+          "total_cells": 30,
+          "used_cells": 23,
+          "width": 6
+        },
+        "capture": "D:\\Github\\broxy\\reports\\ui-refinement\\pack-preview-filled.png",
+        "capture_result": 0,
+        "case": "filled",
+        "fixed_fixture": true,
+        "fixture_passed": true,
+        "formal_transactions": true,
+        "hold": false,
+        "loadout": [
+          {
+            "id": "bone",
+            "paid": 24,
+            "rank": 2,
+            "resonance_bonus": 0.0,
+            "resonance_sources": [],
+            "rune": {
+              "id": "pierce",
+              "paid": 24,
+              "rank": 1,
+              "uid": 10
+            },
+            "uid": 1
+          },
+          {
+            "id": "ember",
+            "paid": 33,
+            "rank": 1,
+            "resonance_bonus": 0.0,
+            "resonance_sources": [],
+            "rune": {},
+            "uid": 3
+          },
+          {
+            "id": "return_ring",
+            "paid": 38,
+            "rank": 1,
+            "resonance_bonus": 0.06,
+            "resonance_sources": [
+              7,
+              8
+            ],
+            "rune": {},
+            "uid": 4
+          },
+          {
+            "id": "frost",
+            "paid": 33,
+            "rank": 1,
+            "resonance_bonus": 0.03,
+            "resonance_sources": [
+              8
+            ],
+            "rune": {},
+            "uid": 5
+          },
+          {
+            "id": "scatter",
+            "paid": 35,
+            "rank": 1,
+            "resonance_bonus": 0.06,
+            "resonance_sources": [
+              7,
+              9
+            ],
+            "rune": {},
+            "uid": 6
+          }
+        ],
+        "persistent_profile": false,
+        "rune_bag": [
+          {
+            "id": "bounce",
+            "paid": 27,
+            "rank": 1,
+            "uid": 11
+          }
+        ],
+        "selected_uid": 11,
+        "test_budget": 1200,
+        "viewport": [
+          1280,
+          720
+        ]
+      }
+    }
+  ],
+  "skills": [
+    {
+      "name": "create-game-assets",
+      "installed_this_iteration": false,
+      "skill_md_sha256": "c178cde20316f7d326f2a853a76522b375b325346b5b8797ef52aa98740aff18"
+    },
+    {
+      "name": "game-ui-ux",
+      "installed_this_iteration": false,
+      "skill_md_sha256": "8a094c84a377503aa8f4c40df676d1c6b6fc07d36ff95554ce06467f1614397e"
+    },
+    {
+      "name": "godot-ui-control",
+      "installed_this_iteration": false,
+      "skill_md_sha256": "9ac89920e74bbf8d939b4d565e350d53b07c9afbe0970345c97d4122f590cfd5"
+    },
+    {
+      "name": "shader-programming",
+      "installed_this_iteration": true,
+      "skill_md_sha256": "a13ed34325b8c18f0c6982edb1a5aede99497a26b9e00fc19e9ce01e566f9923"
+    },
+    {
+      "name": "ai-game-art-pipeline",
+      "installed_this_iteration": true,
+      "skill_md_sha256": "7b7e78d5fe7153a7b8ddf6c2b1d70af7d21484c9fd8d9df23bfb99039d034eab"
+    }
+  ],
+  "simulation_rules_unchanged": true,
+  "runtime_input_sha256": {
+    "scripts/ui/backpack_grid.gd": "d4aef746c7145773fe808d3ea773e4190aa993ba11468038a81ec8c918188456",
+    "scripts/ui/game_ui.gd": "804aa1a484444561eee776545113b0eab0847fa1513420999ad51a1872cb19c6",
+    "scripts/ui/shop_panel_skin.gd": "d6567bd884efa333c342d4929cb90090a654b9e83c0dffe2b71ca04b2359de78",
+    "tools/preview_button_polish.gd": "130a730775710bc270d830782d5f9c92029bd04421d6018db3b0df3ca6d6deb4",
+    "tests/test_ui.gd": "6423bd652d670b902b8a5e20c6472ce5f9e9e166fed1d336cf4d1c0539cc3fae"
+  },
+  "windows": {
+    "build": {
+      "log": "reports/ui-refinement/build.log",
+      "sha256": "4218c0d12746727c0d73a80d66f394c67570b70e7ac81376e0ecff1300f7fb75",
+      "suites": 0,
+      "assertions": 0
+    },
+    "exe_smoke": {
+      "log": "reports/ui-refinement/exe-smoke.log",
+      "sha256": "d97ca315482822067a4ac36d23708e351c00dcdd1a5b82a0c1495b5bef015a75",
+      "suites": 0,
+      "assertions": 0
+    },
+    "zip_sha256": "44671c4059d09057c03276f267c27f42483a496f3b3a1de71ab7749691c6e347",
+    "zip_crc_ok": true,
+    "file_count": 5,
+    "backup": "build/Embers-windows-before-ui-refinement-9663b6e.zip",
+    "backup_sha256": "d85058ae1af282b970f02aa68809ab65674087e450d97cde6fc87074b94cef6c"
+  },
+  "not_run": [
+    "macOS export",
+    "combat stress benchmark",
+    "hardware gamepad",
+    "hardware audio"
+  ]
+}

@@ -1,0 +1,482 @@
+{
+  "sources": [
+    {
+      "id": "item_damage",
+      "kind": "item_icon",
+      "game_id": "damage",
+      "item_kind": "relic",
+      "name": "Beared Fang",
+      "filename": "item-Beared_Fang.png",
+      "url": "https://worldflipper.wiki.gg/images/Beared_Fang.png?78a0b9",
+      "source_page": "https://worldflipper.wiki.gg/wiki/Beared_Fang",
+      "sha256": "60d261990fb34cca08254ecf00f3e176a24730eaeac86339443349654a1d5a14",
+      "source_size": [
+        19,
+        20
+      ],
+      "crop": [
+        0,
+        0,
+        19,
+        20
+      ],
+      "scale": 3,
+      "source_category": "Armament sprite images"
+    },
+    {
+      "id": "item_haste",
+      "kind": "item_icon",
+      "game_id": "haste",
+      "item_kind": "relic",
+      "name": "Protostar Belt",
+      "filename": "item-Protostar_Belt.png",
+      "url": "https://worldflipper.wiki.gg/images/Protostar_Belt.png?d1b05b",
+      "source_page": "https://worldflipper.wiki.gg/wiki/Protostar_Belt",
+      "sha256": "0a1ca6c852138a1de44773a4fd0345cdafde15f746d30ad6481f5ae384ff3482",
+      "source_size": [
+        20,
+        20
+      ],
+      "crop": [
+        0,
+        0,
+        20,
+        20
+      ],
+      "scale": 3,
+      "source_category": "Armament sprite images"
+    },
+    {
+      "id": "item_speed",
+      "kind": "item_icon",
+      "game_id": "speed",
+      "item_kind": "relic",
+      "name": "Seaside Ribbon",
+      "filename": "item-Seaside_Ribbon.png",
+      "url": "https://worldflipper.wiki.gg/images/Seaside_Ribbon.png?c9057f",
+      "source_page": "https://worldflipper.wiki.gg/wiki/Seaside_Ribbon",
+      "sha256": "47d588e118a5b8f364cdc3f8195da43713367f59e4b54cfadcb7d58eb49342ab",
+      "source_size": [
+        20,
+        20
+      ],
+      "crop": [
+        0,
+        0,
+        20,
+        20
+      ],
+      "scale": 3,
+      "source_category": "Armament sprite images"
+    },
+    {
+      "id": "item_vitality",
+      "kind": "item_icon",
+      "game_id": "vitality",
+      "item_kind": "relic",
+      "name": "Luna Womb",
+      "filename": "item-Luna_Womb.png",
+      "url": "https://worldflipper.wiki.gg/images/Luna_Womb.png?9fb983",
+      "source_page": "https://worldflipper.wiki.gg/wiki/Luna_Womb",
+      "sha256": "0ca575bcc011d1a71fcc6057f3aaf138d110e72b1af881c8d854635057cb9bfd",
+      "source_size": [
+        20,
+        20
+      ],
+      "crop": [
+        0,
+        0,
+        20,
+        20
+      ],
+      "scale": 3,
+      "source_category": "Armament sprite images"
+    },
+    {
+      "id": "item_armor",
+      "kind": "item_icon",
+      "game_id": "armor",
+      "item_kind": "relic",
+      "name": "Spiteful Cloak",
+      "filename": "item-Spiteful_Cloak.png",
+      "url": "https://worldflipper.wiki.gg/images/Spiteful_Cloak.png?5eaccb",
+      "source_page": "https://worldflipper.wiki.gg/wiki/Spiteful_Cloak",
+      "sha256": "21b7a0139cf8ce0201de5dd984f404a1aadce3771235623216fb559171df5cba",
+      "source_size": [
+        20,
+        20
+      ],
+      "crop": [
+        0,
+        0,
+        20,
+        20
+      ],
+      "scale": 3,
+      "source_category": "Armament sprite images"
+    },
+    {
+      "id": "item_magnet",
+      "kind": "item_icon",
+      "game_id": "magnet",
+      "item_kind": "relic",
+      "name": "Earrings of Amity",
+      "filename": "item-Earrings_of_Amity.png",
+      "url": "https://worldflipper.wiki.gg/images/Earrings_of_Amity.png?223a61",
+      "source_page": "https://worldflipper.wiki.gg/wiki/Earrings_of_Amity",
+      "sha256": "51f2cdb534aba9f82513ca8a43d6078f1fef96cb095488bdb81231862ffdd131",
+      "source_size": [
+        20,
+        20
+      ],
+      "crop": [
+        0,
+        0,
+        20,
+        20
+      ],
+      "scale": 3,
+      "source_category": "Armament sprite images"
+    },
+    {
+      "id": "item_moon_charm",
+      "kind": "item_icon",
+      "game_id": "moon_charm",
+      "item_kind": "relic",
+      "name": "Spiteful Necklace",
+      "filename": "item-Spiteful_Necklace.png",
+      "url": "https://worldflipper.wiki.gg/images/Spiteful_Necklace.png?8a10e1",
+      "source_page": "https://worldflipper.wiki.gg/wiki/Spiteful_Necklace",
+      "sha256": "35a0d4dbccb65b35fe65d444fc6b699a498aaeab24b247d9c460c5b4f1318ca8",
+      "source_size": [
+        19,
+        20
+      ],
+      "crop": [
+        0,
+        0,
+        19,
+        20
+      ],
+      "scale": 3,
+      "source_category": "Armament sprite images"
+    },
+    {
+      "id": "item_pilgrim",
+      "kind": "item_icon",
+      "game_id": "pilgrim",
+      "item_kind": "relic",
+      "name": "Ebony Handbag",
+      "filename": "item-Ebony_Handbag.png",
+      "url": "https://worldflipper.wiki.gg/images/Ebony_Handbag.png?2548e2",
+      "source_page": "https://worldflipper.wiki.gg/wiki/Ebony_Handbag",
+      "sha256": "3414514dea9683018d67cfd3481e85ca606b560ac0577cdcc6d1991c166f85aa",
+      "source_size": [
+        20,
+        20
+      ],
+      "crop": [
+        0,
+        0,
+        20,
+        20
+      ],
+      "scale": 3,
+      "source_category": "Armament sprite images"
+    },
+    {
+      "id": "item_bulwark",
+      "kind": "item_icon",
+      "game_id": "bulwark",
+      "item_kind": "relic",
+      "name": "Aero Bone Shield",
+      "filename": "item-Aero_Bone_Shield.png",
+      "url": "https://worldflipper.wiki.gg/images/Aero_Bone_Shield.png?40ea1e",
+      "source_page": "https://worldflipper.wiki.gg/wiki/Aero_Bone_Shield",
+      "sha256": "c992b669c38c263ac18f6bf3c7a016dbe876bcdb30aa38b8434685ddc0f509b9",
+      "source_size": [
+        20,
+        20
+      ],
+      "crop": [
+        0,
+        0,
+        20,
+        20
+      ],
+      "scale": 3,
+      "source_category": "Armament sprite images"
+    },
+    {
+      "id": "item_hourglass",
+      "kind": "item_icon",
+      "game_id": "hourglass",
+      "item_kind": "relic",
+      "name": "Polychromatic Earrings",
+      "filename": "item-Polychromatic_Earrings.png",
+      "url": "https://worldflipper.wiki.gg/images/Polychromatic_Earrings.png?f87500",
+      "source_page": "https://worldflipper.wiki.gg/wiki/Polychromatic_Earrings",
+      "sha256": "3acd4b18392b40267ca14dbe9c522b3e001c9b98f900d8c902dcdea3ea9a4ba8",
+      "source_size": [
+        15,
+        20
+      ],
+      "crop": [
+        0,
+        0,
+        15,
+        20
+      ],
+      "scale": 3,
+      "source_category": "Armament sprite images"
+    },
+    {
+      "id": "item_blood_pact",
+      "kind": "item_icon",
+      "game_id": "blood_pact",
+      "item_kind": "relic",
+      "name": "Dream Journal",
+      "filename": "item-Dream_Journal.png",
+      "url": "https://worldflipper.wiki.gg/images/Dream_Journal.png?fa5ddc",
+      "source_page": "https://worldflipper.wiki.gg/wiki/Dream_Journal",
+      "sha256": "5c90f001fb6de083395129301e210702d5749ba2640ac7742a1b67bfa7dceacb",
+      "source_size": [
+        19,
+        20
+      ],
+      "crop": [
+        0,
+        0,
+        19,
+        20
+      ],
+      "scale": 3,
+      "source_category": "Armament sprite images"
+    },
+    {
+      "id": "item_grave_candle",
+      "kind": "item_icon",
+      "game_id": "grave_candle",
+      "item_kind": "relic",
+      "name": "Lightcrest Crown",
+      "filename": "item-Lightcrest_Crown.png",
+      "url": "https://worldflipper.wiki.gg/images/Lightcrest_Crown.png?b445d1",
+      "source_page": "https://worldflipper.wiki.gg/wiki/Lightcrest_Crown",
+      "sha256": "384268266e2f83917f5b0d917a11a89c029de64077daf08a22621fbf0a1b20ac",
+      "source_size": [
+        20,
+        20
+      ],
+      "crop": [
+        0,
+        0,
+        20,
+        20
+      ],
+      "scale": 3,
+      "source_category": "Armament sprite images"
+    },
+    {
+      "id": "item_fold_clasp",
+      "kind": "item_icon",
+      "game_id": "fold_clasp",
+      "item_kind": "relic",
+      "name": "Square Glasses",
+      "filename": "item-Square_Glasses.png",
+      "url": "https://worldflipper.wiki.gg/images/Square_Glasses.png?c2923c",
+      "source_page": "https://worldflipper.wiki.gg/wiki/Square_Glasses",
+      "sha256": "fcedc3374546b8e9efb13480b87ff55d7a04b8fdf0c5a3ef20865e258fdcc777",
+      "source_size": [
+        20,
+        19
+      ],
+      "crop": [
+        0,
+        0,
+        20,
+        19
+      ],
+      "scale": 3,
+      "source_category": "Armament sprite images"
+    },
+    {
+      "id": "item_echo_stone",
+      "kind": "item_icon",
+      "game_id": "echo_stone",
+      "item_kind": "relic",
+      "name": "Savant's Doll",
+      "filename": "item-Savants_Doll.png",
+      "url": "https://worldflipper.wiki.gg/images/Savant%27s_Doll.png?20f67d",
+      "source_page": "https://worldflipper.wiki.gg/wiki/Savant's_Doll",
+      "sha256": "e4a9113d9d79d9e6547752d23bba104fe0ece02dcfafa7290c3807be71b0c003",
+      "source_size": [
+        20,
+        20
+      ],
+      "crop": [
+        0,
+        0,
+        20,
+        20
+      ],
+      "scale": 3,
+      "source_category": "Armament sprite images"
+    },
+    {
+      "id": "item_pierce",
+      "kind": "item_icon",
+      "game_id": "pierce",
+      "item_kind": "rune",
+      "name": "Wrist-Mounted Catapult (Core)",
+      "filename": "item-Wrist-Mounted_Catapult_Core.png",
+      "url": "https://worldflipper.wiki.gg/images/Wrist-Mounted_Catapult_%28Core%29.png?626d93",
+      "source_page": "https://worldflipper.wiki.gg/wiki/Wrist-Mounted_Catapult",
+      "sha256": "9a5309dec608389a062e86928297a939c231ab5c2da75c84cffa228d5b146653",
+      "source_size": [
+        19,
+        19
+      ],
+      "crop": [
+        0,
+        0,
+        19,
+        19
+      ],
+      "scale": 3,
+      "source_category": "Armament Core sprite images"
+    },
+    {
+      "id": "item_bounce",
+      "kind": "item_icon",
+      "game_id": "bounce",
+      "item_kind": "rune",
+      "name": "Protostar Shield (Core)",
+      "filename": "item-Protostar_Shield_Core.png",
+      "url": "https://worldflipper.wiki.gg/images/Protostar_Shield_%28Core%29.png?b516a9",
+      "source_page": "https://worldflipper.wiki.gg/wiki/Protostar_Shield",
+      "sha256": "d2551527a863d29f952a25b82b9e05182b65887d55c27c7cca2ae417fa934b72",
+      "source_size": [
+        20,
+        20
+      ],
+      "crop": [
+        0,
+        0,
+        20,
+        20
+      ],
+      "scale": 3,
+      "source_category": "Armament Core sprite images"
+    },
+    {
+      "id": "item_blast",
+      "kind": "item_icon",
+      "game_id": "blast",
+      "item_kind": "rune",
+      "name": "Aero Bomb Bag (Core)",
+      "filename": "item-Aero_Bomb_Bag_Core.png",
+      "url": "https://worldflipper.wiki.gg/images/Aero_Bomb_Bag_%28Core%29.png?3497e6",
+      "source_page": "https://worldflipper.wiki.gg/wiki/Aero_Bomb_Bag",
+      "sha256": "be1cc5a764c1914e8d27cf22f243fc2b026f642db9f9fda325cc0401a1cc6591",
+      "source_size": [
+        20,
+        20
+      ],
+      "crop": [
+        0,
+        0,
+        20,
+        20
+      ],
+      "scale": 3,
+      "source_category": "Armament Core sprite images"
+    },
+    {
+      "id": "item_skill_pulse",
+      "kind": "item_icon",
+      "game_id": "skill_pulse",
+      "item_kind": "skill",
+      "name": "World Flipper ability sphere 17",
+      "filename": "original-item-sheet.png",
+      "url": "https://worldflipper.jp/demo/src/assets/production/item/sprite_sheet.png",
+      "source_page": "https://worldflipper.jp/demo/",
+      "sha256": "44a5da88ea84ab1acaf7b6feb6ddb0a7d43aa4aee6c6a278d29278a3c5c2885d",
+      "source_size": [
+        559,
+        256
+      ],
+      "crop": [
+        25,
+        221,
+        20,
+        20
+      ],
+      "scale": 3,
+      "source_category": "Official public demo pixel ability spheres",
+      "atlas": {
+        "url": "https://worldflipper.jp/demo/src/assets/production/item/sprite_sheet.atlas.json",
+        "sha256": "23d80aedee6963fc7e0c949d39bfe874eec24e15c723dddfe214433172155565",
+        "frame": "item/equipment/general/ability_sphere_17",
+        "rotated": false
+      }
+    },
+    {
+      "id": "item_skill_starfall",
+      "kind": "item_icon",
+      "game_id": "skill_starfall",
+      "item_kind": "skill",
+      "name": "World Flipper ability sphere 09",
+      "filename": "original-item-sheet.png",
+      "url": "https://worldflipper.jp/demo/src/assets/production/item/sprite_sheet.png",
+      "source_page": "https://worldflipper.jp/demo/",
+      "sha256": "44a5da88ea84ab1acaf7b6feb6ddb0a7d43aa4aee6c6a278d29278a3c5c2885d",
+      "source_size": [
+        559,
+        256
+      ],
+      "crop": [
+        26,
+        27,
+        20,
+        20
+      ],
+      "scale": 3,
+      "source_category": "Official public demo pixel ability spheres",
+      "atlas": {
+        "url": "https://worldflipper.jp/demo/src/assets/production/item/sprite_sheet.atlas.json",
+        "sha256": "23d80aedee6963fc7e0c949d39bfe874eec24e15c723dddfe214433172155565",
+        "frame": "item/equipment/general/ability_sphere_09",
+        "rotated": false
+      }
+    },
+    {
+      "id": "item_skill_arc_slash",
+      "kind": "item_icon",
+      "game_id": "skill_arc_slash",
+      "item_kind": "skill",
+      "name": "World Flipper ability sphere 15",
+      "filename": "original-item-sheet.png",
+      "url": "https://worldflipper.jp/demo/src/assets/production/item/sprite_sheet.png",
+      "source_page": "https://worldflipper.jp/demo/",
+      "sha256": "44a5da88ea84ab1acaf7b6feb6ddb0a7d43aa4aee6c6a278d29278a3c5c2885d",
+      "source_size": [
+        559,
+        256
+      ],
+      "crop": [
+        25,
+        173,
+        20,
+        20
+      ],
+      "scale": 3,
+      "source_category": "Official public demo pixel ability spheres",
+      "atlas": {
+        "url": "https://worldflipper.jp/demo/src/assets/production/item/sprite_sheet.atlas.json",
+        "sha256": "23d80aedee6963fc7e0c949d39bfe874eec24e15c723dddfe214433172155565",
+        "frame": "item/equipment/general/ability_sphere_15",
+        "rotated": false
+      }
+    }
+  ]
+}

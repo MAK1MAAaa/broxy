@@ -6,9 +6,10 @@
 script = ExtResource("1")
 id = "ember"
 kind = "weapon"
-display_name = "幽焰"
+source_id = "5060034"
+display_name = "怨嗟之杖"
 subtitle = "追踪法器 · 缓慢索敌"
-description = "凝聚缓慢飞行的幽焰，逐渐追踪附近尚未命中的敌人。"
+description = "放出缓慢飞行的追踪魔弹，逐渐转向附近尚未命中的敌人。"
 icon = "ember"
 color = Color(0.96, 0.48, 0.29, 1)
 price = 24

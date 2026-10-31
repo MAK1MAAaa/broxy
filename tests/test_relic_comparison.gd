@@ -67,7 +67,7 @@ func _make_state(case_name: String) -> RunState:
 			var third: int = _purchase(state, "relic", definition.id)
 			var fourth: int = _purchase(state, "relic", definition.id)
 			_check(state.merge_items(second, uid) and state.merge_items(fourth, third) and state.merge_items(third, uid), "Explicit merges create the ranked relic without expanding its footprint")
-	_check(state.backpack_snapshot()["used_cells"] == 32, "Four real weapon boxes and all twelve relic kinds occupy thirty-two cells")
+	_check(state.backpack_snapshot()["used_cells"] == 34, "Four real weapon boxes and all fourteen relic kinds occupy thirty-four cells")
 	state.gold = 7 if case_name == "poor" else 120
 	state.wave = 4
 	if case_name == "bulwark":

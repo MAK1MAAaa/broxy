@@ -1,0 +1,32 @@
+{
+  "runs": 12,
+  "wins": 12,
+  "core_versions": [
+    "prototype-0.1.0+5443e4cbc358"
+  ],
+  "per_arena": {
+    "reliquary": {
+      "runs": 3,
+      "wins": 3
+    },
+    "mire": {
+      "runs": 3,
+      "wins": 3
+    },
+    "glacier": {
+      "runs": 3,
+      "wins": 3
+    },
+    "ashland": {
+      "runs": 3,
+      "wins": 3
+    }
+  },
+  "dash_policy": "Unchanged BotPolicy uses ordinary two-argument step; never activates dash. These runs validate ordinary flow, not dash balance or human success rates.",
+  "log_sha256": {
+    "simulation-reliquary.jsonl": "07ba950dd86636a4e4e24d88643536a9bc3d230bec61a7c7bbed2b4f2c209a26",
+    "simulation-mire.jsonl": "f465199016cf8e83b444bf296b1d79b2ec7d74591b167eccfd93935acd640ed8",
+    "simulation-glacier.jsonl": "9772ccf3046b077b19252bdaa6bfb4f214f1c670d38979af20b996fa3af68548",
+    "simulation-ashland.jsonl": "7da4c18fb7bb53269133b7c63d12108239d41754e216d71e749e253c279a5689"
+  }
+}

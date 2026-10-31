@@ -1,0 +1,717 @@
+{
+	"active_skill_fx_capacity": 8,
+	"active_skill_fx_invalid": false,
+	"active_skill_fx_peak": 2,
+	"active_skill_uses": {
+		"arc_slash": 11,
+		"starfall": 7
+	},
+	"active_skills": [
+		{
+			"id": "starfall",
+			"kind": "skill",
+			"paid": 26,
+			"rank": 1,
+			"rotated": false,
+			"rune": {},
+			"uid": 2,
+			"x": 1,
+			"y": 0
+		},
+		{
+			"id": "arc_slash",
+			"kind": "skill",
+			"paid": 24,
+			"rank": 1,
+			"rotated": false,
+			"rune": {},
+			"uid": 3,
+			"x": 3,
+			"y": 0
+		}
+	],
+	"actual_duration_seconds": 60.010836,
+	"actual_warmup_seconds": 5.005306,
+	"after_step_counts_at_end": {
+		"enemies": 300,
+		"pickups": 200,
+		"projectiles": 594
+	},
+	"afterimage_capacity": 6,
+	"afterimage_peak": 6,
+	"arena_id": "mire",
+	"average_fps": 67.4711480439966,
+	"backpack_skill_cast_events": [
+		{
+			"affected": 16,
+			"direction": [
+				1.0,
+				0.0
+			],
+			"elapsed": 0.0166666666666667,
+			"id": "starfall",
+			"origin": [
+				650.441955566406,
+				337.0
+			],
+			"rank": 1,
+			"sample": false,
+			"uid": 2
+		},
+		{
+			"affected": 15,
+			"direction": [
+				1.0,
+				0.0
+			],
+			"elapsed": 0.0166666666666667,
+			"id": "arc_slash",
+			"origin": [
+				640.0,
+				365.0
+			],
+			"rank": 1,
+			"sample": false,
+			"uid": 3
+		},
+		{
+			"affected": 34,
+			"direction": [
+				1.0,
+				0.0
+			],
+			"elapsed": 6.01666666666665,
+			"id": "arc_slash",
+			"origin": [
+				772.0,
+				365.0
+			],
+			"rank": 1,
+			"sample": true,
+			"uid": 3
+		},
+		{
+			"affected": 92,
+			"direction": [
+				1.0,
+				0.0
+			],
+			"elapsed": 10.0166666666667,
+			"id": "starfall",
+			"origin": [
+				772.568420410156,
+				364.0
+			],
+			"rank": 1,
+			"sample": true,
+			"uid": 2
+		},
+		{
+			"affected": 0,
+			"direction": [
+				-1.0,
+				0.0
+			],
+			"elapsed": 12.0166666666668,
+			"id": "arc_slash",
+			"origin": [
+				772.0,
+				365.0
+			],
+			"rank": 1,
+			"sample": true,
+			"uid": 3
+		},
+		{
+			"affected": 0,
+			"direction": [
+				-1.0,
+				0.0
+			],
+			"elapsed": 18.0166666666669,
+			"id": "arc_slash",
+			"origin": [
+				640.0,
+				365.0
+			],
+			"rank": 1,
+			"sample": true,
+			"uid": 3
+		},
+		{
+			"affected": 69,
+			"direction": [
+				1.0,
+				0.0
+			],
+			"elapsed": 20.0166666666668,
+			"id": "starfall",
+			"origin": [
+				772.893981933594,
+				364.0
+			],
+			"rank": 1,
+			"sample": true,
+			"uid": 2
+		},
+		{
+			"affected": 30,
+			"direction": [
+				1.0,
+				0.0
+			],
+			"elapsed": 24.0166666666666,
+			"id": "arc_slash",
+			"origin": [
+				640.0,
+				365.0
+			],
+			"rank": 1,
+			"sample": true,
+			"uid": 3
+		},
+		{
+			"affected": 75,
+			"direction": [
+				1.0,
+				0.0
+			],
+			"elapsed": 30.0166666666662,
+			"id": "starfall",
+			"origin": [
+				773.000671386719,
+				364.0
+			],
+			"rank": 1,
+			"sample": true,
+			"uid": 2
+		},
+		{
+			"affected": 72,
+			"direction": [
+				1.0,
+				0.0
+			],
+			"elapsed": 30.0166666666662,
+			"id": "arc_slash",
+			"origin": [
+				772.0,
+				365.0
+			],
+			"rank": 1,
+			"sample": true,
+			"uid": 3
+		},
+		{
+			"affected": 0,
+			"direction": [
+				-1.0,
+				0.0
+			],
+			"elapsed": 36.0166666666659,
+			"id": "arc_slash",
+			"origin": [
+				772.0,
+				365.0
+			],
+			"rank": 1,
+			"sample": true,
+			"uid": 3
+		},
+		{
+			"affected": 74,
+			"direction": [
+				1.0,
+				0.0
+			],
+			"elapsed": 40.0166666666657,
+			"id": "starfall",
+			"origin": [
+				772.879516601563,
+				364.0
+			],
+			"rank": 1,
+			"sample": true,
+			"uid": 2
+		},
+		{
+			"affected": 0,
+			"direction": [
+				-1.0,
+				0.0
+			],
+			"elapsed": 42.0166666666656,
+			"id": "arc_slash",
+			"origin": [
+				640.0,
+				365.0
+			],
+			"rank": 1,
+			"sample": true,
+			"uid": 3
+		},
+		{
+			"affected": 33,
+			"direction": [
+				1.0,
+				0.0
+			],
+			"elapsed": 48.0166666666652,
+			"id": "arc_slash",
+			"origin": [
+				640.0,
+				365.0
+			],
+			"rank": 1,
+			"sample": true,
+			"uid": 3
+		},
+		{
+			"affected": 72,
+			"direction": [
+				1.0,
+				0.0
+			],
+			"elapsed": 50.0166666666651,
+			"id": "starfall",
+			"origin": [
+				772.883666992188,
+				364.0
+			],
+			"rank": 1,
+			"sample": true,
+			"uid": 2
+		},
+		{
+			"affected": 83,
+			"direction": [
+				1.0,
+				0.0
+			],
+			"elapsed": 54.0166666666649,
+			"id": "arc_slash",
+			"origin": [
+				772.0,
+				365.0
+			],
+			"rank": 1,
+			"sample": true,
+			"uid": 3
+		},
+		{
+			"affected": 73,
+			"direction": [
+				-1.0,
+				0.0
+			],
+			"elapsed": 60.0166666666645,
+			"id": "starfall",
+			"origin": [
+				772.874389648438,
+				364.0
+			],
+			"rank": 1,
+			"sample": true,
+			"uid": 2
+		},
+		{
+			"affected": 0,
+			"direction": [
+				-1.0,
+				0.0
+			],
+			"elapsed": 60.0166666666645,
+			"id": "arc_slash",
+			"origin": [
+				772.0,
+				365.0
+			],
+			"rank": 1,
+			"sample": true,
+			"uid": 3
+		}
+	],
+	"backpack_skill_invalid_events": 0,
+	"backpack_skill_purchases": [
+		{
+			"id": "starfall",
+			"kind": "skill",
+			"paid": 26,
+			"rank": 1,
+			"rotated": false,
+			"rune": {},
+			"uid": 2,
+			"x": 1,
+			"y": 0
+		},
+		{
+			"id": "arc_slash",
+			"kind": "skill",
+			"paid": 24,
+			"rank": 1,
+			"rotated": false,
+			"rune": {},
+			"uid": 3,
+			"x": 3,
+			"y": 0
+		}
+	],
+	"backpack_skill_results": {
+		"arc_slash": {
+			"affected": 267,
+			"cast_events": 11,
+			"cooldown_duration": 6.0,
+			"cooldown_remaining": 0.933333333333351,
+			"damage": 6408.0,
+			"minimum_sample_uses": 9,
+			"ownership_and_real_casts_valid": true,
+			"positive_casts": 6,
+			"rank": 1,
+			"requests": 11,
+			"sample_affected": 252,
+			"sample_cast_events": 10,
+			"sample_damage": 6048.0,
+			"sample_positive_casts": 5,
+			"sample_requests": 10,
+			"sample_uses": 10,
+			"slot": 1,
+			"uid": 3,
+			"uses": 11
+		},
+		"starfall": {
+			"affected": 471,
+			"cast_events": 7,
+			"cooldown_duration": 10.0,
+			"cooldown_remaining": 4.93333333333325,
+			"damage": 15072.0,
+			"minimum_sample_uses": 5,
+			"ownership_and_real_casts_valid": true,
+			"positive_casts": 7,
+			"rank": 1,
+			"requests": 7,
+			"sample_affected": 455,
+			"sample_cast_events": 6,
+			"sample_damage": 14560.0,
+			"sample_positive_casts": 6,
+			"sample_requests": 6,
+			"sample_uses": 6,
+			"slot": 0,
+			"uid": 2,
+			"uses": 7
+		}
+	},
+	"backpack_skill_source_files": {
+		"res://assets/starfall/icons/skill_arc_slash.svg": "cc0aa1d41e99732a41174a1abc38b42fe9589a7d4375c7385b9bf1f078ebfe6b",
+		"res://assets/starfall/icons/skill_pulse.svg": "748f83c7502fb4447db0c3074c1c9c83c8e48103641bb912af9c3f736885f20c",
+		"res://assets/starfall/icons/skill_starfall.svg": "234506b3e122c2e61652a85a34adf1136e9d9dbe91dff6b4887da29d0883be5b",
+		"res://assets/starfall/manifest.json": "a8534eaed70e7fefb46ce10edfbf336632f7cccf5e6331a0a29e120c79ebf4f3",
+		"res://data/skills/arc_slash.tres": "2c31ccb6ff43c09eb57435222a9c1170e6195d5b688e07504a21eb208b2d5123",
+		"res://data/skills/pulse.tres": "58dd1a1f86535ac3593dc8c6134bac864996271e902eae9b1bf63da038d4feb3",
+		"res://data/skills/starfall.tres": "c3f98549e73cc880d5fc712bb0d326bc43fdbc402750f4c2e837d89b8b5b7219",
+		"res://scripts/combat/active_skill_painter.gd": "a412f3d346d8331956a6bcc0335df51d7c34c43aa53a590985c728d806251a76",
+		"res://scripts/data/active_skill_rules.gd": "59282fbb05de10eefe9aa45c1b88b530c8efd353b65d41a6b5123afce04cccef"
+	},
+	"backpack_skills": true,
+	"checks": {
+		"backpack_skill_fx_pool": true,
+		"backpack_skill_inventory_and_real_casts": true,
+		"backpack_skill_source_coverage": true,
+		"dash_feedback": true,
+		"default_settings_and_no_profile": true,
+		"evasion_feedback": true,
+		"grounding_budget": true,
+		"load": true,
+		"performance": true,
+		"pulse_control": true
+	},
+	"connected_gamepads": [],
+	"controls": {
+		"dash": 32,
+		"move_down": 83,
+		"move_left": 65,
+		"move_right": 68,
+		"move_up": 87,
+		"pulse": 81,
+		"skill_secondary": 69
+	},
+	"core_activations": {
+		"bone_chorus": 46,
+		"frostfire": 0
+	},
+	"core_id": "bone_chorus",
+	"counter_scope": "total dash/feedback/hit/damage/core counters include warmup; sample-prefixed counters exclude it",
+	"counts_measurement_phase": "physics_frame_before_combat_world",
+	"damage_by_skill": {
+		"arc_slash": 6408.0,
+		"starfall": 15072.0
+	},
+	"damage_by_weapon": {
+		"bone": 114706.199999992,
+		"comet": 1166197.49999966,
+		"crescent": 1363549.94999886,
+		"ember": 326759.674999994,
+		"frost": 355964.262499629,
+		"return_ring": 1260202.00000315,
+		"scatter": 107454.900000001,
+		"storm": 144139.612499998
+	},
+	"dash_rules": {
+		"cooldown": 2.4,
+		"duration": 0.2,
+		"invulnerability": 0.12,
+		"speed": 660.0
+	},
+	"dashes_used": 28,
+	"display_server": "Windows",
+	"duration_seconds": 60.0,
+	"enemies": 300,
+	"engine": {
+		"build": "official",
+		"hash": "ed1daf0bf001b61586d9930840f2f1394092c079",
+		"hex": 263938,
+		"major": 4,
+		"minor": 7,
+		"patch": 2,
+		"status": "stable",
+		"string": "4.7.2-stable (official)",
+		"timestamp": 0
+	},
+	"evades": 28,
+	"evasion_feedback_peak": 1,
+	"evasion_probes": true,
+	"evasion_probes_spawned": 28,
+	"fixture_overrides": [
+		"300 enemies with synthetic high health",
+		"600 real content/rune projectiles replenished before each World step",
+		"200 synthetic pickups replenished before each World step",
+		"full player health restored before each World step",
+		"bone_chorus core assigned directly",
+		"earned-upgrade modals suppressed by Main._benchmark while Main._process is disabled",
+		"facing alternates right/left on real dash readiness; no synthetic movement input",
+		"autoplay argument only prevents focus-loss pause; World autopilot remains disabled",
+		"fixture grants exact prices and explicit stock, then purchases one rank-I starfall and one rank-I arc_slash through RunState.buy_offer, occupying two real skill slots and six backpack cells",
+		"each ready purchased UID is queued only through World.request_skill(slot); normal fixed steps produce the recorded uses, active_skill_cast events, actual skill damage and bounded painter effects; the existing enemy, projectile and pickup pressure layout is unchanged",
+		"each accepted dash clears old received-hit immunity and adds one stationary, positive-damage hostile projectile at its next-step position; normal collision and dash immunity decide the result"
+	],
+	"grounding": {
+		"capacity": 761,
+		"draw_command_peak": 1,
+		"peak_including_warmup": 501,
+		"sample_peak": 501
+	},
+	"input_prompts": false,
+	"internal_resolution": "1280x720",
+	"load_targets": {
+		"enemies": 300,
+		"pickups": 200,
+		"projectiles": 600
+	},
+	"main_benchmark_upgrade_suppression": true,
+	"main_process_enabled": false,
+	"minimum_pre_step_counts": {
+		"enemies": 300,
+		"pickups": 200,
+		"projectiles": 600
+	},
+	"natural_run": false,
+	"os": "Windows",
+	"p99_frame_ms": 20.27,
+	"passed": true,
+	"persistent_profile": false,
+	"physics_steps": 3904,
+	"physics_ticks_per_second": 60,
+	"pickups": 200,
+	"pre_step_counts_exclude_one_optional_probe_shot": true,
+	"primary_hits": 82681,
+	"projectile_families_at_end": {
+		"bone:bounce": 13,
+		"comet:blast": 6,
+		"comet:bounce": 162,
+		"crescent:blast": 103,
+		"crescent:bounce": 4,
+		"ember:pierce": 37,
+		"frost:blast": 30,
+		"frost:bounce": 1,
+		"return_ring:blast": 55,
+		"return_ring:bounce": 1,
+		"return_ring:pierce": 2,
+		"scatter:bounce": 68,
+		"storm:bounce": 2,
+		"storm:pierce": 110
+	},
+	"projectiles": 600,
+	"prompt_drift_changed_device": false,
+	"prompt_drift_events": 0,
+	"prompt_switches": 0,
+	"pulse_affected": 0,
+	"pulse_cycles": false,
+	"pulse_feedback_peak": 0,
+	"pulses_used": 0,
+	"renderer": "gl_compatibility",
+	"run_seed": 20261028,
+	"rune_visual_peak": 32,
+	"sample_active_skill_fx_peak": 2,
+	"sample_active_skill_uses": {
+		"arc_slash": 10,
+		"starfall": 6
+	},
+	"sample_afterimage_peak": 6,
+	"sample_dashes_used": 25,
+	"sample_evades": 25,
+	"sample_evasion_feedback_peak": 1,
+	"sample_physics_steps": 3602,
+	"sample_prompt_switches": 0,
+	"sample_pulse_affected": 0,
+	"sample_pulse_feedback_peak": 0,
+	"sample_pulses_used": 0,
+	"samples": 4049,
+	"scenario": "backpack-skill-content-pressure",
+	"secondary_hits": 331290,
+	"seed": 20261028,
+	"settings": {
+		"flash": true,
+		"shake": true,
+		"volume": 0.65
+	},
+	"skill_hits": 738,
+	"skill_relics": false,
+	"skill_stats": {
+		"dash_cooldown": 2.4,
+		"move_speed": 220.0,
+		"pulse_cooldown": 8.0,
+		"pulse_radius": 144.0
+	},
+	"source_files": {
+		"res://assets/starfall/icons/skill_arc_slash.svg": "cc0aa1d41e99732a41174a1abc38b42fe9589a7d4375c7385b9bf1f078ebfe6b",
+		"res://assets/starfall/icons/skill_pulse.svg": "748f83c7502fb4447db0c3074c1c9c83c8e48103641bb912af9c3f736885f20c",
+		"res://assets/starfall/icons/skill_starfall.svg": "234506b3e122c2e61652a85a34adf1136e9d9dbe91dff6b4887da29d0883be5b",
+		"res://assets/starfall/manifest.json": "a8534eaed70e7fefb46ce10edfbf336632f7cccf5e6331a0a29e120c79ebf4f3",
+		"res://assets/worldflipper/manifest.json": "d478ace75ce5804edb9655c4b3d4ae9f4ba124f74684ff3e6949d42593e9277f",
+		"res://assets/worldflipper/maps/ashland.png": "bc228b64fb98e856ab1c9098b94249c40f83688ff203627d7fffe0fb7429899b",
+		"res://assets/worldflipper/maps/glacier.png": "db029fa823459093116913cdf09fac60fb7e86c40d121e2b832aec8cc3b693b9",
+		"res://assets/worldflipper/maps/mire.png": "3dd39effc68df6bba8b56951f107ba905614b6786d5083db3b111e38531e3c6b",
+		"res://assets/worldflipper/maps/reliquary.png": "ac014b8a8814836089e7f3243af6fc197903ac32fb61e19885367bfb07103598",
+		"res://assets/worldflipper/props/bumper.png": "a619c6111532e9b720b48e68c4f50a4f49cec8746761e89fc8ff500dea9051c6",
+		"res://assets/worldflipper/props/monument.png": "2161982a519956f335e4bd130cf6e2cb1453ff3cbb15f8bf93df4ddce76641b9",
+		"res://assets/worldflipper/props/planter.png": "f93558f126fbfcba3cd47bb3724457b106db1ffcce3746551d5d84b566177a70",
+		"res://assets/worldflipper/sprites/boss.png": "747fdfaa65b1049e0086ccf4e86244208163f065e93b50cb6ece35d8f9953432",
+		"res://assets/worldflipper/sprites/caster.png": "6d7ab229bc34d4bbdcbe5b0f0ec8a80309cb7a4545481511fc2527221f1a565b",
+		"res://assets/worldflipper/sprites/chaser.png": "117e9d34f43c185f1831155e59565fda89d5ef2bf67e861f352498a8f98074a7",
+		"res://assets/worldflipper/sprites/player-atlas.png": "5ca0b0a24c7da0b33a9b8d6a414f6e519ced0a677619e1faf833f0e64d18cd55",
+		"res://assets/worldflipper/sprites/player.png": "3ff027414e4366719636448006d90af5f6f4418940bc5b6fe6581e795ba152e7",
+		"res://assets/worldflipper/sprites/rusher.png": "ab551d0cb0cef0e210cd503a2ca8c678243ae3d9e5a8284b5d16886ae3c89ce2",
+		"res://assets/worldflipper/sprites/tank.png": "9fc77fd43d54c9d1888b9898ab9f5d8b51ed9c9fc65bc3b6ce0ae6cde448de04",
+		"res://data/arenas.json": "eae3e35168ec4bc9b06630833190e7b2f4446d0766c2b324c419044224e3ac67",
+		"res://data/enemies/boss.tres": "d8832c910af8845821579d29d5fb8ff4b30ba1333a53004347b1c6272fe934cb",
+		"res://data/enemies/caster.tres": "c2f1dffc0aaeb4b74837ef109d78a0bb536c583a9efc9cc5347b3b55ddb67e86",
+		"res://data/enemies/chaser.tres": "67b655cd3ad1919cfe4eea86cbc50ae32ee4ae8dcc426b70341b013a055b4c11",
+		"res://data/enemies/rusher.tres": "85f4a04a54297ccf16e4caf9f39444b97ec0fbfe4d5516263e322f953635e3aa",
+		"res://data/enemies/tank.tres": "7901efcd7ec48940d8bce6559dea80daf9c2d911ddd12257ed72d1fe80100b1a",
+		"res://data/relics/armor.tres": "dcff8f80667fbb41ef9f73669d122cd36e062f23281110bf1306e3a59178c142",
+		"res://data/relics/blood_pact.tres": "78d71d0242e87303c96429c5766862bbdd58243519422421a5d101f15fe85c73",
+		"res://data/relics/bulwark.tres": "9547c7b55bfff53664a2e982aaeffa07fb963c6452bc0461926d9d1a24d72fba",
+		"res://data/relics/damage.tres": "ad40db04c89e9ca4f77af604f4f9cb8b5d84c9f4a999e452a89082485fb2a9be",
+		"res://data/relics/echo_stone.tres": "fc11c36280d836528a3342403135554d32c0b55ad9e90790b4fb08a89cfa95b8",
+		"res://data/relics/fold_clasp.tres": "34d35a7c0650dc7d5be69a90531ecccd9a781ddeb13a2ccc4a4a7d10674ff929",
+		"res://data/relics/grave_candle.tres": "18509fdec8e9ae5bd11db3af139d8dcfd2f81b9f5db9037a037b35b4886e6072",
+		"res://data/relics/haste.tres": "064b75700f47e2dec990d09b320d2917e25cf1641fe2d753d4a6668591487c19",
+		"res://data/relics/hourglass.tres": "bf6298b13ed0010305b4ae5c8ead9140751858684d62d777997e69a1e20f8a4e",
+		"res://data/relics/magnet.tres": "beec14d470e303e96c08c6320abd256ec70bec60dbedf23b5cb89a7db23f021d",
+		"res://data/relics/moon_charm.tres": "7993bed835ff329f61cedf09f80842ebe3ffd511e3c4739a1b3c8366fc236c5c",
+		"res://data/relics/pilgrim.tres": "d7b566785fdd6d5506d6a4eb07da7e3148ab63eb7eb8a3050cd05877bb5652a8",
+		"res://data/relics/speed.tres": "d1d0536ad44c075d4519d9d20f9828655142fe67f13ffc8cb1131ee03918f0b6",
+		"res://data/relics/vitality.tres": "317a224d39c0d6642ae001106335fcfa68569d7cddb115facc0ea7c0d38855df",
+		"res://data/runes/blast.tres": "b4f2ab629897503c16974ee10e2fcac3147b703724dd429b35431e692862ca87",
+		"res://data/runes/bounce.tres": "dba33aea9f6750ce5de9e318e1c22c6b671f416e7f59c3698af24c7dcfc95028",
+		"res://data/runes/pierce.tres": "23d69bda5fb1464befb7f89ef012f6980c0775e8e65644b7d16078919a3f540b",
+		"res://data/skills/arc_slash.tres": "2c31ccb6ff43c09eb57435222a9c1170e6195d5b688e07504a21eb208b2d5123",
+		"res://data/skills/pulse.tres": "58dd1a1f86535ac3593dc8c6134bac864996271e902eae9b1bf63da038d4feb3",
+		"res://data/skills/starfall.tres": "c3f98549e73cc880d5fc712bb0d326bc43fdbc402750f4c2e837d89b8b5b7219",
+		"res://data/waves/wave_1.tres": "0806ec860e50ff356f2446e0d36c26f7421bd54b4caef77c2c6b52c87d77f897",
+		"res://data/waves/wave_2.tres": "c215ce4849981a33e6f143e510ec4b29e5559efdc168e6c888f8ffa42a57dd70",
+		"res://data/waves/wave_3.tres": "40a1d88ca1d4e1b6fb6473eaa77c3f3a49b01b9ad39b6d642d10d275c7da5dfc",
+		"res://data/waves/wave_4.tres": "962f10a533021cca45e6227f42dedc58789558e8bccf21bd35802db18d732861",
+		"res://data/waves/wave_5.tres": "1da70e90df8b263cf7f17b22d64994bdd1849782629c9b69bbf05f0846349582",
+		"res://data/waves/wave_6.tres": "eacf2c8c19f344b7e16e3c1e253b30d0f789d60f3c23c508bd4cad85df963803",
+		"res://data/waves/wave_7.tres": "41e6b80f98711486684b71d3d086bfc6c7199596d4a085c6cd56f4afb7ac36ff",
+		"res://data/waves/wave_8.tres": "2a810cf965bb95c7c62d49528557863a923d9e4e66842df9c40de8c7a8ca7474",
+		"res://data/weapons/bone.tres": "0e6b495a79c76fd59fbacb4a8b6b738a2ff41982b5dfeba32558945890279382",
+		"res://data/weapons/comet.tres": "1c76fe0e2b34a05472e062aeb9d957df2e5e462b33fca5edba3b924ed370bdf7",
+		"res://data/weapons/crescent.tres": "cd63d4647a38563ed7e531443eb21b101d2d580fd7e62d2279b532d554a15ec9",
+		"res://data/weapons/ember.tres": "aaf0dacb0a723977e8006dd4696ec8c7db24caaa510c2b20eac428d61cc8f7f0",
+		"res://data/weapons/frost.tres": "86dec7e84405e146f76cc1420512b70ceba38243378a9d207452160e74987f40",
+		"res://data/weapons/return_ring.tres": "5697b2b83c2c0c7f4052c7ca9c39c5d133124c1cc84d4dce2067dfd706a823f0",
+		"res://data/weapons/scatter.tres": "468f02e2371d693e575bf9819be68f087588ba43d8b3037d8edf887f7e223a45",
+		"res://data/weapons/storm.tres": "b8174a17e112cf2c7bdf8f0a8e3848231da734de335d561b0bca75dbea329e17",
+		"res://project.godot": "1f5418f6b3f7be4dec17318adc96bfb899fa3b9f75541c35a269e391e0ba1cdc",
+		"res://scenes/main.tscn": "0d1a22532da1a02ae8891b362b96d8c1493c66fa67d6a87a7f12dcd79186dfc0",
+		"res://scripts/combat/active_skill_painter.gd": "a412f3d346d8331956a6bcc0335df51d7c34c43aa53a590985c728d806251a76",
+		"res://scripts/combat/bot_policy.gd": "814d8cf96fd89b6b3ca8a9fdf7243f42fa6ca765eb83cd8a6bc4f8deeee6d075",
+		"res://scripts/combat/combat_sim.gd": "2cfc441018cec637a6d542467400ecd837cfdea7004797faa649de1a6d8d5362",
+		"res://scripts/combat/combat_world.gd": "f96bd67a38d7ca47942aa7479b65891a70b8d7f802a47d8e49cc59e9628456ed",
+		"res://scripts/combat/enemy_telegraph_painter.gd": "4750e8c434ef2eac723d1cb6cb3bef5386734cd369a80f001b0467a3211af2e6",
+		"res://scripts/combat/grounding_painter.gd": "f5edc536bcaaaf8802d3b677d4b802f145d533da5c1e34d08594f1087f1e29a5",
+		"res://scripts/combat/impact_painter.gd": "0366327196c07f810e77869db84161cc1c633f466f15586d5035d50f3a0e006b",
+		"res://scripts/combat/projectile_painter.gd": "d45361a776204640d18c29423d01df850edb5af71a411cfd89821cd3b940f64d",
+		"res://scripts/core/adventure_art.gd": "52ace4c2e1b17e7f684f8c923e35964eed903e8dcbd5da50199fdc44cdd35a84",
+		"res://scripts/core/arena_catalog.gd": "0e640bec081a82eb97a79085ac23cf6df2d537fe8d2321900f5579873302669c",
+		"res://scripts/core/arena_obstacles.gd": "d3076c5cd3b7024e59048bbaca12816b6fefb9eb34225eec718f4fb9a3bf715e",
+		"res://scripts/core/backpack_inventory.gd": "e490c0f1b00f548ee3e0baf3c64077a2fd47ffa5397e00def564857cb46a7a4e",
+		"res://scripts/core/backpack_resonance.gd": "29d937b97ba2a076acc4439d6fd42b7d785f6353af0bd12da249ae44a5c4b17f",
+		"res://scripts/core/control_bindings.gd": "a8c72d831274fad22c893af38335219322262e4e94bdb5742c7bd51cc1bc2312",
+		"res://scripts/core/game_store.gd": "390ac85b2f79b71b901b1008f1e4160e9f5c4d81eefc72fcf7625d75651e19a4",
+		"res://scripts/core/input_device_tracker.gd": "e41bb3b998cf86ef57f35fff1eed8dd62d1151e0c6bd86f561818057973bae64",
+		"res://scripts/core/run_state.gd": "315fc98ede39d467193bdef028cb94dd36d42c619ffef4e9f7bcddbdfcaf4040",
+		"res://scripts/core/sound_bank.gd": "aafab1b8c70fb3d0bd39cb6df798cfc4dd9cd8e936f5c36bc66fb9d309ea201e",
+		"res://scripts/core/world_flipper_player_art.gd": "ae5157683078c06f8a225b5bbc5679ede9c762d967e58b268421f252fc57aafe",
+		"res://scripts/data/active_skill_rules.gd": "59282fbb05de10eefe9aa45c1b88b530c8efd353b65d41a6b5123afce04cccef",
+		"res://scripts/data/content_def.gd": "64c9867d89c19021d38c1b4015c7a2777a35d7116411697a01bd0a152b821f94",
+		"res://scripts/data/dash_rules.gd": "385b45260f8014ac41c4f39a449f63d1a3568b9c88d0151799557aa0443db416",
+		"res://scripts/data/game_catalog.gd": "932ed2e437e6c25514b0101a1de39c3dba3d33664df41fd92798239c9318076b",
+		"res://scripts/data/pulse_rules.gd": "d3bdb993eceaea0f954defa08675bfb4b42281ed05a3dd542973d615b95339f5",
+		"res://scripts/data/rogue_rules.gd": "4042bf642049825de0c863b170f37fd8e2f4d29f5ed803835c0459c4a3494065",
+		"res://scripts/data/rune_rules.gd": "66a9dbcec6adbca30ef9c43848ccc905a5bd43bd91c5906b88ae38833fe4fce4",
+		"res://scripts/main.gd": "ccf7c94b60b8c03312236d5bcb57abd03f3c7edb6b2942c16de7aa75206a4ce2",
+		"res://scripts/ui/backpack_grid.gd": "baedb124fbafc71e854073a3d2b97dff92350c6b5f63b55c142036556ffd6044",
+		"res://scripts/ui/button_skin.gd": "59667ddeb55b8133c03ac587a64f237c25a80dea01af2c601139abd8b67b6d97",
+		"res://scripts/ui/game_typography.gd": "2b8e75ad6c34a911002c2381b04031f27d4232bbc3afba0085e6bf06086f9afd",
+		"res://scripts/ui/game_ui.gd": "40675bc63dfb0f0b7d87e542eb2b5e2118af6ceeb68e31d0e0204b23144b712b",
+		"res://scripts/ui/minimap_view.gd": "65d1ef3041df11018196a0c34b5b4fdf30fde12526212008a6c0f5445cbc4066",
+		"res://scripts/ui/shop_panel_skin.gd": "08a2312fcf393b3f22828c0309ebb51575a24905d7a762b987e64452c44dc814",
+		"res://scripts/ui/shop_workbench_art.gd": "723302a8701bffc29c663ec8868f4fda54ef6a850ec8b296dd0507e16ede8702",
+		"res://scripts/ui/title_cover.gd": "971fd7c79f4329c0eb6fe0ead01a6ee91bbd0fbf9321dbda5f95ae0ab0095179",
+		"res://tools/benchmark_dash.gd": "6929f29cb98b43d4df67ac2306a465aeab2d3b1f56900345608524994dcf1d4b"
+	},
+	"source_hash": "03b3af00d25bb44aff418cd656f79a39c56e547969bee1853ddd1f269cd44669",
+	"source_hash_algorithm": "sha256-path-and-content-manifest",
+	"thresholds": {
+		"maximum_active_skill_fx": 8,
+		"maximum_p99_frame_ms": 33.0,
+		"minimum_afterimage_peak": 1,
+		"minimum_fps": 58.0,
+		"minimum_sample_dashes": 24,
+		"minimum_sample_skill_uses": {
+			"arc_slash": 9,
+			"starfall": 5
+		}
+	},
+	"warmup_dashes_used": 3,
+	"warmup_seconds": 5.0,
+	"weapon_ids": [
+		"bone",
+		"frost",
+		"ember",
+		"scatter",
+		"crescent",
+		"storm",
+		"comet",
+		"return_ring"
+	],
+	"window_size": [
+		1280,
+		720
+	],
+	"window_visible": true,
+	"world_autopilot": false,
+	"world_stress_mode": false
+}

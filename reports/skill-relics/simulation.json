@@ -1,0 +1,46 @@
+{
+  "seed": 20261028,
+  "arena": "mire",
+  "core": "bone_chorus",
+  "route": "balanced",
+  "altar": "accept",
+  "policies": [
+    {
+      "mode": "default-policy",
+      "runs": 3,
+      "wins": 3,
+      "pulses_used": 0,
+      "pulse_affected": 0,
+      "core_versions": [
+        "prototype-0.1.0+d492dd7052d0"
+      ],
+      "policy_versions": [
+        "orbit-avoid-v1/backpack-shop-v2/upgrade-timing-v2/rogue-choices-v1/bone_chorus/balanced/accept+50ec63992513"
+      ],
+      "skill_relic_weight_at_end": {
+        "fold_clasp": 0,
+        "echo_stone": 0
+      },
+      "log_sha256": "c426f848df7b52d46aa1ec930628f20bc879a36d219e574f0279c762714a63b6"
+    },
+    {
+      "mode": "pulse-policy",
+      "runs": 3,
+      "wins": 3,
+      "pulses_used": 12,
+      "pulse_affected": 60,
+      "core_versions": [
+        "prototype-0.1.0+d492dd7052d0"
+      ],
+      "policy_versions": [
+        "orbit-avoid-v1/backpack-shop-v2/upgrade-timing-v2/rogue-choices-v1/pulse-peel-v1/bone_chorus/balanced/accept+50ec63992513"
+      ],
+      "skill_relic_weight_at_end": {
+        "fold_clasp": 0,
+        "echo_stone": 0
+      },
+      "log_sha256": "77bd07549985cf1f3a5496d50017ab7ba33eb3a759afb2d9c706027cab93e9a1"
+    }
+  ],
+  "limits": "Six unchanged-policy runs test the enlarged shop catalog, not human balance; neither policy purchased the new relics. Paid construction, rank growth and actual modified casts are covered by dedicated tests, native fixtures and pressure. Default policy does not use skills; opt-in Q does not auto-dash."
+}

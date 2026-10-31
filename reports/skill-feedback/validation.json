@@ -1,0 +1,262 @@
+{
+  "created_utc": "2026-10-28T06:43:59.715811+00:00",
+  "base_commit": "6317fa9a4b743b48b731bffa2224c12a5d569847",
+  "engine": "Godot 4.7.2 ed1daf0bf",
+  "platform": "Windows x86_64",
+  "godot_suites": 82,
+  "diagnostic_entries": 5,
+  "regression": {
+    "invocations": 87,
+    "assertions": 29580,
+    "failures": 0,
+    "sha256": "72d4420a9e8c1c69aa4474ddd72875f6ff9845cd2d34d33e3a0435d76ed714af"
+  },
+  "python_tests": 35,
+  "native": {
+    "skill_audio": {
+      "invocations": 1,
+      "assertions": 54,
+      "failures": 0,
+      "sha256": "b488ac385b01af4c22186b931003dad99e93e6eee0fe4ea22854cdedb6ca9536"
+    },
+    "skill_feedback": {
+      "invocations": 1,
+      "assertions": 76,
+      "failures": 0,
+      "sha256": "21b7c5e0d336551af51e0d73a5e312b97e4df024f3379dba861f597055088208"
+    },
+    "dash_evasion_audio": {
+      "invocations": 1,
+      "assertions": 40,
+      "failures": 0,
+      "sha256": "7e82a34cfba20c9677d55ce10187ea47f25376dd1e1654c0854e2181ef9d804b"
+    },
+    "dash_world": {
+      "invocations": 1,
+      "assertions": 69,
+      "failures": 0,
+      "sha256": "3fbfaec03743f43444a4e0c5b73f2a4c033d9af8d378f466f55d0076b88c361e"
+    },
+    "dash_evasion_world": {
+      "invocations": 1,
+      "assertions": 75,
+      "failures": 0,
+      "sha256": "0f8f7e6f481e2ec60e734076c1d7727f2613cb24b7088abdc93ae510f7773e39"
+    },
+    "pulse_world": {
+      "invocations": 1,
+      "assertions": 63,
+      "failures": 0,
+      "sha256": "4c029c506b663dd23289e70d4512f10f05d205d1a0e7a3dc491a66a343f1b426"
+    }
+  },
+  "compiled_pck": {
+    "skill_audio": {
+      "invocations": 1,
+      "assertions": 54,
+      "failures": 0,
+      "sha256": "b488ac385b01af4c22186b931003dad99e93e6eee0fe4ea22854cdedb6ca9536"
+    },
+    "skill_feedback": {
+      "invocations": 1,
+      "assertions": 76,
+      "failures": 0,
+      "sha256": "21b7c5e0d336551af51e0d73a5e312b97e4df024f3379dba861f597055088208"
+    }
+  },
+  "previews": {
+    "hit": {
+      "case": "hit",
+      "affected": 3,
+      "active": true,
+      "text": "受控 ×3",
+      "health": 100.0,
+      "png_sha256": "93a497d678cf369837a35c98192be39bd5c00ebf431bdc84a9a06be368aaa70b"
+    },
+    "empty": {
+      "case": "empty",
+      "affected": 0,
+      "active": true,
+      "text": "未受控",
+      "health": 100.0,
+      "png_sha256": "0baf763cda1ca6affa6ae83b4845e600296bb990f7b3e5ed49528bd8e61e9017"
+    },
+    "flash_off": {
+      "case": "flash_off",
+      "affected": 3,
+      "active": true,
+      "text": "受控 ×3",
+      "health": 100.0,
+      "png_sha256": "1093dbe4dbda76732390835d744e8694e8465569dbcfb76fadf64a17a4a6a2ba"
+    },
+    "danger": {
+      "case": "danger",
+      "affected": 3,
+      "active": true,
+      "text": "受控 ×3",
+      "health": 100.0,
+      "png_sha256": "6e4174f0c298aa805823a2951321a54045cbb42a9f528363d03b277d5790455c"
+    },
+    "hurt": {
+      "case": "hurt",
+      "affected": 3,
+      "active": false,
+      "text": "受控 ×3",
+      "health": 92.0,
+      "png_sha256": "09226e85e40ecb505688c94fbe751eb5e2c37db5d79bbd4821b216d6164f47ae"
+    },
+    "corner": {
+      "case": "corner",
+      "affected": 3,
+      "active": true,
+      "text": "受控 ×3",
+      "health": 100.0,
+      "png_sha256": "dda77002d3dad431afc040c7fbf49ef216c25a1d7a28c8fbaa8e181ad503c7c8"
+    },
+    "pack-hit": {
+      "case": "hit",
+      "affected": 3,
+      "active": true,
+      "text": "受控 ×3",
+      "health": 100.0,
+      "png_sha256": "93a497d678cf369837a35c98192be39bd5c00ebf431bdc84a9a06be368aaa70b"
+    },
+    "pack-empty": {
+      "case": "empty",
+      "affected": 0,
+      "active": true,
+      "text": "未受控",
+      "health": 100.0,
+      "png_sha256": "0baf763cda1ca6affa6ae83b4845e600296bb990f7b3e5ed49528bd8e61e9017"
+    },
+    "pack-flash_off": {
+      "case": "flash_off",
+      "affected": 3,
+      "active": true,
+      "text": "受控 ×3",
+      "health": 100.0,
+      "png_sha256": "1093dbe4dbda76732390835d744e8694e8465569dbcfb76fadf64a17a4a6a2ba"
+    },
+    "pack-danger": {
+      "case": "danger",
+      "affected": 3,
+      "active": true,
+      "text": "受控 ×3",
+      "health": 100.0,
+      "png_sha256": "6e4174f0c298aa805823a2951321a54045cbb42a9f528363d03b277d5790455c"
+    },
+    "pack-hurt": {
+      "case": "hurt",
+      "affected": 3,
+      "active": false,
+      "text": "受控 ×3",
+      "health": 92.0,
+      "png_sha256": "09226e85e40ecb505688c94fbe751eb5e2c37db5d79bbd4821b216d6164f47ae"
+    },
+    "pack-corner": {
+      "case": "corner",
+      "affected": 3,
+      "active": true,
+      "text": "受控 ×3",
+      "health": 100.0,
+      "png_sha256": "dda77002d3dad431afc040c7fbf49ef216c25a1d7a28c8fbaa8e181ad503c7c8"
+    }
+  },
+  "audio_report": "audio.json",
+  "performance_report": "performance.json",
+  "original_resources_preserved": 51,
+  "current_resources": 55,
+  "preserved_existing_files_excluding_expected_asset_metadata": 433,
+  "expected_asset_metadata_updates": [
+    "assets/PROVENANCE.md",
+    "assets/manifest.json"
+  ],
+  "unchanged_rule_source_files": 65,
+  "package": {
+    "path": "build/Embers-windows-x86_64.zip",
+    "sha256": "b25da80ef7235734fd843a7618e776056df2ddea1f351817ef08e46f78436149",
+    "x64_pe_and_zip_member_bytes": true,
+    "exe_smoke_exit_code": 0,
+    "previous_path": "build/Embers-windows-before-skill-feedback-6317fa9.zip",
+    "previous_sha256": "e3407bb32db7cd0a243b80bed36d8ee6ccba6d388788465958c7968d438523cf"
+  },
+  "source_and_document_sha256": {
+    "README.md": "1ead2c3ffa598a414837045cc75b95fc659992486d1645ecbf44dedf24d9af18",
+    "assets/PROVENANCE.md": "8db59566fe3ab40bdcea7f98b1097b65400cc641787bbbb5249ec63f3872b5be",
+    "assets/audio/dash.wav": "6592e2bf5d1c85d26ab1ab58349068b3abbef7c94bd3044dc970acd09c9cf850",
+    "assets/audio/dash.wav.import": "34577397410b08af5eee4b07643528ddf277bb0fdea9c8ee1e813dcbfef82b5b",
+    "assets/audio/evade.wav": "622cea175847dfd8c086cf8a81244f21603fa7317f69db4b896aa1a1ae015b26",
+    "assets/audio/evade.wav.import": "5bf94cbec3a2cbd92f2df90b9f9bbe41ff0a1fd9d9531ef07a5b1fe931abd42f",
+    "assets/audio/pulse.wav": "2c7532b68bc1d3aa64410336208782c1f812e315404f4dbeb7bc3260f32b404a",
+    "assets/audio/pulse.wav.import": "2d0dc71c7801f1f9fc37dbb17ae847e9b62c608f1cff98ae1f89e1ea4bf95660",
+    "assets/audio/pulse_hit.wav": "753841eb67dae3d6dce39b3eb2eec2bb8d66edf7d9108323970bbc7c2a805404",
+    "assets/audio/pulse_hit.wav.import": "32d7e0b5bc069a0d533cd2d4abd26fe59da02cbf565bc2dda17b666cdc7eab29",
+    "assets/manifest.json": "50eb2d1d0592e564b8da53819479d14bd742b73ef8aee2e1ba0e6d1bd547370e",
+    "docs/art-direction.md": "61c6cf755d002b7d088f1624d4479c9a29b15351c29eb3660fbe5b7e930ac895",
+    "docs/dash-evasion.md": "add64890a3255506dc8e4702f46a92c71d0890eef92b3b48498289f0fc10eca5",
+    "docs/dash.md": "386a09dffe3c6800c2331b8772694627768af459680f8c87a0a55ea654aa879e",
+    "docs/pulse.md": "8682b1479ff1b4216dae09bd790af84b269d1f68f84cd8e9e06a4ef6d8c2794a",
+    "docs/skill-feedback.md": "945d19eb31e7b6f968376bbe0447a1cfa99e45270219493832c7578d8d30cb0a",
+    "scripts/combat/combat_world.gd": "c3befe28a8d849418ed115f28efc7991cc52b2e5c5b47e4ada8d9f702000a5cc",
+    "scripts/core/sound_bank.gd": "aafab1b8c70fb3d0bd39cb6df798cfc4dd9cd8e936f5c36bc66fb9d309ea201e",
+    "tests/test_dash_evasion_audio.gd": "5c3b89576b18f4d68e56afedae60f55700ce772ab137c580190b24d24592d29c",
+    "tests/test_dash_evasion_world.gd": "80826b70e75670aade8709a964b3ade728a6efef521c864efcd764268557620e",
+    "tests/test_dash_world.gd": "fa11921988e3240a332a151e4ea2f4f57fa81f950975e144d24a1f50aa356bec",
+    "tests/test_pulse_world.gd": "aab7404e18e78b7e30115b70298d28d21f96d375215e930ea191f1c891d9786f",
+    "tests/test_skill_audio.gd": "089e3c35524088f98af000f42048b88cfaf45be010279a64a29fe498782d763a",
+    "tests/test_skill_audio.gd.uid": "4e1a4ddbe8add1d697db3cf797f12676888a7288ac0ab4d4b712e9db2b256756",
+    "tests/test_skill_audio_assets.py": "dd85e275a6b7dfb84890903de0075cf1146bcc6502ba33637c6d787e14608d9c",
+    "tests/test_skill_feedback.gd": "07da5e132ef237c6082d9fc6447d3353c2a9ebef73148c9eea8ed97fb9936a85",
+    "tests/test_skill_feedback.gd.uid": "0714f4dd8a97fc98fdb65913190fe8d86118a975be327d27ab15443149e67fcc",
+    "tools/audio_skills.py": "ea655f2d54ff8a0bbab977a9ab51dbcd266d3421d6d2d2546cc81b5451cbd15f",
+    "tools/benchmark_dash.gd": "a0e777e6f3df1a9c4ec5be7f198f3f58e2cc2f7ca08f306a31698d46d8bd275c",
+    "tools/generate_assets.py": "e89a8a9b80690ea9bc9cd2e11eb83e539360685ec3cdf32cc3281611cbc6854c",
+    "tools/preview_skill_audio.gd": "5ad75a64d9c6d703fd5df959ad117930f7017ff99da2840167c945348df7afe1",
+    "tools/preview_skill_audio.gd.uid": "f7a58da25754efcd134f0ae191b3c7d57bc0f852db4401c08e614c71d6271af9",
+    "tools/preview_skill_feedback.gd": "0f79442c4d7d2c9d7c30361d8b0af5901c6837cca8a50b851d0507fe9b1bc4ab",
+    "tools/preview_skill_feedback.gd.uid": "95062f37f4eee24e1cdbd14fd04fd8d666a2d11bf3d650f5c718abb6f308de6e",
+    "tools/test.ps1": "17866fe7b08774eb2f644e1ae2e73d986eddcedb5c94052e988cd99072d29095",
+    "tools/test.sh": "91005708d62b459dee5a3d0baecc4ae110959f96fd239c64260a14d8006de52b"
+  },
+  "evidence_sha256": {
+    "regression.log": "72d4420a9e8c1c69aa4474ddd72875f6ff9845cd2d34d33e3a0435d76ed714af",
+    "generation-raw.json": "09eaed2e557f3d0a47ae44799bb2797ea9e8a28f0f59d01359a19bccb6a91e28",
+    "build.log": "1d6756190e3f254ae5106fb1d18557c16d8c3162a5ddc77c5120c3d92226b0ae",
+    "export-smoke.log": "20d74f5280403dc18b2148d3e1052f7683715da86044aad2a02666a6ea2499d7",
+    "audio-preview.log": "fbd02c205e3a5d822971f956df912395c7d1702f6117484e5be18a34adb4ecce",
+    "engine-mix.json": "d3b51a59287550e329ea84def94c0a769d48c26708c9566a7e1d0cbcf98aa0ea",
+    "engine-mix.wav": "cd84612ad43b545ba5e82479ad4bec3427769cb05ff2f06d9d6dcdae10dabd68",
+    "pack-audio-preview.log": "1b74dfd0a3c2d6baf96558f8c5e6cdfb154770ae2359ade7ab954ddeb531ff36",
+    "pack-engine-mix-raw.json": "2b8c56ad28e2b7f09c1d532a6790f5b0864aadcc698e646e543bbdba8d130ed0",
+    "pack-engine-mix-raw.wav": "465e9911ba948b8aa94253ee615e81231a8d2c3ff81aa7fee2c8590df0af7083",
+    "performance.log": "9eba9388a74cc473194f59e9941a0424c70665b516c3b9142cc93969b9b3e420",
+    "performance-raw.json": "92b4d9fea4266cdac64d6828eb828407fcb170e594d0aa815115afa6724b6c30",
+    "performance-start-raw.json": "1f33ae4447a83a88da66a0f0a4faba799fb6249b259488084e5dd0ada31ca3b9",
+    "skill_audio-native.log": "b488ac385b01af4c22186b931003dad99e93e6eee0fe4ea22854cdedb6ca9536",
+    "skill_feedback-native.log": "21b7c5e0d336551af51e0d73a5e312b97e4df024f3379dba861f597055088208",
+    "dash_evasion_audio-native.log": "7e82a34cfba20c9677d55ce10187ea47f25376dd1e1654c0854e2181ef9d804b",
+    "dash_world-native.log": "3fbfaec03743f43444a4e0c5b73f2a4c033d9af8d378f466f55d0076b88c361e",
+    "dash_evasion_world-native.log": "0f8f7e6f481e2ec60e734076c1d7727f2613cb24b7088abdc93ae510f7773e39",
+    "pulse_world-native.log": "4c029c506b663dd23289e70d4512f10f05d205d1a0e7a3dc491a66a343f1b426",
+    "pack-skill_audio.log": "b488ac385b01af4c22186b931003dad99e93e6eee0fe4ea22854cdedb6ca9536",
+    "pack-skill_feedback.log": "21b7c5e0d336551af51e0d73a5e312b97e4df024f3379dba861f597055088208",
+    "hit.log": "7309d8c2d83515e0138b90448aadd760ab36d16c4509d4045bbf9414bd0e7733",
+    "empty.log": "e9b89abd68aa0089dff4d890f8b9e3cdf39218242e665bae902515cf82d443f9",
+    "flash_off.log": "eabae0f5dbad656f618168f650ef97ceb1542f7628a8ca179bf0b3f37d6abf82",
+    "danger.log": "2e96e56b06772d856150e1cd13bdbeb3ce57fe29aa2018583be5f0bd0ab8c1c5",
+    "hurt.log": "4bd87f27003da0655bc5aabeaccedc7e46a7575739f00f7c7436b7df5d6741a4",
+    "corner.log": "70153f7fd0df29a124313824c313f27681d8ac5e57de999feecedcb37a02ab9b",
+    "pack-hit.log": "aed22f2f852d4909a75f04c2980c6d72ca1442bed0a9c6f7169870755d4cb8bc",
+    "pack-empty.log": "7e37227bee2e28584725ee0ca25056917de6fab8cd33f17662b1a5d3d3177b6e",
+    "pack-flash_off.log": "37a629d90a14971b1eaecd37f8d282c007c0a353732121c85a90ac53576c91c7",
+    "pack-danger.log": "a4214613a8a8277f62639c9d4cfa5ac3305509b84b03725dd6d14bd40480ab38",
+    "pack-hurt.log": "4d943c9a6973ef855944273897f09a487d9ea5f8e7d1fa5c0cb6544c6cc2bc3a",
+    "pack-corner.log": "12583a18abe09ce20601cf8e9fad446c4691a942db76148c7b85da5cb8170f3c"
+  },
+  "limits": [
+    "No physical controller or speaker hearing review; objective PCM checks, real scheduling/playback and engine capture are separate evidence.",
+    "Native screenshots are six fixed 1280x720 scenes; danger may occlude the result sign by design.",
+    "Pressure maintains synthetic load, health and probe projectiles and suppresses upgrade modals; not natural balance or difficulty. Empty casts are covered separately, not forced into pressure.",
+    "No macOS rebuild, new full automated simulation or 300-second sample this iteration. CombatSim/RunState/data sources are unchanged."
+  ]
+}

@@ -6,9 +6,10 @@
 script = ExtResource("1")
 id = "crescent"
 kind = "weapon"
-display_name = "月镰"
+source_id = "5020037"
+display_name = "悲叹死镰"
 subtitle = "穿透法器 · 弧刃贯行"
-description = "月弧刃本体可贯穿额外1个目标。穿过首目标后，符文从后续命中触发：贯穿再穿2次，弹射再转向2次，爆破在第二次命中时引爆；未命中第二目标则不爆破。"
+description = "镰刃本体可贯穿额外1个目标。穿过首目标后，符文从后续命中触发：贯穿再穿2次，弹射再转向2次，爆破在第二次命中时引爆；未命中第二目标则不爆破。"
 icon = "crescent"
 color = Color(0.69, 0.88, 0.91, 1)
 price = 26
