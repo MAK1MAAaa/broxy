@@ -1,6 +1,7 @@
 extends SceneTree
 ## Real map focus, purchased equipment, textured projectiles and complete damage history.
 
+const HEAD_GPU_STRIDE: int = 16
 var _checks: int = 0
 var _failures: int = 0
 
@@ -52,7 +53,7 @@ func _run() -> void:
 		_check(damage_scroll != null and damage_scroll.focus_mode == Control.FOCUS_ALL, "Expanded history has a real keyboard-reachable scroll surface")
 		for definition: ContentDef in GameCatalog.weapons():
 			var row := ui.find_child("Damage_" + definition.id, true, false) as Control
-			_check(row != null, "All sixteen historical weapon contributions exist without truncation: " + definition.id)
+			_check(row != null, "Every historical weapon contribution exists without truncation: " + definition.id)
 		var last := ui.find_child("Damage_bone", true, false) as Control
 		damage_scroll.ensure_control_visible(last)
 		await _settle()
@@ -69,6 +70,7 @@ func _run() -> void:
 	var sim := CombatSim.new()
 	sim.begin(state)
 	var painter := ProjectilePainter.new()
+	var expected_frame: int = 8
 	for definition: ContentDef in GameCatalog.weapons().slice(8):
 		state.offers.assign([{"kind": "weapon", "id": definition.id, "price": definition.price, "sold": false}])
 		var preview: Dictionary = state.weapon_purchase_preview(0)
@@ -82,6 +84,26 @@ func _run() -> void:
 		painter.rebuild(sim.shots)
 		var head: ProjectilePainter.HeadBatch = painter.heads[definition.id + ":"]
 		_check(head.texture != null and head.texture.resource_path == AdventureArt.path("res://assets/icons/%s.svg" % definition.icon), "New projectile families display their own original weapon art rather than falling back to the knife")
+		_check(head.frame == expected_frame and head.cursor == 1 and head.capacity >= 1 and head.start >= 0 and head.start < painter.head_multimesh.visible_instance_count, "Every added source maps to its stable real instance and appended atlas column: " + definition.id)
+		var physical_index: int = head.start
+		var offset: int = physical_index * HEAD_GPU_STRIDE
+		var transform := Transform2D(Vector2(painter.head_buffer[offset], painter.head_buffer[offset + 4]), Vector2(painter.head_buffer[offset + 1], painter.head_buffer[offset + 5]), Vector2(painter.head_buffer[offset + 3], painter.head_buffer[offset + 7]))
+		var custom := Color(painter.head_buffer[offset + 12], painter.head_buffer[offset + 13], painter.head_buffer[offset + 14], painter.head_buffer[offset + 15])
+		_check(transform.is_equal_approx(Transform2D(0.0, shot.position)) and custom.is_equal_approx(Color(float(expected_frame) / 31.0, 0.5, 0.25, 0.0)) and int(round(custom.r * 31.0)) == expected_frame, "The shared physical head buffer retains each new source's full-size geometry and exact shader column: " + definition.id)
+		var original: Image = head.texture.get_image()
+		var authored_cell: Image = painter.head_atlas_texture.get_image().get_region(Rect2i(expected_frame * 64, 0, 64, 64))
+		_check(original.get_size() == Vector2i(64, 64) and authored_cell.get_data() == original.get_data(), "Each appended runtime atlas column retains the complete original weapon icon pixels: " + definition.id)
+		if DisplayServer.get_name() != "headless":
+			var gpu_custom: Color = painter.head_multimesh.get_instance_custom_data(physical_index)
+			_check(painter.head_multimesh.get_instance_transform_2d(physical_index).is_equal_approx(transform) and int(round(gpu_custom.r * 31.0)) == expected_frame and gpu_custom.g == 0.5 and gpu_custom.b == 0.25 and gpu_custom.a == 0.0, "Native GPU readback confirms each new original weapon head's physical transform, decoded source column and exact binary sentinels: " + definition.id)
+		expected_frame += 1
+	_check(expected_frame == 21 and painter.head_multimesh.visible_instance_count == 13, "All thirteen appended source columns and physical weapon heads coexist in one pool")
+	var physical_slots: Dictionary = {}
+	for head: ProjectilePainter.HeadBatch in painter.heads.values():
+		var physical_index: int = head.start
+		_check(not physical_slots.has(physical_index) and int(round(painter.head_buffer[physical_index * HEAD_GPU_STRIDE + 12] * 31.0)) == head.frame, "Every simultaneously visible new source keeps a distinct physical slot with its own atlas column: " + head.source)
+		physical_slots[physical_index] = true
+	_check(physical_slots.size() == 13, "The single GPU pool contains thirteen independent source heads rather than repeatedly overwriting one slot")
 	ui.queue_free()
 	await _settle()
 	print("WFExpansionUI: %d assertions, %d failures" % [_checks, _failures])

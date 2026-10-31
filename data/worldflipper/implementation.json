@@ -169,6 +169,112 @@
         ]
       },
       {
+        "canonical_id": "3050002",
+        "game_id": "book_0002",
+        "resource": "data/weapons/book_0002.tres",
+        "source": "https://wiki.biligame.com/worldflipper/%E8%B0%8E%E8%A8%80%E4%B9%8B%E4%B9%A6?oldid=10481",
+        "status": "partial",
+        "runtime_verified": true,
+        "notes": "原作基础被动已按固定JP原行绑定；装备默认归属主角，自身只作用主角，队伍属性条件按实际施法角色筛选；数值按本作背包1/2/4权重缩放。",
+        "remaining_gaps": [
+          "原作等级成长与独立觉醒槽尚未完整移植；背包I/II/III采用本作1/2/4权重",
+          "原作装备基础生命攻击数值未移植，自动投射与背包占格采用本作规则"
+        ],
+        "source_binding": {
+          "canonical_id": "3050002",
+          "source_commit": "1d45b529ef078ba9b1f876d4588debd0c8a9a214",
+          "rank_weights": [
+            1,
+            2,
+            4
+          ],
+          "equipment_owner": "main",
+          "resource": "data/weapons/book_0002.tres",
+          "status": "partial",
+          "source_rules": [
+            {
+              "slot": 0,
+              "unlock_level": 1,
+              "original_pointer": "/3050002/0",
+              "normalized_pointer": "/equipment/49/rules/0",
+              "raw_field_count": 123,
+              "source_row_sha256": "e7e5ed7970d6b420966a1b7f8941faed6762c7bacb9f98f5ee949df4d95e3551",
+              "semantic_sha256": "3f393a0484f4cb877e799576d1c4064680d252a5d7e038e8d1377a67034d4a49",
+              "original_operation": "skill_damage_ratio",
+              "original_target": {
+                "kind": "party_group",
+                "group": "Black"
+              },
+              "original_amount_base": 0.225,
+              "original_amount_maximum": 0.45,
+              "status": "primary_unlock_1_project_binding",
+              "resource_binding": {
+                "field": "equipment_modifiers",
+                "value": {
+                  "stat": "skill_damage",
+                  "target": "party_element",
+                  "element": "dark",
+                  "amount_by_rank": [
+                    0.225,
+                    0.45,
+                    0.9
+                  ]
+                },
+                "index": 0
+              }
+            },
+            {
+              "slot": 1,
+              "unlock_level": 5,
+              "original_pointer": "/3050002/1",
+              "normalized_pointer": "/equipment/49/rules/1",
+              "raw_field_count": 123,
+              "source_row_sha256": "d273623479684ebb13786a9cd08fb34a4e54f1ce5e89feb1106218edd7fe808c",
+              "semantic_sha256": "8ee8818bd63657f95f5be295d27e6bbb8b9be34be25a80be9f34fd72be7e460c",
+              "original_operation": "skill_damage_ratio",
+              "original_target": {
+                "kind": "party_group",
+                "group": "Black"
+              },
+              "original_amount_base": 0.15,
+              "original_amount_maximum": 0.15,
+              "status": "independent_unlock_5_slot_unmapped",
+              "resource_binding": null
+            }
+          ],
+          "modifiers": [
+            {
+              "stat": "skill_damage",
+              "target": "party_element",
+              "element": "dark",
+              "amount_by_rank": [
+                0.225,
+                0.45,
+                0.9
+              ]
+            }
+          ],
+          "effects": [],
+          "art": {
+            "path": "assets/worldflipper/equipment/book_0002.png",
+            "sha256": "a336393dcb96101a8f462182fbbf8e40838da7523221cf9e43a5ad395bb11e71",
+            "canonical_equipment_id": "3050002",
+            "source_image_resource_ref": "item/equipment/general/book_0002",
+            "input_route": "res://assets/icons/book_0002.svg",
+            "output_route": "equipment/book_0002.png",
+            "final_jp_art_byte_identity_claimed": false
+          },
+          "gaps": [
+            "original_level_progression_not_replayed",
+            "original_equipment_base_stats_not_imported",
+            "ordinary_weapon_attack_and_balance_are_project_adaptations",
+            "independent_unlock_5_slot_unmapped"
+          ],
+          "original_progression_complete": false,
+          "original_awakening_complete": false
+        }
+      },
+      {
         "canonical_id": "5050009",
         "game_id": "book_0009",
         "resource": "data/weapons/book_0009.tres",
@@ -179,6 +285,110 @@
         "remaining_gaps": [
           "原作觉醒能力、角色属性条件与完整成长曲线尚未逐项移植"
         ]
+      },
+      {
+        "canonical_id": "3040006",
+        "game_id": "bow_0006",
+        "resource": "data/weapons/bow_0006.tres",
+        "source": "https://wiki.biligame.com/worldflipper/%E5%8D%81%E5%AD%97%E5%BC%93?oldid=10479",
+        "status": "partial",
+        "runtime_verified": true,
+        "notes": "原作基础被动已按固定JP原行绑定；装备默认归属主角，自身只作用主角，队伍属性条件按实际施法角色筛选；数值按本作背包1/2/4权重缩放。",
+        "remaining_gaps": [
+          "原作等级成长与独立觉醒槽尚未完整移植；背包I/II/III采用本作1/2/4权重",
+          "原作装备基础生命攻击数值未移植，自动投射与背包占格采用本作规则"
+        ],
+        "source_binding": {
+          "canonical_id": "3040006",
+          "source_commit": "1d45b529ef078ba9b1f876d4588debd0c8a9a214",
+          "rank_weights": [
+            1,
+            2,
+            4
+          ],
+          "equipment_owner": "main",
+          "resource": "data/weapons/bow_0006.tres",
+          "status": "partial",
+          "source_rules": [
+            {
+              "slot": 0,
+              "unlock_level": 1,
+              "original_pointer": "/3040006/0",
+              "normalized_pointer": "/equipment/47/rules/0",
+              "raw_field_count": 123,
+              "source_row_sha256": "fe743a54fdbcbc31d8360229270486130e7f26290c3779baf32961c7cc7fce35",
+              "semantic_sha256": "89185fe24a70508f658780bbc259c2df27c37491a17133410e6b42f94dd42132",
+              "original_operation": "skill_damage_ratio",
+              "original_target": {
+                "kind": "owner",
+                "group": ""
+              },
+              "original_amount_base": 0.475,
+              "original_amount_maximum": 0.95,
+              "status": "primary_unlock_1_project_binding",
+              "resource_binding": {
+                "field": "equipment_modifiers",
+                "value": {
+                  "stat": "skill_damage",
+                  "target": "owner",
+                  "amount_by_rank": [
+                    0.475,
+                    0.95,
+                    1.9
+                  ]
+                },
+                "index": 0
+              }
+            },
+            {
+              "slot": 1,
+              "unlock_level": 5,
+              "original_pointer": "/3040006/1",
+              "normalized_pointer": "/equipment/47/rules/1",
+              "raw_field_count": 123,
+              "source_row_sha256": "ca9c81655aed5fdc332385b4faeca71c5ec94df91a38f992e8308ea66afa377f",
+              "semantic_sha256": "141df7642844a0690081c71d39bb86f2278e034ac574cd12027ebdfd0f140f32",
+              "original_operation": "skill_damage_ratio",
+              "original_target": {
+                "kind": "owner",
+                "group": ""
+              },
+              "original_amount_base": 0.35,
+              "original_amount_maximum": 0.35,
+              "status": "independent_unlock_5_slot_unmapped",
+              "resource_binding": null
+            }
+          ],
+          "modifiers": [
+            {
+              "stat": "skill_damage",
+              "target": "owner",
+              "amount_by_rank": [
+                0.475,
+                0.95,
+                1.9
+              ]
+            }
+          ],
+          "effects": [],
+          "art": {
+            "path": "assets/worldflipper/equipment/bow_0006.png",
+            "sha256": "3be50df85d66eed5fbc210fdcecee791b6cefcf2b345618bd86e92de33154441",
+            "canonical_equipment_id": "3040006",
+            "source_image_resource_ref": "item/equipment/general/bow_0006",
+            "input_route": "res://assets/icons/bow_0006.svg",
+            "output_route": "equipment/bow_0006.png",
+            "final_jp_art_byte_identity_claimed": false
+          },
+          "gaps": [
+            "original_level_progression_not_replayed",
+            "original_equipment_base_stats_not_imported",
+            "ordinary_weapon_attack_and_balance_are_project_adaptations",
+            "independent_unlock_5_slot_unmapped"
+          ],
+          "original_progression_complete": false,
+          "original_awakening_complete": false
+        }
       },
       {
         "canonical_id": "5030039",
@@ -215,6 +425,112 @@
         "remaining_gaps": [
           "原作装备被动尚未实现"
         ]
+      },
+      {
+        "canonical_id": "3070006",
+        "game_id": "fist_0006",
+        "resource": "data/weapons/fist_0006.tres",
+        "source": "https://wiki.biligame.com/worldflipper/%E5%8D%8A%E6%9C%88%E6%8B%B3%E5%88%83?oldid=10487",
+        "status": "partial",
+        "runtime_verified": true,
+        "notes": "原作基础被动已按固定JP原行绑定；装备默认归属主角，自身只作用主角，队伍属性条件按实际施法角色筛选；数值按本作背包1/2/4权重缩放。",
+        "remaining_gaps": [
+          "原作等级成长与独立觉醒槽尚未完整移植；背包I/II/III采用本作1/2/4权重",
+          "原作装备基础生命攻击数值未移植，自动投射与背包占格采用本作规则"
+        ],
+        "source_binding": {
+          "canonical_id": "3070006",
+          "source_commit": "1d45b529ef078ba9b1f876d4588debd0c8a9a214",
+          "rank_weights": [
+            1,
+            2,
+            4
+          ],
+          "equipment_owner": "main",
+          "resource": "data/weapons/fist_0006.tres",
+          "status": "partial",
+          "source_rules": [
+            {
+              "slot": 0,
+              "unlock_level": 1,
+              "original_pointer": "/3070006/0",
+              "normalized_pointer": "/equipment/56/rules/0",
+              "raw_field_count": 123,
+              "source_row_sha256": "8df4763ca2c1c43dff94d893cca2ebb07eee2dc3707a678a4a301ad2c7cf6609",
+              "semantic_sha256": "dc8dbdb88ceaacc5a2b3b05c017fdf95eddfc930048b91c677dc5aedd784271a",
+              "original_operation": "skill_damage_ratio",
+              "original_target": {
+                "kind": "party_group",
+                "group": "Red"
+              },
+              "original_amount_base": 0.225,
+              "original_amount_maximum": 0.45,
+              "status": "primary_unlock_1_project_binding",
+              "resource_binding": {
+                "field": "equipment_modifiers",
+                "value": {
+                  "stat": "skill_damage",
+                  "target": "party_element",
+                  "element": "fire",
+                  "amount_by_rank": [
+                    0.225,
+                    0.45,
+                    0.9
+                  ]
+                },
+                "index": 0
+              }
+            },
+            {
+              "slot": 1,
+              "unlock_level": 5,
+              "original_pointer": "/3070006/1",
+              "normalized_pointer": "/equipment/56/rules/1",
+              "raw_field_count": 123,
+              "source_row_sha256": "6a35b7cdbe3f45da9ffba52c9d40e1b98e06ce627f4fa998656c2304f6bc3234",
+              "semantic_sha256": "cacfdb0df826d701734e59b4a52590ecc16ce92486be0a090285878aa0bb5837",
+              "original_operation": "skill_damage_ratio",
+              "original_target": {
+                "kind": "party_group",
+                "group": "Red"
+              },
+              "original_amount_base": 0.15,
+              "original_amount_maximum": 0.15,
+              "status": "independent_unlock_5_slot_unmapped",
+              "resource_binding": null
+            }
+          ],
+          "modifiers": [
+            {
+              "stat": "skill_damage",
+              "target": "party_element",
+              "element": "fire",
+              "amount_by_rank": [
+                0.225,
+                0.45,
+                0.9
+              ]
+            }
+          ],
+          "effects": [],
+          "art": {
+            "path": "assets/worldflipper/equipment/fist_0006.png",
+            "sha256": "61f765bad2b800c114dcac71bec9fe20c47fdaf8bea5886252071d414a5f5aa3",
+            "canonical_equipment_id": "3070006",
+            "source_image_resource_ref": "item/equipment/general/fist_0006",
+            "input_route": "res://assets/icons/fist_0006.svg",
+            "output_route": "equipment/fist_0006.png",
+            "final_jp_art_byte_identity_claimed": false
+          },
+          "gaps": [
+            "original_level_progression_not_replayed",
+            "original_equipment_base_stats_not_imported",
+            "ordinary_weapon_attack_and_balance_are_project_adaptations",
+            "independent_unlock_5_slot_unmapped"
+          ],
+          "original_progression_complete": false,
+          "original_awakening_complete": false
+        }
       },
       {
         "canonical_id": "5030036",
@@ -265,6 +581,96 @@
         ]
       },
       {
+        "canonical_id": "1060001",
+        "game_id": "staff_0001",
+        "resource": "data/weapons/staff_0001.tres",
+        "source": "https://wiki.biligame.com/worldflipper/%E8%80%81%E6%97%A7%E6%B3%95%E6%9D%96?oldid=10503",
+        "status": "partial",
+        "runtime_verified": true,
+        "notes": "原作基础被动已按固定JP原行绑定；装备默认归属主角，自身只作用主角，队伍属性条件按实际施法角色筛选；数值按本作背包1/2/4权重缩放。",
+        "remaining_gaps": [
+          "原作等级成长与独立觉醒槽尚未完整移植；背包I/II/III采用本作1/2/4权重",
+          "原作装备基础生命攻击数值未移植，自动投射与背包占格采用本作规则",
+          "原作同次技能生效顺序未证；当前次预约成功后叠层、每波重置和总加成上限8均为本作适配"
+        ],
+        "source_binding": {
+          "canonical_id": "1060001",
+          "source_commit": "1d45b529ef078ba9b1f876d4588debd0c8a9a214",
+          "rank_weights": [
+            1,
+            2,
+            4
+          ],
+          "equipment_owner": "main",
+          "resource": "data/weapons/staff_0001.tres",
+          "status": "partial",
+          "source_rules": [
+            {
+              "slot": 0,
+              "unlock_level": 1,
+              "original_pointer": "/1060001/0",
+              "normalized_pointer": "/equipment/21/rules/0",
+              "raw_field_count": 123,
+              "source_row_sha256": "b9e27806c7cabacb487f791b47371ecdd8bcffe46b264af10157082ea86a443d",
+              "semantic_sha256": "463db87afe32df957011341f196b8ff5063347efa92eefaa1437c1d3a5b28015",
+              "original_operation": "skill_damage_ratio",
+              "original_target": {
+                "kind": "party",
+                "group": "(None)"
+              },
+              "original_amount_base": 0.05,
+              "original_amount_maximum": 0.1,
+              "status": "primary_unlock_1_project_binding",
+              "resource_binding": {
+                "field": "equipment_effects",
+                "value": {
+                  "kind": "cast_party_skill_damage",
+                  "amount_by_rank": [
+                    0.05,
+                    0.1,
+                    0.2
+                  ],
+                  "max_stacks": 4,
+                  "applies_to_current_cast": true
+                },
+                "index": 0
+              }
+            }
+          ],
+          "modifiers": [],
+          "effects": [
+            {
+              "kind": "cast_party_skill_damage",
+              "amount_by_rank": [
+                0.05,
+                0.1,
+                0.2
+              ],
+              "max_stacks": 4,
+              "applies_to_current_cast": true
+            }
+          ],
+          "art": {
+            "path": "assets/worldflipper/equipment/staff_0001.png",
+            "sha256": "ab333457809ca9f7f342c2deeb76b83489b305c925caf4ba1a5bcc58fd0dae5b",
+            "canonical_equipment_id": "1060001",
+            "source_image_resource_ref": "item/equipment/general/staff_0001",
+            "input_route": "res://assets/icons/staff_0001.svg",
+            "output_route": "equipment/staff_0001.png",
+            "final_jp_art_byte_identity_claimed": false
+          },
+          "gaps": [
+            "original_level_progression_not_replayed",
+            "original_equipment_base_stats_not_imported",
+            "ordinary_weapon_attack_and_balance_are_project_adaptations",
+            "same_cast_damage_order_not_proven_by_source",
+            "wave_reset_is_project_adaptation"
+          ],
+          "original_progression_complete": false,
+          "original_awakening_complete": false
+        }
+      },
+      {
         "canonical_id": "4050031",
         "game_id": "storm",
         "resource": "data/weapons/storm.tres",
@@ -287,6 +693,130 @@
         "remaining_gaps": [
           "原作觉醒能力、角色属性条件与完整成长曲线尚未逐项移植"
         ]
+      },
+      {
+        "canonical_id": "5010005",
+        "game_id": "sword_0005",
+        "resource": "data/weapons/sword_0005.tres",
+        "source": "https://wiki.biligame.com/worldflipper/%E6%9D%9C%E5%85%B0%E5%BE%B7%E5%B0%94?oldid=18156",
+        "status": "partial",
+        "runtime_verified": true,
+        "notes": "原作基础被动已按固定JP原行绑定；装备默认归属主角，自身只作用主角，队伍属性条件按实际施法角色筛选；数值按本作背包1/2/4权重缩放。",
+        "remaining_gaps": [
+          "原作等级成长与独立觉醒槽尚未完整移植；背包I/II/III采用本作1/2/4权重",
+          "原作装备基础生命攻击数值未移植，自动投射与背包占格采用本作规则"
+        ],
+        "source_binding": {
+          "canonical_id": "5010005",
+          "source_commit": "1d45b529ef078ba9b1f876d4588debd0c8a9a214",
+          "rank_weights": [
+            1,
+            2,
+            4
+          ],
+          "equipment_owner": "main",
+          "resource": "data/weapons/sword_0005.tres",
+          "status": "partial",
+          "source_rules": [
+            {
+              "slot": 0,
+              "unlock_level": 1,
+              "original_pointer": "/5010005/0",
+              "normalized_pointer": "/equipment/147/rules/0",
+              "raw_field_count": 123,
+              "source_row_sha256": "f1dcc31f05e19d85311d1449cb78b843d2d27cb191afea028e33a0ea2e3a9d55",
+              "semantic_sha256": "67ef219323546b859975f35d11b7ef6701c06c5ab88e5e7e51d85797339ddc2d",
+              "original_operation": "attack_ratio",
+              "original_target": {
+                "kind": "owner",
+                "group": ""
+              },
+              "original_amount_base": 1.6,
+              "original_amount_maximum": 1.6,
+              "status": "primary_unlock_1_project_binding",
+              "resource_binding": {
+                "field": "equipment_modifiers",
+                "value": {
+                  "stat": "damage",
+                  "target": "owner",
+                  "amount_by_rank": [
+                    1.6,
+                    3.2,
+                    6.4
+                  ]
+                },
+                "index": 0
+              }
+            },
+            {
+              "slot": 1,
+              "unlock_level": 1,
+              "original_pointer": "/5010005/1",
+              "normalized_pointer": "/equipment/147/rules/1",
+              "raw_field_count": 123,
+              "source_row_sha256": "23a423b17684e399912ace0928c13775e85c0886afd9ac07c31b8dede3abf38c",
+              "semantic_sha256": "3c39c851c10743d56cd943e73dff9d7159b6704cf5866f5845d9b22747a5754c",
+              "original_operation": "max_health_ratio",
+              "original_target": {
+                "kind": "owner",
+                "group": ""
+              },
+              "original_amount_base": 0.15,
+              "original_amount_maximum": 0.15,
+              "status": "primary_unlock_1_project_binding",
+              "resource_binding": {
+                "field": "equipment_modifiers",
+                "value": {
+                  "stat": "max_health_ratio",
+                  "target": "owner",
+                  "amount_by_rank": [
+                    0.15,
+                    0.3,
+                    0.6
+                  ]
+                },
+                "index": 1
+              }
+            }
+          ],
+          "modifiers": [
+            {
+              "stat": "damage",
+              "target": "owner",
+              "amount_by_rank": [
+                1.6,
+                3.2,
+                6.4
+              ]
+            },
+            {
+              "stat": "max_health_ratio",
+              "target": "owner",
+              "amount_by_rank": [
+                0.15,
+                0.3,
+                0.6
+              ]
+            }
+          ],
+          "effects": [],
+          "art": {
+            "path": "assets/worldflipper/equipment/sword_0005.png",
+            "sha256": "60b66c47e421f5e6cf4713328430138a8f77fa07cad4daec40b5db4cd810d390",
+            "canonical_equipment_id": "5010005",
+            "source_image_resource_ref": "item/equipment/general/sword_0005",
+            "input_route": "res://assets/icons/sword_0005.svg",
+            "output_route": "equipment/sword_0005.png",
+            "final_jp_art_byte_identity_claimed": false
+          },
+          "gaps": [
+            "original_level_progression_not_replayed",
+            "original_equipment_base_stats_not_imported",
+            "ordinary_weapon_attack_and_balance_are_project_adaptations"
+          ],
+          "original_progression_complete": false,
+          "original_awakening_complete": false
+        }
       },
       {
         "canonical_id": "3010007",
@@ -644,7 +1174,7 @@
           "原作props碰撞形状与机关交互未获得定义，未用编辑器椭圆或装饰物猜测碰撞",
           "仅接入layer 0；原作机关、阶段切换、门、墓地及敌人关卡序列尚未完整移植",
           "以BOUNDS矩形限场及外框展示为本作适配，不代表原作存在四面实体封墙",
-          "官方试玩与最终日服terrain_ref一致，但最终日服terrain二进制未获得，无法证明逐字节一致"
+          "日服缓存1.780.30地形字节已获得，但最终1.780.40逐字节一致性未证；ship试玩layer0对应缓存layer1，保留现有试玩层适配"
         ]
       },
       {
@@ -659,7 +1189,7 @@
           "原作props碰撞形状与机关交互未获得定义，未用编辑器椭圆或装饰物猜测碰撞",
           "仅接入layer 0；原作机关、阶段切换、门、墓地及敌人关卡序列尚未完整移植",
           "以BOUNDS矩形限场及外框展示为本作适配，不代表原作存在四面实体封墙",
-          "官方试玩与最终日服terrain_ref一致，但最终日服terrain二进制未获得，无法证明逐字节一致"
+          "日服缓存1.780.30地形字节已获得，但最终1.780.40逐字节一致性未证；ship试玩layer0对应缓存layer1，保留现有试玩层适配"
         ]
       },
       {
@@ -674,7 +1204,7 @@
           "原作props碰撞形状与机关交互未获得定义，未用编辑器椭圆或装饰物猜测碰撞",
           "仅接入layer 0；原作机关、阶段切换、门、墓地及敌人关卡序列尚未完整移植",
           "以BOUNDS矩形限场及外框展示为本作适配，不代表原作存在四面实体封墙",
-          "官方试玩与最终日服terrain_ref一致，但最终日服terrain二进制未获得，无法证明逐字节一致"
+          "日服缓存1.780.30地形字节已获得，但最终1.780.40逐字节一致性未证；ship试玩layer0对应缓存layer1，保留现有试玩层适配"
         ]
       }
     ],
@@ -710,8 +1240,8 @@
     }
   ],
   "runtime_evidence": {
-    "report": "reports/world-flipper-roster/runtime-validation.json",
-    "sha256": "be5fa83aba830de760fe53801454bdaed11c1fe0c3d1bdb860eeffbcad940bb9"
+    "report": "reports/world-flipper-equipment/runtime-validation.json",
+    "sha256": "004b2e52c1bec18230a7d758d4ac2be8c1c9435c08e1ea38eb9dd34f6f1a6825"
   },
   "canonical_source": {
     "commit": "1d45b529ef078ba9b1f876d4588debd0c8a9a214",
@@ -729,11 +1259,11 @@
     },
     "equipment": {
       "canonical": 426,
-      "pending": 410,
-      "partial": 8,
+      "pending": 405,
+      "partial": 13,
       "adapted_playable": 8,
       "complete": 0,
-      "runtime_verified": 16
+      "runtime_verified": 21
     },
     "skills": {
       "canonical": 1062,
@@ -1291,7 +1821,6 @@
       "300001",
       "300002",
       "1010001",
-      "1060001",
       "1080001",
       "2010002",
       "2020001",
@@ -1315,16 +1844,13 @@
       "3030013",
       "3030027",
       "3040003",
-      "3040006",
       "3040032",
-      "3050002",
       "3050005",
       "3050010",
       "3060002",
       "3060003",
       "3060007",
       "3060010",
-      "3070006",
       "3070010",
       "3070018",
       "3070022",
@@ -1413,7 +1939,6 @@
       "4100003",
       "4100008",
       "4100014",
-      "5010005",
       "5010019",
       "5010020",
       "5010022",

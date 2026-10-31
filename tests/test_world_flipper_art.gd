@@ -9,6 +9,13 @@ const SOURCE_WEAPONS: Dictionary = {
 	"bone": "Camping Knife", "frost": "Moon Dance", "ember": "Spiteful Staff", "scatter": "Hyperion Bow",
 	"crescent": "Grim Scythe", "storm": "Lightcrest Tome", "comet": "Spiteful Spear", "return_ring": "Amulet of Ruin",
 }
+const LEGACY_WEAPONS: PackedStringArray = ["bone", "frost", "ember", "scatter", "crescent", "storm", "comet", "return_ring", "sword_0012", "spear_0005", "sword_0004", "axe_0009", "book_0009", "sword_0007", "axe_0024", "sword_0011"]
+const SCOPED_WEAPONS: Dictionary = {"bow_0006": "3040006", "sword_0005": "5010005", "book_0002": "3050002", "fist_0006": "3070006", "staff_0001": "1060001"}
+const ORIGINAL_MANIFESTS: Array[Dictionary] = [
+	{"path": "manifest.json", "count": 79, "sha256": "33576d518bed52ddc2d7a9c79f58c28959ffee98efdbd4c3e4f4c2da1e13490f"},
+	{"path": "stages/manifest.json", "count": 6, "sha256": "49e6172924531c080973219f1d4966fb7734ffec54e42b6c5c50fac25da367eb"},
+	{"path": "roster/manifest.json", "count": 9, "sha256": "3a4fa59ddc1cbce6bb54f2033052a87344cafc8a94a4aa4babfd7e3fd6afa062"},
+]
 const FRAME_RECTS: Array[Rect2] = [
 	Rect2(0, 0, 96, 96), Rect2(96, 0, 96, 96), Rect2(192, 0, 96, 96), Rect2(288, 0, 96, 96),
 	Rect2(0, 96, 96, 96), Rect2(96, 96, 96, 96), Rect2(192, 96, 96, 96), Rect2(288, 96, 96, 96),
@@ -44,6 +51,7 @@ func _initialize() -> void:
 func _run() -> void:
 	root.size = Vector2i(1280, 720)
 	_test_manifest_provenance()
+	_test_separate_equipment_manifest()
 	_test_imported_animation()
 	_test_source_timing()
 	await _test_real_world_animation()
@@ -69,7 +77,8 @@ func _test_manifest_provenance() -> void:
 	_check(parsed is Dictionary and parsed.get("assets") is Array and parsed.get("sources") is Array, "The shipped original-game resources have a readable source manifest")
 	if not parsed is Dictionary or not parsed.get("assets") is Array or not parsed.get("sources") is Array:
 		return
-	_check(parsed.get("revision") == "world-flipper-fan-08" and AdventureArt.REVISION == parsed["revision"] and (parsed["sources"] as Array).size() == 82 and (parsed["assets"] as Array).size() == 79, "The running art revision matches all eighty-two sources and seventy-nine normalized outputs")
+	_check(parsed.get("revision") == "world-flipper-fan-08" and (parsed["sources"] as Array).size() == 82 and (parsed["assets"] as Array).size() == 79, "The original fan08 manifest retains its exact eighty-two sources and seventy-nine normalized outputs")
+	_check(AdventureArt.REVISION == "world-flipper-fan-09", "The production art router independently declares the new equipment revision")
 	var sources: Dictionary = {}
 	for source: Dictionary in parsed["sources"]:
 		sources[str(source["id"])] = source
@@ -86,6 +95,42 @@ func _test_manifest_provenance() -> void:
 		var source: Dictionary = sources.get(source_id, {})
 		_check(str(asset.get("path", "")) == expected_path and asset.get("source_ids", []) == [source_id] and FileAccess.get_sha256("res://" + expected_path) == str(asset.get("sha256", "")), "The exact runtime replacement is tied to its complete checked-in source-derived bytes: " + id)
 		_check(str(source.get("sha256", "")).length() == 64 and str(source.get("url", "")).begins_with("https://") and str(source.get("source_page", "")).begins_with("https://") and (str(source.get("pose", "")) == "neutral" if id == "player" else str(source.get("game_id", "")) == id and str(source.get("name", "")) == str(SOURCE_WEAPONS[id])), "Each replacement records the intended original character or weapon source: " + id)
+
+
+func _test_separate_equipment_manifest() -> void:
+	var original_count: int = 0
+	var original_paths: Dictionary = {}
+	for source: Dictionary in ORIGINAL_MANIFESTS:
+		var path: String = FAN_ROOT + str(source["path"])
+		_check(FileAccess.get_sha256(path) == source["sha256"], "The original art manifest keeps its exact pre-equipment bytes: " + str(source["path"]))
+		var document: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(path))
+		var records: Array = document.get("assets", [])
+		_check(records.size() == int(source["count"]), "Each original art family retains its exact independent output count")
+		for record: Dictionary in records:
+			original_count += 1
+			var original_path: String = str(record["path"])
+			original_paths[original_path] = true
+			_check(not original_path.contains("/equipment/") and FileAccess.get_sha256("res://" + original_path) == record["sha256"], "Every one of the original94 PNGs keeps its own checked bytes")
+	_check(original_count == 94 and original_paths.size() == 94, "The exact original79+6+9 art baseline remains separate and unique")
+	var scoped: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(FAN_ROOT + "equipment/manifest.json"))
+	var records: Array = scoped.get("assets", [])
+	var sources: Array = scoped.get("sources", [])
+	_check(records.size() == 5 and sources.size() == 5 and scoped.get("missing", []).is_empty(), "All five original equipment icons have their independent complete manifest")
+	var seen: Dictionary = {}
+	for record: Dictionary in records:
+		var id: String = str(record.get("id", ""))
+		var path: String = "assets/worldflipper/equipment/%s.png" % id
+		_check(SCOPED_WEAPONS.has(id) and not seen.has(id) and record.get("canonical_equipment_id", "") == SCOPED_WEAPONS.get(id, ""), "Each new art record has its unique exact canonical equipment identity")
+		seen[id] = true
+		_check(record.get("path", "") == path and not original_paths.has(path) and FileAccess.get_sha256("res://" + path) == record.get("sha256", ""), "A new icon is independently sourced without replacing an original path")
+		_check(_numeric_array_equals(record.get("size"), [64, 64]) and record.get("source_scale") == 2, "Every new icon retains its exact64 canvas and integer2x scale")
+		_check(AdventureArt.path("res://assets/icons/%s.svg" % id) == "res://" + path, "The production router uses the new equipment family's exact icon")
+		var texture := load("res://" + path) as Texture2D
+		_check(texture != null and texture.get_size() == Vector2(64, 64) and _binary_alpha(texture.get_image()), "Each new imported icon keeps genuine binary transparency")
+		if id == "fist_0006":
+			_check(record.get("source_kind", "") == "authored_atlas_frame" and record.get("authored_frame", {}).get("n", "") == "item/equipment/general/fist_0006", "Halfmoon art comes from its original weapon frame, not the separate ability core")
+			_check(record.get("cache_metadata_declared_version", "") == "1.780.30" and not bool(record.get("source_object_final_jp_byte_identity_verified", true)), "Same-archive cache metadata is never promoted to final-JP object-byte proof")
+	_check(seen.size() == SCOPED_WEAPONS.size(), "The new icon manifest covers the exact approved five-item set")
 
 
 func _test_current_map_geometry(assets: Dictionary, sources: Dictionary) -> void:
@@ -294,11 +339,22 @@ func _test_purchased_weapon_icons() -> void:
 	var ui := GameUI.new()
 	root.add_child(ui)
 	ui.bind(state)
-	for id: String in WEAPONS:
+	var ids: PackedStringArray = LEGACY_WEAPONS.duplicate()
+	ids.append_array(PackedStringArray(SCOPED_WEAPONS.keys()))
+	var icon_records: Dictionary = {}
+	for manifest_path: String in [FAN_ROOT + "manifest.json", FAN_ROOT + "equipment/manifest.json"]:
+		var manifest: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(manifest_path))
+		for record: Dictionary in manifest.get("assets", []):
+			icon_records[str(record.get("path", ""))] = record
+	for id: String in ids:
 		var definition: ContentDef = GameCatalog.weapon(id)
-		var expected: String = FAN_ROOT + "icons/%s.png" % id
+		var expected: String = FAN_ROOT + ("equipment/%s.png" if SCOPED_WEAPONS.has(id) else "icons/%s.png") % id
 		var texture := load(expected) as Texture2D
-		_check(texture != null and texture.get_size() == Vector2(64, 64) and texture.get_image().get_used_rect().has_area() and _binary_alpha(texture.get_image()), "Each selected weapon imports as an actual crisp sixty-four-pixel icon: " + id)
+		var record: Dictionary = icon_records.get(expected.trim_prefix("res://"), {})
+		var dimensions: Array = record.get("size", [])
+		var original := Image.new()
+		var decoded: Error = original.load_png_from_buffer(FileAccess.get_file_as_bytes(expected))
+		_check(dimensions.size() == 2 and texture != null and texture.get_size() == Vector2(float(dimensions[0]), float(dimensions[1])) and decoded == OK and _same_alpha(texture.get_image(), original) and texture.get_image().get_used_rect().has_area(), "Each selected weapon preserves its exact manifest dimensions and original alpha plane: " + id)
 		state.offers.assign([{"kind": "weapon", "id": id, "price": state.shop_price(definition), "sold": false}])
 		ui.show_shop()
 		await _settle()
@@ -318,6 +374,16 @@ func _test_purchased_weapon_icons() -> void:
 		await _press(ui, "bag_sell:%d" % uid)
 	ui.queue_free()
 	await _settle()
+
+
+func _same_alpha(imported: Image, original: Image) -> bool:
+	if imported.get_size() != original.get_size():
+		return false
+	for y: int in original.get_height():
+		for x: int in original.get_width():
+			if imported.get_pixel(x, y).a != original.get_pixel(x, y).a:
+				return false
+	return true
 
 
 func _press(ui: GameUI, id: String) -> bool:

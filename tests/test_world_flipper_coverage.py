@@ -87,7 +87,7 @@ class WorldFlipperCoverageTests(unittest.TestCase):
         self.assertTrue(all(entry["status"] == "partial" for category in ("characters", "skills") for entry in claims[category]))
         self.assertEqual(len(claims["fields"]), 4)
         self.assertEqual(len(claims["layouts"]), 3)
-        self.assertEqual(len(claims["equipment"]), 16)
+        self.assertEqual(len(claims["equipment"]), 21)
         self.assertEqual(sum(entry["status"] == "adapted_playable" for entry in claims["equipment"]), 8)
         self.assertFalse(any("world_flipper_background_sources" in entry["resource"] for entries in claims.values() for entry in entries))
 
@@ -98,9 +98,27 @@ class WorldFlipperCoverageTests(unittest.TestCase):
             self.assertEqual(claims[game_id]["canonical_id"], canonical_id)
             self.assertEqual(claims[game_id]["status"], "partial")
             self.assertIn("原作装备被动尚未实现", claims[game_id]["remaining_gaps"])
-        new = [item for item in claims.values() if item["game_id"] not in old]
+        scoped = {"bow_0006", "sword_0005", "book_0002", "fist_0006", "staff_0001"}
+        new = [item for item in claims.values() if item["game_id"] not in old and item["game_id"] not in scoped]
         self.assertEqual(len(new), 8)
         self.assertTrue(all(item["status"] == "adapted_playable" for item in new))
+
+    def test_scoped_equipment_keeps_source_bindings_and_unimplemented_original_progression(self) -> None:
+        bindings = COVERAGE.validate_equipment_context(ROOT)
+        self.assertEqual(set(bindings), {"bow_0006", "sword_0005", "book_0002", "fist_0006", "staff_0001"})
+        claims = {item["game_id"]: item for item in self.ledger["claims"]["equipment"]}
+        for game_id, binding in bindings.items():
+            self.assertEqual(claims[game_id]["source_binding"], binding)
+            self.assertEqual(claims[game_id]["status"], "partial")
+            self.assertTrue(set(COVERAGE.SCOPED_GAPS).issubset(claims[game_id]["remaining_gaps"]))
+            for change in [{"status": "complete", "remaining_gaps": []}, {"source_binding": {}}, {"remaining_gaps": []}]:
+                changed = copy.deepcopy(self.ledger)
+                next(row for row in changed["claims"]["equipment"] if row["game_id"] == game_id).update(change)
+                with self.assertRaises(ValueError):
+                    COVERAGE.audit(self.catalog, changed)
+        self.assertTrue(any("未证" in gap and "同次" in gap for gap in claims["staff_0001"]["remaining_gaps"]))
+        self.assertEqual(self.ledger["counts"]["equipment"]["pending"], 405)
+        self.assertEqual(self.ledger["counts"]["layouts"]["pending"], 1419)
 
     def test_map_background_reuse_is_not_reported_as_all_original_layouts(self) -> None:
         mapped = {item["game_id"]: item for item in self.ledger["claims"]["fields"]}
@@ -293,6 +311,18 @@ class WorldFlipperCoverageTests(unittest.TestCase):
             COVERAGE.audit(self.catalog, data)
         data["runtime_evidence"] = {"report": "reports/missing-validation.json", "sha256": "0" * 64}
         with self.assertRaisesRegex(ValueError, "missing, stale or unsuccessful"):
+            COVERAGE.audit(self.catalog, data)
+
+    def test_old_successful_runtime_report_cannot_certify_new_equipment(self) -> None:
+        import hashlib
+
+        data = copy.deepcopy(self.ledger)
+        report = ROOT / "reports/world-flipper-roster/runtime-validation.json"
+        data["runtime_evidence"] = {"report": report.relative_to(ROOT).as_posix(), "sha256": hashlib.sha256(report.read_bytes()).hexdigest()}
+        for entries in data["claims"].values():
+            for row in entries:
+                row["runtime_verified"] = True
+        with self.assertRaisesRegex(ValueError, "stale for current"):
             COVERAGE.audit(self.catalog, data)
 
 

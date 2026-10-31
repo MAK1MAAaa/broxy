@@ -169,10 +169,19 @@ func _pressure_simulation() -> CombatSim:
 func _check_instances(baseline: ProjectilePainter, culled: ProjectilePainter) -> void:
 	_check(culled.get_stats() == baseline.get_stats(), "The camera preserves every global, family, visible-instance and allocation count")
 	_check(culled._body_buffer == baseline._body_buffer and culled.bodies.buffer == baseline.bodies.buffer, "All ember body transforms and GPU instances remain unchanged")
+	_check(culled.head_multimesh.instance_count == baseline.head_multimesh.instance_count and culled.head_multimesh.visible_instance_count == baseline.head_multimesh.visible_instance_count
+		and culled.head_buffer == baseline.head_buffer and culled.head_multimesh.buffer == baseline.head_multimesh.buffer, "The single physical head batch keeps all onscreen and offscreen CPU/GPU instances unchanged")
+	var start: int = 0
 	for key: String in baseline.heads:
 		var before: ProjectilePainter.HeadBatch = baseline.heads[key]
 		var after: ProjectilePainter.HeadBatch = culled.heads[key]
-		_check(after.cursor == before.cursor and after.multimesh.visible_instance_count == before.multimesh.visible_instance_count and after.buffer == before.buffer and after.multimesh.buffer == before.multimesh.buffer, "Every textured head is retained with the same actual CPU/GPU data: " + key)
+		_check(after.cursor == before.cursor and after.capacity == before.capacity and after.start == before.start and after.start == start
+			and after.source == before.source and after.frame == before.frame and is_equal_approx(after.base_radius, before.base_radius), "Every logical textured-head range retains count, order, source and independent geometry: " + key)
+		var first: int = start * ProjectilePainter.HEAD_INSTANCE_STRIDE
+		var end: int = (start + before.cursor) * ProjectilePainter.HEAD_INSTANCE_STRIDE
+		_check(culled.head_buffer.slice(first, end) == baseline.head_buffer.slice(first, end), "Every family still occupies its exact real physical instance slice: " + key)
+		start += before.cursor
+	_check(start == baseline.head_multimesh.visible_instance_count and start == baseline.get_stats()["head_instances"], "Logical families cover every physical head instance exactly once despite cosmetic culling")
 	for radius: float in baseline.rings:
 		var before: ProjectilePainter.RingBatch = baseline.rings[radius]
 		var after: ProjectilePainter.RingBatch = culled.rings[radius]
@@ -190,6 +199,7 @@ func _test_600_instances_and_purity() -> void:
 	baseline.rebuild(world.sim.shots)
 	culled.rebuild(world.sim.shots, VIEW)
 	_check(baseline.get_stats()["family_counts"].size() == 24, "The pressure fixture exercises all 24 source/rune families")
+	_check(baseline.get_stats()["head_gpu_batches"] == 1 and baseline.head_multimesh.visible_instance_count == 600 and baseline.head_multimesh.instance_count == 600, "All24 logical families retain600 real heads in one physical draw batch")
 	_check_instances(baseline, culled)
 	for key: String in baseline.trails:
 		var full: ProjectilePainter.TrailBatch = baseline.trails[key]

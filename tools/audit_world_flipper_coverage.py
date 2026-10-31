@@ -52,8 +52,21 @@ LAYOUT_GAPS = [
     "原作props碰撞形状与机关交互未获得定义，未用编辑器椭圆或装饰物猜测碰撞",
     "仅接入layer 0；原作机关、阶段切换、门、墓地及敌人关卡序列尚未完整移植",
     "以BOUNDS矩形限场及外框展示为本作适配，不代表原作存在四面实体封墙",
-    "官方试玩与最终日服terrain_ref一致，但最终日服terrain二进制未获得，无法证明逐字节一致",
+    "日服缓存1.780.30地形字节已获得，但最终1.780.40逐字节一致性未证；ship试玩layer0对应缓存layer1，保留现有试玩层适配",
 ]
+SCOPED_GAPS = [
+    "原作等级成长与独立觉醒槽尚未完整移植；背包I/II/III采用本作1/2/4权重",
+    "原作装备基础生命攻击数值未移植，自动投射与背包占格采用本作规则",
+]
+
+
+def validate_equipment_context(root: Path) -> dict[str, dict[str, Any]]:
+    spec = importlib.util.spec_from_file_location("coverage_equipment_bindings", root / "tools/audit_world_flipper_equipment_bindings.py")
+    if spec is None or spec.loader is None:
+        raise ValueError("Missing source equipment binding auditor")
+    auditor = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(auditor)
+    return auditor.audit(root=root)["bindings"]
 LAYOUT_REGISTRY_SHA256 = "8fc238a6f7ca57a8278358790dc6aff014123b061ef0cbbadf2ad33e6848056d"
 LAYOUT_DOCUMENT_SHA256 = "a2ab5d9efd542015189228fc1097a613bb191de29246ea181ee734d52a21e7a1"
 
@@ -73,6 +86,23 @@ def string_property(path: Path, key: str) -> str:
 
 def canonical_sets(catalog: dict[str, Any]) -> dict[str, dict[str, dict[str, Any]]]:
     return {name: {item["id"]: item for item in (catalog[name] if name in ["characters", "equipment", "skills"] else catalog["maps"][name])} for name in CATEGORIES}
+
+
+def runtime_inputs(root: Path = ROOT) -> dict[str, str]:
+    """Bind runtime code/data and art; exclude the ledger to avoid a hash cycle.
+
+    Text uses canonical UTF-8/LF so an unchanged CRLF working checkout and the
+    repository's LF export are equivalent. PNGs always retain their raw SHA256.
+    """
+    paths = {root / "project.godot", root / "export_presets.cfg"}
+    for directory in ("scripts", "data", "scenes", "shaders"):
+        paths.update(path for path in (root / directory).rglob("*") if path.is_file() and path.suffix in (".gd", ".tscn", ".tres", ".json", ".gdshader") and path != root / "data/worldflipper/implementation.json")
+    paths.update(path for path in (root / "assets/worldflipper").rglob("*") if path.is_file() and path.suffix in (".png", ".json"))
+    return {path.relative_to(root).as_posix(): hashlib.sha256(path.read_bytes() if path.suffix == ".png" else path.read_text(encoding="utf-8").encode("utf-8")).hexdigest() for path in sorted(paths)}
+
+
+def verified_claims(ledger: dict[str, Any]) -> dict[str, list[dict[str, str]]]:
+    return {category: sorted(({key: row[key] for key in ("canonical_id", "game_id", "resource")} for row in ledger["claims"][category]), key=lambda row: (row["canonical_id"], row["game_id"])) for category in CATEGORIES}
 
 
 def resolve_source(items: dict[str, dict[str, Any]], source_id: str) -> str:
@@ -263,15 +293,24 @@ def bootstrap(catalog: dict[str, Any], root: Path = ROOT) -> dict[str, Any]:
     old_sources = read_json(root / "tools/world_flipper_sources.json")["sources"]
     new_sources = read_json(root / "tools/world_flipper_weapon_expansion_sources.json")["sources"]
     source_pages = {item["game_id"]: item["source_page"] for item in old_sources + new_sources if item.get("kind") in ["weapon", "weapon_expansion"]}
+    scoped_sources = read_json(root / "tools/world_flipper_scoped_equipment.json")["sources"]
+    source_pages.update({item["game_id"]: item["name_evidence"]["revision_url"] for item in scoped_sources})
+    scoped = validate_equipment_context(root)
     expanded = {item["game_id"] for item in new_sources}
     for path in sorted((root / "data/weapons").glob("*.tres")):
         game_id = string_property(path, "id")
         canonical_id = resolve_source(original["equipment"], string_property(path, "source_id"))
-        claims["equipment"].append({"canonical_id": canonical_id, "game_id": game_id,
+        claim = {"canonical_id": canonical_id, "game_id": game_id,
             "resource": path.relative_to(root).as_posix(), "source": source_pages.get(game_id, ""),
             "status": "adapted_playable" if game_id in expanded else "partial", "runtime_verified": False,
             "notes": "原作身份与透明图已接入；基础投射、装备被动及数值采用本作规则。" if game_id in expanded else "沿用原作外观及此前本游戏攻击方式，不代表原作装备能力已经实现。",
-            "remaining_gaps": ["原作觉醒能力、角色属性条件与完整成长曲线尚未逐项移植"] if game_id in expanded else ["原作装备被动尚未实现"]})
+            "remaining_gaps": ["原作觉醒能力、角色属性条件与完整成长曲线尚未逐项移植"] if game_id in expanded else ["原作装备被动尚未实现"]}
+        if game_id in scoped:
+            claim.update(source_binding=scoped[game_id], status="partial", remaining_gaps=list(SCOPED_GAPS),
+                         notes="原作基础被动已按固定JP原行绑定；装备默认归属主角，自身只作用主角，队伍属性条件按实际施法角色筛选；数值按本作背包1/2/4权重缩放。")
+            if game_id == "staff_0001":
+                claim["remaining_gaps"].append("原作同次技能生效顺序未证；当前次预约成功后叠层、每波重置和总加成上限8均为本作适配")
+        claims["equipment"].append(claim)
     unmapped = []
     for source in read_json(root / "tools/world_flipper_maps_sources.json")["sources"]:
         if source.get("kind") != "arena_map":
@@ -308,6 +347,7 @@ def audit(catalog: dict[str, Any], ledger: dict[str, Any], root: Path = ROOT) ->
     try:
         layout_bindings = validate_layout_context(catalog, root) if result["claims"]["layouts"] else {}
         profile_bindings = validate_profile_context(catalog, root)
+        equipment_bindings = validate_equipment_context(root)
     except (OSError, KeyError, TypeError, StopIteration) as error:
         raise ValueError("Original layout or character-profile evidence is missing or malformed: " + str(error)) from error
     counts = {}
@@ -360,6 +400,11 @@ def audit(catalog: dict[str, Any], ledger: dict[str, Any], root: Path = ROOT) ->
                     raise ValueError("Current characters and shared skill-level variants must retain their concrete partial implementation gaps")
                 if hero_id in profile_bindings and entry.get("source_profile") != profile_bindings[hero_id]:
                     raise ValueError("Character coverage source-profile binding differs from its canonical action evidence")
+            if category == "equipment" and entry["game_id"] in equipment_bindings:
+                if entry.get("source_binding") != equipment_bindings[entry["game_id"]] or entry["status"] != "partial" or not set(SCOPED_GAPS).issubset(entry["remaining_gaps"]):
+                    raise ValueError("Scoped equipment must retain exact source binding and original progression gaps")
+                if entry["game_id"] == "staff_0001" and not any("同次" in gap and "未证" in gap for gap in entry["remaining_gaps"]):
+                    raise ValueError("Old Staff current-cast order must remain an explicit unverified project adaptation")
             status_counts[entry["status"]] += 1
             verified += int(entry["runtime_verified"])
         pending[category] = sorted(set(items) - claimed, key=lambda value: (0, int(value)) if value.isdigit() else (1, value))
@@ -380,6 +425,9 @@ def audit(catalog: dict[str, Any], ledger: dict[str, Any], root: Path = ROOT) ->
         report = root / evidence["report"]
         if not report.is_file() or hashlib.sha256(report.read_bytes()).hexdigest() != evidence["sha256"] or read_json(report).get("passed") is not True:
             raise ValueError("Runtime validation report is missing, stale or unsuccessful")
+        proof = read_json(report)
+        if proof.get("runtime_input_algorithm") != "sha256-utf8-lf-text-and-raw-png" or proof.get("runtime_inputs") != runtime_inputs(root) or proof.get("verified_claims") != verified_claims(result):
+            raise ValueError("Runtime validation report is stale for current code, data, art or claimed content")
     result["canonical_source"] = {"commit": catalog["source"]["commit"], "asset_version": catalog["source"]["asset_version"], "catalog_sha256": hashlib.sha256(encoded(catalog)).hexdigest()}
     result["counts"] = counts
     result["pending_ids"] = pending

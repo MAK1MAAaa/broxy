@@ -213,3 +213,9 @@ reports/world-flipper-roster/*.png
 reports/world-flipper-roster/*.import
 reports/world-flipper-roster/*-raw.json
 reports/world-flipper-roster/*/
+
+reports/world-flipper-equipment/*.log
+reports/world-flipper-equipment/*.png
+reports/world-flipper-equipment/*.import
+reports/world-flipper-equipment/*-raw.json
+reports/world-flipper-equipment/*/

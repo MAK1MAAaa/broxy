@@ -144,6 +144,7 @@ func _test_weapon_rune_matrix() -> void:
 			var first: CombatSim.Enemy = _target(simulation, Vector2(340, 300))
 			_target(simulation, Vector2(395, 300))
 			_target(simulation, Vector2(450, 300))
+			_target(simulation, Vector2(505, 300))
 			simulation._cooldowns[0] = 0.0
 			simulation.step(DELTA, Vector2.ZERO)
 			_check(simulation.shot_count == weapon.shots, "Weapon emits its configured shot count: " + weapon.id + "/" + rune.id)
@@ -151,7 +152,7 @@ func _test_weapon_rune_matrix() -> void:
 			_advance(simulation, 60)
 			_check(simulation.primary_hits > 0, "Weapon/rune combination hits an enemy: " + weapon.id + "/" + rune.id)
 			_check(float(simulation.damage_by_weapon.get(weapon.id, 0.0)) > 0.0, "Combination accounts damage under its weapon")
-			_check(not activations.is_empty(), "All four weapons report an executed rune behavior: " + weapon.id + "/" + rune.id)
+			_check(not activations.is_empty(), "Every registered weapon reports an executed rune behavior after its native penetration budget: " + weapon.id + "/" + rune.id)
 			if weapon.id == "frost":
 				_check(first.slow_timer > 0.0 and is_equal_approx(first.slow_factor, 0.75), "Frost applies its advertised 25% slow")
 
@@ -1014,6 +1015,20 @@ func _test_swept_collision_order() -> void:
 		_check(is_equal_approx(tank.health, tank.max_health - 14.0) and chaser.health == chaser.max_health, "First physical collision is independent of entity pool order")
 
 func _test_projectile_broadphase_equivalence() -> void:
+	var overlap: CombatSim = _simulation(9126)
+	var first: CombatSim.Enemy = _target(overlap, Vector2(305, 300))
+	var second: CombatSim.Enemy = _target(overlap, Vector2(310, 300))
+	var later: CombatSim.Enemy = _target(overlap, Vector2(400, 300))
+	overlap._rebuild_grid()
+	var crossing := CombatSim.Shot.new()
+	crossing.previous = Vector2(307, 300)
+	crossing.position = Vector2(450, 300)
+	crossing.radius = 4.0
+	_check(overlap._first_collision(crossing) == first, "Equal immediate overlaps preserve the original first candidate rather than a later positive entry")
+	crossing.hit_ids[first.uid] = true
+	_check(overlap._first_collision(crossing) == second, "An excluded first overlap leaves the next immediate candidate hittable")
+	second.active = false
+	_check(overlap._first_collision(crossing) == later, "Exclusions and inactive overlaps never hide the next positive-time collision")
 	var sim: CombatSim = _simulation(9127)
 	var random := RandomNumberGenerator.new()
 	random.seed = 720649

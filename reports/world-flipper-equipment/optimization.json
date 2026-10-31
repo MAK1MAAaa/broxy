@@ -1,0 +1,108 @@
+{
+  "passed": true,
+  "scope": "Equivalent fixed-step physics and head-only/unmarked-canvas rendering. Friendly heads now render together after all friendly tails and before subsequent danger/player passes; compositing between heads and tails is intentionally reordered for readability.",
+  "sources": {
+    "scripts/combat/combat_sim.gd": "b7d4ec37dec58c8e80fc5a8eece4d2255f8a8db10d6beb6aeb7f25608072773b",
+    "scripts/core/weapon_effect_runtime.gd": "e5e16d8b50216fed60c6a1a1a60c4714ae2128a76771f24e7b41298edebabc93",
+    "scripts/combat/projectile_painter.gd": "e68b24b20d6a82961defebb70cca69a711eba765b465cc3be2d38f6acbf93c96",
+    "shaders/projectile_heads.gdshader": "ed9e0471851a9d7531631e40eb04976654b532e8e024e68a64fa44a4c15d5a97"
+  },
+  "cpu": {
+    "steps_each": 600,
+    "full_pools_uids_and_three_rng_streams_equal": true,
+    "snapshots_equal_and_pure": true,
+    "before_step_mean_usec": 6062.035,
+    "after_step_mean_usec": 5602.71833333333,
+    "native_fps_measurement": false,
+    "raw_evidence_sha256": "564a6ab37b7afcb4304ff65fa1fc32e0303faac4a4e294d69935ca0253ff1c3c",
+    "before_runtime_sha256": "cbf85b4f17a05e03ac5d541cf1ab5f6a6b0e68f26a5b56fb5544e18e51385339",
+    "before_sim_sha256": "6487041f4916c57d8c53db5251a0c606b7133838efff036c99fa448d3b4657d1",
+    "probe_sha256": "2af32674a1d0d72b7a5fd9389d65a1670c9edd57083c12db772420762865ac6c"
+  },
+  "render": {
+    "native": true,
+    "pixel_equal_cases": [
+      {
+        "batched_sha256": "0c660f2bd3eff3150dd0040789abe2291613b9af319df870203d4f77a4913a5f",
+        "case": "heads-0",
+        "pixels_equal": true,
+        "source_sha256": "0c660f2bd3eff3150dd0040789abe2291613b9af319df870203d4f77a4913a5f"
+      },
+      {
+        "batched_sha256": "db3ac101bba67b65bc794e1cbe97fbe2d03e855628d68b456ce607edf3ea45b6",
+        "case": "passthrough-0",
+        "pixels_equal": true,
+        "source_sha256": "db3ac101bba67b65bc794e1cbe97fbe2d03e855628d68b456ce607edf3ea45b6"
+      },
+      {
+        "batched_sha256": "36a9ecf19545e684e82d006643de5d10c013ca446f88163f1ad000c678d3c7e2",
+        "case": "heads-1",
+        "pixels_equal": true,
+        "source_sha256": "36a9ecf19545e684e82d006643de5d10c013ca446f88163f1ad000c678d3c7e2"
+      },
+      {
+        "batched_sha256": "db3ac101bba67b65bc794e1cbe97fbe2d03e855628d68b456ce607edf3ea45b6",
+        "case": "passthrough-1",
+        "pixels_equal": true,
+        "source_sha256": "db3ac101bba67b65bc794e1cbe97fbe2d03e855628d68b456ce607edf3ea45b6"
+      },
+      {
+        "batched_sha256": "a8b37717662c32140ff826993b061d70f56655c42c4d08c7eeeb5ee1395a39ca",
+        "case": "heads-63",
+        "pixels_equal": true,
+        "source_sha256": "a8b37717662c32140ff826993b061d70f56655c42c4d08c7eeeb5ee1395a39ca"
+      },
+      {
+        "batched_sha256": "357992bd68d3b2a0880de47fc213f1dd0423eb1abec46711efd4c51427398517",
+        "case": "passthrough-63",
+        "pixels_equal": true,
+        "source_sha256": "357992bd68d3b2a0880de47fc213f1dd0423eb1abec46711efd4c51427398517"
+      },
+      {
+        "batched_sha256": "91a6ceeeeea9162e5c9a6082ea6ab5e5bcf143b81fd87d17a81d554d7c6a12c2",
+        "case": "heads-600",
+        "pixels_equal": true,
+        "source_sha256": "91a6ceeeeea9162e5c9a6082ea6ab5e5bcf143b81fd87d17a81d554d7c6a12c2"
+      },
+      {
+        "batched_sha256": "1c43726ba55623076b0ed4a816b1ddc2fa07772e998eee4658d73e339f1e58cf",
+        "case": "passthrough-600",
+        "pixels_equal": true,
+        "source_sha256": "1c43726ba55623076b0ed4a816b1ddc2fa07772e998eee4658d73e339f1e58cf"
+      },
+      {
+        "batched_sha256": "1fdf34d635e61b8b92be03d55986a9258ff4a3559648c93d3489951ba1648e74",
+        "case": "heads-1600",
+        "pixels_equal": true,
+        "source_sha256": "1fdf34d635e61b8b92be03d55986a9258ff4a3559648c93d3489951ba1648e74"
+      },
+      {
+        "batched_sha256": "db222a93ed8d24646eb7f605535f830adb782c3c40eafdc515dbba8bf475d607",
+        "case": "passthrough-1600",
+        "pixels_equal": true,
+        "source_sha256": "db222a93ed8d24646eb7f605535f830adb782c3c40eafdc515dbba8bf475d607"
+      },
+      {
+        "batched_sha256": "055992c4ae928dacadcd8ff2f9776f639e0d927d694f3658e5ca6c0eb8142ceb",
+        "case": "heads-21",
+        "pixels_equal": true,
+        "source_sha256": "055992c4ae928dacadcd8ff2f9776f639e0d927d694f3658e5ca6c0eb8142ceb"
+      },
+      {
+        "batched_sha256": "648bcca6b5d72f6a3cb023d0846010c8d0d96e0e232bf049d5bad67355630517",
+        "case": "passthrough-21",
+        "pixels_equal": true,
+        "source_sha256": "648bcca6b5d72f6a3cb023d0846010c8d0d96e0e232bf049d5bad67355630517"
+      }
+    ],
+    "raw_evidence_sha256": "e9d13a19e76fcbb3cd0bbcbf49d24bf4b1a96cf34de849616581070d28f0b604",
+    "oracle_source_sha256": "55bb30688d792eda8e63a98cda63bc5186c7099acf3f324fbd3faea33b86a408",
+    "probe_sha256": "9c664d5ae6f68751f7bcc6f4736a68a5461c0a7b4509fe0216fd6fd086ebfb9c",
+    "original_pngs_modified": 0,
+    "head_gpu_batches": 1,
+    "logical_pressure_families": 63,
+    "heads_reduced": false,
+    "trails_or_rings_removed": false,
+    "maximum_gpu_instances": 4800
+  }
+}

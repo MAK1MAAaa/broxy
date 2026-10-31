@@ -678,7 +678,7 @@ func try_active_skill(slot: int, expected_uid: int = -1) -> bool:
 	var clock: Dictionary = _active_skill_clocks.get(uid, {})
 	if float(clock.get("remaining", 0.0)) > 0.0:
 		return false
-	var parameters: Dictionary = run.active_skill_parameters(item).duplicate(true)
+	var parameters: Dictionary = run.active_skill_parameters(item, weapon_effects.current_party_skill_damage(self)).duplicate(true)
 	if parameters.is_empty():
 		return false
 	parameters["damage"] = float(parameters.get("damage", 0.0)) * hero_effects.attack_multiplier()
@@ -700,14 +700,15 @@ func _skill_direction() -> Vector2:
 	return player_direction.normalized() if player_direction.is_finite() and player_direction.length_squared() > 0.0 else Vector2.RIGHT
 
 func try_hero_skill(expected_hero: String = "") -> bool:
-	if run == null or complete or run.health <= 0.0 or not player_position.is_finite():
+	if run == null or complete or not is_finite(run.health) or run.health <= 0.0 or not player_position.is_finite():
 		return false
 	if not expected_hero.is_empty() and run.hero_id != expected_hero:
 		return false
 	if float(_hero_skill_clock.get("remaining", 0.0)) > 0.0:
 		return false
-	var parameters: Dictionary = _next_hero_skill_parameters()
-	if parameters.is_empty():
+	var preview: Dictionary = weapon_effects.preview_main_cast(self)
+	var parameters: Dictionary = _next_hero_skill_parameters(float(preview.get("party_skill_damage", 0.0)))
+	if parameters.is_empty() or not is_finite(float(parameters.get("cooldown", 0.0))) or float(parameters.get("cooldown", 0.0)) <= 0.0 or not is_finite(float(parameters.get("damage", -1.0))) or float(parameters.get("damage", -1.0)) < 0.0:
 		return false
 	var direction: Vector2 = _skill_direction()
 	var origin: Vector2 = player_position
@@ -715,6 +716,7 @@ func try_hero_skill(expected_hero: String = "") -> bool:
 		origin = _nearest_skill_origin(direction, float(parameters.get("target_range", 400.0)))
 	elif parameters.get("origin_mode", "player") == "forward":
 		origin = _clamp_skill_origin(player_position + direction * float(parameters.get("forward_distance", 160.0)))
+	var checkpoint: Dictionary = _hero_reservation_checkpoint(parameters) if preview.has("token") else {}
 	if parameters.get("delivery", "instant") == "bombs":
 		if not hero_effects.can_spawn_parameters(parameters, origin, direction):
 			return false
@@ -724,20 +726,91 @@ func try_hero_skill(expected_hero: String = "") -> bool:
 			return false
 		if not hero_effects.spawn_bombs(parameters, origin, direction, impacts):
 			skill_timeline.cancel(impacts)
+			_seal_hero_reservation(checkpoint)
+			_rollback_hero_reservation(checkpoint)
 			return false
 	if parameters.get("delivery", "instant") == "areas" and not skill_timeline.enqueue(parameters, origin, direction):
 		return false
-	hero_effects.set_attack_buff(float(parameters.get("attack_bonus", 0.0)), float(parameters.get("buff_seconds", 0.0)))
-	hero_effects.set_skill_buff(float(parameters.get("skill_bonus", 0.0)), float(parameters.get("skill_buff_seconds", 0.0)), str(parameters.get("buff_element", "")))
+	_seal_hero_reservation(checkpoint)
+	if preview.has("token") and not weapon_effects.commit_main_cast(self, preview["token"]):
+		_rollback_hero_reservation(checkpoint)
+		return false
 	_hero_skill_clock = {"hero_id": run.hero_id, "remaining": parameters["cooldown"], "duration": parameters["cooldown"],
 		"uses": int(_hero_skill_clock.get("uses", 0)) + 1, "parameters": parameters}
+	hero_effects.set_attack_buff(float(parameters.get("attack_bonus", 0.0)), float(parameters.get("buff_seconds", 0.0)))
+	hero_effects.set_skill_buff(float(parameters.get("skill_bonus", 0.0)), float(parameters.get("skill_buff_seconds", 0.0)), str(parameters.get("buff_element", "")))
 	var affected: int = _cast_hero_delivery(origin, direction, parameters)
 	weapon_effects.on_hero_cast(self)
 	hero_skill_cast.emit(run.hero_id, parameters.duplicate(true), origin, direction, affected)
 	return true
 
-func _next_hero_skill_parameters() -> Dictionary:
-	var parameters: Dictionary = run.hero_skill_parameters().duplicate(true)
+func _hero_reservation_checkpoint(parameters: Dictionary) -> Dictionary:
+	var delivery: String = str(parameters.get("delivery", "instant"))
+	var count: int = 0
+	if delivery == "bombs":
+		count = int(parameters.get("projectiles", 5))
+	elif delivery == "areas" and parameters.get("timeline", []) is Array:
+		count = (parameters["timeline"] as Array).size()
+	var area_rows: Array[Dictionary] = []
+	for area: SkillTimelineRuntime.Area in skill_timeline.areas:
+		if area_rows.size() >= count:
+			break
+		if not area.occupied:
+			area_rows.append({"target": area, "fields": _reservation_fields(area, ["occupied", "serial", "age", "previous_age", "delay", "duration", "max_hits", "interval", "purpose", "origin", "direction", "follow_offset", "anchor", "parameters", "contacts", "next_contacts", "opened", "held"]), "serial_field": "serial"})
+	var bomb_rows: Array[Dictionary] = []
+	if delivery == "bombs":
+		for bomb: HeroSkillRuntime.Bomb in hero_effects.bombs:
+			if bomb_rows.size() >= count:
+				break
+			if not bomb.active:
+				bomb_rows.append({"target": bomb, "fields": _reservation_fields(bomb, ["active", "uid", "position", "previous", "velocity", "collision_radius", "blast_radius", "damage", "life", "total", "source", "element", "delay", "delay_total", "impact_area"]), "serial_field": "uid"})
+	return {"run": run, "run_epoch": run.run_epoch, "timeline": skill_timeline, "effects": hero_effects,
+		"areas": area_rows, "bombs": bomb_rows, "area_serial": skill_timeline._serial,
+		"area_peak": skill_timeline.peak, "bomb_serial": hero_effects._serial, "bomb_peak": hero_effects.peak_bombs}
+
+static func _reservation_fields(target: Object, names: Array[String]) -> Dictionary:
+	var fields: Dictionary = {}
+	for name: String in names:
+		var value: Variant = target.get(name)
+		fields[name] = value.duplicate(true) if value is Dictionary else value
+	return fields
+
+func _seal_hero_reservation(checkpoint: Dictionary) -> void:
+	if checkpoint.is_empty():
+		return
+	checkpoint["area_serial_after"] = skill_timeline._serial
+	checkpoint["bomb_serial_after"] = hero_effects._serial
+	for group: String in ["areas", "bombs"]:
+		for row: Dictionary in checkpoint[group]:
+			row["reserved_serial"] = int((row["target"] as Object).get(str(row["serial_field"])))
+
+func _rollback_hero_reservation(checkpoint: Dictionary) -> void:
+	if checkpoint.is_empty() or run == null or run != checkpoint["run"] or run.run_epoch != int(checkpoint["run_epoch"]) or skill_timeline != checkpoint["timeline"] or hero_effects != checkpoint["effects"]:
+		return
+	for row: Dictionary in checkpoint["areas"]:
+		var area: SkillTimelineRuntime.Area = row["target"]
+		if area.serial == int(row["reserved_serial"]) and area.serial > int(checkpoint["area_serial"]):
+			if area.occupied:
+				skill_timeline._occupied -= 1
+			for name: String in row["fields"]:
+				area.set(name, row["fields"][name])
+	for row: Dictionary in checkpoint["bombs"]:
+		var bomb: HeroSkillRuntime.Bomb = row["target"]
+		if bomb.uid == int(row["reserved_serial"]) and bomb.uid > int(checkpoint["bomb_serial"]):
+			for name: String in row["fields"]:
+				bomb.set(name, row["fields"][name])
+	if skill_timeline._serial == int(checkpoint["area_serial_after"]):
+		skill_timeline._serial = int(checkpoint["area_serial"])
+		skill_timeline.peak = int(checkpoint["area_peak"])
+	if hero_effects._serial == int(checkpoint["bomb_serial_after"]):
+		hero_effects._serial = int(checkpoint["bomb_serial"])
+		hero_effects.peak_bombs = int(checkpoint["bomb_peak"])
+
+func _next_hero_skill_parameters(extra_skill_damage: float = -1.0) -> Dictionary:
+	var extra: float = extra_skill_damage
+	if extra < 0.0:
+		extra = float(weapon_effects.preview_main_cast(self).get("party_skill_damage", 0.0))
+	var parameters: Dictionary = run.hero_skill_parameters(extra).duplicate(true)
 	if parameters.is_empty():
 		return {}
 	var static_haste: float = run.stat("skill_haste")
@@ -759,9 +832,13 @@ func _next_hero_skill_parameters() -> Dictionary:
 func hero_skill_snapshot() -> Dictionary:
 	if run == null:
 		return {"available": false, "ready": false}
-	var next_parameters: Dictionary = _next_hero_skill_parameters()
 	var remaining: float = float(_hero_skill_clock.get("remaining", 0.0))
-	var parameters: Dictionary = _hero_skill_clock.get("parameters", next_parameters) if remaining > 0.0 else next_parameters
+	var parameters: Dictionary
+	if remaining > 0.0 and _hero_skill_clock.has("parameters"):
+		weapon_effects.haste_bonus()
+		parameters = _hero_skill_clock["parameters"]
+	else:
+		parameters = _next_hero_skill_parameters()
 	var result: Dictionary = parameters.duplicate(true)
 	result.merge({"hero_id": run.hero_id, "available": not parameters.is_empty(), "ready": not complete and run.health > 0.0 and remaining <= 0.0,
 		"cooldown_remaining": remaining, "cooldown_duration": float(_hero_skill_clock.get("duration", parameters.get("cooldown", 0.0))) if remaining > 0.0 else float(parameters.get("cooldown", 0.0)),
@@ -1033,15 +1110,20 @@ func active_skill_snapshot(slot: int) -> Dictionary:
 	var item: Dictionary = _skill_item(slot)
 	if item.is_empty():
 		return result
-	var next_parameters: Dictionary = run.active_skill_parameters(item)
-	if next_parameters.is_empty():
-		return result
-	next_parameters["damage"] = float(next_parameters.get("damage", 0.0)) * hero_effects.attack_multiplier()
-	next_parameters["damage"] *= hero_effects.skill_multiplier(str(next_parameters.get("element", "")))
 	var uid: int = int(item["uid"])
 	var clock: Dictionary = _active_skill_clocks.get(uid, {})
 	var remaining: float = float(clock.get("remaining", 0.0))
-	var parameters: Dictionary = clock["parameters"] if remaining > 0.0 else next_parameters
+	var parameters: Dictionary
+	if remaining > 0.0:
+		if ActiveSkillRules.parameters(str(item["id"]), int(item.get("rank", 1)), {}).is_empty():
+			return result
+		parameters = clock["parameters"]
+	else:
+		parameters = run.active_skill_parameters(item, weapon_effects.current_party_skill_damage(self))
+		if parameters.is_empty():
+			return result
+		parameters["damage"] = float(parameters.get("damage", 0.0)) * hero_effects.attack_multiplier()
+		parameters["damage"] *= hero_effects.skill_multiplier(str(parameters.get("element", "")))
 	result.merge({"uid": uid, "id": item["id"], "rank": parameters["rank"], "available": true,
 		"ready": not complete and run.health > 0.0 and remaining <= 0.0,
 		"cooldown_remaining": remaining, "cooldown_duration": float(clock["duration"]) if remaining > 0.0 else float(parameters["cooldown"]),
@@ -1647,6 +1729,7 @@ func _hostile_shot(position: Vector2, velocity: Vector2, damage: float, attacker
 	shot.color = Color("ff775e")
 
 func _update_shots(delta: float) -> void:
+	var shot_bounds: Rect2 = ARENA.grow(100.0)
 	for shot: Shot in shots:
 		if complete:
 			return
@@ -1654,7 +1737,7 @@ func _update_shots(delta: float) -> void:
 			continue
 		shot.life -= delta
 		var can_return: bool = not shot.hostile and not shot.return_cancelled and (shot.returning or shot.return_after > 0.0)
-		if shot.life <= 0.0 or (not can_return and not ARENA.grow(100.0).has_point(shot.position)):
+		if shot.life <= 0.0 or (not can_return and not shot_bounds.has_point(shot.position)):
 			_release_shot(shot)
 			continue
 		if can_return and not shot.returning:
@@ -1700,7 +1783,7 @@ func _update_shots(delta: float) -> void:
 		var hit_limit: int = 1 + shot.innate_remaining + shot.remaining
 		while shot.active and hit_count < hit_limit:
 			var crate: Dictionary = interactions.first_crate_hit(shot.previous, shot.position, shot.radius)
-			var enemy_t: float = _swept_circle_entry_t(shot.previous, shot.position, impact.position, shot.radius + impact.radius) if impact != null else INF
+			var enemy_t: float = _swept_circle_entry_t(shot.previous, shot.position, impact.position, shot.radius + impact.radius) if impact != null and (not crate.is_empty() or (boss != null and boss.active)) else INF
 			if boss != null and boss.active:
 				var point: Dictionary = _weakpoint_first_hit(shot.previous, shot.position, shot.radius, shot.weakpoint_hit_ids)
 				if not point.is_empty() and float(point["t"]) <= minf(enemy_t, float(crate.get("t", INF))):
@@ -1796,21 +1879,29 @@ func _frostfire_burst(point: Vector2, damage: float, source: String, excluded: D
 func _first_collision(shot: Shot) -> Enemy:
 	var result: Enemy
 	var nearest_t: float = INF
-	var movement: Vector2 = shot.position - shot.previous
+	var previous: Vector2 = shot.previous
+	var position: Vector2 = shot.position
+	var shot_radius: float = shot.radius
+	var exclusions: Dictionary = shot.hit_ids
+	var movement: Vector2 = position - previous
 	var length_squared: float = movement.length_squared()
-	var low: Vector2 = shot.previous.min(shot.position)
-	var high: Vector2 = shot.previous.max(shot.position)
-	var padding: float = shot.radius + _largest_enemy_radius
-	var start: Vector2i = Vector2i(((low - Vector2.ONE * padding) / CELL).floor())
-	var end: Vector2i = Vector2i(((high + Vector2.ONE * padding) / CELL).floor())
+	var low: Vector2 = previous.min(position)
+	var high: Vector2 = previous.max(position)
+	var padding: float = shot_radius + _largest_enemy_radius
+	var padding_vector: Vector2 = Vector2.ONE * padding
+	var start: Vector2i = Vector2i(((low - padding_vector) / CELL).floor())
+	var end: Vector2i = Vector2i(((high + padding_vector) / CELL).floor())
+	var has_exclusions: bool = not exclusions.is_empty()
 	for enemy: Enemy in _shot_candidates(start, end):
-		if not enemy.active or shot.hit_ids.has(enemy.uid):
+		if not enemy.active:
 			continue
-		var radius: float = enemy.radius + shot.radius
+		var radius: float = enemy.radius + shot_radius
 		var center: Vector2 = enemy.position
 		if center.x < low.x - radius or center.x > high.x + radius or center.y < low.y - radius or center.y > high.y + radius:
 			continue
-		var offset: Vector2 = shot.previous - center
+		if has_exclusions and exclusions.has(enemy.uid):
+			continue
+		var offset: Vector2 = previous - center
 		var outside: float = offset.length_squared() - radius * radius
 		var t: float = 0.0
 		if outside > 0.0:
@@ -1828,6 +1919,8 @@ func _first_collision(shot: Shot) -> Enemy:
 		if t < nearest_t:
 			nearest_t = t
 			result = enemy
+			if t == 0.0:
+				return result
 	return result
 
 func _shot_candidates(first: Vector2i, last: Vector2i) -> Array:

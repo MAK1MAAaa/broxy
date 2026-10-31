@@ -15,7 +15,7 @@ func _initialize() -> void:
 	_test_heterogeneous_family()
 	_test_real_combat_purity()
 	_test_pressure_budget()
-	print("TrailReadability: %d assertions, %d failures" % [_checks, _failures])
+	print("TrailReadability: %d assertions, %d failures; native GPU readback=%s" % [_checks, _failures, DisplayServer.get_name() != "headless"])
 	quit(0 if _failures == 0 else 1)
 
 
@@ -74,6 +74,7 @@ func _test_styles() -> void:
 	_check(is_equal_approx(painter.trails["comet:"].style.main_width, 4.356)
 		and is_equal_approx(painter.trails["comet:"].style.halo_width, 9.3775), "Comet's actual display strokes narrow from 6.05/14.0965px to 4.356/9.3775px")
 	_check_authored_tail_geometry(sim, painter)
+	_check_global_head_mapping(sim, painter)
 
 
 func _test_heterogeneous_family() -> void:
@@ -106,6 +107,7 @@ func _test_heterogeneous_family() -> void:
 	_check(painter.trails["frost:pierce"].points == expected and painter.trails["frost:pierce"].wings == wings, "A large boundary trail uses its own radius for conservative culling even when the last family shot is tiny")
 	_check(painter.trails["frost:pierce"].color == Color.BLUE and is_equal_approx(painter.trails["frost:pierce"].width, 0.6), "The final active shot determines family RGB and width even when that shot's own trail is outside the view")
 	_check(_signature(sim) == before, "Family metadata preparation cannot mutate custom shot radii, colors, ordering or simulation")
+	_check_global_head_mapping(sim, painter)
 	last.radius = 20.0
 	last.color = Color(0.8, 0.3, 0.6)
 	before = _signature(sim)
@@ -113,9 +115,11 @@ func _test_heterogeneous_family() -> void:
 	_check(painter.trails["frost:pierce"].points == expected and painter.trails["frost:pierce"].wings == wings, "A large final family width cannot make the earlier tiny outside trail falsely visible")
 	_check(painter.trails["frost:pierce"].color == last.color and is_equal_approx(painter.trails["frost:pierce"].width, 24.0), "A repeated rebuild refreshes final-shot custom appearance without changing geometric endpoints")
 	_check(painter.get_stats()["friendly_count"] == 4 and painter.get_stats()["head_instances"] == 4 and _signature(sim) == before, "Culling and family styling retain every actual head and leave the custom simulation intact")
+	_check_global_head_mapping(sim, painter)
 	other.active = false
 	painter.rebuild(sim.shots, view)
 	_check(painter.trails.keys() == ["frost:pierce"] and painter.heads.keys() == ["frost:pierce"], "Disappearing interleaved families are removed without reordering the survivor")
+	_check_global_head_mapping(sim, painter, 4)
 
 
 func _test_real_combat_purity() -> void:
@@ -140,7 +144,8 @@ func _test_real_combat_purity() -> void:
 	var empty: Array[CombatSim.Shot] = []
 	painter.rebuild(empty)
 	_check(painter.trails.is_empty() and painter.heads.is_empty() and painter.rings.is_empty()
-		and painter.get_stats()["total_visible_instances"] == 0, "An empty rebuild leaves no old styled trail, ring or head visible")
+		and painter.get_stats()["total_visible_instances"] == 0 and painter.head_multimesh.instance_count == 0
+		and painter.head_buffer.is_empty() and painter.get_stats()["head_gpu_batches"] == 0, "An empty rebuild leaves no old styled trail, ring, head or retained physical head allocation")
 
 
 func _test_pressure_budget() -> void:
@@ -162,16 +167,80 @@ func _test_pressure_budget() -> void:
 	for trail in painter.trails.values():
 		trail_commands += 2 if trail.style.has_halo else 1
 		trail_commands += 0 if trail.wings.is_empty() else 1
-	_check(trail_commands == 111, "The sixteen-weapon pressure scene retains all one hundred eleven tail and wing submissions")
+	_check(trail_commands == 146, "The twenty-one-weapon pressure scene retains all one hundred forty-six tail and wing submissions")
 	var visible_heads: int = 0
-	var head_commands: int = 0
 	for head in painter.heads.values():
-		visible_heads += head.multimesh.visible_instance_count
-		head_commands += 1 if head.multimesh.visible_instance_count > 0 else 0
-	_check(head_commands == 48 and stats["head_families"] == 48 and visible_heads == 600 and stats["head_instances"] == visible_heads, "The complete pressure population uses forty-eight texture head batches with six hundred genuinely visible instances")
+		visible_heads += head.cursor
+	_check(stats["head_gpu_batches"] == 1 and stats["head_families"] == 63 and painter.heads.size() == 63 and visible_heads == 600
+		and painter.head_multimesh.visible_instance_count == visible_heads and painter.head_multimesh.instance_count == visible_heads
+		and stats["allocated_head_instances"] == visible_heads and stats["head_instances"] == visible_heads, "Sixty-three logical texture families retain six hundred genuine head instances in one physical GPU batch")
+	_check_global_head_mapping(world.sim, painter)
 	_check(_signature(world.sim) == before, "Preparing the full pressure scene does not advance or modify its simulation")
 	world.free()
 	sound.free()
+
+
+func _check_global_head_mapping(sim: CombatSim, painter, retained_capacity: int = -1) -> void:
+	var families: Dictionary = {}
+	var count: int = 0
+	for shot: CombatSim.Shot in sim.shots:
+		if not shot.active or shot.hostile:
+			continue
+		if count == CombatSim.SHOT_LIMIT:
+			break
+		var key: String = shot.source + ":" + shot.rune
+		if not families.has(key):
+			families[key] = []
+		families[key].append(shot)
+		count += 1
+	var cpu: PackedFloat32Array = painter.head_buffer
+	var native_readback: bool = DisplayServer.get_name() != "headless"
+	var gpu := PackedFloat32Array()
+	if native_readback:
+		gpu = painter.head_multimesh.buffer
+	var capacity: int = retained_capacity if retained_capacity >= 0 else count
+	_check(cpu.size() == capacity * PAINTER_SCRIPT.HEAD_INSTANCE_STRIDE
+		and painter.head_multimesh.instance_count == capacity and painter.head_multimesh.visible_instance_count == count,
+		"The physical head preparation includes every friendly head, including all offscreen and differently sized shots")
+	if native_readback:
+		_check(gpu.size() == cpu.size(), "The actual native GPU upload contains every prepared head instance")
+	var frames: Dictionary = {}
+	for index: int in PAINTER_SCRIPT.HEAD_SOURCES.size():
+		frames[PAINTER_SCRIPT.HEAD_SOURCES[index]] = index
+	for definition: ContentDef in GameCatalog.weapons():
+		if not frames.has(definition.id):
+			frames[definition.id] = frames.size()
+	var start: int = 0
+	for key: String in painter.heads:
+		var head = painter.heads[key]
+		var shots: Array = families.get(key, [])
+		var matches: bool = head.start == start and head.cursor == shots.size() and head.capacity >= head.cursor
+		var native_matches: bool = gpu.size() == cpu.size()
+		matches = matches and head.source == key.get_slice(":", 0) and head.frame == frames.get(head.source, 0) and head.frame >= 0 and head.frame < 32
+		for local: int in shots.size():
+			var shot: CombatSim.Shot = shots[local]
+			var definition: ContentDef = GameCatalog.weapon(shot.source)
+			var direction: Vector2 = shot.velocity.normalized()
+			if direction.is_zero_approx():
+				direction = Vector2.RIGHT
+			var scale: float = shot.radius / definition.projectile_radius
+			var values: Array[float] = [direction.x * scale, -direction.y * scale, 0.0, shot.position.x,
+				direction.y * scale, direction.x * scale, 0.0, shot.position.y, 1.0, 1.0, 1.0, 1.0,
+				float(head.frame) / 31.0, 0.5, 0.25, 0.0]
+			var offset: int = (int(head.start) + local) * PAINTER_SCRIPT.HEAD_INSTANCE_STRIDE
+			matches = matches and is_equal_approx(head.base_radius, definition.projectile_radius)
+			for channel: int in values.size():
+				matches = matches and is_equal_approx(cpu[offset + channel], values[channel])
+			if native_readback and gpu.size() == cpu.size():
+				for channel: int in 12:
+					native_matches = native_matches and is_equal_approx(gpu[offset + channel], values[channel])
+				native_matches = native_matches and roundi(gpu[offset + 12] * 31.0) == head.frame and is_equal_approx(gpu[offset + 13], 0.5)
+				native_matches = native_matches and is_equal_approx(gpu[offset + 14], 0.25) and is_zero_approx(gpu[offset + 15])
+		_check(matches, "Global head mapping preserves family order, each shot's authored transform and exact atlas/color channels: " + key)
+		if native_readback:
+			_check(native_matches, "Actual native GPU readback preserves the family's full transform/color data and exact decoded atlas columns: " + key)
+		start += head.cursor
+	_check(start == count and painter.heads.size() == families.size(), "Flattened family ranges neither omit nor duplicate any live head")
 
 
 func _endpoint_signature(painter) -> String:
@@ -183,11 +252,13 @@ func _endpoint_signature(painter) -> String:
 
 
 func _head_signature(painter) -> String:
-	var result: Dictionary = {}
+	var families: Dictionary = {}
 	for key: String in painter.heads:
 		var head = painter.heads[key]
-		result[key] = [head.source, head.frame, head.cursor, head.buffer.slice(0, head.cursor * PAINTER_SCRIPT.INSTANCE_STRIDE)]
-	return JSON.stringify(result)
+		families[key] = [head.source, head.frame, head.cursor, head.capacity, head.start, head.base_radius]
+	return JSON.stringify({"families": families, "head_buffer": painter.head_buffer,
+		"gpu_buffer": painter.head_multimesh.buffer, "capacity": painter.head_multimesh.instance_count,
+		"visible": painter.head_multimesh.visible_instance_count})
 
 
 func _check_authored_tail_geometry(sim: CombatSim, painter) -> void:
@@ -222,7 +293,7 @@ func _check_authored_tail_geometry(sim: CombatSim, painter) -> void:
 
 
 func _signature(sim: CombatSim) -> String:
-	var result: Array = [sim.rng.state, sim.run.rng.state, sim.run.summary(), sim.snapshot(),
+	var result: Array = [sim.rng.state, sim.run.rng.state, str(sim.interactions._rng.state), sim.run.summary(), sim.snapshot(),
 		sim.primary_hits, sim.secondary_hits, sim.damage_by_weapon, sim._shot_free.duplicate()]
 	for shot: CombatSim.Shot in sim.shots:
 		result.append([shot.slot, shot.active, shot.hostile, shot.source, shot.attacker_id, shot.position,

@@ -13,9 +13,10 @@ func _initialize() -> void:
 	_test_mixed_600()
 	_test_worst_case_capacity()
 	_test_filter_and_clear()
+	_test_global_head_order()
 	_test_trails_and_color()
 	_test_simulation_unchanged()
-	print("ProjectilePainter: %d assertions, %d failures" % [_checks, _failures])
+	print("ProjectilePainter: %d assertions, %d failures; native GPU readback=%s" % [_checks, _failures, DisplayServer.get_name() != "headless"])
 	quit(0 if _failures == 0 else 1)
 
 func _check(condition: bool, message: String) -> void:
@@ -41,18 +42,74 @@ func _shot(source: String, rune_id: String, index: int = 0) -> CombatSim.Shot:
 	return shot
 
 func _allocated(painter) -> int:
-	var total: int = painter.bodies.instance_count
-	for head in painter.heads.values():
-		total += head.multimesh.instance_count
+	var total: int = painter.bodies.instance_count + painter.head_multimesh.instance_count
 	for ring in painter.rings.values():
 		total += ring.multimesh.instance_count
 	return total
 
 func _visible_heads(painter) -> int:
-	var total: int = 0
-	for head in painter.heads.values():
-		total += head.multimesh.visible_instance_count
-	return total
+	return painter.head_multimesh.visible_instance_count
+
+func _check_head_mapping(painter, shots: Array[CombatSim.Shot], expected_capacity: int = -1) -> void:
+	var expected: Dictionary = {}
+	var count: int = 0
+	for shot: CombatSim.Shot in shots:
+		if not shot.active or shot.hostile:
+			continue
+		if count == CombatSim.SHOT_LIMIT:
+			break
+		var key: String = shot.source + ":" + shot.rune
+		if not expected.has(key):
+			expected[key] = []
+		expected[key].append(shot)
+		count += 1
+	var native_readback: bool = DisplayServer.get_name() != "headless"
+	var gpu := PackedFloat32Array()
+	if native_readback:
+		gpu = painter.head_multimesh.buffer
+	var cpu: PackedFloat32Array = painter.head_buffer
+	var capacity: int = count if expected_capacity < 0 else expected_capacity
+	_check(painter.head_multimesh.instance_count == capacity and _visible_heads(painter) == count and cpu.size() == capacity * PAINTER_SCRIPT.HEAD_INSTANCE_STRIDE, "The sole physical head buffer preserves its exact highest nonempty capacity and prepares every visible projectile once")
+	if native_readback:
+		_check(gpu.size() == cpu.size(), "The actual native GPU buffer contains every prepared head instance")
+	_check(painter.head_multimesh.use_custom_data and painter.get_stats()["head_gpu_batches"] == (1 if count > 0 else 0), "Head atlas selection uses one actual custom-data GPU batch, or none when empty")
+	var frames: Dictionary = {}
+	for index: int in PAINTER_SCRIPT.HEAD_SOURCES.size():
+		frames[PAINTER_SCRIPT.HEAD_SOURCES[index]] = index
+	for definition: ContentDef in GameCatalog.weapons():
+		if not frames.has(definition.id):
+			frames[definition.id] = frames.size()
+	var start: int = 0
+	for key: String in painter.heads:
+		var head = painter.heads[key]
+		var family: Array = expected.get(key, [])
+		_check(head.start == start and head.cursor == family.size() and head.capacity >= head.cursor and head.capacity <= CombatSim.SHOT_LIMIT, "Logical family ranges preserve their surviving insertion order and bounded capacity: " + key)
+		var matches: bool = head.source == key.get_slice(":", 0) and head.frame == frames.get(head.source, 0) and head.frame >= 0 and head.frame < 32
+		var native_matches: bool = gpu.size() == cpu.size()
+		for local: int in family.size():
+			var shot: CombatSim.Shot = family[local]
+			var direction: Vector2 = shot.velocity.normalized()
+			if direction.is_zero_approx():
+				direction = Vector2.RIGHT
+			var definition: ContentDef = GameCatalog.weapon(shot.source)
+			var scale: float = shot.radius / definition.projectile_radius
+			var values: Array[float] = [direction.x * scale, -direction.y * scale, 0.0, shot.position.x,
+				direction.y * scale, direction.x * scale, 0.0, shot.position.y, 1.0, 1.0, 1.0, 1.0,
+				float(head.frame) / 31.0, 0.5, 0.25, 0.0]
+			var offset: int = (int(head.start) + local) * PAINTER_SCRIPT.HEAD_INSTANCE_STRIDE
+			matches = matches and is_equal_approx(head.base_radius, definition.projectile_radius)
+			for channel: int in values.size():
+				matches = matches and is_equal_approx(cpu[offset + channel], values[channel])
+			if native_readback and gpu.size() == cpu.size():
+				for channel: int in 12:
+					native_matches = native_matches and is_equal_approx(gpu[offset + channel], values[channel])
+				native_matches = native_matches and roundi(gpu[offset + 12] * 31.0) == head.frame and is_equal_approx(gpu[offset + 13], 0.5)
+				native_matches = native_matches and is_equal_approx(gpu[offset + 14], 0.25) and is_zero_approx(gpu[offset + 15])
+		_check(matches, "Every real shot retains its independent transform, white tint and exact atlas custom data: " + key)
+		if native_readback:
+			_check(native_matches, "Actual native GPU readback preserves every transform, tint, decoded frame and both head sentinels: " + key)
+		start += head.cursor
+	_check(start == count and painter.heads.size() == expected.size(), "Logical families cover the complete physical buffer without omitted or duplicated instances")
 
 func _test_mixed_600() -> void:
 	var shots: Array[CombatSim.Shot] = []
@@ -70,12 +127,14 @@ func _test_mixed_600() -> void:
 	_check(_visible_heads(painter) == 600 and painter.bodies.visible_instance_count == 150, "Visible MultiMesh counts match the full mixed population")
 	_check(stats["allocated_instances"] == _allocated(painter) and _allocated(painter) <= CombatSim.SHOT_LIMIT * 3, "Actual GPU buffer capacities stay within the global instance budget")
 	_check(stats["family_counts"].size() == 12 and stats["trail_families"] == 12 and stats["head_families"] == 12, "Four sources and three runes remain twelve distinct trail and head drawing families")
+	_check(stats["head_gpu_batches"] == 1 and stats["allocated_head_instances"] == 600, "Twelve logical families share one600-instance physical head allocation")
+	_check_head_mapping(painter, shots)
 	for source: String in SOURCES:
 		for rune_id: String in RUNES:
 			var key: String = source + ":" + rune_id
 			_check(stats["family_counts"].get(key, 0) == 50, "Mixed source/rune population is retained: " + key)
 			_check(painter.trails.has(key) and painter.trails[key].points.size() == 100, "Every projectile contributes one trail segment: " + key)
-			_check(painter.heads.has(key) and painter.heads[key].multimesh.visible_instance_count == 50, "Every legacy source/rune projectile retains a visible textured head: " + key)
+			_check(painter.heads.has(key) and painter.heads[key].cursor == 50, "Every legacy source/rune projectile retains a visible textured head: " + key)
 			var expected_wing_points: int = 200 if rune_id == "pierce" or source == "frost" else 0
 			_check(painter.trails[key].wings.size() == expected_wing_points, "Pierce and frost wing rules are retained: " + key)
 
@@ -91,6 +150,7 @@ func _test_worst_case_capacity() -> void:
 	_check(stats["bounce_instances"] == CombatSim.SHOT_LIMIT, "All 1600 worst-case bounce rings remain visible")
 	_check(stats["total_visible_instances"] == CombatSim.SHOT_LIMIT * 3, "Ember plus bounce uses exactly three instances per projectile")
 	_check(_allocated(painter) == CombatSim.SHOT_LIMIT * 3, "The worst case reaches but never exceeds the fixed GPU instance budget")
+	_check_head_mapping(painter, shots)
 	_check(painter.rings.size() == 1 and painter.rings.has(11.0), "Equal-radius bounce shots share one ring mesh family")
 	if painter.rings.has(11.0):
 		var ring = painter.rings[11.0]
@@ -112,7 +172,9 @@ func _test_worst_case_capacity() -> void:
 	var narrowed: Array[CombatSim.Shot] = [_shot("frost", "bounce")]
 	painter.rebuild(narrowed)
 	_check(painter.rings.size() == 1 and painter.rings.has(9.0), "Changing ring radius releases obsolete ring families")
-	_check(_allocated(painter) == CombatSim.SHOT_LIMIT + 2 and painter.heads.size() == 1 and painter.heads.has("frost:bounce"), "Shrinking after the worst case releases obsolete head and ring capacity")
+	_check(_allocated(painter) == CombatSim.SHOT_LIMIT * 2 + 1 and painter.head_multimesh.instance_count == CombatSim.SHOT_LIMIT and painter.head_multimesh.visible_instance_count == 1
+		and painter.heads.size() == 1 and painter.heads.has("frost:bounce"), "Shrinking after the worst case releases obsolete ring families while retaining the single exact1600-slot head allocation until empty")
+	_check_head_mapping(painter, narrowed, CombatSim.SHOT_LIMIT)
 
 func _test_filter_and_clear() -> void:
 	var inactive: CombatSim.Shot = _shot("ember", "bounce")
@@ -133,12 +195,38 @@ func _test_filter_and_clear() -> void:
 	_check(stats["friendly_count"] == 0 and stats["total_visible_instances"] == 0, "Deactivating the final friendly projectile clears every visible instance")
 	_check(painter.bodies.visible_instance_count == 0 and _visible_heads(painter) == 0, "Empty frames hide body and head instances")
 	_check(painter.rings.is_empty() and painter.trails.is_empty() and painter.heads.is_empty() and stats["family_counts"].is_empty(), "Empty frames retain no old heads, rings, trails or family counts")
+	_check(painter.head_multimesh.instance_count == 0 and painter.head_buffer.is_empty() and stats["head_gpu_batches"] == 0, "An empty frame releases the physical head buffer instead of retaining invisible1600-head capacity")
 	var replacement: Array[CombatSim.Shot] = [_shot("ember", "blast")]
 	painter.rebuild(replacement)
 	_check(painter.get_stats()["family_counts"] == {"ember:blast": 1} and painter.trails.size() == 1, "Rebuilding another family does not resurrect stale geometry")
 	var empty: Array[CombatSim.Shot] = []
 	painter.rebuild(empty)
 	_check(painter.get_stats()["allocated_instances"] == CombatSim.SHOT_LIMIT and painter.rings.is_empty() and painter.heads.is_empty(), "An empty rebuild releases variable head and ring buffers without growing the persistent body pool")
+	_check_head_mapping(painter, empty)
+
+func _test_global_head_order() -> void:
+	var first: CombatSim.Shot = _shot("bone", "", 1)
+	var middle: CombatSim.Shot = _shot("ember", "", 2)
+	var last: CombatSim.Shot = _shot("bone", "", 3)
+	var shots: Array[CombatSim.Shot] = [first, middle, last]
+	var painter = PAINTER_SCRIPT.new()
+	painter.rebuild(shots)
+	_check(painter.heads.keys() == ["bone:", "ember:"] and painter.heads["bone:"].start == 0 and painter.heads["ember:"].start == 2, "Interleaved shots flatten by first surviving family, with original in-family order")
+	_check_head_mapping(painter, shots)
+	shots.assign([middle, last, first])
+	painter.rebuild(shots)
+	_check(painter.heads.keys() == ["bone:", "ember:"] and painter.heads["ember:"].start == 2, "Reordered input does not reorder already-surviving draw families")
+	_check_head_mapping(painter, shots)
+	first.active = false
+	last.active = false
+	painter.rebuild(shots)
+	_check(painter.heads.keys() == ["ember:"] and painter.heads["ember:"].start == 0, "Removing a family compacts the actual physical head range")
+	_check_head_mapping(painter, shots, 3)
+	first.active = true
+	shots.assign([first, middle])
+	painter.rebuild(shots)
+	_check(painter.heads.keys() == ["ember:", "bone:"] and painter.heads["bone:"].start == 1, "A returning family appends after the survivor even when its shot appears first")
+	_check_head_mapping(painter, shots, 3)
 
 func _test_trails_and_color() -> void:
 	var shots: Array[CombatSim.Shot] = [_shot("ember", "pierce"), _shot("frost", ""), _shot("bone", ""), _shot("scatter", "blast")]
@@ -177,7 +265,7 @@ func _simulation() -> CombatSim:
 	return sim
 
 func _signature(sim: CombatSim) -> String:
-	var data: Array = [sim.rng.state, sim.run.rng.state, sim.run.summary(), sim.snapshot(),
+	var data: Array = [sim.rng.state, sim.run.rng.state, str(sim.interactions._rng.state), sim.run.summary(), sim.snapshot(),
 		sim.primary_hits, sim.secondary_hits, sim.damage_by_weapon, sim._shot_free.duplicate()]
 	for shot: CombatSim.Shot in sim.shots:
 		data.append([shot.slot, shot.active, shot.hostile, shot.position, shot.previous, shot.velocity,

@@ -89,6 +89,9 @@ func add(kind: String, id: String, paid: int = 0, rank: int = 1) -> Dictionary:
 	var entry: Dictionary = {"uid": _next_uid, "kind": kind, "id": id, "rank": rank,
 		"x": placement["cell"].x, "y": placement["cell"].y,
 		"rotated": placement["rotated"], "paid": paid, "rune": {}}
+	var content: ContentDef = definition(kind, id)
+	if kind == "weapon" and not content.equipment_owner.is_empty():
+		entry["owner_ref"] = EquipmentScopeRules.default_owner(content)
 	_next_uid += 1
 	_items.append(entry)
 	last_error = ""

@@ -13,6 +13,8 @@ func _initialize() -> void:
 	_native_readback = DisplayServer.get_name() != "headless"
 	_test_reuse()
 	_test_bulk_buffers()
+	_test_trail_buffer_reuse()
+	_test_head_buffer_capacity_reuse()
 	_test_capacity_reclamation()
 	_test_head_capacity_reclamation()
 	_test_limit_and_empty()
@@ -79,8 +81,8 @@ func _native_instance_matches(multimesh: MultiMesh, index: int, point: Vector2, 
 
 
 func _head_buffer_matches(buffer: PackedFloat32Array, index: int, point: Vector2, direction: Vector2, scale: float) -> bool:
-	var offset: int = index * 12
-	if buffer.size() < offset + 12:
+	var offset: int = index * ProjectilePainter.HEAD_INSTANCE_STRIDE
+	if buffer.size() < offset + ProjectilePainter.HEAD_INSTANCE_STRIDE:
 		return false
 	return is_equal_approx(buffer[offset], direction.x * scale) and is_equal_approx(buffer[offset + 1], -direction.y * scale) \
 		and is_equal_approx(buffer[offset + 4], direction.y * scale) and is_equal_approx(buffer[offset + 5], direction.x * scale) \
@@ -89,7 +91,7 @@ func _head_buffer_matches(buffer: PackedFloat32Array, index: int, point: Vector2
 		and _colors_near(Color(buffer[offset + 8], buffer[offset + 9], buffer[offset + 10], buffer[offset + 11]), Color.WHITE)
 
 
-func _check_visible(painter: ProjectilePainter, shots: Array[CombatSim.Shot], label: String) -> void:
+func _check_visible(painter: ProjectilePainter, shots: Array[CombatSim.Shot], label: String, expected_head_capacity: int = -1) -> void:
 	var ring_counts: Dictionary = {}
 	var head_counts: Dictionary = {}
 	var visible: int = 0
@@ -103,16 +105,21 @@ func _check_visible(painter: ProjectilePainter, shots: Array[CombatSim.Shot], la
 		var head_index: int = int(head_counts.get(key, 0))
 		head_counts[key] = head_index + 1
 		var head: ProjectilePainter.HeadBatch = painter.heads[key]
+		var global_head_index: int = head.start + head_index
 		var direction: Vector2 = shot.velocity.normalized()
 		if direction.is_zero_approx():
 			direction = Vector2.RIGHT
 		var scale: float = shot.radius / head.base_radius
-		packed_data_matches = packed_data_matches and _head_buffer_matches(head.buffer, head_index, shot.position, direction, scale)
+		packed_data_matches = packed_data_matches and _head_buffer_matches(painter.head_buffer, global_head_index, shot.position, direction, scale)
+		var custom_offset: int = global_head_index * ProjectilePainter.HEAD_INSTANCE_STRIDE + 12
+		var custom := Color(float(head.frame) / float(ProjectilePainter.HEAD_ATLAS_COLUMNS - 1), 0.5, 0.25, 0.0)
+		packed_data_matches = packed_data_matches and _colors_near(Color(painter.head_buffer[custom_offset], painter.head_buffer[custom_offset + 1], painter.head_buffer[custom_offset + 2], painter.head_buffer[custom_offset + 3]), custom)
 		if _native_readback:
-			var transform: Transform2D = head.multimesh.get_instance_transform_2d(head_index)
+			var transform: Transform2D = painter.head_multimesh.get_instance_transform_2d(global_head_index)
 			var expected := Transform2D(direction * scale, Vector2(-direction.y, direction.x) * scale, shot.position)
 			native_data_matches = native_data_matches and transform.is_equal_approx(expected)
-			native_data_matches = native_data_matches and _colors_near(head.multimesh.get_instance_color(head_index), Color.WHITE)
+			native_data_matches = native_data_matches and _colors_near(painter.head_multimesh.get_instance_color(global_head_index), Color.WHITE)
+			native_data_matches = native_data_matches and _colors_near(painter.head_multimesh.get_instance_custom_data(global_head_index), custom)
 		if shot.source == "ember":
 			var body_color := Color("dab779")
 			if shot.rune == "blast":
@@ -133,13 +140,18 @@ func _check_visible(painter: ProjectilePainter, shots: Array[CombatSim.Shot], la
 			native_data_matches = native_data_matches and _native_instance_matches(ring.multimesh, index, shot.position, 1.0, BOUNCE_COLOR)
 	var visible_counts_match: bool = painter.rings.size() == ring_counts.size() and painter.heads.size() == head_counts.size() and painter.bodies.visible_instance_count == bodies
 	var buffer_sizes_match: bool = painter._body_buffer.size() == painter.bodies.instance_count * 12
-	var head_capacity: int = 0
+	buffer_sizes_match = buffer_sizes_match and painter.head_buffer.size() == painter.head_multimesh.instance_count * ProjectilePainter.HEAD_INSTANCE_STRIDE
+	var physical_head_capacity: int = visible if expected_head_capacity < 0 else expected_head_capacity
+	visible_counts_match = visible_counts_match and painter.head_multimesh.visible_instance_count == visible and painter.head_multimesh.instance_count == physical_head_capacity
+	var logical_head_capacity: int = 0
+	var global_head_cursor: int = 0
 	for key: String in painter.heads:
 		var head: ProjectilePainter.HeadBatch = painter.heads[key]
-		head_capacity += head.multimesh.instance_count
-		visible_counts_match = visible_counts_match and head.cursor == int(head_counts.get(key, 0)) and head.multimesh.visible_instance_count == head.cursor
-		buffer_sizes_match = buffer_sizes_match and head.buffer.size() == head.multimesh.instance_count * 12
-		visible_counts_match = visible_counts_match and head.multimesh.instance_count >= head.multimesh.visible_instance_count
+		logical_head_capacity += head.capacity
+		visible_counts_match = visible_counts_match and head.cursor == int(head_counts.get(key, 0)) and head.start == global_head_cursor
+		visible_counts_match = visible_counts_match and head.capacity >= head.cursor
+		global_head_cursor += head.cursor
+	visible_counts_match = visible_counts_match and global_head_cursor == visible
 	var geometry_matches: bool = true
 	for radius: float in painter.rings:
 		var ring: ProjectilePainter.RingBatch = painter.rings[radius]
@@ -152,10 +164,11 @@ func _check_visible(painter: ProjectilePainter, shots: Array[CombatSim.Shot], la
 		for vertex: Variant in vertices:
 			var distance: float = Vector2(vertex.x, vertex.y).length()
 			geometry_matches = geometry_matches and (is_equal_approx(distance, radius - 0.5) or is_equal_approx(distance, radius + 0.5))
-	_check(visible_counts_match, label + ": every visible head/ring instance and cursor matches its population")
-	_check(buffer_sizes_match and packed_data_matches, label + ": reusable buffers preserve the twelve-float transform/color layout")
+	_check(visible_counts_match, label + ": every head occupies its family-ordered global GPU range and every ring cursor matches its population")
+	_check(buffer_sizes_match and packed_data_matches, label + ": reusable buffers preserve transform/color bytes and sixteen-float head frame/sentinel data")
 	_check(geometry_matches, label + ": bounce rings retain their original one-pixel geometry")
-	_check(head_capacity <= LIMIT and _ring_capacity(painter) <= LIMIT and painter.get_stats()["allocated_instances"] <= LIMIT * 3, label + ": both variable pools and the actual total remain within their capacity limits")
+	_check(logical_head_capacity <= LIMIT and painter.head_multimesh.instance_count <= LIMIT and _ring_capacity(painter) <= LIMIT and painter.get_stats()["allocated_instances"] <= LIMIT * 3, label + ": logical head ranges, both real GPU pools and their actual total remain within their limits")
+	_check(painter.head_multimesh.use_custom_data and painter.get_stats()["head_gpu_batches"] == (1 if visible > 0 else 0) and painter.get_stats()["allocated_head_instances"] == painter.head_multimesh.instance_count, label + ": honest rendering statistics expose one physical custom-data head batch rather than one GPU allocation per family")
 	if _native_readback:
 		_check(native_data_matches, label + ": native GPU readback preserves every body, rotated head and ring instance in family order")
 
@@ -171,7 +184,7 @@ func _test_reuse() -> void:
 		painter.rebuild(shots)
 		_check(painter.rings[11.0] == ring and ring.multimesh.mesh.get_rid() == mesh_rid, "Population changes retain the same batch and authored radius mesh")
 		_check(ring.multimesh.instance_count == 64 and ring.multimesh.visible_instance_count == count, "Falling and regrowing populations reuse sixty-four allocated slots without repeated resizing")
-		_check_visible(painter, shots, "reuse/%d" % count)
+		_check_visible(painter, shots, "reuse/%d" % count, 64)
 		if _native_readback and count < 64:
 			var hidden: Transform2D = ring.multimesh.get_instance_transform_2d(63)
 			_check(hidden.origin.is_equal_approx(original[63].position), "Hidden slot data survives a visible-count reduction without a buffer reset")
@@ -224,6 +237,97 @@ func _test_bulk_buffers() -> void:
 		_check(_native_instance_matches(probe, 0, first_point, 2.5, first_color) and _native_instance_matches(probe, 1, second_point, 0.0, second_color), "Native bulk upload decodes the twelve-float transform/color layout with no transposition, alpha loss or extra filled head")
 
 
+func _test_trail_buffer_reuse() -> void:
+	var painter := ProjectilePainter.new()
+	var shapes: Dictionary = {
+		"frost:": [PackedVector2Array([Vector2(75, 190), Vector2(100, 190)]),
+			PackedVector2Array([Vector2(75, 187), Vector2(105, 190), Vector2(75, 193), Vector2(105, 190)])],
+		"return_ring:pierce": [PackedVector2Array([Vector2(84, 190), Vector2(90, 190)]),
+			PackedVector2Array([Vector2(84, 187), Vector2(90, 187), Vector2(84, 193), Vector2(90, 193)])],
+		"ember:blast": [PackedVector2Array([Vector2(76, 190), Vector2(100, 190)]), PackedVector2Array()],
+		"bone:bounce": [PackedVector2Array([Vector2(82, 190), Vector2(100, 190)]), PackedVector2Array()],
+	}
+	var frames: Array[Dictionary] = [
+		{"count": 3, "reverse": false, "cull": false, "offscreen": false},
+		{"count": 1, "reverse": true, "cull": false, "offscreen": false},
+		{"count": 3, "reverse": true, "cull": true, "offscreen": false},
+		{"count": 2, "reverse": false, "cull": false, "offscreen": true},
+		{"count": 3, "reverse": false, "cull": false, "offscreen": false},
+		{"count": 0, "reverse": false, "cull": false, "offscreen": false},
+		{"count": 3, "reverse": true, "cull": true, "offscreen": false},
+		{"count": 3, "reverse": false, "cull": false, "offscreen": false},
+	]
+	var retained: Dictionary = {}
+	for frame_index: int in frames.size():
+		var frame: Dictionary = frames[frame_index]
+		var count: int = int(frame["count"])
+		var counts: Dictionary = {}
+		if count > 0:
+			for key: String in shapes:
+				counts[key] = count
+		var shots: Array[CombatSim.Shot] = _head_populations(counts)
+		if frame["cull"]:
+			for index: int in range(count - 1, shots.size(), count):
+				shots[index].position = Vector2(10000, 190)
+		if frame["reverse"]:
+			shots.reverse()
+		var view := Rect2(40, 150, 150, 80) if frame["cull"] else Rect2()
+		if frame["offscreen"]:
+			view = Rect2(-5000, -5000, 50, 50)
+		painter.rebuild(shots, view)
+		_check_visible(painter, shots, "trail-reuse/%d" % frame_index, 0 if count == 0 else 12)
+		if count == 0:
+			_check(painter.trails.is_empty(), "An empty frame removes every retained trail family")
+			for trail: ProjectilePainter.TrailBatch in retained.values():
+				_check(trail.points.is_empty() and trail.wings.is_empty(), "Removed trail objects expose no geometry left from an earlier frame")
+			retained.clear()
+			continue
+		var visible_count: int = 0 if frame["offscreen"] else count - 1 if frame["cull"] else count
+		for key: String in shapes:
+			var trail: ProjectilePainter.TrailBatch = painter.trails[key]
+			var expected_points := PackedVector2Array()
+			var expected_wings := PackedVector2Array()
+			var shape: Array = shapes[key]
+			for ordinal: int in visible_count:
+				var index: int = visible_count - ordinal - 1 if frame["reverse"] else ordinal
+				var offset := Vector2(index * 18, 0)
+				for point: Vector2 in shape[0]:
+					expected_points.append(point + offset)
+				for point: Vector2 in shape[1]:
+					expected_wings.append(point + offset)
+			_check(trail.points.to_byte_array() == expected_points.to_byte_array() and trail.wings.to_byte_array() == expected_wings.to_byte_array(), "Trail reuse preserves exact authored segment bytes, input ordering and viewport clipping: %d/%s" % [frame_index, key])
+			_check(trail.point_cursor == expected_points.size() and trail.wing_cursor == expected_wings.size(), "Trail cursors end at the visible array lengths after population and viewport changes")
+			_check(trail.style.has_halo == (key != "ember:blast"), "Ember remains unhaloed while frost, return-ring and bone keep their halo pass")
+			if retained.has(key):
+				_check(retained[key] == trail, "Surviving families reuse the same trail object through full, clipped and empty-view frames")
+			else:
+				retained[key] = trail
+
+
+func _test_head_buffer_capacity_reuse() -> void:
+	var painter := ProjectilePainter.new()
+	var populations: Array[int] = [6, 2, 11, 1, 0, 2]
+	var capacities: Array[int] = [6, 6, 11, 11, 0, 2]
+	var previous_buffer := PackedFloat32Array()
+	for index: int in populations.size():
+		var count: int = populations[index]
+		var shots: Array[CombatSim.Shot] = []
+		if count > 0:
+			shots = _shots({11.0: count})
+		painter.rebuild(shots)
+		_check(painter.head_multimesh.instance_count == capacities[index] and painter.head_multimesh.visible_instance_count == count
+			and painter.head_buffer.size() == capacities[index] * ProjectilePainter.HEAD_INSTANCE_STRIDE,
+			"A single global head allocation follows the exact grow, retain, grow, retain, empty, restart capacity sequence")
+		_check_visible(painter, shots, "global-capacity/%d" % index, capacities[index])
+		if index == 1 or index == 3:
+			var first_hidden: int = count * ProjectilePainter.HEAD_INSTANCE_STRIDE
+			_check(painter.head_buffer.slice(first_hidden) == previous_buffer.slice(first_hidden), "Shrinking visibility preserves every hidden transform, white channel and frame sentinel in the retained allocation")
+			if _native_readback:
+				var hidden: int = capacities[index] - 1
+				_check(painter.head_multimesh.get_instance_transform_2d(hidden).origin.is_equal_approx(Vector2(100 + hidden * 18, 190)), "The actual native GPU retains hidden head transforms instead of rebuilding the pool on a count reduction")
+		previous_buffer = painter.head_buffer.duplicate()
+
+
 func _test_capacity_reclamation() -> void:
 	var painter := ProjectilePainter.new()
 	painter.rebuild(_shots({11.0: 900, 7.0: 700}))
@@ -234,7 +338,7 @@ func _test_capacity_reclamation() -> void:
 	_check(painter.rings.keys() == [11.0, 7.0], "Reordered input never changes surviving radius-group drawing order")
 	_check(painter.rings[11.0] == first and painter.rings[7.0] == second, "Capacity transfer retains both existing MultiMesh groups")
 	_check(first.multimesh.instance_count == 700 and second.multimesh.instance_count == 900, "A growing group reclaims exactly two hundred spare slots before exceeding the global cap")
-	_check_visible(painter, shots, "reclaim/two-radii")
+	_check_visible(painter, shots, "reclaim/two-radii", LIMIT)
 	shots = _shots({15.0: 300, 7.0: 1100, 11.0: 200})
 	painter.rebuild(shots)
 	_check(painter.rings.keys() == [11.0, 7.0, 15.0], "A new radius appends after surviving groups even when its shots appear first")
@@ -248,7 +352,7 @@ func _test_capacity_reclamation() -> void:
 	painter.rebuild(shots)
 	_check(not painter.rings.has(7.0) and painter.rings.keys() == [11.0, 15.0], "A radius with no live instances is released immediately without reordering survivors")
 	_check(first.multimesh.instance_count == 300 and painter.rings[15.0].multimesh.instance_count == 1000, "Removing an empty group does not gratuitously shrink other active buffers")
-	_check_visible(painter, shots, "reclaim/released-radius")
+	_check_visible(painter, shots, "reclaim/released-radius", LIMIT)
 
 
 func _head_populations(counts: Dictionary) -> Array[CombatSim.Shot]:
@@ -270,19 +374,21 @@ func _test_head_capacity_reclamation() -> void:
 	var shots: Array[CombatSim.Shot] = _head_populations({"ember:blast": 900, "bone:pierce": 100})
 	painter.rebuild(shots)
 	_check(painter.heads.keys() == ["bone:pierce", "ember:blast"] and painter.heads["bone:pierce"] == first and painter.heads["ember:blast"] == second, "Head-family population changes retain surviving batches and their order")
-	_check(first.multimesh.instance_count == 700 and second.multimesh.instance_count == 900, "A growing head family reclaims only the capacity required from another active family")
-	_check_visible(painter, shots, "heads/two-families")
+	_check(first.capacity == 700 and second.capacity == 900, "Logical head family capacities reclaim only the range required by a growing family")
+	_check_visible(painter, shots, "heads/two-families", LIMIT)
 	shots = _head_populations({"return_ring:bounce": 300, "ember:blast": 1100, "bone:pierce": 200})
 	painter.rebuild(shots)
 	_check(painter.heads.keys() == ["bone:pierce", "ember:blast", "return_ring:bounce"], "A new textured family appends after existing family groups")
-	_check(first.multimesh.instance_count == 200 and second.multimesh.instance_count == 1100 and painter.heads["return_ring:bounce"].multimesh.instance_count == 300, "Head-family growth preserves the separate sixteen-hundred-slot cap")
+	_check(first.capacity == 200 and second.capacity == 1100 and painter.heads["return_ring:bounce"].capacity == 300, "Logical head-family growth preserves its separate sixteen-hundred-slot metadata cap without allocating family GPU pools")
 	_check_visible(painter, shots, "heads/new-family")
 	shots = _head_populations({"return_ring:bounce": 1000, "bone:pierce": 300, "ember:blast": 300})
 	painter.rebuild(shots)
-	_check(first.multimesh.instance_count == 300 and second.multimesh.instance_count == 300 and painter.heads["return_ring:bounce"].multimesh.instance_count == 1000, "Head capacity can move in the opposite direction without dropping visible instances")
+	_check(first.capacity == 300 and second.capacity == 300 and painter.heads["return_ring:bounce"].capacity == 1000, "Logical head ranges can move in the opposite direction without dropping any global visible instance")
 	_check_visible(painter, shots, "heads/reversed-growth")
 	painter.rebuild(_head_populations({"return_ring:bounce": 1}))
-	_check(painter.heads.size() == 1 and painter.heads["return_ring:bounce"].multimesh.instance_count == 1000, "Empty head groups release immediately while a surviving family retains its spare slots")
+	_check(painter.heads.size() == 1 and painter.heads["return_ring:bounce"].capacity == 1000 and painter.head_multimesh.instance_count == LIMIT
+		and painter.head_multimesh.visible_instance_count == 1 and painter.head_buffer.size() == LIMIT * ProjectilePainter.HEAD_INSTANCE_STRIDE,
+		"Empty logical families release immediately while the one physical pool retains its exact highest nonempty demand")
 
 
 func _test_limit_and_empty() -> void:
@@ -348,13 +454,14 @@ func _test_simulation_unchanged() -> void:
 	var painted: CombatSim = _simulation()
 	var oracle: CombatSim = _simulation()
 	var painter := ProjectilePainter.new()
+	var initial_head_capacity: int = painted.shot_count
 	_check(_signature(painted) == _signature(oracle), "The real-fire fixtures begin with identical simulation and RNG state")
 	for step: int in 12:
 		var before: String = _signature(painted)
 		painter.rebuild(painted.shots)
 		painter.rebuild(painted.shots)
 		_check(_signature(painted) == before, "Repeated capacity preparation never changes either RNG, hit budgets or flight state")
-		_check_visible(painter, painted.shots, "real-fire/%d" % step)
+		_check_visible(painter, painted.shots, "real-fire/%d" % step, initial_head_capacity if painted.shot_count > 0 else 0)
 		painted.step(1.0 / 60.0, Vector2.ZERO)
 		oracle.step(1.0 / 60.0, Vector2.ZERO)
 		_check(_signature(painted) == _signature(oracle), "A formal collision step is identical with or without retained ring-buffer preparation")

@@ -102,7 +102,8 @@ class WorldFlipperEquipmentRulesTests(unittest.TestCase):
         expected = {"3010053": "dark", "5030036": "water", "5060034": "dark", "5040026": "light",
                     "5020037": "dark", "4050031": "light", "5030039": "light", "5090030": "water",
                     "5010012": "fire", "5030005": "all", "5010004": "dark", "5020009": "thunder",
-                    "5050009": "fire", "3010007": "water", "5020024": "all", "5010011": "light"}
+                    "5050009": "fire", "3010007": "water", "5020024": "all", "5010011": "light",
+                    "3040006": "all", "5010005": "all", "3050002": "dark", "3070006": "fire", "1060001": "all"}
         for identifier, element in expected.items():
             self.assertEqual(self.items[identifier]["element"], element)
             self.assertIn("secondary Wiki", self.items[identifier]["element_evidence"]["evidence_level"])
@@ -112,7 +113,7 @@ class WorldFlipperEquipmentRulesTests(unittest.TestCase):
                 self.assertEqual(item["element_evidence"]["status"], "unknown")
 
     def test_unreviewed_original_instructions_never_become_generic_runtime_effects(self) -> None:
-        self.assertEqual(self.data["semantic_coverage"], {"reviewed_equipment": 16, "unsupported_equipment": 410, "reviewed_rows": 35, "unsupported_rows": 851})
+        self.assertEqual(self.data["semantic_coverage"], {"reviewed_equipment": 21, "unsupported_equipment": 405, "reviewed_rows": 44, "unsupported_rows": 842})
         for item in self.items.values():
             for rule in item["rules"]:
                 self.assertEqual(rule["runtime_support"], "not_claimed_by_extractor")
@@ -125,7 +126,7 @@ class WorldFlipperEquipmentRulesTests(unittest.TestCase):
         self.assertIsNone(RULES.parse_rule("not-a-reviewed-equipment", row)["semantic"])
 
     def test_all_reviewed_semantics_lock_the_entire_original_row_not_only_an_opcode(self) -> None:
-        self.assertEqual(sum(len(rows) for rows in RULES.REVIEWED_ROWS.values()), 35)
+        self.assertEqual(sum(len(rows) for rows in RULES.REVIEWED_ROWS.values()), 44)
         for identifier in RULES.REVIEWED_IDS:
             for rule in self.items[identifier]["rules"]:
                 row = rule["raw_fields"]
@@ -205,6 +206,53 @@ class WorldFlipperEquipmentRulesTests(unittest.TestCase):
                 self.assertEqual(enhanced["semantic_status"], "unsupported")
                 rows += len(enhanced["raw_rule_rows"])
         self.assertEqual(rows, 108)
+
+    def test_scoped_equipment_retains_owner_party_and_element_targets(self) -> None:
+        for identifier, target, group, lower, upper in [
+            ("3040006", "owner", "", 0.475, 0.95),
+            ("3050002", "party_group", "Black", 0.225, 0.45),
+            ("3070006", "party_group", "Red", 0.225, 0.45),
+        ]:
+            item = self.items[identifier]
+            rules = RULES.select_reviewed_rules(item, 5)
+            self.assertEqual(len(RULES.select_reviewed_rules(item, 1)), 1)
+            self.assertEqual(len(rules), 2)
+            self.assertEqual(rules[0]["semantic"]["conditions"], [])
+            self.assertEqual(rules[0]["semantic"]["effect"]["target"], {"kind": target, "group": group})
+            self.assertEqual(rules[0]["semantic"]["effect"]["operation"], "skill_damage_ratio")
+            self.assertEqual(rules[0]["semantic"]["effect"]["amount_base"], lower)
+            self.assertEqual(rules[0]["semantic"]["effect"]["amount_maximum"], upper)
+            self.assertEqual(rules[1]["unlock_level"], 5)
+            self.assertEqual(rules[1]["semantic"]["effect"]["amount_maximum"], 0.35 if identifier == "3040006" else 0.15)
+            self.assertEqual(rules[1]["semantic"]["effect"]["target"], rules[0]["semantic"]["effect"]["target"])
+
+    def test_durendal_keeps_independent_attack_and_percent_health_not_flat_health(self) -> None:
+        attack, health = RULES.select_reviewed_rules(self.items["5010005"], 1)
+        self.assertEqual([attack["slot"], health["slot"]], [0, 1])
+        self.assertEqual(attack["semantic"]["effect"]["operation"], "attack_ratio")
+        self.assertEqual(attack["semantic"]["effect"]["amount_base"], 1.6)
+        self.assertEqual(attack["semantic"]["effect"]["amount_maximum"], 1.6)
+        self.assertEqual(health["semantic"]["effect"]["operation"], "max_health_ratio")
+        self.assertEqual(health["semantic"]["effect"]["amount_base"], 0.15)
+        self.assertEqual(health["semantic"]["effect"]["unit"], "ratio")
+        for rule in (attack, health):
+            self.assertEqual(rule["semantic"]["effect"]["target"]["kind"], "owner")
+            self.assertEqual(rule["semantic"]["event"]["kind"], "initial")
+
+    def test_old_staff_owner_cast_and_party_stacks_do_not_claim_original_capture_order(self) -> None:
+        self.assertEqual(len(self.items["1060001"]["rules"]), 1)
+        rule = self.items["1060001"]["rules"][0]["semantic"]
+        self.assertEqual(rule["event"]["kind"], "skill_activation")
+        self.assertEqual(rule["event"]["actor_scope"], "owner")
+        self.assertEqual(rule["event"]["count_base"], 1.0)
+        self.assertEqual(rule["event"]["stack_limit"], 4)
+        self.assertEqual(rule["effect"]["target"], {"kind": "party", "group": "(None)"})
+        self.assertEqual(rule["effect"]["amount_base"], 0.05)
+        self.assertEqual(rule["effect"]["amount_maximum"], 0.10)
+        self.assertEqual(rule["effect"]["stack_cap_base"], 0.20)
+        self.assertEqual(rule["effect"]["stack_cap_maximum"], 0.40)
+        self.assertFalse(rule["execution_order_evidence"]["same_cast_damage_order_verified"])
+        self.assertIn("explicit project adaptation", rule["execution_order_evidence"]["project_current_cast_policy"])
 
     def test_only_the_active_trigger_branch_is_exposed_for_translation(self) -> None:
         for item in self.items.values():

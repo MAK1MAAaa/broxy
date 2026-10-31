@@ -64,6 +64,9 @@ var _sample_zero_pulse_start: int = 0
 var _skill_audio_playing_peak: int = 0
 var _skill_audio_streams_observed: Dictionary = {}
 var _backpack_skills: bool = false
+var _equipment_scopes: bool = false
+var _equipment_purchases: Array[Dictionary] = []
+const SCOPED_EQUIPMENT: Array[String] = ["sword_0005", "bow_0006", "book_0002", "fist_0006", "staff_0001"]
 var _backpack_skill_ids: Array[String] = []
 var _hero_skills: bool = false
 var _hero_id: String = "alk"
@@ -127,6 +130,8 @@ func _parse_arguments() -> bool:
 			_skill_feedback = true
 		elif argument == "--backpack-skills":
 			_backpack_skills = true
+		elif argument == "--equipment-scopes":
+			_equipment_scopes = true
 		elif argument == "--hero-skills":
 			_hero_skills = true
 		elif argument.begins_with("--hero="):
@@ -137,8 +142,11 @@ func _parse_arguments() -> bool:
 		elif argument == "--pinball-probes":
 			_pinball_probes = true
 		else:
-			push_error("Supported arguments: --seconds=<at least 5> --output=<report.json> [--evasion-probes] [--pulse-cycles] [--skill-relics] [--input-prompts] [--skill-feedback] [--backpack-skills] [--hero-skills] [--hero=<implemented id>] [--pinball-probes]")
+			push_error("Supported arguments: --seconds=<at least 5> --output=<report.json> [--evasion-probes] [--pulse-cycles] [--skill-relics] [--input-prompts] [--skill-feedback] [--backpack-skills] [--hero-skills] [--equipment-scopes] [--hero=<implemented id>] [--pinball-probes]")
 			return false
+	if _equipment_scopes and (not _backpack_skills or not _hero_skills):
+		push_error("--equipment-scopes requires --backpack-skills and --hero-skills")
+		return false
 	if _backpack_skills and (_pulse_cycles or _skill_feedback or _skill_relics or _input_prompts):
 		push_error("--backpack-skills cannot be combined with --pulse-cycles, --skill-feedback, --skill-relics, or --input-prompts")
 		return false
@@ -199,6 +207,9 @@ func _start() -> void:
 			_abort("Could not purchase the pressure fixture's two backpack skills")
 			return
 		_app.world.sim.active_skill_cast.connect(_observe_backpack_skill_cast)
+	if _equipment_scopes and not _equip_scoped_equipment():
+		_abort("Could not purchase the five scoped weapons in the real backpack")
+		return
 	if _input_prompts:
 		_app.ui.get_node("InputDeviceTracker").device_changed.connect(func(_kind: String, _device: int) -> void: _prompt_switches += 1)
 	if _skill_relics and not _equip_skill_relics():
@@ -252,6 +263,28 @@ func _start() -> void:
 		start_report["source_files"] = _source_fingerprint()["files"]
 		start_report["audio_source_files"] = _audio_source_fingerprint()["files"]
 	print("DASH_BENCHMARK_START ", JSON.stringify(start_report))
+
+func _equip_scoped_equipment() -> bool:
+	_app.run.gold += 1000
+	while _app.run.backpack.height < BackpackInventory.MAX_HEIGHT:
+		if not _app.run.expand_backpack():
+			return false
+	for slot: int in _app.run.active_skills.size():
+		var skill: Dictionary = _app.run.active_skills[slot]
+		if not _app.run.move_item(int(skill["uid"]), Vector2i(slot * 2, 4), false):
+			return false
+	for id: String in SCOPED_EQUIPMENT:
+		var definition: ContentDef = GameCatalog.weapon(id)
+		var uid: int = int(_app.run.backpack_snapshot()["next_uid"])
+		_app.run.offers.assign([{"kind": "weapon", "id": id, "price": definition.price, "sold": false}])
+		if not _app.run.buy_offer(0):
+			return false
+		var item: Dictionary = _app.run.backpack_item(uid)
+		if item.get("owner_ref", {}) != {"kind": "main"} or int(item.get("rank", 0)) != 1:
+			return false
+		_equipment_purchases.append(item)
+	_app.run.offers.clear()
+	return _equipment_purchases.size() == SCOPED_EQUIPMENT.size()
 
 func _equip_pulse_skill() -> bool:
 	var definition: ContentDef = GameCatalog.skill("pulse")
@@ -554,7 +587,7 @@ func _counts(value: Vector3i) -> Dictionary:
 
 func _collect_sources(directory: String, paths: Array[String]) -> void:
 	for file: String in DirAccess.get_files_at(directory):
-		if file.get_extension() in ["gd", "tscn", "tres", "json"]:
+		if file.get_extension() in ["gd", "tscn", "tres", "json", "gdshader"]:
 			paths.append(directory.path_join(file))
 	for child: String in DirAccess.get_directories_at(directory):
 		_collect_sources(directory.path_join(child), paths)
@@ -565,6 +598,9 @@ func _source_fingerprint() -> Dictionary:
 		paths.append(ArenaCatalog.texture_path(id))
 	paths.append("res://assets/worldflipper/manifest.json")
 	paths.append("res://assets/worldflipper/roster/manifest.json")
+	paths.append("res://assets/worldflipper/equipment/manifest.json")
+	for id: String in ["bow_0006", "sword_0005", "book_0002", "fist_0006", "staff_0001"]:
+		paths.append("res://assets/worldflipper/equipment/%s.png" % id)
 	for hero_id: String in HeroCatalog.PROFILE_IDS:
 		var hero: HeroDef = HeroCatalog.definition(hero_id)
 		paths.append_array([hero.idle_path, hero.atlas_path, hero.portrait_path])
@@ -573,7 +609,7 @@ func _source_fingerprint() -> Dictionary:
 	for id: String in ["player", "chaser", "rusher", "tank", "caster", "boss"]:
 		paths.append(AdventureArt.path("res://assets/sprites/%s.svg" % id))
 	paths.append(WorldFlipperPlayerArt.ATLAS_PATH)
-	for directory: String in ["res://scripts", "res://data", "res://scenes"]:
+	for directory: String in ["res://scripts", "res://data", "res://scenes", "res://shaders"]:
 		_collect_sources(directory, paths)
 	if _skill_feedback:
 		paths.append_array(_audio_input_paths())
@@ -783,6 +819,21 @@ func _finish_report(now: int) -> void:
 		report["passed"] = bool(report["passed"]) and bool(results["valid"]) and fx_valid and source_valid
 		report["fixture_overrides"].append("fixture grants exact prices and explicit stock, then purchases the legal rank-I companions %s through RunState.buy_offer into two real backpack skill slots" % ", ".join(_backpack_skill_ids))
 		report["fixture_overrides"].append("each ready purchased UID is queued only through World.request_skill(slot); output skills require positive sampled damage, while pulse requires positive sampled active_skill_cast affected counts plus observed legal enemies with pulse_hinder_timer > 0 and zero pulse damage; pressure counts and performance thresholds stay unchanged")
+	if _equipment_scopes:
+		var equipment_valid: bool = _equipment_purchases.size() == SCOPED_EQUIPMENT.size()
+		for item: Dictionary in _equipment_purchases:
+			equipment_valid = equipment_valid and sim.run.backpack_item(int(item["uid"])) == item
+		var effects: Dictionary = sim.weapon_effects.snapshot()
+		var stacks: int = -1
+		for item: Dictionary in effects.get("items", []):
+			if item.get("id", "") == "staff_0001":
+				stacks = int(item.get("party_cast_stacks", -1))
+		var expected: int = mini(4, int(sim.hero_skill_snapshot().get("uses", 0)))
+		equipment_valid = equipment_valid and expected > 0 and stacks == expected and is_equal_approx(float(effects.get("party_skill_damage", -1.0)), 0.05 * expected)
+		report["equipment_scopes"] = {"purchases": _equipment_purchases.duplicate(true), "runtime": effects, "valid": equipment_valid}
+		report["checks"]["scoped_equipment_inventory_and_main_cast_stacks"] = equipment_valid
+		report["passed"] = bool(report["passed"]) and equipment_valid
+		report["fixture_overrides"].append("fixture funds real backpack expansion to6rows, moves both purchased companions to row4 through RunState.move_item, then purchases five rank-I main-owned equipment items; actual R requests must commit Old Staff stacks, while the unchanged300/600/200 load and58FPS/33ms thresholds still apply")
 	report["grounding"] = {"peak_including_warmup": _grounding_peak, "sample_peak": _sample_grounding_peak,
 		"draw_command_peak": _grounding_draw_peak, "capacity": GroundingPainter.CAPACITY}
 	report["checks"]["grounding_budget"] = _sample_grounding_peak > 0 and _grounding_peak <= GroundingPainter.CAPACITY and _grounding_draw_peak == 1

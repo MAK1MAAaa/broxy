@@ -28,6 +28,12 @@ var _combat_upgrade_generation: int = -1
 var _wf_actions_preview_redirecting: bool = false
 
 func _ready() -> void:
+	if "--wf-equipment-preview" in OS.get_cmdline_user_args() and not has_meta("wf_equipment_preview_child"):
+		store.persistent = false
+		_wf_actions_preview_redirecting = true
+		process_mode = Node.PROCESS_MODE_DISABLED
+		_start_wf_equipment_preview.call_deferred()
+		return
 	if "--wf-actions-preview" in OS.get_cmdline_user_args() and not has_meta("wf_actions_preview_child"):
 		store.persistent = false
 		_wf_actions_preview_redirecting = true
@@ -113,6 +119,16 @@ func _start_wf_actions_preview() -> void:
 	var diagnostic_script := load("res://scripts/diagnostics/wf_actions_preview.gd") as Script
 	if diagnostic_script == null:
 		push_error("The embedded World Flipper preview diagnostic is unavailable")
+		get_tree().quit(2)
+		return
+	var diagnostic: Node = diagnostic_script.new()
+	get_tree().root.add_child(diagnostic)
+	queue_free()
+
+func _start_wf_equipment_preview() -> void:
+	var diagnostic_script := load("res://scripts/diagnostics/wf_equipment_preview.gd") as Script
+	if diagnostic_script == null:
+		push_error("The embedded equipment preview diagnostic is unavailable")
 		get_tree().quit(2)
 		return
 	var diagnostic: Node = diagnostic_script.new()

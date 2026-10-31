@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="ContentDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/content_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "book_0002"
+kind = "weapon"
+display_name = "谎言之书"
+icon = "book_0002"
+source_id = "3050002"
+element = "dark"
+subtitle = "暗角色 · 技伤"
+description = "射出两枚追踪暗符。队伍中暗角色技能伤害Ⅰ/Ⅱ/Ⅲ阶增加22.5%/45%/90%，按实际施法角色属性生效。"
+color = Color(0.69, 0.55, 0.85, 1)
+price = 34
+damage = 7.0
+cooldown = 0.9
+projectile_speed = 300.0
+projectile_radius = 5.5
+range = 540.0
+shots = 2
+spread = 0.2
+homing = 1.4
+inventory_size = Vector2i(2, 2)
+equipment_owner = "main"
+equipment_modifiers = Array[Dictionary]([{"stat": "skill_damage", "target": "party_element", "element": "dark", "amount_by_rank": [0.225, 0.45, 0.9]}])

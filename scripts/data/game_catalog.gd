@@ -18,6 +18,11 @@ const WEAPON_DEFS: Array[ContentDef] = [
 	preload("res://data/weapons/sword_0007.tres"),
 	preload("res://data/weapons/axe_0024.tres"),
 	preload("res://data/weapons/sword_0011.tres"),
+	preload("res://data/weapons/bow_0006.tres"),
+	preload("res://data/weapons/sword_0005.tres"),
+	preload("res://data/weapons/book_0002.tres"),
+	preload("res://data/weapons/fist_0006.tres"),
+	preload("res://data/weapons/staff_0001.tres"),
 ]
 const RUNE_DEFS: Array[ContentDef] = [
 	preload("res://data/runes/pierce.tres"),

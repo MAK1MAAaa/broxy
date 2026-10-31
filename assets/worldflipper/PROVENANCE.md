@@ -26,7 +26,7 @@
 | throne | light_castle_throne，274×415 | [王座大厅背景](https://worldflipper.jp/demo/src/assets/production/battle/field/world_light/light_castle_throne/background/background.png) |
 | tower_peak | evil_tower_top，769×274 | [魔塔顶层背景](https://worldflipper.jp/demo/src/assets/production/battle/field/world_evil/evil_tower_top/background/background.png) |
 
-七张试玩素材主题不等于日服最终版地图全集。锁定的最终版 `field` 表中，沙漠、神社、海盗船可按完整背景资源key对应 `sand_ruins`、`japan_shrine`、`sea_ship_boss`；城镇背景对应多个活动条目及 `common_skill_preview`，覆盖追踪只登记后者的部分美术重构。试玩的 `evil_tower`、`light_castle_throne`、`evil_tower_top` 完整背景key不在该最终表内，保留为三个试玩专有的未映射场景，不编造日服场景ID。所有现有竞技场均未恢复原作关卡地形的1:1布局。
+七张试玩素材主题不等于日服最终版地图全集。锁定的最终版 `field` 表中，沙漠、神社、海盗船可按完整背景资源key对应 `sand_ruins`、`japan_shrine`、`sea_ship_boss`；城镇背景对应多个活动条目及 `common_skill_preview`，覆盖追踪只登记后者的部分美术重构。试玩的 `evil_tower`、`light_castle_throne`、`evil_tower_top` 完整背景key不在该最终表内，保留为三个试玩专有的未映射场景，不编造日服场景ID。这七张宽图的布局为本项目配置；后续另三张关卡使用试玩源真实墙线及边界，仍不声明恢复原作全部关卡、机关或战斗。
 
 石碑、花坛和弹板来自同一官方试玩的field_object图集，按对应atlas帧排除1像素边栏，分别最近邻放大4／3／3倍，放入96×96透明画布，脚点统一在 `(48,84)`。原色和轮廓不变。运行时按配置半径显示并阻挡地面角色、敌人、冲刺和击退；飞行弹体可以越过这些低矮障碍。地图改用原场景主题，活动尺寸、原34处地形坐标和减速倍率保持，障碍位置为本项目重新布置。
 
@@ -96,3 +96,23 @@
 本轮追加三份原作关卡裁片与墙线，使用独立[stages清单](stages/manifest.json)，记录12个实际使用来源与6张PNG；原79张PNG和fan08清单保留。固定JP原始动作、装备能力表、官方demo地形和2022动画镜像分别由 `tools/world_flipper_skill_action_sources.json`、`world_flipper_equipment_rules_sources.json`、`world_flipper_layout_sources.json`、`world_flipper_character_animation_sources.json` 追踪。1122份GIF只在本地缓存，未作为374名新主角发行；131份角色版本缺口明示保留。指令及资源引用已取得不等于全部技能或原关卡已移植，详见[本轮实现和限制](../../docs/world-flipper-actions.md)。
 
 本轮追加娜希尔、莫迪亚迦、法露伽的原作待机与双向步行像素规范化，独立清单位于 assets/worldflipper/roster/manifest.json；像素portrait并非原作全身立绘。132份历史背景仅作本地来源准备，未作为额外可玩布局。原作角色、背景、图像与数据版权归 Cygames, Inc. / Citail Inc.，未发现开放资产许可；当前为用户指定同人用途。
+
+## 五件主角装备与JP缓存
+
+本轮新增五张独立64×64装备PNG，原94张运行PNG保持。来源由[独立装备清单](equipment/manifest.json)与[下载登记](../../tools/world_flipper_scoped_equipment.json)锁定原作ID、dev名、精确资源引用、下载SHA、像素SHA及原始画布；完整原图统一2倍nearest居中，不重新着色、按颜色抠图或附加图鉴底纹。
+
+| 游戏ID／原作ID | 名称与原图来源 | 原始画布 |
+| --- | --- | --- |
+| sword_0005／5010005 | 杜兰德尔 / [Durendal](https://worldflipper.wiki.gg/wiki/Durendal) | 22×22 |
+| bow_0006／3040006 | 十字弓 / [Crossbow](https://worldflipper.wiki.gg/wiki/Crossbow) | 18×18 |
+| book_0002／3050002 | 谎言之书 / [Rohonc Codex](https://worldflipper.wiki.gg/wiki/Rohonc_Codex) | 15×18 |
+| staff_0001／1060001 | 老旧法杖 / [Old Staff](https://worldflipper.wiki.gg/wiki/Old_Staff) | 18×18 |
+| fist_0006／3070006 | 半月拳刃 / [公开JP缓存](https://archive.org/details/gacha-archive)中原物品图集的精确装备帧 | 恢复20×20 |
+
+半月拳刃使用`item/equipment/general/fist_0006`，原18×18裁片位于2032×372图集的(1260,310)，按原`fx=-1/fy=-1/fw=20/fh=20`放回20×20画布。不是`item/generated/ability_soul/general/fist_0006`的能力魂Core。原图集363167字节，SHA256为`fc4ab64dcdbdbbbdac4cdaf331dc8df67355361fb3796797cddfdfbfe42a11ab`；AMF3 atlas的SHA256为`226341b121ecc92d2d5f6f6850a2c1310b79157b017af3c64adf4ece90067f5c`。解码只修复PNG签名字母大小写，原下载字节保留在忽略缓存；原始矩形、还原偏移、ZIP Range及CRC证据一并登记。
+
+五件中文名为锁定BWIKI版本中的社区别名，不声明固定日服数据包含官方中文。新增投射攻击、主角归属、1／2／4背包权重与老旧法杖当次施放生效、每波重置均按[本作装备规则](../../docs/world-flipper-equipment.md)单独记录，图像或能力行核准不等于完整原作能力移植。独立工具`python tools/world_flipper_scoped_equipment.py --offline --check`可只读核对确定性重建；首次准备去掉`--offline`，需要Python与Pillow，原字节不纳源码。
+
+同一公开缓存还提供1230份真实地形，逐项CRC／SHA验证与AMF3完整解码后精确绑定最终目录1422条布局引用，保留1465层与23394条普通WALL开放段。三种环境的背景PNG／atlas／parts／timeline共12份作为配套样本实际验证。来源登记为[JP归档清单](../../tools/world_flipper_jp_archive_sources.json)，下载与数据边界见[JP归档说明](../../docs/world-flipper-jp-archive.md)。这些原地形与背景样本仅在`.tools/`，不计为新增可玩竞技场，也不覆盖旧PNG或fan08清单。
+
+实测`asset_download/production/info.json`声明缓存版本1.780.30；文件名的客户端包版本1.780.0与最终目录1.780.40分别记录。表内容逐字段匹配并不证明每个对象属于最终版字节。船舱原缓存两层与试玩单层存在层映射和道具差异，现运行关卡保留试玩源；未将两层合并。完整6.86GB归档未下载，其全包SHA1仅为上传者元数据；已选资源则记录实际ZIP条目CRC与SHA256。公开可下载不构成原作资产的开放许可，版权及同人使用边界继续遵循[NOTICE](NOTICE.txt)。

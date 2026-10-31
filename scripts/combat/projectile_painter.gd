@@ -6,6 +6,9 @@ const LIMIT: int = CombatSim.SHOT_LIMIT
 const DISC_SIDES: int = 16
 const RING_SIDES: int = 8
 const INSTANCE_STRIDE: int = 12
+const HEAD_INSTANCE_STRIDE: int = 16
+const HEAD_ATLAS_COLUMNS: int = 32
+const HEAD_SHADER: Shader = preload("res://shaders/projectile_heads.gdshader")
 const HEAD_FRAME_SIZE: int = 64
 const HEAD_WORLD_SIZE: float = 32.0
 const HEAD_SOURCES: PackedStringArray = ["bone", "frost", "ember", "scatter", "crescent", "storm", "comet", "return_ring"]
@@ -27,6 +30,8 @@ class TrailStyle:
 class TrailBatch:
 	var points: PackedVector2Array = PackedVector2Array()
 	var wings: PackedVector2Array = PackedVector2Array()
+	var point_cursor: int = 0
+	var wing_cursor: int = 0
 	var color: Color = Color.WHITE
 	var width: float = 3.0
 	var source: String = ""
@@ -42,7 +47,10 @@ class InstanceBatch:
 class RingBatch extends InstanceBatch:
 	var radius: float = 0.0
 
-class HeadBatch extends InstanceBatch:
+class HeadBatch:
+	var cursor: int = 0
+	var capacity: int = 0
+	var start: int = 0
 	var source: String = ""
 	var frame: int = 0
 	var base_radius: float = 1.0
@@ -53,6 +61,11 @@ var heads: Dictionary = {}
 var rings: Dictionary = {}
 var trails: Dictionary = {}
 var atlas_texture: Texture2D
+var head_atlas_texture: Texture2D
+var head_multimesh: MultiMesh
+var head_buffer: PackedFloat32Array = PackedFloat32Array()
+var head_mesh: ArrayMesh
+var head_material: ShaderMaterial
 var friendly_count: int = 0
 var ember_count: int = 0
 var bounce_count: int = 0
@@ -63,6 +76,7 @@ var _body_buffer: PackedFloat32Array = PackedFloat32Array()
 var _head_base_radii: Dictionary = {}
 var _head_meshes: Dictionary = {}
 var _head_textures: Dictionary = {}
+var _head_frames: Dictionary = {}
 
 func _init() -> void:
 	bodies = _multimesh(_disc_mesh(true), LIMIT)
@@ -73,6 +87,46 @@ func _init() -> void:
 		_head_base_radii[source] = GameCatalog.weapon(source).projectile_radius
 		_head_meshes[source] = _head_mesh(frame)
 		_head_textures[source] = atlas_texture
+		_head_frames[source] = frame
+	_build_head_atlas()
+	head_mesh = _head_mesh(0, 1)
+	head_multimesh = _multimesh(head_mesh, 0, true)
+	head_material = ShaderMaterial.new()
+	head_material.shader = HEAD_SHADER
+
+func _build_head_atlas() -> void:
+	var image: Image = Image.create(HEAD_ATLAS_COLUMNS * HEAD_FRAME_SIZE, HEAD_FRAME_SIZE, false, Image.FORMAT_RGBA8)
+	image.fill(Color.TRANSPARENT)
+	var source_image: Image = atlas_texture.get_image()
+	source_image.convert(Image.FORMAT_RGBA8)
+	image.blit_rect(source_image, Rect2i(0, 0, HEAD_SOURCES.size() * HEAD_FRAME_SIZE, HEAD_FRAME_SIZE), Vector2i.ZERO)
+	var frame: int = HEAD_SOURCES.size()
+	for definition: ContentDef in GameCatalog.weapons():
+		if _head_frames.has(definition.id):
+			continue
+		if frame >= HEAD_ATLAS_COLUMNS:
+			push_error("Projectile head atlas exceeds its thirty-two source columns")
+			break
+		var texture := load(AdventureArt.path("res://assets/icons/%s.svg" % definition.icon)) as Texture2D
+		if texture == null:
+			push_error("Missing projectile head texture: " + definition.id)
+			continue
+		var icon: Image = texture.get_image()
+		if icon == null or icon.get_size() != Vector2i(HEAD_FRAME_SIZE, HEAD_FRAME_SIZE):
+			push_error("Projectile head texture is not an authored sixty-four-pixel cell: " + definition.id)
+			continue
+		icon.convert(Image.FORMAT_RGBA8)
+		image.blit_rect(icon, Rect2i(0, 0, HEAD_FRAME_SIZE, HEAD_FRAME_SIZE), Vector2i(frame * HEAD_FRAME_SIZE, 0))
+		_head_base_radii[definition.id] = definition.projectile_radius
+		_head_meshes[definition.id] = _head_mesh(0, 1)
+		_head_textures[definition.id] = texture
+		_head_frames[definition.id] = frame
+		frame += 1
+	head_atlas_texture = ImageTexture.create_from_image(image)
+
+func attach_material(canvas: CanvasItem) -> void:
+	if canvas.material != head_material:
+		canvas.material = head_material
 
 func rebuild(shots: Array[CombatSim.Shot], view: Rect2 = Rect2()) -> void:
 	friendly_count = 0
@@ -82,9 +136,6 @@ func rebuild(shots: Array[CombatSim.Shot], view: Rect2 = Rect2()) -> void:
 	_friendly.clear()
 	_friendly_keys.clear()
 	var ring_counts: Dictionary = {}
-	for batch: TrailBatch in trails.values():
-		batch.points.clear()
-		batch.wings.clear()
 	for shot: CombatSim.Shot in shots:
 		if not shot.active or shot.hostile:
 			continue
@@ -124,22 +175,26 @@ func rebuild(shots: Array[CombatSim.Shot], view: Rect2 = Rect2()) -> void:
 		var start: Vector2 = shot.position - direction * 16.0 if shot.source == "return_ring" else tail - direction * 6.0 if shot.source == "ember" else tail
 		var end: Vector2 = shot.position - direction * 10.0 if shot.source == "return_ring" else shot.position
 		if not view.has_area() or trail_draw_bounds(start, end, width).intersects(view):
-			trail.points.append(start)
-			trail.points.append(end)
+			trail.points[trail.point_cursor] = start
+			trail.points[trail.point_cursor + 1] = end
+			trail.point_cursor += 2
 			if shot.rune == "pierce" or shot.source == "frost":
 				var wing: Vector2 = direction.orthogonal() * 3.0
 				var wing_tail: Vector2 = shot.position - direction * 16.0 if shot.source == "return_ring" else tail
 				var wing_head: Vector2 = shot.position - direction * 10.0 if shot.source == "return_ring" else shot.position + direction * 5.0
-				trail.wings.append(wing_tail + wing)
-				trail.wings.append(wing_head + wing if shot.source == "return_ring" else wing_head)
-				trail.wings.append(wing_tail - wing)
-				trail.wings.append(wing_head - wing if shot.source == "return_ring" else wing_head)
+				trail.wings[trail.wing_cursor] = wing_tail + wing
+				trail.wings[trail.wing_cursor + 1] = wing_head + wing if shot.source == "return_ring" else wing_head
+				trail.wings[trail.wing_cursor + 2] = wing_tail - wing
+				trail.wings[trail.wing_cursor + 3] = wing_head - wing if shot.source == "return_ring" else wing_head
+				trail.wing_cursor += 4
 		if shot.source == "ember":
 			_write_instance(_body_buffer, ember_count, shot.position, shot.radius, trail.color)
 			ember_count += 1
 		var head: HeadBatch = heads[key]
 		var head_direction: Vector2 = Vector2.RIGHT if direction.is_zero_approx() else direction
-		_write_head_instance(head.buffer, head.cursor, shot.position, head_direction, shot.radius / head.base_radius)
+		var head_index: int = head.start + head.cursor
+		_write_head_instance(head_buffer, head_index, shot.position, head_direction, shot.radius / head.base_radius, HEAD_INSTANCE_STRIDE)
+		head_buffer[head_index * HEAD_INSTANCE_STRIDE + 12] = float(head.frame) / float(HEAD_ATLAS_COLUMNS - 1)
 		head.cursor += 1
 		if shot.rune == "bounce":
 			var ring: RingBatch = rings[shot.radius + 3.0]
@@ -147,13 +202,18 @@ func rebuild(shots: Array[CombatSim.Shot], view: Rect2 = Rect2()) -> void:
 			ring.cursor += 1
 	if ember_count > 0:
 		bodies.buffer = _body_buffer
-	for head: HeadBatch in heads.values():
-		head.multimesh.buffer = head.buffer
+	if friendly_count > 0:
+		head_multimesh.buffer = head_buffer
 	for ring: RingBatch in rings.values():
 		ring.multimesh.buffer = ring.buffer
 	bodies.visible_instance_count = ember_count
 	for key: String in trails.keys():
+		var trail: TrailBatch = trails[key]
+		trail.points.resize(trail.point_cursor if family_counts.has(key) else 0)
+		trail.wings.resize(trail.wing_cursor if family_counts.has(key) else 0)
 		if not family_counts.has(key):
+			trail.point_cursor = 0
+			trail.wing_cursor = 0
 			trails.erase(key)
 
 func _reclaim_capacity(batches: Dictionary, counts: Dictionary) -> void:
@@ -189,8 +249,28 @@ func _resize_batch(batch: InstanceBatch, count: int) -> void:
 	batch.multimesh.visible_instance_count = count
 	batch.cursor = 0
 
+func _reclaim_head_capacity() -> void:
+	var allocated: int = 0
+	for key: String in heads.keys():
+		if not family_counts.has(key):
+			heads.erase(key)
+		else:
+			allocated += heads[key].capacity
+	var growth: int = 0
+	for key: String in family_counts:
+		var capacity: int = heads[key].capacity if heads.has(key) else 0
+		growth += maxi(0, int(family_counts[key]) - capacity)
+	var release: int = maxi(0, allocated + growth - LIMIT)
+	for key: String in heads:
+		if release == 0:
+			break
+		var head: HeadBatch = heads[key]
+		var freed: int = mini(release, maxi(0, head.capacity - int(family_counts[key])))
+		head.capacity -= freed
+		release -= freed
+
 func _prepare_heads() -> void:
-	_reclaim_capacity(heads, family_counts)
+	_reclaim_head_capacity()
 	for key: String in family_counts:
 		var head: HeadBatch
 		if heads.has(key):
@@ -198,19 +278,39 @@ func _prepare_heads() -> void:
 		else:
 			head = HeadBatch.new()
 			head.source = key.get_slice(":", 0)
-			var definition: ContentDef = GameCatalog.weapon(head.source)
-			if not _head_meshes.has(head.source) and definition != null:
-				_head_base_radii[head.source] = definition.projectile_radius
-				_head_meshes[head.source] = _head_mesh(0, 1)
-				_head_textures[head.source] = load(AdventureArt.path("res://assets/icons/%s.svg" % definition.icon)) as Texture2D
-			var source: String = head.source if _head_meshes.has(head.source) else "bone"
-			head.frame = HEAD_SOURCES.find(source)
+			var source: String = head.source if _head_frames.has(head.source) else "bone"
+			head.frame = _head_frames[source]
 			head.base_radius = _head_base_radii[source]
 			head.texture = _head_textures[source]
-			head.multimesh = _multimesh(_head_meshes[source], 0)
 			heads[key] = head
-		_resize_batch(head, int(family_counts[key]))
-		_prepare_trail(trails[key])
+		var count: int = int(family_counts[key])
+		head.capacity = maxi(head.capacity, count)
+		head.cursor = 0
+		var trail: TrailBatch = trails[key]
+		_prepare_trail(trail)
+		trail.points.resize(count * 2)
+		trail.wings.resize(count * 4 if trail.last_shot.rune == "pierce" or trail.source == "frost" else 0)
+		trail.point_cursor = 0
+		trail.wing_cursor = 0
+	var offset: int = 0
+	for key: String in heads:
+		var head: HeadBatch = heads[key]
+		head.start = offset
+		offset += int(family_counts[key])
+	if friendly_count == 0:
+		head_multimesh.instance_count = 0
+		head_buffer.resize(0)
+	elif head_multimesh.instance_count < friendly_count:
+		var previous_capacity: int = head_multimesh.instance_count
+		head_multimesh.instance_count = friendly_count
+		head_buffer.resize(friendly_count * HEAD_INSTANCE_STRIDE)
+		for index: int in range(previous_capacity, friendly_count):
+			var base: int = index * HEAD_INSTANCE_STRIDE
+			for channel: int in range(8, 12):
+				head_buffer[base + channel] = 1.0
+			head_buffer[base + 13] = 0.5
+			head_buffer[base + 14] = 0.25
+	head_multimesh.visible_instance_count = friendly_count
 
 static func _prepare_trail(trail: TrailBatch) -> void:
 	var shot: CombatSim.Shot = trail.last_shot
@@ -250,7 +350,8 @@ static func trail_draw_bounds(start: Vector2, end: Vector2, width: float) -> Rec
 	return Rect2(minimum, maximum - minimum).grow(absf(width) * TRAIL_HALO_WIDTH_SCALE * 0.5 + 8.0)
 
 func draw(canvas: CanvasItem) -> void:
-	# Each family head follows its trails; all commands precede the danger pass.
+	# The single head submission follows every friendly trail and precedes danger.
+	attach_material(canvas)
 	if ember_count > 0:
 		canvas.draw_multimesh(bodies, null)
 	for ring: RingBatch in rings.values():
@@ -265,19 +366,21 @@ func draw(canvas: CanvasItem) -> void:
 			canvas.draw_multiline(trail.points, style.main_color, style.main_width, true)
 		if not trail.wings.is_empty():
 			canvas.draw_multiline(trail.wings, Color(trail.color, 0.65), 1.0, true)
-		var head: HeadBatch = heads[key]
-		canvas.draw_multimesh(head.multimesh, head.texture)
+	if friendly_count > 0:
+		canvas.draw_multimesh(head_multimesh, head_atlas_texture)
 
 func get_stats() -> Dictionary:
-	var head_capacity: int = 0
+	var logical_head_capacity: int = 0
 	for head: HeadBatch in heads.values():
-		head_capacity += head.multimesh.instance_count
+		logical_head_capacity += head.capacity
+	var head_capacity: int = head_multimesh.instance_count
 	var allocated: int = bodies.instance_count + head_capacity
 	for ring: RingBatch in rings.values():
 		allocated += ring.multimesh.instance_count
 	return {"friendly_count": friendly_count, "body_instances": ember_count,
 		"core_instances": friendly_count, "head_instances": friendly_count,
-		"head_families": heads.size(), "allocated_head_instances": head_capacity,
+		"head_families": heads.size(), "head_gpu_batches": 1 if friendly_count > 0 else 0,
+		"logical_head_capacity": logical_head_capacity, "allocated_head_instances": head_capacity,
 		"bounce_instances": bounce_count,
 		"total_visible_instances": ember_count + friendly_count + bounce_count,
 		"allocated_instances": allocated, "family_counts": family_counts.duplicate(),
@@ -294,8 +397,8 @@ static func _write_instance(buffer: PackedFloat32Array, index: int, point: Vecto
 	buffer[offset + 10] = color.b
 	buffer[offset + 11] = color.a
 
-static func _write_head_instance(buffer: PackedFloat32Array, index: int, point: Vector2, direction: Vector2, scale: float) -> void:
-	var offset: int = index * INSTANCE_STRIDE
+static func _write_head_instance(buffer: PackedFloat32Array, index: int, point: Vector2, direction: Vector2, scale: float, stride: int = INSTANCE_STRIDE) -> void:
+	var offset: int = index * stride
 	var x: float = direction.x * scale
 	var y: float = direction.y * scale
 	buffer[offset] = x
@@ -304,10 +407,6 @@ static func _write_head_instance(buffer: PackedFloat32Array, index: int, point: 
 	buffer[offset + 4] = y
 	buffer[offset + 5] = x
 	buffer[offset + 7] = point.y
-	buffer[offset + 8] = 1.0
-	buffer[offset + 9] = 1.0
-	buffer[offset + 10] = 1.0
-	buffer[offset + 11] = 1.0
 
 static func _head_mesh(frame: int, frame_count: int = HEAD_SOURCES.size()) -> ArrayMesh:
 	var half_size: float = HEAD_WORLD_SIZE * 0.5
@@ -327,10 +426,11 @@ static func _head_mesh(frame: int, frame_count: int = HEAD_SOURCES.size()) -> Ar
 	result.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays, [], {}, Mesh.ARRAY_FLAG_USE_2D_VERTICES)
 	return result
 
-static func _multimesh(mesh: ArrayMesh, capacity: int) -> MultiMesh:
+static func _multimesh(mesh: ArrayMesh, capacity: int, custom_data: bool = false) -> MultiMesh:
 	var result := MultiMesh.new()
 	result.transform_format = MultiMesh.TRANSFORM_2D
 	result.use_colors = true
+	result.use_custom_data = custom_data
 	result.mesh = mesh
 	result.instance_count = capacity
 	result.visible_instance_count = 0

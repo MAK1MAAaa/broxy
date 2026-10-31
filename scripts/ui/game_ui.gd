@@ -122,6 +122,7 @@ var _input_device_tracker: InputDeviceTracker
 var _input_kind: String = "keyboard"
 var _hud: Dictionary = {}
 var _hud_loadout_key := ""
+var _hud_equipment_cast_key: String = ""
 var _best: Dictionary = {}
 var _requested_shop_focus := ""
 var _shop_epoch: int = 0
@@ -215,6 +216,9 @@ func _refresh_input_prompts() -> void:
 		_update_dash_hud(_hud_skill_snapshot)
 		_update_pulse_hud(_hud_skill_snapshot)
 		_update_hero_hud(_hud_skill_snapshot)
+	if is_instance_valid(_root):
+		for node: Node in _root.find_children("EquipmentActorKey", "Label", true, false):
+			(node as Label).text = _equipment_actor_key(node.get_meta("actor_ref", {}))
 	if is_instance_valid(_bag_grid):
 		_bag_grid.set_skill_bindings(_controls)
 		_bag_grid.set_input_device(_input_kind)
@@ -635,6 +639,7 @@ func show_hud() -> void:
 	_toast_timer.stop()
 	_hud.clear()
 	_hud_loadout_key = ""
+	_hud_equipment_cast_key = ""
 	var top := HBoxContainer.new()
 	top.name = "RitualStatus"
 	top.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
@@ -690,6 +695,13 @@ func show_hud() -> void:
 	slots.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	equipment.add_child(slots)
 	_hud["slots"] = slots
+	var cast_status := VBoxContainer.new()
+	cast_status.name = "EquipmentCastStatus"
+	cast_status.add_theme_constant_override("separation", 4)
+	cast_status.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	equipment.add_child(cast_status)
+	_hud["equipment_casts"] = cast_status
+	cast_status.hide()
 	var abilities := _hud_side_panel("RitualAbilities", true)
 	var active_slots := VBoxContainer.new()
 	active_slots.name = "ActiveSkillSlots"
@@ -784,6 +796,7 @@ func update_hud(snapshot: Dictionary) -> void:
 	if key != _hud_loadout_key:
 		_hud_loadout_key = key
 		_update_hud_slots(loadout)
+	_update_equipment_cast_hud(snapshot, loadout)
 
 
 func _clear_hud_skill(key: String) -> void:
@@ -1383,6 +1396,8 @@ func _add_shop_symbol(parent: Control, id: String, extent: int) -> void:
 
 func _item_trait(kind: String, definition: ContentDef, rank: int) -> String:
 	if kind == "weapon":
+		if not definition.equipment_owner.is_empty():
+			return _weapon_passives_text(definition, rank).replace("\n", " · ")
 		return {"bone": "速射", "frost": "寒霜减速", "ember": "追踪", "scatter": "三向散射", "crescent": "穿透", "storm": "双发", "comet": "重击", "return_ring": "往返穿透", "sword_0012": "主角回转", "spear_0005": "球化攻势", "sword_0004": "球化连携", "axe_0009": "破防追击", "book_0009": "球化强化", "sword_0007": "生命增幅", "axe_0024": "技伤强化", "sword_0011": "濒危回复"}.get(definition.id, "")
 	if kind == "rune":
 		return "贯穿 +%d目标" % RuneRules.extra_hits(rank) if definition.id == "pierce" else "弹射 +%d跳" % RuneRules.extra_hits(rank) if definition.id == "bounce" else "爆破 %.0f范围" % RuneRules.blast_radius(rank)
@@ -1792,6 +1807,11 @@ func _build_backpack_details() -> void:
 	_bag_details.add_child(footprint)
 	_bag_details.move_child(rune_guide, 2)
 	if str(item["kind"]) == "weapon":
+		_add_equipment_owner(_bag_details, item, definition)
+		if not definition.equipment_owner.is_empty():
+			var passives := _wrap(_weapon_passives_text(definition, rank), 16, CYAN)
+			passives.name = "BackpackEquipmentPassives"
+			_bag_details.add_child(passives)
 		var stats := _wrap(_weapon_stats_text(definition, rank, _item_resonance_bonus(item)), 15, CYAN)
 		stats.name = "BackpackWeaponStats"
 		_bag_details.add_child(stats)
@@ -1843,6 +1863,7 @@ func _build_backpack_details() -> void:
 		var merge_preview := _wrap(explanation, 14, GOLD)
 		merge_preview.name = "BackpackMergePreview"
 		_bag_details.add_child(merge_preview)
+		_add_equipment_actor_changes(_bag_details, sample.get("actor_skill_changes", []), "EquipmentMergeActors")
 		_add_backpack_merge_target(uid, partners[0])
 	var actions := HBoxContainer.new()
 	actions.add_theme_constant_override("separation", 6)
@@ -1866,6 +1887,9 @@ func _build_backpack_details() -> void:
 	sale.add_theme_font_size_override("font_size", GameTypography.size_for(13))
 	sale.tooltip_text = "出售不可撤回。" if str(item["kind"]) == "skill" else "出售不可撤回；必须保留至少一件法器。法器上的符文退回背包空格。"
 	_bag_details.add_child(sale)
+	if str(item["kind"]) == "weapon" and not definition.equipment_owner.is_empty():
+		var sale_preview: Dictionary = run.sell_preview(uid)
+		_add_equipment_actor_changes(_bag_details, sale_preview.get("actor_skill_changes", []), "EquipmentSaleActors", "出售")
 	var rune: Dictionary = item.get("rune", {})
 	if str(item["kind"]) == "weapon" and not rune.is_empty():
 		var detach := _shop_button("拆下 %s · %s阶" % [GameCatalog.rune(str(rune["id"])).display_name, _rank_name(int(rune.get("rank", 1)))], _bp_unequip.bind(uid), "bag_unequip:%d" % uid, Vector2(0, 32))
@@ -1897,7 +1921,7 @@ func _build_backpack_details() -> void:
 		_section_heading(_bag_details, "其他合成目标", GOLD, 14)
 		for index: int in range(1, partners.size()):
 			_add_backpack_merge_target(uid, partners[index])
-	if str(item["kind"]) != "skill":
+	if str(item["kind"]) != "skill" and (str(item["kind"]) != "weapon" or definition.equipment_owner.is_empty()):
 		var effect_summary: String = _item_trait(str(item["kind"]), definition, rank)
 		if str(item["kind"]) == "weapon" and run.linked_weapon_uids().has(uid):
 			effect_summary += " · 烛引"
@@ -2043,6 +2067,8 @@ func _backpack_effect_text(item: Dictionary) -> String:
 		"skill": return _rear_skill_name(definition.id) + "\n" + _active_skill_stats_text(run.active_skill_parameters(item)) + "\n" + _rear_bonuses_text(definition.id, rank)
 		"weapon":
 			var text: String = definition.description
+			if not definition.equipment_owner.is_empty():
+				text = HeroCatalog.definition(run.hero_id).display_name + " · " + _rank_name(rank) + "阶\n" + _weapon_passives_text(definition, rank)
 			var rune: Dictionary = item.get("rune", {})
 			if not rune.is_empty():
 				text += "\n" + _rune_rank_text(str(rune["id"]), int(rune.get("rank", 1)))
@@ -2371,7 +2397,10 @@ func _show_offer_record(index: int, epoch: int, expected_offer: Dictionary) -> v
 		return
 	if run == null or index < 0 or index >= run.offers.size() or run.offers[index] != expected_offer:
 		return
-	_show_item_record({"kind": expected_offer["kind"], "id": expected_offer["id"], "rank": expected_offer.get("rank", 1)}, false, epoch)
+	var item: Dictionary = {"kind": expected_offer["kind"], "id": expected_offer["id"], "rank": 1 if expected_offer["kind"] == "weapon" else expected_offer.get("rank", 1)}
+	if item["kind"] == "weapon" and not GameCatalog.weapon(str(item["id"])).equipment_owner.is_empty():
+		item["equipment_preview"] = run.weapon_purchase_preview(index)
+	_show_item_record(item, false, epoch)
 
 
 func _show_owned_item_record(uid: int, epoch: int) -> void:
@@ -2390,7 +2419,7 @@ func _show_item_record(item: Dictionary, owned: bool, epoch: int) -> void:
 	heading.add_theme_constant_override("separation", 18)
 	body.add_child(heading)
 	_add_icon(heading, definition, 80)
-	heading.add_child(_label(_item_trait(kind, definition, rank), 20, CYAN))
+	heading.add_child(_wrap(definition.subtitle if kind == "weapon" and not definition.equipment_owner.is_empty() else _item_trait(kind, definition, rank), 20, CYAN))
 	var scroll := ScrollContainer.new()
 	scroll.name = "ItemRecordScroll"
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -2411,9 +2440,32 @@ func _show_item_record(item: Dictionary, owned: bool, epoch: int) -> void:
 		details = _rune_rank_text(definition.id, rank)
 	elif kind == "skill":
 		details = _rear_skill_name(definition.id) + "\n" + _active_skill_stats_text(run.active_skill_parameters(item)) + "\n" + _rear_bonuses_text(definition.id, rank)
-	var text := _wrap(details, 24, BONE)
-	text.name = "ItemRecordEffect"
-	scroll.add_child(text)
+	if kind == "weapon" and not definition.equipment_owner.is_empty():
+		var content := VBoxContainer.new()
+		content.name = "EquipmentRecord"
+		content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		content.add_theme_constant_override("separation", 12)
+		scroll.add_child(content)
+		_add_equipment_owner(content, item, definition, 48)
+		var passive := _wrap(_weapon_passives_text(definition, rank), 22, CYAN)
+		passive.name = "ItemRecordEffect"
+		content.add_child(passive)
+		var projection: Dictionary = run.sell_preview(int(item["uid"])) if owned else item.get("equipment_preview", {})
+		var stats_text: String
+		if owned:
+			stats_text = _weapon_stats_text(definition, rank, _item_resonance_bonus(item))
+		elif bool(projection.get("has_projection", false)):
+			stats_text = _format_weapon_stats(float(projection["damage"]), int(projection["shots"]), float(projection["interval"]))
+		else:
+			stats_text = "基础 · " + _format_weapon_stats(definition.damage * BackpackInventory.rank_multiplier(rank), definition.shots, definition.cooldown)
+		var stats := _wrap(stats_text, 18, BONE)
+		stats.name = "EquipmentProjectileStats"
+		content.add_child(stats)
+		_add_equipment_actor_changes(content, projection.get("actor_skill_changes", []), "EquipmentSaleActors" if owned else "EquipmentPurchaseActors", "出售" if owned else "购入")
+	else:
+		var text := _wrap(details, 24, BONE)
+		text.name = "ItemRecordEffect"
+		scroll.add_child(text)
 	var close := _button("返回", _close_item_record.bind(epoch), Vector2(180, 42))
 	close.name = "CloseItemRecord"
 	_reading_footer(body, close)
@@ -3285,6 +3337,167 @@ func _resonance_details(item: Dictionary) -> String:
 	return "共边供能 +%s → %s\n每把法器共鸣最高18%%；旋转、合成或出售后按新邻接重算。" % [_rune_percent(0.03 * BackpackInventory.rank_multiplier(int(item.get("rank", 1)))), "、".join(names) if not names.is_empty() else "暂无共边法器"]
 
 
+func _add_equipment_owner(parent: Control, item: Dictionary, definition: ContentDef, portrait_size: int = 32) -> void:
+	if definition.equipment_owner != "main" or run == null:
+		return
+	var owner: Variant = item.get("owner_ref", {"kind": "main"})
+	if not owner is Dictionary or owner.get("kind", "") != "main":
+		return
+	var hero: HeroDef = HeroCatalog.definition(run.hero_id)
+	var row := HBoxContainer.new()
+	row.name = "EquipmentOwner"
+	row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	row.add_theme_constant_override("separation", 8)
+	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	row.set_meta("owner_ref", {"kind": "main"})
+	row.set_meta("hero_id", hero.id)
+	parent.add_child(row)
+	_add_hero_icon(row, hero, portrait_size)
+	var portrait := row.get_child(0) as TextureRect
+	portrait.name = "EquipmentOwnerPortrait"
+	portrait.set_meta("hero_id", hero.id)
+	var name_label := _label(hero.display_name, 18, BONE)
+	name_label.name = "EquipmentOwnerName"
+	name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	name_label.clip_text = true
+	name_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	row.add_child(name_label)
+	row.add_child(_label("主角", 16, CYAN))
+
+
+func _equipment_actor_key(actor_ref: Dictionary) -> String:
+	if actor_ref.get("kind", "") == "main":
+		return "RB" if _input_kind == "gamepad" else ControlBindings.key_label(int(_controls.get("hero_skill", KEY_R)))
+	var slot: int = _active_skill_index(int(actor_ref.get("skill_uid", -1))) if run != null else -1
+	if slot < 0:
+		return "—"
+	return ("X" if slot == 0 else "Y") if _input_kind == "gamepad" else ControlBindings.key_label(int(_controls.get("pulse" if slot == 0 else "skill_secondary", KEY_Q if slot == 0 else KEY_E)))
+
+
+static func _relative_skill_percent(before: float, after: float) -> String:
+	if not is_finite(before) or not is_finite(after) or before <= 0.0 or after < 0.0:
+		return "—"
+	var ratio: float = after / before - 1.0
+	if absf(ratio) < 0.000001:
+		return "0%"
+	return ("+" if ratio > 0.0 else "") + _skill_number(ratio * 100.0) + "%"
+
+
+func _add_equipment_actor_changes(parent: Control, values: Variant, node_name: String, caption: String = "") -> void:
+	if not values is Array or values.is_empty():
+		return
+	var content := VBoxContainer.new()
+	content.name = node_name
+	content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	content.add_theme_constant_override("separation", 4)
+	content.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	parent.add_child(content)
+	if not caption.is_empty():
+		content.add_child(_label(caption + " · 技伤", 16, MUTED))
+	var actors := GridContainer.new()
+	actors.name = "EquipmentActors"
+	actors.columns = 3
+	actors.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	actors.add_theme_constant_override("h_separation", 6)
+	actors.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	content.add_child(actors)
+	for value: Variant in values:
+		if not value is Dictionary or not HeroCatalog.IDS.has(str(value.get("hero_id", ""))):
+			continue
+		var change: Dictionary = value
+		var actor_ref: Dictionary = change.get("actor_ref", {})
+		var hero: HeroDef = HeroCatalog.definition(str(change["hero_id"]))
+		var cell := VBoxContainer.new()
+		cell.name = "EquipmentActor_" + EquipmentScopeRules.actor_key(actor_ref).replace(":", "_")
+		cell.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		cell.add_theme_constant_override("separation", 1)
+		cell.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		cell.set_meta("actor_ref", actor_ref.duplicate(true))
+		cell.set_meta("hero_id", hero.id)
+		actors.add_child(cell)
+		var identity := HBoxContainer.new()
+		identity.alignment = BoxContainer.ALIGNMENT_CENTER
+		identity.add_theme_constant_override("separation", 4)
+		identity.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		cell.add_child(identity)
+		_add_hero_icon(identity, hero, 28)
+		var action := _label(_equipment_actor_key(actor_ref), 16, MUTED)
+		action.name = "EquipmentActorKey"
+		action.set_meta("actor_ref", actor_ref.duplicate(true))
+		identity.add_child(action)
+		var before: float = float(change.get("damage_before", 0.0))
+		var after: float = float(change.get("damage_after", 0.0))
+		var percent: String = _relative_skill_percent(before, after)
+		var amount := _label(percent, 18, RED if after < before else CYAN if after > before else MUTED)
+		amount.name = "EquipmentActorDelta"
+		amount.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		amount.clip_text = true
+		amount.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		cell.add_child(amount)
+		cell.tooltip_text = hero.display_name + " · " + action.text + " · " + percent
+
+
+func _update_equipment_cast_hud(snapshot: Dictionary, loadout: Array) -> void:
+	var host: VBoxContainer = _hud.get("equipment_casts") as VBoxContainer
+	if not is_instance_valid(host):
+		return
+	var equipped: Array[Dictionary] = []
+	for item: Dictionary in loadout:
+		var definition: ContentDef = GameCatalog.weapon(str(item.get("id", "")))
+		if definition == null:
+			continue
+		for effect: Dictionary in definition.equipment_effects:
+			if effect.get("kind", "") == "cast_party_skill_damage":
+				equipped.append({"uid": int(item.get("uid", -1)), "id": definition.id, "rank": int(item.get("rank", 1))})
+				break
+	host.visible = not equipped.is_empty() and float(snapshot.get("health", 0.0)) > 0.0
+	var inventory_key: String = str(equipped)
+	if inventory_key != _hud_equipment_cast_key:
+		_hud_equipment_cast_key = inventory_key
+		_clear(host)
+		for item: Dictionary in equipped:
+			var row := HBoxContainer.new()
+			row.name = "EquipmentCastPips_%d" % int(item["uid"])
+			row.alignment = BoxContainer.ALIGNMENT_CENTER
+			row.add_theme_constant_override("separation", 4)
+			row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			host.add_child(row)
+			_add_icon(row, GameCatalog.weapon(str(item["id"])), 24)
+			for index: int in 4:
+				var pip := ColorRect.new()
+				pip.name = "EquipmentCastPip%d" % index
+				pip.custom_minimum_size = Vector2(9, 9)
+				pip.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+				pip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+				row.add_child(pip)
+			var count := _label("0/4", 14, HUD_GOLD)
+			count.name = "EquipmentCastCount"
+			row.add_child(count)
+		var total_label := _label("", 14, HUD_GOLD)
+		total_label.name = "EquipmentPartySkillDamage"
+		total_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		host.add_child(total_label)
+	var runtime_value: Variant = snapshot.get("weapon_effects", {})
+	var runtime: Dictionary = runtime_value if runtime_value is Dictionary else {}
+	var records: Variant = runtime.get("items", [])
+	for item: Dictionary in equipped:
+		var stacks: int = 0
+		if records is Array:
+			for record: Variant in records:
+				if record is Dictionary and int(record.get("uid", -2)) == int(item["uid"]):
+					stacks = clampi(int(record.get("party_cast_stacks", 0)), 0, 4)
+					break
+		var row := host.find_child("EquipmentCastPips_%d" % int(item["uid"]), false, false) as HBoxContainer
+		if row == null:
+			continue
+		(row.get_node("EquipmentCastCount") as Label).text = "%d/4" % stacks
+		for index: int in 4:
+			(row.get_node("EquipmentCastPip%d" % index) as ColorRect).color = HUD_GOLD if index < stacks else Color(HUD_MUTED, 0.2)
+	var total_display := host.find_child("EquipmentPartySkillDamage", false, false) as Label
+	if total_display != null:
+		total_display.text = "技伤 +" + _rune_percent(maxf(0.0, float(runtime.get("party_skill_damage", 0.0))))
+
+
 func _equipment_tooltip(item: Dictionary) -> String:
 	var weapon: ContentDef = GameCatalog.weapon(str(item["id"]))
 	var rune: Dictionary = item.get("rune", {})
@@ -3310,10 +3523,20 @@ func _equipment_tooltip(item: Dictionary) -> String:
 
 func _weapon_passives_text(weapon: ContentDef, rank: int) -> String:
 	var lines: PackedStringArray = []
+	for modifier: Dictionary in weapon.equipment_modifiers:
+		var amount: float = EquipmentScopeRules.amount_for_rank(modifier, rank)
+		var target: String = "主角" if modifier.get("target", "") == "owner" else "全队"
+		if modifier.get("target", "") == "party_element":
+			target = {"fire": "火队", "dark": "暗队", "water": "水队", "wind": "风队", "light": "光队", "thunder": "雷队"}.get(str(modifier.get("element", "")), "—")
+		var stat: String = {"damage": "攻击", "skill_damage": "技伤", "max_health_ratio": "生命"}.get(str(modifier.get("stat", "")), "")
+		lines.append("%s%s +%s" % [target, stat, _rune_percent(amount)])
 	var weight: float = BackpackInventory.rank_multiplier(rank)
 	for key: String in weapon.equipment_bonuses:
 		lines.append("%s %s" % [_relic_stat_name(key), _relic_amount_text(key, float(weapon.equipment_bonuses[key]) * weight)])
 	for effect: Dictionary in weapon.equipment_effects:
+		if effect.get("kind", "") == "cast_party_skill_damage":
+			lines.append("主角施法 · 全队技伤 +%s ×%d" % [_rune_percent(EquipmentScopeRules.amount_for_rank(effect, rank)), int(effect.get("max_stacks", 4))])
+			continue
 		var amount: float = float(effect.get("amount", 0.0)) * weight
 		var cap: float = float(effect.get("cap", 0.0)) * weight
 		match str(effect.get("kind", "")):
@@ -3334,7 +3557,11 @@ static func _return_flight_tooltip(weapon: ContentDef) -> String:
 func _weapon_stats_text(definition: ContentDef, rank: int = 1, resonance_bonus: float = 0.0) -> String:
 	var attack_speed: float = run.stat("attack_speed") if run != null else 1.0
 	var damage: float = run.weapon_damage({"id": definition.id, "rank": rank, "resonance_bonus": resonance_bonus}) if run != null else definition.damage * BackpackInventory.rank_multiplier(rank) * (1.0 + resonance_bonus)
-	return "每枚 %.1f伤害 · %d枚/次 · 间隔 %.2f秒" % [damage, definition.shots, definition.cooldown / attack_speed]
+	return _format_weapon_stats(damage, definition.shots, definition.cooldown / attack_speed)
+
+
+static func _format_weapon_stats(damage: float, shots: int, interval: float) -> String:
+	return "每枚 %.1f伤害 · %d枚/次 · 间隔 %.2f秒" % [damage, shots, interval]
 
 
 func _weapon_stats_note() -> String:

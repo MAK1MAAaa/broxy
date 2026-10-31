@@ -3,7 +3,7 @@ WORLD FLIPPER 原作素材与同人作品声明
 © Cygames, Inc. / Citail Inc.
 
 本目录中的《弹射世界 / WORLD FLIPPER》角色、敌人、武器、饰品、符文、立绘、背景与场景道具图片来自原作素材，
-由官方公开试玩、Wiki 与角色保存站提供下载。本项目按用户要求将这些图片用于
+由官方公开试玩、Wiki、角色保存站及公开历史资源缓存归档提供下载。本项目按用户要求将这些图片用于
 非官方同人试作。原作图片的著作权及相关权利仍属于原权利人，不因下载、
 裁切、缩放、图集整理或收录到本项目而转移。
 
@@ -15,7 +15,8 @@ WORLD FLIPPER 原作素材与同人作品声明
 也不声明这项同人使用已获官方授权或认可。本文件仅记录来源与权利状态，
 不授予第三方对原作素材的复制、修改或再发行许可。
 
-各文件的下载地址、校验值及裁切、缩放、图集处理记录见同目录 manifest.json。
+各文件的下载地址、校验值及裁切、缩放、图集处理记录见同目录 manifest.json，
+以及 stages/manifest.json、roster/manifest.json、equipment/manifest.json 的独立增量清单。
 发行包请保留本文件；Windows 外置文件为 licenses/World-Flipper-NOTICE.txt，
 macOS 外置文件位于 Contents/Resources/licenses/World-Flipper-NOTICE.txt。
 
@@ -34,3 +35,14 @@ World Flipper Wiki：https://worldflipper.wiki.gg/
 Additional original-stage crops and open-wall geometry use verified official-demo resources with references matched to the pinned JP catalog. Runtime bounds, scale, timing and combat are adaptations; unresolved original mechanisms are not claimed as reproduced. Source registries and limits are documented in docs/world-flipper-actions.md. Original animation preparation uses the pinned 2022 vivaldi6352 mirror; unimplemented and missing character variants remain separately tracked.
 
 本轮追加娜希尔、莫迪亚迦、法露伽的原作待机与双向步行像素规范化，独立清单位于 assets/worldflipper/roster/manifest.json；像素portrait并非原作全身立绘。132份历史背景仅作本地来源准备，未作为额外可玩布局。原作角色、背景、图像与数据版权归 Cygames, Inc. / Citail Inc.，未发现开放资产许可；当前为用户指定同人用途。
+
+本轮新增杜兰德尔、十字弓、谎言之书、半月拳刃、老旧法杖五张装备原图规范化。
+杜兰德尔、十字弓、谎言之书、老旧法杖来自Wiki原生小图；半月拳刃来自原始装备图集精确帧。
+五件分别锁定下载和像素校验；半月拳刃未使用同名能力魂Core。
+来源和完整画布还原记录见 assets/worldflipper/equipment/manifest.json、tools/world_flipper_scoped_equipment.json。
+公开历史JP资源缓存来源：https://archive.org/details/gacha-archive
+同一归档的生产资源缓存元数据声明1.780.30，不证明逐对象版本或与最终JP1.780.40字节一致。
+归档全包未下载、全包SHA1未独立核验；已选条目按ZIP CRC32与实测SHA256验证。
+1230份地形、1422条布局引用及背景配套样本仅作原始来源准备，不构成更多地图已可玩的声明。
+下载范围和证据见 tools/world_flipper_jp_archive_sources.json、docs/world-flipper-jp-archive.md。
+原作图片与数据权利不因公开归档、裁切、签名解码修复或整数缩放而转移；未发现开放资产许可。

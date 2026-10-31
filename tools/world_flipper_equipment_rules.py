@@ -50,6 +50,11 @@ REVIEWED_ROWS: dict[str, dict[str, str]] = {
     "3010007": {"0:1": "e1cad829bba03cb560e2924f48037575bdf11dbf2670239923b203358e7ba1db", "1:5": "fd18a44614adf4b9a00ba04c4d1924198c52dc6616a8af64b8f7d501cf242312"},
     "5020024": {"0:1": "47951767c0ef29d59c6eb89b5418e0468dea0babc6c027aaad596801a5c9a428"},
     "5010011": {"0:1": "be1b9f30f5c1af8cd27a92ede6fc9434e2cb4bc01227c1d31a802dcd0d347a56", "1:1": "218012e49e772c6ba097d38c648d7985faacf018f4e2ffabd2cfddb312935432"},
+    "3040006": {"0:1": "fe743a54fdbcbc31d8360229270486130e7f26290c3779baf32961c7cc7fce35", "1:5": "ca9c81655aed5fdc332385b4faeca71c5ec94df91a38f992e8308ea66afa377f"},
+    "5010005": {"0:1": "f1dcc31f05e19d85311d1449cb78b843d2d27cb191afea028e33a0ea2e3a9d55", "1:1": "23a423b17684e399912ace0928c13775e85c0886afd9ac07c31b8dede3abf38c"},
+    "3050002": {"0:1": "e7e5ed7970d6b420966a1b7f8941faed6762c7bacb9f98f5ee949df4d95e3551", "1:5": "d273623479684ebb13786a9cd08fb34a4e54f1ce5e89feb1106218edd7fe808c"},
+    "3070006": {"0:1": "8df4763ca2c1c43dff94d893cca2ebb07eee2dc3707a678a4a301ad2c7cf6609", "1:5": "6a35b7cdbe3f45da9ffba52c9d40e1b98e06ce627f4fa998656c2304f6bc3234"},
+    "1060001": {"0:1": "b9e27806c7cabacb487f791b47371ecdd8bcffe46b264af10157082ea86a443d"},
 }
 REVIEWED_IDS = frozenset(REVIEWED_ROWS)
 REVIEWED_OPS = {"32": "attack_ratio", "34": "skill_damage_ratio", "35": "skill_charge_speed_ratio",
@@ -68,6 +73,11 @@ ADDITIONAL_FACT_CHECKS = {
     "3010007": ("water", "Cutlass", "6122", "352d4bc293948f1d9aab4f8ae5f7fb0818e8fb6bdf2e49c33c3295b25c4fccbb"),
     "5020024": ("all", "Parashu", "1223", "a1b0cd2444931a364ea848447624bbec860e9bf19b80be0ec186e7361375842c"),
     "5010011": ("light", "Heimdall%27s_Sword", "3166", "b73085fadbabd9d38ad80b558cd92f13627afc470974b35a0ed77142fb67ebf9"),
+    "3040006": ("all", "Crossbow", "5852", "b5e0244b54f747cbb8738220e657e42bda3a886fb56c3e2d6347cd2739f9eda7"),
+    "5010005": ("all", "Durendal", "3311", "9469bbbde80bba1e08efe61327de4169078062b182e47dc99ded921b040886bb"),
+    "3050002": ("dark", "Rohonc_Codex", "1231", "6fa9f2c2e66233f5e8203fad921e445ddaceb0d895761ec87dd75bded7aadb40"),
+    "3070006": ("fire", "Moonblade_Knuckles", "16", "8cbba0edd0cbe78494ed9d28631b485114ac7f213d64d0d2bd5d74ff8fa4ca2e"),
+    "1060001": ("all", "Old_Staff", "5180", "58d622788b2660ff682fa8b41f52296a2fdf17c4eec80438366637e7702ab718"),
 }
 
 
@@ -178,12 +188,13 @@ def _reviewed_operation(equipment_id: str, row: list[str]) -> dict[str, Any] | N
     stacks = int(row[31]) if row[31] else None
     lower = original_ratio(row[48])
     upper = original_ratio(row[49])
+    target_kind = "party" if target_code == "5" and row[46] == "(None)" else targets[target_code]
     result = {
         "conditions": conditions,
         "event": {"kind": REVIEWED_EVENTS[event_code], "puller_code": row[25], "puller_group": row[26],
                   "count_base": original_ratio(row[27]), "count_maximum": original_ratio(row[28]), "stack_limit": stacks},
         "effect": {"operation": REVIEWED_OPS[opcode], "jp_opcode": int(opcode),
-                   "target": {"kind": targets[target_code], "group": row[46]},
+                   "target": {"kind": target_kind, "group": row[46]},
                    "amount_base": lower, "amount_maximum": upper, "unit": "ratio" if lower is not None else "flag"},
         "evidence": "Pinned JP numeric row, cross-checked against this exact equipment's sourced ability and awakening facts.",
     }
@@ -194,6 +205,12 @@ def _reviewed_operation(equipment_id: str, row: list[str]) -> dict[str, Any] | N
     if stacks is not None and stacks > 0 and lower is not None and upper is not None:
         result["effect"]["stack_cap_base"] = int(row[48]) * stacks / 100000.0
         result["effect"]["stack_cap_maximum"] = int(row[49]) * stacks / 100000.0
+    if equipment_id == "1060001":
+        result["event"]["actor_scope"] = "owner"
+        result["execution_order_evidence"] = {
+            "same_cast_damage_order_verified": False,
+            "reason": "The fixed JP row and sourced ability prove successful owner skill activation and party-wide skill damage stacks, but do not prove ordering relative to that cast's damage parameter capture.",
+            "project_current_cast_policy": "Requires an explicit project adaptation and an atomic cast reservation; not a claim of exact original execution order."}
     return result
 
 

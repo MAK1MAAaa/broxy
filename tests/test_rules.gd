@@ -31,7 +31,7 @@ func _buy(state: RunState, kind: String, id: String, price: int = 20) -> bool:
 	return state.buy_offer(0)
 
 func _test_catalog() -> void:
-	_check(GameCatalog.weapons().size() == 16, "Catalog has sixteen weapons")
+	_check(GameCatalog.weapons().size() == 21, "Catalog has twenty-one weapons")
 	_check(GameCatalog.runes().size() == 3, "Catalog has three runes")
 	_check(GameCatalog.relics().size() == 14, "Catalog has fourteen relics including both active-skill tradeoffs")
 	_check(GameCatalog.enemies().size() == 5, "Catalog has four enemies and one boss")
@@ -56,7 +56,7 @@ func _test_catalog() -> void:
 	_check(GameCatalog.wave(0) == null and GameCatalog.wave(9) == null, "Out-of-range waves return null")
 	var copy: Array[ContentDef] = GameCatalog.weapons()
 	copy.clear()
-	_check(GameCatalog.weapons().size() == 16, "Catalog list callers cannot clear the catalog")
+	_check(GameCatalog.weapons().size() == 21, "Catalog list callers cannot clear the catalog")
 
 func _test_catalog_index_semantics() -> void:
 	var families: Array[Dictionary] = [

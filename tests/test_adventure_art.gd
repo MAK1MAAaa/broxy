@@ -8,6 +8,7 @@ const SPRITE_SIZES: Dictionary = {
 }
 const ART_ROOT: String = "res://assets/starfall/"
 const FAN_ROOT: String = "res://assets/worldflipper/"
+const SCOPED_EQUIPMENT_ICONS: PackedStringArray = ["bow_0006", "sword_0005", "book_0002", "fist_0006", "staff_0001"]
 const FAN_OVERRIDES: Dictionary = {
 	"res://assets/arena.svg": FAN_ROOT + "maps/previews/reliquary.png",
 	"res://assets/maps/reliquary.svg": FAN_ROOT + "maps/previews/reliquary.png",
@@ -67,6 +68,10 @@ func _test_path_contract() -> void:
 	for source: String in FAN_OVERRIDES:
 		var expected: String = str(FAN_OVERRIDES[source])
 		_check(AdventureArt.path(source) == expected and AdventureArt.path(expected) == expected, "The original-game override has an exact stable route: " + source)
+	for icon: String in SCOPED_EQUIPMENT_ICONS:
+		var expected: String = FAN_ROOT + "equipment/%s.png" % icon
+		_check(GameCatalog.weapon(icon).icon == icon and _expected_icon(icon) == expected and AdventureArt.path("res://assets/icons/%s.svg" % icon) == expected and AdventureArt.path(expected) == expected, "Each new scoped equipment icon has its exact independent route: " + icon)
+		_expect_texture(load(expected) as Texture2D, expected, Vector2(64, 64), "scoped equipment " + icon)
 	_check(AdventureArt.path(ART_ROOT + "sprites/chaser.svg") == ART_ROOT + "sprites/chaser.svg", "The preserved previous enemy artwork remains available through its explicit path")
 	_check(AdventureArt.path("res://assets/maps/mire.svg") == FAN_ROOT + "maps/previews/mire.png", "An original map selects its source-art preview without changing its stable catalog ID")
 	_check(AdventureArt.path("res://assets/menu_art.svg") == ART_ROOT + "menu_art.png", "Legacy menu references retain their preserved static illustration")
@@ -78,6 +83,8 @@ func _expected_sprite(id: String) -> String:
 	return str(FAN_OVERRIDES.get("res://assets/sprites/%s.svg" % id, ART_ROOT + "sprites/%s.svg" % id))
 
 func _expected_icon(icon: String) -> String:
+	if SCOPED_EQUIPMENT_ICONS.has(icon):
+		return FAN_ROOT + "equipment/%s.png" % icon
 	var definitions: Array[ContentDef] = []
 	definitions.append_array(GameCatalog.weapons())
 	definitions.append_array(GameCatalog.relics())

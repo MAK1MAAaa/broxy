@@ -184,6 +184,7 @@ func _advance(sim: CombatSim, frames: int = 120) -> void:
 
 func _test_real_pierce_and_bounce() -> void:
 	for weapon: ContentDef in GameCatalog.weapons():
+		var personal_attack: float = 2.6 if weapon.id == "sword_0005" else 1.0
 		for rune: String in ["pierce", "bounce"]:
 			var state: RunState = _fixture(weapon.id, rune)
 			var preview: Dictionary = _query(state, 0)
@@ -199,7 +200,7 @@ func _test_real_pierce_and_bounce() -> void:
 			_check(events.size() == RuneRules.EXTRA_HITS and int(events[0]["hits"]) == int(preview["trigger_hit"]), "Rune feedback begins only after advertised native penetration: " + weapon.id + "/" + rune)
 			for index: int in targets.size():
 				var scale: float = float(preview["bounce_scales"][index]) if rune == "bounce" and index < limit else 1.0
-				var expected: float = weapon.damage * scale if index < limit else 0.0
+				var expected: float = weapon.damage * personal_attack * scale if index < limit else 0.0
 				_check(is_equal_approx(10000.0 - targets[index].health, expected), "Actual direct damage matches advertised bounce decay without repeat UID hits")
 			_advance(sim)
 			_check(sim.primary_hits == limit, "An exhausted projectile cannot revisit a previous UID")
@@ -213,6 +214,7 @@ func _test_real_pierce_and_bounce() -> void:
 
 func _test_real_blast() -> void:
 	for weapon: ContentDef in GameCatalog.weapons():
+		var personal_attack: float = 2.6 if weapon.id == "sword_0005" else 1.0
 		var state: RunState = _fixture(weapon.id, "blast")
 		var preview: Dictionary = _query(state, 0)
 		var sim: CombatSim = _simulation(weapon.id)
@@ -227,8 +229,8 @@ func _test_real_blast() -> void:
 		_advance(sim)
 		_check(sim.primary_hits == int(preview["max_direct_targets"]) and events.size() == 1 and int(events[0]["hits"]) == int(preview["trigger_hit"]) and events[0]["point"] == center, "Blast occurs at the advertised direct hit and world position: " + weapon.id)
 		for enemy: CombatSim.Enemy in direct:
-			_check(is_equal_approx(10000.0 - enemy.health, weapon.damage), "Blast excludes every previously direct-hit UID from secondary damage")
-		_check(is_equal_approx(10000.0 - splash.health, weapon.damage * float(preview["blast_multiplier"])) and outside.health == 10000.0 and sim.secondary_hits == 1, "Real splash uses the advertised radius and multiplier without secondary recursion")
+			_check(is_equal_approx(10000.0 - enemy.health, weapon.damage * personal_attack), "Blast excludes every previously direct-hit UID from secondary damage while preserving owner attack")
+		_check(is_equal_approx(10000.0 - splash.health, weapon.damage * personal_attack * float(preview["blast_multiplier"])) and outside.health == 10000.0 and sim.secondary_hits == 1, "Real splash uses owner attack and the advertised radius and multiplier without secondary recursion")
 	var lone: CombatSim = _simulation("crescent")
 	var events: Array[Dictionary] = _events(lone)
 	_target(lone, Vector2(300, 300))
